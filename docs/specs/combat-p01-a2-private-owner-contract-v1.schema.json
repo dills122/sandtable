@@ -7,7 +7,7 @@
     "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "maxLength": 71 },
     "publicRef": { "type": "string", "pattern": "^pub\\.[0-9a-f]{64}$", "maxLength": 68 },
     "candidateRef": { "type": "string", "pattern": "^p01-owner-v1\\.[0-9a-f]{64}$", "maxLength": 77 },
-    "campaignId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$", "maxLength": 64 },
+    "campaignId": { "type": "string", "const": "rules-lab.combat-creation.1", "maxLength": 64 },
     "seatAuthorityId": { "type": "string", "pattern": "^seat\\.[0-9a-f]{64}$", "maxLength": 69 },
     "journalKey": { "type": "string", "pattern": "^p01j\\.[0-9a-f]{64}$", "maxLength": 69 },
     "requestId": { "type": "string", "pattern": "^req\\.[0-9a-f]{64}$", "maxLength": 68 },
@@ -99,7 +99,7 @@
       "required": ["contractVersion", "context", "cycleRef", "positionId", "openingRevision", "decisionRef", "participantRef", "targetRef", "candidateRefs"],
       "properties": {
         "contractVersion": { "const": 1 }, "context": { "$ref": "#/$defs/context" }, "cycleRef": { "$ref": "#/$defs/hash" },
-        "positionId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,127}$", "maxLength": 128 },
+        "positionId": { "type": "string", "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$", "maxLength": 128 },
         "openingRevision": { "const": 1 },
         "decisionRef": { "$ref": "#/$defs/publicRef" }, "participantRef": { "$ref": "#/$defs/publicRef" },
         "targetRef": { "$ref": "#/$defs/publicRef" },

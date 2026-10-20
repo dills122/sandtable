@@ -42,6 +42,20 @@ owner; transfer creates a different authority ID. New session generation does
 not change retry key. Grant/secret never enters ordinary logs, Maproom,
 Signals or intelligence plane.
 
+This R03 v1 profile pins `campaignId` to
+`rules-lab.combat-creation.1`: all 300 retained CreationRequest and resulting
+Control vectors in the 11 SHA-256-pinned chunks under the physical R03 manifest
+(`sha256:39cae77c405b83a793b3d806fcf4a67860b9ff8514e59c9bfa83384d7dfc2b35`)
+carry that exact ID. The prior synthetic `campaign-demo` value is not an
+authenticated import and is rejected. The retained Control boundary also uses
+`land.position.operation-1.first-player.movement-and-combat.combat.position-determination`
+as its position ID in all 300 rows. The proposed owner-opening golden carries
+those source-backed identifiers but remains **synthetic** for public refs,
+opening, seat authority, journal, Core transition and receipt. A closed R03
+Control boundary does not establish an authentic owner opening. Position IDs
+use lowercase segments separated by a single dot or hyphen; the host must
+still verify the exact Core-derived position at issue time.
+
 ## Canonical v1 bytes and bounds
 
 Each closed shape has `contractVersion:1` and exactly ordered keys in

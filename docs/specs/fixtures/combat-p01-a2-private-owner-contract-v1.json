@@ -7,7 +7,7 @@
       "values": {
         "importBinding": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "creationRequestHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           "elevenLedgerRootHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
           "dependencyManifestHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
@@ -16,7 +16,7 @@
         },
         "seatGrant": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "side": "axis",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "grantGeneration": 1,
@@ -28,7 +28,7 @@
         },
         "actorFacts": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "side": "axis",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "grantGeneration": 1,
@@ -38,7 +38,7 @@
           "clockAvailable": true,
           "journalKey": "p01j.eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
           "expectedSequence": 1,
-          "expectedRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
+          "expectedRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
           "expectedStateVersion": 12,
           "expectedPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
           "fence": 4
@@ -46,7 +46,7 @@
         "ownerOpening": {
           "contractVersion": 1,
           "context": {
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "audience": "axis",
             "cycle": {
               "gameTurn": 1,
@@ -60,25 +60,25 @@
             "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
           },
           "cycleRef": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "positionId": "combat-position-1",
+          "positionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
           "openingRevision": 1,
-          "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+          "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
           "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          "targetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891",
+          "targetRef": "pub.68b51f77e41816f5ace4aae2b9b4b7a1f8e2d37cc5f240bd1d460c8d49bb7c76",
           "candidateRefs": [
-            "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+            "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a"
           ]
         },
         "privateOpeningPayload": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "seatEpoch": 0,
           "openingRevision": 1,
           "visibleOpening": {
             "contractVersion": 1,
             "context": {
-              "campaignId": "campaign-demo",
+              "campaignId": "rules-lab.combat-creation.1",
               "audience": "axis",
               "cycle": {
                 "gameTurn": 1,
@@ -92,18 +92,18 @@
               "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
             },
             "cycleRef": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-            "positionId": "combat-position-1",
+            "positionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
             "openingRevision": 1,
-            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
             "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "targetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891",
+            "targetRef": "pub.68b51f77e41816f5ace4aae2b9b4b7a1f8e2d37cc5f240bd1d460c8d49bb7c76",
             "candidateRefs": [
-              "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+              "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a"
             ]
           },
           "candidateBindings": [
             {
-              "ownerCandidateRef": "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f",
+              "ownerCandidateRef": "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a",
               "privateCandidateId": "p01a.cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
             }
           ],
@@ -115,17 +115,17 @@
         "ownerInput": {
           "contractVersion": 1,
           "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
-          "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+          "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
           "openingRevision": 1,
           "choiceKind": "select",
-          "candidateRef": "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+          "candidateRef": "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a"
         },
         "journalRecord": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "sequence": 2,
           "kind": "owner-accepted-input",
-          "priorRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
+          "priorRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
           "priorStateVersion": 12,
           "priorPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
           "resultStateVersion": 13,
@@ -133,31 +133,31 @@
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "seatEpoch": 0,
           "openingRevision": 1,
-          "requestDigest": "sha256:da8904a5818f9ad726f8b80571b1d6360640b472fc227be6fd2f14952d7f0ed8",
-          "inputDigest": "sha256:b89bb4212b27392723cf2e8cda8bb63bfcf89155ab2de27f01d3098a782406d7",
-          "eventDigest": "sha256:25ad48218a9857eb5144b9961c2c32d38f257b49d237c9c830333ab494aadeba",
-          "receiptDigest": "sha256:7d70dab7e0aa83cbb9a64366663079aad6707b4315a7912790270af0f9ea6a50",
-          "privatePayloadDigest": "sha256:d691899a1cc9e40663134c647e06236e88cc25042bd8e3e691cf818122d63ef5",
+          "requestDigest": "sha256:8741cd98b2d2202795ff2f88f0da77dc6136ac185c1803309a51fe1606bc000b",
+          "inputDigest": "sha256:6c5234ec73c3e56b7e9569f3a444410f6e6b9c68539ccd582e8266ce3ff57203",
+          "eventDigest": "sha256:45da1765119060c22355e91637d41fede999dd84abeb1226d06059de19f87d39",
+          "receiptDigest": "sha256:1c8864f48795ec3947be9389bf18230f49264eab7a30ddf27c7ff3650429078c",
+          "privatePayloadDigest": "sha256:e68ae85099afc320d3241566080f03cc11c66da45c313dc2ee4a2a02ea6f20f5",
           "acceptanceClockSource": "local-store-transaction-utc-v1",
           "acceptedAtUnixMilliseconds": 1792523701000
         },
         "ownerReceipt": {
           "contractVersion": 1,
           "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
-          "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+          "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
           "openingRevision": 1,
           "resultClass": "accepted"
         },
         "acceptedTransitionPayload": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "seatEpoch": 0,
-          "openingRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
-          "privateOpeningPayloadHash": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d",
+          "openingRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
+          "privateOpeningPayloadHash": "sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b",
           "historicalSeatGrant": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "side": "axis",
             "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
             "grantGeneration": 1,
@@ -169,7 +169,7 @@
           },
           "historicalActorFacts": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "side": "axis",
             "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
             "grantGeneration": 1,
@@ -179,7 +179,7 @@
             "clockAvailable": true,
             "journalKey": "p01j.eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
             "expectedSequence": 1,
-            "expectedRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
+            "expectedRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
             "expectedStateVersion": 12,
             "expectedPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
             "fence": 4
@@ -189,34 +189,34 @@
           "ownerInput": {
             "contractVersion": 1,
             "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
-            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
             "openingRevision": 1,
             "choiceKind": "select",
-            "candidateRef": "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+            "candidateRef": "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a"
           },
-          "coreInputHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a2273656c6563742d636c6f73652d61737361756c74222c2263616d706169676e4964223a2263616d706169676e2d64656d6f222c226465636973696f6e526566223a227075622e38303562626331643439383265653065333134613031643633363037613433383461666535623233363133323137623939323364633931636265613461336563222c22726571756573744964223a227265712e39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c226f70656e696e675265636f726448617368223a227368613235363a33653562356534356130396534663338616365393036316535343461326135653363623735373861613137386430623464363264333439343233303362333830222c22736f7572636543757448617368223a227368613235363a64646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464222c226163746f7253696465223a2261786973222c227072697661746543616e6469646174654964223a22703031612e63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363222c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730313030307d",
-          "coreEventHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d636c6f736564222c2263616d706169676e4964223a2263616d706169676e2d64656d6f222c22726571756573744964223a227265712e39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c22696e707574446967657374223a227368613235363a62383962623432313262323733393237323363663265386364613862623633626663663839313535616232646532376630316433303938613738323430366437222c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a37373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737222c226f7574636f6d65223a2273656c6563746564222c227072697661746543616e6469646174654964223a22703031612e63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363222c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730313030302c22636f6e74726f6c48617368223a227368613235363a31313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131222c22776f726c6448617368223a227368613235363a32323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232222c2272616e646f6d48617368223a227368613235363a33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333227d",
-          "coreReceiptHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d6163636570746564222c2263616d706169676e4964223a2263616d706169676e2d64656d6f222c22726571756573744964223a227265712e39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c22696e707574446967657374223a227368613235363a62383962623432313262323733393237323363663265386364613862623633626663663839313535616232646532376630316433303938613738323430366437222c226576656e74446967657374223a227368613235363a32356164343832313861393835376562353134346239393631633263333264333866323537623439643233376339633833303333336162343934616164656261222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a37373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737222c22726563656970744964223a226173632e34343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434227d",
+          "coreInputHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a2273656c6563742d636c6f73652d61737361756c74222c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c226465636973696f6e526566223a227075622e32316261366537393432613139336636663432623038363266653566663932646661336162313935633138643066663066326566643939383932316161616334222c22726571756573744964223a227265712e39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c226f70656e696e675265636f726448617368223a227368613235363a31343136613034326530646334613732336261396230353564373533343361366336326335333764313732346462303563376361363761663833376566396664222c22736f7572636543757448617368223a227368613235363a64646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464222c226163746f7253696465223a2261786973222c227072697661746543616e6469646174654964223a22703031612e63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363222c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730313030307d",
+          "coreEventHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d636c6f736564222c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c22726571756573744964223a227265712e39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c22696e707574446967657374223a227368613235363a36633532333465633733633365353662376539353639663361343434343130663665366239633638353339636364353832653832363663653366663537323033222c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a37373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737222c226f7574636f6d65223a2273656c6563746564222c227072697661746543616e6469646174654964223a22703031612e63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363222c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730313030302c22636f6e74726f6c48617368223a227368613235363a31313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131222c22776f726c6448617368223a227368613235363a32323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232323232222c2272616e646f6d48617368223a227368613235363a33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333227d",
+          "coreReceiptHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d6163636570746564222c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c22726571756573744964223a227265712e39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c22696e707574446967657374223a227368613235363a36633532333465633733633365353662376539353639663361343434343130663665366239633638353339636364353832653832363663653366663537323033222c226576656e74446967657374223a227368613235363a34356461313736353131393036306332323335356539313633376434316665646539393964643834616265623132323664303630353964653139663837643339222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a37373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737222c22726563656970744964223a226173632e34343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434227d",
           "ownerReceipt": {
             "contractVersion": 1,
             "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
-            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
             "openingRevision": 1,
             "resultClass": "accepted"
           }
         },
         "retryBinding": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
-          "inputDigest": "sha256:da8904a5818f9ad726f8b80571b1d6360640b472fc227be6fd2f14952d7f0ed8",
-          "receiptDigest": "sha256:395140e359fd2bafb5dda4083f5237bbf5d230c038690c73b60bb11aea665104",
+          "inputDigest": "sha256:8741cd98b2d2202795ff2f88f0da77dc6136ac185c1803309a51fe1606bc000b",
+          "receiptDigest": "sha256:1e20de0b85b3cb4f8a0c5c3fb3396ca5d4afb1c2ff72df6e780ae76c42eaeccc",
           "recordSequence": 2
         },
         "retryAuthFacts": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "side": "axis",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "grantGeneration": 2,
@@ -232,55 +232,55 @@
       },
       "expected": {
         "importBinding": {
-          "bytes": 518,
-          "digest": "sha256:78a72ffd08757cfe6db05b66185f0763ca89aa8745c310788a4b122c3adca927"
+          "bytes": 532,
+          "digest": "sha256:b346af24c552dca99a6f4a942c7ad3e70edb6533e734bbf391f2ad80ed4355cb"
         },
         "seatGrant": {
-          "bytes": 387,
-          "digest": "sha256:76c6067218e419bb9718b402dff435129bfe4ba0edb951d7692e21db5f331e61"
+          "bytes": 401,
+          "digest": "sha256:89fcbe9ed2210536bff96a1b94928588cbf52efdc8707196792950dcef13ef42"
         },
         "actorFacts": {
-          "bytes": 596,
-          "digest": "sha256:d7ae14174b1b27f14ac1a8cbfdc0c0304bbdd2ec2884ba9d3d9a4c4b83f3f685"
+          "bytes": 610,
+          "digest": "sha256:9a4683a1218801e93177f7c23ca795f965bceef6c4ae4585bb837e497357f230"
         },
         "ownerOpening": {
-          "bytes": 914,
-          "digest": "sha256:e77a6d6bbc827c88f5ef545a25ff751a3324452d866bc1f75c5d6b84d90d5ee8"
+          "bytes": 999,
+          "digest": "sha256:722a282ec5c3b7fea920a19990f4a4bb0350c471e4599da22670001d578352ad"
         },
         "privateOpeningPayload": {
-          "bytes": 1656,
-          "digest": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d"
+          "bytes": 1755,
+          "digest": "sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b"
         },
         "ownerInput": {
           "bytes": 326,
-          "digest": "sha256:da8904a5818f9ad726f8b80571b1d6360640b472fc227be6fd2f14952d7f0ed8"
+          "digest": "sha256:8741cd98b2d2202795ff2f88f0da77dc6136ac185c1803309a51fe1606bc000b"
         },
         "journalRecord": {
-          "bytes": 1086,
-          "digest": "sha256:0c00028064988dbd78cc21b4b3099418015f316314f1b7bf7fa3df598148ee45"
+          "bytes": 1100,
+          "digest": "sha256:1c60846551e6322bc76477efa386b60797053816f403d1747d368953e3761a7f"
         },
         "ownerReceipt": {
           "bytes": 234,
-          "digest": "sha256:395140e359fd2bafb5dda4083f5237bbf5d230c038690c73b60bb11aea665104"
+          "digest": "sha256:1e20de0b85b3cb4f8a0c5c3fb3396ca5d4afb1c2ff72df6e780ae76c42eaeccc"
         },
         "acceptedTransitionPayload": {
-          "bytes": 6382,
-          "digest": "sha256:d691899a1cc9e40663134c647e06236e88cc25042bd8e3e691cf818122d63ef5"
+          "bytes": 6508,
+          "digest": "sha256:e68ae85099afc320d3241566080f03cc11c66da45c313dc2ee4a2a02ea6f20f5"
         },
         "retryBinding": {
-          "bytes": 420,
-          "digest": "sha256:081dee095955d9b6ec3e0c38e3d032f2921f9a2d90ad34470d8fa496b579f6b9"
+          "bytes": 434,
+          "digest": "sha256:a277e80d9545cc120531e5879057cb035c816c4588d792ea530f9d610e3d3ac6"
         },
         "retryAuthFacts": {
-          "bytes": 399,
-          "digest": "sha256:186f8e8949cd20848118517913f8af862fee7930fc8d7c6c9624dd4964707e99"
+          "bytes": 413,
+          "digest": "sha256:9f2a232cbdf2ee1e408e96da09479a148b7273c40ab00bc0dc542745820c27fd"
         }
       },
       "priorRecords": [
         {
           "value": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "sequence": 0,
             "kind": "r03-import-checkpoint",
             "priorRecordHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
@@ -299,16 +299,16 @@
             "acceptanceClockSource": null,
             "acceptedAtUnixMilliseconds": null
           },
-          "bytes": 920,
-          "digest": "sha256:119b5192966b5ede1b6a2e56f6af58052b847a53ae40ecf221bd3d15035f71be"
+          "bytes": 934,
+          "digest": "sha256:d2d7b4b9c5d136b263ffb3baa5e70037c4df2ee9036245c9a666172643382d2e"
         },
         {
           "value": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "sequence": 1,
             "kind": "owner-opening",
-            "priorRecordHash": "sha256:119b5192966b5ede1b6a2e56f6af58052b847a53ae40ecf221bd3d15035f71be",
+            "priorRecordHash": "sha256:d2d7b4b9c5d136b263ffb3baa5e70037c4df2ee9036245c9a666172643382d2e",
             "priorStateVersion": 12,
             "priorPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
             "resultStateVersion": 12,
@@ -320,12 +320,12 @@
             "inputDigest": null,
             "eventDigest": null,
             "receiptDigest": null,
-            "privatePayloadDigest": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d",
+            "privatePayloadDigest": "sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b",
             "acceptanceClockSource": null,
             "acceptedAtUnixMilliseconds": null
           },
-          "bytes": 766,
-          "digest": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380"
+          "bytes": 780,
+          "digest": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd"
         }
       ]
     },
@@ -334,7 +334,7 @@
       "values": {
         "importBinding": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "creationRequestHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           "elevenLedgerRootHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
           "dependencyManifestHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
@@ -343,7 +343,7 @@
         },
         "seatGrant": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "side": "axis",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "grantGeneration": 1,
@@ -355,7 +355,7 @@
         },
         "actorFacts": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "side": "axis",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "grantGeneration": 1,
@@ -365,7 +365,7 @@
           "clockAvailable": true,
           "journalKey": "p01j.eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
           "expectedSequence": 1,
-          "expectedRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
+          "expectedRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
           "expectedStateVersion": 12,
           "expectedPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
           "fence": 4
@@ -373,7 +373,7 @@
         "ownerOpening": {
           "contractVersion": 1,
           "context": {
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "audience": "axis",
             "cycle": {
               "gameTurn": 1,
@@ -387,25 +387,25 @@
             "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
           },
           "cycleRef": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "positionId": "combat-position-1",
+          "positionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
           "openingRevision": 1,
-          "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+          "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
           "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          "targetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891",
+          "targetRef": "pub.68b51f77e41816f5ace4aae2b9b4b7a1f8e2d37cc5f240bd1d460c8d49bb7c76",
           "candidateRefs": [
-            "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+            "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a"
           ]
         },
         "privateOpeningPayload": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "seatEpoch": 0,
           "openingRevision": 1,
           "visibleOpening": {
             "contractVersion": 1,
             "context": {
-              "campaignId": "campaign-demo",
+              "campaignId": "rules-lab.combat-creation.1",
               "audience": "axis",
               "cycle": {
                 "gameTurn": 1,
@@ -419,18 +419,18 @@
               "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
             },
             "cycleRef": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-            "positionId": "combat-position-1",
+            "positionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
             "openingRevision": 1,
-            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
             "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "targetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891",
+            "targetRef": "pub.68b51f77e41816f5ace4aae2b9b4b7a1f8e2d37cc5f240bd1d460c8d49bb7c76",
             "candidateRefs": [
-              "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+              "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a"
             ]
           },
           "candidateBindings": [
             {
-              "ownerCandidateRef": "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f",
+              "ownerCandidateRef": "p01-owner-v1.3cb81438326a073f98ad3c037c482fdf3daa093b213c03d7df648264d37ee39a",
               "privateCandidateId": "p01a.cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
             }
           ],
@@ -442,17 +442,17 @@
         "ownerInput": {
           "contractVersion": 1,
           "requestId": "req.8888888888888888888888888888888888888888888888888888888888888888",
-          "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+          "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
           "openingRevision": 1,
           "choiceKind": "decline",
           "candidateRef": null
         },
         "journalRecord": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "sequence": 2,
           "kind": "owner-accepted-input",
-          "priorRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
+          "priorRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
           "priorStateVersion": 12,
           "priorPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
           "resultStateVersion": 13,
@@ -460,31 +460,31 @@
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "seatEpoch": 0,
           "openingRevision": 1,
-          "requestDigest": "sha256:56675cb1eb6e622befbb7b0eaf6915de26a38c907a68ac0baf423e498acb2387",
-          "inputDigest": "sha256:711d01df3f77fcf39852266638fef1ca6599d022b60eb82a16720f0b8f9d0e58",
-          "eventDigest": "sha256:2d4c8ebe756deecc4bf23c4a40e27678775a40c0605c8d235199bb2c039d090f",
-          "receiptDigest": "sha256:641939aa8ad1e7a79da46ee02bb4ccaa94f9930a930de9a3b81fa9bbff6eb8af",
-          "privatePayloadDigest": "sha256:bce610b150e1951ec0b08b0286f3fab00038bd81a3b3a152c58924a32422ee70",
+          "requestDigest": "sha256:8ac9c5b3858f2459728993b04733ba356f9c929375e3cd1ccf5748044f831755",
+          "inputDigest": "sha256:edd4e387bb954a9527c81f4872ef89b1687e4b4d77af433010080fd57fd0c738",
+          "eventDigest": "sha256:6a1c0732649404f29aaa964bd1b443f441e087ccec7344d5f5826d8c641a50f3",
+          "receiptDigest": "sha256:33b2b71a8237d73188db2145aecbde8fa0ce73df57b5bf7a0d1be59ea71ad617",
+          "privatePayloadDigest": "sha256:dcfd889b9a396e9391fc95326e864b43e0657c542db3fe3b8a2959544a3d29f4",
           "acceptanceClockSource": "local-store-transaction-utc-v1",
           "acceptedAtUnixMilliseconds": 1792523702000
         },
         "ownerReceipt": {
           "contractVersion": 1,
           "requestId": "req.8888888888888888888888888888888888888888888888888888888888888888",
-          "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+          "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
           "openingRevision": 1,
           "resultClass": "accepted"
         },
         "acceptedTransitionPayload": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "seatEpoch": 0,
-          "openingRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
-          "privateOpeningPayloadHash": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d",
+          "openingRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
+          "privateOpeningPayloadHash": "sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b",
           "historicalSeatGrant": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "side": "axis",
             "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
             "grantGeneration": 1,
@@ -496,7 +496,7 @@
           },
           "historicalActorFacts": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "side": "axis",
             "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
             "grantGeneration": 1,
@@ -506,7 +506,7 @@
             "clockAvailable": true,
             "journalKey": "p01j.eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
             "expectedSequence": 1,
-            "expectedRecordHash": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380",
+            "expectedRecordHash": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd",
             "expectedStateVersion": 12,
             "expectedPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
             "fence": 4
@@ -516,34 +516,34 @@
           "ownerInput": {
             "contractVersion": 1,
             "requestId": "req.8888888888888888888888888888888888888888888888888888888888888888",
-            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
             "openingRevision": 1,
             "choiceKind": "decline",
             "candidateRef": null
           },
-          "coreInputHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a2266696e6973682d776974686f75742d61747461636b222c2263616d706169676e4964223a2263616d706169676e2d64656d6f222c226465636973696f6e526566223a227075622e38303562626331643439383265653065333134613031643633363037613433383461666535623233363133323137623939323364633931636265613461336563222c22726571756573744964223a227265712e38383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838222c226f70656e696e675265636f726448617368223a227368613235363a33653562356534356130396534663338616365393036316535343461326135653363623735373861613137386430623464363264333439343233303362333830222c22736f7572636543757448617368223a227368613235363a64646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464222c226163746f7253696465223a2261786973222c227072697661746543616e6469646174654964223a6e756c6c2c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730323030307d",
-          "coreEventHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d636c6f736564222c2263616d706169676e4964223a2263616d706169676e2d64656d6f222c22726571756573744964223a227265712e38383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838222c22696e707574446967657374223a227368613235363a37313164303164663366373766636633393835323236363633386665663163613635393964303232623630656238326131363732306630623866396430653538222c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c226f7574636f6d65223a226e6f2d73656c656374696f6e222c227072697661746543616e6469646174654964223a6e756c6c2c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730323030302c22636f6e74726f6c48617368223a227368613235363a35353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535222c22776f726c6448617368223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c2272616e646f6d48617368223a227368613235363a37373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737227d",
-          "coreReceiptHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d6163636570746564222c2263616d706169676e4964223a2263616d706169676e2d64656d6f222c22726571756573744964223a227265712e38383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838222c22696e707574446967657374223a227368613235363a37313164303164663366373766636633393835323236363633386665663163613635393964303232623630656238326131363732306630623866396430653538222c226576656e74446967657374223a227368613235363a32643463386562653735366465656363346266323363346134306532373637383737356134306330363035633864323335313939626232633033396430393066222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c22726563656970744964223a226173632e35353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535227d",
+          "coreInputHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a2266696e6973682d776974686f75742d61747461636b222c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c226465636973696f6e526566223a227075622e32316261366537393432613139336636663432623038363266653566663932646661336162313935633138643066663066326566643939383932316161616334222c22726571756573744964223a227265712e38383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838222c226f70656e696e675265636f726448617368223a227368613235363a31343136613034326530646334613732336261396230353564373533343361366336326335333764313732346462303563376361363761663833376566396664222c22736f7572636543757448617368223a227368613235363a64646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464222c226163746f7253696465223a2261786973222c227072697661746543616e6469646174654964223a6e756c6c2c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730323030307d",
+          "coreEventHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d636c6f736564222c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c22726571756573744964223a227265712e38383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838222c22696e707574446967657374223a227368613235363a65646434653338376262393534613935323763383166343837326566383962313638376534623464373761663433333031303038306664353766643063373338222c227072696f72537461746556657273696f6e223a31322c227072696f72507265666978223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c226f7574636f6d65223a226e6f2d73656c656374696f6e222c227072697661746543616e6469646174654964223a6e756c6c2c2261636365707465644174556e69784d696c6c697365636f6e6473223a313739323532333730323030302c22636f6e74726f6c48617368223a227368613235363a35353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535222c22776f726c6448617368223a227368613235363a36363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636222c2272616e646f6d48617368223a227368613235363a37373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737227d",
+          "coreReceiptHex": "7b22636f6e747261637456657273696f6e223a312c226b696e64223a227030312d73656c656374696f6e2d6163636570746564222c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c22726571756573744964223a227265712e38383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838383838222c22696e707574446967657374223a227368613235363a65646434653338376262393534613935323763383166343837326566383962313638376534623464373761663433333031303038306664353766643063373338222c226576656e74446967657374223a227368613235363a36613163303733323634393430346632396161613936346264316234343366343431653038376363656337333434643566353832366438633634316135306633222c22726573756c74537461746556657273696f6e223a31332c22726573756c74507265666978223a227368613235363a39393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939393939222c22726563656970744964223a226173632e35353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535227d",
           "ownerReceipt": {
             "contractVersion": 1,
             "requestId": "req.8888888888888888888888888888888888888888888888888888888888888888",
-            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "decisionRef": "pub.21ba6e7942a193f6f42b0862fe5ff92dfa3ab195c18d0ff0f2efd998921aaac4",
             "openingRevision": 1,
             "resultClass": "accepted"
           }
         },
         "retryBinding": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "requestId": "req.8888888888888888888888888888888888888888888888888888888888888888",
-          "inputDigest": "sha256:56675cb1eb6e622befbb7b0eaf6915de26a38c907a68ac0baf423e498acb2387",
-          "receiptDigest": "sha256:6bb23d1a1c056e7ae903503b74a285745a2cd216554bab3d35d0db023076e0cf",
+          "inputDigest": "sha256:8ac9c5b3858f2459728993b04733ba356f9c929375e3cd1ccf5748044f831755",
+          "receiptDigest": "sha256:36295bd210d04333794a957808cc3b8c4288330342afc77fd0dc4060ffab66fc",
           "recordSequence": 2
         },
         "retryAuthFacts": {
           "contractVersion": 1,
-          "campaignId": "campaign-demo",
+          "campaignId": "rules-lab.combat-creation.1",
           "side": "axis",
           "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "grantGeneration": 2,
@@ -559,55 +559,55 @@
       },
       "expected": {
         "importBinding": {
-          "bytes": 518,
-          "digest": "sha256:78a72ffd08757cfe6db05b66185f0763ca89aa8745c310788a4b122c3adca927"
+          "bytes": 532,
+          "digest": "sha256:b346af24c552dca99a6f4a942c7ad3e70edb6533e734bbf391f2ad80ed4355cb"
         },
         "seatGrant": {
-          "bytes": 387,
-          "digest": "sha256:76c6067218e419bb9718b402dff435129bfe4ba0edb951d7692e21db5f331e61"
+          "bytes": 401,
+          "digest": "sha256:89fcbe9ed2210536bff96a1b94928588cbf52efdc8707196792950dcef13ef42"
         },
         "actorFacts": {
-          "bytes": 596,
-          "digest": "sha256:d7ae14174b1b27f14ac1a8cbfdc0c0304bbdd2ec2884ba9d3d9a4c4b83f3f685"
+          "bytes": 610,
+          "digest": "sha256:9a4683a1218801e93177f7c23ca795f965bceef6c4ae4585bb837e497357f230"
         },
         "ownerOpening": {
-          "bytes": 914,
-          "digest": "sha256:e77a6d6bbc827c88f5ef545a25ff751a3324452d866bc1f75c5d6b84d90d5ee8"
+          "bytes": 999,
+          "digest": "sha256:722a282ec5c3b7fea920a19990f4a4bb0350c471e4599da22670001d578352ad"
         },
         "privateOpeningPayload": {
-          "bytes": 1656,
-          "digest": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d"
+          "bytes": 1755,
+          "digest": "sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b"
         },
         "ownerInput": {
           "bytes": 252,
-          "digest": "sha256:56675cb1eb6e622befbb7b0eaf6915de26a38c907a68ac0baf423e498acb2387"
+          "digest": "sha256:8ac9c5b3858f2459728993b04733ba356f9c929375e3cd1ccf5748044f831755"
         },
         "journalRecord": {
-          "bytes": 1086,
-          "digest": "sha256:97c61fa8254cebc21ffa30166b7e8259d17f464662b471859c014b6e0277b287"
+          "bytes": 1100,
+          "digest": "sha256:bc211a13c91b3b7fc2b90cc60e2052cc36c46740c4e476d14516950054bc8e54"
         },
         "ownerReceipt": {
           "bytes": 234,
-          "digest": "sha256:6bb23d1a1c056e7ae903503b74a285745a2cd216554bab3d35d0db023076e0cf"
+          "digest": "sha256:36295bd210d04333794a957808cc3b8c4288330342afc77fd0dc4060ffab66fc"
         },
         "acceptedTransitionPayload": {
-          "bytes": 6050,
-          "digest": "sha256:bce610b150e1951ec0b08b0286f3fab00038bd81a3b3a152c58924a32422ee70"
+          "bytes": 6176,
+          "digest": "sha256:dcfd889b9a396e9391fc95326e864b43e0657c542db3fe3b8a2959544a3d29f4"
         },
         "retryBinding": {
-          "bytes": 420,
-          "digest": "sha256:ad644e83a57f964f0d8b90ce821dde3141e417cac08a492dfc60bb1154081813"
+          "bytes": 434,
+          "digest": "sha256:1cb1d8ab80d00034b667ffd9c6213adb2c4814d5686cdcea1d0679d68bf1c36f"
         },
         "retryAuthFacts": {
-          "bytes": 399,
-          "digest": "sha256:186f8e8949cd20848118517913f8af862fee7930fc8d7c6c9624dd4964707e99"
+          "bytes": 413,
+          "digest": "sha256:9f2a232cbdf2ee1e408e96da09479a148b7273c40ab00bc0dc542745820c27fd"
         }
       },
       "priorRecords": [
         {
           "value": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "sequence": 0,
             "kind": "r03-import-checkpoint",
             "priorRecordHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
@@ -626,16 +626,16 @@
             "acceptanceClockSource": null,
             "acceptedAtUnixMilliseconds": null
           },
-          "bytes": 920,
-          "digest": "sha256:119b5192966b5ede1b6a2e56f6af58052b847a53ae40ecf221bd3d15035f71be"
+          "bytes": 934,
+          "digest": "sha256:d2d7b4b9c5d136b263ffb3baa5e70037c4df2ee9036245c9a666172643382d2e"
         },
         {
           "value": {
             "contractVersion": 1,
-            "campaignId": "campaign-demo",
+            "campaignId": "rules-lab.combat-creation.1",
             "sequence": 1,
             "kind": "owner-opening",
-            "priorRecordHash": "sha256:119b5192966b5ede1b6a2e56f6af58052b847a53ae40ecf221bd3d15035f71be",
+            "priorRecordHash": "sha256:d2d7b4b9c5d136b263ffb3baa5e70037c4df2ee9036245c9a666172643382d2e",
             "priorStateVersion": 12,
             "priorPrefix": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
             "resultStateVersion": 12,
@@ -647,12 +647,12 @@
             "inputDigest": null,
             "eventDigest": null,
             "receiptDigest": null,
-            "privatePayloadDigest": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d",
+            "privatePayloadDigest": "sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b",
             "acceptanceClockSource": null,
             "acceptedAtUnixMilliseconds": null
           },
-          "bytes": 766,
-          "digest": "sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380"
+          "bytes": 780,
+          "digest": "sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd"
         }
       ]
     }
