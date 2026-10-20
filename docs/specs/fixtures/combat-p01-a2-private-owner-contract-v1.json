@@ -134,10 +134,10 @@
           "seatEpoch": 0,
           "openingRevision": 1,
           "requestDigest": "sha256:da8904a5818f9ad726f8b80571b1d6360640b472fc227be6fd2f14952d7f0ed8",
-          "inputDigest": "sha256:da8904a5818f9ad726f8b80571b1d6360640b472fc227be6fd2f14952d7f0ed8",
-          "eventDigest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
-          "receiptDigest": "sha256:395140e359fd2bafb5dda4083f5237bbf5d230c038690c73b60bb11aea665104",
-          "privatePayloadDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+          "inputDigest": "sha256:2adf4bf0deea1559b8d21c811276ab56d39033ca74246fb3bbc63fc4ba274c0a",
+          "eventDigest": "sha256:0959938915cd0997912932eb9d364d45a1dde94223f60c5b9e64172cd423c3c8",
+          "receiptDigest": "sha256:0021fc7fab1d464c997412a7e11b105f43d931fed12c6015adbe7156ea8d7426",
+          "privatePayloadDigest": "sha256:3c17493e3c046f98b96e669840280c2f81c85d37e0d5e0897da1e71c971afc54"
         },
         "ownerReceipt": {
           "contractVersion": 1,
@@ -145,6 +145,32 @@
           "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
           "openingRevision": 1,
           "resultClass": "accepted"
+        },
+        "acceptedTransitionPayload": {
+          "contractVersion": 1,
+          "campaignId": "campaign-demo",
+          "seatAuthorityId": "seat.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "seatEpoch": 0,
+          "openingRecordHash": "sha256:bf99c815a5794d59feb061ae7c861495b34d4aa3d72e190ee6e97723dfcff602",
+          "privateOpeningPayloadHash": "sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d",
+          "ownerInput": {
+            "contractVersion": 1,
+            "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
+            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "openingRevision": 1,
+            "choiceKind": "select",
+            "candidateRef": "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f"
+          },
+          "coreInputHex": "7b226b696e64223a2273656c65637465642d61737361756c742d696e707574227d",
+          "coreEventHex": "7b226b696e64223a2273656c65637465642d61737361756c742d6576656e74227d",
+          "coreReceiptHex": "7b226b696e64223a2261636365707465642d636f72652d72656365697074227d",
+          "ownerReceipt": {
+            "contractVersion": 1,
+            "requestId": "req.9999999999999999999999999999999999999999999999999999999999999999",
+            "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+            "openingRevision": 1,
+            "resultClass": "accepted"
+          }
         },
         "retryBinding": {
           "contractVersion": 1,
@@ -183,11 +209,15 @@
         },
         "journalRecord": {
           "bytes": 986,
-          "digest": "sha256:036fe1a45b4bf07980cdb556e8729bb29c77e45b9588c5b4c9e8b8e1758a338b"
+          "digest": "sha256:70714cc89cc3d99b6be84dbf5f1e47e89cefe099751e8bb4c8748dcb6ad8e1dd"
         },
         "ownerReceipt": {
           "bytes": 234,
           "digest": "sha256:395140e359fd2bafb5dda4083f5237bbf5d230c038690c73b60bb11aea665104"
+        },
+        "acceptedTransitionPayload": {
+          "bytes": 1192,
+          "digest": "sha256:3c17493e3c046f98b96e669840280c2f81c85d37e0d5e0897da1e71c971afc54"
         },
         "retryBinding": {
           "bytes": 420,

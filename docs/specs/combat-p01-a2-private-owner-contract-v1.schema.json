@@ -11,6 +11,7 @@
     "seatAuthorityId": { "type": "string", "pattern": "^seat\\.[0-9a-f]{64}$", "maxLength": 69 },
     "journalKey": { "type": "string", "pattern": "^p01j\\.[0-9a-f]{64}$", "maxLength": 69 },
     "requestId": { "type": "string", "pattern": "^req\\.[0-9a-f]{64}$", "maxLength": 68 },
+    "coreBytesHex": { "type": "string", "pattern": "^(?:[0-9a-f]{2})+$", "minLength": 2, "maxLength": 16384 },
     "utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", "maxLength": 20 },
     "counter": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
     "side": { "enum": ["axis", "commonwealth"] },
@@ -83,7 +84,7 @@
       "properties": {
         "contractVersion": { "const": 1 }, "context": { "$ref": "#/$defs/context" }, "cycleRef": { "$ref": "#/$defs/hash" },
         "positionId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,127}$", "maxLength": 128 },
-        "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "openingRevision": { "const": 1 },
         "decisionRef": { "$ref": "#/$defs/publicRef" }, "participantRef": { "$ref": "#/$defs/publicRef" },
         "targetRef": { "$ref": "#/$defs/publicRef" },
         "candidateRefs": { "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": { "$ref": "#/$defs/candidateRef" } }
@@ -107,7 +108,7 @@
         "campaignId": { "$ref": "#/$defs/campaignId" },
         "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" },
         "seatEpoch": { "$ref": "#/$defs/counter" },
-        "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "openingRevision": { "const": 1 },
         "visibleOpening": { "$ref": "#/$defs/ownerOpening" },
         "candidateBindings": {
           "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true,
@@ -130,7 +131,7 @@
       ],
       "properties": {
         "contractVersion": { "const": 1 }, "requestId": { "$ref": "#/$defs/requestId" },
-        "decisionRef": { "$ref": "#/$defs/publicRef" }, "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "decisionRef": { "$ref": "#/$defs/publicRef" }, "openingRevision": { "const": 1 },
         "choiceKind": { "enum": ["select", "decline"] },
         "candidateRef": { "anyOf": [{ "$ref": "#/$defs/candidateRef" }, { "type": "null" }] }
       }
@@ -143,9 +144,9 @@
         { "if": { "properties": { "kind": { "const": "r03-import-checkpoint" } } },
           "then": { "properties": { "sequence": { "const": 0 }, "seatAuthorityId": { "type": "null" }, "seatEpoch": { "type": "null" }, "openingRevision": { "type": "null" }, "requestDigest": { "type": "null" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } },
         { "if": { "properties": { "kind": { "const": "owner-opening" } } },
-          "then": { "properties": { "sequence": { "const": 1 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "type": "integer", "minimum": 1 }, "requestDigest": { "type": "null" }, "inputDigest": { "type": "null" }, "eventDigest": { "type": "null" }, "receiptDigest": { "type": "null" } } } },
+          "then": { "properties": { "sequence": { "const": 1 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "const": 1 }, "requestDigest": { "type": "null" }, "inputDigest": { "type": "null" }, "eventDigest": { "type": "null" }, "receiptDigest": { "type": "null" } } } },
         { "if": { "properties": { "kind": { "const": "owner-accepted-input" } } },
-          "then": { "properties": { "sequence": { "type": "integer", "minimum": 2 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "type": "integer", "minimum": 1 }, "requestDigest": { "$ref": "#/$defs/hash" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } }
+          "then": { "properties": { "sequence": { "const": 2 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "const": 1 }, "requestDigest": { "$ref": "#/$defs/hash" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } }
       ],
       "properties": {
         "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
@@ -170,8 +171,37 @@
       "properties": {
         "contractVersion": { "const": 1 }, "requestId": { "$ref": "#/$defs/requestId" },
         "decisionRef": { "$ref": "#/$defs/publicRef" },
-        "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "openingRevision": { "const": 1 },
         "resultClass": { "enum": ["accepted", "invalid-request", "stale-view", "not-current-or-not-admissible"] }
+      }
+    },
+    "acceptedOwnerReceipt": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "requestId", "decisionRef", "openingRevision", "resultClass"],
+      "required": ["contractVersion", "requestId", "decisionRef", "openingRevision", "resultClass"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "requestId": { "$ref": "#/$defs/requestId" },
+        "decisionRef": { "$ref": "#/$defs/publicRef" },
+        "openingRevision": { "const": 1 },
+        "resultClass": { "const": "accepted" }
+      }
+    },
+    "acceptedTransitionPayload": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
+      "required": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
+      "properties": {
+        "contractVersion": { "const": 1 },
+        "campaignId": { "$ref": "#/$defs/campaignId" },
+        "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" },
+        "seatEpoch": { "$ref": "#/$defs/counter" },
+        "openingRecordHash": { "$ref": "#/$defs/hash" },
+        "privateOpeningPayloadHash": { "$ref": "#/$defs/hash" },
+        "ownerInput": { "$ref": "#/$defs/ownerInput" },
+        "coreInputHex": { "$ref": "#/$defs/coreBytesHex" },
+        "coreEventHex": { "$ref": "#/$defs/coreBytesHex" },
+        "coreReceiptHex": { "$ref": "#/$defs/coreBytesHex" },
+        "ownerReceipt": { "$ref": "#/$defs/acceptedOwnerReceipt" }
       }
     },
     "retryBinding": {
@@ -182,7 +212,7 @@
         "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
         "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "requestId": { "$ref": "#/$defs/requestId" },
         "inputDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" },
-        "recordSequence": { "$ref": "#/$defs/counter" }
+        "recordSequence": { "const": 2 }
       }
     }
   }
