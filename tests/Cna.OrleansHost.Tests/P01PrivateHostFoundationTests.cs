@@ -346,6 +346,33 @@ public sealed class P01PrivateHostFoundationTests
     }
 
     [Theory]
+    [InlineData("PRAGMA application_id=0")]
+    [InlineData("PRAGMA user_version=2")]
+    public void AlreadyOpenHandleRejectsPostOpenStoreIdentityDriftBeforeMutation(
+        string mutation)
+    {
+        using var fixture = new StoreFixture();
+        var store = fixture.Create();
+        store.SeedUnissuableCampaign(Campaign, Checkpoint, Operator);
+        var openedBeforeDrift = fixture.Open();
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = mutation;
+            command.ExecuteNonQuery();
+        }
+        Assert.Throws<InvalidOperationException>(() => openedBeforeDrift
+            .AcquireActivationFence(Campaign, Operator));
+        using var readback = new SqliteConnection($"Data Source={fixture.Path}");
+        readback.Open();
+        using var query = readback.CreateCommand();
+        query.CommandText = "SELECT activation_fence FROM campaigns WHERE campaign_id=$campaign";
+        query.Parameters.AddWithValue("$campaign", Campaign);
+        Assert.Equal(0L, (long)query.ExecuteScalar()!);
+    }
+
+    [Theory]
     [InlineData("authority_id")]
     [InlineData("seat_epoch")]
     [InlineData("request_id")]

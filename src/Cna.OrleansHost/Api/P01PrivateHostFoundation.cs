@@ -469,7 +469,11 @@ internal sealed class P01PrivateHostFoundation
         Execute(connection, "PRAGMA foreign_keys=ON");
         Execute(connection, "PRAGMA busy_timeout=5000");
         Execute(connection, "PRAGMA synchronous=FULL");
-        if (!create) RequireSchema(connection);
+        if (!create)
+        {
+            RequireStoreIdentity(connection);
+            RequireSchema(connection);
+        }
         return connection;
     }
 
@@ -480,6 +484,7 @@ internal sealed class P01PrivateHostFoundation
         var transaction = connection.BeginTransaction(deferred: false);
         try
         {
+            RequireStoreIdentity(connection, transaction);
             RequireSchema(connection, transaction);
             return transaction;
         }
@@ -488,6 +493,14 @@ internal sealed class P01PrivateHostFoundation
             transaction.Dispose();
             throw;
         }
+    }
+
+    private static void RequireStoreIdentity(SqliteConnection connection,
+        SqliteTransaction? transaction = null)
+    {
+        if (ScalarLong(connection, "PRAGMA application_id", transaction) != ApplicationId
+            || ScalarLong(connection, "PRAGMA user_version", transaction) != SchemaVersion)
+            throw new InvalidOperationException("Unrecognized private store identity or version.");
     }
 
     private static void ValidatePath(string path)
@@ -816,9 +829,10 @@ internal sealed class P01PrivateHostFoundation
         command.ExecuteNonQuery();
     }
 
-    private static long ScalarLong(SqliteConnection connection, string sql)
+    private static long ScalarLong(SqliteConnection connection, string sql,
+        SqliteTransaction? transaction = null)
     {
-        using var command = Command(connection, null, sql);
+        using var command = Command(connection, transaction, sql);
         return (long)command.ExecuteScalar()!;
     }
 
