@@ -231,6 +231,7 @@ describe('CampaignActionFlow', () => {
       position: { ...view.position, positionId: 'position-3' },
     };
     flow.observeView(newer);
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
     resolveView({
       ...view,
       audienceRevision: '2',
@@ -239,6 +240,150 @@ describe('CampaignActionFlow', () => {
     await submitting;
     expect(flow.currentView()).toBe(newer);
     expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
+  });
+
+  it('rejects a delayed normal same-seat read after accepted refresh displayed a newer view', async () => {
+    const flow = new CampaignActionFlow(adapter(), true, () => 'request-1');
+    flow.observeView(view);
+    await flow.submit('opaque-action-1');
+    const acceptedView = flow.currentView();
+    expect(acceptedView?.audienceRevision).toBe('2');
+
+    const staleRead = {
+      ...view,
+      position: { ...view.position, positionId: 'stale-position' },
+      actionSetToken: 'stale-action-set',
+    };
+    expect(flow.observeView(staleRead)).toBe(false);
+    expect(flow.currentView()).toBe(acceptedView);
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
+  });
+
+  it('preserves successful retry when an earlier accepted-view read fails later', async () => {
+    let rejectFirst!: (reason: Error) => void;
+    const api = adapter({
+      view: vi
+        .fn()
+        .mockImplementationOnce(
+          () =>
+            new Promise<CoherentPlayerView>((_resolve, reject) => {
+              rejectFirst = reject;
+            }),
+        )
+        .mockResolvedValueOnce({ ...view, audienceRevision: '2' }),
+    });
+    const flow = new CampaignActionFlow(api, true, () => 'request-1');
+    flow.observeView(view);
+    const submitting = flow.submit('opaque-action-1');
+    await Promise.resolve();
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: true });
+
+    await flow.readback();
+    expect(flow.currentView()?.audienceRevision).toBe('2');
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
+    rejectFirst(new Error('old read failed'));
+    await submitting;
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
+    expect(api.submit).toHaveBeenCalledTimes(1);
+  });
+
+  it('preserves a newer retry view when the first accepted-view read succeeds later', async () => {
+    let resolveFirst!: (value: CoherentPlayerView) => void;
+    const api = adapter({
+      view: vi
+        .fn()
+        .mockImplementationOnce(
+          () =>
+            new Promise<CoherentPlayerView>((resolve) => {
+              resolveFirst = resolve;
+            }),
+        )
+        .mockResolvedValueOnce({
+          ...view,
+          audienceRevision: '3',
+          position: { ...view.position, positionId: 'position-3' },
+        }),
+    });
+    const flow = new CampaignActionFlow(api, true, () => 'request-1');
+    flow.observeView(view);
+    const submitting = flow.submit('opaque-action-1');
+    await Promise.resolve();
+    await flow.readback();
+    const newer = flow.currentView();
+    expect(newer?.audienceRevision).toBe('3');
+    resolveFirst({
+      ...view,
+      audienceRevision: '2',
+      position: { ...view.position, positionId: 'position-2' },
+    });
+    await submitting;
+    expect(flow.currentView()).toBe(newer);
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
+  });
+
+  it('does not replace an equal-revision view and fails closed on malformed revision', () => {
+    const flow = new CampaignActionFlow(adapter(), true, () => 'request-1');
+    flow.observeView(view);
+    expect(
+      flow.observeView({
+        ...view,
+        position: { ...view.position, positionId: 'conflicting-position' },
+      }),
+    ).toBe(false);
+    expect(flow.currentView()).toBe(view);
+    expect(flow.observeView({ ...view, audienceRevision: '18446744073709551616' })).toBe(false);
+    expect(flow.currentView()).toBeNull();
+    expect(flow.state()).toEqual({ phase: 'disabled' });
+    expect(flow.canSubmit).toBe(false);
+  });
+
+  it('serializes duplicate receipt reads and discards a late receipt after seat rotation', async () => {
+    let resolveReceipt!: (value: ActionReceipt) => void;
+    const api = adapter({
+      submit: vi.fn().mockRejectedValue(new Error('reply lost')),
+      receipt: vi.fn().mockImplementation(
+        () =>
+          new Promise<ActionReceipt>((resolve) => {
+            resolveReceipt = resolve;
+          }),
+      ),
+    });
+    const flow = new CampaignActionFlow(api, true, () => 'request-1');
+    flow.observeView(view);
+    await flow.submit('opaque-action-1');
+    const first = flow.readback();
+    const duplicate = flow.readback();
+    expect(api.receipt).toHaveBeenCalledTimes(1);
+    flow.observeView({ ...view, seat: 'commonwealth', sessionGeneration: 'other' });
+    resolveReceipt(accepted);
+    await Promise.all([first, duplicate]);
+    expect(flow.currentView()?.seat).toBe('commonwealth');
+    expect(flow.state()).toEqual({ phase: 'disabled' });
+    expect(api.view).not.toHaveBeenCalled();
+  });
+
+  it('discards a late accepted-view reply after audience rotation', async () => {
+    let resolveView!: (value: CoherentPlayerView) => void;
+    const flow = new CampaignActionFlow(
+      adapter({
+        view: vi.fn().mockImplementation(
+          () =>
+            new Promise<CoherentPlayerView>((resolve) => {
+              resolveView = resolve;
+            }),
+        ),
+      }),
+      true,
+      () => 'request-1',
+    );
+    flow.observeView(view);
+    const submitting = flow.submit('opaque-action-1');
+    await Promise.resolve();
+    flow.observeView({ ...view, seat: 'commonwealth', sessionGeneration: 'other' });
+    resolveView({ ...view, audienceRevision: '2' });
+    await submitting;
+    expect(flow.currentView()?.seat).toBe('commonwealth');
+    expect(flow.state()).toEqual({ phase: 'disabled' });
   });
 
   it('clears the old audience when accepted readback returns another seat', async () => {

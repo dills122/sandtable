@@ -75,8 +75,22 @@ export class CampaignActionFlow {
     );
   }
 
-  observeView(view: CoherentPlayerView): void {
+  observeView(view: CoherentPlayerView): boolean {
+    if (!validRevision(view.audienceRevision)) {
+      this.clearAudience();
+      return false;
+    }
     const previous = this.currentView();
+    if (
+      previous &&
+      sameAudience(previous, view) &&
+      previous !== view &&
+      validRevision(previous.audienceRevision) &&
+      BigInt(view.audienceRevision) <= BigInt(previous.audienceRevision)
+    ) {
+      // A late same-seat read cannot restore an older or conflicting equal-revision view.
+      return false;
+    }
     if (!previous) {
       this.epoch++;
       this.state.set({
@@ -100,6 +114,16 @@ export class CampaignActionFlow {
       });
     }
     this.currentView.set(view);
+    const state = this.state();
+    if (
+      state.phase === 'accepted' &&
+      state.refreshPending &&
+      BigInt(view.audienceRevision) >= BigInt(state.audienceRevision)
+    ) {
+      // A normal authorized read can satisfy the accepted receipt before its own read returns.
+      this.state.set({ ...state, refreshPending: false });
+    }
+    return true;
   }
 
   clearAudience(): void {
@@ -249,37 +273,37 @@ export class CampaignActionFlow {
         this.clearAudience();
         return;
       }
-      const displayed = this.currentView();
-      if (
-        !displayed ||
-        !sameAudience(view, displayed) ||
-        !validRevision(displayed.audienceRevision)
-      ) {
-        this.clearAudience();
-        return;
-      }
       if (
         validRevision(refreshed.audienceRevision) &&
-        BigInt(displayed.audienceRevision) >= BigInt(refreshed.audienceRevision)
+        BigInt(refreshed.audienceRevision) >= BigInt(state.audienceRevision)
       ) {
-        // A concurrent authorized read already advanced the same seat. Never paint older data.
-        this.state.set({
-          ...state,
-          refreshPending: BigInt(displayed.audienceRevision) < BigInt(state.audienceRevision),
-        });
-        return;
+        this.observeView(refreshed);
       }
-      if (
-        !validRevision(refreshed.audienceRevision) ||
-        BigInt(refreshed.audienceRevision) < BigInt(state.audienceRevision)
-      ) {
-        this.state.set({ ...state, refreshPending: true });
-        return;
-      }
-      this.currentView.set(refreshed);
-      this.state.set({ ...state, refreshPending: false });
+      this.settleAcceptedRefresh(view, state, epoch);
     } catch {
-      if (epoch === this.epoch) this.state.set({ ...state, refreshPending: true });
+      this.settleAcceptedRefresh(view, state, epoch);
     }
+  }
+
+  private settleAcceptedRefresh(
+    view: CoherentPlayerView,
+    state: Extract<ActionFlowState, { phase: 'accepted' }>,
+    epoch: number,
+  ): void {
+    if (epoch !== this.epoch) return;
+    const latestState = this.state();
+    if (
+      latestState.phase !== 'accepted' ||
+      latestState.requestId !== state.requestId ||
+      latestState.audienceRevision !== state.audienceRevision
+    )
+      return;
+    const displayed = this.currentView();
+    const satisfied =
+      displayed !== null &&
+      sameAudience(view, displayed) &&
+      validRevision(displayed.audienceRevision) &&
+      BigInt(displayed.audienceRevision) >= BigInt(state.audienceRevision);
+    this.state.set({ ...latestState, refreshPending: !satisfied });
   }
 }

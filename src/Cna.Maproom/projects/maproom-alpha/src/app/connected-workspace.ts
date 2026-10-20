@@ -135,14 +135,15 @@ export class ConnectedWorkspace {
     if (!current) return;
     await this.run(async () => {
       try {
-        this.setView(
-          await this.api.refreshAuthorizedView(
-            current.campaignId,
-            current.sessionGeneration,
-            current.seat,
-          ),
+        const refreshed = await this.api.refreshAuthorizedView(
+          current.campaignId,
+          current.sessionGeneration,
+          current.seat,
         );
+        if (!this.stillShowingAudience(current)) return;
+        this.setView(refreshed);
       } catch (cause) {
+        if (!this.stillShowingAudience(current)) return;
         // A failed read cannot retain the old audience's map or selected formation.
         this.view.set(null);
         this.selectedId.set(null);
@@ -188,6 +189,14 @@ export class ConnectedWorkspace {
   }
 
   private setView(view: CoherentPlayerView, initial = false): void {
+    if (!this.actionFlow.observeView(view)) {
+      if (!this.actionFlow.currentView()) {
+        this.view.set(null);
+        this.selectedId.set(null);
+        if (this.mapFullscreen()) this.toggleMapFullscreen();
+      }
+      return;
+    }
     if (
       !Array.isArray(view.ownFormations) ||
       !Array.isArray(view.locations) ||
@@ -196,11 +205,23 @@ export class ConnectedWorkspace {
       !Array.isArray(view.warDiary) ||
       !Array.isArray(view.legalActions)
     ) {
+      this.actionFlow.clearAudience();
+      this.view.set(null);
+      this.selectedId.set(null);
+      if (this.mapFullscreen()) this.toggleMapFullscreen();
       throw new Error('Incomplete audience view');
     }
     this.selectedId.set(selectedFormationId(view, this.selectedId(), initial));
     this.view.set(view);
-    this.actionFlow.observeView(view);
+  }
+
+  private stillShowingAudience(expected: CoherentPlayerView): boolean {
+    const current = this.view();
+    return (
+      current?.campaignId === expected.campaignId &&
+      current.sessionGeneration === expected.sessionGeneration &&
+      current.seat === expected.seat
+    );
   }
 
   private async run(action: () => Promise<void>): Promise<void> {
