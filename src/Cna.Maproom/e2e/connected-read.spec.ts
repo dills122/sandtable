@@ -400,6 +400,7 @@ for (const deniedStatus of [401, 403]) {
                   campaignId: 'c-1',
                   seat: 'axis',
                   sessionGeneration: 'g-1',
+                  audienceRevision: '1',
                   position: {
                     turn: '1',
                     phaseId: 'movement',
@@ -475,6 +476,7 @@ test('mismatched refresh generation removes prior audience view', async ({ page 
           campaignId: 'c-1',
           seat: 'axis',
           sessionGeneration: reads === 1 ? 'g-1' : 'other-generation',
+          audienceRevision: String(reads),
           position: { turn: '1', phaseId: 'movement', stageId: 'initial', decision: 'human' },
           locations: [],
           ownFormations: [
@@ -538,6 +540,7 @@ test('refresh recovers a rotated generation only after rechecking the same seat'
           campaignId: 'c-1',
           seat: 'axis',
           sessionGeneration: reads === 1 ? 'g-1' : 'g-2',
+          audienceRevision: String(reads),
           position: { turn: '1', phaseId: 'movement', stageId: 'initial', decision: 'human' },
           locations: [],
           ownFormations: [],
