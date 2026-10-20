@@ -416,6 +416,9 @@
     "Cna.Core.Tests.Campaigns.OpeningPreambleCampaignTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Campaigns.P01R03SameCutSourceAttestationTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Campaigns.P01R03ValidationCheckpointTests": {
       "parts": 1
     },
@@ -623,6 +626,7 @@
     "012dc37ee657b6e14f49324cbfd665492c969b7060f107c64170cfeca146c998": 4219,
     "013c1acf2d0304b5850afe17b7e6eaf74fd9130872a96b1cded6075001200868": 24437,
     "0160d299b2a809180b7cef08aea83db0da78e941e2d19f59e8f4b25c02a13c77": 385,
+    "01620a55a93b640589d5c9ba3bab3c1946013af183312a4045d4533371d29417": 1009,
     "019916be383452a3be20062cc4399dd6d1fb106d35dad3475c64ae3dd3d20312": 207,
     "01a3e89cb15ead30d21d09ccc12ab791a37c12070ee2bc78d5f25bbc9def2c6a": 8,
     "01a5f4018aa04455c496ff0bcfcff106eca1d299e7cc055606a3f2e35aa64549": 3,
@@ -1129,6 +1133,7 @@
     "28819cce3152f35fec55678bb2286a7bee29901025dcc7b304f3dc119f91788b": 548,
     "28965917eec2a4f1e237b00d21115dc861dec03d9d383b5054aeb18659d4d6f6": 1,
     "28a79468761552d03587f766bc76cba062b26c2ac7172b4eac3e5eb410f2fd4f": 4631,
+    "28abbb391aec619f2861fbd6aca810de73dad7248efb49a6f065bdea8ca61227": 1737,
     "28c1deb489977ab4870365d40e7feb167b706c41cafce1d7e3d3112074b9e875": 2778,
     "28e2ecc32b8f244b20a441aa9bcb4234fff6009a11fa7ea162b139aeaac31a7e": 90,
     "28f098a63430d02aa37aebf068c2747fa9e3765520c15db6f499bc2a7efee1a9": 11689,
