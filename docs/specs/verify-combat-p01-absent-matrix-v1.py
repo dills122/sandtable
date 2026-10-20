@@ -10,11 +10,14 @@ import gzip
 import hashlib
 import importlib.util
 import json
+import re
+import subprocess
 from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 GOLDEN = ROOT / "fixtures/combat-p01-absent-matrix-v1.json"
+RETAINED = ROOT / "fixtures/combat-p01-absent-retained-roots-v1.json"
 
 
 def load(name, filename):
@@ -28,6 +31,7 @@ result = load("absent_result", "verify-combat-p01-result-gates-v1.py")
 selected = load("absent_selected", "verify-combat-p01-selected-assault-v1.py")
 rba = load("absent_rba", "verify-combat-p01-explicit-rba-v1.py")
 matrix = load("absent_action_matrix", "verify-combat-p01-action-matrix-v1.py")
+fixture = load("absent_generated_root", "test-combat-actual-moved-repeat-position-v1.py")
 
 
 def require(ok, label):
@@ -213,19 +217,14 @@ def check_row_identity(index, row, summary, partition, seen):
             "ordered row identity")
 
 
-def audit(evidence, *, frozen=True, progress=None):
-    rows = []
+def summarize(rows, *, frozen=True):
     counts = Counter()
     caps = {name: 0 for name in ("privateSourceBytes", "privateInputBytes",
                                 "privateEventBytes", "privateControlBytes")}
-    for record, partition in evidence_rows(evidence):
-        output = classify_record(record, partition)
-        rows.append(output)
+    for output in rows:
         counts[output["issuance"]] += 1
         for name in caps:
             caps[name] = max(caps[name], output.get(name, 0))
-        if progress:
-            progress(len(rows), output["rowKey"], output["issuance"])
     require(len(rows) == 300 and counts == {
         "selected-positive-control": 44,
         "paid-adjacent-no-issuance": 12,
@@ -243,12 +242,151 @@ def audit(evidence, *, frozen=True, progress=None):
     return output
 
 
+def audit(evidence, *, frozen=True, progress=None):
+    rows = []
+    for record, partition in evidence_rows(evidence):
+        output = classify_record(record, partition)
+        rows.append(output)
+        if progress:
+            progress(len(rows), output["rowKey"], output["issuance"])
+    return summarize(rows, frozen=frozen)
+
+
+def retained_claims():
+    claims = json.loads(RETAINED.read_text())
+    require(claims["retainedPins"] == result.PINS and
+            len(claims["chunkPins"]) == 11 and
+            all(re.fullmatch(r"rows-\d{3}-\d{3}\.jsonl\.gz", name) and
+                re.fullmatch(r"[0-9a-f]{64}", pin)
+                for name, pin in claims["chunkPins"].items()) and
+            len(claims["rows"]) == 300 and
+            [row["index"] for row in claims["rows"]] == list(range(300)) and
+            len({row["rowKey"] for row in claims["rows"]}) == 300 and
+            Counter(row["partition"] for row in claims["rows"]) ==
+            {"provisional-positive": 44, "provisional-empty": 256},
+            "reviewed retained physical pins")
+    return claims
+
+
+def generated_record(index, claims=None):
+    """Regenerate original Source/Creation/eleven ledgers, then match retained pins."""
+    claims = retained_claims() if claims is None else claims
+    require(type(index) is int and 0 <= index < 300, "generated index")
+    claim = claims["rows"][index]
+    root = fixture.terminal(index)
+    source, parents, own = root
+    check_generated_input_pins(index, root, claim)
+    _, _, state = fixture.r03.replay(source, parents, own)
+    event = fixture.r03.parse(source, "Source")["breakdownEventCanonicalUtf8"][-1]
+    control = fixture.r03.raw(state, "Control")
+    receipt_id = json.loads(event)["receiptId"]
+    require(digest(event.encode("ascii")) == claim["eventHash"] and
+            receipt_id == claim["receiptId"] and
+            digest(control) == claim["controlHash"],
+            "regenerated original event/receipt/Control pin")
+    record = dict(rowKey=claim["rowKey"], sourceHash=claim["sourceHash"],
+                  eventHash=claim["eventHash"], receiptId=claim["receiptId"],
+                  afterControlHash=claim["controlHash"],
+                  vectors=dict(sourceCanonicalUtf8=source.decode("ascii"),
+                               parentInputLedgersCanonicalUtf8=[
+                                   parents[0], *[[item.decode("ascii") for item in ledger]
+                                                for ledger in parents[1:]]],
+                               inputCanonicalUtf8=own[0].decode("ascii"),
+                               eventCanonicalUtf8=event,
+                               afterControlCanonicalUtf8=control.decode("ascii")))
+    return record, claim["partition"]
+
+
+def check_generated_input_pins(index, root, claim):
+    source, parents, own = root
+    require(len(parents) == 11 and len(own) == 1 and
+            fixture.r03.r02.semantic_rows()[index]["rowKey"] == claim["rowKey"] and
+            digest(source) == claim["sourceHash"] and
+            digest(canonical(parents[0])) == claim["creationRequestHash"] and
+            [digest(canonical([item.decode("ascii") for item in ledger]))
+             for ledger in parents[1:]] == claim["parentLedgerHashes"] and
+            len(claim["parentLedgerHashes"]) == 10 and
+            digest(own[0]) == claim["r03InputHash"],
+            "regenerated original Source/Creation/eleven-ledger pin")
+
+
+def exact_sha(value):
+    require(type(value) is str and re.fullmatch(r"[0-9a-f]{40}", value),
+            "tested SHA syntax")
+    actual = subprocess.check_output(["git", "rev-parse", "HEAD"],
+                                     cwd=ROOT, text=True).strip()
+    require(actual == value, "tested SHA differs from checkout")
+    return value
+
+
+def generated_shard(shard, *, tested_sha):
+    exact_sha(tested_sha)
+    require(type(shard) is int and 0 <= shard < 4, "four-way shard")
+    claims = retained_claims()
+    rows = []
+    for index in range(shard, 300, 4):
+        record, partition = generated_record(index, claims)
+        rows.append(dict(index=index, **classify_record(record, partition)))
+    return dict(shard=shard, testedSha=tested_sha,
+                retainedPinsHash=digest(canonical(claims["retainedPins"])),
+                chunkPinsHash=digest(canonical(claims["chunkPins"])),
+                rowsHash=digest(canonical(rows)), rows=rows)
+
+
+def combine_shards(paths, *, tested_sha):
+    exact_sha(tested_sha)
+    claims = retained_claims()
+    require(len(paths) == 4, "four shard artifacts")
+    shards = [json.loads(Path(path).read_text()) for path in paths]
+    require({item["shard"] for item in shards} == set(range(4)),
+            "one of each shard")
+    by_index = {}
+    for item in shards:
+        shard, rows = item["shard"], item["rows"]
+        require(item["testedSha"] == tested_sha and
+                item["retainedPinsHash"] ==
+                digest(canonical(claims["retainedPins"])) and
+                item["chunkPinsHash"] == digest(canonical(claims["chunkPins"])) and
+                item["rowsHash"] == digest(canonical(rows)) and
+                [row["index"] for row in rows] == list(range(shard, 300, 4)),
+                "exact-head complete shard")
+        for row in rows:
+            index = row.pop("index")
+            claim = claims["rows"][index]
+            require(index not in by_index and row["rowKey"] == claim["rowKey"] and
+                    row["originalSourceHash"] == claim["sourceHash"] and
+                    row["originalInputHash"] == claim["r03InputHash"] and
+                    row["originalEventHash"] == claim["eventHash"] and
+                    row["originalReceiptId"] == claim["receiptId"] and
+                    row["originalControlHash"] == claim["controlHash"],
+                    "reviewed original row in shard")
+            by_index[index] = row
+    require(set(by_index) == set(range(300)), "complete 300-row aggregate")
+    return summarize([by_index[index] for index in range(300)])
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("evidence", type=Path)
+    parser.add_argument("evidence", type=Path, nargs="?")
     parser.add_argument("--unfrozen", action="store_true")
     parser.add_argument("--progress", action="store_true")
+    parser.add_argument("--generated-shard", type=int)
+    parser.add_argument("--combine-shards", nargs=4, type=Path)
+    parser.add_argument("--tested-sha")
     args = parser.parse_args()
-    print(json.dumps(audit(args.evidence, frozen=not args.unfrozen,
-                           progress=(lambda *items: print(*items, flush=True))
-                           if args.progress else None), sort_keys=True))
+    if args.generated_shard is not None:
+        require(args.evidence is None and args.combine_shards is None and
+                args.tested_sha is not None, "generated shard CLI")
+        output = generated_shard(args.generated_shard, tested_sha=args.tested_sha)
+    elif args.combine_shards is not None:
+        require(args.evidence is None and args.generated_shard is None and
+                args.tested_sha is not None, "combine CLI")
+        output = combine_shards(args.combine_shards, tested_sha=args.tested_sha)
+    else:
+        require(args.evidence is not None and args.tested_sha is None,
+                "physical audit CLI")
+        output = audit(args.evidence, frozen=not args.unfrozen,
+                       progress=(lambda *items: print(*items, flush=True))
+                       if args.progress else None)
+    # Preserve canonical per-row insertion order across shard serialization.
+    print(json.dumps(output))

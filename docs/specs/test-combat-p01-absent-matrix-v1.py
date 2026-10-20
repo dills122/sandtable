@@ -4,6 +4,7 @@
 import copy
 import importlib.util
 import json
+import subprocess
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -116,6 +117,28 @@ class AbsentMatrixTests(unittest.TestCase):
                                return_value=({}, "p01a." + "0" * 64)):
             with self.assertRaisesRegex(ValueError, "positive selected control"):
                 reference.classify_record(self.nonadjacent_axis, "provisional-empty")
+
+    def test_regenerated_original_source_creation_ledgers_and_input_pins_fail(self):
+        root = fixture.terminal(0)
+        claim = reference.retained_claims()["rows"][0]
+        reference.check_generated_input_pins(0, root, claim)
+        for label, mutate in (
+            ("source", lambda c: c.__setitem__("sourceHash", "sha256:" + "0" * 64)),
+            ("CreationRequest", lambda c: c.__setitem__(
+                "creationRequestHash", "sha256:" + "0" * 64)),
+            ("parent ledger", lambda c: c["parentLedgerHashes"].__setitem__(
+                0, "sha256:" + "0" * 64)),
+            ("R03 input", lambda c: c.__setitem__(
+                "r03InputHash", "sha256:" + "0" * 64)),
+        ):
+            with self.subTest(label=label):
+                broken = copy.deepcopy(claim)
+                mutate(broken)
+                with self.assertRaisesRegex(ValueError, "regenerated original"):
+                    reference.check_generated_input_pins(0, root, broken)
+        with self.assertRaisesRegex(ValueError, "four shard artifacts"):
+            reference.combine_shards([], tested_sha=subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip())
 
 
 if __name__ == "__main__":

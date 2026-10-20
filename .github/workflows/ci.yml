@@ -202,7 +202,39 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  p01-absent-focused:
+  p01-absent-shard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - name: Check out exact private proof source SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
+          persist-credentials: false
+      - name: Regenerate and replay 75 reviewed original R03 roots
+        run: |
+          mkdir -p artifacts/p01-absent
+          python3 -B docs/specs/verify-combat-p01-absent-matrix-v1.py \
+            --generated-shard "$PROOF_SHARD" --tested-sha "$TESTED_SHA" \
+            > "artifacts/p01-absent/shard-${PROOF_SHARD}.json"
+        env:
+          PROOF_SHARD: ${{ matrix.shard }}
+          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
+      - name: Retain exact-head physical absence shard
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: p01-absent-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: artifacts/p01-absent/shard-${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 14
+
+  p01-absent-aggregate:
+    needs: p01-absent-shard
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -211,8 +243,30 @@ jobs:
         with:
           ref: ${{ env.P01_PROOF_SOURCE_SHA }}
           persist-credentials: false
-      - name: Exercise selected and explicit-RBA absence boundaries
+      - name: Download all current-attempt absence shards
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: p01-absent-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
+          path: artifacts/p01-absent
+          merge-multiple: true
+      - name: Exercise selected and explicit-RBA absence negatives
         run: python3 -B docs/specs/test-combat-p01-absent-matrix-v1.py
+      - name: Require all 300 regenerated rows and frozen aggregate
+        run: |
+          python3 -B docs/specs/verify-combat-p01-absent-matrix-v1.py \
+            --tested-sha "$TESTED_SHA" \
+            --combine-shards artifacts/p01-absent/shard-{0,1,2,3}.json \
+            > artifacts/p01-absent/aggregate.json
+        env:
+          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
+      - name: Retain exact-head absence aggregate
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: p01-absent-aggregate-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: artifacts/p01-absent/aggregate.json
+          if-no-files-found: error
+          retention-days: 14
 
   orleans:
     needs: prepare
