@@ -14,9 +14,9 @@ internal sealed class P01PrivateHostFoundation
     private const int MaxProbeBytes = 65_536;
     private static readonly TimeSpan GrantLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan CredentialLifetime = TimeSpan.FromHours(2);
-    private static readonly Regex CampaignPattern = new("^[a-z0-9][a-z0-9._-]{0,127}$",
+    private static readonly Regex CampaignPattern = new(@"\A[a-z0-9][a-z0-9._-]{0,127}\z",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
-    private static readonly Regex HashPattern = new("^sha256:[0-9a-f]{64}$",
+    private static readonly Regex HashPattern = new(@"\Asha256:[0-9a-f]{64}\z",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     private readonly string path;
     private readonly TimeProvider clock;
@@ -144,6 +144,7 @@ internal sealed class P01PrivateHostFoundation
         using var transaction = connection.BeginTransaction(deferred: false);
         RequireOperator(connection, transaction, operatorSecret);
         var secret = NewSecret();
+        var nextOperatorSecret = NewSecret();
         using var command = Command(connection, transaction,
             """
             UPDATE campaigns SET activation_fence=activation_fence+1,
@@ -154,8 +155,15 @@ internal sealed class P01PrivateHostFoundation
         command.Parameters.AddWithValue("$digest", ActivationDigest(campaignId, secret));
         var fence = command.ExecuteScalar() as long?
             ?? throw new InvalidOperationException("Unknown campaign.");
+        using (var rotate = Command(connection, transaction,
+            "UPDATE operator_capability SET secret_digest=$digest WHERE singleton=1"))
+        {
+            rotate.Parameters.AddWithValue("$digest", Digest("operator", ParseSecret(nextOperatorSecret)));
+            if (rotate.ExecuteNonQuery() != 1)
+                throw new InvalidOperationException("Missing operator capability.");
+        }
         transaction.Commit();
-        return new P01ActivationLease(campaignId, fence, secret);
+        return new P01ActivationLease(campaignId, fence, secret, nextOperatorSecret);
     }
 
     internal P01PrivateGrant IssueGrant(string campaignId, string side, P01ActivationLease lease,
@@ -182,6 +190,42 @@ internal sealed class P01PrivateHostFoundation
             authorityId, 1, secret));
         command.Parameters.AddWithValue("$expiry", expiry);
         command.ExecuteNonQuery();
+        transaction.Commit();
+        return new P01PrivateGrant(campaignId, side, authorityId, secret, expiry);
+    }
+
+    // Operator-only lost-response recovery. A new authority and epoch invalidate both the
+    // consumed grant and any replacement credential whose response was not delivered.
+    internal P01PrivateGrant RecoverGrant(string campaignId, string side,
+        P01ActivationLease lease, string operatorSecret)
+    {
+        ValidateCampaign(campaignId);
+        ValidateSide(side);
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        RequireLease(connection, transaction, campaignId, lease);
+        var authorityId = Guid.NewGuid().ToString("D");
+        var secret = NewSecret();
+        var expiry = clock.GetUtcNow().Add(GrantLifetime).ToUnixTimeMilliseconds();
+        using var command = Command(connection, transaction, """
+            UPDATE seats SET authority_id=$authority, grant_generation=grant_generation+1,
+                seat_epoch=seat_epoch+1, grant_digest=$digest, grant_expiry_ms=$expiry,
+                credential_digest=NULL, credential_expiry_ms=NULL
+            WHERE campaign_id=$campaign AND side=$side AND revoked=0
+            """);
+        command.Parameters.AddWithValue("$campaign", campaignId);
+        command.Parameters.AddWithValue("$side", side);
+        command.Parameters.AddWithValue("$authority", authorityId);
+        // The stored generation advances so every recovery has an independent digest domain.
+        var seat = ReadSeat(connection, transaction, campaignId, side)
+            ?? throw new InvalidOperationException("Unknown seat.");
+        if (seat.Revoked) throw new InvalidOperationException("Revoked seat cannot be recovered.");
+        command.Parameters.AddWithValue("$digest", SeatDigest("grant", campaignId, side,
+            authorityId, checked(seat.GrantGeneration + 1), secret));
+        command.Parameters.AddWithValue("$expiry", expiry);
+        if (command.ExecuteNonQuery() != 1)
+            throw new InvalidOperationException("Seat recovery failed.");
         transaction.Commit();
         return new P01PrivateGrant(campaignId, side, authorityId, secret, expiry);
     }
@@ -424,28 +468,85 @@ internal sealed class P01PrivateHostFoundation
 
     private static void RequireSchema(SqliteConnection connection)
     {
+        // Each tuple is name, declared type, NOT NULL bit, primary-key ordinal.
+        // SQLite reports 0 for NOT NULL on a single-column INTEGER/TEXT PRIMARY KEY.
         var expected = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
-            ["operator_capability"] = ["singleton", "secret_digest"],
-            ["campaigns"] = ["campaign_id", "checkpoint_hash", "head_sequence",
-                "head_hash", "activation_fence", "activation_digest"],
-            ["seats"] = ["campaign_id", "side", "authority_id", "grant_generation",
-                "seat_epoch", "grant_digest", "grant_expiry_ms", "credential_digest",
-                "credential_expiry_ms", "revoked"],
-            ["probe_records"] = ["campaign_id", "sequence", "prior_hash",
-                "record_hash", "record_bytes", "authority_id", "seat_epoch", "request_id"],
-            ["probe_requests"] = ["campaign_id", "authority_id", "request_id",
-                "input_hash", "record_hash", "sequence"],
+            ["operator_capability"] = ["singleton|INTEGER|0|1", "secret_digest|BLOB|1|0"],
+            ["campaigns"] = ["campaign_id|TEXT|0|1", "checkpoint_hash|TEXT|1|0",
+                "head_sequence|INTEGER|1|0", "head_hash|TEXT|1|0",
+                "activation_fence|INTEGER|1|0", "activation_digest|BLOB|1|0"],
+            ["seats"] = ["campaign_id|TEXT|1|1", "side|TEXT|1|2",
+                "authority_id|TEXT|1|0", "grant_generation|INTEGER|1|0",
+                "seat_epoch|INTEGER|1|0", "grant_digest|BLOB|0|0",
+                "grant_expiry_ms|INTEGER|0|0", "credential_digest|BLOB|0|0",
+                "credential_expiry_ms|INTEGER|0|0", "revoked|INTEGER|1|0"],
+            ["probe_records"] = ["campaign_id|TEXT|1|1", "sequence|INTEGER|1|2",
+                "prior_hash|TEXT|1|0", "record_hash|TEXT|1|0",
+                "record_bytes|BLOB|1|0", "authority_id|TEXT|1|0",
+                "seat_epoch|INTEGER|1|0", "request_id|TEXT|1|0"],
+            ["probe_requests"] = ["campaign_id|TEXT|1|1", "authority_id|TEXT|1|2",
+                "request_id|TEXT|1|3", "input_hash|TEXT|1|0",
+                "record_hash|TEXT|1|0", "sequence|INTEGER|1|0"],
         };
-        foreach (var (table, fields) in expected)
+        var foreignKeys = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
-            using var command = Command(connection, null, "PRAGMA table_info(" + table + ")");
-            using var reader = command.ExecuteReader();
-            var actual = new List<string>();
-            while (reader.Read()) actual.Add(reader.GetString(1));
-            if (!actual.SequenceEqual(fields))
-                throw new InvalidOperationException("Unrecognized private store schema.");
+            ["operator_capability"] = [],
+            ["campaigns"] = [],
+            ["seats"] = ["0|0|campaigns|campaign_id|campaign_id"],
+            ["probe_records"] = ["0|0|campaigns|campaign_id|campaign_id"],
+            ["probe_requests"] = ["0|0|probe_records|campaign_id|campaign_id",
+                "0|1|probe_records|sequence|sequence"],
+        };
+        foreach (var (table, columns) in expected)
+        {
+            using (var command = Command(connection, null, "PRAGMA table_info(" + table + ")"))
+            using (var reader = command.ExecuteReader())
+            {
+                var actual = new List<string>();
+                while (reader.Read())
+                    actual.Add($"{reader.GetString(1)}|{reader.GetString(2)}|"
+                        + $"{reader.GetInt64(3)}|{reader.GetInt64(5)}");
+                if (!actual.SequenceEqual(columns))
+                    throw new InvalidOperationException("Unrecognized private store schema.");
+            }
+            using (var command = Command(connection, null, "PRAGMA foreign_key_list(" + table + ")"))
+            using (var reader = command.ExecuteReader())
+            {
+                var actual = new List<string>();
+                while (reader.Read())
+                    actual.Add($"{reader.GetInt64(0)}|{reader.GetInt64(1)}|"
+                        + $"{reader.GetString(2)}|{reader.GetString(3)}|{reader.GetString(4)}");
+                if (!actual.Order(StringComparer.Ordinal).SequenceEqual(
+                        foreignKeys[table].Order(StringComparer.Ordinal)))
+                    throw new InvalidOperationException("Unrecognized private store foreign key.");
+            }
         }
+        // The authority ID must identify one current seat globally, including across sides.
+        var uniqueIndexNames = new List<string>();
+        using (var indexCommand = Command(connection, null, "PRAGMA index_list(seats)"))
+        using (var indexes = indexCommand.ExecuteReader())
+        {
+            while (indexes.Read())
+            {
+                if (indexes.GetInt64(2) != 1 || indexes.GetString(3) != "u") continue;
+                var indexName = indexes.GetString(1);
+                if (indexName.StartsWith("sqlite_autoindex_seats_", StringComparison.Ordinal))
+                    uniqueIndexNames.Add(indexName);
+            }
+        }
+        var uniqueAuthority = false;
+        foreach (var indexName in uniqueIndexNames)
+        {
+            using var columnsCommand = Command(connection, null,
+                "PRAGMA index_info(" + indexName + ")");
+            using var indexColumns = columnsCommand.ExecuteReader();
+            var names = new List<string>();
+            while (indexColumns.Read()) names.Add(indexColumns.GetString(2));
+            uniqueAuthority |= names.SequenceEqual(["authority_id"]);
+        }
+        if (!uniqueAuthority)
+            throw new InvalidOperationException("Missing unique seat authority constraint.");
     }
 
     private static void ValidateCampaign(string campaignId)
@@ -647,10 +748,22 @@ internal sealed class P01PrivateHostFoundation
 }
 
 internal sealed record P01PrivateGrant(string CampaignId, string Side, string AuthorityId,
-    string Secret, long ExpiresAtMs);
-internal sealed record P01ActivationLease(string CampaignId, long Fence, string Secret);
+    string Secret, long ExpiresAtMs)
+{
+    public override string ToString() => $"P01PrivateGrant({CampaignId},{Side},{AuthorityId},<redacted>)";
+}
+// OperatorSecret is host-only successor custody. Activation rotates it atomically: a stale
+// process holding its prior value cannot acquire a later activation fence.
+internal sealed record P01ActivationLease(string CampaignId, long Fence, string Secret,
+    string OperatorSecret)
+{
+    public override string ToString() => $"P01ActivationLease({CampaignId},{Fence},<redacted>)";
+}
 internal sealed record P01PrivateCredential(string CampaignId, string Side, string AuthorityId,
-    string Secret, long SeatEpoch, long ExpiresAtMs);
+    string Secret, long SeatEpoch, long ExpiresAtMs)
+{
+    public override string ToString() => $"P01PrivateCredential({CampaignId},{Side},{AuthorityId},<redacted>)";
+}
 internal sealed record P01PrivateSeatFacts(string CampaignId, string Side, string AuthorityId,
     long SeatEpoch, string SessionGeneration);
 internal sealed record P01PrivateHead(long Sequence, string Hash, long ActivationFence);

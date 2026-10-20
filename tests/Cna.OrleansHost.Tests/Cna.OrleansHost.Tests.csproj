@@ -9,5 +9,7 @@
     <Using Include="Xunit" />
     <PackageReference Include="xunit.v3.mtp-v2" />
     <ProjectReference Include="../../src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
+    <ProjectReference Include="../Cna.OrleansHost.FoundationChild/Cna.OrleansHost.FoundationChild.csproj"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>
