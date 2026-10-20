@@ -1,0 +1,29 @@
+{
+  "contract": "combat-p01-owner-decision-proposal-v1",
+  "status": "proposed private codec only; owner approval and authenticated hidden twins pending",
+  "decisionKind": "selection",
+  "capabilityKind": "close-assault-full",
+  "firstRepresentedRevision": 0,
+  "firstOpeningRevision": 1,
+  "maxRevision": 9223372036854775807,
+  "maxGameTurn": 111,
+  "maxOrdinal": 2147483647,
+  "contextFields": ["campaignId", "audience", "cycle", "rulesRef", "configRef", "capabilityPolicyId"],
+  "cycleFields": ["gameTurn", "operationStage", "playerPhaseSlot", "phasingSide", "ordinal"],
+  "decisionSeedFields": ["context", "cycleRef", "positionId", "openingRevision", "kind", "participantRef", "targetRef"],
+  "targetSeedFields": ["context", "locationId"],
+  "aliasSeedFields": ["decisionRef", "openingRevision", "capabilityKind", "ownParticipantRef", "apparentTargetRef"],
+  "domains": {
+    "decision": "sandtable.combat.p01.owner-decision.v1",
+    "target": "sandtable.combat.p01.owner-target.v1",
+    "alias": "sandtable.combat.p01.owner-candidate.v1"
+  },
+  "decisionPrefix": "pub.",
+  "targetPrefix": "pub.",
+  "aliasPrefix": "p01-owner-v1.",
+  "privateCandidatePrefix": "p01a.",
+  "genericReject": "not-current-or-not-admissible",
+  "outputStatus": "unsupported",
+  "admitted": false,
+  "publicActions": []
+}

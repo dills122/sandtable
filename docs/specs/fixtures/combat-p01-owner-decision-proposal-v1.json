@@ -1,0 +1,251 @@
+{
+  "status": "synthetic codec goldens only; no authenticated R03 twins",
+  "cases": [
+    {
+      "name": "axis-initial",
+      "privateVariant": "axis-initial",
+      "ownerHex": "hex-0405",
+      "decisionSeed": {
+        "context": {
+          "campaignId": "campaign-demo",
+          "audience": "axis",
+          "cycle": {
+            "gameTurn": 1,
+            "operationStage": 1,
+            "playerPhaseSlot": "first-acting-side",
+            "phasingSide": "axis",
+            "ordinal": 1
+          },
+          "rulesRef": "pub.1111111111111111111111111111111111111111111111111111111111111111",
+          "configRef": "pub.2222222222222222222222222222222222222222222222222222222222222222",
+          "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
+        },
+        "cycleRef": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "positionId": "combat-position-1",
+        "openingRevision": 1,
+        "kind": "selection",
+        "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "aliasSeed": {
+        "decisionRef": "pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f",
+        "openingRevision": 1,
+        "capabilityKind": "close-assault-full",
+        "ownParticipantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "apparentTargetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "expected": {
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8",
+        "decisionRef": "pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f",
+        "alias": "p01-owner-v1.247cbfa76f534ef46bced6c9e9843575386a3e12a693e1c33b6cd4d4c649c920",
+        "decisionSeedCanonical": "{\"context\":{\"campaignId\":\"campaign-demo\",\"audience\":\"axis\",\"cycle\":{\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"phasingSide\":\"axis\",\"ordinal\":1},\"rulesRef\":\"pub.1111111111111111111111111111111111111111111111111111111111111111\",\"configRef\":\"pub.2222222222222222222222222222222222222222222222222222222222222222\",\"capabilityPolicyId\":\"sandtable.combat.p01.owner-capability.v1\"},\"cycleRef\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"positionId\":\"combat-position-1\",\"openingRevision\":1,\"kind\":\"selection\",\"participantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"targetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}",
+        "aliasSeedCanonical": "{\"decisionRef\":\"pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f\",\"openingRevision\":1,\"capabilityKind\":\"close-assault-full\",\"ownParticipantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"apparentTargetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}"
+      }
+    },
+    {
+      "name": "commonwealth-initial",
+      "privateVariant": "commonwealth-initial",
+      "ownerHex": "hex-0405",
+      "decisionSeed": {
+        "context": {
+          "campaignId": "campaign-demo",
+          "audience": "commonwealth",
+          "cycle": {
+            "gameTurn": 1,
+            "operationStage": 1,
+            "playerPhaseSlot": "first-acting-side",
+            "phasingSide": "axis",
+            "ordinal": 1
+          },
+          "rulesRef": "pub.1111111111111111111111111111111111111111111111111111111111111111",
+          "configRef": "pub.2222222222222222222222222222222222222222222222222222222222222222",
+          "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
+        },
+        "cycleRef": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "positionId": "combat-position-1",
+        "openingRevision": 1,
+        "kind": "selection",
+        "participantRef": "pub.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "targetRef": "pub.b723c2ab2e216ce9714f50bc8c99fe972a24d174325e8261a83c3ed4c90db714"
+      },
+      "aliasSeed": {
+        "decisionRef": "pub.6e81bca19484388c8ccd90c549fee99a00b2c417eb0495dc42c2c68f5adf0dc5",
+        "openingRevision": 1,
+        "capabilityKind": "close-assault-full",
+        "ownParticipantRef": "pub.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "apparentTargetRef": "pub.b723c2ab2e216ce9714f50bc8c99fe972a24d174325e8261a83c3ed4c90db714"
+      },
+      "expected": {
+        "targetRef": "pub.b723c2ab2e216ce9714f50bc8c99fe972a24d174325e8261a83c3ed4c90db714",
+        "decisionRef": "pub.6e81bca19484388c8ccd90c549fee99a00b2c417eb0495dc42c2c68f5adf0dc5",
+        "alias": "p01-owner-v1.42f919d8470ccb1fe8fe720b228c57c3d9f5f9b7d6134b7f937a7bf49442edd5",
+        "decisionSeedCanonical": "{\"context\":{\"campaignId\":\"campaign-demo\",\"audience\":\"commonwealth\",\"cycle\":{\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"phasingSide\":\"axis\",\"ordinal\":1},\"rulesRef\":\"pub.1111111111111111111111111111111111111111111111111111111111111111\",\"configRef\":\"pub.2222222222222222222222222222222222222222222222222222222222222222\",\"capabilityPolicyId\":\"sandtable.combat.p01.owner-capability.v1\"},\"cycleRef\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"positionId\":\"combat-position-1\",\"openingRevision\":1,\"kind\":\"selection\",\"participantRef\":\"pub.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"targetRef\":\"pub.b723c2ab2e216ce9714f50bc8c99fe972a24d174325e8261a83c3ed4c90db714\"}",
+        "aliasSeedCanonical": "{\"decisionRef\":\"pub.6e81bca19484388c8ccd90c549fee99a00b2c417eb0495dc42c2c68f5adf0dc5\",\"openingRevision\":1,\"capabilityKind\":\"close-assault-full\",\"ownParticipantRef\":\"pub.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"apparentTargetRef\":\"pub.b723c2ab2e216ce9714f50bc8c99fe972a24d174325e8261a83c3ed4c90db714\"}"
+      }
+    },
+    {
+      "name": "axis-reopen",
+      "privateVariant": "axis-reopen",
+      "ownerHex": "hex-0405",
+      "decisionSeed": {
+        "context": {
+          "campaignId": "campaign-demo",
+          "audience": "axis",
+          "cycle": {
+            "gameTurn": 1,
+            "operationStage": 1,
+            "playerPhaseSlot": "first-acting-side",
+            "phasingSide": "axis",
+            "ordinal": 1
+          },
+          "rulesRef": "pub.1111111111111111111111111111111111111111111111111111111111111111",
+          "configRef": "pub.2222222222222222222222222222222222222222222222222222222222222222",
+          "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
+        },
+        "cycleRef": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "positionId": "combat-position-1",
+        "openingRevision": 3,
+        "kind": "selection",
+        "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "aliasSeed": {
+        "decisionRef": "pub.fce08188ddac0d6892c7f8b3866e0108e83f2d9ecc00adf83715cddfb2d7dde3",
+        "openingRevision": 3,
+        "capabilityKind": "close-assault-full",
+        "ownParticipantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "apparentTargetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "expected": {
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8",
+        "decisionRef": "pub.fce08188ddac0d6892c7f8b3866e0108e83f2d9ecc00adf83715cddfb2d7dde3",
+        "alias": "p01-owner-v1.4c3dcdfbf2487a95736d80a46e754bfbc0045c24bf367ce27adcec007bfb794f",
+        "decisionSeedCanonical": "{\"context\":{\"campaignId\":\"campaign-demo\",\"audience\":\"axis\",\"cycle\":{\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"phasingSide\":\"axis\",\"ordinal\":1},\"rulesRef\":\"pub.1111111111111111111111111111111111111111111111111111111111111111\",\"configRef\":\"pub.2222222222222222222222222222222222222222222222222222222222222222\",\"capabilityPolicyId\":\"sandtable.combat.p01.owner-capability.v1\"},\"cycleRef\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"positionId\":\"combat-position-1\",\"openingRevision\":3,\"kind\":\"selection\",\"participantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"targetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}",
+        "aliasSeedCanonical": "{\"decisionRef\":\"pub.fce08188ddac0d6892c7f8b3866e0108e83f2d9ecc00adf83715cddfb2d7dde3\",\"openingRevision\":3,\"capabilityKind\":\"close-assault-full\",\"ownParticipantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"apparentTargetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}"
+      }
+    },
+    {
+      "name": "axis-next-ordinal",
+      "privateVariant": "axis-next-ordinal",
+      "ownerHex": "hex-0405",
+      "decisionSeed": {
+        "context": {
+          "campaignId": "campaign-demo",
+          "audience": "axis",
+          "cycle": {
+            "gameTurn": 1,
+            "operationStage": 1,
+            "playerPhaseSlot": "first-acting-side",
+            "phasingSide": "axis",
+            "ordinal": 2
+          },
+          "rulesRef": "pub.1111111111111111111111111111111111111111111111111111111111111111",
+          "configRef": "pub.2222222222222222222222222222222222222222222222222222222222222222",
+          "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
+        },
+        "cycleRef": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "positionId": "combat-position-1",
+        "openingRevision": 1,
+        "kind": "selection",
+        "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "targetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891"
+      },
+      "aliasSeed": {
+        "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+        "openingRevision": 1,
+        "capabilityKind": "close-assault-full",
+        "ownParticipantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "apparentTargetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891"
+      },
+      "expected": {
+        "targetRef": "pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891",
+        "decisionRef": "pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec",
+        "alias": "p01-owner-v1.dada83632fdd3758795718d27ff23ec86ed4fb3d74ea8f25726b3ef6658a8a4f",
+        "decisionSeedCanonical": "{\"context\":{\"campaignId\":\"campaign-demo\",\"audience\":\"axis\",\"cycle\":{\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"phasingSide\":\"axis\",\"ordinal\":2},\"rulesRef\":\"pub.1111111111111111111111111111111111111111111111111111111111111111\",\"configRef\":\"pub.2222222222222222222222222222222222222222222222222222222222222222\",\"capabilityPolicyId\":\"sandtable.combat.p01.owner-capability.v1\"},\"cycleRef\":\"sha256:2222222222222222222222222222222222222222222222222222222222222222\",\"positionId\":\"combat-position-1\",\"openingRevision\":1,\"kind\":\"selection\",\"participantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"targetRef\":\"pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891\"}",
+        "aliasSeedCanonical": "{\"decisionRef\":\"pub.805bbc1d4982ee0e314a01d63607a4384afe5b23613217b9923dc91cbea4a3ec\",\"openingRevision\":1,\"capabilityKind\":\"close-assault-full\",\"ownParticipantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"apparentTargetRef\":\"pub.76bd81a8c8235487480f824e93c78d4780fe93e15b3a230498b830a3cf2d0891\"}"
+      }
+    },
+    {
+      "name": "axis-restart",
+      "privateVariant": "axis-restart",
+      "ownerHex": "hex-0405",
+      "decisionSeed": {
+        "context": {
+          "campaignId": "campaign-demo",
+          "audience": "axis",
+          "cycle": {
+            "gameTurn": 1,
+            "operationStage": 1,
+            "playerPhaseSlot": "first-acting-side",
+            "phasingSide": "axis",
+            "ordinal": 1
+          },
+          "rulesRef": "pub.1111111111111111111111111111111111111111111111111111111111111111",
+          "configRef": "pub.2222222222222222222222222222222222222222222222222222222222222222",
+          "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
+        },
+        "cycleRef": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "positionId": "combat-position-1",
+        "openingRevision": 1,
+        "kind": "selection",
+        "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "aliasSeed": {
+        "decisionRef": "pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f",
+        "openingRevision": 1,
+        "capabilityKind": "close-assault-full",
+        "ownParticipantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "apparentTargetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "expected": {
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8",
+        "decisionRef": "pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f",
+        "alias": "p01-owner-v1.247cbfa76f534ef46bced6c9e9843575386a3e12a693e1c33b6cd4d4c649c920",
+        "decisionSeedCanonical": "{\"context\":{\"campaignId\":\"campaign-demo\",\"audience\":\"axis\",\"cycle\":{\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"phasingSide\":\"axis\",\"ordinal\":1},\"rulesRef\":\"pub.1111111111111111111111111111111111111111111111111111111111111111\",\"configRef\":\"pub.2222222222222222222222222222222222222222222222222222222222222222\",\"capabilityPolicyId\":\"sandtable.combat.p01.owner-capability.v1\"},\"cycleRef\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"positionId\":\"combat-position-1\",\"openingRevision\":1,\"kind\":\"selection\",\"participantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"targetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}",
+        "aliasSeedCanonical": "{\"decisionRef\":\"pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f\",\"openingRevision\":1,\"capabilityKind\":\"close-assault-full\",\"ownParticipantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"apparentTargetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}"
+      }
+    },
+    {
+      "name": "axis-hidden-only-synthetic-fork",
+      "privateVariant": "axis-hidden-only-synthetic-fork",
+      "ownerHex": "hex-0405",
+      "decisionSeed": {
+        "context": {
+          "campaignId": "campaign-demo",
+          "audience": "axis",
+          "cycle": {
+            "gameTurn": 1,
+            "operationStage": 1,
+            "playerPhaseSlot": "first-acting-side",
+            "phasingSide": "axis",
+            "ordinal": 1
+          },
+          "rulesRef": "pub.1111111111111111111111111111111111111111111111111111111111111111",
+          "configRef": "pub.2222222222222222222222222222222222222222222222222222222222222222",
+          "capabilityPolicyId": "sandtable.combat.p01.owner-capability.v1"
+        },
+        "cycleRef": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "positionId": "combat-position-1",
+        "openingRevision": 1,
+        "kind": "selection",
+        "participantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "aliasSeed": {
+        "decisionRef": "pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f",
+        "openingRevision": 1,
+        "capabilityKind": "close-assault-full",
+        "ownParticipantRef": "pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "apparentTargetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8"
+      },
+      "expected": {
+        "targetRef": "pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8",
+        "decisionRef": "pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f",
+        "alias": "p01-owner-v1.247cbfa76f534ef46bced6c9e9843575386a3e12a693e1c33b6cd4d4c649c920",
+        "decisionSeedCanonical": "{\"context\":{\"campaignId\":\"campaign-demo\",\"audience\":\"axis\",\"cycle\":{\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"phasingSide\":\"axis\",\"ordinal\":1},\"rulesRef\":\"pub.1111111111111111111111111111111111111111111111111111111111111111\",\"configRef\":\"pub.2222222222222222222222222222222222222222222222222222222222222222\",\"capabilityPolicyId\":\"sandtable.combat.p01.owner-capability.v1\"},\"cycleRef\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"positionId\":\"combat-position-1\",\"openingRevision\":1,\"kind\":\"selection\",\"participantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"targetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}",
+        "aliasSeedCanonical": "{\"decisionRef\":\"pub.4ce0e3c17e44d1e9561502185b1ab4a66a7b115656ce9f6b5675325d4df9349f\",\"openingRevision\":1,\"capabilityKind\":\"close-assault-full\",\"ownParticipantRef\":\"pub.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"apparentTargetRef\":\"pub.ebf9e9e46d76e377f8b177cea7c2f2652b16271e9e0212e413f75f1728b237b8\"}"
+      }
+    }
+  ]
+}
