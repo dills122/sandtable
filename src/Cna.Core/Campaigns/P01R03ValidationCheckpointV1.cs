@@ -83,7 +83,7 @@ internal sealed class P01R03ImportV1
             if (!bytes.SequenceEqual(value.Serialize())) throw new JsonException("P01-A1-001");
             return value;
         }
-        catch (Exception error) when (error is InvalidOperationException or KeyNotFoundException or FormatException or OverflowException or ArgumentException)
+        catch (Exception error) when (error is JsonException or InvalidOperationException or KeyNotFoundException or FormatException or OverflowException or ArgumentException)
         { throw new JsonException("P01-A1-001", error); }
     }
 
@@ -148,7 +148,9 @@ internal static class P01R03ValidationCheckpointV1
             trustedContext.Setup.Artifact.Identity.Hash != ContentHash || trustedContext.Configuration.Hash != ConfigurationHash ||
             ManifestHash != P01R03ImportV1.FrozenManifest || Hash(import.R03Source) != SourceHash)
             throw new JsonException("P01-A1-002");
-        var request = CampaignCombatCreationRequestCodec.Deserialize(import.CreationRequest, trustedContext);
+        CampaignCombatCreationRequest request;
+        try { request = CampaignCombatCreationRequestCodec.Deserialize(import.CreationRequest, trustedContext); }
+        catch (JsonException error) { throw new JsonException("P01-A1-002", error); }
         if (request.CampaignId != CampaignId) throw new JsonException("P01-A1-002");
         var parents = import.Predecessors;
         var result = CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(import.R03Source, request,

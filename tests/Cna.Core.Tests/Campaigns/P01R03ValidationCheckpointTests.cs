@@ -45,8 +45,9 @@ public sealed class P01R03ValidationCheckpointTests
         var importBytes = AuthenticImport();
         var value = P01R03ImportV1.Deserialize(importBytes);
         Assert.Equal(importBytes, value.Serialize());
+        Assert.Equal("P01-A1-001", Assert.Throws<JsonException>(() => P01R03ImportV1.Deserialize([(byte)'{'])).Message);
         var duplicate = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(importBytes).Replace("\"contractVersion\":1,", "\"contractVersion\":1,\"contractVersion\":1,", StringComparison.Ordinal));
-        Assert.Throws<JsonException>(() => P01R03ImportV1.Deserialize(duplicate));
+        Assert.Equal("P01-A1-001", Assert.Throws<JsonException>(() => P01R03ImportV1.Deserialize(duplicate)).Message);
         var unknown = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(importBytes).Replace("\"contractVersion\":1,", "\"contractVersion\":1,\"claimedAdmission\":true,", StringComparison.Ordinal));
         Assert.Throws<JsonException>(() => P01R03ImportV1.Deserialize(unknown));
         Assert.Throws<JsonException>(() => P01R03ImportV1.Deserialize([.. importBytes, (byte)' ']));
@@ -81,8 +82,8 @@ public sealed class P01R03ValidationCheckpointTests
                 new P01R03ImportV1(original.CreationRequest, ledgers, original.R03Input, original.R03Source).Serialize(), Context(), Dependency));
         }
         var request = original.CreationRequest.ToArray(); request[30] ^= 1;
-        Assert.Throws<JsonException>(() => P01R03ValidationCheckpointV1.Validate(
-            new P01R03ImportV1(request, original.Predecessors, original.R03Input, original.R03Source).Serialize(), Context(), Dependency));
+        Assert.Equal("P01-A1-002", Assert.Throws<JsonException>(() => P01R03ValidationCheckpointV1.Validate(
+            new P01R03ImportV1(request, original.Predecessors, original.R03Input, original.R03Source).Serialize(), Context(), Dependency)).Message);
         var own = original.R03Input.Select(x => x.ToArray()).ToArray(); own[0][20] ^= 1;
         Assert.Throws<JsonException>(() => P01R03ValidationCheckpointV1.Validate(
             new P01R03ImportV1(original.CreationRequest, original.Predecessors, own, original.R03Source).Serialize(), Context(), Dependency));
@@ -95,7 +96,7 @@ public sealed class P01R03ValidationCheckpointTests
         var artifact = Cna1979CombatContentCatalog.Artifact;
         var foreign = new CampaignCombatCreationContext(Cna1979CombatRuleset.Manifest, context.Setup, artifact,
             artifact.Definition.Scenarios.Single(), CombatDecisionConfigurationCodec.Deserialize(Encode(config), Cna1979CombatRuleset.Manifest));
-        Assert.Throws<JsonException>(() => P01R03ValidationCheckpointV1.Validate(AuthenticImport(), foreign, Dependency));
+        Assert.Equal("P01-A1-002", Assert.Throws<JsonException>(() => P01R03ValidationCheckpointV1.Validate(AuthenticImport(), foreign, Dependency)).Message);
     }
 
     private static byte[] AuthenticImport()

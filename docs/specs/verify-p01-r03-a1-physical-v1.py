@@ -23,25 +23,30 @@ def canonical(value: object) -> bytes:
     return json.dumps(value, separators=(",", ":"), ensure_ascii=False).encode("ascii")
 
 
+def require(condition: bool, label: str) -> None:
+    if not condition:
+        raise ValueError(f"P01-A1 physical evidence mismatch: {label}")
+
+
 def verify(archive: Path) -> None:
     repository = Path(__file__).resolve().parents[2]
     manifest_bytes = (archive / "manifest.json").read_bytes()
-    assert digest(manifest_bytes) == MANIFEST_HASH
+    require(digest(manifest_bytes) == MANIFEST_HASH, "manifest hash")
     manifest = json.loads(manifest_bytes)
-    assert manifest["counts"]["rows"] == 300
-    assert manifest["counts"]["parentInputLedgersPerRow"] == 11
-    assert manifest["counts"]["runtimeSourcePins"] == 108
+    require(manifest["counts"]["rows"] == 300, "row count")
+    require(manifest["counts"]["parentInputLedgersPerRow"] == 11, "ledger count")
+    require(manifest["counts"]["runtimeSourcePins"] == 108, "runtime source pin count")
     chunk = archive / "rows-036-067.jsonl.gz"
-    assert digest(chunk.read_bytes()) == CHUNK_HASH
-    assert next(entry["sha256"] for entry in manifest["chunks"] if entry["name"] == chunk.name) == CHUNK_HASH
+    require(digest(chunk.read_bytes()) == CHUNK_HASH, "chunk hash")
+    require(next(entry["sha256"] for entry in manifest["chunks"] if entry["name"] == chunk.name) == CHUNK_HASH, "manifest chunk hash")
     with gzip.open(chunk, "rt") as stream:
         row = next(json.loads(line)["r03"] for line in stream if json.loads(line)["r03"]["rowKey"] == "r012-c01")
-    assert row["rootOrdinal"] == 12 and row["movementCut"] == 1
+    require(row["rootOrdinal"] == 12 and row["movementCut"] == 1, "selected row and cut")
     catalogue_path = repository / "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-native-hashes-v1.json"
     catalogue_bytes = catalogue_path.read_bytes()
-    assert digest(catalogue_bytes) == CATALOGUE_HASH == manifest["sourceHashes"]["nativeHashCatalogue"]
+    require(digest(catalogue_bytes) == CATALOGUE_HASH == manifest["sourceHashes"]["nativeHashCatalogue"], "catalogue hash")
     frozen = next(entry for entry in json.loads(catalogue_bytes)["rows"] if entry["rowKey"] == "r012-c01")
-    assert frozen == {key: row[key] for key in frozen}
+    require(frozen == {key: row[key] for key in frozen}, "frozen selected vector")
     vectors = row["vectors"]
     for expected, field in (
         ("sourceHash", "sourceCanonicalUtf8"),
@@ -52,11 +57,11 @@ def verify(archive: Path) -> None:
         ("beforeProofHash", "beforeProofCanonicalUtf8"),
         ("parentSourceHash", "parentSourceCanonicalUtf8"),
     ):
-        assert "sha256:" + digest(vectors[field].encode("ascii")) == row[expected], expected
+        require("sha256:" + digest(vectors[field].encode("ascii")) == row[expected], expected)
     retained = vectors["parentInputLedgersCanonicalUtf8"]
-    assert len(retained) == 11 and len(vectors["inputCanonicalUtf8"]) > 0
-    assert isinstance(retained[0], dict)
-    assert all(isinstance(ledger, list) for ledger in retained[1:])
+    require(len(retained) == 11 and len(vectors["inputCanonicalUtf8"]) > 0, "retained inputs")
+    require(isinstance(retained[0], dict), "retained creation request")
+    require(all(isinstance(ledger, list) for ledger in retained[1:]), "retained predecessor ledgers")
     expected_import = {
         "contractVersion": 1,
         "creationRequestCanonicalUtf8": canonical(retained[0]).decode("ascii"),
@@ -66,8 +71,8 @@ def verify(archive: Path) -> None:
         "dependencyManifestHash": MANIFEST_ID,
     }
     fixture = repository / "docs/specs/fixtures/p01-r03-a1-r012-c01-import-v1.json.gz"
-    assert digest(fixture.read_bytes()) == IMPORT_HASH
-    assert gzip.decompress(fixture.read_bytes()) == canonical(expected_import)
+    require(digest(fixture.read_bytes()) == IMPORT_HASH, "import fixture hash")
+    require(gzip.decompress(fixture.read_bytes()) == canonical(expected_import), "import fixture content")
     print("A1 physical archive, independent catalogue, and selected import fixture verified")
 
 
