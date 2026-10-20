@@ -1,0 +1,22 @@
+{
+  "schema": "combat-p01-paid-all44-fresh.v1",
+  "catalogueRows": 300,
+  "freshPreparedCuts": 44,
+  "freshCommittedCuts": 44,
+  "candidateAbsent": 256,
+  "admittedRows": 0,
+  "publicActions": 0,
+  "orientations": {
+    "axis": 22,
+    "commonwealth": 22
+  },
+  "orderedOutputHash": "sha256:c4e549455ecce399473751aa2d616565bba1bd52f816fc31a345fb57c220f49b",
+  "orderedOutputBytes": 52790,
+  "maxima": {
+    "sourceBytes": 5627669,
+    "inputBytes": 1004,
+    "eventBytes": 5978,
+    "controlBytes": 44589,
+    "worldBytes": 3326
+  }
+}
