@@ -549,31 +549,58 @@ internal sealed class P01PrivateHostFoundation
                     throw new InvalidOperationException("Unrecognized private store foreign key.");
             }
         }
-        // The authority ID must identify one current seat globally, including across sides.
-        var uniqueIndexNames = new List<string>();
-        using (var indexCommand = Command(connection, null, "PRAGMA index_list(seats)"))
-        using (var indexes = indexCommand.ExecuteReader())
+        var expectedIndexes = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
-            while (indexes.Read())
+            ["operator_capability"] = [],
+            ["campaigns"] = ["pk|1|0|campaign_id"],
+            ["seats"] = ["pk|1|0|campaign_id,side", "u|1|0|authority_id"],
+            ["probe_records"] = ["pk|1|0|campaign_id,sequence"],
+            ["probe_requests"] = ["pk|1|0|campaign_id,authority_id,request_id"],
+        };
+        var knownIndexNames = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var (table, descriptors) in expectedIndexes)
+        {
+            var entries = new List<(string Name, string Origin, long Unique, long Partial)>();
+            using (var command = Command(connection, null, "PRAGMA index_list(" + table + ")"))
+            using (var reader = command.ExecuteReader())
+                while (reader.Read())
+                    entries.Add((reader.GetString(1), reader.GetString(3),
+                        reader.GetInt64(2), reader.GetInt64(4)));
+            var actual = new List<string>();
+            foreach (var entry in entries)
             {
-                if (indexes.GetInt64(2) != 1 || indexes.GetString(3) != "u") continue;
-                var indexName = indexes.GetString(1);
-                if (indexName.StartsWith("sqlite_autoindex_seats_", StringComparison.Ordinal))
-                    uniqueIndexNames.Add(indexName);
+                if (!Regex.IsMatch(entry.Name,
+                        @"\Asqlite_autoindex_" + table + @"_[1-9][0-9]*\z",
+                        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+                    throw new InvalidOperationException("Unrecognized private store index.");
+                knownIndexNames.Add(entry.Name);
+                using var command = Command(connection, null,
+                    "PRAGMA index_info(" + entry.Name + ")");
+                using var reader = command.ExecuteReader();
+                var names = new List<string>();
+                while (reader.Read()) names.Add(reader.GetString(2));
+                actual.Add($"{entry.Origin}|{entry.Unique}|{entry.Partial}|"
+                    + string.Join(',', names));
             }
+            if (!actual.Order(StringComparer.Ordinal).SequenceEqual(
+                    descriptors.Order(StringComparer.Ordinal)))
+                throw new InvalidOperationException("Unrecognized private store indexes.");
         }
-        var uniqueAuthority = false;
-        foreach (var indexName in uniqueIndexNames)
+        using var objectsCommand = Command(connection, null,
+            "SELECT type,name,tbl_name,sql FROM sqlite_master");
+        using var objects = objectsCommand.ExecuteReader();
+        while (objects.Read())
         {
-            using var columnsCommand = Command(connection, null,
-                "PRAGMA index_info(" + indexName + ")");
-            using var indexColumns = columnsCommand.ExecuteReader();
-            var names = new List<string>();
-            while (indexColumns.Read()) names.Add(indexColumns.GetString(2));
-            uniqueAuthority |= names.SequenceEqual(["authority_id"]);
+            var type = objects.GetString(0);
+            var name = objects.GetString(1);
+            var table = objects.GetString(2);
+            if (type == "table" && expected.ContainsKey(name) && table == name)
+                continue;
+            if (type == "index" && knownIndexNames.Contains(name)
+                && expected.ContainsKey(table) && objects.IsDBNull(3))
+                continue;
+            throw new InvalidOperationException("Unexpected private store schema object.");
         }
-        if (!uniqueAuthority)
-            throw new InvalidOperationException("Missing unique seat authority constraint.");
     }
 
     private static void ValidateCampaign(string campaignId)

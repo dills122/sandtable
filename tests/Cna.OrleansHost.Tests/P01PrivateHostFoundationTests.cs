@@ -297,6 +297,26 @@ public sealed class P01PrivateHostFoundationTests
         Assert.Throws<InvalidOperationException>(() => fixture.Open());
     }
 
+    [Theory]
+    [InlineData("CREATE TRIGGER sabotage AFTER UPDATE OF activation_fence ON campaigns "
+        + "BEGIN DELETE FROM operator_capability WHERE singleton=1; END")]
+    [InlineData("CREATE VIEW leaked_seats AS SELECT * FROM seats")]
+    [InlineData("CREATE INDEX extra_probe_index ON probe_records(request_id)")]
+    public void UnexpectedSchemaObjectFailsBeforeUse(string sql)
+    {
+        using var fixture = new StoreFixture();
+        var store = fixture.Create();
+        store.SeedUnissuableCampaign(Campaign, Checkpoint, Operator);
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+        Assert.Throws<InvalidOperationException>(() => fixture.Open());
+    }
+
     [Fact]
     public void FinalNewlineCannotExtendCampaignOrHash()
     {

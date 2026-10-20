@@ -8,7 +8,7 @@ The proof owner is the holder of a host-issued, single-use campaign/side grant, 
 
 ## Closed foundation schema
 
-The SQLite database has `application_id = 0x50303146` (`P01F`), `user_version = 1`, `journal_mode = WAL`, `synchronous = FULL`, foreign keys enabled, and a 5-second busy timeout. The exact creator-owned table DDL is pinned, including `CHECK(singleton=1)`; name/type/nullability/primary key/foreign key shape and foreign-key actions are checked independently. Unknown database version, application ID, schema change, failed integrity check or any `foreign_key_check` violation is unavailable; there is no automatic migration. Single-host local file, WAL and SHM form one authority unit. File directory must be private to the host user. Recovery cannot copy only the database file while writes continue.
+The SQLite database has `application_id = 0x50303146` (`P01F`), `user_version = 1`, `journal_mode = WAL`, `synchronous = FULL`, foreign keys enabled, and a 5-second busy timeout. The exact creator-owned table DDL is pinned, including `CHECK(singleton=1)`; name/type/nullability/primary key/foreign key shape and foreign-key actions are checked independently. Only the expected SQLite autoindexes may exist; triggers, views and extra tables or indexes make the store unavailable. Unknown database version, application ID, schema change, failed integrity check or any `foreign_key_check` violation is unavailable; there is no automatic migration. Single-host local file, WAL and SHM form one authority unit. File directory must be private to the host user. Recovery cannot copy only the database file while writes continue.
 
 | Table | Key and exact columns | Meaning |
 | --- | --- | --- |
