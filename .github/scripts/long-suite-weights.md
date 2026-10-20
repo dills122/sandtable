@@ -61,6 +61,18 @@ requires a fresh exact-head hosted run.
 
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
+The private Content8/Setup8 Core source reader adds five `CombatAutoSurrenderSourceTests` rows. A passing local macOS arm64 .NET 10 Release MTP XML run on 2026-10-20 measured only these new rows; all prior weights and baseline metadata remain unchanged. This is a scheduling observation, not a hosted CI or admission claim.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `AlternateCanonicalBytesOrOriginalContent7CannotMasqueradeAsContent8` | `b957e63ba0ee` | 10 |
+| `FrozenTripletReadsOnlyApprovedOneOrientationSource` | `41ed21cd1778` | 6 |
+| `OneByteTamperInAnyArtifactFailsClosed(index: 0)` | `447587703f25` | 1 |
+| `OneByteTamperInAnyArtifactFailsClosed(index: 1)` | `a3e6709f08f5` | 1 |
+| `OneByteTamperInAnyArtifactFailsClosed(index: 2)` | `33db1b23cfb6` | 1 |
+
+Command: `/opt/homebrew/bin/dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter-class Cna.Core.Tests.Campaigns.CombatAutoSurrenderSourceTests --report-xunit-xml --results-directory /private/tmp/sandtable-p01-content8-source-reader-release-timing`. Result: 5 passed, 0 failed, 0 skipped. Release Core test DLL SHA-256 `8eedfa8a0907cb2fdf1f9a0e547396867a31a4c6fb8525172e731b307bdcb028`; retained XML SHA-256 `12811b4107a7f4f6914ab0b4ba662c7bf98e751c5294a721179192b2e0543c5c`. Exact-head `r02_partition.py discover` found 3,233 ordinary Core rows: precisely these five keys were missing from the prior manifest, with no stale keys. The updated manifest covers 3,233 rows and 199 classes; `make_plan` allocates each once across 61 groups and all 12 dedicated jobs. The 28 partition supervisor tests pass outside the local sandbox; hosted exact-head CI remains the acceptance gate.
+
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
 2. Measure the new/changed cases with the installed MTP runner and literal selectors. Keep every assertion, strict XML, process exit, source/attempt/SDK and resource evidence. For a complete refresh use an already verified full artifact whose prepared inventory and all actual rows reconcile. Never derive weights from a failed, skipped, truncated or unbound report. Retain the prior manifest and observation as evidence.
 3. The following lightweight recipe recreates a fully measured manifest from such a complete proof directory. Set `PROOF` to the local selected artifact directory containing `r02-inventory.json` and all execution XML. Run from the repository root; save/review the output before replacing the tracked file.

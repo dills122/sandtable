@@ -393,6 +393,9 @@ RBA choice. Its decline/cancellation and six structural steps have no native or 
 the full P01 support certificate remains open.
 Accepted `CMB-POL-009` excludes Land §15.88 voluntary surrender from the initial RC
 bounded choice surface; this remains an explicit source-legal coverage limit.
+The [private automatic-surrender Core source reader](docs/specs/combat-auto-surrender-core-reader-v1.md)
+accepts only frozen Content8/Rules/Setup8 bytes. Creation and eleven authenticated R03 predecessor
+ledgers for that asymmetric source still need a separate authority path; no surrender is issued.
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.

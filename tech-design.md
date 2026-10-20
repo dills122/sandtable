@@ -853,6 +853,9 @@ exercise cannot claim the full physical action surface. These private slices do 
 selection, a native ordinal-two consumer or a public action. Full AC-003 action exhaustiveness,
 AC-006 surrender/RBA, AC-007 outward privacy, AC-008 replay/resource caps and the P01 support
 certificate remain open.
+The [private Content8/Setup8 source reader](docs/specs/combat-auto-surrender-core-reader-v1.md)
+pins exact asymmetric source bytes inside Core without registering a campaign creation or
+predecessor-ledger issuer. The original Content7/Setup7 creation path remains separate.
 The [private P01 no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) keeps proposed
 ordinal-two System inputs disconnected until a source-backed supported-empty certificate and
 authentic twelfth-ledger event/receipt replay exist; provisional physical emptiness is insufficient.
