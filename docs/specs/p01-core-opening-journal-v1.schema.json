@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sandtable.p01.core-opening-journal.v1",
+  "title": "Private pinned P01 Core opening journal cut v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contractVersion", "campaignId", "creationRequestCanonicalUtf8", "createdEventCanonicalUtf8", "records", "admitted"],
+  "properties": {
+    "contractVersion": { "const": 1 },
+    "campaignId": { "const": "rules-lab.combat-creation.1" },
+    "creationRequestCanonicalUtf8": { "type": "string", "maxLength": 4096 },
+    "createdEventCanonicalUtf8": { "type": "string", "maxLength": 1048576 },
+    "records": {
+      "type": "array",
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sequence", "inputCanonicalUtf8", "eventCanonicalUtf8", "sourceReferencesCanonicalUtf8", "receiptId", "priorPrefix", "afterPrefix"],
+        "properties": {
+          "sequence": { "const": 1 },
+          "inputCanonicalUtf8": { "type": "string", "maxLength": 4096 },
+          "eventCanonicalUtf8": { "type": "string", "maxLength": 1048576 },
+          "sourceReferencesCanonicalUtf8": { "type": "string", "maxLength": 4096 },
+          "receiptId": { "type": "string", "minLength": 1 },
+          "priorPrefix": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "afterPrefix": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "admitted": { "const": false }
+  }
+}

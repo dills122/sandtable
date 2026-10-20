@@ -77,6 +77,14 @@ never appends that game event twice or consumes a twelfth P01 input. Its private
 journal sequence starts at zero; separately authorized later records start at
 one. A1 has **no journal sequence**.
 
+The separately implemented [private Core opening-stage proof](../specs/p01-core-opening-journal-v1.md)
+uses a pinned `r012-c01` CreationRequest to derive Created11 and the first
+System initiative record. Its `sequence:1` is local to that disposable proof
+format. It is **not** `P01ValidatedCheckpointV1`, the A2 sequence-zero
+`r03-import-checkpoint`, an A2 predecessor/head, or an authority source for an
+owner decision. It neither imports the complete A1 R03 cut into a journal nor
+changes this proposal's A1/A2 ordering and gates.
+
 For A1, `r012-c01` (row index 36) comes from the **retained private archive**
 `/Users/dsteele/.codex/worktrees/combat-p01-inventory/p01-evidence`. Its retained
 `manifest.json` (SHA-256
