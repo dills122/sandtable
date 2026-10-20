@@ -33,6 +33,10 @@ CAPS = {
     "coreInputV1": 8192, "coreEventV1": 8192, "coreReceiptV1": 8192,
 }
 CORE_KINDS = {"input": "coreInputV1", "event": "coreEventV1", "receipt": "coreReceiptV1"}
+REQUIRED_TERMINAL_CASES = {
+    "axis-ordinal-two-selected-synthetic": "select",
+    "axis-ordinal-two-explicit-decline-synthetic": "decline",
+}
 
 
 def no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -760,11 +764,49 @@ def check_negatives(schema: dict, case: dict) -> None:
             pass
 
 
+def check_terminal_cases(cases: object) -> None:
+    if not isinstance(cases, list) or len(cases) != len(REQUIRED_TERMINAL_CASES):
+        raise ValueError("exactly two terminal owner paths required")
+    seen: set[str] = set()
+    for case in cases:
+        if not isinstance(case, dict) or not isinstance(case.get("name"), str):
+            raise ValueError("terminal case name missing")
+        name = case["name"]
+        if name in seen or name not in REQUIRED_TERMINAL_CASES:
+            raise ValueError("duplicate or unknown terminal case")
+        seen.add(name)
+        try:
+            choice = case["values"]["ownerInput"]["choiceKind"]
+        except (KeyError, TypeError):
+            raise ValueError("terminal owner choice missing") from None
+        if choice != REQUIRED_TERMINAL_CASES[name]:
+            raise ValueError("terminal owner choice/name mismatch")
+    if seen != set(REQUIRED_TERMINAL_CASES):
+        raise ValueError("selected and decline terminal cases both required")
+
+
+def check_terminal_case_negatives(cases: list[dict]) -> None:
+    missing_selected = [case for case in cases if case["values"]["ownerInput"]["choiceKind"] != "select"]
+    missing_decline = [case for case in cases if case["values"]["ownerInput"]["choiceKind"] != "decline"]
+    duplicate = [cases[0], copy.deepcopy(cases[0])]
+    wrong_choice = copy.deepcopy(cases)
+    wrong_choice[1]["values"]["ownerInput"]["choiceKind"] = "select"
+    for mutated in ([], missing_selected, missing_decline, duplicate, wrong_choice):
+        try:
+            check_terminal_cases(mutated)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("missing, duplicate or mismatched terminal path accepted")
+
+
 def main() -> None:
     schema = parse(SCHEMA.read_bytes())
     goldens = parse(GOLDENS.read_bytes())
     if goldens["contract"] != schema["$id"] or goldens["status"] != "synthetic proposal only; no authenticated owner path":
         raise ValueError("fixture status")
+    check_terminal_cases(goldens["cases"])
+    check_terminal_case_negatives(goldens["cases"])
     for case in goldens["cases"]:
         check_case(schema, case)
         check_negatives(schema, case)
