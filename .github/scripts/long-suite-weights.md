@@ -181,3 +181,24 @@ six R03 numeric leaves directly and traverses borrowed R02 Proof numeric leaves 
 canonicalization. The seven focused rows were remeasured from the successful Release XML above;
 only those seven R03 weights changed. Four MAP-06 provisional rows and all unrelated weights were
 preserved through the rebase onto main `f0266be`.
+
+## P01 private owner-visible codec supplemental measurement (October 20, 2026)
+
+The isolated #308 branch adds three ordinary Core rows in one class. They were measured from a
+successful local .NET 10 Microsoft.Testing.Platform Release xUnit XML report; all three passed,
+none failed or skipped. Existing row weights, baseline metadata, and provisional labels were
+preserved. These are elapsed-time scheduling hints, not hosted latency acceptance.
+
+| New row | SHA-256 row identity | Measured ms |
+| --- | --- | ---: |
+| `NoncanonicalAndDuplicateBytesRejectAtEverySeedBoundary` | `37d02e755f705659755a76f99fd8fec0e14b658ed624cd9ad40ea425394b0a82` | 11 |
+| `AllSixApprovedPrivateVectorsMatchExactCanonicalBytesAndReferences` | `c4ad597a195715996613ff849fe165f661ee9d071190e1cef071cc85f5a43c46` | 6 |
+| `TypedBoundariesAndBindingRejectInvalidOrCrossSeatInputs` | `3e76c6f9ae1eac1a1f299d4b8f03981ba7fb8b5efd8ab839697f0a7506c3d72d` | 1 |
+
+- Command: `DOTNET_ROOT=/opt/homebrew/Cellar/dotnet/10.0.400/libexec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests --filter-class Cna.Core.Tests.Campaigns.P01OwnerVisibleCodecV1Tests --report-xunit-xml --results-directory /private/tmp/sandtable-p01-owner-codec-release-timing --no-ansi`.
+- Release Core DLL SHA-256: `75df2cb79c41a6cb15c532eb89e14a809c8f2b422bb1826cd7626b27bae44762`.
+- Retained XML SHA-256: `97303c2e315cb8c945e3abcf71bc823738d8b07f662a1627ff7aae3269561797`.
+- After rebasing onto merged #304 and #307 main, the manifest has 3,244 rows and 203 classes:
+  their five new rows and two classes remain intact alongside these three #308 rows and one class.
+  The prior #308 local discovery at `5482b08287f0e9f979435c389e5407c179488aa0` covered its
+  then-current 3,239 rows; this rebased head requires fresh exact-head discovery and hosted CI.

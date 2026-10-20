@@ -6,6 +6,10 @@
 observation, action set, submission endpoint, P01 admission, or P02/P03 activation.
 The [owner projection v0](combat-p01-owner-projection-v0.md) remains disconnected and
 continues to return `unsupported`, `admitted=false`, and `publicActions=[]`.
+The internal `P01OwnerVisibleCodecV1` now serializes and parses this approved private
+tuple and matches the six frozen synthetic vectors. Its caller supplies an already
+authenticated visible tuple; no runtime owner observation, opening, submission,
+binding authority, or public action uses the codec.
 
 ## Approved private owner contract
 
