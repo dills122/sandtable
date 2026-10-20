@@ -39,21 +39,17 @@ settlement review before any AC-006 positive claim. No mutation of the current p
 
 ## Proposed AC-007 owner scope for review
 
-The [owner projection v0](../../specs/combat-p01-owner-projection-v0.md) proposes four alias inputs: side, visible decision revision, capability kind and apparent target reference. It deliberately has no approved owner observation or positive outward action. Before contract freeze, present a concrete proposal covering:
+The exact proposed fields, `selection` decision kind versus `close-assault-full` capability,
+public context+hex target, `pub.` decision domain, distinct `p01-owner-v1.` alias domain,
+revision-0 represented boundary / revision-1 first opening, repeated-window and restart
+rules, generic rejection, schema and synthetic byte goldens are in the
+[owner decision proposal](../../specs/combat-p01-owner-decision-proposal-v1.md).
+The earlier `p01o.` alias sketch is withdrawn: `p01o.` already names private opening
+receipts. This proposal changes no runtime schema or outward bytes.
 
-| Proposed field | Source and rule |
-| --- | --- |
-| `campaignId`, `audienceSide` | Trusted active campaign and authenticated seat, never browser-selected. |
-| `ownerDecisionRef` | Proposed reuse of the accepted side-projection `decisionId` pattern, not an existing P01 production field: a new versioned P01 public domain over typed `IdentitySeed3={context,cycleRef,positionId,openingRevision,kind,participantRef,targetRef}`. `cycleRef` uses the frozen public cycle tuple (including ordinal), and `openingRevision` comes from the authenticated owner-visible opening. Define the P01 decision kind and codec explicitly. Distinct visible openings in one history must differ; equal-visible hidden forks must match; restart must replay the same reference. No pre-open decision is fabricated on cancellation. Freeze golden fixtures for repeated same-position openings, both sides, hidden forks and restart before issuing an alias. |
-| `openingVisibleRevision` | Per-audience revision captured when the owner decision opens and held fixed in its reference and retries. Current observation revision is separate; advance it only when the approved owner-visible projection or window lifecycle changes. Hidden-only bookkeeping does not change it. |
-| `capabilityKind` | Closed `close-assault-full` value for this bounded profile. |
-| `ownParticipantRef` | Existing owner-visible own formation reference from the same authorized observation cut; never an internal UnitKey unless that exact value is already approved outward. |
-| `apparentTargetRef` | The authorized context/location target reference from the same observation cut, following the accepted side projection's `{context,locationId}` target seed. Close Assault targets a hex; Umpire retains and authenticates the exact frozen defender set privately. Do not salt this reference with hidden contact identity or count. |
-
-After `ownerDecisionRef` is frozen, the proposed alias is `p01o.` followed by lowercase SHA-256 of ASCII domain `sandtable.combat.p01.owner-candidate.v1`, one NUL byte and compact canonical ASCII JSON in the table's field order. The Umpire retains an exact alias-to-private-candidate map scoped to the authenticated campaign, seat and opened decision. An alias is an identity, not authorization: each submission authenticates the audience and validates exact retained membership against the frozen combat base and **only** the permitted bookkeeping event suffix. A combat-fact change cannot silently alter legality under the same visible decision revision: it invalidates the decision and requires an owner-visible terminal or reopened boundary before another submission. Duplicate outward aliases and equal-visible histories with differing acceptance outcomes block publication.
-
-Proposed side-safe rejection shape: authenticate the seat before any alias lookup; syntactically malformed requests can be `invalid-request`, and an obsolete **visible** decision revision can be `stale-view` only when the owner-visible boundary actually changed. Until a new outward rejection contract is approved, hidden-dependent non-membership or profile failure uses the existing generic `not-current-or-not-admissible` shape with no blocker detail. An unchanged visible revision must not become stale solely because opponent-only bookkeeping advanced. Prove equal-visible histories yield byte-equal candidates **and** equal accept/reject outcomes, including post-opening hidden bookkeeping and invalidation boundaries. Do not return a private digest, raw state version, hidden unit identity, event count or source hash in any outward payload or log. Exact retry identity remains the host's separate contract.
-
-These fields and rejection classes are **proposals for owner decision**, not approved runtime contracts. The accepted side projection proves an `IdentitySeed3` reference for its own bounded evidence but allocates no P01 production field, protobuf, host route or durable publication. The owner decision packet is incomplete until the P01 domain/kind/codec, opening lifecycle and repeated-window/restart fixtures are specified. The existing four-field v0 scaffold remains disconnected until that packet is accepted and a versioned schema, canonical golden bytes, authenticated hidden-variant pair and acceptance/rejection comparison pass independent review.
-
-Approval of wording does not replace the authenticated equal-visible hidden-history test. If the accepted fields cannot yield such a pair from original sources, AC-007 remains open and P01 remains unsupported.
+Owner approval remains pending. The pure vectors prove only a proposed codec, not an
+approved P01 observation or authentic equal-visible hidden-history pair. AC-007 stays open
+until two independent source-authenticated CreationRequest plus eleven-ledger R03 histories
+with equal approved visible facts and different hidden bindings produce equal outward
+bytes, ordering, IDs, and accept/reject behavior, including post-opening hidden changes.
+If the accepted fields cannot yield such a pair, fail closed; P01 remains unsupported.
