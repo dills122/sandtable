@@ -387,8 +387,10 @@ vectors; authenticated owner openings and equal-visible hidden-variant privacy p
 remain open. P02 selection, P03 native consumption
 and public activation remain gated.
 The [private local host foundation](docs/specs/p01-private-host-foundation-v1.md) adds
-an unregistered SQLite grant/activation-fence/probe store for Choice L tests. It has no
-P01 import adapter, owner opening, game-event journal, host route, receipt API or admission.
+an unregistered SQLite grant/activation-fence/probe store for Choice L tests. A separate
+[private A1 physical import](docs/specs/p01-a1-physical-host-import-v1.md) binds one
+validated R03 cut to an unissuable campaign row; it has no owner opening,
+game-event journal, host route, receipt API or admission.
 The [private no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) fixes a proposed
 twelfth-ledger input shape but issues no event: no authentic supported-empty certificate exists.
 The separate [private explicit-RBA successor](docs/specs/combat-p01-explicit-rba-v1.md) proves

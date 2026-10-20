@@ -76,6 +76,8 @@ Umpire capability or a completed Combat step path.
 The `P01PrivateHostFoundation` name is a plain technical host module for disabled local
 grant and fence experiments. Its probe records are not Chronicle events or Archives saves,
 and they expose nothing to Maproom.
+`P01A1PhysicalHostImportV1` is a private Core-to-host evidence adapter for one
+pinned R03 cut; its import row is not an issued campaign or owner action.
 `combat-p01-explicit-rba-v1` names a separate private successor for nonadjacent zero-assault
 states with a retained defender RBA choice; it is not a public action or native consumer.
 `CampaignCombatAutoSurrenderSourceV1` names the private pinned Content8/Setup8 Core reader;
