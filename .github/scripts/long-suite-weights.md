@@ -202,3 +202,18 @@ preserved. These are elapsed-time scheduling hints, not hosted latency acceptanc
   their five new rows and two classes remain intact alongside these three #308 rows and one class.
   The prior #308 local discovery at `5482b08287f0e9f979435c389e5407c179488aa0` covered its
   then-current 3,239 rows; this rebased head requires fresh exact-head discovery and hosted CI.
+
+## Private A1 physical host import Core rows
+
+The two `P01A1PhysicalHostImportTests` rows were measured in a passing local
+macOS arm64 .NET 10 Release Microsoft.Testing.Platform XML run on #310 head
+`f578beae43cc432089fee0f6b8490022d9d1ee7b`. They are scheduling weights,
+not hosted CI or Combat admission evidence. Existing measured rows and baseline
+metadata remain unchanged; this class uses one ordinary suite part.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `RetainedPinnedBytesRevalidateWithoutOpeningAnAction` | `d0d2f2fb14c0` | 1968 |
+| `RetainedBytesAndForeignRootsFailClosed` | `08e4fca9b2d2` | 2 |
+
+Command: `dotnet artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-class Cna.Core.Tests.Campaigns.P01A1PhysicalHostImportTests --report-xunit-xml --results-directory /private/tmp/sandtable-p01-a1-import-core-timing --progress off`. Result: 2 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `ec7c59a5181d4e2c6ef3436d7dac219ebad69755a98774ff31d8eb816f76f60e`; XML SHA-256 `83062d9167ebea63a500dd2c76b09d3d4b4c10f19af115047ed3b964a5d058aa`. The failed prepare job in run `39504461958` reported unknown or missing measured rows on the synthetic merge. The coordinated rebase retains the three already measured `P01OwnerVisibleCodecV1Tests` rows from #308 main. This local timing note is not a passing exact-head hosted run.
