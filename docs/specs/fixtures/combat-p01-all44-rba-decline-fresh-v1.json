@@ -1,0 +1,226 @@
+{
+  "orderedOutputHash": "sha256:333b9df692cfba2077b9c059e21bc968a494340296128de42bb7a548feedcef5",
+  "orderedOutputBytes": 56706,
+  "roots": [
+    {
+      "index": 36,
+      "rowKey": "r012-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 42,
+      "rowKey": "r013-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 48,
+      "rowKey": "r014-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 54,
+      "rowKey": "r015-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 60,
+      "rowKey": "r016-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 66,
+      "rowKey": "r017-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 72,
+      "rowKey": "r018-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 78,
+      "rowKey": "r019-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 84,
+      "rowKey": "r020-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 90,
+      "rowKey": "r021-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 96,
+      "rowKey": "r022-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 102,
+      "rowKey": "r023-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 108,
+      "rowKey": "r024-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 114,
+      "rowKey": "r025-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 120,
+      "rowKey": "r026-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 126,
+      "rowKey": "r027-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 132,
+      "rowKey": "r028-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 138,
+      "rowKey": "r029-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 144,
+      "rowKey": "r030-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 150,
+      "rowKey": "r031-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 156,
+      "rowKey": "r032-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 162,
+      "rowKey": "r033-c01",
+      "actingSide": "axis"
+    },
+    {
+      "index": 168,
+      "rowKey": "r034-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 174,
+      "rowKey": "r035-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 180,
+      "rowKey": "r036-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 186,
+      "rowKey": "r037-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 192,
+      "rowKey": "r038-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 198,
+      "rowKey": "r039-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 204,
+      "rowKey": "r040-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 210,
+      "rowKey": "r041-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 216,
+      "rowKey": "r042-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 222,
+      "rowKey": "r043-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 228,
+      "rowKey": "r044-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 234,
+      "rowKey": "r045-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 240,
+      "rowKey": "r046-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 246,
+      "rowKey": "r047-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 252,
+      "rowKey": "r048-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 258,
+      "rowKey": "r049-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 264,
+      "rowKey": "r050-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 270,
+      "rowKey": "r051-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 276,
+      "rowKey": "r052-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 282,
+      "rowKey": "r053-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 288,
+      "rowKey": "r054-c01",
+      "actingSide": "commonwealth"
+    },
+    {
+      "index": 294,
+      "rowKey": "r055-c01",
+      "actingSide": "commonwealth"
+    }
+  ]
+}
