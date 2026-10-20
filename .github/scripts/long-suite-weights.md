@@ -40,6 +40,25 @@ The private connected accepted-outcome source adds five `CampaignAudienceOutcome
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Hosting.CampaignAudienceOutcomeSourceTests --report-xunit-xml --results-directory /private/tmp/sandtable-connected-outcome-release-timing`. Result: 5 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `dfd24b9bad11e24c018cf6de860b48ef29e99ecd91db0930c13cfbb57d0fbeb9`; XML SHA-256 `8723645b379af032988d1cb1a3fe0fcd6bc917bdae56f5e0ce1741967fbf11c7`. Exact Release discovery found 3,228 ordinary Core rows, including precisely these five new rows and no stale manifest rows.
 
+The private A1 R03 checkpoint adds three `P01R03ValidationCheckpointTests` rows. A passing
+local macOS arm64 .NET 10 Release MTP XML run on 2026-10-20 measured the elapsed times below.
+They are scheduling hints, not hosted latency evidence. Existing row weights and baseline
+metadata remain unchanged; this class uses one ordinary suite part.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `ClosedImportAndCheckpointRejectMalformedOrClaimedBytes` | `3dc7daf99a9b` | 3045 |
+| `AuthenticRootProducesDeterministicUnissuableCheckpoint` | `82d8383f8f1c` | 954 |
+| `MutatedSourceLedgerOrderAndCreationRequestCannotProduceCheckpoint` | `3a0ec0c84f29` | 1643 |
+
+Command: `dotnet artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-class Cna.Core.Tests.Campaigns.P01R03ValidationCheckpointTests --report-xunit-xml --results-directory /private/tmp/sandtable-a1-release-timing-2c2ffb8 --progress off`. Result: 3 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `d37d51f5e9a76d48aa9697b4cc702b4d44435d9d739481f12897cbbda276f008`; XML SHA-256 `4d33c234ee8b7e661678f271a0116cd13f7b85a8e385b9911a7a2736a03b18ac`. Source head at measurement: `2c2ffb89939b9a9ecf7540e3baee0f003136eda5`.
+The failed prepare job in run `39465573467` retained complete Release discovery: 3,231
+ordinary Core rows plus 325 frozen R02 rows. Independent local Core discovery at the
+same source matched all 3,556 hosted Core identities. With only the three measured A1
+rows added, the manifest reconciles exactly and the existing allocation remains 61
+groups across 12 jobs. The failed run is not a passing CI claim; the updated head
+requires a fresh exact-head hosted run.
+
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
