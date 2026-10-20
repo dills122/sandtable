@@ -381,8 +381,10 @@ transitions. The [private paid-commit reference](docs/specs/combat-p01-paid-comm
 executes its preflight and one atomic cost event on all 44 positive roots, with 256 candidate-absent
 and zero admitted or public actions. It does not roll a result, settle a World or provide a native
 consumer. A [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md) models a
-separate visible alias and Umpire mapping; approved fields and authentic hidden-variant privacy
-proof remain open. P02 selection, P03 native consumption and public activation remain gated.
+separate visible alias and Umpire mapping. The private owner decision codec's
+visible fields are approved; authenticated owner openings and equal-visible
+hidden-variant privacy proof remain open. P02 selection, P03 native consumption
+and public activation remain gated.
 The [private no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) fixes a proposed
 twelfth-ledger input shape but issues no event: no authentic supported-empty certificate exists.
 The separate [private explicit-RBA successor](docs/specs/combat-p01-explicit-rba-v1.md) proves

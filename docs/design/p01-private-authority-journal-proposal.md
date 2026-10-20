@@ -49,6 +49,11 @@ trusted clock facts. Chronicle would own conditional append and Archives would
 own durable recovery. A2 can supply authentic owner decisions needed by the
 certificate without making P01 public or admitted. Neither A1 approval nor
 this proposal approves A2, an actual store, a route, or a runtime transition.
+Before any A2 implementation, the owner must separately approve an explicit
+amendment to the P01 [acceptance spec](../specs/combat-actual-moved-repeat-position-v1.md#freeze-decision),
+whose current freeze bars native ordinal-two consumption until the certificate
+gates close. That amendment must permit only the specified private proof path;
+it must retain the public/native admission gate.
 
 ### Proposed closed import, checkpoint and later journal contracts
 
@@ -61,7 +66,7 @@ untrusted supplier by itself.
 | Contract | Exact proposed fields and owner |
 | --- | --- |
 | `P01R03ImportV1` (A1) | `contractVersion:1`; canonical CreationRequest bytes; ten ordered predecessor input ledgers; one ordered R03 input ledger; canonical final R03 Source bytes; independently selected trusted Rules10/Content7/configuration identity; pinned dependency-manifest identity. Core reconstructs the context from trusted catalog inputs, replays all eleven ledgers using the existing native R03 consumer, and recomputes terminal Source, Control, Proof, event, receipt, prefix, World and RNG. Supplier row labels, vectors and hashes never authorize import. |
-| `P01ValidatedCheckpointV1` (A1) | `contractVersion:1`, private creation binding, R03 source hash, creation/request hash, ordered ledger hashes and lengths, dependency-manifest hash, recomputed final R03 Control/Proof hashes, terminal version/prefix/receipt, exact ordinal-two Combat Position and active-cycle identity, and `admitted:false`. This immutable Core result has no append sequence or outward ID. Repeating validation gives byte-identical output, not a committed write. |
+| `P01ValidatedCheckpointV1` (A1) | `contractVersion:1`, campaign identity authenticated from CreationRequest, private creation binding, R03 source hash, creation/request hash, ordered ledger hashes and lengths, dependency-manifest hash, recomputed final R03 Control/Proof hashes, terminal version/prefix/receipt, exact ordinal-two Combat Position and active-cycle identity, and `admitted:false`. This immutable Core result has no append sequence or outward ID. Repeating validation gives byte-identical output, not a committed write. |
 | `P01PrivateJournalRecordV1` (A2 only) | `contractVersion:1`, monotonic sequence, prior record hash, prior state version/prefix, closed event kind, canonical input/event bytes and hashes, accepted receipt ID, resulting state version/prefix, and `admitted:false`. The first record binds the **validated R03 checkpoint**, not a new Combat step or second R03 event append. Later P01 records require separately approved typed owner transitions. Unknown kind/version fails closed. |
 | `P01PrivateReadbackV1` (A2 only) | Retained import/dependency bytes plus ordered journal records and storage fence. Readback replays CreationRequest and all eleven ledgers, verifies the checkpoint binding and every later accepted record, and rejects missing, duplicate, reordered or mutated bytes. A hash-only snapshot cannot restore authority. |
 
@@ -124,7 +129,10 @@ hidden opponent bindings never enter owner-visible bytes.
 The host-to-Core command envelope must carry an independently authenticated
 `campaignId`, seat grant identity, side, current journal fence, and trusted
 clock sample/availability. These are host facts, not fields a browser or
-retained R03 input may authorize. Core verifies that the side owns the live
+retained R03 input may authorize. Core requires the authenticated host
+`campaignId`, CreationRequest campaign identity, validated checkpoint binding
+and campaign-scoped journal key to be equal; a cross-campaign envelope rejects
+before any opening or append. Core also verifies that the side owns the live
 decision and that version, prefix, revision, membership, deadline and frozen
 combat base match; it emits canonical accepted input/event/receipt bytes or a
 generic rejection. A timeout or unavailable clock may cancel under accepted
@@ -179,8 +187,10 @@ promoted to production authority
    may serialize/replay that result in a fresh interpreter, but cannot claim
    durable host recovery or journal readback. Keep `admitted=false`
    and no owner opening, legal action, result, settlement or public bytes.
-3. A2, only if separately owner-approved, must prove conditional append/fence,
-   exact byte readback after a real host restart, authenticated seat/clock,
+3. A2, only if separately owner-approved and after the P01 acceptance-spec
+   amendment, must prove conditional append/fence, exact byte readback after a
+   real host restart, authenticated seat/clock, rejection of a host campaign ID
+   that differs from the CreationRequest, checkpoint binding or journal key,
    accepted retry without duplicate record/debit/RNG, failed and competing
    appenders, privacy and resource caps. It must then exercise authentic
    owner decisions and equal-visible hidden-history acceptance/rejection for
@@ -232,9 +242,11 @@ parity remains valid evidence, not a running P01 authority.
 review. The proposed scope is private and non-public authenticated owner
 opening/input/receipt proof before certification, with host-derived seat and
 clock, Chronicle/Archives conditional append and restart readback, and
-authentic AC-007 twin acceptance/rejection. It cannot be inferred from A1
-approval. Native/public P03 consumption and admission remain gated on the
-complete certificate and separate approval.
+authentic AC-007 twin acceptance/rejection. The same owner decision must
+explicitly amend the P01 acceptance spec's pre-certificate native-consumption
+freeze for this private proof path before A2 implementation. It cannot be
+inferred from A1 approval. Public/native P03 consumption and admission remain
+gated on the complete certificate and separate approval.
 
 If A1 is approved, replace item 5 under **Work order and stop rules** in
 [`2026-10-19-p01-admission-overnight.md`](../work/plans/2026-10-19-p01-admission-overnight.md)
