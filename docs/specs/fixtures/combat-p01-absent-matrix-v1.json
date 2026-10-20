@@ -1,0 +1,16 @@
+{
+  "admittedRows": 0,
+  "authenticatedRows": 300,
+  "candidateAbsent": 256,
+  "maxBytes": {
+    "privateControlBytes": 44345,
+    "privateEventBytes": 1783,
+    "privateInputBytes": 573,
+    "privateSourceBytes": 1659135
+  },
+  "orderedOutputHash": "sha256:74c3e58586c371a040a39ac79069fec1c73b065f9f578deb4a104120be2e76b5",
+  "paidAdjacentNoIssuance": 12,
+  "publicActionCount": 0,
+  "selectedPositive": 44,
+  "zeroAssaultOnlyRbaChoiceOpen": 244
+}
