@@ -67,7 +67,9 @@ not a new product. Its [acceptance matrix](docs/specs/combat-actual-moved-repeat
 has a provisional private reference, bounded evidence and a disconnected
 [owner alias draft](docs/specs/combat-p01-owner-projection-v0.md), but no supported public action.
 The proposed alias is distinct from the Umpire-only `p01.` candidate identity. Any later native
-implementation belongs inside Umpire under a plain technical name. Accepted `CMB-POL-009` excludes voluntary surrender from
+implementation belongs inside Umpire under a plain technical name. The internal pure
+`P01OwnerVisibleCodecV1` implements only approved private owner-visible bytes and IDs.
+Accepted `CMB-POL-009` excludes voluntary surrender from
 the initial RC bounded exercise; the remaining contract and proof gates still control admission.
 The `combat-p01-no-attack-v0` name is a private ordinal-two contract inventory, not a new
 Umpire capability or a completed Combat step path.
