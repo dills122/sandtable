@@ -141,7 +141,7 @@ internal sealed class P01PrivateHostFoundation
         ValidateCampaign(campaignId);
         ValidateHash(checkpointHash);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
         var headHash = HashText("campaign-binding", campaignId, checkpointHash);
         using var command = Command(connection, transaction,
@@ -157,7 +157,7 @@ internal sealed class P01PrivateHostFoundation
     {
         ValidateCampaign(campaignId);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
         var secret = NewSecret();
         var nextOperatorSecret = NewSecret();
@@ -188,7 +188,7 @@ internal sealed class P01PrivateHostFoundation
         ValidateCampaign(campaignId);
         ValidateSide(side);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
         RequireLease(connection, transaction, campaignId, lease);
         var authorityId = Guid.NewGuid().ToString("D");
@@ -218,7 +218,7 @@ internal sealed class P01PrivateHostFoundation
         ValidateCampaign(campaignId);
         ValidateSide(side);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
         RequireLease(connection, transaction, campaignId, lease);
         var authorityId = Guid.NewGuid().ToString("D");
@@ -253,7 +253,7 @@ internal sealed class P01PrivateHostFoundation
         ValidateUuid(grant.AuthorityId);
         ParseSecret(grant.Secret);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         RequireLease(connection, transaction, grant.CampaignId, lease);
         var seat = ReadSeat(connection, transaction, grant.CampaignId, grant.Side);
         if (seat is null || seat.Value.Revoked || seat.Value.AuthorityId != grant.AuthorityId
@@ -299,7 +299,7 @@ internal sealed class P01PrivateHostFoundation
         ValidateCampaign(campaignId);
         ValidateSide(side);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
         RequireLease(connection, transaction, campaignId, lease);
         using var command = Command(connection, transaction, """
@@ -328,7 +328,7 @@ internal sealed class P01PrivateHostFoundation
         ValidateUuid(credential.AuthorityId);
         ParseSecret(credential.Secret);
         using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
+        using var transaction = BeginCheckedMutation(connection);
         if (!ValidLease(connection, transaction, credential.CampaignId, lease))
             return new(P01ProbeStatus.Stale, null);
         var seat = ReadSeat(connection, transaction, credential.CampaignId, credential.Side);
@@ -343,6 +343,9 @@ internal sealed class P01PrivateHostFoundation
             var retained = ReadRecord(connection, transaction, credential.CampaignId,
                 previous.Value.Sequence);
             return retained is not null && retained.Value.RecordHash == previous.Value.RecordHash
+                   && retained.Value.AuthorityId == credential.AuthorityId
+                   && retained.Value.SeatEpoch == credential.SeatEpoch
+                   && retained.Value.RequestId == requestId
                    && retained.Value.RecordHash == ProbeRecordHash(credential.CampaignId,
                        previous.Value.Sequence, retained.Value.PriorHash,
                        retained.Value.RecordBytes)
@@ -401,7 +404,7 @@ internal sealed class P01PrivateHostFoundation
         }
         transaction.Commit();
         var readback = ReadCommittedProbe(credential.CampaignId, credential.AuthorityId,
-            requestId, recordBytes);
+            credential.SeatEpoch, requestId, recordBytes);
         return readback is not null && readback.Sequence == nextSequence
             && readback.RecordHash == recordHash
             ? new(P01ProbeStatus.Committed, nextSequence)
@@ -421,7 +424,7 @@ internal sealed class P01PrivateHostFoundation
         if (!ValidCredential(ReadSeat(connection, null, credential.CampaignId,
                 credential.Side), credential)) return null;
         return ReadCommittedProbe(credential.CampaignId, credential.AuthorityId,
-            requestId, exactBytes);
+            credential.SeatEpoch, requestId, exactBytes);
     }
 
     internal P01PrivateHead? ReadHeadForTest(string campaignId)
@@ -434,7 +437,7 @@ internal sealed class P01PrivateHostFoundation
     }
 
     private P01ProbeReadback? ReadCommittedProbe(string campaignId, string authorityId,
-        string requestId, byte[] exactBytes)
+        long seatEpoch, string requestId, byte[] exactBytes)
     {
         using var connection = Connect(create: false);
         var request = ReadRequest(connection, null, campaignId, authorityId, requestId);
@@ -442,6 +445,9 @@ internal sealed class P01PrivateHostFoundation
             return null;
         var record = ReadRecord(connection, null, campaignId, request.Value.Sequence);
         return record is not null && record.Value.RecordHash == request.Value.RecordHash
+               && record.Value.AuthorityId == authorityId
+               && record.Value.SeatEpoch == seatEpoch
+               && record.Value.RequestId == requestId
                && record.Value.RecordHash == ProbeRecordHash(campaignId,
                    request.Value.Sequence, record.Value.PriorHash, record.Value.RecordBytes)
                && record.Value.RecordBytes.AsSpan().SequenceEqual(exactBytes)
@@ -463,7 +469,25 @@ internal sealed class P01PrivateHostFoundation
         Execute(connection, "PRAGMA foreign_keys=ON");
         Execute(connection, "PRAGMA busy_timeout=5000");
         Execute(connection, "PRAGMA synchronous=FULL");
+        if (!create) RequireSchema(connection);
         return connection;
+    }
+
+    private static SqliteTransaction BeginCheckedMutation(SqliteConnection connection)
+    {
+        // An external schema edit can happen after OpenExisting or even after Connect.
+        // Hold SQLite's write reservation while checking before any state mutation.
+        var transaction = connection.BeginTransaction(deferred: false);
+        try
+        {
+            RequireSchema(connection, transaction);
+            return transaction;
+        }
+        catch
+        {
+            transaction.Dispose();
+            throw;
+        }
     }
 
     private static void ValidatePath(string path)
@@ -482,13 +506,14 @@ internal sealed class P01PrivateHostFoundation
             throw new InvalidOperationException("Store directory permissions are not private.");
     }
 
-    private static void RequireSchema(SqliteConnection connection)
+    private static void RequireSchema(SqliteConnection connection,
+        SqliteTransaction? transaction = null)
     {
         // Pin complete creator-owned DDL, including CHECK constraints. PRAGMA checks below
         // also provide independent field-level validation of keys and their actions.
         foreach (var (table, sql) in TableDefinitions)
         {
-            using var command = Command(connection, null,
+            using var command = Command(connection, transaction,
                 "SELECT sql FROM sqlite_master WHERE type='table' AND name=$table");
             command.Parameters.AddWithValue("$table", table);
             if (command.ExecuteScalar() is not string actual || actual.Trim() != sql.Trim())
@@ -526,7 +551,7 @@ internal sealed class P01PrivateHostFoundation
         };
         foreach (var (table, columns) in expected)
         {
-            using (var command = Command(connection, null, "PRAGMA table_info(" + table + ")"))
+            using (var command = Command(connection, transaction, "PRAGMA table_info(" + table + ")"))
             using (var reader = command.ExecuteReader())
             {
                 var actual = new List<string>();
@@ -536,7 +561,7 @@ internal sealed class P01PrivateHostFoundation
                 if (!actual.SequenceEqual(columns))
                     throw new InvalidOperationException("Unrecognized private store schema.");
             }
-            using (var command = Command(connection, null, "PRAGMA foreign_key_list(" + table + ")"))
+            using (var command = Command(connection, transaction, "PRAGMA foreign_key_list(" + table + ")"))
             using (var reader = command.ExecuteReader())
             {
                 var actual = new List<string>();
@@ -561,7 +586,7 @@ internal sealed class P01PrivateHostFoundation
         foreach (var (table, descriptors) in expectedIndexes)
         {
             var entries = new List<(string Name, string Origin, long Unique, long Partial)>();
-            using (var command = Command(connection, null, "PRAGMA index_list(" + table + ")"))
+            using (var command = Command(connection, transaction, "PRAGMA index_list(" + table + ")"))
             using (var reader = command.ExecuteReader())
                 while (reader.Read())
                     entries.Add((reader.GetString(1), reader.GetString(3),
@@ -574,7 +599,7 @@ internal sealed class P01PrivateHostFoundation
                         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
                     throw new InvalidOperationException("Unrecognized private store index.");
                 knownIndexNames.Add(entry.Name);
-                using var command = Command(connection, null,
+                using var command = Command(connection, transaction,
                     "PRAGMA index_info(" + entry.Name + ")");
                 using var reader = command.ExecuteReader();
                 var names = new List<string>();
@@ -586,7 +611,7 @@ internal sealed class P01PrivateHostFoundation
                     descriptors.Order(StringComparer.Ordinal)))
                 throw new InvalidOperationException("Unrecognized private store indexes.");
         }
-        using var objectsCommand = Command(connection, null,
+        using var objectsCommand = Command(connection, transaction,
             "SELECT type,name,tbl_name,sql FROM sqlite_master");
         using var objects = objectsCommand.ExecuteReader();
         while (objects.Read())
@@ -757,19 +782,22 @@ internal sealed class P01PrivateHostFoundation
         return reader.Read() ? (reader.GetString(0), reader.GetString(1), reader.GetInt64(2)) : null;
     }
 
-    private static (string PriorHash, string RecordHash, byte[] RecordBytes)? ReadRecord(
+    private static (string PriorHash, string RecordHash, byte[] RecordBytes,
+        string AuthorityId, long SeatEpoch, string RequestId)? ReadRecord(
         SqliteConnection connection, SqliteTransaction? transaction, string campaignId,
         long sequence)
     {
         using var command = Command(connection, transaction, """
-            SELECT prior_hash,record_hash,record_bytes FROM probe_records
+            SELECT prior_hash,record_hash,record_bytes,authority_id,seat_epoch,request_id
+            FROM probe_records
             WHERE campaign_id=$campaign AND sequence=$sequence
             """);
         command.Parameters.AddWithValue("$campaign", campaignId);
         command.Parameters.AddWithValue("$sequence", sequence);
         using var reader = command.ExecuteReader();
         return reader.Read() ? (reader.GetString(0), reader.GetString(1),
-            (byte[])reader[2]) : null;
+            (byte[])reader[2], reader.GetString(3), reader.GetInt64(4),
+            reader.GetString(5)) : null;
     }
 
     private static SqliteCommand Command(SqliteConnection connection,

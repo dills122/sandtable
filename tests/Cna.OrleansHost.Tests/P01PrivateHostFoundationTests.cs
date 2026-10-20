@@ -317,6 +317,69 @@ public sealed class P01PrivateHostFoundationTests
         Assert.Throws<InvalidOperationException>(() => fixture.Open());
     }
 
+    [Theory]
+    [InlineData("CREATE TRIGGER sabotage AFTER UPDATE OF activation_fence ON campaigns "
+        + "BEGIN DELETE FROM operator_capability WHERE singleton=1; END")]
+    [InlineData("CREATE VIEW leaked_seats AS SELECT * FROM seats")]
+    [InlineData("CREATE INDEX extra_probe_index ON probe_records(request_id)")]
+    public void AlreadyOpenHandleRejectsPostOpenSchemaDriftBeforeMutation(string sql)
+    {
+        using var fixture = new StoreFixture();
+        var store = fixture.Create();
+        store.SeedUnissuableCampaign(Campaign, Checkpoint, Operator);
+        var openedBeforeDrift = fixture.Open();
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+        Assert.Throws<InvalidOperationException>(() => openedBeforeDrift
+            .AcquireActivationFence(Campaign, Operator));
+        using var readback = new SqliteConnection($"Data Source={fixture.Path}");
+        readback.Open();
+        using var query = readback.CreateCommand();
+        query.CommandText = "SELECT activation_fence FROM campaigns WHERE campaign_id=$campaign";
+        query.Parameters.AddWithValue("$campaign", Campaign);
+        Assert.Equal(0L, (long)query.ExecuteScalar()!);
+    }
+
+    [Theory]
+    [InlineData("authority_id")]
+    [InlineData("seat_epoch")]
+    [InlineData("request_id")]
+    public void CommittedProbeReadbackRejectsMismatchedRetainedProvenance(string column)
+    {
+        using var fixture = new StoreFixture();
+        var store = fixture.Create();
+        store.SeedUnissuableCampaign(Campaign, Checkpoint, Operator);
+        var fence = store.AcquireActivationFence(Campaign, Operator);
+        var credential = store.RedeemGrant(store.IssueGrant(Campaign, "axis", fence,
+            fence.OperatorSecret), fence)!;
+        var head = store.ReadHeadForTest(Campaign)!;
+        var requestId = Guid.NewGuid().ToString("D");
+        byte[] bytes = [7, 8, 9];
+        Assert.Equal(P01ProbeStatus.Committed, store.AppendProbe(credential, requestId,
+            bytes, head.Sequence, head.Hash, fence).Status);
+        Assert.NotNull(store.FindProbe(credential, requestId, bytes, fence));
+
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = $"UPDATE probe_records SET {column}=$value "
+                + "WHERE campaign_id=$campaign AND sequence=1";
+            command.Parameters.AddWithValue("$value", column == "seat_epoch"
+                ? credential.SeatEpoch + 1 : Guid.NewGuid().ToString("D"));
+            command.Parameters.AddWithValue("$campaign", Campaign);
+            Assert.Equal(1, command.ExecuteNonQuery());
+        }
+        Assert.Null(fixture.Open().FindProbe(credential, requestId, bytes, fence));
+        Assert.Equal(P01ProbeStatus.Unavailable, fixture.Open().AppendProbe(credential,
+            requestId, bytes, head.Sequence, head.Hash, fence).Status);
+    }
+
     [Fact]
     public void FinalNewlineCannotExtendCampaignOrHash()
     {
