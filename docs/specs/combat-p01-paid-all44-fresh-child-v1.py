@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read both retained private paid cuts in one independent Python interpreter."""
+"""Cold-read one retained private paid cut in an independent interpreter."""
 import base64
 import binascii
 import hashlib
@@ -55,46 +55,42 @@ def view(state, source, ledger):
 
 
 def result():
-    if len(sys.argv) != 3:
-        return dict(rejected="preflight", error="two retained cut paths required")
+    if len(sys.argv) != 3 or sys.argv[1] not in ("prepared", "committed"):
+        return dict(rejected="preflight", error="one cut mode and path required")
     try:
-        prepared = parse_path(sys.argv[1])
-        committed = parse_path(sys.argv[2])
-        source, parents, r03, selected, assignment, own, retry, pc, pw, pr = prepared
-        csource, cparents, cr03, cselected, cassignment, cown, cretry, cc, cw, cr = committed
-        require((parents, r03, selected, assignment) ==
-                (cparents, cr03, cselected, cassignment),
-                "cuts have different original ancestry")
-        require(own == [] and retry is None and len(cown) == 1 and cretry is not None,
-                "prepared/committed ledger shape")
-        require(ref.input_bytes(cretry) == cown[0], "accepted retry differs from paid input")
-        before = ref.replay(source, parents, r03, selected, assignment, own)
-        require(before["status"] == "prepared" and
-                ref.control_bytes(before) == pc and ref.encode(before["world"]) == pw and
-                before["lastReceiptId"] == pr, "prepared retained cut differs")
-        after, event, receipt = ref.transition(before, ref.parse_input(cown[0]))
+        mode = sys.argv[1]
+        source, parents, r03, selected, assignment, own, retry, control, world, receipt = (
+            parse_path(sys.argv[2]))
         packet = ref.parse_source(source)
-        require(packet["eventCanonicalUtf8"] == [], "prepared event contamination")
-        packet["eventCanonicalUtf8"].append(event.decode("ascii"))
-        require(ref.encode(packet) == csource, "committed Source differs")
-        require(ref.parse_source(csource)["eventCanonicalUtf8"] ==
-                [event.decode("ascii")], "committed event differs")
-        require(after["status"] == "committed" and
-                ref.control_bytes(after) == cc and ref.encode(after["world"]) == cw and
-                receipt == cr == after["lastReceiptId"],
-                "committed retained cut differs")
-        # The real apply path replays the committed cut again from its original
-        # ancestors, then deduplicates the accepted input without another debit.
-        retry_source, retry_ledger, retry_event, retry_receipt = ref.apply(
-            csource, parents, r03, selected, assignment, cown,
-            ref.input_bytes(cretry))
-        require((retry_source, retry_ledger, retry_event, retry_receipt) ==
-                (csource, cown, None, receipt), "accepted retry mutated committed cut")
-        return dict(prepared=view(before, source, own),
-                    committed=view(after, csource, cown),
-                    retry=dict(receiptId=retry_receipt, event=None,
-                               sourceHash=digest(retry_source),
-                               ledgerHash=ledger_hash(retry_ledger)))
+        if mode == "prepared":
+            require(own == [] and retry is None and
+                    packet["eventCanonicalUtf8"] == [],
+                    "prepared ledger/source shape")
+        else:
+            require(len(own) == 1 and retry is not None and
+                    ref.input_bytes(retry) == own[0] and
+                    len(packet["eventCanonicalUtf8"]) == 1,
+                    "committed ledger/source/retry shape")
+        state = ref.replay(source, parents, r03, selected, assignment, own)
+        require(state["status"] == mode and
+                ref.control_bytes(state) == control and
+                ref.encode(state["world"]) == world and
+                state["lastReceiptId"] == receipt,
+                mode + " retained cut differs")
+        output = dict(cut=view(state, source, own))
+        if mode == "committed":
+            # This process starts without any Prepared interpreter state and
+            # replays its own complete ancestry before accepted retry.
+            retry_source, retry_ledger, retry_event, retry_receipt = ref.apply(
+                source, parents, r03, selected, assignment, own,
+                ref.input_bytes(retry))
+            require((retry_source, retry_ledger, retry_event, retry_receipt) ==
+                    (source, own, None, receipt),
+                    "accepted retry mutated committed cut")
+            output["retry"] = dict(receiptId=retry_receipt, event=None,
+                                   sourceHash=digest(retry_source),
+                                   ledgerHash=ledger_hash(retry_ledger))
+        return output
     except (ref.Invalid, ValueError, TypeError, KeyError, OverflowError,
             binascii.Error) as error:
         return dict(rejected="readback", error=str(error))

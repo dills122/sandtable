@@ -64,13 +64,11 @@ def ledger_hash(ledger):
     return cuts.digest(ref.encode([b64(item) for item in ledger]))
 
 
-def child(prepared_claim, committed_claim, directory):
-    prepared_path = directory / "prepared.json"
-    committed_path = directory / "committed.json"
-    prepared_path.write_bytes(ref.encode(prepared_claim))
-    committed_path.write_bytes(ref.encode(committed_claim))
+def child(mode, claim, path):
+    require(mode in ("prepared", "committed"), "fresh cut mode")
+    path.write_bytes(ref.encode(claim))
     process = subprocess.run(
-        [sys.executable, "-B", str(CHILD), str(prepared_path), str(committed_path)],
+        [sys.executable, "-B", str(CHILD), mode, str(path)],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, timeout=300)
     require(process.returncode == 0, "fresh process exit: " +
             process.stderr.decode("utf-8", "replace")[:1000])
@@ -144,9 +142,19 @@ def verify_row(row, semantic_rows):
                                     source, [], before)
     after_claim = fresh_v1.payload(root, selected_ledger, assignment_ledger,
                                    committed_source, own, intended, retry=command)
+    ancestry = ("creationRequest", "parentInputLedgers", "r03Ledger",
+                "selectedLedger", "assignmentLedger")
+    require(all(before_claim[key] == after_claim[key] for key in ancestry),
+            "cuts have different original ancestry")
     with tempfile.TemporaryDirectory(prefix="p01-all44-fresh-") as folder:
-        fresh = child(before_claim, after_claim, Path(folder))
-    prepared, committed = fresh["prepared"], fresh["committed"]
+        prepared_result = child("prepared", before_claim,
+                                Path(folder) / "prepared.json")
+        committed_result = child("committed", after_claim,
+                                 Path(folder) / "committed.json")
+    require(set(prepared_result) == {"cut"} and
+            set(committed_result) == {"cut", "retry"},
+            "independent cut process outputs")
+    prepared, committed = prepared_result["cut"], committed_result["cut"]
     compare_cut(prepared, before_claim, before, source, [], "prepared")
     compare_cut(committed, after_claim, intended, committed_source, own,
                 "committed")
@@ -155,7 +163,7 @@ def verify_row(row, semantic_rows):
             committed["status"] == "committed" and
             len(committed["attackHistory"]) ==
             len(committed["targetUses"]) == 1, "cut status and history")
-    retry = fresh["retry"]
+    retry = committed_result["retry"]
     require(retry == dict(receiptId=receipt, event=None,
                           sourceHash=cuts.digest(committed_source),
                           ledgerHash=ledger_hash(own)),

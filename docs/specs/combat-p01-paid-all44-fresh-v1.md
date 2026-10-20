@@ -4,17 +4,19 @@
 in the retained 300-row P01 profile, 22 per actor orientation. This extends
 the [two-root fresh-process witness](combat-p01-paid-fresh-readback-v1.md) and
 the [all-44 in-process cut matrix](combat-p01-paid-all44-cuts-v2.md). Each root
-is written to two temporary physical files and read by a new Python
-interpreter. The proof is private: no P01 row becomes admitted, no public or
+is written to two temporary physical files. Prepared and Committed are each
+cold-read by their **own** new Python interpreter, with no state carried from
+the Prepared process into the Committed process. The proof is private: no P01
+row becomes admitted, no public or
 native action is issued, and no durable host restart is exercised.
 
 The parent rebuilds each original CreationRequest, ten pre-R03 ledgers and
 R03 ledger, then the selected-assault and Force Assignment ledgers. It
 derives the prepared cut and one accepted System paid input. The independent
-interpreter reads both retained files, enforces the input and stored-output
-byte caps, replays the original ancestry, and compares complete canonical
-Control and World bytes, source/event binding and receipt IDs at both cuts.
-It applies the accepted paid input again after the committed cut; the retry
+interpreters each read one retained file, enforce the input and stored-output
+byte caps, replay the original ancestry, and compare complete canonical
+Control and World bytes, source/event binding and receipt IDs for their cut.
+The Committed interpreter applies the accepted paid input again; the retry
 must return the same Source, own ledger and receipt, and no new event.
 
 The parent compares the fresh process's CP and ammunition counters,
@@ -36,12 +38,14 @@ the predecessor's canonical field order before comparing its earlier digest;
 the two digest encodings are intentionally distinct.
 
 CI runs four independent Python-only jobs, each reading 11 fixed roots with
-at most four child processes at once. Artifacts include the tested Git SHA
-and run attempt. An aggregate job requires shards 0–3 exactly once, their
+at most four child processes at once. On pull requests these jobs check out
+the exact PR source head; on main pushes they check out the push SHA. Artifact
+names and the verifier bind that same source SHA and run attempt. An aggregate
+job requires shards 0–3 exactly once, their
 ordered authentic root identities and artifact hashes, all 44 prepared and
 committed cuts, the predecessor ordered output hash and exact measured cap
-maxima. A local Python 3.12 benchmark of 11 roots took 175 seconds; a full
-local four-shard run took 193, 186, 194 and 187 seconds per shard. No .NET
+maxima. A local Python 3.12 four-shard run with one new interpreter per cut
+took 211, 228, 210 and 207 seconds per 11-root shard, respectively. No .NET
 restore/build runs inside these 15-minute proof jobs. The focused tests
 physically alter retained Control, ancestry, World and paid input files and
 require fail-closed readback. They also reject missing or duplicate shards.
