@@ -80,6 +80,61 @@
         This phase has no connected browser continuation. No order can be issued here.
       </p>
     }
+    @if (actionFlow.state(); as actionState) {
+      @if (actionState.phase !== 'disabled' && actionState.phase !== 'ready') {
+        <section
+          class="connected-receipt"
+          role="status"
+          aria-live="polite"
+          [attr.inert]="mapFullscreen() ? '' : null"
+        >
+          @switch (actionState.phase) {
+            @case ('submitting') {
+              <p>{{ actionState.actionLabel }} · Sending order. Awaiting receipt.</p>
+            }
+            @case ('pending') {
+              <p>
+                {{ actionState.actionLabel }} · Pending adjudication. Read receipt for latest
+                status.
+              </p>
+            }
+            @case ('uncertain') {
+              <p>
+                {{ actionState.actionLabel }} · Reply lost. Outcome unknown. Read receipt before any
+                new order.
+              </p>
+            }
+            @case ('accepted') {
+              <p>
+                {{ actionState.actionLabel }} · Accepted.
+                {{
+                  actionState.refreshPending
+                    ? 'Refreshing authoritative view.'
+                    : 'Authoritative view refreshed.'
+                }}
+              </p>
+            }
+            @case ('rejected') {
+              <p>{{ actionState.actionLabel }} · Rejected: {{ actionState.reason }}.</p>
+            }
+          }
+          @if (
+            actionState.phase === 'pending' ||
+            actionState.phase === 'uncertain' ||
+            (actionState.phase === 'accepted' && actionState.refreshPending)
+          ) {
+            <button type="button" (click)="readActionReceipt()">
+              {{ actionState.phase === 'accepted' ? 'Retry view refresh' : 'Read receipt' }}
+            </button>
+          }
+          @if (actionState.phase === 'accepted' && !actionState.refreshPending) {
+            <button type="button" (click)="actionFlow.acknowledgeAccepted()">
+              Continue with updated actions
+            </button>
+          }
+        </section>
+      }
+    }
     <div class="workspace-grid connected-grid">
       <aside
         class="roster"
@@ -204,11 +259,18 @@
           </dl>
           <h3>Available action labels</h3>
           @for (action of selectedActions(); track action.actionId) {
-            <p class="connected-action-label">{{ action.label }}</p>
+            <button
+              type="button"
+              class="connected-action-label"
+              [disabled]="!actionFlow.canSubmit || busy()"
+              (click)="requestAction(action)"
+            >
+              {{ action.label }}
+            </button>
           } @empty {
             <p>No formation action labels in this view.</p>
           }
-          <p>Orders unavailable in connected read mode.</p>
+          <p>Orders unavailable in connected read mode. Action submission awaits admission.</p>
         } @else {
           <p>Select an own formation.</p>
         }
@@ -264,7 +326,14 @@
         @if (generalActions().length) {
           <h3>Available decision labels</h3>
           @for (action of generalActions(); track action.actionId) {
-            <p class="connected-action-label">{{ action.label }}</p>
+            <button
+              type="button"
+              class="connected-action-label"
+              [disabled]="!actionFlow.canSubmit || busy()"
+              (click)="requestAction(action)"
+            >
+              {{ action.label }}
+            </button>
           }
         }
       </fa-panel>

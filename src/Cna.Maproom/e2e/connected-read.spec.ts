@@ -694,7 +694,7 @@ for (const seat of ['axis', 'commonwealth'] as const) {
       .filter({ hasText: `${own} truck` })
       .click();
     await expect(page.locator('.connected-inspector')).toContainText('Move truck');
-    await expect(page.getByRole('button', { name: 'Move truck' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Move truck' })).toBeDisabled();
     const scene = page.locator('.connected-map .map-scene');
     const fitted = await scene.getAttribute('style');
     const locate = page.getByRole('button', { name: 'Locate on map' });

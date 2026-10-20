@@ -290,6 +290,12 @@ h2 {
   border-left: 4px solid var(--color-error);
   background: var(--color-panel);
 }
+.connected-receipt {
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-panel);
+}
 .connected-points {
   position: absolute;
   inset: 0;
@@ -361,9 +367,16 @@ h2 {
   margin: 0;
 }
 .connected-action-label {
+  display: block;
+  width: 100%;
   padding: var(--space-xs) var(--space-sm);
+  margin: var(--space-xs) 0;
   border-left: 2px solid var(--color-accent);
   background: var(--color-paper);
+  text-align: left;
+}
+.connected-action-label:disabled {
+  cursor: not-allowed;
 }
 @media (max-width: 75rem) {
   .connected-grid {
