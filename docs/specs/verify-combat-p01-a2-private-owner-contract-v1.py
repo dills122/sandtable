@@ -29,7 +29,9 @@ CAPS = {
     "ownerInput": 1024, "journalRecord": 2048,
     "ownerReceipt": 1024, "acceptedTransitionPayload": 65536,
     "retryBinding": 1024,
+    "coreInputV1": 8192, "coreEventV1": 8192, "coreReceiptV1": 8192,
 }
+CORE_KINDS = {"input": "coreInputV1", "event": "coreEventV1", "receipt": "coreReceiptV1"}
 
 
 def no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -133,9 +135,20 @@ def digest(kind: str, raw: bytes) -> str:
     return "sha256:" + hashlib.sha256(domain + b"\0" + raw).hexdigest()
 
 
-def core_digest(kind: str, hex_bytes: str) -> str:
-    if kind not in ("input", "event", "receipt"):
+def decode_core(schema: dict, kind: str, hex_bytes: str) -> dict:
+    if kind not in CORE_KINDS:
         raise ValueError("unknown Core byte kind")
+    if not re.fullmatch(r"(?:[0-9a-f]{2})+", hex_bytes) or len(hex_bytes) > 16384:
+        raise ValueError("Core byte encoding/cap")
+    raw = bytes.fromhex(hex_bytes)
+    value = parse(raw)
+    if canonical(schema, CORE_KINDS[kind], value) != raw:
+        raise ValueError("Core bytes not typed canonical v1")
+    return value
+
+
+def core_digest(schema: dict, kind: str, hex_bytes: str) -> str:
+    decode_core(schema, kind, hex_bytes)
     domain = f"sandtable.combat.p01.a2.core-{kind}.v1".encode("ascii")
     return "sha256:" + hashlib.sha256(domain + b"\0" + bytes.fromhex(hex_bytes)).hexdigest()
 
@@ -152,6 +165,26 @@ def check_clock(grant: dict, actor: dict, opening_payload: dict) -> None:
         raise ValueError("grant clock window")
     if now >= utc(opening_payload["deadlineAtUtc"]):
         raise ValueError("owner opening deadline passed")
+
+
+def check_acceptance_clock(grant: dict, actor: dict, opening_payload: dict, record: dict, accepted_payload: dict) -> None:
+    if actor["clockAvailable"] is not True:
+        raise ValueError("trusted acceptance clock unavailable")
+    if record["acceptanceClockSource"] != "local-store-transaction-utc-v1":
+        raise ValueError("untrusted acceptance clock source")
+    if (
+        accepted_payload["acceptanceClockSource"] != record["acceptanceClockSource"]
+        or accepted_payload["acceptedAtUnixMilliseconds"] != record["acceptedAtUnixMilliseconds"]
+    ):
+        raise ValueError("acceptance timestamp readback mismatch")
+    accepted = record["acceptedAtUnixMilliseconds"]
+    to_ms = lambda value: int(utc(value).timestamp()) * 1000
+    if accepted < to_ms(actor["clockAtUtc"]):
+        raise ValueError("acceptance precedes trusted preflight")
+    if not to_ms(grant["issuedAtUtc"]) <= accepted < to_ms(grant["expiresAtUtc"]):
+        raise ValueError("acceptance outside grant window")
+    if accepted >= to_ms(opening_payload["deadlineAtUtc"]):
+        raise ValueError("acceptance past persisted opening deadline")
 
 
 def check_terminal_history(records: list[dict]) -> None:
@@ -214,6 +247,8 @@ def check_case(schema: dict, case: dict) -> None:
         raise ValueError("opening metadata changed game state")
     if any(opening_record[field] is not None for field in ("requestDigest", "inputDigest", "eventDigest", "receiptDigest")):
         raise ValueError("opening metadata contains game input/event")
+    if any(row["acceptedAtUnixMilliseconds"] is not None or row["acceptanceClockSource"] is not None for row in (checkpoint, opening_record)):
+        raise ValueError("nonaccepted record carries acceptance clock")
 
     bind, grant, actor, opening, payload, command, record, receipt, accepted_payload, retry = values.values()
     check_terminal_history([checkpoint, opening_record, record])
@@ -259,6 +294,7 @@ def check_case(schema: dict, case: dict) -> None:
     if actor["grantGeneration"] != grant["grantGeneration"]:
         raise ValueError("grant generation mismatch")
     check_clock(grant, actor, payload)
+    check_acceptance_clock(grant, actor, payload, record, accepted_payload)
     if opening["context"]["campaignId"] != campaign:
         raise ValueError("visible campaign mismatch")
     if opening["decisionRef"] != command["decisionRef"] or opening["decisionRef"] != receipt["decisionRef"]:
@@ -288,11 +324,45 @@ def check_case(schema: dict, case: dict) -> None:
         raise ValueError("retry receipt digest mismatch")
     if record["requestDigest"] != expected["ownerInput"]["digest"]:
         raise ValueError("record request digest mismatch")
-    if record["inputDigest"] != core_digest("input", accepted_payload["coreInputHex"]):
+    core_input = decode_core(schema, "input", accepted_payload["coreInputHex"])
+    core_event = decode_core(schema, "event", accepted_payload["coreEventHex"])
+    core_receipt = decode_core(schema, "receipt", accepted_payload["coreReceiptHex"])
+    private_candidate = next((row["privateCandidateId"] for row in payload["candidateBindings"] if row["ownerCandidateRef"] == command["candidateRef"]), None)
+    if core_input != {
+        "contractVersion": 1,
+        "kind": "select-close-assault" if command["choiceKind"] == "select" else "finish-without-attack",
+        "campaignId": campaign, "decisionRef": command["decisionRef"], "requestId": command["requestId"],
+        "openingRecordHash": prior_records[1]["digest"], "sourceCutHash": payload["sourceCutHash"],
+        "actorSide": grant["side"], "privateCandidateId": private_candidate,
+        "priorStateVersion": record["priorStateVersion"], "priorPrefix": record["priorPrefix"],
+        "acceptedAtUnixMilliseconds": record["acceptedAtUnixMilliseconds"],
+    }:
+        raise ValueError("Core input typed owner binding mismatch")
+    if (
+        core_event["campaignId"] != campaign or core_event["requestId"] != command["requestId"]
+        or core_event["inputDigest"] != record["inputDigest"]
+        or core_event["priorStateVersion"] != record["priorStateVersion"]
+        or core_event["priorPrefix"] != record["priorPrefix"]
+        or core_event["resultStateVersion"] != record["resultStateVersion"]
+        or core_event["resultPrefix"] != record["resultPrefix"]
+        or core_event["outcome"] != ("selected" if command["choiceKind"] == "select" else "no-selection")
+        or core_event["privateCandidateId"] != private_candidate
+        or core_event["acceptedAtUnixMilliseconds"] != record["acceptedAtUnixMilliseconds"]
+    ):
+        raise ValueError("Core event typed transition mismatch")
+    if (
+        core_receipt["campaignId"] != campaign or core_receipt["requestId"] != command["requestId"]
+        or core_receipt["inputDigest"] != record["inputDigest"]
+        or core_receipt["eventDigest"] != record["eventDigest"]
+        or core_receipt["resultStateVersion"] != record["resultStateVersion"]
+        or core_receipt["resultPrefix"] != record["resultPrefix"]
+    ):
+        raise ValueError("Core receipt typed transition mismatch")
+    if record["inputDigest"] != core_digest(schema, "input", accepted_payload["coreInputHex"]):
         raise ValueError("record Core input digest mismatch")
-    if record["eventDigest"] != core_digest("event", accepted_payload["coreEventHex"]):
+    if record["eventDigest"] != core_digest(schema, "event", accepted_payload["coreEventHex"]):
         raise ValueError("record Core event digest mismatch")
-    if record["receiptDigest"] != core_digest("receipt", accepted_payload["coreReceiptHex"]):
+    if record["receiptDigest"] != core_digest(schema, "receipt", accepted_payload["coreReceiptHex"]):
         raise ValueError("record Core receipt digest mismatch")
     if record["privatePayloadDigest"] != expected["acceptedTransitionPayload"]["digest"]:
         raise ValueError("record accepted payload digest mismatch")
@@ -481,14 +551,121 @@ def check_negatives(schema: dict, case: dict) -> None:
             raise AssertionError(f"deadline negative failed for wrong reason: {exc}") from exc
     else:
         raise AssertionError("refrozen expired opening accepted")
+    late = copy.deepcopy(case)
+    late_values = late["values"]
+    late_ms = int(utc(late_values["privateOpeningPayload"]["deadlineAtUtc"]).timestamp()) * 1000
+    late_values["journalRecord"]["acceptedAtUnixMilliseconds"] = late_ms
+    late_values["acceptedTransitionPayload"]["acceptedAtUnixMilliseconds"] = late_ms
+    late_values["journalRecord"]["privatePayloadDigest"] = digest(
+        "acceptedTransitionPayload", canonical(schema, "acceptedTransitionPayload", late_values["acceptedTransitionPayload"])
+    )
+    refreeze(late)
+    try:
+        check_case(schema, late)
+    except ValueError as exc:
+        if "acceptance past persisted opening deadline" not in str(exc):
+            raise AssertionError(f"committed-time negative failed for wrong reason: {exc}") from exc
+    else:
+        raise AssertionError("refrozen late committed acceptance accepted")
+    late = copy.deepcopy(case)
+    late_values = late["values"]
+    late_ms = int(utc(late_values["seatGrant"]["expiresAtUtc"]).timestamp()) * 1000
+    late_values["journalRecord"]["acceptedAtUnixMilliseconds"] = late_ms
+    late_values["acceptedTransitionPayload"]["acceptedAtUnixMilliseconds"] = late_ms
+    late_values["journalRecord"]["privatePayloadDigest"] = digest(
+        "acceptedTransitionPayload", canonical(schema, "acceptedTransitionPayload", late_values["acceptedTransitionPayload"])
+    )
+    refreeze(late)
+    try:
+        check_case(schema, late)
+    except ValueError as exc:
+        if "acceptance outside grant window" not in str(exc):
+            raise AssertionError(f"grant-expiry negative failed for wrong reason: {exc}") from exc
+    else:
+        raise AssertionError("refrozen expired-grant acceptance accepted")
+    spoofed_source = copy.deepcopy(case["values"]["journalRecord"])
+    spoofed_source["acceptanceClockSource"] = "owner-supplied-clock"
+    try:
+        canonical(schema, "journalRecord", spoofed_source)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("caller acceptance-clock source accepted")
+    before_preflight = copy.deepcopy(case)
+    before_values = before_preflight["values"]
+    before_ms = int(utc(before_values["actorFacts"]["clockAtUtc"]).timestamp()) * 1000 - 1
+    before_values["journalRecord"]["acceptedAtUnixMilliseconds"] = before_ms
+    before_values["acceptedTransitionPayload"]["acceptedAtUnixMilliseconds"] = before_ms
+    before_values["journalRecord"]["privatePayloadDigest"] = digest(
+        "acceptedTransitionPayload", canonical(schema, "acceptedTransitionPayload", before_values["acceptedTransitionPayload"])
+    )
+    refreeze(before_preflight)
+    try:
+        check_case(schema, before_preflight)
+    except ValueError as exc:
+        if "acceptance precedes trusted preflight" not in str(exc):
+            raise AssertionError(f"backdated acceptance failed for wrong reason: {exc}") from exc
+    else:
+        raise AssertionError("backdated acceptance accepted")
     accepted_payload = copy.deepcopy(case["values"]["acceptedTransitionPayload"])
     accepted_payload["coreInputHex"] = "00"
-    if core_digest("input", accepted_payload["coreInputHex"]) == accepted["inputDigest"]:
-        raise AssertionError("changed Core input retained digest")
+    try:
+        decode_core(schema, "input", accepted_payload["coreInputHex"])
+    except (ValueError, UnicodeError):
+        pass
+    else:
+        raise AssertionError("arbitrary Core input bytes accepted")
     accepted_payload = copy.deepcopy(case["values"]["acceptedTransitionPayload"])
-    accepted_payload["coreEventHex"] = "00"
-    if core_digest("event", accepted_payload["coreEventHex"]) == accepted["eventDigest"]:
-        raise AssertionError("changed Core event retained digest")
+    accepted_payload["coreEventHex"] = b'{"kind":"selected-assault-event"}'.hex()
+    try:
+        decode_core(schema, "event", accepted_payload["coreEventHex"])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("kind-only Core event bytes accepted")
+    for kind, field in (("input", "coreInputHex"), ("event", "coreEventHex"), ("receipt", "coreReceiptHex")):
+        changed = copy.deepcopy(case["values"]["acceptedTransitionPayload"])
+        core_value = decode_core(schema, kind, changed[field])
+        core_value["contractVersion"] = 2
+        changed[field] = json.dumps(core_value, ensure_ascii=True, separators=(",", ":")).encode("ascii").hex()
+        try:
+            decode_core(schema, kind, changed[field])
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"unknown Core {kind} version accepted")
+        reordered = dict(list(core_value.items())[1:] + list(core_value.items())[:1])
+        reordered["contractVersion"] = 1
+        changed[field] = json.dumps(reordered, ensure_ascii=True, separators=(",", ":")).encode("ascii").hex()
+        try:
+            decode_core(schema, kind, changed[field])
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"reordered Core {kind} bytes accepted")
+    wrong_effect = copy.deepcopy(case)
+    wrong_values = wrong_effect["values"]
+    wrong_payload = wrong_values["acceptedTransitionPayload"]
+    wrong_event = decode_core(schema, "event", wrong_payload["coreEventHex"])
+    wrong_event["privateCandidateId"] = "p01a." + "0" * 64
+    wrong_payload["coreEventHex"] = canonical(schema, "coreEventV1", wrong_event).hex()
+    wrong_record = wrong_values["journalRecord"]
+    wrong_record["eventDigest"] = core_digest(schema, "event", wrong_payload["coreEventHex"])
+    wrong_receipt = decode_core(schema, "receipt", wrong_payload["coreReceiptHex"])
+    wrong_receipt["eventDigest"] = wrong_record["eventDigest"]
+    wrong_payload["coreReceiptHex"] = canonical(schema, "coreReceiptV1", wrong_receipt).hex()
+    wrong_record["receiptDigest"] = core_digest(schema, "receipt", wrong_payload["coreReceiptHex"])
+    wrong_record["privatePayloadDigest"] = digest(
+        "acceptedTransitionPayload", canonical(schema, "acceptedTransitionPayload", wrong_payload)
+    )
+    refreeze(wrong_effect)
+    try:
+        check_case(schema, wrong_effect)
+    except ValueError as exc:
+        if "Core event typed transition mismatch" not in str(exc):
+            raise AssertionError(f"rebound wrong effect failed for wrong reason: {exc}") from exc
+    else:
+        raise AssertionError("rebound wrong Core effect accepted")
     accepted_payload = copy.deepcopy(case["values"]["acceptedTransitionPayload"])
     accepted_payload["ownerInput"]["candidateRef"] = "p01-owner-v1." + "0" * 64
     changed_request = digest(

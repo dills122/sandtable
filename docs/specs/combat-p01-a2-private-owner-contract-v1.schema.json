@@ -12,6 +12,7 @@
     "journalKey": { "type": "string", "pattern": "^p01j\\.[0-9a-f]{64}$", "maxLength": 69 },
     "requestId": { "type": "string", "pattern": "^req\\.[0-9a-f]{64}$", "maxLength": 68 },
     "coreBytesHex": { "type": "string", "pattern": "^(?:[0-9a-f]{2})+$", "minLength": 2, "maxLength": 16384 },
+    "privateCandidateId": { "type": "string", "pattern": "^p01a\\.[0-9a-f]{64}$", "maxLength": 69 },
     "utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", "maxLength": 20 },
     "counter": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
     "side": { "enum": ["axis", "commonwealth"] },
@@ -136,17 +137,61 @@
         "candidateRef": { "anyOf": [{ "$ref": "#/$defs/candidateRef" }, { "type": "null" }] }
       }
     },
+    "coreInputV1": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "kind", "campaignId", "decisionRef", "requestId", "openingRecordHash", "sourceCutHash", "actorSide", "privateCandidateId", "priorStateVersion", "priorPrefix", "acceptedAtUnixMilliseconds"],
+      "required": ["contractVersion", "kind", "campaignId", "decisionRef", "requestId", "openingRecordHash", "sourceCutHash", "actorSide", "privateCandidateId", "priorStateVersion", "priorPrefix", "acceptedAtUnixMilliseconds"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "kind": { "enum": ["select-close-assault", "finish-without-attack"] },
+        "campaignId": { "$ref": "#/$defs/campaignId" }, "decisionRef": { "$ref": "#/$defs/publicRef" },
+        "requestId": { "$ref": "#/$defs/requestId" },
+        "openingRecordHash": { "$ref": "#/$defs/hash" }, "sourceCutHash": { "$ref": "#/$defs/hash" },
+        "actorSide": { "$ref": "#/$defs/side" },
+        "privateCandidateId": { "anyOf": [{ "$ref": "#/$defs/privateCandidateId" }, { "type": "null" }] },
+        "priorStateVersion": { "$ref": "#/$defs/counter" }, "priorPrefix": { "$ref": "#/$defs/hash" },
+        "acceptedAtUnixMilliseconds": { "$ref": "#/$defs/counter" }
+      }
+    },
+    "coreEventV1": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "kind", "campaignId", "requestId", "inputDigest", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "outcome", "privateCandidateId", "acceptedAtUnixMilliseconds", "controlHash", "worldHash", "randomHash"],
+      "required": ["contractVersion", "kind", "campaignId", "requestId", "inputDigest", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "outcome", "privateCandidateId", "acceptedAtUnixMilliseconds", "controlHash", "worldHash", "randomHash"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "kind": { "const": "p01-selection-closed" },
+        "campaignId": { "$ref": "#/$defs/campaignId" }, "requestId": { "$ref": "#/$defs/requestId" },
+        "inputDigest": { "$ref": "#/$defs/hash" },
+        "priorStateVersion": { "$ref": "#/$defs/counter" }, "priorPrefix": { "$ref": "#/$defs/hash" },
+        "resultStateVersion": { "$ref": "#/$defs/counter" }, "resultPrefix": { "$ref": "#/$defs/hash" },
+        "outcome": { "enum": ["selected", "no-selection"] },
+        "privateCandidateId": { "anyOf": [{ "$ref": "#/$defs/privateCandidateId" }, { "type": "null" }] },
+        "acceptedAtUnixMilliseconds": { "$ref": "#/$defs/counter" },
+        "controlHash": { "$ref": "#/$defs/hash" }, "worldHash": { "$ref": "#/$defs/hash" },
+        "randomHash": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "coreReceiptV1": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "kind", "campaignId", "requestId", "inputDigest", "eventDigest", "resultStateVersion", "resultPrefix", "receiptId"],
+      "required": ["contractVersion", "kind", "campaignId", "requestId", "inputDigest", "eventDigest", "resultStateVersion", "resultPrefix", "receiptId"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "kind": { "const": "p01-selection-accepted" },
+        "campaignId": { "$ref": "#/$defs/campaignId" }, "requestId": { "$ref": "#/$defs/requestId" },
+        "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" },
+        "resultStateVersion": { "$ref": "#/$defs/counter" }, "resultPrefix": { "$ref": "#/$defs/hash" },
+        "receiptId": { "type": "string", "pattern": "^asc\\.[0-9a-f]{64}$", "maxLength": 68 }
+      }
+    },
     "journalRecord": {
       "type": "object", "additionalProperties": false,
-      "x-field-order": ["contractVersion", "campaignId", "sequence", "kind", "priorRecordHash", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "seatAuthorityId", "seatEpoch", "openingRevision", "requestDigest", "inputDigest", "eventDigest", "receiptDigest", "privatePayloadDigest"],
-      "required": ["contractVersion", "campaignId", "sequence", "kind", "priorRecordHash", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "seatAuthorityId", "seatEpoch", "openingRevision", "requestDigest", "inputDigest", "eventDigest", "receiptDigest", "privatePayloadDigest"],
+      "x-field-order": ["contractVersion", "campaignId", "sequence", "kind", "priorRecordHash", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "seatAuthorityId", "seatEpoch", "openingRevision", "requestDigest", "inputDigest", "eventDigest", "receiptDigest", "privatePayloadDigest", "acceptanceClockSource", "acceptedAtUnixMilliseconds"],
+      "required": ["contractVersion", "campaignId", "sequence", "kind", "priorRecordHash", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "seatAuthorityId", "seatEpoch", "openingRevision", "requestDigest", "inputDigest", "eventDigest", "receiptDigest", "privatePayloadDigest", "acceptanceClockSource", "acceptedAtUnixMilliseconds"],
       "allOf": [
         { "if": { "properties": { "kind": { "const": "r03-import-checkpoint" } } },
-          "then": { "properties": { "sequence": { "const": 0 }, "seatAuthorityId": { "type": "null" }, "seatEpoch": { "type": "null" }, "openingRevision": { "type": "null" }, "requestDigest": { "type": "null" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } },
+          "then": { "properties": { "sequence": { "const": 0 }, "seatAuthorityId": { "type": "null" }, "seatEpoch": { "type": "null" }, "openingRevision": { "type": "null" }, "requestDigest": { "type": "null" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" }, "acceptanceClockSource": { "type": "null" }, "acceptedAtUnixMilliseconds": { "type": "null" } } } },
         { "if": { "properties": { "kind": { "const": "owner-opening" } } },
-          "then": { "properties": { "sequence": { "const": 1 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "const": 1 }, "requestDigest": { "type": "null" }, "inputDigest": { "type": "null" }, "eventDigest": { "type": "null" }, "receiptDigest": { "type": "null" } } } },
+          "then": { "properties": { "sequence": { "const": 1 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "const": 1 }, "requestDigest": { "type": "null" }, "inputDigest": { "type": "null" }, "eventDigest": { "type": "null" }, "receiptDigest": { "type": "null" }, "acceptanceClockSource": { "type": "null" }, "acceptedAtUnixMilliseconds": { "type": "null" } } } },
         { "if": { "properties": { "kind": { "const": "owner-accepted-input" } } },
-          "then": { "properties": { "sequence": { "const": 2 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "const": 1 }, "requestDigest": { "$ref": "#/$defs/hash" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } }
+          "then": { "properties": { "sequence": { "const": 2 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "const": 1 }, "requestDigest": { "$ref": "#/$defs/hash" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" }, "acceptanceClockSource": { "const": "local-store-transaction-utc-v1" }, "acceptedAtUnixMilliseconds": { "$ref": "#/$defs/counter" } } } }
       ],
       "properties": {
         "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
@@ -161,7 +206,9 @@
         "inputDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
         "eventDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
         "receiptDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
-        "privatePayloadDigest": { "$ref": "#/$defs/hash" }
+        "privatePayloadDigest": { "$ref": "#/$defs/hash" },
+        "acceptanceClockSource": { "anyOf": [{ "const": "local-store-transaction-utc-v1" }, { "type": "null" }] },
+        "acceptedAtUnixMilliseconds": { "anyOf": [{ "$ref": "#/$defs/counter" }, { "type": "null" }] }
       }
     },
     "ownerReceipt": {
@@ -188,8 +235,8 @@
     },
     "acceptedTransitionPayload": {
       "type": "object", "additionalProperties": false,
-      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
-      "required": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
+      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "acceptanceClockSource", "acceptedAtUnixMilliseconds", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
+      "required": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "acceptanceClockSource", "acceptedAtUnixMilliseconds", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
       "properties": {
         "contractVersion": { "const": 1 },
         "campaignId": { "$ref": "#/$defs/campaignId" },
@@ -197,6 +244,8 @@
         "seatEpoch": { "$ref": "#/$defs/counter" },
         "openingRecordHash": { "$ref": "#/$defs/hash" },
         "privateOpeningPayloadHash": { "$ref": "#/$defs/hash" },
+        "acceptanceClockSource": { "const": "local-store-transaction-utc-v1" },
+        "acceptedAtUnixMilliseconds": { "$ref": "#/$defs/counter" },
         "ownerInput": { "$ref": "#/$defs/ownerInput" },
         "coreInputHex": { "$ref": "#/$defs/coreBytesHex" },
         "coreEventHex": { "$ref": "#/$defs/coreBytesHex" },
