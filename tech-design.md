@@ -837,7 +837,11 @@ The [P01 ordinal-two Combat Position design](docs/specs/combat-actual-moved-repe
 starts from that exact R03 suffix and requires CreationRequest plus all eleven independent input
 ledgers before private assessment. Its 44 candidate and 256 empty shapes remain provisional; all
 assessments are unsupported and zero are admitted. The 44-row classification is not a proof of 44
-supported transitions. The [selected-assault successor](docs/specs/combat-p01-selected-assault-v1.md)
+supported transitions. The [disposable Core opening-stage proof](docs/specs/p01-core-opening-journal-v1.md)
+derives only the pinned root's Created11 and first System initiative record.
+It is not A1's R03 validation checkpoint, A2's sequence-zero owner journal
+predecessor/head, or an authority input to either path. The
+[selected-assault successor](docs/specs/combat-p01-selected-assault-v1.md)
 uses two representative positive roots, one per acting side, for bounded private transitions; its
 300-root audit classifies candidate shapes. The [Force Assignment successor](docs/specs/combat-p01-force-assignment-v1.md)
 continues those bounded histories to Prepared or cancellation before any debit. Separately, the

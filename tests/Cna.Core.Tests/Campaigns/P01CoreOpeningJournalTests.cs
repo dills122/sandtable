@@ -11,6 +11,8 @@ public sealed class P01CoreOpeningJournalTests
 {
     private const string Fixture = "docs/specs/fixtures/p01-r03-a1-r012-c01-import-v1.json.gz";
     private const string FixtureHash = "5019978589938979d7010416f6e3424e07615532475f5633a60db66414db14aa";
+    private const string ZeroRecordDigest = "fe42392dceb566faf641e7e5de0b32f482c3def94f840daceb719ee9f28a6f6c";
+    private const string OneRecordDigest = "ce7795a0993e5bb0fb35793a375cecc5dd8e9d8cada97d62fd66237b825d763a";
 
     [Fact]
     public void PinnedCreationIssuesOneSystemInitiativeAndReplaysIdentically()
@@ -18,11 +20,13 @@ public sealed class P01CoreOpeningJournalTests
         var import = AuthenticImport();
         var request = CampaignCombatCreationRequestCodec.Deserialize(import.CreationRequest, Context());
         var initial = P01CoreOpeningJournalV1.Create(request);
+        Assert.Equal(ZeroRecordDigest, Digest(initial));
         var initialState = P01CoreOpeningJournalV1.Read(initial, request);
         Assert.Equal(1, initialState.StateVersion);
         Assert.Empty(initialState.Events);
 
         var advanced = P01CoreOpeningJournalV1.AppendSystemInitiative(initial, request);
+        Assert.Equal(OneRecordDigest, Digest(advanced));
         Assert.Equal(advanced, P01CoreOpeningJournalV1.AppendSystemInitiative(advanced, request));
         var replayed = P01CoreOpeningJournalV1.Read(advanced, request);
         Assert.Equal(2, replayed.StateVersion);
@@ -55,6 +59,10 @@ public sealed class P01CoreOpeningJournalTests
         var request = CampaignCombatCreationRequestCodec.Deserialize(import.CreationRequest, Context());
         var initial = P01CoreOpeningJournalV1.Create(request);
         var advanced = P01CoreOpeningJournalV1.AppendSystemInitiative(initial, request);
+        var changedInitial = initial.ToArray();
+        changedInitial[^2] = (byte)'x';
+        Assert.NotEqual(ZeroRecordDigest, Digest(changedInitial));
+        Assert.ThrowsAny<JsonException>(() => P01CoreOpeningJournalV1.Read(changedInitial, request));
         var changedRequest = CampaignCombatCreationRequest.Create(request.CampaignId, 2, request.Context);
         Assert.Throws<JsonException>(() => P01CoreOpeningJournalV1.Read(initial, changedRequest));
         Assert.Throws<JsonException>(() => P01CoreOpeningJournalV1.AppendSystemInitiative(advanced, changedRequest));
@@ -74,7 +82,9 @@ public sealed class P01CoreOpeningJournalTests
         })
         {
             Assert.NotEqual(journal, mutation);
-            Assert.Throws<JsonException>(() => P01CoreOpeningJournalV1.Read(Encoding.UTF8.GetBytes(mutation), request));
+            var changed = Encoding.UTF8.GetBytes(mutation);
+            Assert.NotEqual(OneRecordDigest, Digest(changed));
+            Assert.Throws<JsonException>(() => P01CoreOpeningJournalV1.Read(changed, request));
         }
     }
 
@@ -101,4 +111,6 @@ public sealed class P01CoreOpeningJournalTests
         }
         return source;
     }
+
+    private static string Digest(ReadOnlySpan<byte> bytes) => Convert.ToHexStringLower(SHA256.HashData(bytes));
 }
