@@ -55,8 +55,11 @@ and submit through the selected host path.
    assigns a private campaign journal key **from the authenticated
    CreationRequest campaign ID**; a caller cannot choose a different key.
 2. A trusted creation coordinator commits a campaign-scoped seat-grant record
-   before releasing any grant. The record binds campaign ID, side, grant
-   generation, issuer, expiry and revocation. The grant secret is never logged
+   before releasing any grant. The record binds campaign ID, side, a stable
+   private `seatAuthorityId`, grant generation, issuer, expiry and a monotonic
+   revocation epoch. The authority ID persists across an explicitly authorized
+   renewal for the *same* owner; a transfer to another owner gets a new ID.
+   It is not the process-local session generation. The grant secret is never logged
    or stored in plaintext. A real owner redeems it in the local proof client;
    the host records redemption and issues a new session generation. A1
    checkpoint bytes or a browser-selected side are never seat credentials.
@@ -65,32 +68,49 @@ and submit through the selected host path.
    authenticator with equivalent recovery and revocation semantics.
 3. `ReadOwnerOpeningV1` reauthenticates the session, obtains a trusted clock
    sample, reads the fenced journal head, reconstructs Core state, and asks
-   Core for an **owner-visible** projection from that exact committed cut.
-   Core must authenticate public rules/config/policy refs, cycle codec,
-   participant ref and visible hex against that cut before it can form the
-   approved `selection` decision and `close-assault-full` candidate. If the
-   source-legal action set or equal-visible privacy condition is unproved,
-   return a generic unavailable result and retain no offer. The private
-   candidate mapping stays in trusted storage; neither `p01.` nor hidden
-   Source/World/dependency bytes leave it.
+   Core for one immutable **owner-visible observation cut**. That same cut
+   supplies the approved own `participantRef`, visible hex `locationId` used
+   to derive `targetRef`, public rules/config/policy refs, position and cycle;
+   Core verifies all of them and legal candidate membership against the
+   frozen combat base before deriving the `selection` decision and
+   `close-assault-full` alias. It cannot assemble the tuple from separate
+   reads or from client-supplied refs. If source legality, ref provenance or
+   equal-visible privacy is unproved, return generic unavailable and append
+   nothing. Otherwise conditionally append an `owner-opening` **authority
+   metadata** record under the same durable head and seat fence. This record
+   retains exact owner-visible opening bytes, revision, decision/alias mapping,
+   frozen combat base, deadline, seat authority and cut/source bindings. It
+   advances journal sequence but has no game event, CP/ammo debit, RNG draw,
+   or change to game state version/prefix. Read back and replay that exact
+   committed record **before** returning the opening to the owner. A retry
+   finds the existing opening and returns byte-identical visible bytes;
+   competing derivations cannot each publish an offer. The private mapping
+   stays in trusted storage; neither `p01.` nor hidden Source/World/dependency
+   bytes leave it. Opening kind, empty game-event representation and caps
+   require the separate A2 schema approval described below.
 4. `SubmitOwnerInputV1` takes only the offered owner decision ref, candidate
    ref or explicit decline, opening revision and request ID. The host
    authenticates the current seat and CSRF/session
    generation **before** any alias lookup. It supplies Core with seat, side,
    campaign ID, grant generation, trusted clock sample and journal fence as
-   host facts, never as client-selected fields. Core checks offer membership,
-   frozen combat base, permitted bookkeeping suffix, deadline, revision and
+   host facts, never as client-selected fields. Core reads the persisted
+   opening and checks its exact mapping, frozen combat base, permitted
+   bookkeeping suffix, deadline, revision and
    accepted policy; it emits a canonical accepted input/event/receipt or the
    approved generic rejection. Only Chronicle can commit an accepted result.
    A timeout or unavailable clock may take an approved System cancellation
    path; it cannot invent an owner decline.
 5. After a successful conditional append and durable Archives publication,
    the host returns the retained owner-safe receipt and next visible cut. A
-   lost response is recovered by request ID plus authenticated seat and exact
-   input bytes. No response is called accepted until readback proves the
-   committed record. Revocation raced with submission is ordered by a shared
-   admission fence: a submission admitted before revocation may finish its
-   commit, while revocation admitted first forbids it.
+   lost response is recovered by durable `(campaignId, seatAuthorityId,
+   requestId)` and exact canonical input bytes after fresh authentication for
+   that same authority ID. Session generation may change on restart and is
+   never the dedupe key. No response is called accepted until readback proves
+   the committed record. Revocation and append compare-and-swap the **same
+   durable seat epoch/fence**: append first may commit and then revocation
+   advances the epoch; revocation first invalidates the old epoch and forbids
+   the append. A process-local semaphore cannot establish this order across
+   host activations.
 
 This path tests genuine seat-bound owner choice, not human identity beyond the
 campaign grant. The owner must decide whether that grant authority is
@@ -100,20 +120,21 @@ required, stop A2 and specify that authority before implementation.
 ## Closed contract inventory to freeze before implementation
 
 These are proposed *fields*, not implemented schemas or approved wire bytes.
-Freeze field order, canonical encoding, size limits, hash domains, unknown
-field handling and rejection classes in versioned schemas and golden vectors
-before writing consumers. Use exact canonical bytes rather than trusting
+Freeze and obtain exact owner approval for field order, canonical encoding,
+size limits, hash domains, unknown-field handling and rejection classes in
+versioned schemas and golden vectors **before implementing A2**. This packet
+does not approve those bytes or caps. Use exact canonical bytes rather than trusting
 supplier hashes. The approved owner-visible codec remains authoritative.
 
 | Contract | Required fields and exclusion |
 | --- | --- |
-| `P01PrivateSeatGrantV1` | Version, authenticated campaign ID, side, issuer, grant generation, issued/expiry/revoked times and digest of a single-use secret. Persist before redemption. No raw grant or private combat bytes in ordinary logs. |
-| `P01HostActorFactsV1` | Version, campaign ID from the authenticated session, grant generation, session generation, side, trusted clock instant plus clock availability, journal key, fence and expected head. Server constructs it after authorization; it is never accepted from a request body. |
-| `P01OwnerOpeningV1` | Version and only the approved owner `context`, independently verified `cycleRef`, `positionId`, `openingRevision`, `selection` decision ref and offered owner candidate refs. Deadline and raw head/fence stay trusted; any additional outward status or token requires a separate visible-field decision. No Source/World hash, private candidate ID, opponent binding or journal sequence. |
+| `P01PrivateSeatGrantV1` | Version, authenticated campaign ID, side, stable private seat authority ID, grant generation, issuer, issued/expiry times, monotonic revocation epoch and digest of a single-use secret. Persist before redemption. No raw grant or private combat bytes in ordinary logs. |
+| `P01HostActorFactsV1` | Version, campaign ID from the authenticated session, stable seat authority ID, grant/session generations, side, trusted clock instant plus clock availability, journal key, durable seat epoch/fence and expected head. Server constructs it after authorization; it is never accepted from a request body. |
+| `P01OwnerOpeningV1` | Version and only the approved owner `context`, independently verified `cycleRef`, `positionId`, `openingRevision`, `selection` decision ref, own `participantRef`, `targetRef` derived from the same approved visible hex, and offered owner candidate refs. Deadline and raw head/fence stay trusted; any additional outward status or token requires a separate visible-field decision. No Source/World hash, private candidate ID, opponent binding or journal sequence. |
 | `P01OwnerInputV1` | Version, request ID, decision ref, opening revision and exactly one of approved candidate ref or explicit decline. The host binds this to the retained opening and head. No actor, side, clock, campaign identity, private candidate or Core action ID supplied by owner. |
-| `P01PrivateJournalRecordV1` | The [A2 record inventory](p01-private-authority-journal-proposal.md#proposed-closed-import-checkpoint-and-later-journal-contracts), plus authenticated seat/grant-generation binding, canonical request digest and accepted receipt binding for owner records. Sequence 0 binds the A1 R03 checkpoint once; first later accepted transition starts at 1. |
+| `P01PrivateJournalRecordV1` | The [A2 record inventory](p01-private-authority-journal-proposal.md#proposed-closed-import-checkpoint-and-later-journal-contracts), plus stable seat authority ID, seat epoch, canonical request digest and accepted receipt binding. Sequence 0 binds the A1 R03 checkpoint once. A separately approved `owner-opening` metadata kind at sequence 1 retains visible bytes, revision, candidate mapping, frozen base and deadline with **no game event** or state-version/prefix change; first accepted owner input is sequence 2. Later openings/closures advance journal sequence and visible revision by their own typed records. |
 | `P01OwnerReceiptV1` | Version, request ID, approved generic accepted/rejected class, owner decision ref and revision. Any further outward field needs its own owner-visible approval. Core/private receipt and raw event stay trusted. Exact duplicate accepted input returns the same retained owner receipt. |
-| `P01PrivateReadbackV1` | Retained import/dependencies, checkpoint, grant/seat provenance and ordered journal records with durable head/fence; replay verifies full CreationRequest and eleven-ledger R03 ancestry before any owner opening. |
+| `P01PrivateReadbackV1` | Retained import/dependencies, checkpoint, grant/seat provenance and ordered journal records with durable head/fence; replay verifies full CreationRequest and eleven-ledger R03 ancestry **and every opening record** before presenting or accepting an owner offer. |
 
 Unknown version or kind, duplicate JSON keys, noncanonical bytes, malformed
 IDs, over-cap input and inconsistent journal head fail closed. Client errors
@@ -129,27 +150,34 @@ is the durable byte store. A2 must choose and test a concrete provider before
 claiming recovery. A minimal transaction boundary is:
 
 1. Read a durable campaign head `(campaignId, authorityEpoch, sequence,
-   stateVersion, prefix, recordHash, fence)`. Require equal IDs across host
-   session, CreationRequest, A1 checkpoint and journal key. Check current
-   grant/session and expected owner opening against that head.
+   stateVersion, prefix, recordHash, fence)` **and** the durable seat authority
+   epoch. Require equal IDs across host session, CreationRequest, A1 checkpoint
+   and journal key. Check the persisted opening against that head; creating
+   one is itself a conditional metadata append, followed by exact readback,
+   before owner exposure.
 2. Core derives the proposed successor from readback-verified bytes. The
-   store conditionally appends exactly one canonical record and request-key
-   binding when *all* expected head fields and fence match. The receipt,
-   accepted event, input, new head and durable material needed for replay
-   publish atomically, or through a reviewed pending/committed protocol with
-   no externally accepted pending state. Neither Orleans turn serialization
-   nor a hash chain alone fences a competing process.
+   store conditionally appends exactly one canonical record and stable
+   `(campaignId, seatAuthorityId, requestId)` binding when *all* expected
+   head fields, journal fence and seat epoch match. The receipt, accepted
+   event, input, new head and durable material needed for replay publish
+   atomically, or through a reviewed pending/committed protocol with no
+   externally accepted pending state. Revocation atomically increments the
+   same seat epoch in this store, so another process cannot commit with an
+   old grant after revocation. Neither Orleans turn serialization nor a hash
+   chain alone fences a competing process.
 3. Read back the exact committed bytes, verify Core replay and receipt, then
    expose the safe result. On uncertain write outcome, read by campaign,
-   authenticated seat generation and request ID. Exact same input returns
-   the original receipt; altered reuse conflicts. If readback is unavailable
+   stable seat authority ID and request ID, after reauthenticating the current
+   session to that authority ID. Exact same input returns the original
+   receipt; altered reuse conflicts. If readback is unavailable
    or mismatched, return unavailable and issue no new decision. Never retry a
    paid transition by recomputing an uncommitted debit or RNG draw.
 4. On real host restart, restore grants/revocations and journal head from
    Archives, replay the original pinned R03 evidence and all accepted
    records in Core, compare every source, Control, World, RNG, prefix, event,
    receipt and conservation invariant, then reconstruct the owner-visible
-   revision and outstanding offer. A hash-only snapshot or process-local
+   revision and **persisted** outstanding offer, including candidate mapping,
+   base and deadline. A hash-only snapshot or process-local
    `TemporaryCampaignMemoryStore` is insufficient. A stale host epoch cannot
    append after a new host acquires the fence.
 
@@ -171,9 +199,15 @@ cases can supplement but cannot replace it.
    redemption, owner read, and explicit owner submission from the private
    client. Verify accepted receipt from durable readback, not test-injected
    actor/time or a fixture-only shortcut. Cross-seat, revoked, expired,
-   reissued-generation and CSRF failures never reach alias lookup.
+   reissued-generation and CSRF failures never reach alias lookup. Reconnect
+   under a new session generation but the same durable seat authority ID and
+   find the exact accepted receipt; a different authority ID cannot find it.
 3. **Opening and action:** use the approved field codec; prove authentic
-   public refs and legal action membership at the committed cut. Reopen and
+   own participant ref, target ref from the same visible hex, public refs and
+   legal action membership at one committed cut. Crash before opening append
+   exposes nothing; crash after opening commit but before read response
+   returns the same persisted bytes and alias on restart. Tamper stored
+   revision, mapping, base or deadline and fail closed. Reopen and
    hidden-only bookkeeping cases preserve the exact owner-visible revision
    rules. Reject a changed combat base even if a previously offered alias
    still exists. Exercise explicit decline, selected assault and System
@@ -183,7 +217,9 @@ cases can supplement but cannot replace it.
    receipt, with one CP/ammo debit and RNG draw. Changed-input duplicate,
    stale fence, competing append, lost response, crash before append, crash
    after append and archive publication failure all have deterministic
-   readback and no double acceptance. Revocation/submit order is proved.
+   readback and no double acceptance. Revocation/submit order is proved
+   across two host processes using one atomic seat epoch and append fence;
+   a local admission semaphore is not accepted as that proof.
 5. **Privacy:** authenticate two independent original CreationRequest plus
    eleven-ledger histories with equal approved visible projection and
    differing hidden facts. Compare full owner output, IDs, ordering,
@@ -200,22 +236,29 @@ cases can supplement but cannot replace it.
 
 ## Decision, migration and stop rules
 
-**Separate A2 owner decision required.** Proposed approval would permit only
+**Separate A2 owner decision required.** This packet is a design input, not
+an implementation authorization. A future exact A2 approval package must
+include the concrete transport/authenticator and transactional store,
+versioned canonical schemas/vectors, byte and replay caps, approved public
+ref and clock sources, retention/key ownership, and explicit amendment to the
+P01 acceptance freeze. The owner must approve that whole exact package
+**before A2 implementation**; a direction-only preference cannot authorize
+code or issuance. Such approval would permit only
 a private, disabled-by-default owner proof with authenticated campaign-seat
 observation/submission, Core-generated typed decisions, and durable
 Chronicle/Archives journal. It would also amend the
 [P01 acceptance freeze](../specs/combat-actual-moved-repeat-position-v1.md#freeze-decision)
 **only** to allow that private pre-certificate proof. It would not authorize
 Maproom/public/native issuance, admission, or a production Combat loop. A1
-approval alone is insufficient. Before seeking approval, reviewers must
+approval alone is insufficient. Before seeking that exact approval, reviewers must
 settle: concrete host transport and authenticator, whether campaign grants
 are enough owner identity, storage provider/transaction/fence, canonical
 schemas/caps, public ref source, deadline/clock source, archive encryption
 and retention, and the exact authentic hidden-twin evidence path.
 
-Implementation order after separate approval: freeze schemas and vectors;
-prove durable import/head and campaign equality; add seat/clock authority and
-private read; add typed submit and conditional append; prove restart, races and
+Implementation order after exact package approval: prove durable import/head
+and campaign equality; add seat/clock authority and persisted opening read;
+add typed submit and conditional append; prove restart, races and
 privacy; only then consider certificate use. No test-only actor or clock fact
 can be relabelled as authentic by migration. Version 1 readers remain
 available for its immutable bytes; new fields require version 2 and explicit
