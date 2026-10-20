@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sandtable.combat.p01.a2-private-owner-contract.v1",
+  "title": "Proposed private P01 A2 owner proof contract v1",
+  "description": "Unapproved, disabled-by-default contract proposal. No public or native issue.",
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "maxLength": 71 },
+    "publicRef": { "type": "string", "pattern": "^pub\\.[0-9a-f]{64}$", "maxLength": 68 },
+    "candidateRef": { "type": "string", "pattern": "^p01-owner-v1\\.[0-9a-f]{64}$", "maxLength": 77 },
+    "campaignId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$", "maxLength": 64 },
+    "seatAuthorityId": { "type": "string", "pattern": "^seat\\.[0-9a-f]{64}$", "maxLength": 69 },
+    "journalKey": { "type": "string", "pattern": "^p01j\\.[0-9a-f]{64}$", "maxLength": 69 },
+    "requestId": { "type": "string", "pattern": "^req\\.[0-9a-f]{64}$", "maxLength": 68 },
+    "utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", "maxLength": 20 },
+    "counter": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
+    "side": { "enum": ["axis", "commonwealth"] },
+    "cycle": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["gameTurn", "operationStage", "playerPhaseSlot", "phasingSide", "ordinal"],
+      "required": ["gameTurn", "operationStage", "playerPhaseSlot", "phasingSide", "ordinal"],
+      "properties": {
+        "gameTurn": { "type": "integer", "minimum": 1, "maximum": 111 },
+        "operationStage": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+        "playerPhaseSlot": { "type": "string", "pattern": "^[a-z][a-z-]{0,63}$", "maxLength": 64 },
+        "phasingSide": { "$ref": "#/$defs/side" },
+        "ordinal": { "type": "integer", "minimum": 1, "maximum": 2147483647 }
+      }
+    },
+    "context": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["campaignId", "audience", "cycle", "rulesRef", "configRef", "capabilityPolicyId"],
+      "required": ["campaignId", "audience", "cycle", "rulesRef", "configRef", "capabilityPolicyId"],
+      "properties": {
+        "campaignId": { "$ref": "#/$defs/campaignId" },
+        "audience": { "$ref": "#/$defs/side" },
+        "cycle": { "$ref": "#/$defs/cycle" },
+        "rulesRef": { "$ref": "#/$defs/publicRef" },
+        "configRef": { "$ref": "#/$defs/publicRef" },
+        "capabilityPolicyId": { "const": "sandtable.combat.p01.owner-capability.v1" }
+      }
+    },
+    "importBinding": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "creationRequestHash", "elevenLedgerRootHash", "dependencyManifestHash", "checkpointHash", "journalKey"],
+      "required": ["contractVersion", "campaignId", "creationRequestHash", "elevenLedgerRootHash", "dependencyManifestHash", "checkpointHash", "journalKey"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
+        "creationRequestHash": { "$ref": "#/$defs/hash" }, "elevenLedgerRootHash": { "$ref": "#/$defs/hash" },
+        "dependencyManifestHash": { "$ref": "#/$defs/hash" }, "checkpointHash": { "$ref": "#/$defs/hash" },
+        "journalKey": { "$ref": "#/$defs/journalKey" }
+      }
+    },
+    "seatGrant": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "side", "seatAuthorityId", "grantGeneration", "issuerRef", "issuedAtUtc", "expiresAtUtc", "revocationEpoch", "secretDigest"],
+      "required": ["contractVersion", "campaignId", "side", "seatAuthorityId", "grantGeneration", "issuerRef", "issuedAtUtc", "expiresAtUtc", "revocationEpoch", "secretDigest"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
+        "side": { "$ref": "#/$defs/side" }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" },
+        "grantGeneration": { "$ref": "#/$defs/counter" }, "issuerRef": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$", "maxLength": 64 },
+        "issuedAtUtc": { "$ref": "#/$defs/utc" }, "expiresAtUtc": { "$ref": "#/$defs/utc" },
+        "revocationEpoch": { "$ref": "#/$defs/counter" }, "secretDigest": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "actorFacts": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "side", "seatAuthorityId", "grantGeneration", "sessionGeneration", "seatEpoch", "clockAtUtc", "clockAvailable", "journalKey", "expectedSequence", "expectedRecordHash", "expectedStateVersion", "expectedPrefix", "fence"],
+      "required": ["contractVersion", "campaignId", "side", "seatAuthorityId", "grantGeneration", "sessionGeneration", "seatEpoch", "clockAtUtc", "clockAvailable", "journalKey", "expectedSequence", "expectedRecordHash", "expectedStateVersion", "expectedPrefix", "fence"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" }, "side": { "$ref": "#/$defs/side" },
+        "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "grantGeneration": { "$ref": "#/$defs/counter" },
+        "sessionGeneration": { "$ref": "#/$defs/counter" }, "seatEpoch": { "$ref": "#/$defs/counter" },
+        "clockAtUtc": { "$ref": "#/$defs/utc" }, "clockAvailable": { "type": "boolean" },
+        "journalKey": { "$ref": "#/$defs/journalKey" }, "expectedSequence": { "$ref": "#/$defs/counter" },
+        "expectedRecordHash": { "$ref": "#/$defs/hash" }, "expectedStateVersion": { "$ref": "#/$defs/counter" },
+        "expectedPrefix": { "$ref": "#/$defs/hash" }, "fence": { "$ref": "#/$defs/counter" }
+      }
+    },
+    "ownerOpening": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "context", "cycleRef", "positionId", "openingRevision", "decisionRef", "participantRef", "targetRef", "candidateRefs"],
+      "required": ["contractVersion", "context", "cycleRef", "positionId", "openingRevision", "decisionRef", "participantRef", "targetRef", "candidateRefs"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "context": { "$ref": "#/$defs/context" }, "cycleRef": { "$ref": "#/$defs/hash" },
+        "positionId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,127}$", "maxLength": 128 },
+        "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "decisionRef": { "$ref": "#/$defs/publicRef" }, "participantRef": { "$ref": "#/$defs/publicRef" },
+        "targetRef": { "$ref": "#/$defs/publicRef" },
+        "candidateRefs": { "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": { "$ref": "#/$defs/candidateRef" } }
+      }
+    },
+    "ownerInput": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "requestId", "decisionRef", "openingRevision", "choiceKind", "candidateRef"],
+      "required": ["contractVersion", "requestId", "decisionRef", "openingRevision", "choiceKind", "candidateRef"],
+      "allOf": [
+        { "if": { "properties": { "choiceKind": { "const": "select" } } },
+          "then": { "properties": { "candidateRef": { "$ref": "#/$defs/candidateRef" } } },
+          "else": { "properties": { "candidateRef": { "type": "null" } } } }
+      ],
+      "properties": {
+        "contractVersion": { "const": 1 }, "requestId": { "$ref": "#/$defs/requestId" },
+        "decisionRef": { "$ref": "#/$defs/publicRef" }, "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "choiceKind": { "enum": ["select", "decline"] },
+        "candidateRef": { "anyOf": [{ "$ref": "#/$defs/candidateRef" }, { "type": "null" }] }
+      }
+    },
+    "journalRecord": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "sequence", "kind", "priorRecordHash", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "seatAuthorityId", "seatEpoch", "openingRevision", "requestDigest", "inputDigest", "eventDigest", "receiptDigest", "privatePayloadDigest"],
+      "required": ["contractVersion", "campaignId", "sequence", "kind", "priorRecordHash", "priorStateVersion", "priorPrefix", "resultStateVersion", "resultPrefix", "seatAuthorityId", "seatEpoch", "openingRevision", "requestDigest", "inputDigest", "eventDigest", "receiptDigest", "privatePayloadDigest"],
+      "allOf": [
+        { "if": { "properties": { "kind": { "const": "r03-import-checkpoint" } } },
+          "then": { "properties": { "sequence": { "const": 0 }, "seatAuthorityId": { "type": "null" }, "seatEpoch": { "type": "null" }, "openingRevision": { "type": "null" }, "requestDigest": { "type": "null" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } },
+        { "if": { "properties": { "kind": { "const": "owner-opening" } } },
+          "then": { "properties": { "sequence": { "const": 1 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "type": "integer", "minimum": 1 }, "requestDigest": { "type": "null" }, "inputDigest": { "type": "null" }, "eventDigest": { "type": "null" }, "receiptDigest": { "type": "null" } } } },
+        { "if": { "properties": { "kind": { "const": "owner-accepted-input" } } },
+          "then": { "properties": { "sequence": { "type": "integer", "minimum": 2 }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "seatEpoch": { "$ref": "#/$defs/counter" }, "openingRevision": { "type": "integer", "minimum": 1 }, "requestDigest": { "$ref": "#/$defs/hash" }, "inputDigest": { "$ref": "#/$defs/hash" }, "eventDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" } } } }
+      ],
+      "properties": {
+        "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
+        "sequence": { "$ref": "#/$defs/counter" }, "kind": { "enum": ["r03-import-checkpoint", "owner-opening", "owner-accepted-input"] },
+        "priorRecordHash": { "$ref": "#/$defs/hash" }, "priorStateVersion": { "$ref": "#/$defs/counter" },
+        "priorPrefix": { "$ref": "#/$defs/hash" }, "resultStateVersion": { "$ref": "#/$defs/counter" },
+        "resultPrefix": { "$ref": "#/$defs/hash" },
+        "seatAuthorityId": { "anyOf": [{ "$ref": "#/$defs/seatAuthorityId" }, { "type": "null" }] },
+        "seatEpoch": { "anyOf": [{ "$ref": "#/$defs/counter" }, { "type": "null" }] },
+        "openingRevision": { "anyOf": [{ "$ref": "#/$defs/counter" }, { "type": "null" }] },
+        "requestDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+        "inputDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+        "eventDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+        "receiptDigest": { "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+        "privatePayloadDigest": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "ownerReceipt": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "requestId", "decisionRef", "openingRevision", "resultClass"],
+      "required": ["contractVersion", "requestId", "decisionRef", "openingRevision", "resultClass"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "requestId": { "$ref": "#/$defs/requestId" },
+        "decisionRef": { "$ref": "#/$defs/publicRef" },
+        "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "resultClass": { "enum": ["accepted", "invalid-request", "stale-view", "not-current-or-not-admissible"] }
+      }
+    },
+    "retryBinding": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "requestId", "inputDigest", "receiptDigest", "recordSequence"],
+      "required": ["contractVersion", "campaignId", "seatAuthorityId", "requestId", "inputDigest", "receiptDigest", "recordSequence"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
+        "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" }, "requestId": { "$ref": "#/$defs/requestId" },
+        "inputDigest": { "$ref": "#/$defs/hash" }, "receiptDigest": { "$ref": "#/$defs/hash" },
+        "recordSequence": { "$ref": "#/$defs/counter" }
+      }
+    }
+  }
+}
