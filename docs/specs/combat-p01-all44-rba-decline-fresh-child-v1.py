@@ -51,7 +51,8 @@ def result(path):
         require(type(claim) is dict and list(claim) == [
             "source", "creationRequest", "parentLedgers", "r03Ledger",
             "ownLedger", "expectedControl", "expectedWorld", "expectedRandom",
-            "expectedReceiptId", "retryInput", "declineInput"], "claim fields")
+            "expectedReceiptId", "retryInput", "declineInput",
+            "completionInput"], "claim fields")
         require(ref.encode(claim) == raw_claim, "canonical claim")
         creation_raw = unb64(claim["creationRequest"])
         creation = json.loads(creation_raw, object_pairs_hook=pairs)
@@ -71,6 +72,7 @@ def result(path):
         random = unb64(claim["expectedRandom"])
         retry = unb64(claim["retryInput"])
         decline = unb64(claim["declineInput"])
+        completion = unb64(claim["completionInput"])
         state = ref.replay(source, parents, r03, own)
         require(state["stepIndex"] == 2 and state["rbaOutcome"] is None and
                 state["rbaDecision"] is not None and
@@ -104,6 +106,28 @@ def result(path):
                 ref.encode(after["parent"]["randomState"]) == random and
                 after["admitted"] is False and after["publicActions"] == [],
                 "decline cut changed parent/resources/admission")
+        completion_value = ref.parse_input(completion)
+        require(completion_value["kind"] == "complete-step" and
+                completion_value["actor"] == "system" and
+                completion_value["admittedAtUnixMilliseconds"] is None and
+                completion_value["participant"] is None,
+                "canonical system completion input")
+        final_source, final_ledger, final_event, final_receipt = ref.apply(
+            next_source, parents, r03, next_ledger, completion)
+        final = ref.replay(final_source, parents, r03, final_ledger)
+        require(final_event is not None and len(final_ledger) == 7 and
+                final_ledger[:6] == next_ledger and
+                final_ledger[6] == completion and
+                final["closed"] and final["stepIndex"] == 3 and
+                final["position"]["positionId"].endswith(".force-assignment") and
+                final["rbaOutcome"] == "declined" and
+                final["declineReceiptId"] == receipt and
+                final["lastReceiptId"] == final_receipt and
+                final["parent"] == state["parent"] and
+                ref.encode(final["parent"]["world"]) == world and
+                ref.encode(final["parent"]["randomState"]) == random and
+                final["admitted"] is False and final["publicActions"] == [],
+                "fresh same-slot Force Assignment completion")
         return dict(control=b64(control), sourceHash=digest(source),
                     ledgerHash=digest(ref.encode([b64(x) for x in own])),
                     worldHash=digest(world), randomHash=digest(random),
@@ -115,6 +139,12 @@ def result(path):
                     nextEvent=b64(event), nextReceiptId=receipt,
                     nextControl=b64(ref.control_bytes(after)),
                     nextPrefix=after["prefix"], nextVersion=after["stateVersion"],
+                    finalSource=b64(final_source),
+                    finalLedger=[b64(x) for x in final_ledger],
+                    finalEvent=b64(final_event), finalReceiptId=final_receipt,
+                    finalControl=b64(ref.control_bytes(final)),
+                    finalPrefix=final["prefix"], finalVersion=final["stateVersion"],
+                    finalPositionId=final["position"]["positionId"],
                     admitted=False, publicActions=[])
     except (ValueError, TypeError, KeyError, IndexError, OverflowError,
             binascii.Error, UnicodeError) as error:

@@ -30,6 +30,13 @@ class FreshDeclineTests(unittest.TestCase):
                     self.assertEqual(expected, observed[field], field)
                 self.assertEqual(defender, case["state"]["rbaDecision"]["owner"])
                 self.assertEqual("declined", case["after"]["rbaOutcome"])
+                self.assertFalse(case["after"]["closed"])
+                self.assertTrue(case["final"]["closed"])
+                self.assertEqual(3, case["final"]["stepIndex"])
+                self.assertTrue(observed["finalPositionId"].endswith(
+                    ".force-assignment"))
+                self.assertEqual(case["finalReceipt"],
+                                 observed["finalReceiptId"])
                 self.assertFalse(observed["admitted"])
                 self.assertEqual([], observed["publicActions"])
 
@@ -86,6 +93,15 @@ class FreshDeclineTests(unittest.TestCase):
     def test_nonidentical_open_retry_rejects(self):
         claim = copy.deepcopy(self.axis["claim"])
         claim["retryInput"] = claim["declineInput"]
+        self.assertEqual("fresh-rba-decline",
+                         proof.child(claim).get("rejected"))
+
+    def test_completion_requires_exact_decline_chain(self):
+        claim = copy.deepcopy(self.axis["claim"])
+        value = proof.selected.parse_input(
+            base64.b64decode(claim["completionInput"]))
+        value["previousReceiptId"] = self.axis["state"]["rbaOpenReceiptId"]
+        claim["completionInput"] = proof.b64(proof.selected.encode(value))
         self.assertEqual("fresh-rba-decline",
                          proof.child(claim).get("rejected"))
 

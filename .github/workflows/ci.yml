@@ -184,7 +184,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$PROOF_SHA"
         env:
           PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Cold-read eleven original RBA-open cuts and typed test declines
+      - name: Cold-read eleven RBA-open cuts through Force Assignment
         run: |
           mkdir -p artifacts/p01-rba-decline-fresh
           python3 -B docs/specs/verify-combat-p01-all44-rba-decline-fresh-v1.py \
@@ -222,7 +222,7 @@ jobs:
           pattern: p01-rba-decline-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
           path: artifacts/p01-rba-decline-fresh
           merge-multiple: true
-      - name: Reject forged identity, deadline, files and retry
+      - name: Reject forged identity, deadline, files, retry and skipped completion
         run: python3 -B docs/specs/test-combat-p01-all44-rba-decline-fresh-v1.py
       - name: Require frozen all-44 same-SHA aggregate
         run: |

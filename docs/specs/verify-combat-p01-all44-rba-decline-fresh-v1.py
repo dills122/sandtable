@@ -102,6 +102,22 @@ def build(row):
             selected.encode(after["parent"]["randomState"]) == random and
             after["admitted"] is False and after["publicActions"] == [],
             "decline resource conservation")
+    completion = selected.input_bytes(selected.expected_input(
+        after, "complete-step", actor="system"))
+    final_source, final_ledger, final_event, final_receipt = selected.apply(
+        next_source, parents, r03, next_ledger, completion)
+    final = selected.replay(final_source, parents, r03, final_ledger)
+    require(final_event is not None and len(final_ledger) == 7 and
+            final["closed"] and final["stepIndex"] == 3 and
+            final["position"]["positionId"].endswith(".force-assignment") and
+            final["rbaOutcome"] == "declined" and
+            final["declineReceiptId"] == receipt and
+            final["lastReceiptId"] == final_receipt and
+            final["parent"] == state["parent"] and
+            selected.encode(final["parent"]["world"]) == world and
+            selected.encode(final["parent"]["randomState"]) == random and
+            final["admitted"] is False and final["publicActions"] == [],
+            "canonical same-slot Force Assignment completion")
     claim = dict(source=b64(source), creationRequest=b64(selected.encode(parents[0])),
                  parentLedgers=[[b64(x) for x in group] for group in parents[1:]],
                  r03Ledger=[b64(x) for x in r03],
@@ -109,15 +125,24 @@ def build(row):
                  expectedControl=b64(selected.control_bytes(state)),
                  expectedWorld=b64(world), expectedRandom=b64(random),
                  expectedReceiptId=state["lastReceiptId"],
-                 retryInput=b64(ledger[4]), declineInput=b64(decline))
+                 retryInput=b64(ledger[4]), declineInput=b64(decline),
+                 completionInput=b64(completion))
     expected = dict(nextSource=b64(next_source),
                     nextLedger=[b64(x) for x in next_ledger],
                     nextEvent=b64(event), nextReceiptId=receipt,
                     nextControl=b64(selected.control_bytes(after)),
-                    nextPrefix=after["prefix"], nextVersion=after["stateVersion"])
+                    nextPrefix=after["prefix"], nextVersion=after["stateVersion"],
+                    finalSource=b64(final_source),
+                    finalLedger=[b64(x) for x in final_ledger],
+                    finalEvent=b64(final_event), finalReceiptId=final_receipt,
+                    finalControl=b64(selected.control_bytes(final)),
+                    finalPrefix=final["prefix"], finalVersion=final["stateVersion"],
+                    finalPositionId=final["position"]["positionId"])
     return dict(claim=claim, expected=expected, state=state,
                 source=source, ledger=ledger, r03=r03,
                 event=event, receipt=receipt, after=after,
+                finalSource=final_source, finalLedger=final_ledger,
+                finalEvent=final_event, finalReceipt=final_receipt, final=final,
                 world=world, random=random)
 
 
@@ -144,7 +169,7 @@ def verify_row(row):
     observed = child(case["claim"])
     require("rejected" not in observed, "fresh readback rejected: " + str(observed))
     require(all(observed.get(key) == value for key, value in case["expected"].items()),
-            "fresh decline differs byte-for-byte from parent")
+            "fresh decline/completion differs byte-for-byte from parent")
     state = case["state"]
     require(observed["control"] == case["claim"]["expectedControl"] and
             observed["sourceHash"] == digest(case["source"]) and
@@ -172,6 +197,12 @@ def verify_row(row):
                 declinedEventHash=digest(case["event"]),
                 declinedControlHash=digest(selected.control_bytes(case["after"])),
                 declinedReceiptId=case["receipt"],
+                finalSourceHash=digest(case["finalSource"]),
+                finalLedgerHash=ledger_hash(case["finalLedger"]),
+                finalEventHash=digest(case["finalEvent"]),
+                finalControlHash=digest(selected.control_bytes(case["final"])),
+                finalReceiptId=case["finalReceipt"],
+                finalPositionId=case["final"]["position"]["positionId"],
                 worldHash=digest(case["world"]), randomHash=digest(case["random"]),
                 admitted=False, publicActions=[])
 

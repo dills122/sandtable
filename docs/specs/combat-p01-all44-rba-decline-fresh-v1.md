@@ -22,18 +22,25 @@ at trusted time 1003, which is before the derived deadline. Actor, participant,
 decision, previous receipt, clock, cycle, prefix and version are checked by
 the selected-assault reference. The emitted event, updated Source and ledger,
 receipt, Control, version and prefix must match the parent interpreter byte for
-byte. World, RNG, CP, ammunition and other parent resources remain unchanged.
+byte. The interpreter then replays the exact next `complete-step` system input.
+That seventh event closes the selected-assault continuation at the same-slot
+Force Assignment position; stopping at the decline receipt is insufficient.
+The final Source, seven-input ledger, event, receipt, Control, prefix, version
+and position must also match the parent byte for byte. World, RNG, CP,
+ammunition and other parent resources remain unchanged at both cuts.
 
 The frozen 44-row output commits to each original root, orientation, R03
 Source/ledger, RBA-open Source/ledger/Control/receipt, declined event,
-Source/ledger/Control/receipt, and unchanged World/RNG. Four 11-root shard jobs
+Source/ledger/Control/receipt, completed same-slot Force Assignment
+Source/ledger/event/Control/receipt/position, and unchanged World/RNG. Four 11-root shard jobs
 are checked against the same frozen aggregate and exact Git commit SHA. The
 original 300-row private audit still reports 44 candidate positive, 256
 candidate absent, and zero admitted/public.
 
 Focused negatives reject wrong actor, decision, participant, receipt, deadline
 equality, unavailable clock, tampered retained Source/ledger/Control and a
-nonidentical retry. This tests typed admission and replay, not a production
+nonidentical retry, and a completion that skips the decline receipt. This
+tests typed admission and replay, not a production
 source of trusted actor identity or clock time; neither is added here. It also
 does not prove durable Orleans restart or genuine owner-supplied decisions.
 
