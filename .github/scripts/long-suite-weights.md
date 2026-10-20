@@ -72,6 +72,18 @@ metadata remain unchanged; the class uses one ordinary suite part.
 
 Command: `dotnet artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-class Cna.Core.Tests.Campaigns.P01R03SameCutSourceAttestationTests --report-xunit-xml --results-directory /private/tmp/sandtable-a1s-release-timing-b143eb2 --progress off`. Result: 2 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `2c42f764dc7719948825c352d76cc5eeda0be25f97c8724b38a3ea7559776b53`; XML SHA-256 `356171a19df39b41fc8ceb32c82360db6d97e6a318ded84f47c58166bc8de4f2`. Source head at measurement: `b143eb2bdb534a3d0883b2b158265222f1e454aa`. The failed prepare job in run `39478676567` reported an unknown/missing measured row; it is not a passing CI claim. This updated head requires a fresh exact-head hosted run.
 
+The private Core P01 opening-stage proof adds two `P01CoreOpeningJournalTests` rows. A passing
+local macOS arm64 .NET 10 Release MTP XML run on 2026-10-20 measured their elapsed times below.
+These are scheduling hints, not hosted latency or P01 admission evidence. Existing weights and
+baseline metadata remain unchanged; this class uses one ordinary suite part.
+
+| New row | Exact hash | Measured ms |
+| --- | --- | ---: |
+| `RecoveredBytesRejectForeignRequestAndTamperedActorClockSourceOrReceipt` | `1184613b38882668460314121ad2c3322f9c3677a919576e8061af857cce5c8a` | 100 |
+| `PinnedCreationIssuesOneSystemInitiativeAndReplaysIdentically` | `8549912b65c96b4256f689ae7af31533fd2b2a735302af330841fd9f493dd5e6` | 25 |
+
+Command: `/opt/homebrew/bin/dotnet artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-class Cna.Core.Tests.Campaigns.P01CoreOpeningJournalTests --report-xunit-xml --results-directory /private/tmp/sandtable-p01-core-opening-release-timing-f733fe7 --progress off`. Result: 2 passed, 0 failed, 0 skipped. Source head `f733fe7eabc4c69eafef36ee2ec5e339d9af64b0`; Release Core test DLL SHA-256 `27c6e67f71cabacda466b063514de0fb206e059cb8d0863ba68ecd11ee5e3142`; XML SHA-256 `43260f1529f0bbc8fc1d3501af61a0a433c535acdb54303d843f264cfe389734`. Fresh exact-head hosted prepare remains required after manifest update.
+
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
 The private Content8/Setup8 Core source reader adds five `CombatAutoSurrenderSourceTests` rows. A passing local macOS arm64 .NET 10 Release MTP XML run on 2026-10-20 measured only these new rows; all prior weights and baseline metadata remain unchanged. This is a scheduling observation, not a hosted CI or admission claim.
