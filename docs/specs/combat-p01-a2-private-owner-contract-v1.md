@@ -24,13 +24,14 @@ seat, legal action, privacy twin, append or host restart.
 | --- | --- | --- |
 | `importBinding` | Core validates original CreationRequest, eleven ledgers and pinned dependencies; trusted import coordinator persists binding with A1 checkpoint. | `campaignId` is authenticated CreationRequest ID. `journalKey` is a stored one-to-one mapping for that ID, never a request parameter or supplier hash. Import cannot be selected by a client row label. |
 | `seatGrant` | Trusted local creation coordinator commits it before releasing a single-use secret; trusted store retains only secret digest. | Campaign, side, stable `seatAuthorityId`, issuer, generation, expiry and revocation epoch come from committed record. Possession of valid local grant is proposed private seat authority; human identity beyond it is not asserted. |
-| `actorFacts` | Host constructs after grant redemption and session/CSRF verification, fresh trusted clock sample and durable head read. | Never accepted from owner request body. Session generation can change after restart; stable seat authority ID cannot be inferred from browser-selected side. |
+| `actorFacts` | Host constructs at original acceptance after grant redemption and session/CSRF verification, preflight clock sample and durable head read. Archives retains its exact canonical historical bytes with the accepted transition and the historical `seatGrant`. | Never accepted from owner request body. These are acceptance facts for cold replay, not a fresh retry session. A later session generation or grant epoch must not rewrite them. |
 | `ownerOpening` | Core derives one immutable visible cut from persisted, fenced journal state and approved public refs. Host persists `owner-opening` metadata record, reads it back, then exposes exact visible bytes. | Only approved owner context, refs and revision, plus **proposed** offered candidate-ref list. `candidateRefs` is an outward-field decision in future exact A2 approval. No private candidate ID, raw source, hidden target, journal head/fence or deadline in visible bytes. |
 | `ownerInput` | Owner supplies request ID, offered decision ref and revision, plus exactly selected alias **or** explicit decline. | No campaign, side, clock, grant, private candidate or Core action ID from owner. Host authenticates before alias lookup. |
 | `privateOpeningPayload` | Core supplies one exact, capped private payload with the full canonical visible opening, ordered alias-to-private-candidate mapping, frozen combat base, permitted bookkeeping suffix, source-cut hash and trusted deadline. Archives persists its **actual canonical bytes** atomically with sequence 1. | Payload is never owner-visible. Sequence 1 `privatePayloadDigest` binds its domain-separated hash but cannot substitute for persisted bytes. On restart, missing, mutated or over-cap payload closes the offer. |
-| `acceptedTransitionPayload` | Trusted local store samples acceptance UTC inside the conditional append transaction; Core then derives proposed A2 v1 typed input, selection-closed event and receipt against that same sample. Exact canonical bytes of all three are lowercase-hex encoded beside owner input and safe receipt. Archives persists the capped payload bytes atomically with sequence 2, record and retry binding. | Sequence 2 `privatePayloadDigest` binds payload bytes; `requestDigest` binds owner input; `inputDigest`/`eventDigest`/`receiptDigest` bind decoded, typed Core bytes. A digest alone cannot reconstruct a transition after restart. |
+| `acceptedTransitionPayload` | Trusted local store samples acceptance UTC inside the conditional append transaction; Core then derives proposed A2 v1 typed input, selection-closed event and receipt against that same sample. Exact canonical bytes of all three are lowercase-hex encoded beside owner input, safe receipt, historical grant and preflight actor facts. Archives persists the capped payload bytes atomically with sequence 2, record and retry binding. | Sequence 2 `privatePayloadDigest` binds historical evidence and transition bytes; `requestDigest` binds owner input; `inputDigest`/`eventDigest`/`receiptDigest` bind decoded, typed Core bytes. A digest alone cannot reconstruct a transition after restart. |
 | `journalRecord` and `retryBinding` | Private Chronicle/Archives contract; Core determines canonical transition bytes; durable store conditionally appends and binds request ID to exact input/receipt. | Never owner-visible. `seatEpoch` and append fence compare atomically with revocation across host processes. |
 | `ownerReceipt` | Derived only after exact committed-byte readback and Core replay. | Outward fields are request ID, decision ref, revision and approved generic class. No event, journal sequence, CP/ammo, RNG or hidden reason. |
+| `retryAuthFacts` | Trusted host constructs anew after authenticating the current same stable seat authority and checking current durable store revocation epoch. | Current clock, grant generation, epoch and session can advance after the original acceptance. These facts gate receipt lookup only; they do not rejudge historical acceptance against a closed opening or expired old grant. No owner-supplied values are trusted. |
 
 All repeated campaign IDs must equal CreationRequest, checkpoint, grant, actor
 facts, owner context, record, retry binding, journal key mapping and stored
@@ -86,9 +87,12 @@ transaction, fails closed if unavailable, and compares the instant with the
 grant issue/expiry and persisted opening deadline **before** Core derivation
 and commit. Host preflight `clockAtUtc` is an earlier check, never the
 authoritative append time. Cold replay validates the persisted source and
-time, equality across record/payload/Core input/event, and the same strict
-windows; a later retry returns the retained receipt without resampling an
-acceptance time or appending another event. This local trust boundary must be
+time against the **historical** grant and actor facts retained inside the
+accepted payload, equality across record/payload/Core input/event, and the
+original strict windows. Later retry separately authenticates the *current*
+same seat authority and current store revocation epoch, then reads the
+retained receipt. Its current clock/epoch never enters the historical
+acceptance test and cannot append another event. This local trust boundary must be
 implemented and tested separately; an asserted source string by itself does
 not authenticate a clock.
 
@@ -108,15 +112,17 @@ total-byte and replay-time caps against original R03 evidence before issuance.
 This proposal does **not** guess that observed source maximum is safe for
 production. Over-cap import or replay closes rather than truncates history.
 
-Synthetic accepted golden contains ordered sequence 0 checkpoint, sequence 1
-metadata opening and sequence 2 accepted owner input. Frozen domain-separated
-record digests:
+Two alternative synthetic goldens each contain ordered sequence 0 checkpoint,
+sequence 1 metadata opening and sequence 2 accepted owner input. They share
+the opening, then diverge into a selected assault or explicit decline.
+Frozen domain-separated record digests:
 
 | Sequence | Kind | Canonical digest |
 | --- | --- | --- |
 | 0 | `r03-import-checkpoint` | `sha256:119b5192966b5ede1b6a2e56f6af58052b847a53ae40ecf221bd3d15035f71be` |
 | 1 | `owner-opening` | `sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380` |
-| 2 | `owner-accepted-input` | `sha256:4e229f88a92353eb8bc5dd913a1473df8ea25afe9ca7b5da0b121fa29efc96de` |
+| 2 selected | `owner-accepted-input` | `sha256:0c00028064988dbd78cc21b4b3099418015f316314f1b7bf7fa3df598148ee45` |
+| 2 decline | `owner-accepted-input` | `sha256:97c61fa8254cebc21ffa30166b7e8259d17f464662b471859c014b6e0277b287` |
 
 These are **codec goldens only**; fabricated `sha256:` values inside sample
 are placeholders, not actual CreationRequest, source, event or receipt pins.
@@ -139,9 +145,11 @@ recovery must read and rehash them before returning the same offer. Sequence
 1 changes journal sequence/hash and
 visible revision to one; it does **not** change game state version/prefix or
 emit game input/event/receipt, debit or RNG draw. Sequence 2 is the **only**
-accepted owner input in v1. Its synthetic 5,352-byte
-`acceptedTransitionPayload` digest is
-`sha256:3f415d355b89ff66d8b48594ad8f0836a43fccbfc3d7d4f48c236d05c1f2aa19`.
+accepted owner input in v1. Selected and decline synthetic
+`acceptedTransitionPayload` byte counts/digests are respectively 6,382 /
+`sha256:d691899a1cc9e40663134c647e06236e88cc25042bd8e3e691cf818122d63ef5`
+and 6,050 /
+`sha256:bce610b150e1951ec0b08b0286f3fab00038bd81a3b3a152c58924a32422ee70`.
 Exact capped payload bytes, including owner input/receipt objects and decoded
 Core input/event/receipt bytes, must be durably published in the same
 transaction as record and retry key. Sequence 2 may change game state
@@ -179,13 +187,13 @@ or process-local semaphore does not prove this order.
 | Crash before sequence 1 append | No visible opening; derive only from reconstructed Core state. |
 | Crash after sequence 1 commit, before read response | Reauthenticate, read back and return byte-identical persisted opening and alias. |
 | Crash before sequence 2 append | No accepted result/debit; retry may conditionally derive once from same verified opening. |
-| Commit sequence 2, lose response | Reauthenticate, look up stable retry key, verify exact input and committed-byte replay; return same receipt without new debit/RNG. |
+| Commit sequence 2, lose response | Reauthenticate current same stable seat authority against current grant/epoch, look up stable retry key, verify historical accepted bytes using retained historical grant/preflight and committed-byte replay; return same receipt without new debit/RNG even after original deadline or grant expiry. |
 | Ambiguous append/readback failure | Return generic unavailable; do not report acceptance or recompute paid transition. |
 | Concurrent revocation or competing host | One store seat-epoch/head/fence order decides; stale process cannot append. |
 
 Readback after actual host restart must revalidate retained original
 CreationRequest, all eleven ledgers, pinned dependencies, A1 checkpoint,
-grant/revocation history, exact persisted private opening payload bytes,
+historical grant/preflight and revocation order, exact persisted private opening payload bytes,
 exact accepted-transition payload bytes and every journal record in
 sequence. Rehash and decode Core input/event/receipt bytes, then compare
 Core-derived source, Control, World, RNG, prefix, event, receipt and
@@ -204,7 +212,11 @@ submission. Any System cancellation is a separate typed path, never forged
 owner decline. Synthetic negatives re-freeze all digests and still reject
 post-deadline or expired-grant committed times. They also reject duplicate
 terminal append, sequence 3, kind-only/unknown-version Core bytes, missing
-Core event and over-cap Core receipt.
+Core event and over-cap Core receipt. Both complete goldens replay under a
+current authenticated retry clock after the original opening deadline with
+current seat epoch 1, while historical acceptance remains epoch 0. Current
+unauthenticated, wrong-seat, stale-store-epoch or expired-grant retry is denied
+without changing the historical acceptance verdict.
 
 ## Rejection and approval gate
 

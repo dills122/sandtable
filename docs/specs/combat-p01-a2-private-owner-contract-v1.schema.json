@@ -78,6 +78,21 @@
         "expectedPrefix": { "$ref": "#/$defs/hash" }, "fence": { "$ref": "#/$defs/counter" }
       }
     },
+    "retryAuthFacts": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "side", "seatAuthorityId", "grantGeneration", "seatEpoch", "storeRevocationEpoch", "sessionGeneration", "clockAtUtc", "clockAvailable", "grantIssuedAtUtc", "grantExpiresAtUtc", "authenticated"],
+      "required": ["contractVersion", "campaignId", "side", "seatAuthorityId", "grantGeneration", "seatEpoch", "storeRevocationEpoch", "sessionGeneration", "clockAtUtc", "clockAvailable", "grantIssuedAtUtc", "grantExpiresAtUtc", "authenticated"],
+      "properties": {
+        "contractVersion": { "const": 1 }, "campaignId": { "$ref": "#/$defs/campaignId" },
+        "side": { "$ref": "#/$defs/side" }, "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" },
+        "grantGeneration": { "$ref": "#/$defs/counter" }, "seatEpoch": { "$ref": "#/$defs/counter" },
+        "storeRevocationEpoch": { "$ref": "#/$defs/counter" },
+        "sessionGeneration": { "$ref": "#/$defs/counter" }, "clockAtUtc": { "$ref": "#/$defs/utc" },
+        "clockAvailable": { "type": "boolean" },
+        "grantIssuedAtUtc": { "$ref": "#/$defs/utc" }, "grantExpiresAtUtc": { "$ref": "#/$defs/utc" },
+        "authenticated": { "type": "boolean" }
+      }
+    },
     "ownerOpening": {
       "type": "object", "additionalProperties": false,
       "x-field-order": ["contractVersion", "context", "cycleRef", "positionId", "openingRevision", "decisionRef", "participantRef", "targetRef", "candidateRefs"],
@@ -235,8 +250,8 @@
     },
     "acceptedTransitionPayload": {
       "type": "object", "additionalProperties": false,
-      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "acceptanceClockSource", "acceptedAtUnixMilliseconds", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
-      "required": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "acceptanceClockSource", "acceptedAtUnixMilliseconds", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
+      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "historicalSeatGrant", "historicalActorFacts", "acceptanceClockSource", "acceptedAtUnixMilliseconds", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
+      "required": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRecordHash", "privateOpeningPayloadHash", "historicalSeatGrant", "historicalActorFacts", "acceptanceClockSource", "acceptedAtUnixMilliseconds", "ownerInput", "coreInputHex", "coreEventHex", "coreReceiptHex", "ownerReceipt"],
       "properties": {
         "contractVersion": { "const": 1 },
         "campaignId": { "$ref": "#/$defs/campaignId" },
@@ -244,6 +259,8 @@
         "seatEpoch": { "$ref": "#/$defs/counter" },
         "openingRecordHash": { "$ref": "#/$defs/hash" },
         "privateOpeningPayloadHash": { "$ref": "#/$defs/hash" },
+        "historicalSeatGrant": { "$ref": "#/$defs/seatGrant" },
+        "historicalActorFacts": { "$ref": "#/$defs/actorFacts" },
         "acceptanceClockSource": { "const": "local-store-transaction-utc-v1" },
         "acceptedAtUnixMilliseconds": { "$ref": "#/$defs/counter" },
         "ownerInput": { "$ref": "#/$defs/ownerInput" },

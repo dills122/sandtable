@@ -21,7 +21,7 @@ OWNER_GOLDENS = ROOT / "fixtures/combat-p01-owner-decision-proposal-v1.json"
 KINDS = (
     "importBinding", "seatGrant", "actorFacts", "ownerOpening",
     "privateOpeningPayload", "ownerInput", "journalRecord", "ownerReceipt",
-    "acceptedTransitionPayload", "retryBinding",
+    "acceptedTransitionPayload", "retryBinding", "retryAuthFacts",
 )
 CAPS = {
     "importBinding": 1024, "seatGrant": 1024, "actorFacts": 1536,
@@ -29,6 +29,7 @@ CAPS = {
     "ownerInput": 1024, "journalRecord": 2048,
     "ownerReceipt": 1024, "acceptedTransitionPayload": 65536,
     "retryBinding": 1024,
+    "retryAuthFacts": 1536,
     "coreInputV1": 8192, "coreEventV1": 8192, "coreReceiptV1": 8192,
 }
 CORE_KINDS = {"input": "coreInputV1", "event": "coreEventV1", "receipt": "coreReceiptV1"}
@@ -187,6 +188,26 @@ def check_acceptance_clock(grant: dict, actor: dict, opening_payload: dict, reco
         raise ValueError("acceptance past persisted opening deadline")
 
 
+def check_current_retry_auth(current: dict, historical_grant: dict, record: dict, campaign: str) -> None:
+    if current["authenticated"] is not True or current["clockAvailable"] is not True:
+        raise ValueError("current retry authentication unavailable")
+    if (
+        current["campaignId"] != campaign
+        or current["side"] != historical_grant["side"]
+        or current["seatAuthorityId"] != record["seatAuthorityId"]
+    ):
+        raise ValueError("current retry seat authority mismatch")
+    if (
+        current["seatEpoch"] != current["storeRevocationEpoch"]
+        or current["seatEpoch"] < record["seatEpoch"]
+        or current["grantGeneration"] < historical_grant["grantGeneration"]
+    ):
+        raise ValueError("current retry grant generation rollback")
+    now = utc(current["clockAtUtc"])
+    if not utc(current["grantIssuedAtUtc"]) <= now < utc(current["grantExpiresAtUtc"]):
+        raise ValueError("current retry grant clock window")
+
+
 def check_terminal_history(records: list[dict]) -> None:
     if len(records) != 3:
         raise ValueError("v1 journal must contain exactly three records")
@@ -250,7 +271,7 @@ def check_case(schema: dict, case: dict) -> None:
     if any(row["acceptedAtUnixMilliseconds"] is not None or row["acceptanceClockSource"] is not None for row in (checkpoint, opening_record)):
         raise ValueError("nonaccepted record carries acceptance clock")
 
-    bind, grant, actor, opening, payload, command, record, receipt, accepted_payload, retry = values.values()
+    bind, grant, actor, opening, payload, command, record, receipt, accepted_payload, retry, current_retry = values.values()
     check_terminal_history([checkpoint, opening_record, record])
     check_chain_fields(bind, checkpoint, opening_record, record)
     approved_owner_cases = parse(OWNER_GOLDENS.read_bytes())["cases"]
@@ -314,6 +335,8 @@ def check_case(schema: dict, case: dict) -> None:
         or accepted_payload["seatEpoch"] != actor["seatEpoch"]
         or accepted_payload["openingRecordHash"] != prior_records[1]["digest"]
         or accepted_payload["privateOpeningPayloadHash"] != expected["privateOpeningPayload"]["digest"]
+        or accepted_payload["historicalSeatGrant"] != grant
+        or accepted_payload["historicalActorFacts"] != actor
         or accepted_payload["ownerInput"] != command
         or accepted_payload["ownerReceipt"] != receipt
     ):
@@ -384,6 +407,7 @@ def check_case(schema: dict, case: dict) -> None:
         raise ValueError("game head mismatch")
     if record["kind"] != "owner-accepted-input" or receipt["resultClass"] != "accepted":
         raise ValueError("golden requires accepted owner input")
+    check_current_retry_auth(current_retry, grant, record, campaign)
 
 
 def check_negatives(schema: dict, case: dict) -> None:
@@ -401,7 +425,7 @@ def check_negatives(schema: dict, case: dict) -> None:
         {"extra": "bad"},
         {"contractVersion": 2},
         {"requestId": "req." + "a" * 1000},
-        {"candidateRef": None},
+        {"candidateRef": None if value["choiceKind"] == "select" else case["values"]["ownerOpening"]["candidateRefs"][0]},
     ):
         changed = copy.deepcopy(value)
         changed.update(mutation)
@@ -415,7 +439,7 @@ def check_negatives(schema: dict, case: dict) -> None:
     declined["choiceKind"] = "decline"
     declined["candidateRef"] = None
     canonical(schema, "ownerInput", declined)
-    declined["candidateRef"] = value["candidateRef"]
+    declined["candidateRef"] = case["values"]["ownerOpening"]["candidateRefs"][0]
     try:
         canonical(schema, "ownerInput", declined)
     except ValueError:
@@ -513,6 +537,11 @@ def check_negatives(schema: dict, case: dict) -> None:
         raise AssertionError("unavailable clock accepted")
     unavailable = copy.deepcopy(case)
     unavailable["values"]["actorFacts"]["clockAvailable"] = False
+    unavailable["values"]["acceptedTransitionPayload"]["historicalActorFacts"]["clockAvailable"] = False
+    unavailable["values"]["journalRecord"]["privatePayloadDigest"] = digest(
+        "acceptedTransitionPayload",
+        canonical(schema, "acceptedTransitionPayload", unavailable["values"]["acceptedTransitionPayload"]),
+    )
     refreeze(unavailable)
     try:
         check_case(schema, unavailable)
@@ -607,6 +636,30 @@ def check_negatives(schema: dict, case: dict) -> None:
             raise AssertionError(f"backdated acceptance failed for wrong reason: {exc}") from exc
     else:
         raise AssertionError("backdated acceptance accepted")
+    current = case["values"]["retryAuthFacts"]
+    historical = case["values"]["journalRecord"]
+    if not (
+        utc(current["clockAtUtc"]) > utc(case["values"]["privateOpeningPayload"]["deadlineAtUtc"])
+        and current["seatEpoch"] > historical["seatEpoch"]
+    ):
+        raise AssertionError("golden lacks post-deadline, post-revocation authenticated retry")
+    for changed_field, replacement, expected_error in (
+        ("authenticated", False, "current retry authentication unavailable"),
+        ("clockAvailable", False, "current retry authentication unavailable"),
+        ("seatEpoch", 0, "current retry grant generation rollback"),
+        ("seatAuthorityId", "seat." + "0" * 64, "current retry seat authority mismatch"),
+        ("clockAtUtc", "2026-10-21T00:00:00Z", "current retry grant clock window"),
+    ):
+        changed = copy.deepcopy(case)
+        changed["values"]["retryAuthFacts"][changed_field] = replacement
+        refreeze(changed)
+        try:
+            check_case(schema, changed)
+        except ValueError as exc:
+            if expected_error not in str(exc):
+                raise AssertionError(f"current retry negative failed for wrong reason: {exc}") from exc
+        else:
+            raise AssertionError(f"invalid current retry accepted: {changed_field}")
     accepted_payload = copy.deepcopy(case["values"]["acceptedTransitionPayload"])
     accepted_payload["coreInputHex"] = "00"
     try:
@@ -667,7 +720,7 @@ def check_negatives(schema: dict, case: dict) -> None:
     else:
         raise AssertionError("rebound wrong Core effect accepted")
     accepted_payload = copy.deepcopy(case["values"]["acceptedTransitionPayload"])
-    accepted_payload["ownerInput"]["candidateRef"] = "p01-owner-v1." + "0" * 64
+    accepted_payload["ownerInput"]["requestId"] = "req." + "0" * 64
     changed_request = digest(
         "ownerInput", canonical(schema, "ownerInput", accepted_payload["ownerInput"])
     )
