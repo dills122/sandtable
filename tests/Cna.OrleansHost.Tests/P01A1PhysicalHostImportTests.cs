@@ -49,7 +49,7 @@ public sealed class P01A1PhysicalHostImportTests
     [Theory]
     [InlineData("import_bytes", 2_097_153)]
     [InlineData("control_bytes", 65_537)]
-    [InlineData("checkpoint_bytes", 2_097_153)]
+    [InlineData("checkpoint_bytes", 4_097)]
     [InlineData("attestation_bytes", 4_097)]
     public void OversizedRetainedBlobIsRejectedBeforeMaterialization(string column, int length)
     {

@@ -17,7 +17,7 @@ internal sealed class P01PrivateHostFoundation
     private const int MaxProbeBytes = 65_536;
     private const int MaxA1ImportBytes = 2_097_152;
     private const int MaxA1ControlBytes = 65_536;
-    private const int MaxA1CheckpointBytes = 2_097_152;
+    private const int MaxA1CheckpointBytes = 4_096;
     private const int MaxA1AttestationBytes = 4_096;
     private static readonly TimeSpan GrantLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan CredentialLifetime = TimeSpan.FromHours(2);
