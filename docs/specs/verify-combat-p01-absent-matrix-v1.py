@@ -18,6 +18,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 GOLDEN = ROOT / "fixtures/combat-p01-absent-matrix-v1.json"
 RETAINED = ROOT / "fixtures/combat-p01-absent-retained-roots-v1.json"
+# Reviewed physical manifest's ordered eleven-chunk table. Keep this outside
+# the retained row fixture so editing a chunk pin cannot re-authorize itself.
+REVIEWED_CHUNK_PINS_HASH = (
+    "sha256:313d1e1d8526bde4f5e0104f9f2580b27a782fb8242e1d1984e8c960382582b2"
+)
 
 
 def load(name, filename):
@@ -255,6 +260,7 @@ def audit(evidence, *, frozen=True, progress=None):
 def retained_claims():
     claims = json.loads(RETAINED.read_text())
     require(claims["retainedPins"] == result.PINS and
+            digest(canonical(claims["chunkPins"])) == REVIEWED_CHUNK_PINS_HASH and
             len(claims["chunkPins"]) == 11 and
             all(re.fullmatch(r"rows-\d{3}-\d{3}\.jsonl\.gz", name) and
                 re.fullmatch(r"[0-9a-f]{64}", pin)

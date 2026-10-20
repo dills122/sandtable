@@ -48,7 +48,9 @@ commitment derived from the read-only physical corpus; each rebuilt event,
 receipt and Control is checked too. Four disjoint 75-row artifacts are required
 by the aggregate job, which checks exact tested SHA, all row identities,
 reviewed retained manifest/summary/partition/source pins, and the full frozen
-ordered output hash. A missing shard, changed original input, changed physical
+ordered output hash. The reviewed eleven-chunk pin-table digest is frozen in
+the verifier outside the retained root fixture. A missing shard, changed
+original input, changed physical
 row pin, or changed output rejects. The local physical audit additionally
 checks the physical files and all eleven compressed chunk hashes directly.
 The byte maxima are for this retained exercise, not general resource caps.

@@ -5,6 +5,7 @@ import copy
 import importlib.util
 import json
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -139,6 +140,22 @@ class AbsentMatrixTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "four shard artifacts"):
             reference.combine_shards([], tested_sha=subprocess.check_output(
                 ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip())
+
+    def test_changed_chunk_pin_fails_shard_and_aggregate(self):
+        claims = reference.retained_claims()
+        changed = copy.deepcopy(claims)
+        first = next(iter(changed["chunkPins"]))
+        changed["chunkPins"][first] = "0" * 64
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "changed-retained-roots.json"
+            path.write_text(json.dumps(changed))
+            sha = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+            with mock.patch.object(reference, "RETAINED", path):
+                with self.assertRaisesRegex(ValueError, "reviewed retained physical pins"):
+                    reference.generated_shard(0, tested_sha=sha)
+                with self.assertRaisesRegex(ValueError, "reviewed retained physical pins"):
+                    reference.combine_shards([], tested_sha=sha)
 
 
 if __name__ == "__main__":
