@@ -19,6 +19,16 @@ The first overnight source audits found two concrete limits. AC-003's current wo
 
 AC-006's existing 300 roots contain no automatic-surrender trigger. The 44 selected assaults start at ammo 10/Cohesion 0, the 12 adjacent ammunitionless rows cannot select an assault, and the 244 nonadjacent rows have no assault trigger. The source-condition and boundary tests passed 12/12 and the pinned RBA audit passed. A positive proof needs a new independently source-authenticated legal scenario or predecessor with an armed attacker and a legally ammunitionless or sufficiently low-Cohesion defender, an actual assault trigger, complete ancestor replay, and typed full-TOE/custody settlement. Do not hand-edit an R03 World or infer surrender from ammo spent by that same attack.
 
+The follow-on feasibility probe confirmed that the current certified profile cannot supply that
+positive trigger: defender initial ammo `0` fails Content7 validation at
+`CMB-CNT-007 /scenarios/0/initialPlacements/1/initialAmmunition/points`; creation Cohesion `-17`
+with a recomputed setup hash fails `CMB-INI-006 /combatInitialization/cohesionLevel`. Both existing
+units spend ammo `10→0` in the paid attack, so its resulting `0/0` state cannot place an armed
+attacker against an ammunitionless defender. Choose a separately versioned, source-approved
+Content/Creation profile that permits the asymmetric trigger, or authenticate a later predecessor
+that produces it without violating current validators. Either path needs fresh source, ancestry and
+settlement review before any AC-006 positive claim. No mutation of the current profile is authority.
+
 ## Work order and stop rules
 
 1. Resume the saved all-44 fresh-process worker without replacing its worktree or untracked scripts. Benchmark four roots, then the full 44; stop without a PR if the proof cannot fit the measured CI budget or a fresh process is not real for every root.
