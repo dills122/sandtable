@@ -67,6 +67,7 @@ export class CampaignActionFlow {
       !this.capabilityRevoked &&
       this.adapter !== null &&
       view !== null &&
+      validRevision(view.audienceRevision) &&
       !!view.actionSetToken &&
       !!view.position.positionId &&
       view.position.decision === 'human' &&
@@ -246,6 +247,26 @@ export class CampaignActionFlow {
       if (epoch !== this.epoch) return;
       if (refreshed.contractVersion !== 1 || !sameAudience(view, refreshed)) {
         this.clearAudience();
+        return;
+      }
+      const displayed = this.currentView();
+      if (
+        !displayed ||
+        !sameAudience(view, displayed) ||
+        !validRevision(displayed.audienceRevision)
+      ) {
+        this.clearAudience();
+        return;
+      }
+      if (
+        validRevision(refreshed.audienceRevision) &&
+        BigInt(displayed.audienceRevision) >= BigInt(refreshed.audienceRevision)
+      ) {
+        // A concurrent authorized read already advanced the same seat. Never paint older data.
+        this.state.set({
+          ...state,
+          refreshPending: BigInt(displayed.audienceRevision) < BigInt(state.audienceRevision),
+        });
         return;
       }
       if (

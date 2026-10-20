@@ -211,6 +211,36 @@ describe('CampaignActionFlow', () => {
     expect(flow.currentView()?.audienceRevision).toBe('2');
   });
 
+  it('does not replace a newer same-seat view when an accepted refresh completes late', async () => {
+    let resolveView!: (value: CoherentPlayerView) => void;
+    const api = adapter({
+      view: vi.fn().mockImplementation(
+        () =>
+          new Promise<CoherentPlayerView>((resolve) => {
+            resolveView = resolve;
+          }),
+      ),
+    });
+    const flow = new CampaignActionFlow(api, true, () => 'request-1');
+    flow.observeView(view);
+    const submitting = flow.submit('opaque-action-1');
+    await Promise.resolve();
+    const newer = {
+      ...view,
+      audienceRevision: '3',
+      position: { ...view.position, positionId: 'position-3' },
+    };
+    flow.observeView(newer);
+    resolveView({
+      ...view,
+      audienceRevision: '2',
+      position: { ...view.position, positionId: 'position-2' },
+    });
+    await submitting;
+    expect(flow.currentView()).toBe(newer);
+    expect(flow.state()).toMatchObject({ phase: 'accepted', refreshPending: false });
+  });
+
   it('clears the old audience when accepted readback returns another seat', async () => {
     const api = adapter({ view: vi.fn().mockResolvedValue({ ...view, seat: 'commonwealth' }) });
     const flow = new CampaignActionFlow(api, true, () => 'request-1');
