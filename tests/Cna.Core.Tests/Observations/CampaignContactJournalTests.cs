@@ -93,6 +93,26 @@ public sealed class CampaignContactJournalTests
         Assert.Equal("north", stale.ApparentLocationId);
     }
 
+    [Fact]
+    public void UnseenMovementLeavesOwnerObservationByteIdentical()
+    {
+        var prior = BreakdownMovementTests.ChangeElement(BreakdownSnapshotTests.Create(true),
+            "commonwealth-infantry", "east");
+        var context = CampaignContentContext.Create(BreakdownContentFixture.Artifact(),
+            BreakdownSnapshotTests.Scenario().ScenarioId);
+        var journal = CampaignContactJournal.Initialize(prior, context);
+        var before = journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry");
+        var movement = BreakdownMovementTests.Move(prior, "axis-infantry", "north-west", "north");
+        var movedWorld = BreakdownMovementTests.ChangeElement(prior, "axis-infantry", "north").World;
+        var after = new CampaignSnapshotV11(11, prior.CampaignId, movement.StateVersion,
+            prior.RulesetHash, prior.Setup, movedWorld, prior.InitiativeHolder,
+            prior.OperationStageOrders, prior.OperationStageWeather, prior.RandomState,
+            prior.CurrentPosition, null, prior.BreakdownFlow);
+
+        journal = journal.AppendMovement(prior, after, movement, context);
+        Assert.Equal(before, journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"));
+    }
+
     private static (CampaignSnapshotV11 Prior, CampaignSnapshotV11 After,
         ElementMovedV3 Movement, CampaignContentContext Context) AcceptedReactionMovement()
     {
