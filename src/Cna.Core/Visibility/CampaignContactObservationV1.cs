@@ -19,7 +19,7 @@ internal sealed record CampaignContactObservationV1(
     {
         ArgumentNullException.ThrowIfNull(knowledge);
         return new CampaignContactObservationV1(CurrentContractVersion, knowledge.CampaignId,
-            knowledge.Side, actingFormationId, knowledge.AudienceRevision,
+            knowledge.Side, actingFormationId, knowledge.AudienceRevisionFor(actingFormationId),
             knowledge.ObserveFor(actingFormationId), knowledge.CurrentTargetsFor(actingFormationId));
     }
 

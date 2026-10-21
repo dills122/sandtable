@@ -17,7 +17,8 @@ public static class CampaignExercises
         var session = new ExerciseSession(
             execution.CurrentSnapshot!,
             execution.Context!,
-            [execution.CurrentCreatedEvent!]);
+            [execution.CurrentCreatedEvent!],
+            CampaignContactJournal.Initialize(execution.CurrentSnapshot!, execution.Context!));
         return ExerciseStartResult.Started(
             session,
             CampaignCurrentEventSerializer.Serialize(execution.CurrentCreatedEvent!),
@@ -61,7 +62,8 @@ public static class CampaignExercises
 
         var history = session.CurrentHistory.Add(execution.AcceptedEvent!);
         var contacts = execution.AcceptedEvent is ElementMovedV3 movement
-            ? session.CurrentContacts.Append(movement)
+            ? session.CurrentContacts.AppendMovement(session.CurrentSnapshot,
+                execution.SuccessorSnapshot!, movement, session.Context)
             : session.CurrentContacts;
         var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts);
         var evidence = new ExerciseStepEvidence(
@@ -92,7 +94,7 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var replayedContacts = CampaignContactJournal.FromEvents(
-                replayed.CampaignId, replayEvents).Records;
+                completedSession.Context, replayEvents).Records;
             var contactsMatch = contactRecords.Count == replayedContacts.Count
                 && contactRecords.Zip(replayedContacts).All(pair =>
                     pair.First.AsSpan().SequenceEqual(pair.Second));

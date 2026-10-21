@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Rules;
-using Cna.Core.Tests.Campaigns;
 using Cna.Core.Visibility;
 
 namespace Cna.Core.Tests.Observations;
@@ -12,7 +11,7 @@ public sealed class CampaignContactKnowledgeTests
     public void CurrentContactCanBeOfferedThenBecomesStaleUntilRediscovery()
     {
         var knowledge = new CampaignContactKnowledge("campaign", LandSide.Axis);
-        var handle = knowledge.NextHandle();
+        var handle = knowledge.NextHandle("observer");
         knowledge.Apply(Transition(1, "sight-1", CampaignContactTransitionKind.Observed, handle));
 
         Assert.Equal(1, knowledge.AudienceRevision);
@@ -38,23 +37,24 @@ public sealed class CampaignContactKnowledgeTests
     {
         var left = new CampaignContactKnowledge("campaign", LandSide.Axis);
         var right = new CampaignContactKnowledge("campaign", LandSide.Axis);
+        var handle = left.NextHandle("observer");
         left.Apply(Transition(1, "sight-1", CampaignContactTransitionKind.Observed,
-            left.NextHandle()));
+            handle));
         right.Apply(Transition(1, "sight-1", CampaignContactTransitionKind.Observed,
-            right.NextHandle()) with
-        { BoundElementId = "different-hidden-enemy" });
+            handle) with
+        { BoundRepresentationId = "different-hidden-enemy" });
 
         // A private source transition at a later authority cut changes no visible field.
         right.Apply(Transition(2, "private-source-2", CampaignContactTransitionKind.Updated,
-            "c-00000001") with
-        { BoundElementId = "different-hidden-enemy" });
+            handle) with
+        { BoundRepresentationId = "different-hidden-enemy" });
 
         Assert.Equal(left.AudienceRevision, right.AudienceRevision);
         Assert.Equal(left.ObserveFor("observer"), right.ObserveFor("observer"));
         Assert.Equal(left.CurrentTargetsFor("observer"), right.CurrentTargetsFor("observer"));
         Assert.Equal(2, right.LastAuthorityVersion);
-        Assert.NotEqual(left.ResolvePrivateTarget("observer", "c-00000001"),
-            right.ResolvePrivateTarget("observer", "c-00000001"));
+        Assert.NotEqual(left.ResolvePrivateTarget("observer", handle),
+            right.ResolvePrivateTarget("observer", handle));
         Assert.Equal(CampaignContactObservationV1.Project(left, "observer").SerializeCanonical(),
             CampaignContactObservationV1.Project(right, "observer").SerializeCanonical());
     }
@@ -64,7 +64,7 @@ public sealed class CampaignContactKnowledgeTests
     {
         var axis = new CampaignContactKnowledge("campaign", LandSide.Axis);
         var commonwealth = new CampaignContactKnowledge("campaign", LandSide.Commonwealth);
-        axis.Apply(Transition(1, "sight-1", CampaignContactTransitionKind.Observed, axis.NextHandle()));
+        axis.Apply(Transition(1, "sight-1", CampaignContactTransitionKind.Observed, axis.NextHandle("observer")));
 
         Assert.Empty(commonwealth.ObserveFor("observer"));
         Assert.Empty(axis.ObserveFor("other-formation"));
@@ -75,7 +75,29 @@ public sealed class CampaignContactKnowledgeTests
         Assert.DoesNotContain("authorityVersion", wire, StringComparison.Ordinal);
         Assert.DoesNotContain("sourceEvent", wire, StringComparison.Ordinal);
         Assert.Throws<ArgumentException>(() => commonwealth.Apply(Transition(1, "wrong-side",
-            CampaignContactTransitionKind.Observed, commonwealth.NextHandle())));
+            CampaignContactTransitionKind.Observed, commonwealth.NextHandle("observer"))));
+    }
+
+    [Fact]
+    public void AnotherFormationContactDoesNotChangeThisObservationOrNextHandle()
+    {
+        var left = new CampaignContactKnowledge("campaign", LandSide.Axis);
+        var right = new CampaignContactKnowledge("campaign", LandSide.Axis);
+        var first = Transition(1, "sight-1", CampaignContactTransitionKind.Observed,
+            left.NextHandle("observer"));
+        left.Apply(first);
+        right.Apply(first);
+        right.Apply(Transition(2, "other-sight", CampaignContactTransitionKind.Observed,
+            right.NextHandle("other-formation")) with
+        {
+            ObserverFormationId = "other-formation",
+            BoundRepresentationId = "different-enemy",
+        });
+
+        Assert.Equal(CampaignContactObservationV1.Project(left, "observer").SerializeCanonical(),
+            CampaignContactObservationV1.Project(right, "observer").SerializeCanonical());
+        Assert.Equal(left.NextHandle("observer"), right.NextHandle("observer"));
+        Assert.Equal(left.CurrentTargetsFor("observer"), right.CurrentTargetsFor("observer"));
     }
 
     [Fact]
@@ -83,16 +105,20 @@ public sealed class CampaignContactKnowledgeTests
     {
         var knowledge = new CampaignContactKnowledge("campaign", LandSide.Axis);
         Assert.Throws<ArgumentException>(() => knowledge.Apply(Transition(1, "sight-1",
-            CampaignContactTransitionKind.Observed, "c-00000002")));
+            CampaignContactTransitionKind.Observed, "invented-handle")));
+        var handle = knowledge.NextHandle("observer");
         knowledge.Apply(Transition(1, "sight-1", CampaignContactTransitionKind.Observed,
-            knowledge.NextHandle()));
+            handle));
         Assert.Throws<ArgumentException>(() => knowledge.Apply(Transition(2, "sight-1",
-            CampaignContactTransitionKind.Updated, "c-00000001")));
+            CampaignContactTransitionKind.Updated, handle)));
         Assert.Throws<ArgumentException>(() => knowledge.Apply(Transition(2, "bad-binding",
-            CampaignContactTransitionKind.Updated, "c-00000001") with
-        { BoundElementId = "other" }));
+            CampaignContactTransitionKind.Updated, handle) with
+        { BoundRepresentationId = "other" }));
+        Assert.Throws<ArgumentException>(() => knowledge.Apply(Transition(2, "bad-observer",
+            CampaignContactTransitionKind.Updated, handle) with
+        { ObserverFormationId = "other-formation" }));
         Assert.Throws<ArgumentException>(() => knowledge.Apply(Transition(2, "duplicate-binding",
-            CampaignContactTransitionKind.Observed, knowledge.NextHandle())));
+            CampaignContactTransitionKind.Observed, knowledge.NextHandle("observer"))));
         Assert.Equal(1, knowledge.AudienceRevision);
     }
 
@@ -101,11 +127,12 @@ public sealed class CampaignContactKnowledgeTests
     {
         var original = new CampaignContactKnowledge("campaign", LandSide.Axis);
         var replay = new CampaignContactKnowledge("campaign", LandSide.Axis);
+        var handle = original.NextHandle("observer");
         var events = new[]
         {
-            Transition(1, "sight-1", CampaignContactTransitionKind.Observed, "c-00000001"),
-            Transition(2, "sight-loss", CampaignContactTransitionKind.Lost, "c-00000001"),
-            Transition(3, "sight-2", CampaignContactTransitionKind.Rediscovered, "c-00000001", "hex-2"),
+            Transition(1, "sight-1", CampaignContactTransitionKind.Observed, handle),
+            Transition(2, "sight-loss", CampaignContactTransitionKind.Lost, handle),
+            Transition(3, "sight-2", CampaignContactTransitionKind.Rediscovered, handle, "hex-2"),
         };
         foreach (var value in events)
         {
@@ -121,40 +148,6 @@ public sealed class CampaignContactKnowledgeTests
                 StringComparison.Ordinal);
         Assert.Throws<JsonException>(() => CampaignContactTransitionCodec.DeserializeCanonical(
             Encoding.UTF8.GetBytes(expanded)));
-    }
-
-    [Fact]
-    public void CommittedReactionMovementCreatesContactForActualReactingFormation()
-    {
-        var prior = BreakdownMovementTests.ChangeElement(BreakdownSnapshotTests.Create(true),
-            "commonwealth-infantry", "north-east");
-        var moved = BreakdownMovementTests.Move(prior, "axis-infantry", "north-west", "north");
-        Assert.Single(moved.OpenedReactionWindow!.FrozenOpportunities);
-        var knowledge = new CampaignContactKnowledge(prior.CampaignId, LandSide.Commonwealth);
-
-        var transition = Assert.Single(CampaignContactReactionSource.Derive(moved, knowledge));
-        Assert.Equal(0, knowledge.AudienceRevision);
-        knowledge.Apply(transition);
-        Assert.Equal(CampaignContactReactionSource.RuleId, transition.SourceRuleId);
-        Assert.Equal("axis-infantry", knowledge.ResolvePrivateTarget("commonwealth-infantry", transition.ContactHandle));
-        Assert.Equal("north", Assert.Single(knowledge.CurrentTargetsFor("commonwealth-infantry")).ApparentLocationId);
-        Assert.Empty(knowledge.ObserveFor("other-commonwealth-formation"));
-    }
-
-    [Fact]
-    public void ReactionSightSourceDoesNotRevealOrdinaryMoveOrWrongSide()
-    {
-        var prior = BreakdownSnapshotTests.Create(true);
-        var ordinary = BreakdownMovementTests.Move(prior, "axis-truck", "west", "center");
-        var commonwealth = new CampaignContactKnowledge(prior.CampaignId, LandSide.Commonwealth);
-        Assert.Empty(CampaignContactReactionSource.Derive(ordinary, commonwealth));
-        Assert.Equal(0, commonwealth.AudienceRevision);
-
-        var reactingPrior = BreakdownMovementTests.ChangeElement(prior,
-            "commonwealth-infantry", "north-east");
-        var reactingMove = BreakdownMovementTests.Move(reactingPrior, "axis-infantry", "north-west", "north");
-        Assert.Throws<ArgumentException>(() => CampaignContactReactionSource.Derive(reactingMove,
-            new CampaignContactKnowledge(prior.CampaignId, LandSide.Axis)));
     }
 
     private static CampaignContactTransition Transition(long version, string source,

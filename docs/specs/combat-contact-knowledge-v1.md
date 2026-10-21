@@ -12,11 +12,13 @@ the successor together.
 
 Core alone emits `CampaignContactTransition` at an adjudicated authority cut.
 Version 1 carries campaign, side, authority version, unique source event ID,
-visibility rule ID, transition kind, side-local handle, private bound element,
+visibility rule ID, transition kind, observer-scoped handle, private bound map representation,
 observer formation, apparent location, identification level and access scope.
 The private binding and source IDs remain in authority storage. The handle is
-allocated monotonically within one side (`c-00000001`, then `c-00000002`),
-never derived from an opponent ID or private hash.
+allocated monotonically for each observing formation. Its stable scope is derived
+from campaign, side, and own formation identity; another formation's contact count
+cannot change this observer's handle or revision. The handle never derives from
+an opponent ID or private hash.
 
 Transitions are `observed`, `updated`, `lost`, and `rediscovered`. `Observed`
 creates a new contact; `updated` changes an existing current contact after new
@@ -44,19 +46,20 @@ history and rejects a mismatch. The current V7 observation remains a
 historical reader. New owner observations must use the successor contact
 projection and action set at one cut.
 
-The first live source is a committed native Movement v3 event with a frozen
-Reaction opportunity. Its adjacency evidence identifies a specific reacting
-formation and the apparent moved location. Core derives one contact event for
-that formation from the committed move and its private trigger binding.
-Derivation is pure against the retained ledger; the caller appends the events
-durably and replays them before publishing an observation. A move without a
-frozen opportunity emits no contact from this source. Other detection,
-sharing and loss sources will use this same ledger and outward contract.
+The default live source is Core's adjacency rule at creation and committed
+Movement v3 cuts. Core compares map representations at the before and after
+cuts for each formation on both sides. A formation currently in the same or an
+adjacent location gains or updates an observer-local contact; separation marks
+that contact stale at its last apparent location. A later adjacent observation
+rediscovers the same handle. Reaction eligibility does not control sight.
+Derivation uses private truth only at event application and independently
+replays the same transitions from the retained authority stream. Player queries
+read side knowledge; they never inspect opposing World state to invent a contact.
 
 ## Player view and action boundary
 
 `CampaignContactObservationV1` projects only contacts accessible to the acting
-formation and a side-audience revision. A current contact can become a
+formation and an observer-scoped audience revision. A current contact can become a
 visibility-qualified target candidate. A stale contact remains a last-known
 marker and cannot be a direct-assault target candidate. A local contact is
 usable by its observer; a side-shared contact is usable by the side. Combat
@@ -65,7 +68,7 @@ any legal action is offered. A side observation never contains a private
 opponent ID, source ID, or authority version. The private target lookup stays
 inside Core and rejects stale or inaccessible handles.
 
-The next implementation stage attaches further authentic sight/combat/share
-sources, persists these transitions with the campaign, and makes one Core
+The next implementation stage persists these transitions with the campaign,
+adds explicit sharing under the same rule, and makes one Core
 observation/action pair and Host owner opening consume them. Until that is
 complete, this contract is internal and unissuable; it does not admit Combat.

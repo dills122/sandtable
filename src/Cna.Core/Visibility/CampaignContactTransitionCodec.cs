@@ -16,7 +16,7 @@ internal static class CampaignContactTransitionCodec
             || string.IsNullOrWhiteSpace(value.SourceEventId)
             || string.IsNullOrWhiteSpace(value.SourceRuleId)
             || string.IsNullOrWhiteSpace(value.ContactHandle)
-            || string.IsNullOrWhiteSpace(value.BoundElementId)
+            || string.IsNullOrWhiteSpace(value.BoundRepresentationId)
             || string.IsNullOrWhiteSpace(value.ObserverFormationId)
             || string.IsNullOrWhiteSpace(value.ApparentLocationId))
             throw new ArgumentException("Invalid contact transition contract.", nameof(value));
@@ -32,7 +32,7 @@ internal static class CampaignContactTransitionCodec
             writer.WriteString("sourceRuleId", value.SourceRuleId);
             writer.WriteString("kind", Kind(value.Kind));
             writer.WriteString("contactHandle", value.ContactHandle);
-            writer.WriteString("boundElementId", value.BoundElementId);
+            writer.WriteString("boundRepresentationId", value.BoundRepresentationId);
             writer.WriteString("observerFormationId", value.ObserverFormationId);
             writer.WriteString("apparentLocationId", value.ApparentLocationId);
             writer.WriteString("identification", Identification(value.Identification));
@@ -58,7 +58,7 @@ internal static class CampaignContactTransitionCodec
             root.GetProperty("sourceRuleId").GetString()!,
             ParseKind(root.GetProperty("kind").GetString()),
             root.GetProperty("contactHandle").GetString()!,
-            root.GetProperty("boundElementId").GetString()!,
+            root.GetProperty("boundRepresentationId").GetString()!,
             root.GetProperty("observerFormationId").GetString()!,
             root.GetProperty("apparentLocationId").GetString()!,
             ParseIdentification(root.GetProperty("identification").GetString()),

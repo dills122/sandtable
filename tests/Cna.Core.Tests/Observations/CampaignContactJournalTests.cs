@@ -1,8 +1,11 @@
 using System.Text;
 using System.Text.Json;
+using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 using Cna.Core.Tests.Campaigns;
 using Cna.Core.Tests.Content;
 using Cna.Core.Visibility;
@@ -12,73 +15,118 @@ namespace Cna.Core.Tests.Observations;
 public sealed class CampaignContactJournalTests
 {
     [Fact]
-    public void CommittedReactionSourceSurvivesColdReplayWithoutExposingPrivateBinding()
+    public void AdjacentMovementIsRecordedForBothSidesAndSurvivesColdReplay()
     {
-        var prior = BreakdownMovementTests.ChangeElement(BreakdownSnapshotTests.Create(true),
-            "commonwealth-infantry", "north-east");
-        var moved = BreakdownMovementTests.Move(prior, "axis-infantry", "north-west", "north");
-        var empty = CampaignContactJournal.Empty(prior.CampaignId);
-        var committed = empty.Append(moved);
-        var retained = committed.Records;
-        var replayed = CampaignContactJournal.Replay(prior.CampaignId, [moved], retained);
+        var (prior, after, moved, context) = AcceptedReactionMovement();
+        var initial = CampaignContactJournal.Initialize(prior, context);
+        var committed = initial.AppendMovement(prior, after, moved, context);
+        var replayed = CampaignContactJournal.Replay(prior, context, [moved], committed.Records);
 
-        Assert.Empty(empty.Records);
-        Assert.Single(retained);
+        Assert.True(committed.Records.Count > initial.Records.Count);
         Assert.Equal(committed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"),
             replayed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"));
-        Assert.Equal([new CampaignContactTargetCandidate("commonwealth-infantry", "c-00000001", "north")],
-            replayed.CurrentTargetsFor(LandSide.Commonwealth, "commonwealth-infantry"));
-        Assert.Empty(replayed.CurrentTargetsFor(LandSide.Axis, "axis-infantry"));
-        Assert.DoesNotContain("axis-infantry",
-            Encoding.UTF8.GetString(replayed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry")),
+        var reacting = Assert.Single(moved.OpenedReactionWindow!.FrozenOpportunities);
+        var observer = Assert.Single(reacting.ReactingRepresentation.BoundElementIds);
+        Assert.Contains(replayed.CurrentTargetsFor(LandSide.Commonwealth, observer),
+            candidate => candidate.ApparentLocationId == moved.DestinationLocationId);
+        Assert.DoesNotContain(moved.RepresentationId,
+            Encoding.UTF8.GetString(replayed.ObserveCanonical(LandSide.Commonwealth, observer)),
             StringComparison.Ordinal);
     }
 
     [Fact]
     public void ColdReplayRejectsMissingOrAlteredContactRecord()
     {
-        var prior = BreakdownMovementTests.ChangeElement(BreakdownSnapshotTests.Create(true),
-            "commonwealth-infantry", "north-east");
-        var moved = BreakdownMovementTests.Move(prior, "axis-infantry", "north-west", "north");
-        var committed = CampaignContactJournal.Empty(prior.CampaignId).Append(moved);
-        var record = Assert.Single(committed.Records);
-        record[^2] ^= 1;
+        var (prior, after, moved, context) = AcceptedReactionMovement();
+        var committed = CampaignContactJournal.Initialize(prior, context)
+            .AppendMovement(prior, after, moved, context);
+        var records = committed.Records.ToArray();
+        records[^1][^2] ^= 1;
 
-        Assert.Throws<JsonException>(() => CampaignContactJournal.Replay(prior.CampaignId,
-            [moved], [record]));
-        Assert.Throws<JsonException>(() => CampaignContactJournal.Replay(prior.CampaignId,
-            [moved], []));
-        Assert.Throws<JsonException>(() => CampaignContactJournal.Replay(prior.CampaignId,
+        Assert.Throws<JsonException>(() => CampaignContactJournal.Replay(prior, context,
+            [moved], records));
+        Assert.Throws<JsonException>(() => CampaignContactJournal.Replay(prior, context,
+            [moved], committed.Records.SkipLast(1).ToArray()));
+        Assert.Throws<JsonException>(() => CampaignContactJournal.Replay(prior, context,
             [], committed.Records));
         Assert.Throws<ArgumentException>(() => CampaignContactJournal.Empty("wrong-campaign")
-            .Append(moved));
+            .AppendMovement(prior, after, moved, context));
     }
 
     [Fact]
-    public void MovementWithoutSightProducesNoContactRecord()
+    public void MovementDoesNotPublishContactsToAnUnrelatedFormation()
     {
-        var prior = BreakdownSnapshotTests.Create(true);
-        var moved = BreakdownMovementTests.Move(prior, "axis-truck", "west", "center");
-        var journal = CampaignContactJournal.Empty(prior.CampaignId).Append(moved);
+        var (prior, after, moved, context) = AcceptedReactionMovement();
+        var initial = CampaignContactJournal.Initialize(prior, context);
+        var committed = initial.AppendMovement(prior, after, moved, context);
 
-        Assert.Empty(journal.Records);
-        Assert.Empty(journal.CurrentTargetsFor(LandSide.Commonwealth, "commonwealth-infantry"));
-        Assert.Empty(CampaignContactJournal.Replay(prior.CampaignId, [moved], []).Records);
+        Assert.Equal(initial.ObserveCanonical(LandSide.Commonwealth, "unrelated-observer"),
+            committed.ObserveCanonical(LandSide.Commonwealth, "unrelated-observer"));
     }
 
     [Fact]
-    public void ExerciseSessionRebuildsContactKnowledgeFromRetainedAuthorityHistory()
+    public void AdjacentContactBecomesStaleWhenMovementBreaksSight()
     {
         var prior = BreakdownMovementTests.ChangeElement(BreakdownSnapshotTests.Create(true),
-            "commonwealth-infantry", "north-east");
-        var moved = BreakdownMovementTests.Move(prior, "axis-infantry", "north-west", "north");
-        var artifact = BreakdownContentFixture.Artifact();
-        var context = CampaignContentContext.Create(artifact,
-            artifact.Definition.LegacyDefinition.Scenarios.Single().ScenarioId);
-        var restored = new ExerciseSession(prior, context, [moved]);
+            "axis-infantry", "north");
+        prior = BreakdownMovementTests.ChangeElement(prior, "commonwealth-infantry", "north-east");
+        var context = CampaignContentContext.Create(BreakdownContentFixture.Artifact(),
+            BreakdownSnapshotTests.Scenario().ScenarioId);
+        var knowledge = new CampaignContactKnowledge(prior.CampaignId, LandSide.Commonwealth);
+        foreach (var transition in CampaignContactAdjacencySource.OnCreation(prior, context, knowledge))
+            knowledge.Apply(transition);
+        var before = Assert.Single(knowledge.CurrentTargetsFor("commonwealth-infantry"));
+        var movement = BreakdownMovementTests.Move(prior, "axis-infantry", "north", "north-west");
+        var movedWorld = BreakdownMovementTests.ChangeElement(prior, "axis-infantry", "north-west").World;
+        var after = new CampaignSnapshotV11(11, prior.CampaignId, movement.StateVersion,
+            prior.RulesetHash, prior.Setup, movedWorld, prior.InitiativeHolder,
+            prior.OperationStageOrders, prior.OperationStageWeather, prior.RandomState,
+            prior.CurrentPosition, null, prior.BreakdownFlow);
 
-        Assert.Single(restored.CurrentContacts.Records);
-        Assert.Equal([new CampaignContactTargetCandidate("commonwealth-infantry", "c-00000001", "north")],
-            restored.CurrentContacts.CurrentTargetsFor(LandSide.Commonwealth, "commonwealth-infantry"));
+        foreach (var transition in CampaignContactAdjacencySource.OnMovement(
+                     prior, after, movement, context, knowledge))
+            knowledge.Apply(transition);
+        Assert.Empty(knowledge.CurrentTargetsFor("commonwealth-infantry"));
+        var stale = Assert.Single(knowledge.ObserveFor("commonwealth-infantry"),
+            value => value.Handle == before.ContactHandle);
+        Assert.False(stale.IsCurrent);
+        Assert.Equal("north", stale.ApparentLocationId);
+    }
+
+    private static (CampaignSnapshotV11 Prior, CampaignSnapshotV11 After,
+        ElementMovedV3 Movement, CampaignContentContext Context) AcceptedReactionMovement()
+    {
+        var setup = CampaignSetupSnapshotV6.FromDefinition(
+            Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
+                value.SetupId == Cna1979BreakdownSetupCatalog.ReactionSetupId));
+        var request = new CampaignCreationRequest(1, "contact-journal-test",
+            Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.SetupHash,
+            setup.Content.Pack.PackId, setup.Content.Pack.Hash, setup.Content.ScenarioId);
+        var session = CampaignHostAdapter.Create(request).Session!;
+        for (var index = 0; index < 20; index++)
+        {
+            var set = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(value => value.Candidates.Count > 0);
+            if (set.Candidates.OfType<MoveElementAction>().Any()) break;
+            var next = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
+                ?? set.Candidates[0];
+            session = CampaignHostAdapter.Submit(session, new CampaignActionSubmission(1,
+                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId))
+                .SuccessorSession!;
+        }
+        var ownerSet = Enum.GetValues<CampaignActionAudience>()
+            .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+            .First(value => value.Candidates.OfType<MoveElementAction>().Any());
+        var trigger = ownerSet.Candidates.OfType<MoveElementAction>()
+            .Select(candidate => (candidate, result: CampaignHostAdapter.Submit(session,
+                new CampaignActionSubmission(1, ownerSet.CampaignId, ownerSet.StateVersion,
+                    ownerSet.PositionId, ownerSet.Audience, candidate.ActionId))))
+            .First(value => value.result.IsAccepted
+                && value.result.SuccessorSession!.CurrentSnapshot.ReactionWindow is not null);
+        var after = trigger.result.SuccessorSession!;
+        return (session.CurrentSnapshot, after.CurrentSnapshot,
+            Assert.IsType<ElementMovedV3>(after.CurrentHistory[^1]), session.Context);
     }
 }

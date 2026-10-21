@@ -37,48 +37,74 @@ internal sealed class CampaignContactJournal
             new CampaignContactKnowledge(campaignId, LandSide.Commonwealth), []);
     }
 
-    internal static CampaignContactJournal FromEvents(string campaignId, IEnumerable<object> events)
+    public static CampaignContactJournal Initialize(CampaignSnapshotV11 created,
+        CampaignContentContext context)
     {
-        ArgumentNullException.ThrowIfNull(events);
-        var journal = Empty(campaignId);
-        foreach (var value in events)
-            if (value is ElementMovedV3 movement)
-                journal = journal.Append(movement);
-        return journal;
+        ArgumentNullException.ThrowIfNull(created);
+        var empty = Empty(created.CampaignId);
+        return empty.ApplySources(
+            CampaignContactAdjacencySource.OnCreation(created, context, empty.axis),
+            CampaignContactAdjacencySource.OnCreation(created, context, empty.commonwealth));
     }
 
-    /// <summary>Derive contacts from a committed movement, leaving the prior journal unchanged.</summary>
-    public CampaignContactJournal Append(ElementMovedV3 movement)
+    internal static CampaignContactJournal FromEvents(CampaignContentContext context,
+        IEnumerable<object> events)
     {
-        ArgumentNullException.ThrowIfNull(movement);
-        if (!string.Equals(CampaignId, movement.CampaignId, StringComparison.Ordinal))
-            throw new ArgumentException("Movement belongs to another campaign.", nameof(movement));
-        if (movement.OpenedReactionWindow is null) return this;
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(events);
+        CampaignSnapshotV11? snapshot = null;
+        CampaignContactJournal? journal = null;
+        foreach (var value in events)
+        {
+            var after = CampaignCurrentProjector.Apply(snapshot, value, context);
+            journal = snapshot is null
+                ? Initialize(after, context)
+                : value is ElementMovedV3 movement
+                    ? journal!.AppendMovement(snapshot, after, movement, context)
+                    : journal;
+            snapshot = after;
+        }
+        return journal ?? throw new InvalidCampaignHistoryException("Contact replay requires creation authority.");
+    }
 
+    /// <summary>Derive both audiences' sight from one accepted movement cut.</summary>
+    public CampaignContactJournal AppendMovement(CampaignSnapshotV11 before,
+        CampaignSnapshotV11 after, ElementMovedV3 movement, CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(movement);
+        if (before.CampaignId != CampaignId || after.CampaignId != CampaignId)
+            throw new ArgumentException("Movement belongs to another campaign.", nameof(movement));
+        return ApplySources(
+            CampaignContactAdjacencySource.OnMovement(before, after, movement, context, axis),
+            CampaignContactAdjacencySource.OnMovement(before, after, movement, context, commonwealth));
+    }
+
+    private CampaignContactJournal ApplySources(
+        IReadOnlyList<CampaignContactTransition> axisTransitions,
+        IReadOnlyList<CampaignContactTransition> commonwealthTransitions)
+    {
         var nextAxis = axis.Copy();
         var nextCommonwealth = commonwealth.Copy();
-        var side = movement.OpenedReactionWindow.ReactingSide;
-        var knowledge = side switch
-        {
-            LandSide.Axis => nextAxis,
-            LandSide.Commonwealth => nextCommonwealth,
-            _ => throw new ArgumentException("Movement has an invalid reacting side.", nameof(movement)),
-        };
-        var transitions = CampaignContactReactionSource.Derive(movement, knowledge);
-        if (transitions.Count > MaximumRecords - records.Length)
+        if (axisTransitions.Count + commonwealthTransitions.Count > MaximumRecords - records.Length)
             throw new JsonException("Contact journal exceeds its record limit.");
 
-        var appended = new byte[records.Length + transitions.Count][];
+        var appended = new byte[records.Length + axisTransitions.Count + commonwealthTransitions.Count][];
         Array.Copy(records, appended, records.Length);
-        for (var index = 0; index < transitions.Count; index++)
-        {
-            var canonical = CampaignContactTransitionCodec.SerializeCanonical(transitions[index]);
-            if (canonical.Length > MaximumRecordBytes)
-                throw new JsonException("Contact record exceeds its byte limit.");
-            knowledge.Apply(transitions[index]);
-            appended[records.Length + index] = canonical;
-        }
-
+        var index = records.Length;
+        foreach (var (knowledge, transitions) in new[]
+                 {
+                     (nextAxis, axisTransitions), (nextCommonwealth, commonwealthTransitions),
+                 })
+            foreach (var transition in transitions)
+            {
+                var canonical = CampaignContactTransitionCodec.SerializeCanonical(transition);
+                if (canonical.Length > MaximumRecordBytes)
+                    throw new JsonException("Contact record exceeds its byte limit.");
+                knowledge.Apply(transition);
+                appended[index++] = canonical;
+            }
         return new CampaignContactJournal(CampaignId, nextAxis, nextCommonwealth, appended);
     }
 
@@ -86,9 +112,12 @@ internal sealed class CampaignContactJournal
     /// Cold readback requires the independently replayed, ordered authority events. A contact
     /// record alone cannot establish sight or cause an owner-visible transition.
     /// </summary>
-    public static CampaignContactJournal Replay(string campaignId,
-        IReadOnlyList<ElementMovedV3> committedMovements, IReadOnlyList<byte[]> retainedRecords)
+    public static CampaignContactJournal Replay(CampaignSnapshotV11 initial,
+        CampaignContentContext context, IReadOnlyList<ElementMovedV3> committedMovements,
+        IReadOnlyList<byte[]> retainedRecords)
     {
+        ArgumentNullException.ThrowIfNull(initial);
+        ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(committedMovements);
         ArgumentNullException.ThrowIfNull(retainedRecords);
         if (retainedRecords.Count > MaximumRecords)
@@ -97,9 +126,14 @@ internal sealed class CampaignContactJournal
             if (record is not { Length: > 0 and <= MaximumRecordBytes })
                 throw new JsonException("Missing or oversized retained contact record.");
 
-        var journal = Empty(campaignId);
+        var journal = Initialize(initial, context);
+        var before = initial;
         foreach (var movement in committedMovements)
-            journal = journal.Append(movement);
+        {
+            var after = CampaignCurrentProjector.Apply(before, movement, context);
+            journal = journal.AppendMovement(before, after, movement, context);
+            before = after;
+        }
         if (journal.records.Length != retainedRecords.Count)
             throw new JsonException("Contact records do not match committed movements.");
         for (var index = 0; index < journal.records.Length; index++)

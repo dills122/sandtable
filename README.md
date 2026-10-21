@@ -68,8 +68,9 @@ dormant Core tests; they are not yet exposed as playable actions.
 The permanent fog implementation has started in Core with
 [versioned contact knowledge](docs/specs/combat-contact-knowledge-v1.md): replayed
 side contacts, a side-safe view, visibility-qualified target candidates and a
-source from committed Movement/Reaction evidence. It is not yet wired to
-campaign persistence or player actions; historical observation readers remain
+default adjacency rule at creation and committed Movement cuts. Core's campaign
+exercise session retains contact records and checks them against authority-event
+replay. It is not yet wired to durable Host storage or player actions; historical observation readers remain
 readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

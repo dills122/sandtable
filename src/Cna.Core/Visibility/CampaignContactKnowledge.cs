@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Visibility;
@@ -24,7 +26,7 @@ internal enum CampaignContactAccess
 }
 
 // Core emits these transitions from adjudicated sight, combat, and sharing events.
-// The bound element is private authority data; only CampaignContactView leaves Core.
+// The bound representation is private authority data; only CampaignContactView leaves Core.
 internal sealed record CampaignContactTransition(
     int ContractVersion,
     string CampaignId,
@@ -34,7 +36,7 @@ internal sealed record CampaignContactTransition(
     string SourceRuleId,
     CampaignContactTransitionKind Kind,
     string ContactHandle,
-    string BoundElementId,
+    string BoundRepresentationId,
     string ObserverFormationId,
     string ApparentLocationId,
     CampaignContactIdentification Identification,
@@ -42,7 +44,7 @@ internal sealed record CampaignContactTransition(
 
 internal sealed record CampaignContact(
     string Handle,
-    string BoundElementId,
+    string BoundRepresentationId,
     string ObserverFormationId,
     string ApparentLocationId,
     CampaignContactIdentification Identification,
@@ -68,6 +70,8 @@ internal sealed class CampaignContactKnowledge
 
     private readonly Dictionary<string, CampaignContact> contacts = new(StringComparer.Ordinal);
     private readonly HashSet<(string SourceEventId, string ContactHandle)> appliedSources = [];
+    private readonly Dictionary<string, long> observerRevisions = new(StringComparer.Ordinal);
+    private long sideSharedRevision;
 
     public CampaignContactKnowledge(string campaignId, LandSide side)
     {
@@ -82,7 +86,22 @@ internal sealed class CampaignContactKnowledge
     public long AudienceRevision { get; private set; }
     public long LastAuthorityVersion { get; private set; }
 
-    public string NextHandle() => $"c-{contacts.Count + 1:D8}";
+    public string NextHandle(string observerFormationId)
+    {
+        RequireId(observerFormationId);
+        var scope = SHA256.HashData(Encoding.UTF8.GetBytes(
+            $"{CampaignId}\0{Side}\0{observerFormationId}"));
+        var sequence = contacts.Values.Count(value =>
+            string.Equals(value.ObserverFormationId, observerFormationId, StringComparison.Ordinal)) + 1;
+        return $"c-{Convert.ToHexString(scope.AsSpan(0, 6)).ToLowerInvariant()}-{sequence:D8}";
+    }
+
+    public long AudienceRevisionFor(string actingFormationId)
+    {
+        RequireId(actingFormationId);
+        observerRevisions.TryGetValue(actingFormationId, out var local);
+        return checked(sideSharedRevision + local);
+    }
 
     internal CampaignContactKnowledge Copy()
     {
@@ -93,12 +112,15 @@ internal sealed class CampaignContactKnowledge
         };
         foreach (var (handle, contact) in contacts) copy.contacts.Add(handle, contact);
         foreach (var source in appliedSources) copy.appliedSources.Add(source);
+        foreach (var (observer, revision) in observerRevisions)
+            copy.observerRevisions.Add(observer, revision);
+        copy.sideSharedRevision = sideSharedRevision;
         return copy;
     }
 
-    internal CampaignContact? FindPrivateContact(string boundElementId, string observerFormationId) =>
+    internal CampaignContact? FindPrivateContact(string boundRepresentationId, string observerFormationId) =>
         contacts.Values.SingleOrDefault(contact =>
-            string.Equals(contact.BoundElementId, boundElementId, StringComparison.Ordinal)
+            string.Equals(contact.BoundRepresentationId, boundRepresentationId, StringComparison.Ordinal)
             && string.Equals(contact.ObserverFormationId, observerFormationId, StringComparison.Ordinal));
 
     public IReadOnlyList<CampaignContactView> ObserveFor(string actingFormationId)
@@ -134,7 +156,7 @@ internal sealed class CampaignContactKnowledge
             throw new InvalidOperationException("Contact is unavailable to this formation.");
         }
 
-        return contact.BoundElementId;
+        return contact.BoundRepresentationId;
     }
 
     public void Apply(CampaignContactTransition transition)
@@ -155,7 +177,7 @@ internal sealed class CampaignContactKnowledge
         RequireId(transition.SourceEventId);
         RequireId(transition.SourceRuleId);
         RequireId(transition.ContactHandle);
-        RequireId(transition.BoundElementId);
+        RequireId(transition.BoundRepresentationId);
         RequireId(transition.ObserverFormationId);
         RequireId(transition.ApparentLocationId);
         var sourceKey = (transition.SourceEventId, transition.ContactHandle);
@@ -165,14 +187,17 @@ internal sealed class CampaignContactKnowledge
         var exists = contacts.TryGetValue(transition.ContactHandle, out var prior);
         if (transition.Kind == CampaignContactTransitionKind.Observed)
         {
-            if (exists || !string.Equals(transition.ContactHandle, NextHandle(), StringComparison.Ordinal))
+            if (exists || !string.Equals(transition.ContactHandle,
+                NextHandle(transition.ObserverFormationId), StringComparison.Ordinal))
                 throw new ArgumentException("New contact must use next side-scoped handle.", nameof(transition));
-            if (FindPrivateContact(transition.BoundElementId, transition.ObserverFormationId) is not null)
+            if (FindPrivateContact(transition.BoundRepresentationId, transition.ObserverFormationId) is not null)
                 throw new ArgumentException("Observer already has a handle for this private contact.", nameof(transition));
         }
-        else if (!exists || !string.Equals(prior!.BoundElementId, transition.BoundElementId, StringComparison.Ordinal))
+        else if (!exists
+            || !string.Equals(prior!.BoundRepresentationId, transition.BoundRepresentationId, StringComparison.Ordinal)
+            || !string.Equals(prior.ObserverFormationId, transition.ObserverFormationId, StringComparison.Ordinal))
         {
-            throw new ArgumentException("Contact transition does not match its private binding.", nameof(transition));
+            throw new ArgumentException("Contact transition does not match its private binding and observer.", nameof(transition));
         }
 
         if (transition.Kind == CampaignContactTransitionKind.Lost && !prior!.IsCurrent)
@@ -191,12 +216,22 @@ internal sealed class CampaignContactKnowledge
         var next = transition.Kind switch
         {
             CampaignContactTransitionKind.Lost => prior! with { IsCurrent = false },
-            _ => new CampaignContact(transition.ContactHandle, transition.BoundElementId,
+            _ => new CampaignContact(transition.ContactHandle, transition.BoundRepresentationId,
                 transition.ObserverFormationId, transition.ApparentLocationId,
                 transition.Identification, transition.Access, true),
         };
         if (prior is null || Visible(prior) != Visible(next))
+        {
             AudienceRevision = checked(AudienceRevision + 1);
+            if (prior?.Access == CampaignContactAccess.Side || next.Access == CampaignContactAccess.Side)
+                sideSharedRevision = checked(sideSharedRevision + 1);
+            else
+            {
+                IncrementObserver(next.ObserverFormationId);
+                if (prior is not null && prior.ObserverFormationId != next.ObserverFormationId)
+                    IncrementObserver(prior.ObserverFormationId);
+            }
+        }
         contacts[transition.ContactHandle] = next;
         appliedSources.Add(sourceKey);
         LastAuthorityVersion = transition.AuthorityVersion;
@@ -205,6 +240,12 @@ internal sealed class CampaignContactKnowledge
     private static CampaignContactView Visible(CampaignContact contact) => new(
         contact.Handle, contact.ObserverFormationId, contact.ApparentLocationId,
         contact.Identification, contact.Access, contact.IsCurrent);
+
+    private void IncrementObserver(string observerFormationId)
+    {
+        observerRevisions.TryGetValue(observerFormationId, out var prior);
+        observerRevisions[observerFormationId] = checked(prior + 1);
+    }
 
     private static void RequireId(string value)
     {

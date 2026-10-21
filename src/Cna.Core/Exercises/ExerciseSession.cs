@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
-using Cna.Core.Visibility;
 using Cna.Core.Campaigns;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Exercises;
 
@@ -13,7 +13,7 @@ public sealed class ExerciseSession
         Context = context ?? throw new ArgumentNullException(nameof(context));
         ArgumentNullException.ThrowIfNull(history);
         CurrentHistory = history as ImmutableList<object> ?? ImmutableList.CreateRange(history);
-        CurrentContacts = contacts ?? CampaignContactJournal.FromEvents(snapshot.CampaignId, CurrentHistory);
+        CurrentContacts = contacts ?? CampaignContactJournal.Empty(snapshot.CampaignId);
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
