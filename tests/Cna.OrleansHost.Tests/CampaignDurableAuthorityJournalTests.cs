@@ -95,6 +95,69 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void ContactMovementReferenceCommitsOnceAndReplaysAfterRestart()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = new CampaignCreationRequest(1, "campaign-contact-owner-host",
+            Cna1979Ruleset.Manifest.Hash, 12345,
+            "rules-lab.breakdown.reaction.v1",
+            "sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e",
+            "rules-lab.content.breakdown-reaction.v1",
+            "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd",
+            "breakdown-reaction-lab");
+        var session = journal.CreateCampaign(request);
+        for (var index = 0; index < 20; index++)
+        {
+            var set = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(value => value.Candidates.Count > 0);
+            if (set.Candidates.OfType<MoveElementAction>().Any()) break;
+            var next = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
+                ?? set.Candidates[0];
+            var command = new CampaignActionSubmission(1, set.CampaignId, set.StateVersion,
+                set.PositionId, set.Audience, next.ActionId);
+            var accepted = journal.Append(request.CampaignId, command);
+            Assert.True(accepted.IsAccepted);
+            session = accepted.SuccessorSession!;
+        }
+        var grant = journal.IssueSeatGrant(request.CampaignId,
+            CampaignActionAudience.Axis, OperatorSecret);
+        var credential = journal.RedeemSeatGrant(grant)!;
+        var opening = journal.QueryOwnerOpening(credential, "axis-infantry");
+        Assert.NotEmpty(opening.PublicActionRefs);
+        var reference = opening.PublicActionRefs[0];
+        Assert.False(journal.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, "act.forged").IsAccepted);
+
+        var acceptedOwner = journal.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, reference);
+        Assert.True(acceptedOwner.IsAccepted);
+        var reopened = fixture.Open();
+        var retry = reopened.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, reference);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(acceptedOwner.CanonicalReceipt, retry.CanonicalReceipt);
+        Assert.False(reopened.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision + 1, reference).IsAccepted);
+        Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion + 1,
+            CampaignExercises.QueryCheckpoint(reopened.ReadVerified(request.CampaignId)).StateVersion);
+
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var update = connection.CreateCommand();
+            update.CommandText = """
+                UPDATE accepted_steps SET owner_revision=owner_revision+1
+                WHERE owner_public_ref IS NOT NULL
+                """;
+            Assert.Equal(1, update.ExecuteNonQuery());
+        }
+        Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(request.CampaignId));
+    }
+
+    [Fact]
     public void ExistingSharedDirectoryIsRejectedWithoutChangingItsPermissions()
     {
         if (OperatingSystem.IsWindows()) return;

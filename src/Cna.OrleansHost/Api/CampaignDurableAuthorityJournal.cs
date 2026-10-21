@@ -15,7 +15,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 3;
+    private const int SchemaVersion = 4;
     private const int MaxEvidenceBytes = 2_097_152;
     private readonly string path;
     private readonly TimeProvider clock;
@@ -58,6 +58,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         Execute(connection, """
             CREATE TABLE accepted_steps (
               campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL,
+              action_kind TEXT NOT NULL, acting_element_id TEXT,
+              owner_public_ref TEXT, seat_epoch INTEGER, owner_revision INTEGER,
               canonical_command BLOB NOT NULL, canonical_event BLOB NOT NULL,
               canonical_receipt BLOB NOT NULL, snapshot_checkpoint BLOB NOT NULL,
               prior_hash TEXT NOT NULL, record_hash TEXT NOT NULL,
@@ -69,6 +71,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CREATE TABLE operator_capability (
               singleton INTEGER PRIMARY KEY CHECK(singleton=1), digest BLOB NOT NULL
             )
+            """);
+        Execute(connection, """
+            CREATE UNIQUE INDEX accepted_owner_ref
+            ON accepted_steps(campaign_id,owner_public_ref)
+            WHERE owner_public_ref IS NOT NULL
             """);
         Execute(connection, """
             CREATE TABLE seats (
@@ -190,6 +197,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var head = Load(connection, transaction, campaignId);
         var result = CampaignHostAdapter.Submit(head.Session, submission);
         if (!result.IsAccepted) return result;
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
+        transaction.Commit();
+        return result;
+    }
+
+    private static void PersistAccepted(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId, Loaded head, string kind,
+        string? actingElementId, string? ownerPublicRef, long? seatEpoch,
+        long? ownerRevision,
+        CampaignActionSubmission submission, ExerciseStepResult result)
+    {
         var evidence = result.Evidence!;
         var commandBytes = CampaignActionSubmissionSerializer.SerializeCanonical(submission);
         var eventBytes = evidence.EventRecords.Single();
@@ -198,16 +217,24 @@ internal sealed partial class CampaignDurableAuthorityJournal
         foreach (var bytes in new[] { commandBytes, eventBytes, receiptBytes, checkpoint })
             RequireBounded(bytes);
         var nextSequence = checked(head.Sequence + 1);
-        var nextHash = StepHash(head.Hash, nextSequence, commandBytes, eventBytes,
+        var nextHash = StepHash(head.Hash, nextSequence,
+            kind, actingElementId, ownerPublicRef, seatEpoch, ownerRevision,
+            commandBytes, eventBytes,
             receiptBytes, checkpoint);
         using (var insert = connection.CreateCommand())
         {
             insert.Transaction = transaction;
             insert.CommandText = """
-                INSERT INTO accepted_steps VALUES ($id,$seq,$command,$event,$receipt,$checkpoint,$prior,$hash)
+                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,
+                  $command,$event,$receipt,$checkpoint,$prior,$hash)
                 """;
             insert.Parameters.AddWithValue("$id", campaignId);
             insert.Parameters.AddWithValue("$seq", nextSequence);
+            insert.Parameters.AddWithValue("$kind", kind);
+            insert.Parameters.AddWithValue("$element", (object?)actingElementId ?? DBNull.Value);
+            insert.Parameters.AddWithValue("$ref", (object?)ownerPublicRef ?? DBNull.Value);
+            insert.Parameters.AddWithValue("$epoch", (object?)seatEpoch ?? DBNull.Value);
+            insert.Parameters.AddWithValue("$revision", (object?)ownerRevision ?? DBNull.Value);
             insert.Parameters.AddWithValue("$command", commandBytes);
             insert.Parameters.AddWithValue("$event", eventBytes);
             insert.Parameters.AddWithValue("$receipt", receiptBytes);
@@ -231,8 +258,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (update.ExecuteNonQuery() != 1)
                 throw new InvalidOperationException("Campaign head changed before commit.");
         }
-        transaction.Commit();
-        return result;
     }
 
     private static Loaded Load(SqliteConnection connection, SqliteTransaction transaction,
@@ -271,25 +296,34 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             command.Transaction = transaction;
             command.CommandText = """
-                SELECT sequence,canonical_command,canonical_event,canonical_receipt,
-                  snapshot_checkpoint,prior_hash,record_hash
+                SELECT sequence,action_kind,acting_element_id,owner_public_ref,seat_epoch,
+                  owner_revision,
+                  canonical_command,canonical_event,canonical_receipt,snapshot_checkpoint,
+                  prior_hash,record_hash
                 FROM accepted_steps WHERE campaign_id=$id ORDER BY sequence
                 """;
             command.Parameters.AddWithValue("$id", campaignId);
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                if (reader.GetInt64(0) != checked(++sequence) || reader.GetString(5) != hash)
+                if (reader.GetInt64(0) != checked(++sequence) || reader.GetString(10) != hash)
                     throw new InvalidOperationException("Campaign journal order changed.");
-                var commandBytes = ReadBounded(reader, 1);
-                var eventBytes = ReadBounded(reader, 2);
-                var receiptBytes = ReadBounded(reader, 3);
-                var checkpoint = ReadBounded(reader, 4);
-                hash = StepHash(hash, sequence, commandBytes, eventBytes, receiptBytes, checkpoint);
-                if (reader.GetString(6) != hash)
+                var kind = reader.GetString(1);
+                var actingElementId = reader.IsDBNull(2) ? null : reader.GetString(2);
+                var ownerPublicRef = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var seatEpoch = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
+                var ownerRevision = reader.IsDBNull(5) ? (long?)null : reader.GetInt64(5);
+                var commandBytes = ReadBounded(reader, 6);
+                var eventBytes = ReadBounded(reader, 7);
+                var receiptBytes = ReadBounded(reader, 8);
+                var checkpoint = ReadBounded(reader, 9);
+                hash = StepHash(hash, sequence, kind, actingElementId, ownerPublicRef,
+                    seatEpoch, ownerRevision, commandBytes,
+                    eventBytes, receiptBytes, checkpoint);
+                if (reader.GetString(11) != hash)
                     throw new InvalidOperationException("Campaign journal record changed.");
                 steps.Add(new CampaignHostAcceptedStep(commandBytes, [eventBytes], receiptBytes,
-                    checkpoint));
+                    checkpoint, kind, actingElementId));
             }
         }
         if (sequence != headSequence || hash != headHash)
@@ -349,12 +383,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
         WriteBytes(writer, initial);
     });
 
-    private static string StepHash(string prior, long sequence, byte[] command, byte[] eventBytes,
+    private static string StepHash(string prior, long sequence, string kind,
+        string? actingElementId, string? ownerPublicRef, long? seatEpoch,
+        long? ownerRevision,
+        byte[] command, byte[] eventBytes,
         byte[] receipt, byte[] checkpoint) => Hash(writer =>
     {
-        writer.Write("campaign-durable-authority-v1:step");
+        writer.Write("campaign-durable-authority-v2:step");
         writer.Write(prior);
         writer.Write(sequence);
+        writer.Write(kind);
+        writer.Write(actingElementId ?? string.Empty);
+        writer.Write(ownerPublicRef ?? string.Empty);
+        writer.Write(seatEpoch ?? 0);
+        writer.Write(ownerRevision ?? 0);
         WriteBytes(writer, command);
         WriteBytes(writer, eventBytes);
         WriteBytes(writer, receipt);

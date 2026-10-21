@@ -128,6 +128,11 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission) =>
         CampaignExercises.Submit(session, submission);
 
+    /// <summary>Trusted Core submission against the contact-derived owner cut, never V7 actions.</summary>
+    public static ExerciseStepResult SubmitContactOwnerMovement(
+        ExerciseSession session, CampaignActionSubmission submission, string actingElementId) =>
+        CampaignExercises.SubmitContactOwnerMovement(session, submission, actingElementId);
+
     /// <summary>Private typed decision proof for one accepted step. It neither publishes a
     /// second transition nor supplies browser diary content.</summary>
     public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
@@ -168,7 +173,12 @@ public static class CampaignHostAdapter
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             }
 
-            var accepted = Submit(session, submission);
+            if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind
+                or CampaignHostAcceptedStep.ContactMovementKind))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            var accepted = step.Kind == CampaignHostAcceptedStep.LegacyKind
+                ? Submit(session, submission)
+                : SubmitContactOwnerMovement(session, submission, step.ActingElementId!);
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
@@ -248,7 +258,9 @@ public sealed class CampaignHostAudienceCut
 /// <summary>Private replay evidence; bytes are copied on both ingress and egress.</summary>
 public sealed class CampaignHostAcceptedStep
 {
-    public const int CurrentContractVersion = 1;
+    public const int CurrentContractVersion = 2;
+    public const string LegacyKind = "legacy-action";
+    public const string ContactMovementKind = "contact-movement";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -256,9 +268,16 @@ public sealed class CampaignHostAcceptedStep
     private readonly byte[] snapshotCheckpoint;
 
     public CampaignHostAcceptedStep(byte[] canonicalCommand, IReadOnlyList<byte[]> eventRecords,
-        byte[] canonicalReceipt, byte[] snapshotCheckpoint)
+        byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
+        string? actingElementId = null)
     {
-        ContractVersion = CurrentContractVersion;
+        if (kind is not (LegacyKind or ContactMovementKind)
+            || (kind == ContactMovementKind && string.IsNullOrWhiteSpace(actingElementId))
+            || (kind == LegacyKind && actingElementId is not null))
+            throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
+        ContractVersion = kind == LegacyKind ? 1 : CurrentContractVersion;
+        Kind = kind;
+        ActingElementId = actingElementId;
         this.canonicalCommand = canonicalCommand?.ToArray()
             ?? throw new ArgumentNullException(nameof(canonicalCommand));
         ArgumentNullException.ThrowIfNull(eventRecords);
@@ -273,6 +292,8 @@ public sealed class CampaignHostAcceptedStep
 
     public byte[] CanonicalCommand => canonicalCommand.ToArray();
     public int ContractVersion { get; }
+    public string Kind { get; }
+    public string? ActingElementId { get; }
     public IReadOnlyList<byte[]> EventRecords =>
         Array.AsReadOnly(eventRecords.Select(value => value.ToArray()).ToArray());
     public byte[] CanonicalReceipt => canonicalReceipt.ToArray();

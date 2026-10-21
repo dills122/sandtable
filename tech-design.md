@@ -756,8 +756,10 @@ canonical creation and accepted-step evidence in SQLite, commits each step with 
 and requires full Core replay before a cold read or next append. Its durable side grants
 and credentials are bound to revocable seat epochs. An internal owner-opening query stores
 visible bytes and HMAC action references separately from the current private authority fence
-and Core action map; equal visible cuts keep the same refs across hidden transitions. There is
-still no public opening route or contact-derived submit path.
+and Core action map; equal visible cuts keep the same refs across hidden transitions. Internal
+contact-derived movement submission checks those references and retains a distinct replay kind,
+with exact retry returning the retained receipt. There is still no public opening route or native
+Combat action stage.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.

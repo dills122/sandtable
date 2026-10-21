@@ -100,8 +100,9 @@ is a transport responsibility, while order legality stays in Core.
 **Chronicle** is authoritative event history and replay. **War Diary** is its derived human-readable
 account. **Archives** is campaign storage, snapshots and saves. The normal Host's internal
 durable authority journal retains Core evidence and verifies it by replay, with private side
-credential custody and an internal owner-opening binding. Public opening, submission, and
-resume still need their normal campaign path. A replay checkpoint does not by itself
+credential custody, owner-opening binding, and internal contact-derived movement submission.
+Public opening, Combat submission, and resume still need their normal campaign path. A replay
+checkpoint does not by itself
 constitute a durable player save/resume product.
 
 **Maproom** is the player application: map, orders, legal actions and audience-safe reports.

@@ -5,6 +5,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 using Cna.Core.Tests.Campaigns;
 using Cna.Core.Tests.Content;
 using Cna.Core.Visibility;
@@ -13,6 +14,71 @@ namespace Cna.Core.Tests.Observations;
 
 public sealed class CampaignContactOwnerMovementCutTests
 {
+    [Fact]
+    public void ContactDerivedMovementExecutesAtSameCutWithoutHistoricalV7OfferLookup()
+    {
+        var setup = CampaignSetupSnapshotV6.FromDefinition(
+            Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
+                value.SetupId == Cna1979BreakdownSetupCatalog.ReactionSetupId));
+        var request = new CampaignCreationRequest(1, "contact-owner-submit-test",
+            Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.SetupHash,
+            setup.Content.Pack.PackId, setup.Content.Pack.Hash, setup.Content.ScenarioId);
+        var started = CampaignHostAdapter.Create(request);
+        var session = started.Session!;
+        var retained = new List<CampaignHostAcceptedStep>();
+        for (var index = 0; index < 20; index++)
+        {
+            var set = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(value => value.Candidates.Count > 0);
+            if (set.Candidates.OfType<MoveElementAction>().Any()) break;
+            var next = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
+                ?? set.Candidates[0];
+            var command = new CampaignActionSubmission(1, set.CampaignId, set.StateVersion,
+                set.PositionId, set.Audience, next.ActionId);
+            var step = CampaignHostAdapter.Submit(session, command);
+            Assert.True(step.IsAccepted);
+            retained.Add(new CampaignHostAcceptedStep(
+                CampaignActionSubmissionSerializer.SerializeCanonical(command),
+                step.Evidence!.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(
+                    step.Evidence.Receipt), step.Evidence.SnapshotCheckpoint));
+            session = step.SuccessorSession!;
+        }
+        var snapshot = session.CurrentSnapshot;
+        var context = session.Context;
+        var cut = CampaignContactOwnerMovementCut.Project(snapshot, context,
+            session.CurrentContacts, LandSide.Axis, "axis-infantry");
+        var move = cut.MovementOffers[0];
+        var submission = new CampaignActionSubmission(1, snapshot.CampaignId,
+            snapshot.StateVersion, CampaignCurrentActionExecution.CurrentPositionId(snapshot),
+            CampaignActionAudience.Axis, move.ActionId);
+
+        var accepted = CampaignHostAdapter.SubmitContactOwnerMovement(session, submission,
+            "axis-infantry");
+
+        Assert.True(accepted.IsAccepted, accepted.RejectionReason.ToString());
+        Assert.NotNull(accepted.SuccessorSession);
+        Assert.Equal(snapshot.StateVersion + 1,
+            CampaignExercises.QueryCheckpoint(accepted.SuccessorSession).StateVersion);
+        Assert.Equal(snapshot.StateVersion + 1,
+            accepted.SuccessorSession.CurrentContacts.AuthorityVersion);
+        retained.Add(new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(submission),
+            accepted.Evidence!.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(
+                accepted.Evidence.Receipt), accepted.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.ContactMovementKind, "axis-infantry"));
+        var replayed = CampaignHostAdapter.Import(request, started.CreationEventBytes!,
+            started.InitialSnapshotBytes!, retained);
+        Assert.True(replayed.IsVerified);
+        Assert.Equal(accepted.Evidence.SnapshotCheckpoint,
+            CampaignCurrentSnapshotSerializer.Serialize(replayed.Session!.CurrentSnapshot));
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
+            CampaignHostAdapter.SubmitContactOwnerMovement(session,
+                submission with { ActionId = "sha256:" + new string('0', 64) },
+                "axis-infantry").RejectionReason);
+    }
+
     [Fact]
     public void HiddenEnemyPositionDoesNotChangeOwnerContactsOrMovementOffers()
     {

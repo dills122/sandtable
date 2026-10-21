@@ -82,7 +82,8 @@ any legal action is offered. A side observation never contains a private
 opponent ID, source ID, or authority version. The private target lookup stays
 inside Core and rejects stale or inaccessible handles.
 
-The next implementation stage persists these transitions with the campaign,
-adds explicit sharing under the same rule, and makes one Core
-observation/action pair and Host owner opening consume them. Until that is
-complete, this contract is internal and unissuable; it does not admit Combat.
+Core now retains contact transitions with campaign evidence and supplies a same-cut owner
+movement view and offers. Host stores a private owner opening and accepts contact-derived
+movement through the durable journal; the public route and native Combat action stage are still
+absent. Explicit sharing and the full source-backed detection rule remain open. This contract
+does not by itself admit Combat.

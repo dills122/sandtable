@@ -65,6 +65,23 @@ public static class CampaignExercises
             session.CurrentSnapshot,
             session.Context,
             submission);
+        return Complete(session, execution);
+    }
+
+    internal static ExerciseStepResult SubmitContactOwnerMovement(
+        ExerciseSession session, CampaignActionSubmission submission, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        var execution = CampaignCurrentActionExecution.ExecuteContactMovement(
+            session.CurrentSnapshot, session.Context, session.CurrentContacts,
+            submission, actingElementId);
+        return Complete(session, execution);
+    }
+
+    private static ExerciseStepResult Complete(ExerciseSession session,
+        CampaignCurrentActionExecutionResult execution)
+    {
         if (!execution.IsAccepted)
             return ExerciseStepResult.Rejected(execution.RejectionReason);
 

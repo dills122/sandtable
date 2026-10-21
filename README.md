@@ -79,7 +79,9 @@ that atomically retains accepted Core evidence and verifies it by full Core repl
 It now retains one-time side grants and restart-safe credential digests with epoch revocation.
 An internal authenticated owner-opening query retains a side-safe visible cut and private
 reference-to-Core-action map. It keeps outward bytes and refs stable across unseen authority
-changes. There is no public opening route or contact-derived submit path yet; historical
+changes. Internal contact-derived owner movement now commits once with seat, opening and
+reference fences; cold replay verifies the same path and an exact retry returns the retained
+receipt. There is no public opening route or native Combat action stage yet; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
