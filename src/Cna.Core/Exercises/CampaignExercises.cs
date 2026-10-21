@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Exercises;
 
@@ -59,7 +60,10 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(execution.RejectionReason);
 
         var history = session.CurrentHistory.Add(execution.AcceptedEvent!);
-        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history);
+        var contacts = execution.AcceptedEvent is ElementMovedV3 movement
+            ? session.CurrentContacts.Append(movement)
+            : session.CurrentContacts;
+        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,
             CampaignCurrentEventSerializer.Serialize(execution.AcceptedEvent!),
@@ -86,7 +90,13 @@ public static class CampaignExercises
             var replayed = CampaignCurrentProjector.Replay(replayEvents, completedSession.Context);
             var replayedBytes = CampaignCurrentSnapshotSerializer.Serialize(replayed);
             var replayedHash = Hash(replayedBytes);
-            var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes)
+            var contactRecords = completedSession.CurrentContacts.Records;
+            var replayedContacts = CampaignContactJournal.FromEvents(
+                replayed.CampaignId, replayEvents).Records;
+            var contactsMatch = contactRecords.Count == replayedContacts.Count
+                && contactRecords.Zip(replayedContacts).All(pair =>
+                    pair.First.AsSpan().SequenceEqual(pair.Second));
+            var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes) && contactsMatch
                 ? ExerciseReconstructionFailureReason.None
                 : ExerciseReconstructionFailureReason.SnapshotMismatch;
             return new ExerciseReconstructionResult(

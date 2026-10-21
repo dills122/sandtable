@@ -31,6 +31,19 @@ source/contact pair, invented or reused handle, and a transition against the
 wrong private binding. Event replay, not a caller-supplied World projection,
 is the source of side contact knowledge for the successor.
 
+`CampaignContactJournal` now retains canonical contact records beside the
+campaign's committed movement stream. Its cold readback re-derives each record
+from independently replayed movement events and compares exact bytes; a
+missing, altered, or invented contact record fails closed. The journal owns
+both sides' knowledge and emits only the requested side's view. This is the
+Core replay contract that durable campaign storage must append atomically
+with its source event. It does not by itself issue an owner opening.
+`CampaignExercises` now carries this journal with its accepted event history;
+session reconstruction independently replays contact records from that
+history and rejects a mismatch. The current V7 observation remains a
+historical reader. New owner observations must use the successor contact
+projection and action set at one cut.
+
 The first live source is a committed native Movement v3 event with a frozen
 Reaction opportunity. Its adjacency evidence identifies a specific reacting
 formation and the apparent moved location. Core derives one contact event for
