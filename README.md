@@ -113,9 +113,10 @@ unavailable-clock callback records Core V19 cancellation with zero or one accept
 verified cold replay rejects changed round evidence. A permanent adjacent-infantry Rules Lab
 scenario exercises that normal owner path through restart. Core V20 now records the
 infantry-only empty Anti Armor step after either Force completion or cancellation;
-normal Host appends it atomically and cold replays it. Close Assault closure,
-non-infantry disposition, Reserve Release,
-assault adjudication and public route remain unfinished; historical
+normal Host appends it atomically and cold replays it. On a cancelled Force round,
+Core V21 closes Close Assault without a draw and reaches same-slot Reserve Release.
+Positive Close Assault adjudication, non-infantry disposition, and public route
+remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

@@ -198,6 +198,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(antiArmor.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatCancelledAssault(
+        CampaignNativeCombatCancelledAssaultV21 cancelledAssault)
+    {
+        ArgumentNullException.ThrowIfNull(cancelledAssault);
+        if (cancelledAssault.CampaignId != CampaignId
+            || cancelledAssault.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Cancelled assault does not bind contact authority.",
+                nameof(cancelledAssault));
+        return AtAuthorityVersion(cancelledAssault.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

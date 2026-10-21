@@ -128,8 +128,9 @@ Force Assignment opening and seals. Schema-5/6 journals stay readable but cannot
 create new campaigns. Schema 7 retains one shared Force round for both seats;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
 inventing an owner seal. Core V20/normal Host complete the infantry-only empty
-Anti Armor step from either Force outcome. Close Assault structural closure and
-non-infantry disposition remain unissued. Public
+Anti Armor step from either Force outcome. Core V21 retains cancelled Close Assault
+closure and same-slot Reserve Release;
+positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself

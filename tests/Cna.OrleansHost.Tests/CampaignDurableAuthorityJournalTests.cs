@@ -254,7 +254,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.False(expired.IsAccepted);
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(20, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(21, CampaignExercises.QueryCheckpoint(after).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         Assert.Throws<InvalidOperationException>(() =>
             cold.QueryForceOwnerOpening(defender, defenderId));
@@ -287,7 +287,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.False(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(20, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(21, CampaignExercises.QueryCheckpoint(after).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
@@ -296,6 +296,9 @@ public sealed class CampaignDurableAuthorityJournalTests
             + "AND action_kind='contact-force-seal'";
         query.Parameters.AddWithValue("$id", request.CampaignId);
         Assert.Equal(0L, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+            + "AND action_kind='native-combat-cancelled-assault'";
+        Assert.Equal(1L, query.ExecuteScalar());
     }
 
     [Fact]
@@ -310,7 +313,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         clock.Advance(TimeSpan.FromSeconds(-1));
         Assert.True(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(20, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.Equal(21, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
     }
 

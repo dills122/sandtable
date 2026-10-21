@@ -107,6 +107,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.NativeCombatAntiArmorKind,
             null, null, null, null, command, accepted);
+        var closeAssaultHead = Load(connection, transaction, campaignId);
+        var cancelled = CampaignHostAdapter.CompleteNativeCombatCancelledAssault(
+            closeAssaultHead.Session);
+        if (!cancelled.IsAccepted) return;
+        var cancelledCommand = CampaignHostAdapter.NativeCombatCancelledAssaultCommand(
+            closeAssaultHead.Session, cancelled);
+        PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
+            CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind,
+            null, null, null, null, cancelledCommand, cancelled);
     }
 
     internal bool TickForceRound(string campaignId)

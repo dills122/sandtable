@@ -797,7 +797,10 @@ deadline or clock failure, and verifies round status and evidence on cold replay
 preserves zero or one seal and advances to Anti Armor. Core V20 then records an
 explicit no-effect Anti Armor outcome for infantry-only content, bound to that Force
 event; normal Host appends it in the same transaction and verifies cold replay.
-Close Assault and later no-attack completions remain to implement. Source-backed disposition for
+For a cancelled Force round, Core V21 completes Close Assault without a result
+draw and advances to same-slot Reserve Release; normal Host retains that event in
+the same transaction. Positive Close Assault adjudication remains to implement.
+Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede

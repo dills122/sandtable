@@ -19,7 +19,8 @@ public sealed class ExerciseSession
         IEnumerable<CampaignNativeCombatForceSealV17>? combatForceSeals = null,
         CampaignNativeCombatForceCompletionV18? combatForceCompletion = null,
         CampaignNativeCombatForceCancellationV19? combatForceCancellation = null,
-        CampaignNativeCombatAntiArmorV20? combatAntiArmor = null)
+        CampaignNativeCombatAntiArmorV20? combatAntiArmor = null,
+        CampaignNativeCombatCancelledAssaultV21? combatCancelledAssault = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -96,6 +97,12 @@ public sealed class ExerciseSession
             || combatAntiArmor.CampaignId != snapshot.CampaignId))
             throw new ArgumentException("Anti Armor must bind one retained Force outcome.",
                 nameof(combatAntiArmor));
+        if (combatCancelledAssault is not null && (combatAntiArmor is null
+            || combatForceCancellation is null
+            || combatCancelledAssault.PriorStateVersion != combatAntiArmor.StateVersion
+            || combatCancelledAssault.CampaignId != snapshot.CampaignId))
+            throw new ArgumentException("Cancelled Close Assault must bind retained Anti Armor.",
+                nameof(combatCancelledAssault));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -108,6 +115,7 @@ public sealed class ExerciseSession
         CurrentCombatForceCompletion = combatForceCompletion;
         CurrentCombatForceCancellation = combatForceCancellation;
         CurrentCombatAntiArmor = combatAntiArmor;
+        CurrentCombatCancelledAssault = combatCancelledAssault;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -125,5 +133,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatForceCompletionV18? CurrentCombatForceCompletion { get; }
     internal CampaignNativeCombatForceCancellationV19? CurrentCombatForceCancellation { get; }
     internal CampaignNativeCombatAntiArmorV20? CurrentCombatAntiArmor { get; }
+    internal CampaignNativeCombatCancelledAssaultV21? CurrentCombatCancelledAssault { get; }
     public override string ToString() => nameof(ExerciseSession);
 }
