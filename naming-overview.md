@@ -45,6 +45,11 @@ Intelligence and Maproom cannot invent outcomes or mutate authority. Internally,
 `CampaignContactKnowledge` is a plain Core technical name for replayed side
 knowledge in the permanent fog rule; `CampaignContactView` is its outward
 projection, with private target binding retained only by Umpire.
+`CampaignNativeCombatSelectionStateV12` is the first internal Combat authority step:
+it stores the selected contact action and private defender binding for deterministic
+Exercise and Host replay. It is not a public Combat route or adjudicated result.
+The normal Host's internal Combat opening and submission use the same seat and durable
+journal as owner Movement; they do not publish a playable endpoint yet.
 The private [actual repeated Movement completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
 uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
 `complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner
@@ -102,9 +107,88 @@ account. **Archives** is campaign storage, snapshots and saves. The normal Host'
 durable authority journal retains Core evidence and verifies it by replay, with private side
 credential custody, owner-opening binding, atomic contact-record custody, and internal
 contact-derived movement submission against the current equal-visible owner cut.
-Public opening, Combat submission, and resume still need their normal campaign path. A replay
+The same normal journal now retains internal contact-based Combat assault or no-attack
+decisions with cold-replay receipts. Voluntary finish adds a V13 System no-attack completion
+that records each remaining Combat successor through Reserve Release entry without releasing
+reserves or adjudicating an assault. Selected infantry assault adds a V14 System no-effect
+Barrage successor into Retreat Before Assault under the same durable owner submission. Defender
+RBA move/decline candidates now come from the first side-scoped defender contact cut;
+hidden occupancy does not control offer presence. Trusted Host draft keeps visible bytes
+separate from private action IDs. An explicit defender decline uses a V15 owner event
+and the normal durable Host receipt. A first defender retreat move uses a V16 owner
+event, updates Core World/contact authority, and returns to the RBA choice through
+the normal durable Host receipt. Further offered moves use the same ordered Core/Host
+path. The next Core Force Assignment candidate binds only the owner's own current
+infantry TOE; opponent allocation stays private. Core V17 and normal Host now
+retain each owner's separate seal and cold-replay receipt. A distinct V18
+System completion advances after both seals.
+Normal campaign timing configuration is an explicit seven-window parent
+binding retained in the durable Host journal; absent configuration blocks
+Force Assignment opening and seals. Schema-5/6 journals stay readable but cannot
+create new campaigns. Schema 7 retains one shared Force round for both seats;
+trusted deadline/high-water checks close incomplete rounds through Core V19 without
+inventing an owner seal. Core V20/normal Host complete the infantry-only empty
+Anti Armor step from either Force outcome. Core V21 retains cancelled Close Assault
+closure and same-slot Reserve Release. `force-unavailable` names a Core-verified
+V19 System cancellation before a Force round exists when the selected contact
+has no payable pinned role pair or timing envelope; it does not alter visible offer presence.
+Initial V13/V21 completion enters V27 Reserve Release, and V28 offers Finish
+alone when no Combat result cursor is retained;
+normal Content 6 can resolve an exact-pack Combat source supplement for Basic Morale,
+offensive ratings, and initial ammunition, with no positive draw until its hash is retained and replayed;
+the 10-TOE adjacent-infantry assault setup is a normal catalog campaign;
+its Core ammunition ledger is seeded by the same exact-pack source and must be
+debited by replayed accepted settlements;
+the normal positive-assault input cut binds both owner seals to those private facts;
+Core V22 derives an ordered, replayable chart result from the retained RNG cursor,
+binds both roles' paid capability points to canonical prior/paid normal World hashes,
+and normal Host retains it with source-derived ammunition spend on cold readback,
+and V24 now accepts World TOE/cohesion losses, moved retreat and pending
+captives; Core V25 accepts custody disposition with typed guard or delayed
+replacement assets and independent replay, while normal Host cold-replays the
+System no-captive case;
+internal V26 successor state derives Reserve Release, settled World, RNG,
+and custody from accepted V25 without widening the historical V11 snapshot;
+Exercise and normal Host cold-replay the V26 checkpoint, while the following
+ordinary action remains pending;
+normal Core Reserve Release rules derive only the acting side's due members,
+choices, resulting World, and next-cycle movement allowance; Exercise and normal
+Host retain and cold-replay V27 ordered choices and completion, with a side-safe
+owner opening and fenced receipt. V28 names the separate authenticated
+repeat-or-finish cycle choice; its Core event and normal Host cold replay enter
+same-side Movement ordinal two or same-slot Truck Convoy. Repeat currently has
+a released-unit movement witness; V29 now accepts one such owner movement
+through normal Core/Host World/contact replay and a restart-stable receipt.
+V30 records the cohortless Breakdown System determination into Combat with
+normal Host cold replay. Internal V31 projects repeated Combat owner offers
+without rebuilding V11 and binds an exact replayed owner choice. Exercise and
+normal Host now accept it; a V32 voluntary finish reaches same-ordinal Reserve
+Release and its subsequent cycle choice with cold replay. A selected V31 assault
+uses the same native Combat event families V14-V28 against retained later-cycle
+World, contact, and RNG authority, including World settlement and a restart-safe
+Host receipt. A repeated defender RBA move now updates World/contact authority
+before decline and remains replayable through the local owner HTTP route.
+The repeated Force timeout retains cancellation and a no-result path to
+same-slot Reserve Release. V28 offers Finish only after cycle ordinal two;
+Core rejects an unoffered Repeat event on replay. Further selected cycles, vehicle
+accounting, and public routing remain pending;
+the internal Core custody cut derives captor choices from accepted V24 World,
+current captor contact, and published route/terrain; normal Host now retains a
+captor-only side-safe opening, submission and restart receipt, while the public
+route and next campaign position remain pending;
+the normal 10-TOE pack's separate retreat-source supplement pins side supply
+anchors and Core derives post-result defender route/refusal offers from the
+side contact cut; Core V23 and normal Host accept and cold-replay that
+defender choice behind the durable seat/opening/reference fence;
+positive Close Assault and non-infantry disposition remain unissued. Public
+opening, Combat submission, and resume still need
+their normal campaign path. A replay
 checkpoint does not by itself
 constitute a durable player save/resume product.
+
+The normal journal's opt-in local `/api/v2/campaigns` route is a versioned
+Host adapter for operator creation, seat grants, owner openings, and accepted
+action acknowledgements; the private Core receipt stays in Chronicle/Archives.
 
 **Maproom** is the player application: map, orders, legal actions and audience-safe reports.
 `site/` is the existing project website, with labeled concept illustrations. The first Maproom target

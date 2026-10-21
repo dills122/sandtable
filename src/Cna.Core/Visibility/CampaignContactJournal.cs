@@ -113,6 +113,260 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(after.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatSelection(
+        CampaignNativeCombatDecisionStateV12 selected)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        if (selected.CampaignId != CampaignId
+            || selected.PriorSnapshot.StateVersion != AuthorityVersion
+            || selected.StateVersion != checked(AuthorityVersion + 1))
+            throw new ArgumentException("Combat selection does not bind the contact authority cut.", nameof(selected));
+        return AtAuthorityVersion(selected.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatNoAttackCompletion(
+        CampaignNativeCombatNoAttackCompletionV13 completion)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        if (completion.CampaignId != CampaignId
+            || completion.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("No-attack completion does not bind contact authority.",
+                nameof(completion));
+        return AtAuthorityVersion(completion.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatBarrage(
+        CampaignNativeCombatBarrageV14 barrage)
+    {
+        ArgumentNullException.ThrowIfNull(barrage);
+        if (barrage.CampaignId != CampaignId
+            || barrage.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Barrage does not bind contact authority.", nameof(barrage));
+        return AtAuthorityVersion(barrage.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatRetreatDecline(
+        CampaignNativeCombatRetreatDeclineV15 decline)
+    {
+        ArgumentNullException.ThrowIfNull(decline);
+        if (decline.CampaignId != CampaignId
+            || decline.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Defender decline does not bind contact authority.",
+                nameof(decline));
+        return AtAuthorityVersion(decline.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatForceSeal(
+        CampaignNativeCombatForceSealV17 seal)
+    {
+        ArgumentNullException.ThrowIfNull(seal);
+        if (seal.CampaignId != CampaignId || seal.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Force seal does not bind contact authority.", nameof(seal));
+        return AtAuthorityVersion(seal.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatForceCompletion(
+        CampaignNativeCombatForceCompletionV18 completion)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        if (completion.CampaignId != CampaignId
+            || completion.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Force completion does not bind contact authority.",
+                nameof(completion));
+        return AtAuthorityVersion(completion.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatForceCancellation(
+        CampaignNativeCombatForceCancellationV19 cancellation)
+    {
+        ArgumentNullException.ThrowIfNull(cancellation);
+        if (cancellation.CampaignId != CampaignId
+            || cancellation.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Force cancellation does not bind contact authority.",
+                nameof(cancellation));
+        return AtAuthorityVersion(cancellation.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatAntiArmor(
+        CampaignNativeCombatAntiArmorV20 antiArmor)
+    {
+        ArgumentNullException.ThrowIfNull(antiArmor);
+        if (antiArmor.CampaignId != CampaignId
+            || antiArmor.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Anti Armor does not bind contact authority.",
+                nameof(antiArmor));
+        return AtAuthorityVersion(antiArmor.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatCancelledAssault(
+        CampaignNativeCombatCancelledAssaultV21 cancelledAssault)
+    {
+        ArgumentNullException.ThrowIfNull(cancelledAssault);
+        if (cancelledAssault.CampaignId != CampaignId
+            || cancelledAssault.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Cancelled assault does not bind contact authority.",
+                nameof(cancelledAssault));
+        return AtAuthorityVersion(cancelledAssault.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatAssaultResult(
+        CampaignNativeCombatAssaultResultV22 result)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        if (result.CampaignId != CampaignId
+            || result.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Assault result does not bind contact authority.",
+                nameof(result));
+        return AtAuthorityVersion(result.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatRetreatAfterAssault(
+        CampaignNativeCombatRetreatAfterAssaultV23 retreat)
+    {
+        ArgumentNullException.ThrowIfNull(retreat);
+        if (retreat.CampaignId != CampaignId
+            || retreat.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Post-result retreat does not bind contact authority.",
+                nameof(retreat));
+        return AtAuthorityVersion(retreat.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatSettlement(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatRetreatAfterAssaultV23 retreat,
+        CampaignNativeCombatSettlementV24 settlement,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(settlement);
+        if (settlement.CampaignId != CampaignId
+            || settlement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Settlement does not bind contact authority.",
+                nameof(settlement));
+        return ApplySources(
+                CampaignContactAdjacencySource.OnNativeSettlement(before, after,
+                    settlement, retreat, context, axis),
+                CampaignContactAdjacencySource.OnNativeSettlement(before, after,
+                    settlement, retreat, context, commonwealth))
+            .AtAuthorityVersion(settlement.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatCustodyDisposition(
+        CampaignNativeCombatCustodyDispositionV25 disposition)
+    {
+        ArgumentNullException.ThrowIfNull(disposition);
+        if (disposition.CampaignId != CampaignId
+            || disposition.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Custody does not bind contact authority.",
+                nameof(disposition));
+        return AtAuthorityVersion(disposition.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatSuccessor(
+        CampaignNativeCombatSuccessorV26 successor)
+    {
+        ArgumentNullException.ThrowIfNull(successor);
+        if (successor.CampaignId != CampaignId
+            || successor.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Combat successor does not bind contact authority.",
+                nameof(successor));
+        return AtAuthorityVersion(successor.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeReserveRelease(
+        CampaignNativeReserveReleaseEventV27 reserveEvent)
+    {
+        ArgumentNullException.ThrowIfNull(reserveEvent);
+        if (reserveEvent.CampaignId != CampaignId
+            || reserveEvent.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Reserve Release does not bind contact authority.",
+                nameof(reserveEvent));
+        return AtAuthorityVersion(reserveEvent.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCycleControl(
+        CampaignNativeCycleControlV28 control)
+    {
+        ArgumentNullException.ThrowIfNull(control);
+        if (control.CampaignId != CampaignId
+            || control.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Cycle control does not bind contact authority.",
+                nameof(control));
+        return AtAuthorityVersion(control.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeRepeatMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeRepeatMovementV29 movement,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        if (movement.CampaignId != CampaignId
+            || movement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated Movement does not bind contact authority.",
+                nameof(movement));
+        return ApplySources(
+                CampaignContactAdjacencySource.OnNativeRepeatMove(before, after,
+                    movement, context, axis),
+                CampaignContactAdjacencySource.OnNativeRepeatMove(before, after,
+                    movement, context, commonwealth))
+            .AtAuthorityVersion(movement.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeRepeatBreakdown(
+        CampaignNativeRepeatBreakdownV30 breakdown)
+    {
+        ArgumentNullException.ThrowIfNull(breakdown);
+        if (breakdown.CampaignId != CampaignId
+            || breakdown.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated Breakdown does not bind contact authority.",
+                nameof(breakdown));
+        return AtAuthorityVersion(breakdown.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeRepeatCombatSelection(
+        CampaignNativeRepeatCombatDecisionV31 selection)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        if (selection.CampaignId != CampaignId
+            || selection.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated Combat selection does not bind contact authority.",
+                nameof(selection));
+        return AtAuthorityVersion(selection.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeRepeatCombatNoAttack(
+        CampaignNativeRepeatCombatNoAttackV32 completion)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        if (completion.CampaignId != CampaignId
+            || completion.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated no-attack completion does not bind contact authority.",
+                nameof(completion));
+        return AtAuthorityVersion(completion.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatRetreatMoveV16 movement, string representationId,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        if (movement.CampaignId != CampaignId
+            || movement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Defender movement does not bind contact authority.",
+                nameof(movement));
+        return ApplySources(
+                CampaignContactAdjacencySource.OnNativeRetreatMove(before, after,
+                    movement, representationId, context, axis),
+                CampaignContactAdjacencySource.OnNativeRetreatMove(before, after,
+                    movement, representationId, context, commonwealth))
+            .AtAuthorityVersion(movement.StateVersion);
+    }
+
     private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
     {
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId
@@ -194,6 +448,9 @@ internal sealed class CampaignContactJournal
 
     public IReadOnlyList<CampaignContactTargetCandidate> CurrentTargetsFor(
         LandSide side, string actingFormationId) => Knowledge(side).CurrentTargetsFor(actingFormationId);
+
+    internal string ResolvePrivateTarget(LandSide side, string actingFormationId,
+        string contactHandle) => Knowledge(side).ResolvePrivateTarget(actingFormationId, contactHandle);
 
     private CampaignContactKnowledge Knowledge(LandSide side) => side switch
     {

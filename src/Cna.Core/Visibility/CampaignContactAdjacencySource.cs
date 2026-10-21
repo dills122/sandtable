@@ -20,7 +20,8 @@ internal static class CampaignContactAdjacencySource
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(knowledge);
         RequireAuthority(created, context, knowledge);
-        return Derive(null, created, context.ArtifactV6!, knowledge, null);
+        return Derive(null, created.World, created.CampaignId, created.StateVersion,
+            context.ArtifactV6!, knowledge, null);
     }
 
     public static IReadOnlyList<CampaignContactTransition> OnMovement(
@@ -43,6 +44,83 @@ internal static class CampaignContactAdjacencySource
             context, knowledge);
     }
 
+    public static IReadOnlyList<CampaignContactTransition> OnNativeRetreatMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatRetreatMoveV16 movement, string representationId,
+        CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(movement);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(knowledge);
+        if (context.ArtifactV6 is null || movement.CampaignId != knowledge.CampaignId
+            || movement.PriorStateVersion < 1
+            || !before.Representations.Any(value => value.RepresentationId == representationId
+                && value.CurrentLocationId == movement.OriginLocationId)
+            || !after.Representations.Any(value => value.RepresentationId == representationId
+                && value.CurrentLocationId == movement.DestinationLocationId))
+            throw new ArgumentException("Retreat movement does not bind both world cuts.", nameof(movement));
+        return Derive(before, after, movement.CampaignId, movement.StateVersion,
+            context.ArtifactV6, knowledge, representationId);
+    }
+
+    internal static IReadOnlyList<CampaignContactTransition> OnNativeRepeatMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeRepeatMovementV29 movement,
+        CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(movement);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(knowledge);
+        if (context.ArtifactV6 is null || movement.CampaignId != knowledge.CampaignId
+            || movement.PriorWorldHash != CampaignNativeCombatPaidWorldV22.Hash(before)
+            || movement.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(after)
+            || !before.Representations.Any(value =>
+                value.RepresentationId == movement.RepresentationId
+                && value.CurrentLocationId == movement.OriginLocationId)
+            || !after.Representations.Any(value =>
+                value.RepresentationId == movement.RepresentationId
+                && value.CurrentLocationId == movement.DestinationLocationId))
+            throw new ArgumentException(
+                "Repeated Movement does not bind both World cuts.", nameof(movement));
+        return Derive(before, after, movement.CampaignId, movement.StateVersion,
+            context.ArtifactV6, knowledge, movement.RepresentationId);
+    }
+
+    public static IReadOnlyList<CampaignContactTransition> OnNativeSettlement(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatSettlementV24 settlement,
+        CampaignNativeCombatRetreatAfterAssaultV23 retreat,
+        CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(settlement);
+        ArgumentNullException.ThrowIfNull(retreat);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(knowledge);
+        if (context.ArtifactV6 is null || settlement.CampaignId != knowledge.CampaignId
+            || settlement.PriorStateVersion != retreat.StateVersion
+            || settlement.PaidWorldHash != CampaignNativeCombatPaidWorldV22.Hash(before)
+            || settlement.SettledWorldHash != CampaignNativeCombatPaidWorldV22.Hash(after))
+            throw new ArgumentException("Settlement contact source lacks both World cuts.",
+                nameof(settlement));
+        if (retreat.Disposition != "moved") return [];
+        var representation = before.Representations.Single(value =>
+            value.BoundElementIds.Count == 1
+            && value.BoundElementIds[0] == retreat.DefenderElementId);
+        if (after.Representations.Single(value =>
+                value.RepresentationId == representation.RepresentationId)
+                .CurrentLocationId != retreat.DestinationLocationId)
+            throw new ArgumentException("Settlement moved a different representation.",
+                nameof(after));
+        return Derive(before, after, settlement.CampaignId, settlement.StateVersion,
+            context.ArtifactV6, knowledge, representation.RepresentationId);
+    }
+
     private static List<CampaignContactTransition> OnMovement(
         CampaignSnapshotV11 before, CampaignSnapshotV11 after, string campaignId,
         long priorStateVersion, long stateVersion, string representationId,
@@ -62,11 +140,13 @@ internal static class CampaignContactAdjacencySource
                 value.RepresentationId == representationId
                 && value.CurrentLocationId == destinationLocationId))
             throw new ArgumentException("Movement does not match its committed authority cut.", nameof(representationId));
-        return Derive(before, after, context.ArtifactV6!, knowledge, representationId);
+        return Derive(before.World, after.World, after.CampaignId, after.StateVersion,
+            context.ArtifactV6!, knowledge, representationId);
     }
 
     private static List<CampaignContactTransition> Derive(
-        CampaignSnapshotV11? before, CampaignSnapshotV11 after, ContentPackV6Artifact artifact,
+        CampaignWorldSnapshotV6? before, CampaignWorldSnapshotV6 after,
+        string campaignId, long stateVersion, ContentPackV6Artifact artifact,
         CampaignContactKnowledge knowledge, string? changedRepresentationId)
     {
         var definitions = artifact.Definition.LegacyDefinition;
@@ -75,13 +155,13 @@ internal static class CampaignContactAdjacencySource
         var formations = definitions.Elements.ToDictionary(value => value.ElementId,
             value => value.ParentFormationId, StringComparer.Ordinal);
         var ownSide = CampaignSnapshotSerializer.FormatSide(knowledge.Side);
-        var own = after.World.Representations.Where(value =>
+        var own = after.Representations.Where(value =>
             value.BoundElementIds.Count > 0
             && value.BoundElementIds.All(id => sides[id] == ownSide)).ToArray();
-        var opposing = after.World.Representations.Where(value =>
+        var opposing = after.Representations.Where(value =>
             value.BoundElementIds.Count > 0
             && value.BoundElementIds.All(id => sides[id] != ownSide)).ToArray();
-        var beforeLocations = before?.World.Representations.ToDictionary(value =>
+        var beforeLocations = before?.Representations.ToDictionary(value =>
             value.RepresentationId, value => value.CurrentLocationId, StringComparer.Ordinal);
         var working = knowledge.Copy();
         var transitions = new List<CampaignContactTransition>();
@@ -116,11 +196,11 @@ internal static class CampaignContactAdjacencySource
                         : CampaignContactTransitionKind.Rediscovered
                     : CampaignContactTransitionKind.Lost;
                 var transition = new CampaignContactTransition(
-                    CampaignContactKnowledge.CurrentContractVersion, after.CampaignId, knowledge.Side,
-                    after.StateVersion,
+                    CampaignContactKnowledge.CurrentContractVersion, campaignId, knowledge.Side,
+                    stateVersion,
                     changedRepresentationId is null
                         ? $"creation/{observer.Key}/{target.RepresentationId}"
-                        : $"move/{after.StateVersion}/{observer.Key}/{target.RepresentationId}",
+                        : $"move/{stateVersion}/{observer.Key}/{target.RepresentationId}",
                     RuleId, kind, prior?.Handle ?? working.NextHandle(observer.Key), target.RepresentationId,
                     observer.Key,
                     currentlyVisible ? target.CurrentLocationId : prior!.ApparentLocationId,

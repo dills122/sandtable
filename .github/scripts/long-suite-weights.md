@@ -254,3 +254,31 @@ evidence. Existing measured rows and baseline metadata remain unchanged.
 | `CampaignContactOwnerMovementCutTests` | `749f92d5ebdb` 28; `8855b5d1eb9a` 674; `d04eb9a57ff3` 45; `0cf66e3695cf` 11; `b3704b64db90` 30; `ac2b56ad9ffb` 77 |
 
 Command for each class: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Observations.<class> --report-xunit-xml --results-directory /private/tmp/sandtable-pr314-timing-<class> --progress off`. Each run passed 6/6. Release Core test DLL SHA-256 `9366a99b46b31f718ae917ab241ff10b391f450620b6ae9c1eacd711aed42799`; retained XML SHA-256 by table class order: `b089df0405571139a788987561e3c22013f54edecfac103906fb43217cd7f036`, `3f59755ee068843ae8ae28a7d3f362325be174163107970167ead98928a7f765`, `806325285ed453f7addb7a99ac05b5c903cb0aa9dc2cffb78d0d3e05d2bebf01`. Exact-head local discovery found 18 missing rows, zero stale rows; after refresh, all 3,264 rows allocate once across 61 groups and the same 12 jobs. PR #314's first hosted `prepare` failed on the missing-row guard; this update requires a new exact-head hosted run.
+
+## Native Combat Core rows
+
+Release row discovery on local source head `f05e9c5719f26deeaa277d68368fa451f066c633`
+found 3,275 ordinary Core rows: 11 new identities and no stale identities relative
+to the prior manifest. Four focused macOS arm64 .NET 10 Release MTP XML runs
+passed every selected case (6/6 contact selection, 3/3 content source, 1/1
+reserve release, 21/21 catalog). The Release Core DLL SHA-256 was
+`ef9f5bb9899f8e5e9c95a18454523208fc39aaa1926f83e82723bcd7eb5e8ae0`.
+The retained XML SHA-256 values in that order were
+`47ed99885cdf3bed75eca56e6df42ad7618b8dd16ca6f14aacac0f8d3ea3eb1b`,
+`cd6d2aa4666286ceca85f58ae4881174c5541b3946dcbc3e384c8ecc3ddd9f65`,
+`e06d372f85c1bddbad42b3b627c42fb343e658cae913128ff80feae2e89e4723`, and
+`74ee1f48b350da6d43032da1a1236bc7a2b4b6c452952b0f4804b0a4e7dcda41`.
+
+| Class | New row hash prefixes and measured milliseconds |
+| --- | --- |
+| `CampaignReserveReleaseRulesTests` | `f1743f6f3f65` 411 |
+| `BreakdownRunnerCatalogTests` | `05cd233556f8` 12 |
+| `ContentCombatSourceTests` | `3faf3e9cc3aa` 3; `5aa6b175d05a` 2; `75d3d3045b85` 94 |
+| `CampaignContactCombatSelectionCutTests` | `980c66a3e663` 4527; `75bdb39b0df1` 1; `5e52cc4c8c43` 83; `772c5bb44de3` 2039; `e212130fc60e` 83; `5f5db497f01a` 1 |
+
+Existing measured rows and baseline metadata remain unchanged. Three new
+classes use one part each; the catalog class keeps its existing part. The
+refreshed manifest allocates all 3,275 ordinary rows once across 61 groups
+and the same 12 Core jobs. The 28 long-suite supervisor and 33 R02 partition
+tests passed locally. These are scheduling hints measured concurrently with
+the full Debug Core suite, not hosted timing or Combat admission evidence.

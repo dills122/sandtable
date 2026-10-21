@@ -1,6 +1,12 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status (2026-10-19):** Checkpoint B and Initial H Core codec/replay are complete. Private actual paid assault019F6, empty Release and guarded repeat/finish, repeated Movement/Breakdown and authenticated R03 ordinal-two Combat Position are implemented for bounded histories. P01 has a provisional private 300-row assessor, a narrow zero-assault continuation, and bounded selected-assault/RBA and Force Assignment continuations; all 300 assessments remain unsupported/admitted=false. Its full support certificate, later P02/P03 native work, public Combat and publication evidence remain open.
+**Status (2026-10-21):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and one selected repeated assault, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. The second Reserve Release exposes Finish only; further Combat repeats remain an implementation gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
+
+The initial voluntary finish and initial cancelled assault now pass through V27
+Reserve Release and V28 cycle control. A selected assault with no payable pinned
+role pair or timing envelope records a no-round V19 System cancellation and follows that same
+no-result route. Repeat is closed without a retained Combat result cursor;
+the visible contact offer itself is not conditioned on hidden defender resources.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
@@ -12,7 +18,7 @@ parent evidence are accepted with strict clock privacy and versioned round/settl
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant foundations through016 accepted; bounded017–019 actual and native consumers reach R03 ordinal-two Position. P01 zero-assault and selected-assault/RBA/Force Assignment successors are private only; Task008 publication incomplete | Complete P01-AC-003 action/source exhaustiveness, AC-006 automatic-surrender/RBA, AC-007 outward privacy and AC-008 replay/caps support certificate; then P02/P03 native selection/consumption and parent017–019 reconciliation |
+| Runtime | Permanent contact-based native Core/normal durable Host path reaches a first and one repeated selected assault through settlement and Reserve Release; later repeat is closed at the second cycle | Complete general later-cycle assault continuation, original-300-root support certificate and parent017–019 reconciliation |
 | Public and simulator | Tasks020–024 have no certified ordinal-two Combat admission | Activate only a reviewed, certified side-safe profile through020–021, then prove strict Exercise/Runner reconstruction and repeatability through022–024 |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -38,10 +44,10 @@ and separately projected side evidence. The terminal is same-slot Truck Convoy *
 prisoner upkeep/replacement obligations prohibit calling this a complete playable campaign.
 
 The [policy register](combat-cycle-policy-reconciliation.md) owns POL-001–008 and approvals. Existing
-design ACs remain requirements; this plan does not weaken them. No claim of two runtime assaults,
-general resupply, real RBA, released-Reserve offensive Combat, motorized retreat, gun/armor combat,
-mandatory attacks, new phase-slot execution or hosted intelligence is included. Those require
-separate admitted profiles and tasks. Sprint5's full repeating-skeleton acceptance remains open
+design ACs remain requirements; this plan does not weaken them. This branch supports two bounded
+runtime assaults, defender RBA, and released-Reserve infantry offensive Combat. General later-cycle
+assault continuation, resupply, motorized retreat, gun/armor combat, mandatory attacks, new
+phase-slot execution and hosted intelligence remain open. Sprint5's full repeating-skeleton acceptance remains open
 where those dependencies are required; this package supplies bounded evidence toward it.
 
 ## Combined contract inventory

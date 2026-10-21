@@ -3,6 +3,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
 
@@ -14,7 +15,69 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// A retry of the same accepted reference returns the retained receipt after cold replay.
     /// </summary>
     internal CampaignOwnerSubmissionResult SubmitOwnerMovement(CampaignSeatCredential credential,
-        string actingElementId, long openingRevision, string publicActionRef)
+        string actingElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.Movement);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerCombatSelection(CampaignSeatCredential credential,
+        string actingElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.CombatSelection);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerRbaDecline(CampaignSeatCredential credential,
+        string defenderElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerRbaMove(CampaignSeatCredential credential,
+        string defenderElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault, retreatMove: true);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerForceSeal(CampaignSeatCredential credential,
+        string elementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, elementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.ForceAssignment);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerPostAssaultRetreat(
+        CampaignSeatCredential credential, string defenderElementId,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, defenderElementId, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.PostAssaultRetreat);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerCustody(
+        CampaignSeatCredential credential, string captorElementId,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, captorElementId, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.Custody);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerReserveRelease(
+        CampaignSeatCredential credential, string reserveElementId,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, reserveElementId, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.ReserveRelease);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerCycleControl(
+        CampaignSeatCredential credential, long openingRevision,
+        string publicActionRef) =>
+        SubmitOwnerActionCore(credential, CycleControlOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.CycleControl);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerRepeatMovement(
+        CampaignSeatCredential credential, long openingRevision,
+        string publicActionRef) =>
+        SubmitOwnerActionCore(credential, RepeatMovementOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.RepeatMovement);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerRepeatCombat(
+        CampaignSeatCredential credential, string actingElementId,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.RepeatCombatSelection);
+
+    private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
+        string actingElementId, long openingRevision, string publicActionRef,
+        CampaignOwnerOpeningKind kind, bool retreatMove = false)
     {
         ArgumentNullException.ThrowIfNull(credential);
         using var connection = Connect(create: false);
@@ -22,6 +85,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var seat = AuthenticateSeat(connection, transaction, credential)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
         var head = Load(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.ForceAssignment && head.Timing is null)
+            return CampaignOwnerSubmissionResult.Rejected();
         if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
             || !IsPublicReference(publicActionRef)
             || openingRevision < 1)
@@ -37,7 +102,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   AND seat_epoch=$epoch AND owner_revision=$revision
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
-            retry.Parameters.AddWithValue("$kind", CampaignHostAcceptedStep.ContactMovementKind);
+            retry.Parameters.AddWithValue("$kind", AcceptedKind(kind, retreatMove));
             retry.Parameters.AddWithValue("$element", actingElementId);
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
@@ -46,6 +111,35 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 RequireBounded(retainedReceipt);
                 return CampaignOwnerSubmissionResult.Accepted(retainedReceipt);
+            }
+        }
+
+        ForceRound? forceRound = null;
+        if (kind == CampaignOwnerOpeningKind.ForceAssignment)
+        {
+            if (schemaVersion != SchemaVersion) return CampaignOwnerSubmissionResult.Rejected();
+            (string DecisionActionId, string DeclineEventHash) binding;
+            try
+            {
+                binding = CampaignHostAdapter.QueryNativeCombatForceRoundBinding(head.Session);
+            }
+            catch (InvalidOperationException)
+            {
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+            if (!ForceRoundExists(connection, transaction, seat.CampaignId,
+                binding.DeclineEventHash))
+                return CampaignOwnerSubmissionResult.Rejected();
+            forceRound = GetOrOpenForceRound(connection, transaction, head,
+                seat.CampaignId, requireExisting: true);
+            var gate = GateForceRound(connection, transaction, forceRound);
+            forceRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelForceRound(connection, transaction, head, forceRound,
+                    reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
             }
         }
 
@@ -79,22 +173,90 @@ internal sealed partial class CampaignDurableAuthorityJournal
             || authorityVersion > CampaignExercises.QueryCheckpoint(head.Session).StateVersion
             || visibleDigest != "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visibleBytes)))
             return CampaignOwnerSubmissionResult.Rejected();
-        CampaignHostContactOwnerDraft draft;
+        byte[] currentVisible;
+        string[] actionIds;
         try
         {
-            draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
-                seat.Audience, actingElementId);
+            if (kind == CampaignOwnerOpeningKind.CombatSelection)
+            {
+                var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateCombatActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.ForceAssignment)
+            {
+                var draft = CampaignHostAdapter.QueryContactForceOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
+            {
+                var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
+            {
+                var draft = CampaignHostAdapter.QueryContactPostAssaultRetreatOwnerDraft(
+                    head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.Custody)
+            {
+                var draft = CampaignHostAdapter.QueryContactCustodyOwnerDraft(
+                    head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+            {
+                var draft = CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft(
+                    head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.CycleControl)
+            {
+                var draft = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(
+                    head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RepeatMovement)
+            {
+                var draft = CampaignHostAdapter.QueryNativeRepeatMovementOwnerDraft(
+                    head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection)
+            {
+                var draft = CampaignHostAdapter.QueryNativeRepeatCombatOwnerDraft(
+                    head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateCombatActionIds.ToArray();
+            }
+            else
+            {
+                var draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateMovementActions.OrderBy(value => value.OriginLocationId,
+                    StringComparer.Ordinal).ThenBy(value => value.DestinationLocationId,
+                    StringComparer.Ordinal).Select(value => value.ActionId).ToArray();
+            }
         }
-        catch (ArgumentException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             return CampaignOwnerSubmissionResult.Rejected();
         }
-        if (!draft.VisibleBytes.AsSpan().SequenceEqual(visibleBytes))
+        if (!currentVisible.AsSpan().SequenceEqual(visibleBytes))
             return CampaignOwnerSubmissionResult.Rejected();
-        var actions = draft.PrivateMovementActions.OrderBy(value => value.OriginLocationId,
-            StringComparer.Ordinal).ThenBy(value => value.DestinationLocationId,
-            StringComparer.Ordinal).ToArray();
-        if (actions.Length != actionCount) return CampaignOwnerSubmissionResult.Rejected();
+        if (actionIds.Length != actionCount) return CampaignOwnerSubmissionResult.Rejected();
 
         int ordinal;
         string coreActionId;
@@ -113,8 +275,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             ordinal = reader.GetInt32(0);
             coreActionId = reader.GetString(1);
         }
-        if (ordinal < 0 || ordinal >= actions.Length
-            || coreActionId != actions[ordinal].ActionId)
+        if (ordinal < 0 || ordinal >= actionIds.Length
+            || coreActionId != actionIds[ordinal])
             return CampaignOwnerSubmissionResult.Rejected();
         var expectedRef = Reference(ReadReferenceKey(connection, transaction), seat.CampaignId,
             Side(seat.Audience), actingElementId, seat.Epoch, openingRevision,
@@ -126,16 +288,174 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var checkpoint = CampaignExercises.QueryCheckpoint(head.Session);
         var submission = new CampaignActionSubmission(1, seat.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, seat.Audience, coreActionId);
-        var result = CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
-            submission, actingElementId);
+        var result = kind switch
+        {
+            CampaignOwnerOpeningKind.CombatSelection =>
+                CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.RetreatBeforeAssault =>
+                retreatMove
+                    ? CampaignHostAdapter.SubmitContactDefenderRbaMove(head.Session,
+                        submission, actingElementId)
+                    : CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
+                        submission, actingElementId),
+            CampaignOwnerOpeningKind.ForceAssignment =>
+                CampaignHostAdapter.SubmitContactOwnerForceSeal(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.PostAssaultRetreat =>
+                CampaignHostAdapter.SubmitContactPostAssaultRetreat(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.Custody =>
+                CampaignHostAdapter.SubmitNativeCombatCustody(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.ReserveRelease =>
+                CampaignHostAdapter.SubmitNativeReserveReleaseChoice(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.CycleControl =>
+                CampaignHostAdapter.SubmitNativeCycleControl(head.Session, submission),
+            CampaignOwnerOpeningKind.RepeatMovement =>
+                CampaignHostAdapter.SubmitNativeRepeatMovement(head.Session, submission),
+            CampaignOwnerOpeningKind.RepeatCombatSelection =>
+                CampaignHostAdapter.SubmitNativeRepeatCombat(head.Session,
+                    submission, actingElementId),
+            _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
+                submission, actingElementId),
+        };
         if (!result.IsAccepted) return CampaignOwnerSubmissionResult.Rejected();
         PersistAccepted(connection, transaction, seat.CampaignId, head,
-            CampaignHostAcceptedStep.ContactMovementKind, actingElementId,
+            AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
+        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
+            AppendUnavailableForceCancellation(connection, transaction,
+                seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.RepeatMovement)
+            AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.Custody)
+            AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
+            AppendWorldSettlement(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
+        {
+            var noAttack = CampaignHostAdapter.CompleteNativeCombatNoAttack(result.SuccessorSession!);
+            if (!noAttack.IsAccepted)
+                throw new InvalidOperationException("Accepted voluntary finish cannot complete Combat.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatNoAttackCommand(
+                systemHead.Session, noAttack);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatNoAttackKind, null,
+                null, null, null, systemCommand, noAttack);
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
+        }
+        else if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
+        {
+            var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);
+            if (!barrage.IsAccepted)
+                throw new InvalidOperationException("Accepted infantry assault cannot complete Barrage.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
+                systemHead.Session, barrage);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatBarrageKind, null,
+                null, null, null, systemCommand, barrage);
+        }
+        else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection
+            && CampaignHostAdapter.IsNativeRepeatCombatVoluntaryFinish(
+                result.SuccessorSession!))
+        {
+            var completion = CampaignHostAdapter.CompleteNativeRepeatCombatNoAttack(
+                result.SuccessorSession!);
+            if (!completion.IsAccepted)
+                throw new InvalidOperationException(
+                    "Accepted repeated finish cannot complete Combat.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeRepeatCombatNoAttackCommand(
+                systemHead.Session, completion);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeRepeatCombatNoAttackKind, null,
+                null, null, null, systemCommand, completion);
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
+        }
+        else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection
+            && CampaignHostAdapter.IsNativeRepeatCombatSelectedAssault(
+                result.SuccessorSession!))
+        {
+            var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(
+                result.SuccessorSession!);
+            if (!barrage.IsAccepted)
+                throw new InvalidOperationException(
+                    "Accepted repeated assault cannot enter Barrage.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
+                systemHead.Session, barrage);
+            PersistAccepted(connection, transaction, seat.CampaignId,
+                systemHead, CampaignHostAcceptedStep.NativeCombatBarrageKind,
+                null, null, null, null, systemCommand, barrage);
+        }
+        else if (kind == CampaignOwnerOpeningKind.ForceAssignment
+            && CampaignHostAdapter.IsNativeCombatForcePrepared(result.SuccessorSession!))
+        {
+            var completion = CampaignHostAdapter.CompleteNativeCombatForceAssignment(
+                result.SuccessorSession!);
+            if (!completion.IsAccepted)
+                throw new InvalidOperationException("Two accepted seals cannot complete Force Assignment.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatForceCompletionCommand(
+                systemHead.Session, completion);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatForceCompletionKind, null,
+                null, null, null, systemCommand, completion);
+            UpdateForceRound(connection, transaction, forceRound! with { Status = "completed" });
+            AppendEmptyAntiArmor(connection, transaction, seat.CampaignId);
+        }
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));
     }
+
+    private void AppendNativeRepeatBreakdown(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var head = Load(connection, transaction, campaignId);
+        var completed = CampaignHostAdapter.CompleteNativeRepeatBreakdown(
+            head.Session);
+        if (!completed.IsAccepted)
+            throw new InvalidOperationException(
+                "Accepted repeated Movement cannot complete Breakdown.");
+        var command = CampaignHostAdapter.NativeRepeatBreakdownCommand(
+            head.Session, completed);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.NativeRepeatBreakdownKind,
+            null, null, null, null, command, completed);
+    }
+
+    private static string AcceptedKind(CampaignOwnerOpeningKind kind,
+        bool retreatMove = false) => kind switch
+        {
+            CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
+            CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault => retreatMove
+                ? CampaignHostAcceptedStep.ContactRbaMoveKind
+                : CampaignHostAcceptedStep.ContactRbaDeclineKind,
+            CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,
+            CampaignOwnerOpeningKind.PostAssaultRetreat =>
+                CampaignHostAcceptedStep.ContactPostAssaultRetreatKind,
+            CampaignOwnerOpeningKind.Custody =>
+                CampaignHostAcceptedStep.ContactCombatCustodyKind,
+            CampaignOwnerOpeningKind.ReserveRelease =>
+                CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind,
+            CampaignOwnerOpeningKind.CycleControl =>
+                CampaignHostAcceptedStep.ContactCycleControlKind,
+            CampaignOwnerOpeningKind.RepeatMovement =>
+                CampaignHostAcceptedStep.ContactRepeatMovementKind,
+            CampaignOwnerOpeningKind.RepeatCombatSelection =>
+                CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind)),
+        };
 
     private static bool IsPublicReference(string? value)
     {

@@ -10,6 +10,18 @@ builder.Services.AddSingleton<LocalCampaignCreationStore>();
 builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
 builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
 builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+var campaignJournalPath = builder.Configuration["CampaignJournal:Path"];
+if (!string.IsNullOrWhiteSpace(campaignJournalPath))
+{
+    var operatorSecret = builder.Configuration["CampaignJournal:OperatorSecret"];
+    if (string.IsNullOrWhiteSpace(operatorSecret))
+        throw new InvalidOperationException(
+            "CampaignJournal:OperatorSecret is required when the durable journal is configured.");
+    builder.Services.AddSingleton(_ => File.Exists(campaignJournalPath)
+        ? CampaignDurableAuthorityJournal.OpenExisting(campaignJournalPath)
+        : CampaignDurableAuthorityJournal.CreateNew(campaignJournalPath,
+            operatorSecret));
+}
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration
 builder.Host.UseOrleans(siloBuilder =>
 {
@@ -38,6 +50,8 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 app.MapLocalGameApi();
+if (builder.Configuration.GetValue<bool>("CampaignJournal:EnableOutwardApi"))
+    app.MapDurableCampaignApi();
 app.MapGet("/", () => Results.Ok(new
 {
     service = "Cna.OrleansHost",

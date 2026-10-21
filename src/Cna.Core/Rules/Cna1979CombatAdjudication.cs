@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 
 namespace Cna.Core.Rules;
 
-/// <summary>Dormant selected Combat arithmetic; no campaign or RNG activation.</summary>
+/// <summary>Pure selected Combat arithmetic; campaign authority owns RNG and settlement.</summary>
 internal static class Cna1979CombatAdjudication
 {
     public const int SchemaVersion = 1;

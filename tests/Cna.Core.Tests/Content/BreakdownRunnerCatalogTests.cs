@@ -12,6 +12,7 @@ public sealed class BreakdownRunnerCatalogTests
 {
     [Theory]
     [InlineData("reaction.adjacent")]
+    [InlineData("reaction.combat-assault")]
     [InlineData("reaction.low-defense")]
     [InlineData("reaction.headquarters")]
     [InlineData("reaction.noncombat")]

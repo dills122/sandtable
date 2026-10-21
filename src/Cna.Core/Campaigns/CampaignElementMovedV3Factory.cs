@@ -318,6 +318,18 @@ internal static class CampaignElementMovedV3Factory
         ContentHexEdge edge,
         ContentHex destination,
         string originLocationId,
+        string destinationLocationId) => CalculateMovement(prior.World, definition,
+            contentElement, element, edge, destination, originLocationId,
+            destinationLocationId);
+
+    internal static MovementResult CalculateMovement(
+        CampaignWorldSnapshotV6 world,
+        ContentPackDefinition definition,
+        ContentCombatElement contentElement,
+        CampaignElementStateV5 element,
+        ContentHexEdge edge,
+        ContentHex destination,
+        string originLocationId,
         string destinationLocationId)
     {
         var mobility = Cna1979Movement.Mobility.SingleOrDefault(value => string.Equals(
@@ -378,7 +390,7 @@ internal static class CampaignElementMovedV3Factory
                 hexside.Sources));
         }
 
-        var destinationStacking = prior.World.Elements
+        var destinationStacking = world.Elements
             .Where(value => string.Equals(
                 value.CurrentLocationId,
                 destinationLocationId,
