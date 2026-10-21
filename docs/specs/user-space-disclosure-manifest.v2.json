@@ -554,6 +554,18 @@
       "declaredMembers": ["ElementId"]
     },
     {
+      "name": "Cna.Core.Actions.RefuseRetreatAfterAssaultAction",
+      "declaredMembers": []
+    },
+    {
+      "name": "Cna.Core.Actions.RetreatAfterAssaultMoveAction",
+      "declaredMembers": []
+    },
+    {
+      "name": "Cna.Core.Actions.SealCombatForceAssignmentAction",
+      "declaredMembers": ["CommittedToe", "ComponentId", "ElementId", "Role"]
+    },
+    {
       "name": "Cna.Core.Actions.FinishCombatWithoutAttackAction",
       "declaredMembers": ["ActingElementId"]
     },
