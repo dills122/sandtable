@@ -49,7 +49,9 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
     private readonly List<CampaignNativeCombatForceSealV17> seals = [];
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> Seals => seals;
     internal CampaignNativeCombatForceCompletionV18? ForceCompletion { get; private set; }
+    internal CampaignNativeCombatForceCancellationV19? ForceCancellation { get; private set; }
     internal CampaignNativeCombatAntiArmorV20? AntiArmor { get; private set; }
+    internal CampaignNativeCombatCancelledAssaultV21? CancelledAssault { get; private set; }
     internal CampaignNativeCombatAssaultResultV22? Result { get; private set; }
     internal CampaignWorldSnapshotV6? PaidWorld { get; private set; }
     internal CampaignNativeCombatAssaultInputs? Inputs { get; private set; }
@@ -141,7 +143,15 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             Contacts = Contacts.AdvanceNativeCombatRetreatDecline(Decline);
             return;
         }
-        if (seals.Count < 2)
+        if (ForceCompletion is null && ForceCancellation is null
+            && item is CampaignNativeCombatForceCancellationV19 cancellation)
+        {
+            ForceCancellation = CampaignNativeCombatForceCancellationV19.Replay(
+                Selection, Decline, seals, cancellation.SerializeCanonical());
+            Contacts = Contacts.AdvanceNativeCombatForceCancellation(ForceCancellation);
+            return;
+        }
+        if (seals.Count < 2 && ForceCancellation is null)
         {
             if (item is not CampaignNativeCombatForceSealV17 seal)
                 throw new InvalidCampaignHistoryException(
@@ -153,7 +163,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             Contacts = Contacts.AdvanceNativeCombatForceSeal(verified);
             return;
         }
-        if (ForceCompletion is null)
+        if (ForceCompletion is null && ForceCancellation is null)
         {
             if (item is not CampaignNativeCombatForceCompletionV18 completion)
                 throw new InvalidCampaignHistoryException(
@@ -169,8 +179,28 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
                 throw new InvalidCampaignHistoryException(
                     "Repeated assault needs accepted Anti Armor completion.");
             AntiArmor = CampaignNativeCombatAntiArmorV20.Replay(Selection,
-                ForceCompletion, null, Context, antiArmor.SerializeCanonical());
+                ForceCompletion, ForceCancellation, Context,
+                antiArmor.SerializeCanonical());
             Contacts = Contacts.AdvanceNativeCombatAntiArmor(AntiArmor);
+            return;
+        }
+        if (ForceCancellation is not null && CancelledAssault is null)
+        {
+            if (item is not CampaignNativeCombatCancelledAssaultV21 cancelled)
+                throw new InvalidCampaignHistoryException(
+                    "Cancelled repeated assault needs accepted no-attack completion.");
+            CancelledAssault = CampaignNativeCombatCancelledAssaultV21.Replay(
+                Selection, AntiArmor, cancelled.SerializeCanonical());
+            Contacts = Contacts.AdvanceNativeCombatCancelledAssault(CancelledAssault);
+            Release = CampaignNativeReserveReleaseStateV27
+                .InitializeAfterRepeatCancelledAssault(
+                    Selection, CancelledAssault, RetreatWorld ?? Selection.World,
+                    Context);
+            return;
+        }
+        if (CancelledAssault is not null)
+        {
+            ApplyReleaseOrControl(item);
             return;
         }
         if (Result is null)
@@ -181,7 +211,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
                 Context, PriorHistory);
             var inputs = CampaignNativeCombatAssaultInputs.Create(Selection,
-                ForceCompletion, AntiArmor, seals, RetreatWorld ?? Selection.World,
+                ForceCompletion!, AntiArmor, seals, RetreatWorld ?? Selection.World,
                 Context, ammunition);
             Result = CampaignNativeCombatAssaultResultV22.Replay(Selection,
                 AntiArmor, inputs, Selection.RandomState,
@@ -250,6 +280,11 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
                     Selection.CanonicalSelection), Successor, projection, Context);
             return;
         }
+        ApplyReleaseOrControl(item);
+    }
+
+    private void ApplyReleaseOrControl(object item)
+    {
         if (item is CampaignNativeReserveReleaseEventV27 releaseEvent)
         {
             if (Control is not null)

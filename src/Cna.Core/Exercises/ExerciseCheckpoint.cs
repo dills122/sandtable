@@ -178,6 +178,22 @@ public sealed class ExerciseCheckpoint
         PositionId = cancellation.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatForceCancellationV19 cancellation,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (cancellation.CampaignId != decision.CampaignId
+            || cancellation.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated Force cancellation must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatForceCancellationV19.CurrentContractVersion;
+        CampaignId = cancellation.CampaignId;
+        StateVersion = cancellation.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = cancellation.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatAntiArmorV20 antiArmor,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -211,6 +227,22 @@ public sealed class ExerciseCheckpoint
         CampaignId = cancelledAssault.CampaignId;
         StateVersion = cancelledAssault.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = cancelledAssault.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatCancelledAssaultV21 cancelledAssault,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (cancelledAssault.CampaignId != decision.CampaignId
+            || cancelledAssault.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated cancelled assault must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatCancelledAssaultV21.CurrentContractVersion;
+        CampaignId = cancelledAssault.CampaignId;
+        StateVersion = cancelledAssault.StateVersion;
+        RulesetHash = initial.RulesetHash;
         PositionId = cancelledAssault.NextPositionId;
     }
 

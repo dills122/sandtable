@@ -164,7 +164,8 @@ uses the same native Combat event families V14-V28 against retained later-cycle
 World, contact, and RNG authority, including World settlement and a restart-safe
 Host receipt. A repeated defender RBA move now updates World/contact authority
 before decline and remains replayable through the local owner HTTP route.
-Force cancellation, further selected cycles, vehicle
+The repeated Force timeout retains cancellation and a no-result path to
+same-slot Reserve Release. Further selected cycles, vehicle
 accounting, and public routing remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a

@@ -425,8 +425,12 @@ public static class CampaignHostAdapter
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
         ArgumentNullException.ThrowIfNull(predecessor);
-        if (!accepted.IsAccepted || predecessor.CurrentCombatForceSeals.Count > 1
-            || accepted.SuccessorSession?.CurrentCombatForceCancellation is null)
+        if (!accepted.IsAccepted
+            || (predecessor.CurrentRepeatAssault is { } repeated
+                ? repeated.Seals.Count > 1
+                    || accepted.SuccessorSession?.CurrentRepeatAssault?.ForceCancellation is null
+                : predecessor.CurrentCombatForceSeals.Count > 1
+                    || accepted.SuccessorSession?.CurrentCombatForceCancellation is null))
             throw new ArgumentException("Accepted Force cancellation required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -439,7 +443,8 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted ||
-            (predecessor.CurrentRepeatAssault is { ForceCompletion: not null }
+            (predecessor.CurrentRepeatAssault is
+        { ForceCompletion: not null } or { ForceCancellation: not null }
                 ? accepted.SuccessorSession?.CurrentRepeatAssault?.AntiArmor is null
                 : accepted.SuccessorSession?.CurrentCombatAntiArmor is null))
             throw new ArgumentException("Accepted Anti Armor completion required.", nameof(accepted));
@@ -453,7 +458,10 @@ public static class CampaignHostAdapter
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
         ArgumentNullException.ThrowIfNull(predecessor);
-        if (!accepted.IsAccepted || accepted.SuccessorSession?.CurrentCombatCancelledAssault is null)
+        if (!accepted.IsAccepted
+            || (predecessor.CurrentRepeatAssault is { ForceCancellation: not null }
+                ? accepted.SuccessorSession?.CurrentRepeatAssault?.CancelledAssault is null
+                : accepted.SuccessorSession?.CurrentCombatCancelledAssault is null))
             throw new ArgumentException("Accepted cancelled assault completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -591,7 +599,7 @@ public static class CampaignHostAdapter
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Cycle control needs an owner side."),
         };
-        if ((session.CurrentRepeatAssault?.Successor is not null
+        if ((session.CurrentRepeatAssault?.Release is not null
                 ? session.CurrentRepeatAssault.Control
                 : session.CurrentPostRepeat is null
                     ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not null)
@@ -617,7 +625,7 @@ public static class CampaignHostAdapter
                 CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
                 _ => throw new InvalidOperationException("Cycle control needs an owner side."),
             };
-            if ((session.CurrentRepeatAssault?.Successor is not null
+            if ((session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
                     : session.CurrentPostRepeat is null
                         ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not null)

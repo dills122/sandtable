@@ -146,6 +146,9 @@ public static class CampaignExercises
             return new ExerciseCheckpoint(repeatedRelease, session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Control is { } repeatedControl)
             return new ExerciseCheckpoint(repeatedControl, session.CurrentSnapshot);
+        if (session.CurrentRepeatAssault?.CancelledAssault is { } repeatedCancelled)
+            return new ExerciseCheckpoint(repeatedCancelled,
+                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Successor is { } repeatedSuccessor)
             return new ExerciseCheckpoint(repeatedSuccessor,
                 session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
@@ -163,6 +166,9 @@ public static class CampaignExercises
                 session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.AntiArmor is { } repeatedAntiArmor)
             return new ExerciseCheckpoint(repeatedAntiArmor,
+                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+        if (session.CurrentRepeatAssault?.ForceCancellation is { } repeatedCancellation)
+            return new ExerciseCheckpoint(repeatedCancellation,
                 session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.ForceCompletion is { } repeatedForceCompletion)
             return new ExerciseCheckpoint(repeatedForceCompletion,
@@ -712,6 +718,16 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(configuration);
+        if (session.CurrentRepeatAssault is
+            {
+                Decline: not null,
+                ForceCompletion: null,
+                ForceCancellation: null,
+                Seals.Count: < 2
+            })
+            return CancelRepeatedForceAssignment(session, configuration,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds,
+                highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
             || session.CurrentCombatForceSeals.Count > 1
@@ -758,14 +774,59 @@ public static class CampaignExercises
         }
     }
 
+    private static ExerciseStepResult CancelRepeatedForceAssignment(
+        ExerciseSession session, CampaignDecisionTimingConfigurationV1 configuration,
+        long openedAtUnixMilliseconds, long deadlineUnixMilliseconds,
+        long highWaterUnixMilliseconds, long? cancelledAtUnixMilliseconds,
+        string reason)
+    {
+        var runtime = session.CurrentRepeatAssault!;
+        var selected = runtime.Selection;
+        if (configuration.RulesetHash != selected.PriorSnapshot.RulesetHash
+            || openedAtUnixMilliseconds < 0
+            || deadlineUnixMilliseconds - openedAtUnixMilliseconds
+                != configuration.Budget("force-assignment")
+            || session.CurrentContacts.AuthorityVersion
+                != (runtime.Seals.Count == 0
+                    ? runtime.Decline!.StateVersion : runtime.Seals[^1].StateVersion))
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var cancellation = CampaignNativeCombatForceCancellationV19.Create(
+                selected, runtime.Decline!, runtime.Seals,
+                configuration.Hash, openedAtUnixMilliseconds,
+                deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts
+                .AdvanceNativeCombatForceCancellation(cancellation);
+            var next = session.WithRepeatAssaultEvent(cancellation, contacts);
+            var priorState = runtime.SerializeDeclineState();
+            foreach (var seal in runtime.Seals)
+                priorState = seal.SerializeStateCanonical(priorState);
+            var bytes = cancellation.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                cancellation.PriorStateVersion, cancellation.StateVersion,
+                cancellation.NextPositionId, CampaignActionAudience.System,
+                Hash(bytes));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, cancellation.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     internal static ExerciseStepResult CompleteNativeCombatAntiArmor(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentRepeatAssault is
-            {
-                ForceCompletion: not null,
-                AntiArmor: null
-            })
+        if (session.CurrentRepeatAssault is { AntiArmor: null } repeated
+            && (repeated.ForceCompletion is not null
+                || repeated.ForceCancellation is not null))
             return CompleteRepeatedAntiArmor(session);
         if (session.CurrentCombatDecision is not { } selected
             || (session.CurrentCombatForceCompletion is null)
@@ -820,18 +881,21 @@ public static class CampaignExercises
         var runtime = session.CurrentRepeatAssault!;
         var selected = runtime.Selection;
         if (session.CurrentContacts.AuthorityVersion
-            != runtime.ForceCompletion!.StateVersion)
+            != (runtime.ForceCompletion?.StateVersion
+                ?? runtime.ForceCancellation!.StateVersion))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
             var antiArmor = CampaignNativeCombatAntiArmorV20.Create(selected,
-                runtime.ForceCompletion, null, session.Context);
+                runtime.ForceCompletion, runtime.ForceCancellation, session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatAntiArmor(antiArmor);
             var next = session.WithRepeatAssaultEvent(antiArmor, contacts);
             var priorState = runtime.SerializeDeclineState();
             foreach (var seal in runtime.Seals)
                 priorState = seal.SerializeStateCanonical(priorState);
-            priorState = runtime.ForceCompletion!.SerializeStateCanonical(priorState);
+            priorState = runtime.ForceCompletion is { } completion
+                ? completion.SerializeStateCanonical(priorState)
+                : runtime.ForceCancellation!.SerializeStateCanonical(priorState);
             var bytes = antiArmor.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 antiArmor.PriorStateVersion, antiArmor.StateVersion,
@@ -851,6 +915,13 @@ public static class CampaignExercises
     internal static ExerciseStepResult CompleteNativeCombatCancelledAssault(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentRepeatAssault is
+            {
+                ForceCancellation: not null,
+                AntiArmor: not null,
+                CancelledAssault: null
+            })
+            return CompleteRepeatedCancelledAssault(session);
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatAntiArmor is not { } antiArmor
             || session.CurrentCombatForceCancellation is null
@@ -892,6 +963,45 @@ public static class CampaignExercises
             or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    private static ExerciseStepResult CompleteRepeatedCancelledAssault(
+        ExerciseSession session)
+    {
+        var runtime = session.CurrentRepeatAssault!;
+        var selected = runtime.Selection;
+        if (session.CurrentContacts.AuthorityVersion
+            != runtime.AntiArmor!.StateVersion)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var cancelled = CampaignNativeCombatCancelledAssaultV21.Create(
+                selected, runtime.AntiArmor);
+            var contacts = session.CurrentContacts
+                .AdvanceNativeCombatCancelledAssault(cancelled);
+            var next = session.WithRepeatAssaultEvent(cancelled, contacts);
+            var priorState = runtime.SerializeDeclineState();
+            foreach (var seal in runtime.Seals)
+                priorState = seal.SerializeStateCanonical(priorState);
+            priorState = runtime.ForceCancellation!
+                .SerializeStateCanonical(priorState);
+            priorState = runtime.AntiArmor.SerializeStateCanonical(priorState);
+            var bytes = cancelled.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                cancelled.PriorStateVersion, cancelled.StateVersion,
+                cancelled.NextPositionId, CampaignActionAudience.System,
+                Hash(bytes));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, cancelled.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
     }
 
@@ -1679,7 +1789,7 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Choose(session.Context, elementId, choice);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentRepeatAssault?.Successor is not null
+            var next = session.CurrentRepeatAssault?.Release is not null
                 ? session.WithRepeatAssaultEvent(emitted, contacts)
                 : session.CurrentPostRepeat is null
                     ? session.WithReserveReleaseEvent(emitted, contacts)
@@ -1712,7 +1822,7 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Complete(session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentRepeatAssault?.Successor is not null
+            var next = session.CurrentRepeatAssault?.Release is not null
                 ? session.WithRepeatAssaultEvent(emitted, contacts)
                 : session.CurrentPostRepeat is null
                     ? session.WithReserveReleaseEvent(emitted, contacts)
@@ -1744,7 +1854,7 @@ public static class CampaignExercises
             var release = QueryNativeReserveReleaseState(session);
             var expectedAudience = release.ActingSide == LandSide.Axis
                 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
-            if ((session.CurrentRepeatAssault?.Successor is not null
+            if ((session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
                     : session.CurrentPostRepeat is null
                         ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not null
@@ -1756,7 +1866,7 @@ public static class CampaignExercises
             var control = CampaignNativeCycleControlV28.Create(release,
                 session.Context, session.CurrentContacts, choice);
             var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
-            var next = session.CurrentRepeatAssault?.Successor is not null
+            var next = session.CurrentRepeatAssault?.Release is not null
                 ? session.WithRepeatAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is null
                     ? session.WithCycleControlEvent(control, contacts)

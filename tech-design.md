@@ -876,7 +876,9 @@ historical V11 is not replaced. A registered two-attacker content regression
 shows a fresh reserve unit completing the second assault while spent or damaged
 first attackers remain subject to ordinary resource rules. The local HTTP owner
 route and cold replay cover the selected second assault after an RBA move.
-Force cancellation and further selected cycles remain open.
+An incomplete second Force round retains trusted clock cancellation, a
+cancelled-assault System event and same-slot Reserve Release without a random
+result. Further selected cycles remain open.
 The normal durable journal has an opt-in local `/api/v2/campaigns` adapter.
 It authenticates operator creation and seat rotation, exposes only the
 versioned side cut and public references, and maps submissions back through

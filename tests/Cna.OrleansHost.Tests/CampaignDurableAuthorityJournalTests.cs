@@ -530,6 +530,65 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void TimedOutSecondAssaultReturnsToReserveReleaseWithoutResult()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true,
+                reserveElementId: "axis-infantry-second", doubleContact: true);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var release = journal.QueryReserveReleaseOwnerOpening(attacker,
+            "axis-infantry-second");
+        Assert.True(journal.SubmitOwnerReserveRelease(attacker, "axis-infantry-second",
+            release.Revision, release.PublicActionRefs[0]).IsAccepted);
+        var control = journal.QueryCycleControlOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerCycleControl(attacker,
+            control.Revision, control.PublicActionRefs[0]).IsAccepted);
+        var movement = journal.QueryRepeatMovementOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerRepeatMovement(attacker,
+            movement.Revision, movement.PublicActionRefs[1]).IsAccepted);
+        var combat = journal.QueryRepeatCombatOwnerOpening(attacker,
+            "axis-infantry-second");
+        using var visible = JsonDocument.Parse(combat.VisibleBytes);
+        var offers = visible.RootElement.GetProperty("assaultOffers");
+        var west = Enumerable.Range(0, offers.GetArrayLength()).Single(index =>
+            offers[index].GetProperty("apparentLocationId").GetString() == "west");
+        Assert.True(journal.SubmitOwnerRepeatCombat(attacker,
+            "axis-infantry-second", combat.Revision,
+            combat.PublicActionRefs[west]).IsAccepted);
+        var westDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
+            journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
+        var rba = journal.QueryRbaOwnerOpening(defender, westDefender);
+        Assert.True(journal.SubmitOwnerRbaDecline(defender, westDefender,
+            rba.Revision, rba.PublicActionRefs[^1]).IsAccepted);
+        _ = journal.QueryForceOwnerOpening(attacker, "axis-infantry-second");
+        var resultCount = CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-combat-assault-result");
+        clock.Advance(TimeSpan.FromSeconds(30));
+        Assert.True(journal.TickForceRound(request.CampaignId));
+        var cold = fixture.Open(clock);
+        var after = cold.ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
+        Assert.Equal(resultCount, CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-combat-assault-result"));
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-combat-cancelled-assault"));
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        var nextControl = cold.QueryCycleControlOwnerOpening(attacker);
+        Assert.True(cold.SubmitOwnerCycleControl(attacker,
+            nextControl.Revision, nextControl.PublicActionRefs[^1]).IsAccepted);
+        Assert.True(CampaignExercises.Reconstruct(
+            fixture.Open(clock).ReadVerified(request.CampaignId)).IsVerified);
+    }
+
+    [Fact]
     public void PostResultDefenderRetreatUsesSeatOpeningAndColdReplay()
     {
         using var fixture = new JournalFixture();
@@ -1112,6 +1171,18 @@ public sealed class CampaignDurableAuthorityJournalTests
             Assert.Equal(1, update.ExecuteNonQuery());
         }
         Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(command.CampaignId));
+    }
+
+    private static long CountAcceptedStep(string path, string campaignId, string kind)
+    {
+        using var connection = new SqliteConnection($"Data Source={path}");
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM accepted_steps "
+            + "WHERE campaign_id=$id AND action_kind=$kind";
+        command.Parameters.AddWithValue("$id", campaignId);
+        command.Parameters.AddWithValue("$kind", kind);
+        return (long)command.ExecuteScalar()!;
     }
 
     private sealed class OwnerHttpHarness : IAsyncDisposable

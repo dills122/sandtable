@@ -117,6 +117,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
                 CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind,
                 null, null, null, null, cancelledCommand, cancelled);
+            AppendEmptyReserveRelease(connection, transaction, campaignId);
             return;
         }
         var result = CampaignHostAdapter.ResolveNativeCombatAssault(closeAssaultHead.Session);

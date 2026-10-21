@@ -180,7 +180,9 @@ cursor through Barrage, defender RBA move or decline, two owner Force seals, adj
 retreat, World settlement, custody, and the next Reserve Release/cycle choice.
 The local HTTP owner route accepts the repeated selection, RBA move, Force seals,
 and cycle finish; the normal SQLite Host replays that chain after restart.
-Force cancellation, further selected cycles, vehicle accounting, other
+An incomplete repeated Force round closes on the retained trusted deadline,
+skips the result and resumes Reserve Release without a missing seal.
+Further selected cycles, vehicle accounting, other
 continuation witnesses, ordinary phase continuation, and public routing remain.
 The normal journal now has an opt-in, loopback-only version-2 HTTP entry for
 campaign creation, operator seat grants, owner openings, and fenced action
