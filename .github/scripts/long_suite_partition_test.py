@@ -95,14 +95,20 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual('collections', command[command.index('--parallel') + 1])
             self.assertEqual('4', command[command.index('--max-threads') + 1])
 
-    def test_formatting_remains_in_required_dependency_closure(self):
-        good = {key: {'result': 'success'} for key in ('prepare', 'tests', 'format', 'orleans')}
+    def test_formatting_and_p01_proofs_remain_in_required_dependency_closure(self):
+        required = (
+            'prepare', 'tests', 'format', 'orleans',
+            'p01-paid-fresh-aggregate', 'p01-rba-decline-fresh-aggregate',
+            'p01-rba-cancel-fresh-aggregate', 'p01-force-seal-fresh',
+            'p01-absent-aggregate', 'p01-all-prefix-reject-aggregate',
+        )
+        good = {key: {'result': 'success'} for key in required}
         suites.validate_dependencies(good)
         for key in good:
             for result in ('failure', 'cancelled', 'skipped'):
                 bad = copy.deepcopy(good); bad[key]['result'] = result
                 with self.subTest(key=key, result=result), self.assertRaises(ValueError): suites.validate_dependencies(bad)
-        for missing in ('format', 'orleans'):
+        for missing in required:
             with self.subTest(missing=missing), self.assertRaises(ValueError):
                 suites.validate_dependencies({key: value for key, value in good.items() if key != missing})
 
@@ -171,6 +177,12 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
         from ci_group_runner import RESOURCE_POLICY
         self.needs['format'] = {'result': 'success'}
         self.needs['orleans'] = {'result': 'success'}
+        for job in (
+            'p01-paid-fresh-aggregate', 'p01-rba-decline-fresh-aggregate',
+            'p01-rba-cancel-fresh-aggregate', 'p01-force-seal-fresh',
+            'p01-absent-aggregate', 'p01-all-prefix-reject-aggregate',
+        ):
+            self.needs[job] = {'result': 'success'}
         core = self.proof['legacy_core_rows']
         classes = sorted({row[1].rsplit('.', 1)[0] for row in core})
         self.weights = {'schema_version': 1, 'classes': {}, 'rows': {suites.row_key(row): 1000 for row in core}}
@@ -276,7 +288,12 @@ class WorkflowTests(unittest.TestCase):
         actual = {value.strip() for value in matrix.split(',')}
         self.assertEqual(set(suites.LONG_JOBS + suites.FAST_JOBS) | {'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts'}, actual)
         self.assertIn('max-parallel: 17', text)
-        self.assertIn('needs: [prepare, tests, format, orleans]', text)
+        self.assertIn(
+            'needs: [prepare, tests, format, orleans, p01-paid-fresh-aggregate, '
+            'p01-rba-decline-fresh-aggregate, p01-rba-cancel-fresh-aggregate, '
+            'p01-force-seal-fresh, p01-absent-aggregate, '
+            'p01-all-prefix-reject-aggregate]', text,
+        )
         orleans_job = text.split('  orleans:', 1)[1].split('  verify:', 1)[0]
         self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', orleans_job)
         self.assertIn('python3 .github/scripts/verify_orleans_results.py', orleans_job)

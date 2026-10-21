@@ -555,7 +555,7 @@ jobs:
           retention-days: 14
 
   verify:
-    needs: [prepare, tests, format, orleans]
+    needs: [prepare, tests, format, orleans, p01-paid-fresh-aggregate, p01-rba-decline-fresh-aggregate, p01-rba-cancel-fresh-aggregate, p01-force-seal-fresh, p01-absent-aggregate, p01-all-prefix-reject-aggregate]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
