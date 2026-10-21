@@ -34,7 +34,8 @@ public sealed class ExerciseSession
         CampaignNativeCycleControlV28? cycleControl = null,
         CampaignNativeRepeatMovementV29? repeatMove = null,
         CampaignWorldSnapshotV6? repeatMoveWorld = null,
-        CampaignNativeRepeatBreakdownV30? repeatBreakdown = null)
+        CampaignNativeRepeatBreakdownV30? repeatBreakdown = null,
+        CampaignNativeRepeatCombatDecisionV31? repeatCombatSelection = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -192,10 +193,12 @@ public sealed class ExerciseSession
                 || CurrentHistory.Count < reserveEvents.Length
                     + (cycleControl is null ? 0 : 1) + (repeatMove is null ? 0 : 1)
                     + (repeatBreakdown is null ? 0 : 1)
+                    + (repeatCombatSelection is null ? 0 : 1)
                 || !CurrentHistory.TakeLast(reserveEvents.Length
                         + (cycleControl is null ? 0 : 1)
                         + (repeatMove is null ? 0 : 1)
-                        + (repeatBreakdown is null ? 0 : 1)).Take(reserveEvents.Length)
+                        + (repeatBreakdown is null ? 0 : 1)
+                        + (repeatCombatSelection is null ? 0 : 1)).Take(reserveEvents.Length)
                     .SequenceEqual(reserveEvents.Cast<object>()))
                 throw new ArgumentException("Reserve Release requires the retained Combat successor and events.",
                     nameof(reserveReleaseEvents));
@@ -220,10 +223,12 @@ public sealed class ExerciseSession
             || cycleControl.PriorCycleOrdinal != release.CycleOrdinal
             || cycleControl.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(release.World)
             || CurrentContacts.AuthorityVersion
-                != (repeatBreakdown?.StateVersion
+                != (repeatCombatSelection?.StateVersion
+                    ?? repeatBreakdown?.StateVersion
                     ?? repeatMove?.StateVersion ?? cycleControl.StateVersion)
             || !Equals(CurrentHistory[CurrentHistory.Count
-                - (repeatMove is null ? 1 : repeatBreakdown is null ? 2 : 3)], cycleControl)))
+                - (repeatMove is null ? 1 : repeatBreakdown is null ? 2
+                    : repeatCombatSelection is null ? 3 : 4)], cycleControl)))
             throw new ArgumentException("Cycle control must bind completed Reserve Release.",
                 nameof(cycleControl));
         CurrentCycleControl = cycleControl;
@@ -237,7 +242,8 @@ public sealed class ExerciseSession
                 != CampaignNativeCombatPaidWorldV22.Hash(repeatedRelease.World)
             || repeatMove.ResultWorldHash
                 != CampaignNativeCombatPaidWorldV22.Hash(repeatMoveWorld)
-            || !Equals(CurrentHistory[repeatBreakdown is null ? ^1 : ^2], repeatMove)))
+            || !Equals(CurrentHistory[repeatBreakdown is null ? ^1
+                : repeatCombatSelection is null ? ^2 : ^3], repeatMove)))
             throw new ArgumentException("Repeated Movement must bind accepted repeat and World.",
                 nameof(repeatMove));
         if (repeatMove is null && repeatMoveWorld is not null)
@@ -249,10 +255,22 @@ public sealed class ExerciseSession
             || repeatBreakdown.CampaignId != snapshot.CampaignId
             || repeatBreakdown.PriorStateVersion != repeatMove.StateVersion
             || repeatBreakdown.WorldHash != repeatMove.ResultWorldHash
-            || !Equals(CurrentHistory[^1], repeatBreakdown)))
+            || !Equals(CurrentHistory[repeatCombatSelection is null ? ^1 : ^2],
+                repeatBreakdown)))
             throw new ArgumentException("Repeated Breakdown must bind accepted Movement.",
                 nameof(repeatBreakdown));
         CurrentRepeatBreakdown = repeatBreakdown;
+        if (repeatCombatSelection is not null && (repeatBreakdown is null
+            || repeatCombatSelection.CampaignId != snapshot.CampaignId
+            || repeatCombatSelection.PriorStateVersion != repeatBreakdown.StateVersion
+            || repeatCombatSelection.PriorEventHash != "sha256:"
+                + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+                    repeatBreakdown.SerializeCanonical()))
+            || !Equals(CurrentHistory[^1], repeatCombatSelection)))
+            throw new ArgumentException(
+                "Repeated Combat selection must bind accepted Breakdown.",
+                nameof(repeatCombatSelection));
+        CurrentRepeatCombatSelection = repeatCombatSelection;
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -381,6 +399,35 @@ public sealed class ExerciseSession
             repeatMove: CurrentRepeatMove,
             repeatMoveWorld: CurrentRepeatMoveWorld,
             repeatBreakdown: breakdown);
+
+    internal ExerciseSession WithRepeatCombatSelectionEvent(
+        CampaignNativeRepeatCombatDecisionV31 selection,
+        CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
+            CurrentHistory.Add(selection), contacts, CurrentCombatDecision,
+            combatBarrage: CurrentCombatBarrage,
+            combatRetreatDecline: CurrentCombatRetreatDecline,
+            combatRetreatMove: CurrentCombatRetreatMove,
+            combatRetreatWorld: CurrentCombatRetreatWorld,
+            combatRetreatPriorContacts: CurrentCombatRetreatPriorContacts,
+            combatRetreatMoves: CurrentCombatRetreatMoves,
+            combatForceSeals: CurrentCombatForceSeals,
+            combatForceCompletion: CurrentCombatForceCompletion,
+            combatAntiArmor: CurrentCombatAntiArmor,
+            combatAssaultResult: CurrentCombatAssaultResult,
+            combatPaidWorld: CurrentCombatPaidWorld,
+            combatPostResultRetreat: CurrentCombatPostResultRetreat,
+            combatSettlement: CurrentCombatSettlement,
+            combatSettledWorld: CurrentCombatSettledWorld,
+            combatCustodyDisposition: CurrentCombatCustodyDisposition,
+            combatCustodyWorld: CurrentCombatCustodyWorld,
+            combatCustodyState: CurrentCombatCustodyState,
+            combatSuccessor: CurrentCombatSuccessor,
+            reserveReleaseEvents: CurrentReserveReleaseEvents,
+            cycleControl: CurrentCycleControl,
+            repeatMove: CurrentRepeatMove,
+            repeatMoveWorld: CurrentRepeatMoveWorld,
+            repeatBreakdown: CurrentRepeatBreakdown,
+            repeatCombatSelection: selection);
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
     internal ImmutableList<object> CurrentHistory { get; }
@@ -413,5 +460,6 @@ public sealed class ExerciseSession
     internal CampaignNativeRepeatMovementV29? CurrentRepeatMove { get; }
     internal CampaignWorldSnapshotV6? CurrentRepeatMoveWorld { get; }
     internal CampaignNativeRepeatBreakdownV30? CurrentRepeatBreakdown { get; }
+    internal CampaignNativeRepeatCombatDecisionV31? CurrentRepeatCombatSelection { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

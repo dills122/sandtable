@@ -631,6 +631,63 @@ public static class CampaignHostAdapter
             submission.Audience, submission.ActionId);
     }
 
+    public static CampaignHostContactCombatOwnerDraft QueryNativeRepeatCombatOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience,
+        string actingElementId)
+    {
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException(
+                "Repeated Combat needs an owner side."),
+        };
+        var cut = CampaignExercises.QueryNativeRepeatCombatCut(session,
+            side, actingElementId);
+        return new CampaignHostContactCombatOwnerDraft(cut.AuthorityVersion,
+            cut.VisibleBytes,
+            cut.AssaultOffers.OrderBy(value => value.ContactHandle,
+                    StringComparer.Ordinal)
+                .ThenBy(value => value.ApparentLocationId,
+                    StringComparer.Ordinal)
+                .Select(value => value.ActionId)
+                .Append(cut.FinishOffer.ActionId).ToArray());
+    }
+
+    public static ExerciseStepResult SubmitNativeRepeatCombat(
+        ExerciseSession session, CampaignActionSubmission submission,
+        string actingElementId)
+    {
+        CampaignHostContactCombatOwnerDraft draft;
+        try
+        {
+            draft = QueryNativeRepeatCombatOwnerDraft(session,
+                submission.Audience, actingElementId);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or InvalidOperationException or InvalidCampaignHistoryException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != draft.AuthorityVersion)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateCombatActionIds.Contains(submission.ActionId,
+                StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitNativeRepeatCombat(session,
+            submission.Audience, actingElementId, submission.ActionId);
+    }
+
     public static CampaignActionSubmission NativeReserveReleaseCompletionCommand(
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
@@ -806,6 +863,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactCycleControlKind
                 or CampaignHostAcceptedStep.ContactRepeatMovementKind
                 or CampaignHostAcceptedStep.NativeRepeatBreakdownKind
+                or CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind
                 or CampaignHostAcceptedStep.ContactCombatCustodyKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignNativeCombatForceCancellationV19? forceCancellation = null;
@@ -867,6 +925,9 @@ public static class CampaignHostAdapter
                     SubmitNativeRepeatMovement(session, submission),
                 CampaignHostAcceptedStep.NativeRepeatBreakdownKind =>
                     CompleteNativeRepeatBreakdown(session),
+                CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind =>
+                    SubmitNativeRepeatCombat(session, submission,
+                        step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactCombatCustodyKind =>
                     SubmitNativeCombatCustody(session, submission,
                         step.ActingElementId!),
@@ -1236,6 +1297,7 @@ public sealed class CampaignHostAcceptedStep
     public const int ContactCycleControlContractVersion = 22;
     public const int ContactRepeatMovementContractVersion = 23;
     public const int NativeRepeatBreakdownContractVersion = 24;
+    public const int ContactRepeatCombatSelectionContractVersion = 25;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -1260,6 +1322,7 @@ public sealed class CampaignHostAcceptedStep
     public const string ContactCycleControlKind = "contact-cycle-control";
     public const string ContactRepeatMovementKind = "contact-repeat-movement";
     public const string NativeRepeatBreakdownKind = "native-repeat-breakdown";
+    public const string ContactRepeatCombatSelectionKind = "contact-repeat-combat-selection";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -1280,12 +1343,13 @@ public sealed class CampaignHostAcceptedStep
                 or ContactCombatCustodyKind or NativeCombatSuccessorKind
                 or NativeReserveReleaseCompletionKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind
-                or ContactRepeatMovementKind or NativeRepeatBreakdownKind)
+                or ContactRepeatMovementKind or NativeRepeatBreakdownKind
+                or ContactRepeatCombatSelectionKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind
-                or ContactRepeatMovementKind
+                or ContactRepeatMovementKind or ContactRepeatCombatSelectionKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
@@ -1320,6 +1384,7 @@ public sealed class CampaignHostAcceptedStep
             ContactCycleControlKind => ContactCycleControlContractVersion,
             ContactRepeatMovementKind => ContactRepeatMovementContractVersion,
             NativeRepeatBreakdownKind => NativeRepeatBreakdownContractVersion,
+            ContactRepeatCombatSelectionKind => ContactRepeatCombatSelectionContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

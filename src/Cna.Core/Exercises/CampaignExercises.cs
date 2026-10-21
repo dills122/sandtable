@@ -93,6 +93,9 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentRepeatCombatSelection is { } repeatSelection)
+            return new ExerciseCheckpoint(repeatSelection,
+                session.CurrentCombatDecision!);
         if (session.CurrentRepeatBreakdown is { } repeatBreakdown)
             return new ExerciseCheckpoint(repeatBreakdown, session.CurrentCombatDecision!);
         if (session.CurrentRepeatMove is { } repeatedMove)
@@ -1223,6 +1226,66 @@ public static class CampaignExercises
         }
     }
 
+    internal static CampaignRepeatCombatOwnerCutV31 QueryNativeRepeatCombatCut(
+        ExerciseSession session, LandSide side, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var release = QueryNativeReserveReleaseState(session);
+        if (session.CurrentRepeatCombatSelection is not null
+            || side != release.ActingSide
+            || session.CurrentCycleControl is not { } control
+            || session.CurrentRepeatMove is not { } movement
+            || session.CurrentRepeatBreakdown is not { } breakdown
+            || session.CurrentRepeatMoveWorld is not { } world)
+            throw new InvalidOperationException(
+                "Repeated Combat needs an accepted acting-side Breakdown cut.");
+        return CampaignRepeatCombatOwnerCutV31.Project(release, control,
+            movement, breakdown, world, session.Context,
+            session.CurrentContacts, actingElementId);
+    }
+
+    internal static ExerciseStepResult SubmitNativeRepeatCombat(
+        ExerciseSession session, CampaignActionAudience audience,
+        string actingElementId, string actionId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryNativeReserveReleaseState(session);
+            var expectedAudience = release.ActingSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+            if (audience != expectedAudience
+                || session.CurrentRepeatCombatSelection is not null
+                || session.CurrentCycleControl is not { } control
+                || session.CurrentRepeatMove is not { } movement
+                || session.CurrentRepeatBreakdown is not { } breakdown
+                || session.CurrentRepeatMoveWorld is not { } world
+                || session.CurrentContacts.AuthorityVersion != breakdown.StateVersion)
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var selection = CampaignNativeRepeatCombatDecisionV31.Select(
+                release, control, movement, breakdown, world,
+                session.Context, session.CurrentContacts,
+                actingElementId, actionId);
+            var contacts = session.CurrentContacts
+                .AdvanceNativeRepeatCombatSelection(selection);
+            var next = session.WithRepeatCombatSelectionEvent(selection, contacts);
+            var bytes = selection.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                breakdown.StateVersion, selection.StateVersion,
+                selection.NextPositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, bytes));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);
@@ -1428,6 +1491,8 @@ public static class CampaignExercises
             expectedBytes = repeatMove.SerializeCanonical();
         if (completedSession.CurrentRepeatBreakdown is { } repeatBreakdown)
             expectedBytes = repeatBreakdown.SerializeCanonical();
+        if (completedSession.CurrentRepeatCombatSelection is { } repeatSelection)
+            expectedBytes = repeatSelection.SerializeCanonical();
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
 
@@ -1458,6 +1523,7 @@ public static class CampaignExercises
                         + (completedSession.CurrentCycleControl is null ? 0 : 1)
                         + (completedSession.CurrentRepeatMove is null ? 0 : 1)
                         + (completedSession.CurrentRepeatBreakdown is null ? 0 : 1)
+                        + (completedSession.CurrentRepeatCombatSelection is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -1814,6 +1880,23 @@ public static class CampaignExercises
                                                             replayedContacts = replayedContacts
                                                                 .AdvanceNativeRepeatBreakdown(verifiedBreakdown);
                                                             replayedBytes = verifiedBreakdown.SerializeCanonical();
+                                                            if (completedSession.CurrentRepeatCombatSelection is not null)
+                                                            {
+                                                                if (replayEvents.ElementAtOrDefault(resultIndex + 8
+                                                                    + completedSession.CurrentReserveReleaseEvents.Count)
+                                                                    is not CampaignNativeRepeatCombatDecisionV31 selectionEvent)
+                                                                    throw new InvalidCampaignHistoryException(
+                                                                        "Repeated Combat selection is missing.");
+                                                                var verifiedSelection = CampaignNativeRepeatCombatDecisionV31.Replay(
+                                                                    reserveState, verifiedControl,
+                                                                    verifiedMove, verifiedBreakdown,
+                                                                    repeatedWorld, completedSession.Context,
+                                                                    replayedContacts,
+                                                                    selectionEvent.SerializeCanonical());
+                                                                replayedContacts = replayedContacts
+                                                                    .AdvanceNativeRepeatCombatSelection(verifiedSelection);
+                                                                replayedBytes = verifiedSelection.SerializeCanonical();
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -1836,7 +1919,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentRepeatBreakdown?.StateVersion
+                == (completedSession.CurrentRepeatCombatSelection?.StateVersion
+                    ?? completedSession.CurrentRepeatBreakdown?.StateVersion
                     ?? completedSession.CurrentRepeatMove?.StateVersion
                     ?? completedSession.CurrentCycleControl?.StateVersion
                     ?? completedSession.CurrentReserveRelease?.StateVersion

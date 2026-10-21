@@ -55,6 +55,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         QueryOwnerOpeningCore(credential, RepeatMovementOpeningKey,
             CampaignOwnerOpeningKind.RepeatMovement);
 
+    internal CampaignOwnerOpening QueryRepeatCombatOwnerOpening(
+        CampaignSeatCredential credential, string actingElementId) =>
+        QueryOwnerOpeningCore(credential, actingElementId,
+            CampaignOwnerOpeningKind.RepeatCombatSelection);
+
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
         string actingElementId, CampaignOwnerOpeningKind kind)
     {
@@ -134,6 +139,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection)
+            {
+                var draft = CampaignHostAdapter.QueryNativeRepeatCombatOwnerDraft(
+                    authority.Session, seat.Audience, actingElementId);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateCombatActionIds.ToArray();
             }
             else
             {
@@ -289,6 +302,7 @@ internal enum CampaignOwnerOpeningKind
     ReserveRelease,
     CycleControl,
     RepeatMovement,
+    RepeatCombatSelection,
 }
 
 internal sealed class CampaignOwnerOpening

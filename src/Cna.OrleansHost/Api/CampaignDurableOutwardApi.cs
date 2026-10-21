@@ -128,6 +128,8 @@ internal static class CampaignDurableOutwardApi
                     "reserve-release" => journal.QueryReserveReleaseOwnerOpening(credential, element),
                     "cycle-control" => journal.QueryCycleControlOwnerOpening(credential),
                     "repeat-movement" => journal.QueryRepeatMovementOwnerOpening(credential),
+                    "repeat-combat-selection" => journal.QueryRepeatCombatOwnerOpening(
+                        credential, element),
                     _ => throw new JsonException("Unknown owner stage."),
                 };
                 return Results.Json(new
@@ -168,6 +170,8 @@ internal static class CampaignDurableOutwardApi
                     "reserve-release" => journal.SubmitOwnerReserveRelease(credential, element, revision, reference),
                     "cycle-control" => journal.SubmitOwnerCycleControl(credential, revision, reference),
                     "repeat-movement" => journal.SubmitOwnerRepeatMovement(credential, revision, reference),
+                    "repeat-combat-selection" => journal.SubmitOwnerRepeatCombat(
+                        credential, element, revision, reference),
                     _ => throw new JsonException("Unknown owner stage."),
                 };
                 return result.IsAccepted

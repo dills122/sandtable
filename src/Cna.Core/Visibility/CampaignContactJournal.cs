@@ -325,6 +325,18 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(breakdown.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeRepeatCombatSelection(
+        CampaignNativeRepeatCombatDecisionV31 selection)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        if (selection.CampaignId != CampaignId
+            || selection.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated Combat selection does not bind contact authority.",
+                nameof(selection));
+        return AtAuthorityVersion(selection.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

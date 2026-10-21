@@ -207,6 +207,16 @@ public sealed class ExerciseCheckpoint
         PositionId = breakdown.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeRepeatCombatDecisionV31 selection,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeRepeatCombatDecisionV31.CurrentContractVersion;
+        CampaignId = selection.CampaignId;
+        StateVersion = selection.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = selection.NextPositionId;
+    }
+
     public int ContractVersion { get; }
     public string CampaignId { get; }
     public long StateVersion { get; }

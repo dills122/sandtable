@@ -395,6 +395,29 @@ public sealed class CampaignDurableAuthorityJournalTests
             movementOpening.Revision, movementOpening.PublicActionRefs[0]);
         Assert.True(movedRetry.IsAccepted);
         Assert.Equal(moved.CanonicalReceipt, movedRetry.CanonicalReceipt);
+        const string repeatActor = "axis-infantry";
+        Assert.Throws<InvalidOperationException>(() =>
+            afterMove.QueryRepeatCombatOwnerOpening(defender, repeatActor));
+        var combatOpening = afterMove.QueryRepeatCombatOwnerOpening(
+            attacker, repeatActor);
+        Assert.Contains("finish-combat-without-attack",
+            System.Text.Encoding.UTF8.GetString(combatOpening.VisibleBytes),
+            StringComparison.Ordinal);
+        Assert.False(afterMove.SubmitOwnerRepeatCombat(attacker, repeatActor,
+            combatOpening.Revision, "act." + new string('0', 64)).IsAccepted);
+        var combatDecision = afterMove.SubmitOwnerRepeatCombat(attacker,
+            repeatActor, combatOpening.Revision,
+            combatOpening.PublicActionRefs[^1]);
+        Assert.True(combatDecision.IsAccepted);
+        var afterCombat = fixture.Open(clock);
+        var combatSession = afterCombat.ReadVerified(request.CampaignId);
+        Assert.Equal(31, CampaignExercises.QueryCheckpoint(combatSession).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(combatSession).IsVerified);
+        var combatRetry = afterCombat.SubmitOwnerRepeatCombat(attacker,
+            repeatActor, combatOpening.Revision,
+            combatOpening.PublicActionRefs[^1]);
+        Assert.True(combatRetry.IsAccepted);
+        Assert.Equal(combatDecision.CanonicalReceipt, combatRetry.CanonicalReceipt);
     }
 
     [Fact]
