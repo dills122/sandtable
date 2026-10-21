@@ -12,6 +12,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     long PriorStateVersion,
     string DecisionActionId,
     string PositionId,
+    bool InitiallyAdjacentToKnownEnemy,
     string DefenderElementId,
     string OriginLocationId,
     string DestinationLocationId,
@@ -34,7 +35,8 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
         _ = CampaignNativeCombatRetreatMovement.ProjectFirst(selected, barrage,
             context, contacts, actionId);
         return new(CurrentContractVersion, selected.CampaignId, barrage.StateVersion,
-            selected.Decision.ActionId, barrage.NextPositionId, cut.DefenderElementId,
+            selected.Decision.ActionId, barrage.NextPositionId,
+            cut.InitiallyAdjacentToKnownEnemy, cut.DefenderElementId,
             offer.OriginLocationId, offer.DestinationLocationId, actionId);
     }
 
@@ -67,6 +69,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
             writer.WriteNumber("priorStateVersion", PriorStateVersion);
             writer.WriteString("decisionActionId", DecisionActionId);
             writer.WriteString("positionId", ContentContractGuards.RequireStableId(PositionId, nameof(PositionId)));
+            writer.WriteBoolean("initiallyAdjacentToKnownEnemy", InitiallyAdjacentToKnownEnemy);
             writer.WriteString("defenderElementId", ContentContractGuards.RequireStableId(
                 DefenderElementId, nameof(DefenderElementId)));
             writer.WriteString("originLocationId", ContentContractGuards.RequireStableId(
@@ -101,7 +104,8 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
             var root = document.RootElement;
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
                 "campaignId", "priorStateVersion", "decisionActionId", "positionId",
-                "defenderElementId", "originLocationId", "destinationLocationId", "actionId");
+                "initiallyAdjacentToKnownEnemy", "defenderElementId", "originLocationId",
+                "destinationLocationId", "actionId");
             if (root.GetProperty("eventType").GetString() != "combat-rba-moved")
                 throw new JsonException("Unknown defender RBA event.");
             var parsed = new CampaignNativeCombatRetreatMoveV16(
@@ -110,6 +114,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
                 root.GetProperty("priorStateVersion").GetInt64(),
                 root.GetProperty("decisionActionId").GetString()!,
                 root.GetProperty("positionId").GetString()!,
+                root.GetProperty("initiallyAdjacentToKnownEnemy").GetBoolean(),
                 root.GetProperty("defenderElementId").GetString()!,
                 root.GetProperty("originLocationId").GetString()!,
                 root.GetProperty("destinationLocationId").GetString()!,

@@ -28,9 +28,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.RetreatBeforeAssault);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerRbaFirstMove(CampaignSeatCredential credential,
+        string defenderElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault, retreatMove: true);
+
     private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef,
-        CampaignOwnerOpeningKind kind)
+        CampaignOwnerOpeningKind kind, bool retreatMove = false)
     {
         ArgumentNullException.ThrowIfNull(credential);
         using var connection = Connect(create: false);
@@ -53,7 +58,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   AND seat_epoch=$epoch AND owner_revision=$revision
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
-            retry.Parameters.AddWithValue("$kind", AcceptedKind(kind));
+            retry.Parameters.AddWithValue("$kind", AcceptedKind(kind, retreatMove));
             retry.Parameters.AddWithValue("$element", actingElementId);
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
@@ -167,14 +172,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
                     submission, actingElementId),
             CampaignOwnerOpeningKind.RetreatBeforeAssault =>
-                CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
-                    submission, actingElementId),
+                retreatMove
+                    ? CampaignHostAdapter.SubmitContactDefenderRbaFirstMove(head.Session,
+                        submission, actingElementId)
+                    : CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
+                        submission, actingElementId),
             _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
                 submission, actingElementId),
         };
         if (!result.IsAccepted) return CampaignOwnerSubmissionResult.Rejected();
         PersistAccepted(connection, transaction, seat.CampaignId, head,
-            AcceptedKind(kind), actingElementId,
+            AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (kind == CampaignOwnerOpeningKind.CombatSelection
             && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
@@ -207,13 +215,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));
     }
 
-    private static string AcceptedKind(CampaignOwnerOpeningKind kind) => kind switch
-    {
-        CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
-        CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
-        CampaignOwnerOpeningKind.RetreatBeforeAssault => CampaignHostAcceptedStep.ContactRbaDeclineKind,
-        _ => throw new ArgumentOutOfRangeException(nameof(kind)),
-    };
+    private static string AcceptedKind(CampaignOwnerOpeningKind kind,
+        bool retreatMove = false) => kind switch
+        {
+            CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
+            CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault => retreatMove
+                ? CampaignHostAcceptedStep.ContactRbaMoveKind
+                : CampaignHostAcceptedStep.ContactRbaDeclineKind,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind)),
+        };
 
     private static bool IsPublicReference(string? value)
     {

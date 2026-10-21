@@ -200,6 +200,10 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission, string defenderElementId) =>
         CampaignExercises.SubmitContactDefenderRbaDecline(session, submission, defenderElementId);
 
+    public static ExerciseStepResult SubmitContactDefenderRbaFirstMove(
+        ExerciseSession session, CampaignActionSubmission submission, string defenderElementId) =>
+        CampaignExercises.SubmitContactDefenderRbaFirstMove(session, submission, defenderElementId);
+
     /// <summary>System-only structural continuation of an accepted voluntary finish.</summary>
     public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatNoAttack(session);
@@ -295,7 +299,8 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeCombatBarrageKind
-                or CampaignHostAcceptedStep.ContactRbaDeclineKind))
+                or CampaignHostAcceptedStep.ContactRbaDeclineKind
+                or CampaignHostAcceptedStep.ContactRbaMoveKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             var accepted = step.Kind switch
             {
@@ -305,6 +310,8 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
                 CampaignHostAcceptedStep.NativeCombatBarrageKind => CompleteNativeCombatBarrage(session),
                 CampaignHostAcceptedStep.ContactRbaDeclineKind => SubmitContactDefenderRbaDecline(
+                    session, submission, step.ActingElementId!),
+                CampaignHostAcceptedStep.ContactRbaMoveKind => SubmitContactDefenderRbaFirstMove(
                     session, submission, step.ActingElementId!),
                 _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
             };
@@ -462,12 +469,14 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeCombatNoAttackContractVersion = 4;
     public const int NativeCombatBarrageContractVersion = 5;
     public const int ContactRbaDeclineContractVersion = 6;
+    public const int ContactRbaMoveContractVersion = 7;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
     public const string NativeCombatNoAttackKind = "native-combat-no-attack";
     public const string NativeCombatBarrageKind = "native-combat-barrage";
     public const string ContactRbaDeclineKind = "contact-rba-decline";
+    public const string ContactRbaMoveKind = "contact-rba-move";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -479,8 +488,10 @@ public sealed class CampaignHostAcceptedStep
         string? actingElementId = null)
     {
         if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind
-                or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind)
+                or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
+                or ContactRbaMoveKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
+                or ContactRbaMoveKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 && actingElementId is not null))
@@ -491,6 +502,7 @@ public sealed class CampaignHostAcceptedStep
             ContactMovementKind => ContactMovementContractVersion,
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
             ContactRbaDeclineKind => ContactRbaDeclineContractVersion,
+            ContactRbaMoveKind => ContactRbaMoveContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

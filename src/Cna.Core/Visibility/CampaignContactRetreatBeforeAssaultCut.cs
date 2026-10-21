@@ -38,12 +38,53 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
             || barrage.PriorStateVersion != selected.StateVersion
             || contacts.CampaignId != selected.CampaignId
             || contacts.AuthorityVersion != barrage.StateVersion
-            || context.ArtifactV6 is not { } artifact)
+            || context.ArtifactV6 is null)
             throw new InvalidOperationException("RBA requires the selected, retained Barrage authority cut.");
         _ = CampaignNativeCombatBarrageV14.Replay(selected, context, barrage.SerializeCanonical());
+        return ProjectAtWorld(selected, barrage, context, contacts,
+            selected.PriorSnapshot.World, barrage.StateVersion, null,
+            selected.PriorSnapshot.World.Representations.Single(value =>
+                value.RepresentationId == selected.Decision.BoundRepresentationId).CurrentLocationId,
+            allowFurtherMoves: true);
+    }
 
-        var prior = selected.PriorSnapshot;
-        var representation = prior.World.Representations.SingleOrDefault(value =>
+    internal static CampaignContactRetreatBeforeAssaultCut ProjectAfterFirstMove(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(move);
+        ArgumentNullException.ThrowIfNull(world);
+        if (move.CampaignId != selected.CampaignId
+            || move.PriorStateVersion != barrage.StateVersion
+            || move.DecisionActionId != selected.Decision.ActionId
+            || move.PositionId != barrage.NextPositionId
+            || contacts.AuthorityVersion != move.StateVersion
+            || contacts.CampaignId != selected.CampaignId)
+            throw new InvalidOperationException("Post-move RBA cut lacks retained authority.");
+        return ProjectAtWorld(selected, barrage, context, contacts, world,
+            move.StateVersion, move.InitiallyAdjacentToKnownEnemy,
+            move.OriginLocationId, move.InitiallyAdjacentToKnownEnemy);
+    }
+
+    private static CampaignContactRetreatBeforeAssaultCut ProjectAtWorld(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignContentContext context,
+        CampaignContactJournal contacts,
+        CampaignWorldSnapshotV6 world,
+        long authorityVersion,
+        bool? initialAdjacency,
+        string initialLocationId,
+        bool allowFurtherMoves)
+    {
+        var artifact = context.ArtifactV6
+            ?? throw new InvalidOperationException("RBA requires Content 6 authority.");
+
+        var representation = world.Representations.SingleOrDefault(value =>
             value.RepresentationId == selected.Decision.BoundRepresentationId)
             ?? throw new InvalidOperationException("Selected defender binding is absent.");
         var defenderId = representation.BoundElementIds.Single();
@@ -57,11 +98,11 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
         };
         if (side == selected.Decision.Side)
             throw new InvalidOperationException("RBA defender cannot own the selected assault.");
-        var state = prior.World.Elements.Single(value => value.ElementId == defenderId);
+        var state = world.Elements.Single(value => value.ElementId == defenderId);
         var own = definition.Elements.Where(value => value.SideId == defender.SideId
                 && value.PlacementMode == ContentPlacementMode.Independent)
             .Select(value => CampaignOwnElementProjection.Project(value,
-                prior.World.Elements.Single(world => world.ElementId == value.ElementId)))
+                world.Elements.Single(element => element.ElementId == value.ElementId)))
             .ToArray();
         var observed = own.Single(value => value.ElementId == defenderId);
         var knowledge = contacts.ObserveFor(side, defender.ParentFormationId);
@@ -72,16 +113,16 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
             value.Features.Select(feature => new CampaignObservationEdgeFeature(
                 feature.FeatureId, feature.DirectionFromLocationId)).ToArray())).ToArray();
         var adjacent = AdjacentLocationIds(observed.CurrentLocationId, edges);
-        var initiallyAdjacent = knowledge.CurrentTargets.Any(target =>
+        var initiallyAdjacent = initialAdjacency ?? knowledge.CurrentTargets.Any(target =>
             adjacent.Contains(target.ApparentLocationId));
         var eligible = state.ReserveStatus == CampaignElementReserveStatus.None
             && observed.CohesionLevel > -26
             && observed.VehicleBreakdownRisk is not { WorkingPointCount: 0 };
-        var moves = eligible
+        var moves = eligible && allowFurtherMoves
             ? DeriveOneEdgeMoves(observed, own, knowledge.CurrentTargets, locations, edges)
             : [];
-        return new(barrage.StateVersion, barrage.NextPositionId, side, defenderId,
-            defender.ParentFormationId, observed.CurrentLocationId, initiallyAdjacent,
+        return new(authorityVersion, barrage.NextPositionId, side, defenderId,
+            defender.ParentFormationId, initialLocationId, initiallyAdjacent,
             knowledge, observed, Array.AsReadOnly(locations), Array.AsReadOnly(edges),
             Array.AsReadOnly(moves), new DeclineRetreatBeforeAssaultAction(defenderId));
     }

@@ -49,6 +49,38 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
             cut.DefenderSide, cut.DefenderElementId, actionId);
     }
 
+    public static CampaignNativeCombatRetreatDeclineV15 CreateAfterFirstMove(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context,
+        CampaignContactJournal priorContacts,
+        CampaignContactJournal currentContacts,
+        string actionId)
+    {
+        if (move != CampaignNativeCombatRetreatMoveV16.CreateFirst(selected, barrage,
+                context, priorContacts, move.ActionId)
+            || !world.Equals(move.ProjectWorld(selected, barrage, context, priorContacts)))
+            throw new InvalidCampaignHistoryException("RBA move does not bind the retained world.");
+        var cut = CampaignContactRetreatBeforeAssaultCut.ProjectAfterFirstMove(
+            selected, barrage, move, world, context, currentContacts);
+        if (actionId != cut.DeclineOffer.ActionId)
+            throw new InvalidOperationException("Defender decline is absent from the updated RBA cut.");
+        var position = Cna1979LandSequenceV4.CreateTurn(
+            selected.PriorSnapshot.CurrentPosition.SequencePosition!.GameTurn)
+            .Single(value => value.PositionId == move.PositionId);
+        var next = Cna1979LandSequenceV4.GetNext(position);
+        if (position.StepId != LandStepIds.RetreatBeforeAssault
+            || next.StepId != LandStepIds.ForceAssignment
+            || next.GameTurn != position.GameTurn
+            || next.OperationStage != position.OperationStage)
+            throw new InvalidOperationException("Post-move decline must reach same-slot Force Assignment.");
+        return new(CurrentContractVersion, selected.CampaignId, move.StateVersion,
+            selected.Decision.ActionId, position.PositionId, next.PositionId,
+            cut.DefenderSide, cut.DefenderElementId, actionId);
+    }
+
     public byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
@@ -87,6 +119,24 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
         var expected = Create(selected, barrage, context, contacts, parsed.ActionId);
         if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
             throw new InvalidCampaignHistoryException("RBA decline differs from defender authority.");
+        return expected;
+    }
+
+    public static CampaignNativeCombatRetreatDeclineV15 ReplayAfterFirstMove(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context,
+        CampaignContactJournal priorContacts,
+        CampaignContactJournal currentContacts,
+        ReadOnlyMemory<byte> canonicalEvent)
+    {
+        var parsed = Deserialize(canonicalEvent);
+        var expected = CreateAfterFirstMove(selected, barrage, move, world, context,
+            priorContacts, currentContacts, parsed.ActionId);
+        if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
+            throw new InvalidCampaignHistoryException("Post-move decline differs from defender authority.");
         return expected;
     }
 
@@ -138,6 +188,34 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
             writer.WriteString("positionId", NextPositionId);
             writer.WritePropertyName("priorBarrageState");
             writer.WriteRawValue(barrage.SerializeStateCanonical(selected));
+            writer.WritePropertyName("decline");
+            writer.WriteRawValue(SerializeCanonical());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    public byte[] SerializeAfterFirstMoveStateCanonical(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignContentContext context,
+        CampaignContactJournal priorContacts)
+    {
+        if (selected.CampaignId != CampaignId || move.StateVersion != PriorStateVersion
+            || selected.Decision.ActionId != DecisionActionId)
+            throw new InvalidOperationException("Post-move decline does not bind retained authority.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CurrentContractVersion);
+            writer.WriteString("campaignId", CampaignId);
+            writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("positionId", NextPositionId);
+            writer.WritePropertyName("priorMoveState");
+            writer.WriteRawValue(move.SerializeStateCanonical(selected, barrage,
+                context, priorContacts));
             writer.WritePropertyName("decline");
             writer.WriteRawValue(SerializeCanonical());
             writer.WriteEndObject();

@@ -81,6 +81,47 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void DefenderRetreatMoveAndExplicitStopColdReplayThroughOwnerSeat()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = Request();
+        AdvanceToContactCombat(journal, request);
+        var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var combatOpening = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
+        Assert.True(journal.SubmitOwnerCombatSelection(attacker, "axis-infantry",
+            combatOpening.Revision, combatOpening.PublicActionRefs[0]).IsAccepted);
+        var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(
+            journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
+        var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        var opening = journal.QueryRbaOwnerOpening(defender, defenderId);
+        Assert.True(opening.PublicActionRefs.Count > 1);
+        var moveRef = opening.PublicActionRefs[0];
+        Assert.False(journal.SubmitOwnerRbaDecline(defender, defenderId,
+            opening.Revision, moveRef).IsAccepted);
+        var moved = journal.SubmitOwnerRbaFirstMove(defender, defenderId,
+            opening.Revision, moveRef);
+        Assert.True(moved.IsAccepted);
+        var cold = fixture.Open();
+        Assert.Equal(moved.CanonicalReceipt,
+            cold.SubmitOwnerRbaFirstMove(defender, defenderId,
+                opening.Revision, moveRef).CanonicalReceipt);
+        var afterMove = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterMove).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterMove).IsVerified);
+        var next = cold.QueryRbaOwnerOpening(defender, defenderId);
+        Assert.True(next.Revision > opening.Revision);
+        var stopped = cold.SubmitOwnerRbaDecline(defender, defenderId,
+            next.Revision, next.PublicActionRefs[^1]);
+        Assert.True(stopped.IsAccepted);
+        var final = fixture.Open().ReadVerified(request.CampaignId);
+        Assert.Equal(15, CampaignExercises.QueryCheckpoint(final).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(final).IsVerified);
+    }
+
+    [Fact]
     public void VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart()
     {
         using var fixture = new JournalFixture();

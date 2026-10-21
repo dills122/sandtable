@@ -72,17 +72,22 @@ current contacts, published map and exact movement costs for move-offer presence
 always includes an explicit decline. Known occupied contact hexes cannot be retreat
 destinations; hidden opposing occupancy cannot silently remove an offer. Land §§13.1,
 13.21–13.26 govern eligibility, cost, initial adjacency and stopping. This candidate
-cut is still internal: accepting movement, handling an unseen encounter, a timed
-defender opening and continuing the sequence require the same durable authority path.
+cut is still internal. The first offered move now commits through Core movement rules,
+updates the authoritative World and both contact audiences, and retains a replayable
+V16 event. It returns to a defender cut at the RBA position. Repeat movement and any
+unseen encounter policy remain to complete before an outward opening.
 The first V1 defender-visible retreat draft contains contact observation, own unit,
 map, initial-adjacency fact, move costs and explicit decline. Core action IDs and
 authority version stay in the trusted Host adapter, separate from visible bytes.
 An explicit defender decline now records a V15 owner event from the Barrage cut to
 same-slot Force Assignment. Normal Host binds it to the defender seat, retains the
 opening/ref and accepted receipt atomically, and replays the exact event after restart.
-No query or timeout fabricates a decline. Move-offer acceptance, unseen encounter
+No query or timeout fabricates a decline. Further move-offer acceptance, unseen encounter
 resolution, and subsequent assignment/adjudication remain to implement on this
-production branch.
+production branch. The normal Host now accepts the first move through the defender
+seat, retains its receipt, and cold replays the updated World/contact journal. It also
+accepts an explicit stop from the next cut. Further move offers at that cut must be
+implemented before this branch is published as a complete defender RBA path.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,

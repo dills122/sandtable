@@ -147,6 +147,14 @@ public sealed class CampaignContactCombatSelectionCutTests
             rbaSession.CurrentCombatDecision!.Decision.BoundRepresentationId!,
             rbaSession.Context);
         Assert.Equal(moveEvent.StateVersion, movedContacts.AuthorityVersion);
+        var afterMove = CampaignContactRetreatBeforeAssaultCut.ProjectAfterFirstMove(
+            rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+            moveEvent, projectedRetreat.World, rbaSession.Context, movedContacts);
+        Assert.Equal(moveEvent.StateVersion, afterMove.AuthorityVersion);
+        Assert.Equal(firstMove.DestinationLocationId, afterMove.Defender.CurrentLocationId);
+        Assert.Equal(rba.InitialLocationId, afterMove.InitialLocationId);
+        Assert.Equal(rba.InitiallyAdjacentToKnownEnemy,
+            afterMove.InitiallyAdjacentToKnownEnemy);
         Assert.NotEmpty(moveEvent.SerializeStateCanonical(rbaSession.CurrentCombatDecision!,
             rbaSession.CurrentCombatBarrage!, rbaSession.Context, rbaSession.CurrentContacts));
         Assert.Throws<InvalidCampaignHistoryException>(() =>
@@ -158,6 +166,35 @@ public sealed class CampaignContactCombatSelectionCutTests
             CampaignNativeCombatRetreatMovement.ProjectFirst(
                 rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
                 rbaSession.Context, rbaSession.CurrentContacts, "act.forged"));
+        var moveSubmission = new CampaignActionSubmission(
+            CampaignActionSubmission.CurrentContractVersion, rbaSession.CurrentSnapshot.CampaignId,
+            rba.AuthorityVersion, rba.PositionId, CampaignActionAudience.Commonwealth,
+            firstMove.ActionId);
+        var acceptedMove = CampaignExercises.SubmitContactDefenderRbaFirstMove(
+            rbaSession, moveSubmission, rba.DefenderElementId);
+        Assert.True(acceptedMove.IsAccepted, acceptedMove.RejectionReason.ToString());
+        Assert.True(CampaignExercises.Reconstruct(acceptedMove.SuccessorSession!).IsVerified);
+        Assert.Equal(rba.PositionId,
+            CampaignExercises.QueryCheckpoint(acceptedMove.SuccessorSession!).PositionId);
+        Assert.Equal(afterMove.Defender.CurrentLocationId,
+            CampaignExercises.QueryContactRbaCut(acceptedMove.SuccessorSession!)
+                .Defender.CurrentLocationId);
+        var afterMoveCut = CampaignExercises.QueryContactRbaCut(acceptedMove.SuccessorSession!);
+        var stopAfterMoveSubmission = new CampaignActionSubmission(
+            CampaignActionSubmission.CurrentContractVersion,
+            rbaSession.CurrentSnapshot.CampaignId, afterMoveCut.AuthorityVersion,
+            afterMoveCut.PositionId, CampaignActionAudience.Commonwealth,
+            afterMoveCut.DeclineOffer.ActionId);
+        var stopAfterMove = CampaignExercises.SubmitContactDefenderRbaDecline(
+            acceptedMove.SuccessorSession!, stopAfterMoveSubmission, rba.DefenderElementId);
+        Assert.True(stopAfterMove.IsAccepted, stopAfterMove.RejectionReason.ToString());
+        Assert.True(CampaignExercises.Reconstruct(stopAfterMove.SuccessorSession!).IsVerified);
+        Assert.Equal(LandStepIds.ForceAssignment,
+            Cna1979LandSequenceV4.CreateTurn(
+                rbaSession.CurrentSnapshot.CurrentPosition.SequencePosition!.GameTurn)
+                .Single(position => position.PositionId ==
+                    CampaignExercises.QueryCheckpoint(stopAfterMove.SuccessorSession!).PositionId)
+                .StepId);
         var defenderDraft = CampaignHostAdapter.QueryContactRbaOwnerDraft(rbaSession,
             CampaignActionAudience.Commonwealth, rba.DefenderElementId);
         Assert.Equal(rba.AuthorityVersion, defenderDraft.AuthorityVersion);
@@ -204,6 +241,22 @@ public sealed class CampaignContactCombatSelectionCutTests
             CampaignHostAcceptedStep.NativeCombatBarrageKind)).ToArray();
         Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
             started.InitialSnapshotBytes, barrageSteps).IsVerified);
+        var moveSteps = barrageSteps.Append(new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(moveSubmission),
+            acceptedMove.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(acceptedMove.Evidence.Receipt),
+            acceptedMove.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.ContactRbaMoveKind, rba.DefenderElementId)).ToArray();
+        Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, moveSteps).IsVerified);
+        var stoppedMoveSteps = moveSteps.Append(new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(stopAfterMoveSubmission),
+            stopAfterMove.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(stopAfterMove.Evidence.Receipt),
+            stopAfterMove.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.ContactRbaDeclineKind, rba.DefenderElementId)).ToArray();
+        Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, stoppedMoveSteps).IsVerified);
         var declineSteps = barrageSteps.Append(new CampaignHostAcceptedStep(
             CampaignActionSubmissionSerializer.SerializeCanonical(declineSubmission),
             acceptedDecline.Evidence!.EventRecords,

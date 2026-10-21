@@ -777,7 +777,10 @@ offer; an unseen encounter needs an accepted event rather than a hidden rejectio
 The trusted defender draft keeps canonical visible bytes separate from private action IDs
 and authority version. An explicit defender decline is a V15 owner event through the
 normal durable Host seat/opening/receipt path; silence remains pending. Actual retreat
-movement, Reserve Release, assault adjudication and the public
+movement now uses a V16 retained Core event: the first accepted move updates World and
+both contact audiences, returns to a defender RBA cut, and cold replays through the
+normal durable Host seat/receipt path. An explicit stop from that updated cut reaches
+Force Assignment. Repeat retreat movement, Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

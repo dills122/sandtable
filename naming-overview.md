@@ -115,7 +115,9 @@ Barrage successor into Retreat Before Assault under the same durable owner submi
 RBA move/decline candidates now come from the first side-scoped defender contact cut;
 hidden occupancy does not control offer presence. Trusted Host draft keeps visible bytes
 separate from private action IDs. An explicit defender decline uses a V15 owner event
-and the normal durable Host receipt; retreat movement acceptance, public
+and the normal durable Host receipt. A first defender retreat move uses a V16 owner
+event, updates Core World/contact authority, and returns to the RBA choice through
+the normal durable Host receipt; repeat moves and public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself
