@@ -804,6 +804,9 @@ Normal Content 6 resolves a canonical, source-indexed Combat supplement for form
 Basic Morale and offensive component ratings. It is keyed to exact Content 6 bytes;
 the positive event must retain its hash and revalidate it on cold replay before any
 Core random draw. Defensive ratings and current TOE remain in Content 6 and World.
+The normal catalog has a separate adjacent-infantry assault seed at 10 TOE per
+side, so the selected procedure's committed-strength precondition can be checked
+without altering historical 5-TOE campaigns.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

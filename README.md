@@ -118,6 +118,8 @@ Core V21 closes Close Assault without a draw and reaches same-slot Reserve Relea
 Normal Content 6 now resolves a versioned Combat source supplement for formation
 morale and offensive ratings, bound to the exact pack hash; positive adjudication
 must pin that source identity before drawing or settling.
+The registered adjacent-infantry assault scenario starts both sides at the
+procedure's required 10 TOE; its setup uses normal campaign creation and replay.
 Positive Close Assault adjudication, non-infantry disposition, and public route
 remain unfinished; historical
 observation readers remain readable while the complete successor path is built.

@@ -21,7 +21,8 @@ provenance. Any absent, extra, duplicate, out-of-range, noncanonical, or unindex
 fact fails closed. A pack without a supplement cannot issue a positive native
 Close Assault result.
 
-The first catalog resource binds the normal adjacent-infantry Rules Lab pack. Its
+The first catalog resource binds the normal 10-TOE adjacent-infantry assault
+Rules Lab pack. Its
 synthetic source locators are declared scenario inputs; no rating or morale is
 inferred from a hidden World view, an owner submission, or the separate Content 7
 historical fixture. A positive assault event must retain this source hash and

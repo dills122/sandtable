@@ -10,7 +10,7 @@ public sealed class ContentCombatSourceTests
 {
     private static readonly ContentPackV6Artifact Artifact =
         Cna1979SyntheticContentCatalog.BreakdownRunnerArtifactsV6.Single(value =>
-            value.Identity.PackId == "rules-lab.content.breakdown-reaction.combat-infantry.v1");
+            value.Identity.PackId == "rules-lab.content.breakdown-reaction.combat-assault.v1");
 
     [Fact]
     public void NormalCampaignResolvesPinnedCombatFactsFromItsContentPack()
@@ -22,9 +22,19 @@ public sealed class ContentCombatSourceTests
         Assert.Equal(1, source.OffensiveRating("axis-infantry.toe"));
         Assert.Equal(1, source.OffensiveRating("commonwealth-infantry.toe"));
         Assert.StartsWith("sha256:", source.Hash);
+        Assert.All(Artifact.Definition.ElementCombatFacts.SelectMany(value => value.Components),
+            component => Assert.Equal(10, component.MaximumToe));
+        Assert.All(Assert.Single(Artifact.Definition.LegacyDefinition.Scenarios).InitialPlacements
+                .SelectMany(placement => Artifact.Definition.InitialPlacementCombatFacts
+                    .Where(facts => facts.ElementId == placement.ElementId)
+                    .SelectMany(facts => facts.InitialComponentToes)),
+            toe => Assert.Equal(10, toe.CurrentToe));
         Assert.NotNull(CampaignContentContext.Create(Artifact,
             Assert.Single(Artifact.Definition.LegacyDefinition.Scenarios).ScenarioId).CombatSource);
         Assert.Null(ContentCombatSourceV1.Resolve(Cna1979SyntheticContentCatalog.ArtifactV6));
+        var shorterInfantry = Cna1979SyntheticContentCatalog.BreakdownRunnerArtifactsV6.Single(value =>
+            value.Identity.PackId == "rules-lab.content.breakdown-reaction.combat-infantry.v1");
+        Assert.Null(ContentCombatSourceV1.Resolve(shorterInfantry));
     }
 
     [Fact]
@@ -54,7 +64,7 @@ public sealed class ContentCombatSourceTests
     private static byte[] ReadResource()
     {
         using var source = typeof(ContentPackV6Artifact).Assembly.GetManifestResourceStream(
-            "Cna.Core.Content.Fixtures.rules-lab.content.breakdown-reaction.combat-infantry.v1.combat-source-v1.json");
+            "Cna.Core.Content.Fixtures.rules-lab.content.breakdown-reaction.combat-assault.v1.combat-source-v1.json");
         using var stream = new MemoryStream();
         (source ?? throw new InvalidOperationException("Combat source resource is missing.")).CopyTo(stream);
         return stream.ToArray();
