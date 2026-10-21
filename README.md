@@ -174,9 +174,13 @@ cut now projects repeated Combat offers from retained World and contacts.
 The V31 selection is now accepted through normal Exercise and Host with a
 fenced owner reference and cold-replayed receipt. A voluntary finish commits
 a V32 no-attack System event and reaches the same ordinal's Reserve Release;
-its following repeat-or-finish choice also survives restart. Later-cycle
-selected assaults, vehicle accounting, other continuation witnesses, ordinary
-phase continuation, and public routing remain to be wired.
+its following repeat-or-finish choice also survives restart. A selected later-cycle
+assault now uses the retained World, contact journal, ammunition ledger and RNG
+cursor through Barrage, defender decline, two owner Force seals, adjudication,
+retreat, World settlement, custody, and the next Reserve Release/cycle choice.
+The normal SQLite Host replays the accepted chain after restart. RBA movement,
+Force cancellation, further selected cycles, vehicle accounting, other
+continuation witnesses, ordinary phase continuation, and public routing remain.
 The normal journal now has an opt-in, loopback-only version-2 HTTP entry for
 campaign creation, operator seat grants, owner openings, and fenced action
 submission. It uses the permanent Core contact projection and durable Host;

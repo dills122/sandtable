@@ -47,6 +47,23 @@ public sealed class ExerciseCheckpoint
         PositionId = barrage.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (barrage.CampaignId != decision.CampaignId
+            || barrage.PriorStateVersion != decision.StateVersion
+            || barrage.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated Barrage must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatBarrageV14.CurrentContractVersion;
+        CampaignId = barrage.CampaignId;
+        StateVersion = barrage.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = barrage.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatRetreatDeclineV15 decline,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -54,6 +71,22 @@ public sealed class ExerciseCheckpoint
         CampaignId = decline.CampaignId;
         StateVersion = decline.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = decline.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatRetreatDeclineV15 decline,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (decline.CampaignId != decision.CampaignId
+            || decline.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated RBA decision must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatRetreatDeclineV15.CurrentContractVersion;
+        CampaignId = decline.CampaignId;
+        StateVersion = decline.StateVersion;
+        RulesetHash = initial.RulesetHash;
         PositionId = decline.NextPositionId;
     }
 
@@ -77,6 +110,22 @@ public sealed class ExerciseCheckpoint
         PositionId = seal.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatForceSealV17 seal,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (seal.CampaignId != decision.CampaignId
+            || seal.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated Force seal must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatForceSealV17.CurrentContractVersion;
+        CampaignId = seal.CampaignId;
+        StateVersion = seal.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = seal.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatForceCompletionV18 completion,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -84,6 +133,22 @@ public sealed class ExerciseCheckpoint
         CampaignId = completion.CampaignId;
         StateVersion = completion.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = completion.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatForceCompletionV18 completion,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (completion.CampaignId != decision.CampaignId
+            || completion.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated Force completion must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatForceCompletionV18.CurrentContractVersion;
+        CampaignId = completion.CampaignId;
+        StateVersion = completion.StateVersion;
+        RulesetHash = initial.RulesetHash;
         PositionId = completion.NextPositionId;
     }
 
@@ -107,6 +172,22 @@ public sealed class ExerciseCheckpoint
         PositionId = antiArmor.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatAntiArmorV20 antiArmor,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (antiArmor.CampaignId != decision.CampaignId
+            || antiArmor.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated Anti Armor must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatAntiArmorV20.CurrentContractVersion;
+        CampaignId = antiArmor.CampaignId;
+        StateVersion = antiArmor.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = antiArmor.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatCancelledAssaultV21 cancelledAssault,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -127,6 +208,22 @@ public sealed class ExerciseCheckpoint
         PositionId = result.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatAssaultResultV22 result,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (result.CampaignId != decision.CampaignId
+            || result.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated result must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatAssaultResultV22.CurrentContractVersion;
+        CampaignId = result.CampaignId;
+        StateVersion = result.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = result.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatRetreatAfterAssaultV23 retreat,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -134,6 +231,22 @@ public sealed class ExerciseCheckpoint
         CampaignId = retreat.CampaignId;
         StateVersion = retreat.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = retreat.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatRetreatAfterAssaultV23 retreat,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (retreat.CampaignId != decision.CampaignId
+            || retreat.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated retreat decision must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatRetreatAfterAssaultV23.CurrentContractVersion;
+        CampaignId = retreat.CampaignId;
+        StateVersion = retreat.StateVersion;
+        RulesetHash = initial.RulesetHash;
         PositionId = retreat.NextPositionId;
     }
 
@@ -147,6 +260,22 @@ public sealed class ExerciseCheckpoint
         PositionId = settlement.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatSettlementV24 settlement,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (settlement.CampaignId != decision.CampaignId
+            || settlement.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated settlement must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatSettlementV24.CurrentContractVersion;
+        CampaignId = settlement.CampaignId;
+        StateVersion = settlement.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = settlement.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatCustodyDispositionV25 custody,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -154,6 +283,21 @@ public sealed class ExerciseCheckpoint
         CampaignId = custody.CampaignId;
         StateVersion = custody.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = custody.PositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatCustodyDispositionV25 custody,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (custody.CampaignId != decision.CampaignId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated custody must bind accepted later-cycle campaign.");
+        ContractVersion = CampaignNativeCombatCustodyDispositionV25.CurrentContractVersion;
+        CampaignId = custody.CampaignId;
+        StateVersion = custody.StateVersion;
+        RulesetHash = initial.RulesetHash;
         PositionId = custody.PositionId;
     }
 
@@ -167,6 +311,21 @@ public sealed class ExerciseCheckpoint
         PositionId = successor.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatSuccessorV26 successor,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (successor.CampaignId != decision.CampaignId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated successor must bind accepted later-cycle campaign.");
+        ContractVersion = CampaignNativeCombatSuccessorV26.CurrentContractVersion;
+        CampaignId = successor.CampaignId;
+        StateVersion = successor.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = successor.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeReserveReleaseStateV27 reserveRelease,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -177,6 +336,19 @@ public sealed class ExerciseCheckpoint
         PositionId = reserveRelease.Position.PositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeReserveReleaseStateV27 reserveRelease,
+        CampaignSnapshotV11 initial)
+    {
+        if (reserveRelease.CampaignId != initial.CampaignId)
+            throw new ArgumentException(
+                "Repeated Reserve Release must bind accepted campaign.");
+        ContractVersion = CampaignNativeReserveReleaseEventV27.CurrentContractVersion;
+        CampaignId = reserveRelease.CampaignId;
+        StateVersion = reserveRelease.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = reserveRelease.Position.PositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCycleControlV28 control,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -184,6 +356,19 @@ public sealed class ExerciseCheckpoint
         CampaignId = control.CampaignId;
         StateVersion = control.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = control.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCycleControlV28 control,
+        CampaignSnapshotV11 initial)
+    {
+        if (control.CampaignId != initial.CampaignId)
+            throw new ArgumentException(
+                "Repeated cycle control must bind accepted campaign.");
+        ContractVersion = CampaignNativeCycleControlV28.CurrentContractVersion;
+        CampaignId = control.CampaignId;
+        StateVersion = control.StateVersion;
+        RulesetHash = initial.RulesetHash;
         PositionId = control.NextPositionId;
     }
 

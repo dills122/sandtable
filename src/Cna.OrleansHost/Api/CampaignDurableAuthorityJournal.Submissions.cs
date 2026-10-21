@@ -376,6 +376,22 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 null, null, null, systemCommand, completion);
             AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
         }
+        else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection
+            && CampaignHostAdapter.IsNativeRepeatCombatSelectedAssault(
+                result.SuccessorSession!))
+        {
+            var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(
+                result.SuccessorSession!);
+            if (!barrage.IsAccepted)
+                throw new InvalidOperationException(
+                    "Accepted repeated assault cannot enter Barrage.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
+                systemHead.Session, barrage);
+            PersistAccepted(connection, transaction, seat.CampaignId,
+                systemHead, CampaignHostAcceptedStep.NativeCombatBarrageKind,
+                null, null, null, null, systemCommand, barrage);
+        }
         else if (kind == CampaignOwnerOpeningKind.ForceAssignment
             && CampaignHostAdapter.IsNativeCombatForcePrepared(result.SuccessorSession!))
         {

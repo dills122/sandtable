@@ -159,8 +159,11 @@ V30 records the cohortless Breakdown System determination into Combat with
 normal Host cold replay. Internal V31 projects repeated Combat owner offers
 without rebuilding V11 and binds an exact replayed owner choice. Exercise and
 normal Host now accept it; a V32 voluntary finish reaches same-ordinal Reserve
-Release and its subsequent cycle choice with cold replay. Later-cycle selected
-assaults, vehicle accounting, and public routing remain pending;
+Release and its subsequent cycle choice with cold replay. A selected V31 assault
+uses the same native Combat event families V14-V28 against retained later-cycle
+World, contact, and RNG authority, including World settlement and a restart-safe
+Host receipt. Other defender/Force branches, further selected cycles, vehicle
+accounting, and public routing remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

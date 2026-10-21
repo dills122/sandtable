@@ -37,6 +37,8 @@ public sealed class ExerciseSession
         CampaignNativeRepeatBreakdownV30? repeatBreakdown = null,
         CampaignNativeRepeatCombatDecisionV31? repeatCombatSelection = null,
         CampaignNativeRepeatCombatNoAttackV32? repeatNoAttack = null,
+        CampaignContactJournal? repeatAssaultBaseContacts = null,
+        IEnumerable<object>? repeatAssaultEvents = null,
         CampaignContactJournal? postRepeatBaseContacts = null,
         IEnumerable<object>? postRepeatEvents = null)
     {
@@ -46,14 +48,22 @@ public sealed class ExerciseSession
         CurrentHistory = history as ImmutableList<object> ?? ImmutableList.CreateRange(history);
         CurrentContacts = contacts ?? CampaignContactJournal.Empty(snapshot.CampaignId);
         var laterEvents = postRepeatEvents?.ToArray() ?? [];
-        if (laterEvents.Length > CurrentHistory.Count
+        var assaultEvents = repeatAssaultEvents?.ToArray() ?? [];
+        if (laterEvents.Length + assaultEvents.Length > CurrentHistory.Count
+            || laterEvents.Length != 0 && assaultEvents.Length != 0
             || !CurrentHistory.TakeLast(laterEvents.Length).SequenceEqual(laterEvents))
             throw new ArgumentException(
                 "Later-cycle events must be retained at history tail.",
                 nameof(postRepeatEvents));
         var prePostHistory = CurrentHistory.Take(
-            CurrentHistory.Count - laterEvents.Length).ToArray();
-        var prePostContacts = postRepeatBaseContacts ?? CurrentContacts;
+            CurrentHistory.Count - laterEvents.Length - assaultEvents.Length).ToArray();
+        if (!CurrentHistory.Skip(prePostHistory.Length).Take(assaultEvents.Length)
+                .SequenceEqual(assaultEvents))
+            throw new ArgumentException(
+                "Repeated assault events must be retained after selection.",
+                nameof(repeatAssaultEvents));
+        var prePostContacts = postRepeatBaseContacts
+            ?? repeatAssaultBaseContacts ?? CurrentContacts;
         if (combatSelection is not null && combatSelection.PriorSnapshot != snapshot)
             throw new ArgumentException("Combat selection must bind the session's prior snapshot.", nameof(combatSelection));
         if (noAttackCompletion is not null && (combatSelection is null
@@ -302,6 +312,31 @@ public sealed class ExerciseSession
                     nameof(repeatNoAttack));
         }
         CurrentRepeatNoAttack = repeatNoAttack;
+        if (repeatAssaultBaseContacts is not null || assaultEvents.Length != 0)
+        {
+            if (repeatCombatSelection is not { Choice: "select-contact-assault" }
+                || repeatNoAttack is not null || repeatMoveWorld is null
+                || combatAssaultResult is null
+                || repeatAssaultBaseContacts is null)
+                throw new ArgumentException(
+                    "Repeated assault needs retained selected Combat authority.",
+                    nameof(repeatAssaultEvents));
+            var runtime = CampaignNativeRepeatAssaultRuntime.Replay(snapshot,
+                repeatCombatSelection, repeatMoveWorld,
+                combatAssaultResult.AfterRandomState, context,
+                repeatAssaultBaseContacts, prePostHistory, assaultEvents);
+            if (CurrentContacts.AuthorityVersion
+                    != runtime.Contacts.AuthorityVersion
+                || CurrentContacts.Records.Count != runtime.Contacts.Records.Count
+                || CurrentContacts.Records.Zip(runtime.Contacts.Records)
+                    .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                throw new ArgumentException(
+                    "Repeated assault contacts differ from retained replay.",
+                    nameof(contacts));
+            CurrentRepeatAssault = runtime;
+        }
+        CurrentRepeatAssaultBaseContacts = repeatAssaultBaseContacts;
+        CurrentRepeatAssaultEvents = Array.AsReadOnly(assaultEvents);
         if (repeatNoAttack is null && (postRepeatBaseContacts is not null
             || laterEvents.Length != 0))
             throw new ArgumentException(
@@ -486,7 +521,9 @@ public sealed class ExerciseSession
             repeatMove: CurrentRepeatMove,
             repeatMoveWorld: CurrentRepeatMoveWorld,
             repeatBreakdown: CurrentRepeatBreakdown,
-            repeatCombatSelection: selection);
+            repeatCombatSelection: selection,
+            repeatAssaultBaseContacts: selection.Choice == "select-contact-assault"
+                ? contacts : null);
 
     internal ExerciseSession WithRepeatNoAttackEvent(
         CampaignNativeRepeatCombatNoAttackV32 completion,
@@ -549,6 +586,36 @@ public sealed class ExerciseSession
             repeatNoAttack: CurrentRepeatNoAttack,
             postRepeatBaseContacts: CurrentPostRepeatBaseContacts,
             postRepeatEvents: CurrentPostRepeatEvents.Append(campaignEvent));
+
+    internal ExerciseSession WithRepeatAssaultEvent(object campaignEvent,
+        CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
+            CurrentHistory.Add(campaignEvent), contacts, CurrentCombatDecision,
+            combatBarrage: CurrentCombatBarrage,
+            combatRetreatDecline: CurrentCombatRetreatDecline,
+            combatRetreatMove: CurrentCombatRetreatMove,
+            combatRetreatWorld: CurrentCombatRetreatWorld,
+            combatRetreatPriorContacts: CurrentCombatRetreatPriorContacts,
+            combatRetreatMoves: CurrentCombatRetreatMoves,
+            combatForceSeals: CurrentCombatForceSeals,
+            combatForceCompletion: CurrentCombatForceCompletion,
+            combatAntiArmor: CurrentCombatAntiArmor,
+            combatAssaultResult: CurrentCombatAssaultResult,
+            combatPaidWorld: CurrentCombatPaidWorld,
+            combatPostResultRetreat: CurrentCombatPostResultRetreat,
+            combatSettlement: CurrentCombatSettlement,
+            combatSettledWorld: CurrentCombatSettledWorld,
+            combatCustodyDisposition: CurrentCombatCustodyDisposition,
+            combatCustodyWorld: CurrentCombatCustodyWorld,
+            combatCustodyState: CurrentCombatCustodyState,
+            combatSuccessor: CurrentCombatSuccessor,
+            reserveReleaseEvents: CurrentReserveReleaseEvents,
+            cycleControl: CurrentCycleControl,
+            repeatMove: CurrentRepeatMove,
+            repeatMoveWorld: CurrentRepeatMoveWorld,
+            repeatBreakdown: CurrentRepeatBreakdown,
+            repeatCombatSelection: CurrentRepeatCombatSelection,
+            repeatAssaultBaseContacts: CurrentRepeatAssaultBaseContacts,
+            repeatAssaultEvents: CurrentRepeatAssaultEvents.Append(campaignEvent));
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
     internal ImmutableList<object> CurrentHistory { get; }
@@ -583,6 +650,9 @@ public sealed class ExerciseSession
     internal CampaignNativeRepeatBreakdownV30? CurrentRepeatBreakdown { get; }
     internal CampaignNativeRepeatCombatDecisionV31? CurrentRepeatCombatSelection { get; }
     internal CampaignNativeRepeatCombatNoAttackV32? CurrentRepeatNoAttack { get; }
+    internal CampaignContactJournal? CurrentRepeatAssaultBaseContacts { get; }
+    internal IReadOnlyList<object> CurrentRepeatAssaultEvents { get; }
+    internal CampaignNativeRepeatAssaultRuntime? CurrentRepeatAssault { get; }
     internal CampaignContactJournal? CurrentPostRepeatBaseContacts { get; }
     internal IReadOnlyList<object> CurrentPostRepeatEvents { get; }
     internal CampaignNativePostRepeatRuntime? CurrentPostRepeat { get; }

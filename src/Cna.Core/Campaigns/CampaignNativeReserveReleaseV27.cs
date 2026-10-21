@@ -209,6 +209,37 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             selection.CycleOrdinal, position, world, [], [], false);
     }
 
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatAssault(
+        CampaignNativeRepeatCombatDecisionV31 selection,
+        CampaignNativeCombatSuccessorV26 successor,
+        CampaignNativeCombatSuccessorV26.Projection projection,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        ArgumentNullException.ThrowIfNull(successor);
+        ArgumentNullException.ThrowIfNull(projection);
+        ArgumentNullException.ThrowIfNull(context);
+        if (selection.Choice != "select-contact-assault"
+            || successor.CampaignId != selection.CampaignId
+            || successor.StateVersion != projection.StateVersion
+            || successor.NextPositionId != projection.NextPosition.PositionId
+            || successor.StateHash != CampaignNativeReserveReleaseEventV27.Hash(
+                projection.SerializeCanonical())
+            || successor.CustodyStateHash != CampaignNativeReserveReleaseEventV27.Hash(
+                CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(
+                    projection.Custody))
+            || projection.NextPosition.SegmentId != LandSegmentIds.ReserveRelease
+            || projection.NextPosition.ActorRole != LandActorRole.FirstActingSide)
+            throw new InvalidOperationException(
+                "Repeated assault successor lacks accepted Reserve Release authority.");
+        _ = CampaignReserveReleaseRules.Pending(projection.World, context,
+            selection.Side, selection.CycleOrdinal);
+        return new(successor.CampaignId, successor.StateVersion,
+            CampaignNativeReserveReleaseEventV27.Hash(successor.SerializeCanonical()),
+            selection.Side, selection.CycleOrdinal, projection.NextPosition,
+            projection.World, [], [], false);
+    }
+
     internal IReadOnlyList<CampaignReserveReleaseMember> Pending(
         CampaignContentContext context) => Completed
             ? [] : CampaignReserveReleaseRules.Pending(World, context,

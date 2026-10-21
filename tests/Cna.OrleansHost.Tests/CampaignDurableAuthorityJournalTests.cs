@@ -1,10 +1,18 @@
+using System.Net;
+using System.Text;
+using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.OrleansHost.Api;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cna.OrleansHost.Tests;
 
@@ -431,6 +439,84 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Contains("truck", CampaignExercises.QueryCheckpoint(
             nextCycleSession).PositionId, StringComparison.Ordinal);
         Assert.True(CampaignExercises.Reconstruct(nextCycleSession).IsVerified);
+    }
+
+    [Fact]
+    public async Task SecondContactAssaultEntersBarrageAndColdReplays()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true,
+                reserveElementId: "axis-infantry-second", doubleContact: true);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var beforeRelease = journal.ReadVerified(request.CampaignId);
+        Assert.Equal(26, CampaignExercises.QueryCheckpoint(beforeRelease).ContractVersion);
+        _ = CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft(beforeRelease,
+            CampaignActionAudience.Axis, "axis-infantry-second");
+        var release = journal.QueryReserveReleaseOwnerOpening(attacker,
+            "axis-infantry-second");
+        Assert.True(journal.SubmitOwnerReserveRelease(attacker, "axis-infantry-second",
+            release.Revision, release.PublicActionRefs[0]).IsAccepted);
+        var control = journal.QueryCycleControlOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerCycleControl(attacker,
+            control.Revision, control.PublicActionRefs[0]).IsAccepted);
+        var movement = journal.QueryRepeatMovementOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerRepeatMovement(attacker,
+            movement.Revision, movement.PublicActionRefs[1]).IsAccepted);
+        var opening = journal.QueryRepeatCombatOwnerOpening(attacker,
+            "axis-infantry-second");
+        using var visible = System.Text.Json.JsonDocument.Parse(opening.VisibleBytes);
+        var offers = visible.RootElement.GetProperty("assaultOffers");
+        var west = Enumerable.Range(0, offers.GetArrayLength()).Single(index =>
+            offers[index].GetProperty("apparentLocationId").GetString() == "west");
+        await SubmitRepeatCombatThroughHttp(journal, request.CampaignId, attacker,
+            "axis-infantry-second", opening, opening.PublicActionRefs[west]);
+        var cold = fixture.Open(clock);
+        var session = cold.ReadVerified(request.CampaignId);
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        Assert.Equal(14, checkpoint.ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+        var retry = cold.SubmitOwnerRepeatCombat(attacker,
+            "axis-infantry-second", opening.Revision, opening.PublicActionRefs[west]);
+        Assert.True(retry.IsAccepted);
+        Assert.NotEmpty(retry.CanonicalReceipt!);
+        var westDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
+            session, CampaignActionAudience.Commonwealth);
+        Assert.Equal("commonwealth-infantry-west", westDefender);
+        var rba = cold.QueryRbaOwnerOpening(defender, westDefender);
+        var declined = cold.SubmitOwnerRbaDecline(defender, westDefender,
+            rba.Revision, rba.PublicActionRefs[^1]);
+        Assert.True(declined.IsAccepted);
+        var afterDecline = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(15, CampaignExercises.QueryCheckpoint(afterDecline).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterDecline).IsVerified);
+        var secondAttackerForce = cold.QueryForceOwnerOpening(attacker, "axis-infantry-second");
+        var secondDefenderForce = cold.QueryForceOwnerOpening(defender, westDefender);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(cold.SubmitOwnerForceSeal(attacker, "axis-infantry-second",
+            secondAttackerForce.Revision,
+            secondAttackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(cold.SubmitOwnerForceSeal(defender, westDefender,
+            secondDefenderForce.Revision,
+            secondDefenderForce.PublicActionRefs[0]).IsAccepted);
+        var afterForce = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(afterForce).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterForce).IsVerified);
+        var nextCycle = cold.QueryCycleControlOwnerOpening(attacker);
+        var finished = cold.SubmitOwnerCycleControl(attacker,
+            nextCycle.Revision, nextCycle.PublicActionRefs[^1]);
+        Assert.True(finished.IsAccepted);
+        var afterFinish = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(afterFinish).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterFinish).IsVerified);
     }
 
     [Fact]
@@ -1018,14 +1104,88 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(command.CampaignId));
     }
 
+    private static async Task SubmitRepeatCombatThroughHttp(
+        CampaignDurableAuthorityJournal journal, string campaignId,
+        CampaignSeatCredential credential, string actor,
+        CampaignOwnerOpening expected, string reference)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(journal);
+        await using var app = builder.Build();
+        app.MapDurableCampaignApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient { BaseAddress = new Uri(address) };
+            var seat = new
+            {
+                campaignId = credential.CampaignId,
+                audience = "axis",
+                epoch = credential.Epoch,
+                secret = credential.Secret,
+                expiresUnixMs = credential.ExpiresUnixMs,
+            };
+            var openingBody = JsonSerializer.Serialize(new
+            {
+                contractVersion = 2,
+                credential = seat,
+                stage = "repeat-combat-selection",
+                actingElementId = actor,
+            });
+            using var opened = await client.PostAsync($"/api/v2/campaigns/{campaignId}/openings",
+                new StringContent(openingBody, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, opened.StatusCode);
+            using var openingJson = JsonDocument.Parse(await opened.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            Assert.Equal(expected.VisibleBytes, Convert.FromBase64String(openingJson.RootElement
+                .GetProperty("visibleCutBase64").GetString()!));
+            Assert.Equal(expected.Revision, openingJson.RootElement.GetProperty("revision")
+                .GetInt64());
+            Assert.Contains(reference, openingJson.RootElement.GetProperty("publicActionRefs")
+                .EnumerateArray().Select(item => item.GetString()));
+            var actionBody = JsonSerializer.Serialize(new
+            {
+                contractVersion = 2,
+                credential = seat,
+                stage = "repeat-combat-selection",
+                actingElementId = actor,
+                openingRevision = expected.Revision,
+                publicActionRef = reference,
+            });
+            using var submitted = await client.PostAsync($"/api/v2/campaigns/{campaignId}/actions",
+                new StringContent(actionBody, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, submitted.StatusCode);
+            var receipt = await submitted.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken);
+            Assert.DoesNotContain("actionId", receipt, StringComparison.OrdinalIgnoreCase);
+            using var retried = await client.PostAsync($"/api/v2/campaigns/{campaignId}/actions",
+                new StringContent(actionBody, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, retried.StatusCode);
+            Assert.Equal(receipt, await retried.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+        }
+        finally
+        {
+            await app.StopAsync(TestContext.Current.CancellationToken);
+        }
+    }
+
     private static (CampaignCreationRequest Request, CampaignSeatCredential Attacker,
         CampaignSeatCredential Defender, string DefenderId,
         CampaignOwnerOpening AttackerForce, CampaignOwnerOpening DefenderForce)
         PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal,
             bool positive = false, ulong? seed = null,
-            string? reserveElementId = null)
+            string? reserveElementId = null, bool doubleContact = false)
     {
-        var request = positive ? PositiveCombatRequest(seed ?? 12345) : CombatInfantryRequest();
+        var request = doubleContact ? PositiveDoubleContactRequest(seed ?? 12345)
+            : positive ? PositiveCombatRequest(seed ?? 12345) : CombatInfantryRequest();
         AdvanceToContactCombat(journal, request, Timing(request),
             preserveAdjacentInfantry: true,
             reserveElementId: reserveElementId);
@@ -1096,6 +1256,14 @@ public sealed class CampaignDurableAuthorityJournalTests
         "sha256:d2d569a3f04f4915108e2220ac27ddfc25c97fcc047a4d4a67b496a6d62ca19c",
         "breakdown-reaction-combat-assault");
 
+    private static CampaignCreationRequest PositiveDoubleContactRequest(ulong seed) => new(1,
+        "campaign-native-combat-double", Cna1979Ruleset.Manifest.Hash, seed,
+        "rules-lab.breakdown.reaction.combat-double-fresh.v1",
+        "sha256:d02a9996e2c87b4f5feda75bd0b6cf4a6756b0abbb83abb36ffe037e6fac8b5d",
+        "rules-lab.content.breakdown-reaction.combat-double-fresh.v1",
+        "sha256:44a76f21f1b492493c898495721f5f684acc83a14c391289c5e8d66220b6a648",
+        "breakdown-reaction-combat-double-fresh");
+
     private static ExerciseSession AdvanceToContactCombat(
         CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,
         CampaignDecisionTimingConfigurationV1? timing = null,
@@ -1139,6 +1307,8 @@ public sealed class CampaignDurableAuthorityJournalTests
             var accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
                 set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId));
             Assert.True(accepted.IsAccepted);
+            if (reserveDesignation is not null)
+                reserveElementId = null;
             session = accepted.SuccessorSession!;
         }
         throw new InvalidOperationException("Combat position was not reached.");
