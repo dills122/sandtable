@@ -10,7 +10,8 @@ namespace Cna.Core.Visibility;
 internal sealed record CampaignContactCombatSelectionCut(
     long AuthorityVersion,
     CampaignContactOwnerMovementCut OwnerCut,
-    IReadOnlyList<SelectContactAssaultAction> AssaultOffers)
+    IReadOnlyList<SelectContactAssaultAction> AssaultOffers,
+    bool MayFinishWithoutAttack)
 {
     public static CampaignContactCombatSelectionCut Project(CampaignSnapshotV11 snapshot,
         CampaignContentContext context, CampaignContactJournal contacts, LandSide side,
@@ -34,7 +35,14 @@ internal sealed record CampaignContactCombatSelectionCut(
             owner.ContactObservation.ActingFormationId,
             owner.ActingElement.CurrentLocationId, owner.Edges,
             owner.ContactObservation.CurrentTargets);
-        return new(snapshot.StateVersion, owner, Array.AsReadOnly(offers));
+        // Land 10.3 makes attack mandatory in an opposing ZOC. The currently admitted
+        // V6 world has no positive ZOC source; future worlds must derive this from
+        // their own certified source facts before they can offer a voluntary finish.
+        var opposing = side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
+        var mayFinish = context.ArtifactV6 is { } artifact
+            && CampaignElementMovedV3Factory.DeriveControlledLocationIds(
+                snapshot.World, artifact, context.Scenario, opposing).Count == 0;
+        return new(snapshot.StateVersion, owner, Array.AsReadOnly(offers), mayFinish);
     }
 
     internal static SelectContactAssaultAction[] DeriveAdjacentOffers(string actingElementId,

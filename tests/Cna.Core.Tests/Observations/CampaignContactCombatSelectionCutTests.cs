@@ -64,6 +64,7 @@ public sealed class CampaignContactCombatSelectionCutTests
             .First(value => value.ElementId == "axis-infantry");
         var cut = CampaignExercises.QueryContactOwnerCombatCut(session, LandSide.Axis,
             actor.ElementId);
+        Assert.True(cut.MayFinishWithoutAttack);
         Assert.True(cut.AssaultOffers.Count > 0,
             string.Join(",", session.CurrentSnapshot.World.Elements.Select(value =>
                 $"{value.ElementId}:{value.CurrentLocationId}"))
@@ -202,6 +203,7 @@ public sealed class CampaignContactCombatSelectionCutTests
         var contacts = CampaignContactJournal.Initialize(atCombat, context);
         var cut = CampaignContactCombatSelectionCut.Project(atCombat, context,
             contacts, LandSide.Axis, "axis-infantry");
+        Assert.True(cut.MayFinishWithoutAttack);
         var offer = Assert.Single(cut.AssaultOffers);
         var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(
             new ExerciseSession(atCombat, context, [], contacts),

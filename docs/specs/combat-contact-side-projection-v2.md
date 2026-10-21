@@ -48,6 +48,9 @@ checkpoint in normal Exercise evidence. Host import replays its accepted-step ki
 checks the private defender binding against independently replayed contact authority.
 The event records the exact sequence successor, Barrage, and cold replay rejects a
 different route; subsequent Combat position handlers still need implementation.
+The internal cut now checks voluntary-finish eligibility against opposing ZOC
+authority. Current V6 campaign worlds certify no positive ZOC source, while
+unsupported future worlds fail closed. This does not yet emit a finish action.
 Core's trusted Combat owner draft serializes current contact handles, apparent hexes and
 assault offers in a V2 visible cut; its action IDs, authority fence and defender binding
 remain private to Host/Core. The draft is not a public route.
