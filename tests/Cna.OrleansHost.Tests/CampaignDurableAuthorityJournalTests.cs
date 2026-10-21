@@ -521,6 +521,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(afterForce).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterForce).IsVerified);
         var nextCycle = cold.QueryCycleControlOwnerOpening(attacker);
+        Assert.Single(nextCycle.PublicActionRefs);
         await outward.Submit(attacker, nextCycle.ActingElementId,
             "cycle-control", "cycle-control", nextCycle,
             nextCycle.PublicActionRefs[^1]);

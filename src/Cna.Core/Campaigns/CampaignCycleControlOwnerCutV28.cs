@@ -42,7 +42,8 @@ internal sealed class CampaignCycleControlOwnerCutV28
             || contacts.AuthorityVersion != release.StateVersion)
             throw new InvalidOperationException("Cycle control belongs to the completed owner cut.");
         var choices = new List<CampaignNativeCycleControlChoiceV28>();
-        if (CampaignCycleContinuationMovementWitnessV28.Find(
+        if (release.CycleOrdinal == 1
+            && CampaignCycleContinuationMovementWitnessV28.Find(
                 release, context, contacts) is not null)
             choices.Add(CampaignNativeCycleControlChoiceV28.Repeat);
         choices.Add(CampaignNativeCycleControlChoiceV28.Finish);

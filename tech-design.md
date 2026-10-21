@@ -878,7 +878,8 @@ first attackers remain subject to ordinary resource rules. The local HTTP owner
 route and cold replay cover the selected second assault after an RBA move.
 An incomplete second Force round retains trusted clock cancellation, a
 cancelled-assault System event and same-slot Reserve Release without a random
-result. Further selected cycles remain open.
+result. V28 exposes Finish only at the second Reserve Release and rejects a
+forged further Repeat; general later selected cycles remain open.
 The normal durable journal has an opt-in local `/api/v2/campaigns` adapter.
 It authenticates operator creation and seat rotation, exposes only the
 versioned side cut and public references, and maps submissions back through

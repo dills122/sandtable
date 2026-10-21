@@ -46,6 +46,9 @@ internal sealed record CampaignNativeCycleControlV28(
         string? witnessActionId = null;
         if (choice == CampaignNativeCycleControlChoiceV28.Repeat)
         {
+            if (release.CycleOrdinal != 1)
+                throw new InvalidOperationException(
+                    "Only the first repeat cycle has a complete native Combat continuation.");
             var witness = CampaignCycleContinuationMovementWitnessV28.Find(
                 release, context, contacts)
                 ?? throw new InvalidOperationException(

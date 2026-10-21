@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Permanent contact fog and normal owner movement merged; native Combat incomplete | Core and normal durable Host now retain contact-safe owner movement, selected assault, defender RBA, Force seals and a shared deadline with cancellation. Later Combat stages, public route and admission remain open. Original authenticated P01 has 44 provisional candidate shapes, 256 absent shapes and zero admitted; its classification does not prove supported public transitions. |
+| Combat and continual cycle | Bounded native Combat implementation in review | Core and normal durable Host retain contact-safe first and second selected assaults through result, settlement, custody and Reserve Release, with owner receipts and cold replay. Later repeat is closed at second-cycle Reserve Release; general continuation, public activation and admission remain open. Original authenticated P01 has 44 provisional candidate shapes, 256 absent shapes and zero admitted. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Angular foundation and bounded connected read mode | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The main Maproom route offers a synthetic fixture study and URL-backed `?mode=campaign` local read mode using the same map presentation; `/connected` remains a development deep link. Campaign mode can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -61,9 +61,9 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | Model-backed commanders | Scaffold only | Gateway and worker exist, but no provider is configured and AI never owns authority. |
 
 Current boundary in plain language: you can build engine, run full test suite, launch Aspire service
-stack, and simulate checked rules-lab Movement/Reaction/Breakdown paths. You cannot yet play a
-campaign or resolve Combat through public Runner actions. Combat internals are exercised through
-dormant Core tests; they are not yet exposed as playable actions.
+stack, and simulate checked rules-lab Movement/Reaction/Breakdown paths. The native Combat
+Core/Host path is in review with an opt-in loopback Development route. You cannot yet play a
+public campaign or resolve Combat through public Runner actions.
 
 The permanent fog implementation has started in Core with
 [versioned contact knowledge](docs/specs/combat-contact-knowledge-v1.md): replayed
