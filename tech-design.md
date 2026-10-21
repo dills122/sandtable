@@ -814,6 +814,10 @@ The private positive-assault input cut checks both Force seal hashes against
 completion, exact Content/source/rules identities, committed TOE, morale,
 offensive and defensive ratings, cohesion, capability budget, and ammunition.
 It rejects a second attempt after the ledger has spent that ammunition.
+The V22 positive result derives ordered chart dice only from retained Core RNG,
+retains the full rejection trace and resulting cursor, and binds exact source,
+rules, Force/Anti Armor, and ammunition hashes. Replay independently recomputes
+the result bytes. Accepted World loss and Host settlement remain pending.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

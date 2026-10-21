@@ -124,6 +124,9 @@ Core derives the initial ammunition ledger from that exact source; accepted Comb
 settlements will debit it in replay order, so a spent balance cannot be reused.
 The normal positive-assault input cut now binds both accepted Force seals to the
 content facts, capability budget, and current ammunition before a result draw.
+Core now derives a V22 result from that cut and the retained random cursor, recording
+each accepted/rejected byte, selected chart facts, and before/after ammunition hashes;
+exact replay rejects altered result bytes.
 Positive Close Assault adjudication, non-infantry disposition, and public route
 remain unfinished; historical
 observation readers remain readable while the complete successor path is built.

@@ -93,6 +93,20 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(0, inputs.AfterAmmunition.Remaining("axis-infantry"));
         Assert.Equal(0, inputs.AfterAmmunition.Remaining("commonwealth-infantry"));
         Assert.Equal(context.CombatSource!.Hash, inputs.SourceHash);
+        var result = CampaignNativeCombatAssaultResultV22.Create(selected,
+            antiArmor, inputs, atCombat.RandomState);
+        var canonical = result.SerializeCanonical();
+        Assert.Equal(8 + (result.Facts.CapturedRole is null ? 0 : 1), result.Draws.Count);
+        Assert.Equal(result.Draws[^1].AfterCursor,
+            result.AfterRandomState.NextByteCursor);
+        Assert.Equal(canonical, CampaignNativeCombatAssaultResultV22.Replay(
+            selected, antiArmor, inputs, atCombat.RandomState, canonical)
+            .SerializeCanonical());
+        var tampered = canonical.ToArray();
+        tampered[^2] ^= 1;
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatAssaultResultV22.Replay(selected,
+                antiArmor, inputs, atCombat.RandomState, tampered));
         Assert.Throws<InvalidOperationException>(() => CampaignNativeCombatAssaultInputs.Create(
             selected, completion, antiArmor, [attackerSeal, defenderSeal],
             atCombat.World, context, inputs.AfterAmmunition));
