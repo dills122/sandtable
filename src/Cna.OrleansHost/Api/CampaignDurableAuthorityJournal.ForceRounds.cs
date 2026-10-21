@@ -80,7 +80,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return query.ExecuteScalar() is not null;
     }
 
-    private static void CancelForceRound(SqliteConnection connection, SqliteTransaction transaction,
+    private void CancelForceRound(SqliteConnection connection, SqliteTransaction transaction,
         Loaded authority, ForceRound round, string reason, long? cancelledAt)
     {
         var accepted = CampaignHostAdapter.CancelNativeCombatForceAssignment(authority.Session,
@@ -94,6 +94,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAcceptedStep.NativeCombatForceCancellationKind,
             null, null, null, null, command, accepted);
         UpdateForceRound(connection, transaction, round with { Status = "cancelled" });
+        AppendEmptyAntiArmor(connection, transaction, round.CampaignId);
+    }
+
+    private void AppendEmptyAntiArmor(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var head = Load(connection, transaction, campaignId);
+        var accepted = CampaignHostAdapter.CompleteNativeCombatAntiArmor(head.Session);
+        if (!accepted.IsAccepted) return;
+        var command = CampaignHostAdapter.NativeCombatAntiArmorCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.NativeCombatAntiArmorKind,
+            null, null, null, null, command, accepted);
     }
 
     internal bool TickForceRound(string campaignId)

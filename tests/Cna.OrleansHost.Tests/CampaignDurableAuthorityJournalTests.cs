@@ -203,6 +203,32 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void CompletedInfantryForceRoundAdvancesAntiArmorAndColdReplays()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(20, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+            + "AND action_kind='native-combat-anti-armor'";
+        query.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.Equal(1L, query.ExecuteScalar());
+    }
+
+    [Fact]
     public void ForceRoundSharesDeadlineAndCancelsOneSealAtEqualityAfterColdReadback()
     {
         using var fixture = new JournalFixture();
@@ -228,7 +254,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.False(expired.IsAccepted);
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(19, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(20, CampaignExercises.QueryCheckpoint(after).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         Assert.Throws<InvalidOperationException>(() =>
             cold.QueryForceOwnerOpening(defender, defenderId));
@@ -261,7 +287,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.False(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(19, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(20, CampaignExercises.QueryCheckpoint(after).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
@@ -284,7 +310,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         clock.Advance(TimeSpan.FromSeconds(-1));
         Assert.True(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(19, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.Equal(20, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
     }
 

@@ -18,7 +18,8 @@ public sealed class ExerciseSession
         IEnumerable<CampaignNativeCombatRetreatMoveV16>? combatRetreatMoves = null,
         IEnumerable<CampaignNativeCombatForceSealV17>? combatForceSeals = null,
         CampaignNativeCombatForceCompletionV18? combatForceCompletion = null,
-        CampaignNativeCombatForceCancellationV19? combatForceCancellation = null)
+        CampaignNativeCombatForceCancellationV19? combatForceCancellation = null,
+        CampaignNativeCombatAntiArmorV20? combatAntiArmor = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -89,6 +90,12 @@ public sealed class ExerciseSession
             || combatForceCancellation.CampaignId != snapshot.CampaignId))
             throw new ArgumentException("Force cancellation requires an incomplete retained round.",
                 nameof(combatForceCancellation));
+        if (combatAntiArmor is not null && ((combatForceCompletion is null) == (combatForceCancellation is null)
+            || combatAntiArmor.PriorStateVersion
+                != (combatForceCompletion?.StateVersion ?? combatForceCancellation!.StateVersion)
+            || combatAntiArmor.CampaignId != snapshot.CampaignId))
+            throw new ArgumentException("Anti Armor must bind one retained Force outcome.",
+                nameof(combatAntiArmor));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -100,6 +107,7 @@ public sealed class ExerciseSession
         CurrentCombatForceSeals = Array.AsReadOnly(forceSeals);
         CurrentCombatForceCompletion = combatForceCompletion;
         CurrentCombatForceCancellation = combatForceCancellation;
+        CurrentCombatAntiArmor = combatAntiArmor;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -116,5 +124,6 @@ public sealed class ExerciseSession
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> CurrentCombatForceSeals { get; }
     internal CampaignNativeCombatForceCompletionV18? CurrentCombatForceCompletion { get; }
     internal CampaignNativeCombatForceCancellationV19? CurrentCombatForceCancellation { get; }
+    internal CampaignNativeCombatAntiArmorV20? CurrentCombatAntiArmor { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

@@ -127,7 +127,8 @@ binding retained in the durable Host journal; absent configuration blocks
 Force Assignment opening and seals. Schema-5/6 journals stay readable but cannot
 create new campaigns. Schema 7 retains one shared Force round for both seats;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
-inventing an owner seal. Anti Armor and Close Assault structural closure and
+inventing an owner seal. Core V20/normal Host complete the infantry-only empty
+Anti Armor step from either Force outcome. Close Assault structural closure and
 non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

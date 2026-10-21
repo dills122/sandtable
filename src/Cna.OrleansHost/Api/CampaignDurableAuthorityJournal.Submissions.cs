@@ -270,6 +270,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.NativeCombatForceCompletionKind, null,
                 null, null, null, systemCommand, completion);
             UpdateForceRound(connection, transaction, forceRound! with { Status = "completed" });
+            AppendEmptyAntiArmor(connection, transaction, seat.CampaignId);
         }
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(

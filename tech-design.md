@@ -794,8 +794,10 @@ creation in them is closed. No configuration means no Force Assignment opening o
 The normal Host stores a shared Force Assignment round for both seats with trusted opened,
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
 deadline or clock failure, and verifies round status and evidence on cold replay. V19
-preserves zero or one seal and advances to Anti Armor; subsequent clock-free no-attack
-completions remain to implement. Source-backed disposition for
+preserves zero or one seal and advances to Anti Armor. Core V20 then records an
+explicit no-effect Anti Armor outcome for infantry-only content, bound to that Force
+event; normal Host appends it in the same transaction and verifies cold replay.
+Close Assault and later no-attack completions remain to implement. Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede

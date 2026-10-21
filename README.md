@@ -111,8 +111,10 @@ The configuration supplies no implicit budget. SQLite schema 7 retains one share
 Force Assignment opening and trusted high-water/deadline for both seats. A late or
 unavailable-clock callback records Core V19 cancellation with zero or one accepted seal;
 verified cold replay rejects changed round evidence. A permanent adjacent-infantry Rules Lab
-scenario exercises that normal owner path through restart. Clock-free Anti Armor/Close
-Assault closure, non-infantry disposition, Reserve Release,
+scenario exercises that normal owner path through restart. Core V20 now records the
+infantry-only empty Anti Armor step after either Force completion or cancellation;
+normal Host appends it atomically and cold replays it. Close Assault closure,
+non-infantry disposition, Reserve Release,
 assault adjudication and public route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

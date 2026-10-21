@@ -109,7 +109,11 @@ is now enforced by a normal Host shared Force round. SQLite schema 7 retains
 one trusted deadline/high-water gate for both seats and verifies its source,
 status and cancellation evidence on cold replay. Core V19 validates System
 cancellation, preserves zero or one owner seal, and moves to the same-slot
-Anti Armor step. Subsequent clock-free no-attack completions must reach
+Anti Armor step. Core V20 completes that step with a canonical no-effect
+event only when the retained campaign content contains infantry components
+alone; it binds the prior Force outcome, advances to same-slot Close Assault,
+and normal Host retains it atomically. Cancellation is marked no-attack and
+cannot draw a result. Subsequent clock-free no-attack completions must reach
 Reserve Release before outward issuance. A
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
