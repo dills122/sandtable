@@ -141,6 +141,8 @@ binds both roles' paid capability points to canonical prior/paid normal World ha
 and normal Host retains it with source-derived ammunition spend on cold readback,
 and V24 now accepts World TOE/cohesion losses, moved retreat and pending
 captives, while custody disposition remains pending;
+the internal Core custody cut derives captor choices from accepted V24 World,
+current captor contact, and published route/terrain; no outward opening exists;
 the normal 10-TOE pack's separate retreat-source supplement pins side supply
 anchors and Core derives post-result defender route/refusal offers from the
 side contact cut; Core V23 and normal Host accept and cold-replay that

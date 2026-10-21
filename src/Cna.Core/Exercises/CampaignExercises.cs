@@ -821,6 +821,18 @@ public static class CampaignExercises
         }
     }
 
+    internal static CampaignNativeCombatCustodyCutV25? QueryNativeCombatCustodyCut(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatSettlement is not { } settlement
+            || session.CurrentCombatSettledWorld is not { } world
+            || session.CurrentContacts.AuthorityVersion != settlement.StateVersion)
+            throw new InvalidOperationException("Custody requires the accepted normal World settlement.");
+        return CampaignNativeCombatCustodyCutV25.Project(settlement,
+            world, session.Context, session.CurrentContacts);
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);

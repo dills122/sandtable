@@ -140,6 +140,11 @@ normal Host cold replay independently derive its World and contact effects.
 The defender-visible cut carries the source hash, side contact revision, own
 element and route/refusal semantics; private authority version and Core action
 IDs stay in the Host fence rather than the visible bytes.
+An internal post-V24 captor cut now derives guarded relocation and unguarded
+escape candidates from accepted World, current captor contact, and published
+routes/terrain. It binds the V24 settlement hash and authority version privately.
+Custody choice, durable assets, and equal-visible outward offer proof must be
+complete before Host issues this cut to an owner.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

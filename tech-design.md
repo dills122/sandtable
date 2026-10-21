@@ -834,6 +834,10 @@ TOE/cohesion losses, a moved defender's CP and representation, and pending
 captives from V22 and V23. Normal Host atomically appends the System settlement
 after V23; cold replay independently recomputes World, captive facts, contact
 transitions, event bytes, and checkpoint. Custody disposition remains pending.
+The next internal Core cut derives guard and unguarded route candidates only
+from the settled World, a current captor contact, and published map/terrain.
+It keeps private target identity and authority in Core; no custody offer leaves
+Host until accepted disposition and retained custody assets have normal replay.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

@@ -226,6 +226,45 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(settlement.SerializeCanonical(),
             CampaignCurrentEventSerializer.Serialize(CampaignCurrentEventSerializer.Deserialize(
                 settlement.SerializeCanonical())));
+        Assert.Equal(settlement.PendingCaptives.Count == 0,
+            CampaignNativeCombatCustodyCutV25.Project(settlement,
+                movedSettlement.World, context, routeContacts
+                    .AdvanceNativeCombatRetreatAfterAssault(routeDecision)
+                    .AdvanceNativeCombatSettlement(inputs.PaidWorld,
+                        movedSettlement.World, routeDecision, settlement, context)) is null);
+        var captureResult = Enumerable.Range(1, 256).Select(seed =>
+            CampaignNativeCombatAssaultResultV22.Create(selected, antiArmor, inputs,
+                new RandomStreamState(atCombat.RandomState.ContractVersion,
+                    atCombat.RandomState.AlgorithmId, (ulong)seed,
+                    atCombat.RandomState.NextByteCursor)))
+            .First(value => CampaignNativeCombatLossAssessment.Project(value, inputs,
+                refuseRetreat: false) is { } assessment
+                && assessment.Attacker.CapturedLoss + assessment.Defender.CapturedLoss > 0);
+        var captureContacts = contacts.AdvanceNativeCombatAssaultResult(captureResult);
+        var captureAction = captureResult.Facts.RequiredRetreat == 1
+            ? CampaignContactRetreatAfterAssaultCut.Project(selected, captureResult,
+                inputs.PaidWorld, context, captureContacts).RefuseOffer.ActionId
+            : null;
+        var captureRetreat = CampaignNativeCombatRetreatAfterAssaultV23.Create(
+            selected, captureResult, inputs.PaidWorld, context, captureContacts,
+            captureAction);
+        var captureProjection = CampaignNativeCombatSettledWorldV24.Project(
+            captureResult, captureRetreat, inputs, context);
+        var captureSettlement = CampaignNativeCombatSettlementV24.Create(
+            captureResult, captureRetreat, inputs, context);
+        var captureSettledContacts = captureContacts
+            .AdvanceNativeCombatRetreatAfterAssault(captureRetreat)
+            .AdvanceNativeCombatSettlement(inputs.PaidWorld,
+                captureProjection.World, captureRetreat, captureSettlement, context);
+        var custody = Assert.IsType<CampaignNativeCombatCustodyCutV25>(
+            CampaignNativeCombatCustodyCutV25.Project(captureSettlement,
+                captureProjection.World, context, captureSettledContacts));
+        Assert.Equal(Assert.Single(captureSettlement.PendingCaptives).Quantity,
+            custody.Quantity);
+        Assert.NotEmpty(custody.Choices);
+        Assert.All(custody.Choices, choice =>
+            Assert.Equal(captureSettlement.PendingCaptives[0].OriginLocationId,
+                choice.Route[0]));
         var forgedSettlement = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(
             settlement.SerializeCanonical()).Replace(settlement.SettledWorldHash,
                 "sha256:" + new string('0', 64), StringComparison.Ordinal));
@@ -303,6 +342,15 @@ public sealed class CampaignContactCombatSelectionCutTests
             settledSession).ContractVersion);
         Assert.NotNull(settledSession.CurrentCombatSettledWorld);
         Assert.True(CampaignExercises.Reconstruct(settledSession).IsVerified);
+        Assert.Equal(settledSession.CurrentCombatSettlement!.PendingCaptives.Count == 0,
+            CampaignExercises.QueryNativeCombatCustodyCut(settledSession) is null);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignExercises.QueryNativeCombatCustodyCut(
+                postResult.SuccessorSession!));
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatCustodyCutV25.Project(
+                settledSession.CurrentCombatSettlement, inputs.PaidWorld, context,
+                settledSession.CurrentContacts));
         Assert.False(CampaignExercises.SettleNativeCombatWorld(
             settledSession).IsAccepted);
         Assert.Throws<ArgumentException>(() => new ExerciseSession(atCombat, context,
