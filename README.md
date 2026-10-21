@@ -74,9 +74,10 @@ replay. Core now fences contact knowledge to each accepted authority cut and der
 acting element's contact view and movement offers from that same cut, without consulting
 hidden opposing positions for offer membership. Core now supplies a canonical owner-visible
 draft to the trusted Host adapter while retaining its authority fence and action IDs privately.
-These internal offers are not yet issued
-or accepted through the normal durable Host; historical observation readers remain
-readable while the complete successor path is built.
+The normal Host now has an internal [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md)
+that atomically retains accepted Core evidence and verifies it by full Core replay on cold read.
+These internal offers are not yet issued or accepted through an authenticated durable owner
+opening; historical observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 and native reader authenticate ordinary outward/return Movement and all three direct Reaction closure

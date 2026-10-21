@@ -750,9 +750,12 @@ adjacency rule, with exact contact-record checks against independently replayed
 authority events. The Core journal advances across accepted turns without new sight,
 and an internal owner movement cut binds its contact view and visible movement offers
 to the same authority version. The trusted Host adapter receives canonical owner-visible
-bytes separately from the private authority fence and Core action map. Encounter
-adjudication and normal durable Host
-persistence must precede issuance of those offers. Complete detection policy,
+bytes separately from the private authority fence and Core action map. The normal Host's
+[durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md) now retains
+canonical creation and accepted-step evidence in SQLite, commits each step with its head,
+and requires full Core replay before a cold read or next append. It has no seat or outward
+opening yet. Encounter adjudication and authenticated Host owner lifecycle must precede
+issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.
 
 Task019F0's private actual-selection executable contract merged in PR #161; Task019F1's
