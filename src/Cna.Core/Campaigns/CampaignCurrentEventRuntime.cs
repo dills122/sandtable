@@ -7,6 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeCombatCustodyDispositionV25 custody => custody.SerializeCanonical(),
         CampaignNativeCombatSettlementV24 settlement => settlement.SerializeCanonical(),
         CampaignNativeCombatRetreatAfterAssaultV23 retreat => retreat.SerializeCanonical(),
         CampaignNativeCombatAssaultResultV22 result => result.SerializeCanonical(),
@@ -39,6 +40,7 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
+            "combat-custody-disposed" => CampaignNativeCombatCustodyDispositionV25.Deserialize(canonicalJson),
             "combat-world-settled" => CampaignNativeCombatSettlementV24.Deserialize(canonicalJson),
             "combat-post-result-retreat-decided" => CampaignNativeCombatRetreatAfterAssaultV23.Deserialize(canonicalJson),
             "combat-assault-resolved" => CampaignNativeCombatAssaultResultV22.Deserialize(canonicalJson),

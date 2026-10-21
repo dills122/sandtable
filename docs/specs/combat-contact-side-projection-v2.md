@@ -143,8 +143,11 @@ IDs stay in the Host fence rather than the visible bytes.
 An internal post-V24 captor cut now derives guarded relocation and unguarded
 escape candidates from accepted World, current captor contact, and published
 routes/terrain. It binds the V24 settlement hash and authority version privately.
-Custody choice, durable assets, and equal-visible outward offer proof must be
-complete before Host issues this cut to an owner.
+Core V25 now accepts the cut choice as a canonical event, World update, and
+typed guard or delayed replacement asset; replay independently reprojects it.
+Normal Host appends the no-captive System disposition. Equal-visible outward
+offer proof, captor owner opening and submit, and the next versioned campaign
+position must be complete before Host issues this cut to an owner.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

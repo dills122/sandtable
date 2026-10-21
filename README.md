@@ -143,8 +143,11 @@ retreat, moves the defender's representation, and retains pending captive lots.
 Normal Host appends this System event in the same transaction after V23 and
 verifies its World and contact changes on cold replay.
 Core now derives captor custody route/guard candidates from that accepted World,
-an exact current captor contact, and published terrain. Custody acceptance and
-persistent custody assets remain to be built before an owner opening is issued.
+an exact current captor contact, and published terrain. Core V25 accepts an
+offered disposition into a versioned event, World update, and typed custody
+assets; independent replay verifies all three. Normal Host atomically retains
+the System no-captive disposition. Captor owner opening, replacement maturation,
+and the next normal campaign position remain before outward issuance.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

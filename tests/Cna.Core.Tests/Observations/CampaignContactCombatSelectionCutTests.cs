@@ -265,6 +265,54 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.All(custody.Choices, choice =>
             Assert.Equal(captureSettlement.PendingCaptives[0].OriginLocationId,
                 choice.Route[0]));
+        foreach (var choice in custody.Choices)
+        {
+            var disposition = CampaignNativeCombatCustodyProjectionV25.Project(
+                atCombat, captureSettlement, captureProjection.World, custody,
+                choice.Kind, context);
+            if (choice.Kind == "relocate-and-guard")
+            {
+                Assert.Equal("guarded", disposition.Custody!.Status);
+                Assert.NotNull(disposition.Custody.Guard);
+                Assert.Null(disposition.Custody.Replacement);
+                var donorBefore = captureProjection.World.Elements.Single(value =>
+                    value.ElementId == custody.CaptorElementId).Components.Single().CurrentToe;
+                var donorAfter = disposition.World.Elements.Single(value =>
+                    value.ElementId == custody.CaptorElementId).Components.Single().CurrentToe;
+                Assert.Equal(donorBefore - 1, donorAfter);
+            }
+            else
+            {
+                Assert.Equal("escaped", disposition.Custody!.Status);
+                Assert.Null(disposition.Custody.Guard);
+                Assert.NotNull(disposition.Custody.Replacement);
+                Assert.Equal(captureProjection.World, disposition.World);
+            }
+            var custodyEvent = CampaignNativeCombatCustodyDispositionV25.Create(
+                atCombat, captureSettlement, captureProjection.World, custody,
+                choice.Kind, context);
+            Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(disposition.World),
+                custodyEvent.WorldHash);
+            Assert.Equal(custodyEvent.SerializeCanonical(),
+                CampaignNativeCombatCustodyDispositionV25.Replay(atCombat,
+                    captureSettlement, captureProjection.World, custody, context,
+                    custodyEvent.SerializeCanonical()).SerializeCanonical());
+            Assert.Equal(custodyEvent.SerializeCanonical(),
+                CampaignCurrentEventSerializer.Serialize(
+                    CampaignCurrentEventSerializer.Deserialize(
+                        custodyEvent.SerializeCanonical())));
+            var forgedCustody = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(
+                custodyEvent.SerializeCanonical()).Replace(custodyEvent.WorldHash,
+                    "sha256:" + new string('0', 64), StringComparison.Ordinal));
+            Assert.Throws<InvalidCampaignHistoryException>(() =>
+                CampaignNativeCombatCustodyDispositionV25.Replay(atCombat,
+                    captureSettlement, captureProjection.World, custody, context,
+                    forgedCustody));
+        }
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatCustodyProjectionV25.Project(atCombat,
+                captureSettlement, captureProjection.World, custody,
+                "invented-custody-choice", context));
         var forgedSettlement = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(
             settlement.SerializeCanonical()).Replace(settlement.SettledWorldHash,
                 "sha256:" + new string('0', 64), StringComparison.Ordinal));
@@ -344,6 +392,38 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.True(CampaignExercises.Reconstruct(settledSession).IsVerified);
         Assert.Equal(settledSession.CurrentCombatSettlement!.PendingCaptives.Count == 0,
             CampaignExercises.QueryNativeCombatCustodyCut(settledSession) is null);
+        ExerciseStepResult custodyStep;
+        if (settledSession.CurrentCombatSettlement.PendingCaptives.Count == 0)
+        {
+            custodyStep = CampaignExercises.CompleteNoNativeCombatCustody(settledSession);
+        }
+        else
+        {
+            var custodyCut = Assert.IsType<CampaignNativeCombatCustodyCutV25>(
+                CampaignExercises.QueryNativeCombatCustodyCut(settledSession));
+            var captorSide = context.ArtifactV6!.Definition.LegacyDefinition.Elements
+                .Single(value => value.ElementId == custodyCut.CaptorElementId).SideId;
+            var audience = captorSide == "axis"
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+            var selectedCustody = custodyCut.Choices[0];
+            custodyStep = CampaignExercises.SubmitNativeCombatCustody(settledSession,
+                new CampaignActionSubmission(
+                    CampaignActionSubmission.CurrentContractVersion,
+                    custodyCut.CampaignId, custodyCut.AuthorityVersion,
+                    settledSession.CurrentCombatSettlement.PositionId,
+                    audience, selectedCustody.ActionId));
+        }
+        Assert.True(custodyStep.IsAccepted, custodyStep.RejectionReason.ToString());
+        var custodySession = custodyStep.SuccessorSession!;
+        Assert.Equal(25, CampaignExercises.QueryCheckpoint(custodySession).ContractVersion);
+        Assert.NotNull(custodySession.CurrentCombatCustodyWorld);
+        Assert.True(CampaignExercises.Reconstruct(custodySession).IsVerified);
+        Assert.Equal(custodyStep.Evidence!.EventRecords[0],
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    custodyStep.Evidence.EventRecords[0])));
+        Assert.False(CampaignExercises.CompleteNoNativeCombatCustody(
+            custodySession).IsAccepted);
         Assert.Throws<InvalidOperationException>(() =>
             CampaignExercises.QueryNativeCombatCustodyCut(
                 postResult.SuccessorSession!));

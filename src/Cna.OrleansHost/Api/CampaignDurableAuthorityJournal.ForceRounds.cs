@@ -157,6 +157,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.NativeCombatSettlementKind,
             null, null, null, null, command, settled);
+        if (CampaignHostAdapter.IsNativeCombatNoCustody(settled.SuccessorSession!))
+        {
+            var custodyHead = Load(connection, transaction, campaignId);
+            var completed = CampaignHostAdapter.CompleteNoNativeCombatCustody(
+                custodyHead.Session);
+            if (!completed.IsAccepted)
+                throw new InvalidOperationException(
+                    "No-captive settlement cannot complete its System disposition.");
+            var custodyCommand = CampaignHostAdapter.NativeCombatNoCustodyCommand(
+                custodyHead.Session, completed);
+            PersistAccepted(connection, transaction, campaignId, custodyHead,
+                CampaignHostAcceptedStep.NativeCombatNoCustodyKind,
+                null, null, null, null, custodyCommand, completed);
+        }
     }
 
     internal bool TickForceRound(string campaignId)

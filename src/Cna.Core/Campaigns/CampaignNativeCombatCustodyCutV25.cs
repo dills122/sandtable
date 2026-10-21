@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 using Cna.Core.Content;
 using Cna.Core.Rules;
 using Cna.Core.Visibility;
@@ -8,7 +9,7 @@ namespace Cna.Core.Campaigns;
 // The captor's next normal-campaign decision. Routes and resource checks are
 // derived from the accepted V24 World, never from an owner-supplied path.
 internal sealed record CampaignNativeCombatCustodyChoiceV25(
-    string Kind, IReadOnlyList<string> Route);
+    string Kind, string ActionId, IReadOnlyList<string> Route);
 
 internal sealed record CampaignNativeCombatCustodyCutV25(
     string CampaignId, long AuthorityVersion, string SettlementHash,
@@ -63,6 +64,8 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
             throw new InvalidOperationException(
                 "Custody route needs a current captor contact with the victim.");
 
+        var settlementHash = Convert.ToHexStringLower(
+            SHA256.HashData(settlement.SerializeCanonical()));
         var choices = new List<CampaignNativeCombatCustodyChoiceV25>(2);
         var guardRoute = ShortestRoute(content.Edges, lot.OriginLocationId,
             captor.CurrentLocationId);
@@ -71,7 +74,7 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
             && lot.Quantity <= 5
             && donorToe > 1
             && !guardRoute.Skip(1).Contains(victim.CurrentLocationId, StringComparer.Ordinal))
-            choices.Add(new("relocate-and-guard", guardRoute));
+            choices.Add(Choice("relocate-and-guard", guardRoute));
 
         var escapeRoute = ShortestRoute(content.Edges, lot.OriginLocationId,
             victim.CurrentLocationId);
@@ -94,17 +97,24 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
                 cost = checked(cost + move.Value.Cost.Numerator);
             }
             if (supported && cost <= 8)
-                choices.Add(new("leave-unguarded", escapeRoute));
+                choices.Add(Choice("leave-unguarded", escapeRoute));
         }
 
         if (choices.Count == 0)
             throw new InvalidOperationException("Captive lot has no source-legal disposition.");
-        var settlementHash = Convert.ToHexStringLower(
-            SHA256.HashData(settlement.SerializeCanonical()));
         return new(settlement.CampaignId, settlement.StateVersion,
             "sha256:" + settlementHash, captor.ElementId, victim.ElementId,
             "combat.captive." + settlementHash, lot.Quantity,
             Array.AsReadOnly(choices.ToArray()));
+
+        CampaignNativeCombatCustodyChoiceV25 Choice(
+            string kind, IReadOnlyList<string> route)
+        {
+            var payload = Encoding.UTF8.GetBytes(string.Join('\0',
+                [settlement.CampaignId, settlementHash, kind, .. route]));
+            return new(kind, "sha256:" + Convert.ToHexStringLower(
+                SHA256.HashData(payload)), route);
+        }
     }
 
     private static System.Collections.ObjectModel.ReadOnlyCollection<string>? ShortestRoute(

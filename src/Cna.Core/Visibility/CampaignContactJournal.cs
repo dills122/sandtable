@@ -250,6 +250,17 @@ internal sealed class CampaignContactJournal
             .AtAuthorityVersion(settlement.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatCustodyDisposition(
+        CampaignNativeCombatCustodyDispositionV25 disposition)
+    {
+        ArgumentNullException.ThrowIfNull(disposition);
+        if (disposition.CampaignId != CampaignId
+            || disposition.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Custody does not bind contact authority.",
+                nameof(disposition));
+        return AtAuthorityVersion(disposition.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

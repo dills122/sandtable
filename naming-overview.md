@@ -140,9 +140,11 @@ Core V22 derives an ordered, replayable chart result from the retained RNG curso
 binds both roles' paid capability points to canonical prior/paid normal World hashes,
 and normal Host retains it with source-derived ammunition spend on cold readback,
 and V24 now accepts World TOE/cohesion losses, moved retreat and pending
-captives, while custody disposition remains pending;
+captives; Core V25 accepts custody disposition with typed guard or delayed
+replacement assets and independent replay, while normal Host cold-replays the
+System no-captive case;
 the internal Core custody cut derives captor choices from accepted V24 World,
-current captor contact, and published route/terrain; no outward opening exists;
+current captor contact, and published route/terrain; no captor outward opening exists;
 the normal 10-TOE pack's separate retreat-source supplement pins side supply
 anchors and Core derives post-result defender route/refusal offers from the
 side contact cut; Core V23 and normal Host accept and cold-replay that

@@ -25,7 +25,10 @@ public sealed class ExerciseSession
         CampaignWorldSnapshotV6? combatPaidWorld = null,
         CampaignNativeCombatRetreatAfterAssaultV23? combatPostResultRetreat = null,
         CampaignNativeCombatSettlementV24? combatSettlement = null,
-        CampaignWorldSnapshotV6? combatSettledWorld = null)
+        CampaignWorldSnapshotV6? combatSettledWorld = null,
+        CampaignNativeCombatCustodyDispositionV25? combatCustodyDisposition = null,
+        CampaignWorldSnapshotV6? combatCustodyWorld = null,
+        CampaignNativeCombatCustodyStateV25? combatCustodyState = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -144,6 +147,27 @@ public sealed class ExerciseSession
         if (combatSettlement is null && combatSettledWorld is not null)
             throw new ArgumentException("Settled World requires an accepted settlement.",
                 nameof(combatSettledWorld));
+        if (combatCustodyDisposition is not null && (combatSettlement is null
+            || combatCustodyWorld is null
+            || combatCustodyDisposition.CampaignId != snapshot.CampaignId
+            || combatCustodyDisposition.PriorStateVersion != combatSettlement.StateVersion
+            || combatCustodyDisposition.SettlementHash != "sha256:"
+                + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+                    combatSettlement.SerializeCanonical()))
+            || combatCustodyDisposition.WorldHash
+                != CampaignNativeCombatPaidWorldV22.Hash(combatCustodyWorld)
+            || combatCustodyDisposition.CustodyStateHash != "sha256:"
+                + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+                    CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(
+                        combatCustodyState)))
+            || (combatCustodyDisposition.ChoiceKind == "not-required")
+                != (combatCustodyState is null)))
+            throw new ArgumentException("Custody must bind retained settlement and assets.",
+                nameof(combatCustodyDisposition));
+        if (combatCustodyDisposition is null
+            && (combatCustodyWorld is not null || combatCustodyState is not null))
+            throw new ArgumentException("Custody assets require an accepted disposition.",
+                nameof(combatCustodyWorld));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -162,6 +186,9 @@ public sealed class ExerciseSession
         CurrentCombatPostResultRetreat = combatPostResultRetreat;
         CurrentCombatSettlement = combatSettlement;
         CurrentCombatSettledWorld = combatSettledWorld;
+        CurrentCombatCustodyDisposition = combatCustodyDisposition;
+        CurrentCombatCustodyWorld = combatCustodyWorld;
+        CurrentCombatCustodyState = combatCustodyState;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -185,5 +212,8 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatRetreatAfterAssaultV23? CurrentCombatPostResultRetreat { get; }
     internal CampaignNativeCombatSettlementV24? CurrentCombatSettlement { get; }
     internal CampaignWorldSnapshotV6? CurrentCombatSettledWorld { get; }
+    internal CampaignNativeCombatCustodyDispositionV25? CurrentCombatCustodyDisposition { get; }
+    internal CampaignWorldSnapshotV6? CurrentCombatCustodyWorld { get; }
+    internal CampaignNativeCombatCustodyStateV25? CurrentCombatCustodyState { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

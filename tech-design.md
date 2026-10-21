@@ -833,11 +833,15 @@ it appends a separate System V23 for no-retreat results. Core V24 derives
 TOE/cohesion losses, a moved defender's CP and representation, and pending
 captives from V22 and V23. Normal Host atomically appends the System settlement
 after V23; cold replay independently recomputes World, captive facts, contact
-transitions, event bytes, and checkpoint. Custody disposition remains pending.
+transitions, event bytes, and checkpoint. Core V25 now accepts a captor custody
+choice or System no-captive disposition into an exact event, World update, and
+typed guard or replacement assets. Exercise replay independently reprojects
+the assets; normal Host appends and cold-replays the System no-captive case.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
-It keeps private target identity and authority in Core; no custody offer leaves
-Host until accepted disposition and retained custody assets have normal replay.
+It keeps private target identity and authority in Core; captor-facing issuance
+still requires equal-visible offer validation, normal Host opening and submit,
+and custody assets in the next versioned campaign position.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
