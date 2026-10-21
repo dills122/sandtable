@@ -28,6 +28,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string elementId) => QueryOwnerOpeningCore(credential, elementId,
             CampaignOwnerOpeningKind.ForceAssignment);
 
+    internal CampaignOwnerOpening QueryPostAssaultRetreatOwnerOpening(
+        CampaignSeatCredential credential, string defenderElementId) =>
+        QueryOwnerOpeningCore(credential, defenderElementId,
+            CampaignOwnerOpeningKind.PostAssaultRetreat);
+
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
         string actingElementId, CampaignOwnerOpeningKind kind)
     {
@@ -64,6 +69,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(authority.Session,
                     seat.Audience, actingElementId);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
+            {
+                var draft = CampaignHostAdapter.QueryContactPostAssaultRetreatOwnerDraft(
+                    authority.Session, seat.Audience, actingElementId);
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
@@ -217,6 +230,7 @@ internal enum CampaignOwnerOpeningKind
     CombatSelection,
     RetreatBeforeAssault,
     ForceAssignment,
+    PostAssaultRetreat,
 }
 
 internal sealed class CampaignOwnerOpening

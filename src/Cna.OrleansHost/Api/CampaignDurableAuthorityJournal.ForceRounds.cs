@@ -126,6 +126,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
             CampaignHostAcceptedStep.NativeCombatAssaultResultKind,
             null, null, null, null, resultCommand, result);
+        if (CampaignHostAdapter.IsNativeCombatNoPostResultRetreat(result.SuccessorSession!))
+        {
+            var postResultHead = Load(connection, transaction, campaignId);
+            var noRetreat = CampaignHostAdapter.CompleteNoPostAssaultRetreat(
+                postResultHead.Session);
+            if (!noRetreat.IsAccepted)
+                throw new InvalidOperationException(
+                    "No-retreat result cannot complete its normal System choice.");
+            var noRetreatCommand = CampaignHostAdapter
+                .NativeCombatNoPostAssaultRetreatCommand(
+                    postResultHead.Session, noRetreat);
+            PersistAccepted(connection, transaction, campaignId, postResultHead,
+                CampaignHostAcceptedStep.NativeCombatNoPostAssaultRetreatKind,
+                null, null, null, null, noRetreatCommand, noRetreat);
+        }
     }
 
     internal bool TickForceRound(string campaignId)

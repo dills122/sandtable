@@ -137,7 +137,8 @@ direction source. Core derives post-result one-hex defender offers toward its
 source anchor from the published map and current side contacts, with explicit
 refusal. Core V23 now accepts an offered route or refusal, or a System
 not-required result, and cold replay checks the retained choice. Normal Host
-submission and resulting World changes are still being implemented.
+now retains the defender opening, accepted choice, receipt, and restart replay.
+Resulting World changes are still being implemented.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

@@ -130,8 +130,10 @@ explicit refusal is always present. Core V23 accepts an offered route or
 explicit refusal against the retained V22 result, paid World hash, exact-pack
 source hash, and contact authority cut. A no-retreat result advances by a
 separate System choice; silence cannot become refusal. V23 event bytes and
-checkpoint are verified on ordinary Exercise reconstruction. Route offers and
-V23 submission are not yet exposed through the normal Host or public route.
+checkpoint are verified on ordinary Exercise reconstruction. Normal Host now
+retains a defender-only opening, private action map, accepted V23 submission,
+receipt, and cold replay; no-retreat V23 is appended as a System step. No
+public route issues these offers yet.
 The defender-visible cut carries the source hash, side contact revision, own
 element and route/refusal semantics; private authority version and Core action
 IDs stay in the Host fence rather than the visible bytes.
