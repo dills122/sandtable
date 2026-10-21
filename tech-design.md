@@ -847,8 +847,10 @@ normal Host retain and cold-replay the V26 checkpoint. The following ordinary
 action still needs a versioned path from that checkpoint.
 Core Reserve Release rules now derive the acting side's due Reserve I/II queue,
 apply the legal release, conversion, or retention choice to World, and retain
-the next-cycle movement allowance as typed data. This rule is not yet an
-accepted event or an authenticated Host opening.
+the next-cycle movement allowance as typed data. An internal V27 event chain
+replays each ordered choice and completion against its predecessor and reaches
+same-slot Truck Convoy Movement. It is not yet accepted by Exercise or exposed
+as an authenticated Host opening.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
 It keeps private target identity and authority in Core. Public routing,

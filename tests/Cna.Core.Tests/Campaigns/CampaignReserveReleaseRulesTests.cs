@@ -99,5 +99,55 @@ public sealed class CampaignReserveReleaseRulesTests
             CampaignReserveReleaseChoice.ReleaseII);
         Assert.Equal(member.BaseCapabilityPointAllowance / 2,
             secondRelease.NextMovement!.CapabilityPointCeiling);
+
+        var releasePosition = Cna1979LandSequenceV4.CreateTurn(1).Single(
+            position => position.OperationStage == 1
+                && position.ActorRole == LandActorRole.FirstActingSide
+                && position.SegmentId == LandSegmentIds.ReserveRelease);
+        var authority = new CampaignNativeReserveReleaseStateV27(
+            request.CampaignId, session.CurrentSnapshot.StateVersion,
+            "sha256:" + new string('1', 64), firstSide, 1,
+            releasePosition, world, [], [], false);
+        var (chosen, choiceEvent) = authority.Choose(session.Context,
+            member.ElementId, CampaignReserveReleaseChoice.ConvertToII);
+        Assert.Equal(CampaignElementReserveStatus.ReserveII,
+            chosen.World.Elements.Single(value =>
+                value.ElementId == member.ElementId).ReserveStatus);
+        Assert.Empty(chosen.Pending(session.Context));
+        var (finished, completionEvent) = chosen.Complete(session.Context);
+        Assert.Equal(LandPhaseIds.TruckConvoyMovement,
+            finished.Position.PhaseId);
+        var replayed = CampaignNativeReserveReleaseStateV27.Replay(
+            authority, session.Context,
+            [choiceEvent.SerializeCanonical(), completionEvent.SerializeCanonical()]);
+        Assert.Equal(finished.HeadEventHash, replayed.HeadEventHash);
+        Assert.Equal(finished.World, replayed.World);
+        Assert.Equal(finished.Position, replayed.Position);
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeReserveReleaseStateV27.Replay(authority, session.Context,
+                [(choiceEvent with
+                {
+                    ElementId = "forged-element",
+                }).SerializeCanonical()]));
+
+        var secondCycleAuthority = authority with
+        {
+            World = converted.World,
+            CycleOrdinal = 2,
+            ResolvedElementIds = [],
+        };
+        var (retained, retainEvent) = secondCycleAuthority.Choose(
+            session.Context, member.ElementId,
+            CampaignReserveReleaseChoice.RetainII);
+        Assert.Empty(retained.Pending(session.Context));
+        Assert.Equal(CampaignElementReserveStatus.ReserveII,
+            retained.World.Elements.Single(value =>
+                value.ElementId == member.ElementId).ReserveStatus);
+        var (afterRetain, retainCompletion) = retained.Complete(session.Context);
+        var replayedRetain = CampaignNativeReserveReleaseStateV27.Replay(
+            secondCycleAuthority, session.Context,
+            [retainEvent.SerializeCanonical(), retainCompletion.SerializeCanonical()]);
+        Assert.Equal(afterRetain.HeadEventHash, replayedRetain.HeadEventHash);
+        Assert.Equal(afterRetain.World, replayedRetain.World);
     }
 }

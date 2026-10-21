@@ -522,6 +522,32 @@ public sealed class CampaignContactCombatSelectionCutTests
             completedCombat.SuccessorSession!).IsVerified);
         Assert.False(CampaignExercises.CompleteNativeCombatSuccessor(
             completedCombat.SuccessorSession!).IsAccepted);
+        var successorSession = completedCombat.SuccessorSession!;
+        var releaseProjection = CampaignNativeCombatSuccessorV26.Project(
+            successorSession.CurrentCombatDecision!,
+            successorSession.CurrentCombatAssaultResult!,
+            successorSession.CurrentCombatSettlement!,
+            successorSession.CurrentCombatCustodyDisposition!,
+            successorSession.CurrentCombatCustodyWorld!,
+            successorSession.CurrentCombatCustodyState, context);
+        var release = CampaignNativeReserveReleaseStateV27.Initialize(
+            successorSession.CurrentCombatSuccessor!, releaseProjection, context);
+        Assert.Empty(release.Pending(context));
+        var (afterRelease, releaseEvent) = release.Complete(context);
+        Assert.True(afterRelease.Completed);
+        Assert.Equal(LandPhaseIds.TruckConvoyMovement,
+            afterRelease.Position.PhaseId);
+        Assert.Equal(releaseEvent.SerializeCanonical(),
+            CampaignNativeReserveReleaseEventV27.Deserialize(
+                releaseEvent.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(afterRelease, CampaignNativeReserveReleaseStateV27.Replay(
+            release, context, [releaseEvent.SerializeCanonical()]));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeReserveReleaseStateV27.Replay(release, context,
+                [(releaseEvent with
+                {
+                    PriorEventHash = "sha256:" + new string('0', 64),
+                }).SerializeCanonical()]));
         Assert.Equal(custodyStep.Evidence!.EventRecords[0],
             CampaignCurrentEventSerializer.Serialize(
                 CampaignCurrentEventSerializer.Deserialize(

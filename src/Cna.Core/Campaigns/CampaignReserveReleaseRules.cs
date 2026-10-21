@@ -66,10 +66,12 @@ internal static class CampaignReserveReleaseRules
     internal static CampaignReserveReleaseDisposition Apply(
         CampaignWorldSnapshotV6 world, CampaignContentContext context,
         LandSide actingSide, int cycleOrdinal, string elementId,
-        CampaignReserveReleaseChoice choice)
+        CampaignReserveReleaseChoice choice,
+        IReadOnlySet<string>? resolvedElementIds = null)
     {
-        var pending = Pending(world, context, actingSide, cycleOrdinal);
-        var current = pending.Count == 0 ? null : pending[0];
+        var current = Pending(world, context, actingSide, cycleOrdinal)
+            .FirstOrDefault(member => resolvedElementIds is null
+                || !resolvedElementIds.Contains(member.ElementId));
         if (current is null || current.ElementId != elementId
             || !current.Choices.Contains(choice))
             throw new InvalidOperationException("Reserve choice is not the current owner offer.");
