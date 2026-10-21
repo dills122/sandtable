@@ -179,8 +179,11 @@ Host accept it with a fenced owner reference and cold-replayed receipt. A
 voluntary finish creates a V32 no-attack System event, advances through the
 five remaining Combat positions, and enters the same ordinal's Reserve
 Release. A replay reducer carries subsequent reserve and repeat-or-finish
-choices without resetting the settled World or random cursor. A later-cycle
-selected assault, vehicle accounting, other legal continuation witnesses,
+choices without resetting the settled World or random cursor. A selected
+second-cycle assault now carries its Barrage, defender retreat (including a
+move), Force seals or timeout, Anti Armor, result, World settlement, custody,
+and Reserve Release through Exercise and the normal durable Host. Further
+selected cycles, vehicle accounting, other legal continuation witnesses,
 following ordinary phases, and public routing remain pending.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
@@ -231,8 +234,9 @@ epoch, 64-hex secret, and expiry; the secret is never put in a URL.
 ID. It returns canonical side-visible cut bytes as base64, owner revision, and
 ordered public action references. Supported stage names are `movement`,
 `combat-selection`, `retreat-before-assault`, `force-assignment`,
-`post-assault-retreat`, `custody`, `reserve-release`, `cycle-control`, and
-`repeat-movement`. `POST /{campaignId}/actions` takes the same credential,
+`post-assault-retreat`, `custody`, `reserve-release`, `cycle-control`,
+`repeat-movement`, and `repeat-combat-selection`. `POST /{campaignId}/actions`
+takes the same credential,
 stage, acting element, opening revision, and public action reference.
 Retreat-before-assault submissions use `rba-decline` or `rba-move`; other
 submission names match opening names. The response acknowledges the public
