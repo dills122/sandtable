@@ -27,7 +27,7 @@ internal sealed record CampaignNativeCombatForceSealV17(
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     internal static CampaignNativeCombatForceSealV17 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         CampaignWorldSnapshotV6 world,
         CampaignContentContext context,
@@ -91,7 +91,7 @@ internal sealed record CampaignNativeCombatForceSealV17(
     }
 
     internal static CampaignNativeCombatForceSealV17 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         CampaignWorldSnapshotV6 world,
         CampaignContentContext context,

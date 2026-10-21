@@ -242,6 +242,18 @@ public sealed class CampaignReserveReleaseRulesTests
             CampaignCurrentEventSerializer.Serialize(
                 CampaignCurrentEventSerializer.Deserialize(
                     repeatedFinish.SerializeCanonical())));
+        var repeatedFrame = CampaignCombatSelectionFrame.FromRepeat(
+            session.CurrentSnapshot, repeatedFinish, repeatedWorld,
+            session.CurrentSnapshot.RandomState);
+        var noAttack = CampaignNativeCombatNoAttackCompletionV13.Create(
+            repeatedFrame, session.Context);
+        Assert.Equal(noAttack.SerializeCanonical(),
+            CampaignNativeCombatNoAttackCompletionV13.Replay(
+                repeatedFrame, session.Context,
+                noAttack.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            Cna1979LandSequenceV4.CreateTurn(1).Single(position =>
+                position.PositionId == noAttack.NextPositionId).SegmentId);
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeRepeatCombatDecisionV31.Replay(completedRelease,
                 repeat, repeatedMove, breakdown, repeatedWorld,

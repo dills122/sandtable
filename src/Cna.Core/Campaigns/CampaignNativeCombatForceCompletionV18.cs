@@ -21,7 +21,7 @@ internal sealed record CampaignNativeCombatForceCompletionV18(
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     internal static CampaignNativeCombatForceCompletionV18 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         IReadOnlyList<CampaignNativeCombatForceSealV17> seals)
     {
@@ -74,7 +74,7 @@ internal sealed record CampaignNativeCombatForceCompletionV18(
     }
 
     internal static CampaignNativeCombatForceCompletionV18 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         IReadOnlyList<CampaignNativeCombatForceSealV17> seals,
         ReadOnlyMemory<byte> canonicalEvent)

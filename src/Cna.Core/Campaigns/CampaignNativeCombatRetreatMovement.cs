@@ -14,7 +14,7 @@ internal static class CampaignNativeCombatRetreatMovement
         IReadOnlyList<CampaignBreakdownStep> BreakdownAccounting);
 
     internal static Result ProjectFirst(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts,
@@ -26,12 +26,12 @@ internal static class CampaignNativeCombatRetreatMovement
         ArgumentNullException.ThrowIfNull(contacts);
         var cut = CampaignContactRetreatBeforeAssaultCut.Project(selected, barrage,
             context, contacts);
-        return ProjectAtWorld(selected, selected.PriorSnapshot.World,
+        return ProjectAtWorld(selected, selected.World,
             context, cut, actionId);
     }
 
     internal static Result ProjectAfterMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 previous,
         CampaignWorldSnapshotV6 currentWorld,
@@ -47,7 +47,7 @@ internal static class CampaignNativeCombatRetreatMovement
     }
 
     private static Result ProjectAtWorld(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignWorldSnapshotV6 currentWorld,
         CampaignContentContext context,
         CampaignContactRetreatBeforeAssaultCut cut,

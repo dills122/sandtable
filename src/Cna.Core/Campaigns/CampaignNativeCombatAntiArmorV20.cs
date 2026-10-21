@@ -15,7 +15,7 @@ internal sealed record CampaignNativeCombatAntiArmorV20(
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     internal static CampaignNativeCombatAntiArmorV20 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatForceCompletionV18? completion,
         CampaignNativeCombatForceCancellationV19? cancellation,
         CampaignContentContext context)
@@ -76,7 +76,7 @@ internal sealed record CampaignNativeCombatAntiArmorV20(
     }
 
     internal static CampaignNativeCombatAntiArmorV20 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatForceCompletionV18? completion,
         CampaignNativeCombatForceCancellationV19? cancellation,
         CampaignContentContext context, ReadOnlyMemory<byte> canonicalEvent)

@@ -15,7 +15,7 @@ internal sealed record CampaignNativeCombatCancelledAssaultV21(
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     internal static CampaignNativeCombatCancelledAssaultV21 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAntiArmorV20 antiArmor)
     {
         ArgumentNullException.ThrowIfNull(selected);
@@ -62,7 +62,7 @@ internal sealed record CampaignNativeCombatCancelledAssaultV21(
     }
 
     internal static CampaignNativeCombatCancelledAssaultV21 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAntiArmorV20 antiArmor,
         ReadOnlyMemory<byte> canonicalEvent)
     {

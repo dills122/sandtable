@@ -23,7 +23,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     public long StateVersion => checked(PriorStateVersion + 1);
 
     public static CampaignNativeCombatRetreatMoveV16 CreateFirst(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts,
@@ -42,7 +42,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     }
 
     public static CampaignNativeCombatRetreatMoveV16 CreateNext(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 previous,
         CampaignWorldSnapshotV6 currentWorld,
@@ -65,7 +65,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     }
 
     public CampaignWorldSnapshotV6 ProjectWorld(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts)
@@ -78,7 +78,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     }
 
     public CampaignWorldSnapshotV6 ProjectWorldAfter(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 previous,
         CampaignWorldSnapshotV6 currentWorld,
@@ -124,7 +124,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     }
 
     public static CampaignNativeCombatRetreatMoveV16 ReplayFirst(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts,
@@ -138,7 +138,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     }
 
     public static CampaignNativeCombatRetreatMoveV16 ReplayNext(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 previous,
         CampaignWorldSnapshotV6 currentWorld,
@@ -190,7 +190,7 @@ internal sealed record CampaignNativeCombatRetreatMoveV16(
     }
 
     public byte[] SerializeStateCanonical(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts)

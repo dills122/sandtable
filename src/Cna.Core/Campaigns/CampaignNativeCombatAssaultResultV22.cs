@@ -12,7 +12,7 @@ internal sealed class CampaignNativeCombatAssaultResultV22
     internal const int CurrentContractVersion = 22;
 
     private CampaignNativeCombatAssaultResultV22(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAntiArmorV20 antiArmor,
         CampaignNativeCombatAssaultInputs inputs,
         RandomStreamState before,
@@ -96,7 +96,7 @@ internal sealed class CampaignNativeCombatAssaultResultV22
     internal CampaignCombatResultFacts Facts { get; }
 
     internal static CampaignNativeCombatAssaultResultV22 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAntiArmorV20 antiArmor,
         CampaignNativeCombatAssaultInputs inputs,
         RandomStreamState before)
@@ -162,7 +162,7 @@ internal sealed class CampaignNativeCombatAssaultResultV22
     }
 
     internal static CampaignNativeCombatAssaultResultV22 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAntiArmorV20 antiArmor,
         CampaignNativeCombatAssaultInputs inputs,
         RandomStreamState before,

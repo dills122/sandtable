@@ -18,7 +18,7 @@ internal sealed record CampaignNativeCombatBarrageV14(
     public long StateVersion => checked(PriorStateVersion + 1);
 
     public static CampaignNativeCombatBarrageV14 Create(
-        CampaignNativeCombatDecisionStateV12 selected, CampaignContentContext context)
+        CampaignCombatSelectionFrame selected, CampaignContentContext context)
     {
         ArgumentNullException.ThrowIfNull(selected);
         ArgumentNullException.ThrowIfNull(context);
@@ -66,7 +66,7 @@ internal sealed record CampaignNativeCombatBarrageV14(
     }
 
     public static CampaignNativeCombatBarrageV14 Replay(
-        CampaignNativeCombatDecisionStateV12 selected, CampaignContentContext context,
+        CampaignCombatSelectionFrame selected, CampaignContentContext context,
         ReadOnlyMemory<byte> canonicalEvent)
     {
         var parsed = Deserialize(canonicalEvent);
@@ -104,7 +104,7 @@ internal sealed record CampaignNativeCombatBarrageV14(
         }
     }
 
-    public byte[] SerializeStateCanonical(CampaignNativeCombatDecisionStateV12 selected)
+    public byte[] SerializeStateCanonical(CampaignCombatSelectionFrame selected)
     {
         if (selected.CampaignId != CampaignId || selected.StateVersion != PriorStateVersion
             || selected.Decision.ActionId != DecisionActionId)

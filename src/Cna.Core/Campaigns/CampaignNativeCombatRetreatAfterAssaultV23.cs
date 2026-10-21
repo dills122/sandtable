@@ -20,7 +20,7 @@ internal sealed record CampaignNativeCombatRetreatAfterAssaultV23(
     internal string NextPositionId => PositionId;
 
     internal static CampaignNativeCombatRetreatAfterAssaultV23 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAssaultResultV22 result,
         CampaignWorldSnapshotV6 paidWorld, CampaignContentContext context,
         CampaignContactJournal contacts, string? actionId)
@@ -72,7 +72,7 @@ internal sealed record CampaignNativeCombatRetreatAfterAssaultV23(
     }
 
     internal static CampaignNativeCombatRetreatAfterAssaultV23 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAssaultResultV22 result,
         CampaignWorldSnapshotV6 paidWorld, CampaignContentContext context,
         CampaignContactJournal contacts, ReadOnlyMemory<byte> canonicalEvent)

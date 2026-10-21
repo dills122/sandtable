@@ -18,7 +18,7 @@ internal sealed record CampaignContactForceAssignmentCut(
     SealCombatForceAssignmentAction SealOffer)
 {
     public static CampaignContactForceAssignmentCut Project(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         CampaignWorldSnapshotV6 world,
         CampaignContentContext context,

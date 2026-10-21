@@ -23,7 +23,7 @@ internal sealed record CampaignNativeCombatAssaultInputs(
     CampaignWorldSnapshotV6 PaidWorld)
 {
     internal static CampaignNativeCombatAssaultInputs Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatForceCompletionV18 completion,
         CampaignNativeCombatAntiArmorV20 antiArmor,
         IReadOnlyList<CampaignNativeCombatForceSealV17> seals,

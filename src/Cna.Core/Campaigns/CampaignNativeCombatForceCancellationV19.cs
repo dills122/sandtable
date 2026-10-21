@@ -26,7 +26,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     internal static CampaignNativeCombatForceCancellationV19 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         IReadOnlyList<CampaignNativeCombatForceSealV17> seals,
         string configurationHash, long openedAtUnixMilliseconds,
@@ -109,7 +109,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
     }
 
     internal static CampaignNativeCombatForceCancellationV19 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatRetreatDeclineV15 decline,
         IReadOnlyList<CampaignNativeCombatForceSealV17> seals,
         ReadOnlyMemory<byte> canonicalEvent)

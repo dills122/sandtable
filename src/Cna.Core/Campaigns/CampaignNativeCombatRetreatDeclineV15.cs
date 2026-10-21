@@ -23,7 +23,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     public long StateVersion => checked(PriorStateVersion + 1);
 
     public static CampaignNativeCombatRetreatDeclineV15 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts,
@@ -51,7 +51,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     }
 
     public static CampaignNativeCombatRetreatDeclineV15 CreateAfterFirstMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignWorldSnapshotV6 world,
@@ -69,7 +69,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     }
 
     public static CampaignNativeCombatRetreatDeclineV15 CreateAfterMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignWorldSnapshotV6 world,
@@ -124,7 +124,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     }
 
     public static CampaignNativeCombatRetreatDeclineV15 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts,
@@ -138,7 +138,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     }
 
     public static CampaignNativeCombatRetreatDeclineV15 ReplayAfterFirstMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignWorldSnapshotV6 world,
@@ -156,7 +156,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     }
 
     public static CampaignNativeCombatRetreatDeclineV15 ReplayAfterMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignWorldSnapshotV6 world,
@@ -205,7 +205,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
         }
     }
 
-    public byte[] SerializeStateCanonical(CampaignNativeCombatDecisionStateV12 selected,
+    public byte[] SerializeStateCanonical(CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage)
     {
         if (selected.CampaignId != CampaignId || barrage.StateVersion != PriorStateVersion
@@ -229,7 +229,7 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
     }
 
     public byte[] SerializeAfterFirstMoveStateCanonical(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignContentContext context,

@@ -24,7 +24,7 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
     DeclineRetreatBeforeAssaultAction DeclineOffer)
 {
     public static CampaignContactRetreatBeforeAssaultCut Project(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts)
@@ -42,14 +42,14 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
             throw new InvalidOperationException("RBA requires the selected, retained Barrage authority cut.");
         _ = CampaignNativeCombatBarrageV14.Replay(selected, context, barrage.SerializeCanonical());
         return ProjectAtWorld(selected, barrage, context, contacts,
-            selected.PriorSnapshot.World, barrage.StateVersion, null,
-            selected.PriorSnapshot.World.Representations.Single(value =>
+            selected.World, barrage.StateVersion, null,
+            selected.World.Representations.Single(value =>
                 value.RepresentationId == selected.Decision.BoundRepresentationId).CurrentLocationId,
             allowFurtherMoves: true);
     }
 
     internal static CampaignContactRetreatBeforeAssaultCut ProjectAfterFirstMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignWorldSnapshotV6 world,
@@ -63,7 +63,7 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
     }
 
     internal static CampaignContactRetreatBeforeAssaultCut ProjectAfterMove(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatRetreatMoveV16 move,
         CampaignWorldSnapshotV6 world,
@@ -86,7 +86,7 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
     }
 
     private static CampaignContactRetreatBeforeAssaultCut ProjectAtWorld(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatBarrageV14 barrage,
         CampaignContentContext context,
         CampaignContactJournal contacts,

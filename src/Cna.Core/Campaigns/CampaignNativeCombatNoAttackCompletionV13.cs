@@ -19,7 +19,7 @@ internal sealed record CampaignNativeCombatNoAttackCompletionV13(
     public string NextPositionId => Steps[^1].NextPositionId;
 
     public static CampaignNativeCombatNoAttackCompletionV13 Create(
-        CampaignNativeCombatDecisionStateV12 selected, CampaignContentContext context)
+        CampaignCombatSelectionFrame selected, CampaignContentContext context)
     {
         ArgumentNullException.ThrowIfNull(selected);
         ArgumentNullException.ThrowIfNull(context);
@@ -89,7 +89,7 @@ internal sealed record CampaignNativeCombatNoAttackCompletionV13(
     }
 
     public static CampaignNativeCombatNoAttackCompletionV13 Replay(
-        CampaignNativeCombatDecisionStateV12 selected, CampaignContentContext context,
+        CampaignCombatSelectionFrame selected, CampaignContentContext context,
         ReadOnlyMemory<byte> canonicalEvent)
     {
         try
@@ -146,7 +146,7 @@ internal sealed record CampaignNativeCombatNoAttackCompletionV13(
         }
     }
 
-    public byte[] SerializeStateCanonical(CampaignNativeCombatDecisionStateV12 selected)
+    public byte[] SerializeStateCanonical(CampaignCombatSelectionFrame selected)
     {
         ArgumentNullException.ThrowIfNull(selected);
         if (selected.CampaignId != CampaignId || selected.StateVersion != PriorStateVersion

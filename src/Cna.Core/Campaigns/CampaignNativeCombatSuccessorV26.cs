@@ -49,7 +49,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
         }
     }
 
-    internal static Projection Project(CampaignNativeCombatDecisionStateV12 selected,
+    internal static Projection Project(CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAssaultResultV22 result,
         CampaignNativeCombatSettlementV24 settlement,
         CampaignNativeCombatCustodyDispositionV25 disposition,
@@ -76,7 +76,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
             || disposition.WorldHash != CampaignNativeCombatPaidWorldV22.Hash(custodyWorld)
             || disposition.CustodyStateHash != Hash(
                 CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(custody))
-            || result.BeforeRandomState != prior.RandomState)
+            || result.BeforeRandomState != selected.RandomState)
             throw new InvalidOperationException("Combat successor lacks accepted result and custody authority.");
 
         var position = Cna1979LandSequenceV4.CreateTurn(
@@ -100,7 +100,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
     }
 
     internal static CampaignNativeCombatSuccessorV26 Create(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAssaultResultV22 result,
         CampaignNativeCombatSettlementV24 settlement,
         CampaignNativeCombatCustodyDispositionV25 disposition,
@@ -119,7 +119,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
     }
 
     internal static CampaignNativeCombatSuccessorV26 Replay(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAssaultResultV22 result,
         CampaignNativeCombatSettlementV24 settlement,
         CampaignNativeCombatCustodyDispositionV25 disposition,

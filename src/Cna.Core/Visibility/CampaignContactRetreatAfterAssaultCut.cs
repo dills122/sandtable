@@ -17,7 +17,7 @@ internal sealed record CampaignContactRetreatAfterAssaultCut(
     RefuseRetreatAfterAssaultAction RefuseOffer)
 {
     internal static CampaignContactRetreatAfterAssaultCut Project(
-        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignCombatSelectionFrame selected,
         CampaignNativeCombatAssaultResultV22 result,
         CampaignWorldSnapshotV6 paidWorld,
         CampaignContentContext context,
