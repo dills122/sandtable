@@ -140,6 +140,9 @@ Core V22 derives an ordered, replayable chart result from the retained RNG curso
 binds both roles' paid capability points to canonical prior/paid normal World hashes,
 and normal Host retains it with source-derived ammunition spend on cold readback,
 but has not yet accepted World losses, retreat, or custody settlement;
+the normal 10-TOE pack's separate retreat-source supplement pins side supply
+anchors and Core derives post-result defender route/refusal offers from the
+side contact cut; these offers have no accepted Host transition yet;
 positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

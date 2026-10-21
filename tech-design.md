@@ -821,6 +821,11 @@ the result bytes and the prior/paid normal World hashes after charging both
 roles' capability points. Core and normal Host now accept the result as a versioned
 System step and cold replay its event, checkpoint, and source-derived ammunition
 spend. World loss, retreat, and custody settlement remain pending.
+Normal Combat retreat directions are a versioned exact-pack source supplement,
+resolved on cold replay. The post-result defender cut uses its side anchor,
+published graph, own combat occupancy and current contact targets to offer
+only one-hex routes closer to supply; it always includes explicit refusal.
+Owner acceptance and World settlement remain pending.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

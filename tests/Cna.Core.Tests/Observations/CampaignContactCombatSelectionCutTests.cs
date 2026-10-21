@@ -6,6 +6,7 @@ using Cna.Core.Content;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Cna.Core.Observations;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 using Cna.Core.Tests.Campaigns;
@@ -55,6 +56,10 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(LandStepIds.PositionDetermination,
             atCombat.CurrentPosition.SequenceContext.StepId);
         var context = session.Context;
+        Assert.Equal("sha256:96b408f10d836eaa6f5f0314857d23f5dfd87dd5e15cfbd83d17625a3237058c",
+            context.CombatRetreatSource!.Hash);
+        Assert.Equal("west", context.CombatRetreatSource.Anchor("axis"));
+        Assert.Equal("east", context.CombatRetreatSource.Anchor("commonwealth"));
         var contacts = session.CurrentContacts;
         var offer = Assert.Single(CampaignContactCombatSelectionCut.Project(atCombat,
             context, contacts, LandSide.Axis, "axis-infantry").AssaultOffers);
@@ -128,6 +133,14 @@ public sealed class CampaignContactCombatSelectionCutTests
             losses.Defender.TotalLoss + losses.Defender.RemainingToe);
         if (result.Facts.RequiredRetreat == 1)
         {
+            var retreatCut = CampaignContactRetreatAfterAssaultCut.Project(selected,
+                result, inputs.PaidWorld, context,
+                contacts.AdvanceNativeCombatAssaultResult(result));
+            Assert.Equal(result.StateVersion, retreatCut.AuthorityVersion);
+            Assert.Equal(context.CombatRetreatSource.Hash, retreatCut.RetreatSourceHash);
+            Assert.NotEmpty(retreatCut.MoveOffers);
+            Assert.All(retreatCut.MoveOffers, offer => Assert.NotEqual(
+                retreatCut.Defender.CurrentLocationId, offer.DestinationLocationId));
             var refusal = CampaignNativeCombatLossAssessment.Project(result, inputs,
                 refuseRetreat: true);
             Assert.Equal(losses.Attacker, refusal.Attacker);
@@ -137,6 +150,19 @@ public sealed class CampaignContactCombatSelectionCutTests
         else
             Assert.Throws<ArgumentException>(() => CampaignNativeCombatLossAssessment.Project(
                 result, inputs, refuseRetreat: true));
+        // Exercise the source-directed route with a separately seeded Core result.
+        // The retained campaign cursor is still verified by the replay assertion above.
+        var routeResult = Enumerable.Range(1, 256).Select(seed =>
+            CampaignNativeCombatAssaultResultV22.Create(selected, antiArmor, inputs,
+                new RandomStreamState(atCombat.RandomState.ContractVersion,
+                    atCombat.RandomState.AlgorithmId, (ulong)seed,
+                    atCombat.RandomState.NextByteCursor)))
+            .First(value => value.Facts.RequiredRetreat == 1);
+        var routeCut = CampaignContactRetreatAfterAssaultCut.Project(selected,
+            routeResult, inputs.PaidWorld, context,
+            contacts.AdvanceNativeCombatAssaultResult(routeResult));
+        Assert.Equal("east", Assert.Single(routeCut.MoveOffers).DestinationLocationId);
+        Assert.Equal("commonwealth-infantry", routeCut.RefuseOffer.ElementId);
         Assert.NotEmpty(result.SerializeStateCanonical(antiArmor.SerializeCanonical()));
         var replayedAmmunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
             context, [result]);

@@ -132,6 +132,11 @@ the prior/paid canonical World hashes for subsequent loss settlement.
 The normal post-result loss assessor reuses selected Rules rounding and capture
 arithmetic, with defender refusal affecting only its selected loss; retained
 retreat choice and World settlement are the next implementation step.
+The normal 10-TOE pack now carries a separately versioned, exact-pack retreat
+direction source. Core derives post-result one-hex defender offers toward its
+source anchor from the published map and current side contacts, with explicit
+refusal. This is the production owner-choice input; its accepted transition and
+resulting World changes are still being implemented.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

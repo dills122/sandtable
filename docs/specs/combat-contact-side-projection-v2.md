@@ -122,6 +122,11 @@ prior and paid World hashes; Core retains the paid World projection after chargi
 both roles' capability points, and cold replay re-derives that projection from
 the sealed input cut. World loss, retreat,
 and custody settlement remain before outward issuance. A
+versioned exact-pack retreat-direction supplement supplies one friendly anchor
+per side in the normal 10-TOE campaign. Core derives post-result defender
+one-hex offers from strictly decreasing distance to that anchor on the
+published graph, excluding current contact targets and own combat occupancy;
+explicit refusal is always present. Route offers are not yet public or accepted.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.
