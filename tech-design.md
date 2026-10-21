@@ -745,7 +745,7 @@ The permanent Combat fog path now begins with Core-owned
 [contact knowledge](docs/specs/combat-contact-knowledge-v1.md). Authority
 transitions retain private target bindings and replay into observer-scoped current
 or stale contacts; the side view and visibility-qualified target candidates
-omit those bindings. Creation and committed Movement cuts apply the permanent
+omit those bindings. Creation, ordinary Movement, and Reaction movement cuts apply the permanent
 adjacency rule, with exact contact-record checks against independently replayed
 authority events. The Core journal advances across accepted turns without new sight,
 and an internal owner movement cut binds its contact view and visible movement offers

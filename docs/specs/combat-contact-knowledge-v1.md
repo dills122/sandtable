@@ -46,8 +46,9 @@ history and rejects a mismatch. The current V7 observation remains a
 historical reader. New owner observations must use the successor contact
 projection and action set at one cut.
 
-The default live source is Core's adjacency rule at creation and committed
-Movement v3 cuts. Core compares map representations at the before and after
+The default live source is Core's adjacency rule at creation and accepted
+ordinary Movement v3 or Reaction Movement v2 cuts. Core compares map
+representations at the before and after
 cuts for each formation on both sides. A formation currently in the same or an
 adjacent location gains or updates an observer-local contact; separation marks
 that contact stale at its last apparent location. A later adjacent observation

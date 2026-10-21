@@ -69,11 +69,15 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(execution.RejectionReason);
 
         var history = session.CurrentHistory.Add(execution.AcceptedEvent!);
-        var contacts = execution.AcceptedEvent is ElementMovedV3 movement
-            ? session.CurrentContacts.AppendMovement(session.CurrentSnapshot,
-                execution.SuccessorSnapshot!, movement, session.Context)
-            : session.CurrentContacts.AdvanceNonMovement(
-                session.CurrentSnapshot, execution.SuccessorSnapshot!);
+        var contacts = execution.AcceptedEvent switch
+        {
+            ElementMovedV3 movement => session.CurrentContacts.AppendMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!, movement, session.Context),
+            ReactingElementMovedV2 movement => session.CurrentContacts.AppendMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!, movement, session.Context),
+            _ => session.CurrentContacts.AdvanceNonMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!),
+        };
         var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,

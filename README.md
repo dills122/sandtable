@@ -68,7 +68,7 @@ dormant Core tests; they are not yet exposed as playable actions.
 The permanent fog implementation has started in Core with
 [versioned contact knowledge](docs/specs/combat-contact-knowledge-v1.md): replayed
 side contacts, a side-safe view, visibility-qualified target candidates and a
-default adjacency rule at creation and committed Movement cuts. Core's campaign
+default adjacency rule at creation and accepted ordinary and Reaction movement cuts. Core's campaign
 exercise session retains contact records and checks them against authority-event
 replay. Core now fences contact knowledge to each accepted authority cut and derives an
 acting element's contact view and movement offers from that same cut, without consulting

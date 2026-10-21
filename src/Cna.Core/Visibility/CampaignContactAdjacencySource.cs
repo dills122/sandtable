@@ -27,21 +27,42 @@ internal static class CampaignContactAdjacencySource
         CampaignSnapshotV11 before, CampaignSnapshotV11 after, ElementMovedV3 movement,
         CampaignContentContext context, CampaignContactKnowledge knowledge)
     {
+        ArgumentNullException.ThrowIfNull(movement);
+        return OnMovement(before, after, movement.CampaignId, movement.PriorStateVersion,
+            movement.StateVersion, movement.RepresentationId, movement.DestinationLocationId,
+            context, knowledge);
+    }
+
+    public static IReadOnlyList<CampaignContactTransition> OnMovement(
+        CampaignSnapshotV11 before, CampaignSnapshotV11 after, ReactingElementMovedV2 movement,
+        CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        return OnMovement(before, after, movement.CampaignId, movement.PriorStateVersion,
+            movement.StateVersion, movement.RepresentationId, movement.DestinationLocationId,
+            context, knowledge);
+    }
+
+    private static List<CampaignContactTransition> OnMovement(
+        CampaignSnapshotV11 before, CampaignSnapshotV11 after, string campaignId,
+        long priorStateVersion, long stateVersion, string representationId,
+        string destinationLocationId, CampaignContentContext context,
+        CampaignContactKnowledge knowledge)
+    {
         ArgumentNullException.ThrowIfNull(before);
         ArgumentNullException.ThrowIfNull(after);
-        ArgumentNullException.ThrowIfNull(movement);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(knowledge);
         RequireAuthority(before, context, knowledge);
         RequireAuthority(after, context, knowledge);
-        if (movement.CampaignId != before.CampaignId || movement.CampaignId != after.CampaignId
-            || movement.PriorStateVersion != before.StateVersion
-            || movement.StateVersion != after.StateVersion
+        if (campaignId != before.CampaignId || campaignId != after.CampaignId
+            || priorStateVersion != before.StateVersion
+            || stateVersion != after.StateVersion
             || !after.World.Representations.Any(value =>
-                value.RepresentationId == movement.RepresentationId
-                && value.CurrentLocationId == movement.DestinationLocationId))
-            throw new ArgumentException("Movement does not match its committed authority cut.", nameof(movement));
-        return Derive(before, after, context.ArtifactV6!, knowledge, movement.RepresentationId);
+                value.RepresentationId == representationId
+                && value.CurrentLocationId == destinationLocationId))
+            throw new ArgumentException("Movement does not match its committed authority cut.", nameof(representationId));
+        return Derive(before, after, context.ArtifactV6!, knowledge, representationId);
     }
 
     private static List<CampaignContactTransition> Derive(

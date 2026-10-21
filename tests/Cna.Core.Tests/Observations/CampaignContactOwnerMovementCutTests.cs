@@ -45,6 +45,13 @@ public sealed class CampaignContactOwnerMovementCutTests
             CampaignContactJournal.Initialize(visible, context), LandSide.Axis, "axis-infantry");
 
         Assert.Contains(unseenCut.MovementOffers, offer => offer.DestinationLocationId == "north");
+        var offered = unseenCut.MovementOffers.Single(offer => offer.DestinationLocationId == "north");
+        var accepted = CampaignElementMovedV3Factory.Create(hidden, context.ArtifactV6!,
+            context.Scenario, new ElementMovedV3ReplayInput(hidden.CampaignId,
+                hidden.StateVersion, hidden.CurrentPosition.SequencePosition!.PositionId,
+                LandSide.Axis, offered.ElementId, offered.OriginLocationId,
+                offered.DestinationLocationId));
+        Assert.Equal(offered.DestinationLocationId, accepted.DestinationLocationId);
         Assert.Contains(seenCut.ContactObservation.CurrentTargets,
             target => target.ApparentLocationId == "north");
         Assert.DoesNotContain(seenCut.MovementOffers, offer => offer.DestinationLocationId == "north");

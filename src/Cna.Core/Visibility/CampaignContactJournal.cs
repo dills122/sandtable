@@ -62,9 +62,12 @@ internal sealed class CampaignContactJournal
             var after = CampaignCurrentProjector.Apply(snapshot, value, context);
             journal = snapshot is null
                 ? Initialize(after, context)
-                : value is ElementMovedV3 movement
-                    ? journal!.AppendMovement(snapshot, after, movement, context)
-                    : journal!.AdvanceNonMovement(snapshot, after);
+                : value switch
+                {
+                    ElementMovedV3 movement => journal!.AppendMovement(snapshot, after, movement, context),
+                    ReactingElementMovedV2 movement => journal!.AppendMovement(snapshot, after, movement, context),
+                    _ => journal!.AdvanceNonMovement(snapshot, after),
+                };
             snapshot = after;
         }
         return journal ?? throw new InvalidCampaignHistoryException("Contact replay requires creation authority.");
@@ -73,6 +76,21 @@ internal sealed class CampaignContactJournal
     /// <summary>Derive both audiences' sight from one accepted movement cut.</summary>
     public CampaignContactJournal AppendMovement(CampaignSnapshotV11 before,
         CampaignSnapshotV11 after, ElementMovedV3 movement, CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(movement);
+        if (before.CampaignId != CampaignId || after.CampaignId != CampaignId)
+            throw new ArgumentException("Movement belongs to another campaign.", nameof(movement));
+        RequireNextAuthority(before, after);
+        return ApplySources(
+            CampaignContactAdjacencySource.OnMovement(before, after, movement, context, axis),
+            CampaignContactAdjacencySource.OnMovement(before, after, movement, context, commonwealth))
+            .AtAuthorityVersion(after.StateVersion);
+    }
+
+    public CampaignContactJournal AppendMovement(CampaignSnapshotV11 before,
+        CampaignSnapshotV11 after, ReactingElementMovedV2 movement, CampaignContentContext context)
     {
         ArgumentNullException.ThrowIfNull(before);
         ArgumentNullException.ThrowIfNull(after);
