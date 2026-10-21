@@ -93,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatSettlement is { } settlement)
+            return new ExerciseCheckpoint(settlement, session.CurrentCombatDecision!);
         if (session.CurrentCombatPostResultRetreat is { } postResultRetreat)
             return new ExerciseCheckpoint(postResultRetreat, session.CurrentCombatDecision!);
         if (session.CurrentCombatAssaultResult is { } result)
@@ -756,6 +758,69 @@ public static class CampaignExercises
                 SerializeNativeCombatResultState(session))));
     }
 
+    internal static ExerciseStepResult SettleNativeCombatWorld(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatAssaultResult is not { } result
+            || session.CurrentCombatPostResultRetreat is not { } retreat
+            || session.CurrentCombatSettlement is not null
+            || session.CurrentContacts.AuthorityVersion != retreat.StateVersion)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var priorHistory = session.CurrentHistory.Take(
+                session.CurrentHistory.Count - 2);
+            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                session.Context, priorHistory);
+            var inputs = CampaignNativeCombatAssaultInputs.Create(selected,
+                session.CurrentCombatForceCompletion!, session.CurrentCombatAntiArmor!,
+                session.CurrentCombatForceSeals,
+                session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
+                session.Context, ammunition);
+            var settlement = CampaignNativeCombatSettlementV24.Create(result,
+                retreat, inputs, session.Context);
+            var projected = CampaignNativeCombatSettledWorldV24.Project(result,
+                retreat, inputs, session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatSettlement(
+                inputs.PaidWorld, projected.World, retreat, settlement,
+                session.Context);
+            var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
+                session.CurrentHistory.Add(settlement), contacts, selected,
+                combatBarrage: session.CurrentCombatBarrage,
+                combatRetreatDecline: session.CurrentCombatRetreatDecline,
+                combatRetreatMove: session.CurrentCombatRetreatMove,
+                combatRetreatWorld: session.CurrentCombatRetreatWorld,
+                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                combatForceSeals: session.CurrentCombatForceSeals,
+                combatForceCompletion: session.CurrentCombatForceCompletion,
+                combatAntiArmor: session.CurrentCombatAntiArmor,
+                combatAssaultResult: result,
+                combatPaidWorld: inputs.PaidWorld,
+                combatPostResultRetreat: retreat,
+                combatSettlement: settlement,
+                combatSettledWorld: projected.World);
+            var bytes = settlement.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(result.CampaignId,
+                settlement.PriorStateVersion, settlement.StateVersion,
+                settlement.NextPositionId, CampaignActionAudience.System,
+                Hash(bytes));
+            var priorState = retreat.SerializeStateCanonical(
+                SerializeNativeCombatResultState(session));
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(
+                receipt, bytes, settlement.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);
@@ -939,6 +1004,8 @@ public static class CampaignExercises
                 expectedBytes = assaultResult.SerializeStateCanonical(expectedBytes);
             if (completedSession.CurrentCombatPostResultRetreat is { } postResultRetreat)
                 expectedBytes = postResultRetreat.SerializeStateCanonical(expectedBytes);
+            if (completedSession.CurrentCombatSettlement is { } settlement)
+                expectedBytes = settlement.SerializeStateCanonical(expectedBytes);
         }
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
@@ -963,6 +1030,7 @@ public static class CampaignExercises
                         + (completedSession.CurrentCombatCancelledAssault is null ? 0 : 1)
                         + (completedSession.CurrentCombatAssaultResult is null ? 0 : 1)
                         + (completedSession.CurrentCombatPostResultRetreat is null ? 0 : 1)
+                        + (completedSession.CurrentCombatSettlement is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -974,6 +1042,7 @@ public static class CampaignExercises
             byte[] replayedBytes;
             var worldMatch = completedSession.CurrentCombatRetreatWorld is null;
             var paidWorldMatch = completedSession.CurrentCombatPaidWorld is null;
+            var settledWorldMatch = completedSession.CurrentCombatSettledWorld is null;
             if (completedSession.CurrentCombatDecision is not null)
             {
                 var decisionIndex = replayEvents.Length - combatTailCount;
@@ -1176,6 +1245,27 @@ public static class CampaignExercises
                                 replayedBytes = verifiedRetreat.SerializeStateCanonical(replayedBytes);
                                 replayedContacts = replayedContacts
                                     .AdvanceNativeCombatRetreatAfterAssault(verifiedRetreat);
+                                if (completedSession.CurrentCombatSettlement is not null)
+                                {
+                                    if (replayEvents.ElementAtOrDefault(resultIndex + 2)
+                                        is not CampaignNativeCombatSettlementV24 settlementEvent)
+                                        throw new InvalidCampaignHistoryException(
+                                            "Normal Combat World settlement is missing.");
+                                    var verifiedSettlement = CampaignNativeCombatSettlementV24.Replay(
+                                        verifiedResult, verifiedRetreat, inputs,
+                                        completedSession.Context,
+                                        settlementEvent.SerializeCanonical());
+                                    var projected = CampaignNativeCombatSettledWorldV24.Project(
+                                        verifiedResult, verifiedRetreat, inputs,
+                                        completedSession.Context);
+                                    settledWorldMatch = projected.World.Equals(
+                                        completedSession.CurrentCombatSettledWorld);
+                                    replayedBytes = verifiedSettlement.SerializeStateCanonical(
+                                        replayedBytes);
+                                    replayedContacts = replayedContacts.AdvanceNativeCombatSettlement(
+                                        inputs.PaidWorld, projected.World, verifiedRetreat,
+                                        verifiedSettlement, completedSession.Context);
+                                }
                             }
                         }
                     }
@@ -1191,7 +1281,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentCombatPostResultRetreat?.StateVersion
+                == (completedSession.CurrentCombatSettlement?.StateVersion
+                    ?? completedSession.CurrentCombatPostResultRetreat?.StateVersion
                     ?? completedSession.CurrentCombatAssaultResult?.StateVersion
                     ?? completedSession.CurrentCombatCancelledAssault?.StateVersion
                     ?? completedSession.CurrentCombatAntiArmor?.StateVersion
@@ -1210,7 +1301,7 @@ public static class CampaignExercises
                 && contactRecords.Zip(replayedContacts.Records).All(pair =>
                     pair.First.AsSpan().SequenceEqual(pair.Second));
             var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes)
-                && contactsMatch && worldMatch && paidWorldMatch
+                && contactsMatch && worldMatch && paidWorldMatch && settledWorldMatch
                 ? ExerciseReconstructionFailureReason.None
                 : ExerciseReconstructionFailureReason.SnapshotMismatch;
             return new ExerciseReconstructionResult(

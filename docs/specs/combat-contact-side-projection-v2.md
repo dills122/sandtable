@@ -120,8 +120,9 @@ retains a V22 ordered Core result and source-derived ammunition spend in the
 normal Host, with exact event and checkpoint cold replay. V22 also binds canonical
 prior and paid World hashes; Core retains the paid World projection after charging
 both roles' capability points, and cold replay re-derives that projection from
-the sealed input cut. World loss, retreat,
-and custody settlement remain before outward issuance. A
+the sealed input cut. V24 now settles World TOE/cohesion and an accepted
+retreat, retaining captured TOE as pending custody; custody disposition and
+outward issuance remain. A
 versioned exact-pack retreat-direction supplement supplies one friendly anchor
 per side in the normal 10-TOE campaign. Core derives post-result defender
 one-hex offers from strictly decreasing distance to that anchor on the
@@ -133,7 +134,9 @@ separate System choice; silence cannot become refusal. V23 event bytes and
 checkpoint are verified on ordinary Exercise reconstruction. Normal Host now
 retains a defender-only opening, private action map, accepted V23 submission,
 receipt, and cold replay; no-retreat V23 is appended as a System step. No
-public route issues these offers yet.
+public route issues these offers yet. A following System V24 event binds the
+V23 choice to the resulting World hash and pending captives. Exercise and
+normal Host cold replay independently derive its World and contact effects.
 The defender-visible cut carries the source hash, side contact revision, own
 element and route/refusal semantics; private authority version and Core action
 IDs stay in the Host fence rather than the visible bytes.

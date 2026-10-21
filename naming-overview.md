@@ -139,7 +139,8 @@ the normal positive-assault input cut binds both owner seals to those private fa
 Core V22 derives an ordered, replayable chart result from the retained RNG cursor,
 binds both roles' paid capability points to canonical prior/paid normal World hashes,
 and normal Host retains it with source-derived ammunition spend on cold readback,
-but has not yet accepted World losses, retreat, or custody settlement;
+and V24 now accepts World TOE/cohesion losses, moved retreat and pending
+captives, while custody disposition remains pending;
 the normal 10-TOE pack's separate retreat-source supplement pins side supply
 anchors and Core derives post-result defender route/refusal offers from the
 side contact cut; Core V23 and normal Host accept and cold-replay that

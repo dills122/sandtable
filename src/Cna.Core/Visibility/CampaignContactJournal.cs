@@ -231,6 +231,25 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(retreat.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatSettlement(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatRetreatAfterAssaultV23 retreat,
+        CampaignNativeCombatSettlementV24 settlement,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(settlement);
+        if (settlement.CampaignId != CampaignId
+            || settlement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Settlement does not bind contact authority.",
+                nameof(settlement));
+        return ApplySources(
+                CampaignContactAdjacencySource.OnNativeSettlement(before, after,
+                    settlement, retreat, context, axis),
+                CampaignContactAdjacencySource.OnNativeSettlement(before, after,
+                    settlement, retreat, context, commonwealth))
+            .AtAuthorityVersion(settlement.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

@@ -820,7 +820,7 @@ rules, Force/Anti Armor, and ammunition hashes. Replay independently recomputes
 the result bytes and the prior/paid normal World hashes after charging both
 roles' capability points. Core and normal Host now accept the result as a versioned
 System step and cold replay its event, checkpoint, and source-derived ammunition
-spend. World loss, retreat, and custody settlement remain pending.
+spend. V24 now applies World loss and retreat effects; later custody choice remains pending.
 Normal Combat retreat directions are a versioned exact-pack source supplement,
 resolved on cold replay. The post-result defender cut uses its side anchor,
 published graph, own combat occupancy and current contact targets to offer
@@ -829,8 +829,11 @@ Core V23 binds an accepted route/refusal or System not-required choice to the
 V22 result, paid World, source, and contact cut; Exercise cold replay checks
 the canonical event and checkpoint. Normal Host accepts the defender's
 authenticated choice with a private reference fence and cold-replay receipt;
-it appends a separate System V23 for no-retreat results. World settlement
-remains pending.
+it appends a separate System V23 for no-retreat results. Core V24 derives
+TOE/cohesion losses, a moved defender's CP and representation, and pending
+captives from V22 and V23. Normal Host atomically appends the System settlement
+after V23; cold replay independently recomputes World, captive facts, contact
+transitions, event bytes, and checkpoint. Custody disposition remains pending.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

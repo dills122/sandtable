@@ -216,6 +216,22 @@ public sealed class CampaignContactCombatSelectionCutTests
                 + refusedSettlement.Losses.Defender.CapturedLoss);
         Assert.NotEqual(CampaignNativeCombatPaidWorldV22.Hash(inputs.PaidWorld),
             CampaignNativeCombatPaidWorldV22.Hash(movedSettlement.World));
+        var settlement = CampaignNativeCombatSettlementV24.Create(routeResult,
+            routeDecision, inputs, context);
+        Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(movedSettlement.World),
+            settlement.SettledWorldHash);
+        Assert.Equal(settlement.SerializeCanonical(),
+            CampaignNativeCombatSettlementV24.Replay(routeResult, routeDecision,
+                inputs, context, settlement.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(settlement.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(CampaignCurrentEventSerializer.Deserialize(
+                settlement.SerializeCanonical())));
+        var forgedSettlement = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(
+            settlement.SerializeCanonical()).Replace(settlement.SettledWorldHash,
+                "sha256:" + new string('0', 64), StringComparison.Ordinal));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatSettlementV24.Replay(routeResult, routeDecision,
+                inputs, context, forgedSettlement));
         Assert.Throws<InvalidOperationException>(() =>
             CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
                 routeResult, inputs.PaidWorld, context, routeContacts,
@@ -279,6 +295,16 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(23, CampaignExercises.QueryCheckpoint(
             postResult.SuccessorSession!).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(postResult.SuccessorSession!).IsVerified);
+        var settledStep = CampaignExercises.SettleNativeCombatWorld(
+            postResult.SuccessorSession!);
+        Assert.True(settledStep.IsAccepted, settledStep.RejectionReason.ToString());
+        var settledSession = settledStep.SuccessorSession!;
+        Assert.Equal(24, CampaignExercises.QueryCheckpoint(
+            settledSession).ContractVersion);
+        Assert.NotNull(settledSession.CurrentCombatSettledWorld);
+        Assert.True(CampaignExercises.Reconstruct(settledSession).IsVerified);
+        Assert.False(CampaignExercises.SettleNativeCombatWorld(
+            settledSession).IsAccepted);
         Assert.Throws<ArgumentException>(() => new ExerciseSession(atCombat, context,
             acceptedResult.SuccessorSession.CurrentHistory,
             acceptedResult.SuccessorSession.CurrentContacts, selected,

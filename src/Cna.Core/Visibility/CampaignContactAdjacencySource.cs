@@ -65,6 +65,37 @@ internal static class CampaignContactAdjacencySource
             context.ArtifactV6, knowledge, representationId);
     }
 
+    public static IReadOnlyList<CampaignContactTransition> OnNativeSettlement(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatSettlementV24 settlement,
+        CampaignNativeCombatRetreatAfterAssaultV23 retreat,
+        CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(settlement);
+        ArgumentNullException.ThrowIfNull(retreat);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(knowledge);
+        if (context.ArtifactV6 is null || settlement.CampaignId != knowledge.CampaignId
+            || settlement.PriorStateVersion != retreat.StateVersion
+            || settlement.PaidWorldHash != CampaignNativeCombatPaidWorldV22.Hash(before)
+            || settlement.SettledWorldHash != CampaignNativeCombatPaidWorldV22.Hash(after))
+            throw new ArgumentException("Settlement contact source lacks both World cuts.",
+                nameof(settlement));
+        if (retreat.Disposition != "moved") return [];
+        var representation = before.Representations.Single(value =>
+            value.BoundElementIds.Count == 1
+            && value.BoundElementIds[0] == retreat.DefenderElementId);
+        if (after.Representations.Single(value =>
+                value.RepresentationId == representation.RepresentationId)
+                .CurrentLocationId != retreat.DestinationLocationId)
+            throw new ArgumentException("Settlement moved a different representation.",
+                nameof(after));
+        return Derive(before, after, settlement.CampaignId, settlement.StateVersion,
+            context.ArtifactV6, knowledge, representation.RepresentationId);
+    }
+
     private static List<CampaignContactTransition> OnMovement(
         CampaignSnapshotV11 before, CampaignSnapshotV11 after, string campaignId,
         long priorStateVersion, long stateVersion, string representationId,

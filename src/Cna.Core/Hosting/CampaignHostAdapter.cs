@@ -411,6 +411,21 @@ public static class CampaignHostAdapter
             CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
     }
 
+    public static ExerciseStepResult SettleNativeCombatWorld(ExerciseSession session) =>
+        CampaignExercises.SettleNativeCombatWorld(session);
+
+    public static CampaignActionSubmission NativeCombatSettlementCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.SuccessorSession?.CurrentCombatSettlement is null)
+            throw new ArgumentException("Accepted native settlement required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
     /// <summary>Private typed decision proof for one accepted step. It neither publishes a
     /// second transition nor supplies browser diary content.</summary>
     public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
@@ -475,7 +490,8 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind
                 or CampaignHostAcceptedStep.NativeCombatAssaultResultKind
                 or CampaignHostAcceptedStep.ContactPostAssaultRetreatKind
-                or CampaignHostAcceptedStep.NativeCombatNoPostAssaultRetreatKind))
+                or CampaignHostAcceptedStep.NativeCombatNoPostAssaultRetreatKind
+                or CampaignHostAcceptedStep.NativeCombatSettlementKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignNativeCombatForceCancellationV19? forceCancellation = null;
             if (step.Kind == CampaignHostAcceptedStep.NativeCombatForceCancellationKind)
@@ -519,6 +535,8 @@ public static class CampaignHostAdapter
                         step.ActingElementId!),
                 CampaignHostAcceptedStep.NativeCombatNoPostAssaultRetreatKind =>
                     CompleteNoPostAssaultRetreat(session),
+                CampaignHostAcceptedStep.NativeCombatSettlementKind =>
+                    SettleNativeCombatWorld(session),
                 CampaignHostAcceptedStep.ContactRbaDeclineKind => SubmitContactDefenderRbaDecline(
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactRbaMoveKind => SubmitContactDefenderRbaMove(
@@ -566,6 +584,11 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         NativeCombatNoPostAssaultRetreatCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatSettlementKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeCombatSettlementCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
@@ -764,6 +787,7 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeCombatAssaultResultContractVersion = 13;
     public const int ContactPostAssaultRetreatContractVersion = 14;
     public const int NativeCombatNoPostAssaultRetreatContractVersion = 15;
+    public const int NativeCombatSettlementContractVersion = 16;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -779,6 +803,7 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeCombatAssaultResultKind = "native-combat-assault-result";
     public const string ContactPostAssaultRetreatKind = "contact-post-assault-retreat";
     public const string NativeCombatNoPostAssaultRetreatKind = "native-combat-no-post-assault-retreat";
+    public const string NativeCombatSettlementKind = "native-combat-world-settlement";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -794,7 +819,8 @@ public sealed class CampaignHostAcceptedStep
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
                 or NativeCombatCancelledAssaultKind or NativeCombatAssaultResultKind
-                or ContactPostAssaultRetreatKind or NativeCombatNoPostAssaultRetreatKind)
+                or ContactPostAssaultRetreatKind or NativeCombatNoPostAssaultRetreatKind
+                or NativeCombatSettlementKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind
@@ -803,6 +829,7 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 or NativeCombatAntiArmorKind or NativeCombatCancelledAssaultKind
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
+                or NativeCombatSettlementKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
@@ -820,6 +847,7 @@ public sealed class CampaignHostAcceptedStep
             NativeCombatAssaultResultKind => NativeCombatAssaultResultContractVersion,
             ContactPostAssaultRetreatKind => ContactPostAssaultRetreatContractVersion,
             NativeCombatNoPostAssaultRetreatKind => NativeCombatNoPostAssaultRetreatContractVersion,
+            NativeCombatSettlementKind => NativeCombatSettlementContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

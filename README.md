@@ -131,18 +131,21 @@ roles' paid capability points in a retained normal World projection and binds
 the prior/paid canonical World hashes for subsequent loss settlement.
 The normal post-result loss assessor reuses selected Rules rounding and capture
 arithmetic, with defender refusal affecting only its selected loss; retained
-retreat choice and World settlement are the next implementation step.
+retreat choice now feeds a V24 normal World settlement.
 The normal 10-TOE pack now carries a separately versioned, exact-pack retreat
 direction source. Core derives post-result one-hex defender offers toward its
 source anchor from the published map and current side contacts, with explicit
 refusal. Core V23 now accepts an offered route or refusal, or a System
 not-required result, and cold replay checks the retained choice. Normal Host
 now retains the defender opening, accepted choice, receipt, and restart replay.
-Resulting World changes are still being implemented.
+Core V24 applies source-selected TOE and cohesion losses, charges a completed
+retreat, moves the defender's representation, and retains pending captive lots.
+Normal Host appends this System event in the same transaction after V23 and
+verifies its World and contact changes on cold replay.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.
-World loss and retreat settlement, non-infantry disposition, and public route
+Custody choice after pending capture, non-infantry disposition, and public route
 remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

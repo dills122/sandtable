@@ -140,7 +140,23 @@ internal sealed partial class CampaignDurableAuthorityJournal
             PersistAccepted(connection, transaction, campaignId, postResultHead,
                 CampaignHostAcceptedStep.NativeCombatNoPostAssaultRetreatKind,
                 null, null, null, null, noRetreatCommand, noRetreat);
+            AppendWorldSettlement(connection, transaction, campaignId);
         }
+    }
+
+    private void AppendWorldSettlement(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var head = Load(connection, transaction, campaignId);
+        var settled = CampaignHostAdapter.SettleNativeCombatWorld(head.Session);
+        if (!settled.IsAccepted)
+            throw new InvalidOperationException(
+                "Accepted Combat choice cannot settle normal World.");
+        var command = CampaignHostAdapter.NativeCombatSettlementCommand(
+            head.Session, settled);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.NativeCombatSettlementKind,
+            null, null, null, null, command, settled);
     }
 
     internal bool TickForceRound(string campaignId)
