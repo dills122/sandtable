@@ -860,11 +860,14 @@ repeated Movement action from the side-safe contact cut, applies its retained
 release ceiling to World, updates contact evidence, and cold-replays the normal
 Host opening/submission/receipt. V30 now records the cohortless Breakdown
 System determination after that accepted move and advances to Combat in the
-same durable transaction. Vehicle accounting, repeated Combat/Reserve Release,
+same durable transaction. Vehicle accounting, later-cycle selected assaults,
 other legal continuation witnesses, and public route remain pending.
 An internal V31 owner cut derives the repeated Combat view and offers directly
-from accepted World and contact authority. Its selection event binds and replays
-the chosen offer; Exercise/Host acceptance and later stages remain pending.
+from accepted World and contact authority. Exercise and the normal Host accept
+its fenced choice. V32 completes a voluntary finish, and a replay reducer
+enters the same ordinal's Reserve Release without reconstructing V11; a
+following cycle choice and receipt survive cold restart. Selected assault
+continuation remains pending.
 The normal durable journal has an opt-in local `/api/v2/campaigns` adapter.
 It authenticates operator creation and seat rotation, exposes only the
 versioned side cut and public references, and maps submissions back through

@@ -164,6 +164,51 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             firstSide, 1, projection.NextPosition, projection.World, [], [], false);
     }
 
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatNoAttack(
+        CampaignSnapshotV11 initial,
+        CampaignNativeRepeatCombatDecisionV31 selection,
+        CampaignNativeRepeatCombatNoAttackV32 completion,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(initial);
+        ArgumentNullException.ThrowIfNull(selection);
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(context);
+        var artifact = context.ArtifactV6
+            ?? throw new InvalidOperationException(
+                "Later-cycle Reserve Release needs registered Content 6.");
+        if (initial.CampaignId != selection.CampaignId
+            || selection.Choice != "finish-combat-without-attack"
+            || completion.CampaignId != selection.CampaignId
+            || completion.PriorStateVersion != selection.StateVersion
+            || completion.PriorSelectionHash
+                != CampaignNativeReserveReleaseEventV27.Hash(
+                    selection.SerializeCanonical())
+            || completion.CycleOrdinal != selection.CycleOrdinal
+            || completion.WorldHash != CampaignNativeCombatPaidWorldV22.Hash(world)
+            || !CampaignWorldV6Validator.IsValid(world, artifact,
+                context.Scenario))
+            throw new InvalidOperationException(
+                "Later-cycle Reserve Release lacks accepted Combat authority.");
+        var position = Cna1979LandSequenceV4.CreateTurn(
+            initial.CurrentPosition.SequenceContext.GameTurn).Single(value =>
+                value.PositionId == completion.NextPositionId);
+        if (position.SegmentId != LandSegmentIds.ReserveRelease
+            || position.ActorRole != LandActorRole.FirstActingSide
+            || position.OperationStage
+                != initial.CurrentPosition.SequenceContext.OperationStage)
+            throw new InvalidOperationException(
+                "Later-cycle finish must reach same-slot Reserve Release.");
+        _ = CampaignReserveReleaseRules.Pending(world, context,
+            selection.Side, selection.CycleOrdinal);
+        return new(completion.CampaignId, completion.StateVersion,
+            CampaignNativeReserveReleaseEventV27.Hash(
+                completion.SerializeCanonical()), selection.Side,
+            selection.CycleOrdinal, position, world, [], [], false);
+    }
+
     internal IReadOnlyList<CampaignReserveReleaseMember> Pending(
         CampaignContentContext context) => Completed
             ? [] : CampaignReserveReleaseRules.Pending(World, context,

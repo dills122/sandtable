@@ -173,11 +173,15 @@ determination and same-slot Combat entry after that move with normal Host cold
 replay. An internal V31 owner cut now projects the repeated Combat contact
 observation and assault/voluntary-finish offers from that accepted moved World
 and contact journal. It verifies the V27-V30 event and World hash chain and
-does not reconstruct a V11 snapshot. The V31 selection event now binds either
-an offered contact assault or a voluntary finish to that cut and replays the
-exact choice. Exercise and Host do not accept this event yet. Vehicle
-accounting, later repeated Combat/Reserve Release,
-other legal continuation witnesses, and public routing remain pending.
+does not reconstruct a V11 snapshot. The V31 selection event binds either
+an offered contact assault or a voluntary finish; Exercise and the normal
+Host accept it with a fenced owner reference and cold-replayed receipt. A
+voluntary finish creates a V32 no-attack System event, advances through the
+five remaining Combat positions, and enters the same ordinal's Reserve
+Release. A replay reducer carries subsequent reserve and repeat-or-finish
+choices without resetting the settled World or random cursor. A later-cycle
+selected assault, vehicle accounting, other legal continuation witnesses,
+following ordinary phases, and public routing remain pending.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

@@ -254,6 +254,33 @@ public sealed class CampaignReserveReleaseRulesTests
         Assert.Equal(LandSegmentIds.ReserveRelease,
             Cna1979LandSequenceV4.CreateTurn(1).Single(position =>
                 position.PositionId == noAttack.NextPositionId).SegmentId);
+        var completedRepeat = CampaignNativeRepeatCombatNoAttackV32.Create(
+            repeatedFinish, repeatedFrame, session.Context);
+        Assert.Equal(repeatedWorld,
+            repeatedFrame.World);
+        Assert.Equal(completedRepeat.SerializeCanonical(),
+            CampaignNativeRepeatCombatNoAttackV32.Replay(repeatedFinish,
+                repeatedFrame, session.Context,
+                completedRepeat.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(completedRepeat.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    completedRepeat.SerializeCanonical())));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeRepeatCombatNoAttackV32.Replay(repeatedFinish,
+                repeatedFrame, session.Context,
+                (completedRepeat with
+                {
+                    WorldHash = "sha256:" + new string('0', 64),
+                }).SerializeCanonical()));
+        var nextRelease = CampaignNativeReserveReleaseStateV27
+            .InitializeAfterRepeatNoAttack(session.CurrentSnapshot,
+                repeatedFinish, completedRepeat, repeatedWorld,
+                session.Context);
+        Assert.Equal(2, nextRelease.CycleOrdinal);
+        Assert.Equal(completedRepeat.StateVersion, nextRelease.StateVersion);
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            nextRelease.Position.SegmentId);
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeRepeatCombatDecisionV31.Replay(completedRelease,
                 repeat, repeatedMove, breakdown, repeatedWorld,

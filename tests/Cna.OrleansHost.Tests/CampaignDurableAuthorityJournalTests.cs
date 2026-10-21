@@ -411,13 +411,26 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(combatDecision.IsAccepted);
         var afterCombat = fixture.Open(clock);
         var combatSession = afterCombat.ReadVerified(request.CampaignId);
-        Assert.Equal(31, CampaignExercises.QueryCheckpoint(combatSession).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(combatSession).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(combatSession).IsVerified);
         var combatRetry = afterCombat.SubmitOwnerRepeatCombat(attacker,
             repeatActor, combatOpening.Revision,
             combatOpening.PublicActionRefs[^1]);
         Assert.True(combatRetry.IsAccepted);
         Assert.Equal(combatDecision.CanonicalReceipt, combatRetry.CanonicalReceipt);
+        var nextCycleOpening = afterCombat.QueryCycleControlOwnerOpening(attacker);
+        Assert.Contains("Finish", System.Text.Encoding.UTF8.GetString(
+            nextCycleOpening.VisibleBytes), StringComparison.Ordinal);
+        var nextCycle = afterCombat.SubmitOwnerCycleControl(attacker,
+            nextCycleOpening.Revision, nextCycleOpening.PublicActionRefs[^1]);
+        Assert.True(nextCycle.IsAccepted);
+        var afterNextCycle = fixture.Open(clock);
+        var nextCycleSession = afterNextCycle.ReadVerified(request.CampaignId);
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(
+            nextCycleSession).ContractVersion);
+        Assert.Contains("truck", CampaignExercises.QueryCheckpoint(
+            nextCycleSession).PositionId, StringComparison.Ordinal);
+        Assert.True(CampaignExercises.Reconstruct(nextCycleSession).IsVerified);
     }
 
     [Fact]
