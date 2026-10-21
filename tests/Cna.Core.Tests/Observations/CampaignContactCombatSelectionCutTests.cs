@@ -115,6 +115,24 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.All(rba.MoveOffers, move =>
             Assert.DoesNotContain(rba.ContactObservation.CurrentTargets,
                 target => target.ApparentLocationId == move.DestinationLocationId));
+        var firstMove = rba.MoveOffers[0];
+        var projectedRetreat = CampaignNativeCombatRetreatMovement.ProjectFirst(
+            rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+            rbaSession.Context, rbaSession.CurrentContacts, firstMove.ActionId);
+        Assert.Equal(firstMove.DestinationLocationId,
+            projectedRetreat.World.Elements.Single(value =>
+                value.ElementId == rba.DefenderElementId).CurrentLocationId);
+        Assert.Equal(firstMove.DestinationLocationId,
+            projectedRetreat.World.Representations.Single(value =>
+                value.BoundElementIds.Contains(rba.DefenderElementId)).CurrentLocationId);
+        Assert.Equal(firstMove.CostBreakdown, projectedRetreat.Movement.ActionCost);
+        Assert.Equal(rba.InitialLocationId,
+            rbaSession.CurrentSnapshot.World.Elements.Single(value =>
+                value.ElementId == rba.DefenderElementId).CurrentLocationId);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatRetreatMovement.ProjectFirst(
+                rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+                rbaSession.Context, rbaSession.CurrentContacts, "act.forged"));
         var defenderDraft = CampaignHostAdapter.QueryContactRbaOwnerDraft(rbaSession,
             CampaignActionAudience.Commonwealth, rba.DefenderElementId);
         Assert.Equal(rba.AuthorityVersion, defenderDraft.AuthorityVersion);
