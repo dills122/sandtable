@@ -1,10 +1,12 @@
 # P01 Combat RC contact disclosure and owner opening
 
-**Status:** private design proposal. No action, observation, grant, or public
+**Status:** candidate under fog-of-war research; not approved for implementation.
+Read [the fog-of-war research spike](../research/combat-fog-of-war-architecture-spike.md)
+before selecting any contact rule. No action, observation, grant, or public
 route is enabled by this document. Original R03 roots retain their 44
 provisional positive / 256 absent / zero admitted classification.
 
-## Decision to unblock the first playable Combat slice
+## Candidate to unblock the first playable Combat slice
 
 Create one explicitly labelled **open-contact RC scenario profile**. At the
 Combat selection cut, Umpire records a side-specific contact disclosure before
