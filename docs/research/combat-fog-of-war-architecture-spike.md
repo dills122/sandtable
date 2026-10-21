@@ -1,111 +1,133 @@
-# Combat fog-of-war architecture spike
+# Fog of war for Sandtable's real campaign engine
 
-**Status:** research and recommendation, 2026-10-21. No visibility rule or
-public action is approved by this document. The adjacent
-[open-contact RC proposal](../design/p01-rc-contact-disclosure-opening.md)
-is one option, not the selected rule.
+**Status:** research recommendation for the permanent game feature, 2026-10-21.
+This document selects one architecture for campaign visibility and Combat. It
+does not introduce a special RC visibility profile or turn private evidence
+into an admitted action. No code or public route is changed by this research.
 
-## Question and evidence
+## What other games do
 
-P01's authentic R03 source records contain a private World and replay inputs,
-but no same-cut, side-specific observation/contact disclosure. World presence
-is insufficient proof that an attacker saw a target. The current Observation 7
-projector requires valid Snapshot 11 authority and accepts caller-supplied
-authority facts. It also projects opposing representation positions from the
-snapshot World. That existing projection is not a P01 contact source or a
-general fog policy. CampaignLegalActions likewise requires admitted snapshot
-authority before offering actions. The original 300 P01 roots remain private
-regression evidence: 44 provisional positive, 256 absent, zero admitted.
+| Game | Relevant behavior | Lesson for Sandtable |
+| --- | --- | --- |
+| Wesnoth | Fog is side-specific. A seen hex can reveal a unit, and fog returns when sight is lost. Visibility filters explicitly take a viewing side. | Visibility is game state for an audience, not a Maproom drawing effect. |
+| 0 A.D. | Explored terrain and last-seen objects can remain on the map, while enemy units under fog disappear. | Separate map knowledge, current enemy contact, and stale information. |
+| Freeciv | Server tracks seen state per player, keeps last-seen tile knowledge, and notifies clients when units leave sight. | Core/host send a side-scoped projection; clients never decide what is visible. |
+| Combat Mission | Units distinguish possible contacts from confirmed enemies. Last-known locations can persist; spotting may be shared through command communications rather than instantly across all units. | Preserve observer and sharing provenance, even when the commander sees a combined map. Do not treat a stale marker as a confirmed attack target. |
+| OpenRA | Shroud/fog, visibility effects, and remembered actors are reusable game-system traits. | Implement one reusable rule path for campaigns, not a Combat-only override. |
 
-Established games distinguish terrain knowledge from current sight. Wesnoth
-separates unexplored shroud from returning fog and scopes unit/hex visibility to
-a viewing side. Its input handling looks up visible units for a viewing team.
-0 A.D. retains last-seen map objects under fog while enemy units disappear.
-Freeciv tracks seen state per player, updates last-seen tile information, and
-sends out-of-sight unit notifications when vision changes. These are useful
-architecture examples, not Sandtable rule authority.
+Primary sources: [Wesnoth fog](https://wiki.wesnoth.org/Fog_of_war) and
+[viewing-side filter](https://wiki.wesnoth.org/FilterWML);
+[0 A.D. exploration manual](https://play0ad.com/6-exploring-the-map/);
+[Freeciv server vision code](https://files.freeciv.org/nightly/weekly/main/doxygen/html/d1/d14/maphand_8c_source.html);
+[Combat Mission manual, spotting and C3, pp. 29–30](https://ftp.matrixgames.com/pub/CombatMissionShockForce2/CMShockForce2BaseGameManual.pdf);
+[OpenRA shroud and visibility traits](https://docs.openra.net/en/playtest/traits/).
+These show design patterns, not the authority for Sandtable's own game rules.
 
-Primary references:
+## Fit to Sandtable
 
-- Wesnoth [fog rules](https://wiki.wesnoth.org/Fog_of_war),
-  [viewing-side filter](https://wiki.wesnoth.org/FilterWML), and
-  [visible-unit input code](https://github.com/wesnoth/wesnoth/blob/master/src/mouse_events.cpp).
-- 0 A.D. [exploration manual](https://play0ad.com/6-exploring-the-map/).
-- Freeciv [server vision and map handling](https://files.freeciv.org/nightly/weekly/main/doxygen/html/d1/d14/maphand_8c_source.html).
+Sandtable already publishes campaign locations and edges in its observation
+contracts. For the current game, fog's essential job is to control **enemy
+force information**, not to hide map geography. Own units and published map
+remain known. Enemy units, exact locations, identity, strength and intent are
+separate disclosure decisions.
 
-## Proposed rule model
+`CampaignObservationV7Projector` currently requires valid Snapshot 11 authority,
+accepts caller-supplied apparent-control/ZOC facts, and constructs apparent
+opposing positions from World representations. `CampaignLegalActions` requires
+admitted snapshot authority. Neither is a proven P01 side-contact source. The
+original 300 R03 roots contain private World and replay inputs but no
+authenticated, same-cut record of what the attacker observed. They remain
+44 provisional positive, 256 absent, zero admitted. Building the real
+visibility system creates new authoritative contact events; it does not
+retroactively add them to old records.
 
-Core remains the only authority for both truth and what each side knows.
-Represent these separately at every decision cut:
+## Decision: one campaign visibility model
 
-1. **Ground truth:** actual units, hexes, resources and hidden combat state.
-2. **Side knowledge:** known terrain and last-seen contact records with
-   observation time and staleness. Last-known position is never silently
-   treated as current presence.
-3. **Current observation:** side-scoped contacts and apparent hexes supported
-   by a named visibility rule and a specific source cut.
-4. **Action offer:** a visible alias and permitted intent derived from current
-   observation and public/own-side rules. An offer may disclose that a target
-   is actionable; that disclosure must be an explicit rule choice.
+Make **contact-based fog** the default campaign rule and the only Combat
+visibility path. Core owns four related states:
 
-The side observation should carry campaign, side, position, state version,
-source-cut hash, visibility-policy ID and version, and a canonical digest.
-Current contacts must identify when and why they were seen. Contact loss must
-be an explicit transition; a remembered contact remains marked stale. The
-contact alias should not be a stable opposing unit ID unless the rule explicitly
-reveals identity.
-Chronicle must durably append and read back the exact observation before Host
-opens a decision. Host binds its seat grant, public aliases, deadline and
-accepted-input fence to that observation digest. Core resolves the alias
-against the private mapping, rechecks the current authoritative cut, then
-adjudicates. Maproom renders only the side observation and owner opening.
-Neither Maproom nor Intelligence may calculate visibility or receive hidden
-opposing state.
+1. **Truth:** actual World positions, identity, resources and hidden Combat
+   details. Only Umpire may read this for adjudication and detection.
+2. **Knowledge:** side-scoped contact history, each with observer formation,
+   source event, cut, apparent hex, identification level and sharing status.
+   A last-seen contact is explicitly stale; it is not current enemy position.
+3. **Observation:** the current player view projected from knowledge and own
+   state. It contains only approved contact fields and public map topology.
+4. **Available intents:** the actions offered to the acting formation from its
+   accessible contacts and own state. Core resolves private targets and
+   revalidates on submission; Maproom never calculates legal targets.
 
-Do not derive offerability from a hidden defender fact while claiming that
-fact remains secret. The presence, absence, count, order, identity, rejection
-class, and timing of offers can reveal it. Decide explicitly which facts the
-rule discloses. Offer only intents whose *offer status* is constant across
-histories with the same approved observation; otherwise change the rule or
-withhold that intent for the entire observation class. Core can still resolve
-private outcome details after acceptance. Use a generic stale/invalid
-rejection for submitted aliases.
+Use an opaque, side-scoped contact handle. Do not send opposing element IDs,
+raw World positions, actual strength, or private source hashes to clients or
+Intelligence. The contact record can retain private opponent binding inside
+Core; its visible form contains apparent location and identification level.
+Store which formation observed a contact and how it reached the acting
+formation. The commander may see aggregated side knowledge, while action
+eligibility can require local observation or explicit information sharing.
+This accommodates command-and-control rules without a later data-model rewrite.
 
-## RC choices
+### Contact lifecycle
 
-| Choice | Player sees | Source needed | Assessment |
-| --- | --- | --- | --- |
-| Contact-gated assault | Current apparent contact at a hex; no hidden identity or composition | Deterministic side visibility/contact event at same cut | Recommended first Combat RC rule, if Land rules and scenario scope support it. Preserves ordinary fog and gives a clear action. |
-| Named open-contact scenario | At most one adjacent apparent target hex plus offerability bit | Explicit profile-specific disclosure event | Valid bounded test scenario if intentionally approved; does not establish general fog safety. |
-| Blind hex assault | A chosen hex with no confirmed current contact | Explicit blind-attack rule and outcome disclosure policy | Defer until source rules justify intent, cost, and miss behavior. |
+Core emits typed `observed`, `updated`, and `lost` contact events while
+adjudicating creation, movement, detection, combat and information sharing.
+Events bind campaign, side, observing formation, position/state cut, source
+event, rule version and public contact handle. Replay reconstructs knowledge
+deterministically. Loss changes a current contact into an explicitly stale
+last-known marker. New sight can update or replace it; client code never
+infers contact from a private World field or a nearby marker.
 
-The current recommendation is to build the shared side-observation mechanism
-first, then use **contact-gated assault** for the first RC scenario. This is a
-design recommendation, not a claim that the existing P01 source already
-contains contact or that Land rules permit every suggested attack. The
-open-contact profile can remain an opt-in test scenario. Do not implement it
-as the default or convert the original 300 roots to it.
+The permanent detection policy should use source-backed movement/contact and
+combat events first. Adding LOS, weather, concealment, sensors and C3 sharing
+means extending the versioned visibility rules used by the same event
+pipeline. A rule branch without a defined result must close the affected
+action; it must not silently reveal everything. Published terrain remains
+available to movement even where enemy presence is unknown.
 
-## Smallest safe proof slice
+### Combat behavior
 
-1. Select a written, bounded visibility rule for one scenario: sensor/LOS
-   inputs, terrain and weather effects, contact creation/loss, last-known
-   retention, and exact allowed disclosure. A missing rule branch closes the
-   offer. Pin its ID, source version and fixtures.
-2. Capture a **new authentic** same-cut side-contact event from Core. Preserve
-   the original P01 archive and its separate support status. No target alias
-   comes from private World position alone.
-3. In one integrated private Core/Host vertical, persist the observation,
-   issue a fenced opening, accept selected assault or explicit decline,
-   adjudicate, persist receipt, and prove cold-restart readback. No public
-   route until this vertical and its source certificate pass.
-4. Prove fog noninterference: equal side-visible histories with different
-   hidden defender data must yield byte-equal observation and offers, and the
-   same generic rejection surface. Test stale sightings, disappearing
-   contacts, hidden changes, different seats, retry/restart, and cut races.
-5. Run a new profile-specific support certificate across the pinned scenario
-   set. Keep original 300-root AC-003/006/007/008 certificate open.
+For a direct assault, the acting formation needs a **current actionable
+contact** at the apparent target hex and the normal Combat resources/rules.
+The player chooses a contact/hex intent; Core privately resolves and
+adjudicates the actual defender. A stale contact is displayed as last-known
+intelligence but is not a direct-assault target. Movement toward an unknown or
+stale hex remains possible and may generate a new contact or surprise
+engagement through normal adjudication. If the game later supports area fire
+or blind assault, those are distinct permanent action rules, not a way to
+pretend stale knowledge is current sight.
 
-The remaining scope decision is the exact visibility rule and disclosure
-fields for that bounded scenario. Until they are pinned to source evidence,
-the owner-action vertical must fail closed rather than infer a target.
+Core derives the observation and its action set at one authoritative cut.
+Chronicle durably stores the contact transition and Host's owner opening
+before a player sees an action. The opening binds the side, seat, cut,
+observation digest, public aliases and deadline. On submission, Host
+authenticates and fences the request; Core verifies the contact/action is
+still current and commits one result and receipt. Retry reads back the same
+opening or receipt. Maproom displays current contacts, stale markers and
+available intents from that one owner view; Intelligence receives only the
+same side-safe information.
+
+## Build the feature in the real path
+
+1. Write the versioned **campaign visibility rule** and contact/event schemas
+   into Core/Rules and Core/Observations. Specify initial detection from
+   authentic movement/contact/combat events, contact loss, identity levels
+   and information sharing. Do not add an alternate RC profile.
+2. Make one Core observation projector consume replayed contact knowledge,
+   replacing caller-supplied apparent target facts for the affected campaign
+   path. Generate direct-assault intents from that projection. Keep private
+   target mapping inside Core.
+3. Integrate the same observation and action set with Host's durable
+   seat/opening/accepted-input journal, then Maproom's normal campaign flow.
+   No separate test client is the product path.
+4. Test concrete behavior: unseen defender absent from player view; current
+   contact appears; lost contact becomes stale; stale marker cannot be
+   selected for direct assault; two seats see only their own knowledge;
+   restart returns the same opening; accepted input resolves once. Include
+   paired hidden-state privacy tests, but do not delay basic implementation
+   for a large synthetic proof program.
+5. Capture new authenticated campaign histories from this actual feature and
+   run the Combat support certificate on them. Keep the old 300 roots as
+   replay regressions, without treating them as visibility proof.
+
+This is one engine rule and one user path. The first implemented contacts can
+come from adjudicated movement and combat; later detection inputs extend the
+same rule system. There is no throwaway visibility mode to remove before RC.
