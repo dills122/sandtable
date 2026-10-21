@@ -129,6 +129,31 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(rba.InitialLocationId,
             rbaSession.CurrentSnapshot.World.Elements.Single(value =>
                 value.ElementId == rba.DefenderElementId).CurrentLocationId);
+        var moveEvent = CampaignNativeCombatRetreatMoveV16.CreateFirst(
+            rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+            rbaSession.Context, rbaSession.CurrentContacts, firstMove.ActionId);
+        Assert.Equal(rba.PositionId, moveEvent.PositionId);
+        Assert.Equal(projectedRetreat.World,
+            moveEvent.ProjectWorld(rbaSession.CurrentCombatDecision!,
+                rbaSession.CurrentCombatBarrage!, rbaSession.Context,
+                rbaSession.CurrentContacts));
+        Assert.Equal(moveEvent, CampaignNativeCombatRetreatMoveV16.ReplayFirst(
+            rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+            rbaSession.Context, rbaSession.CurrentContacts, moveEvent.SerializeCanonical()));
+        Assert.Equal(moveEvent, CampaignCurrentEventSerializer.Deserialize(
+            CampaignCurrentEventSerializer.Serialize(moveEvent)));
+        var movedContacts = rbaSession.CurrentContacts.AdvanceNativeCombatRetreatMove(
+            rbaSession.CurrentSnapshot.World, projectedRetreat.World, moveEvent,
+            rbaSession.CurrentCombatDecision!.Decision.BoundRepresentationId!,
+            rbaSession.Context);
+        Assert.Equal(moveEvent.StateVersion, movedContacts.AuthorityVersion);
+        Assert.NotEmpty(moveEvent.SerializeStateCanonical(rbaSession.CurrentCombatDecision!,
+            rbaSession.CurrentCombatBarrage!, rbaSession.Context, rbaSession.CurrentContacts));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatRetreatMoveV16.ReplayFirst(
+                rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+                rbaSession.Context, rbaSession.CurrentContacts,
+                (moveEvent with { DestinationLocationId = rba.InitialLocationId }).SerializeCanonical()));
         Assert.Throws<InvalidOperationException>(() =>
             CampaignNativeCombatRetreatMovement.ProjectFirst(
                 rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,

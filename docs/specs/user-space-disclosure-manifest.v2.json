@@ -550,6 +550,22 @@
       ]
     },
     {
+      "name": "Cna.Core.Actions.DeclineRetreatBeforeAssaultAction",
+      "declaredMembers": ["ElementId"]
+    },
+    {
+      "name": "Cna.Core.Actions.FinishCombatWithoutAttackAction",
+      "declaredMembers": ["ActingElementId"]
+    },
+    {
+      "name": "Cna.Core.Actions.RetreatBeforeAssaultMoveAction",
+      "declaredMembers": ["CostBreakdown", "DestinationLocationId", "ElementId", "OriginLocationId"]
+    },
+    {
+      "name": "Cna.Core.Actions.SelectContactAssaultAction",
+      "declaredMembers": ["ActingElementId", "ApparentLocationId", "ContactHandle"]
+    },
+    {
       "name": "Cna.Core.Actions.ResolveInitiativeAction",
       "declaredMembers": []
     },

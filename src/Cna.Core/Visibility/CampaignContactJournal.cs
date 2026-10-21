@@ -156,6 +156,24 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(decline.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeCombatRetreatMoveV16 movement, string representationId,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        if (movement.CampaignId != CampaignId
+            || movement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Defender movement does not bind contact authority.",
+                nameof(movement));
+        return ApplySources(
+                CampaignContactAdjacencySource.OnNativeRetreatMove(before, after,
+                    movement, representationId, context, axis),
+                CampaignContactAdjacencySource.OnNativeRetreatMove(before, after,
+                    movement, representationId, context, commonwealth))
+            .AtAuthorityVersion(movement.StateVersion);
+    }
+
     private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
     {
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId
