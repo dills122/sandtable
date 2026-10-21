@@ -43,11 +43,12 @@ obligations block campaign activation; they cannot disappear from the action
 set at runtime. The selected or no-attack event advances ordinary Core
 authority and has a durable command, event, state, and receipt schema.
 
-The first internal selection implementation retains a V12 selected-contact event and
-checkpoint in normal Exercise evidence. Host import replays its accepted-step kind and
-checks the private defender binding against independently replayed contact authority.
-The event records the exact sequence successor, Barrage, and cold replay rejects a
-different route; subsequent Combat position handlers still need implementation.
+The initial V12 milestone retained a selected-contact event and checkpoint in
+normal Exercise evidence. Host import still replays its accepted-step kind and
+checks the private defender binding against independently replayed contact
+authority. That milestone stopped at Barrage; the current V12–V32 path below
+also implements the later Combat handlers and rejects a different route on
+cold replay.
 The internal cut now checks voluntary-finish eligibility against opposing ZOC
 authority. Current V6 campaign worlds certify no positive ZOC source, while
 unsupported future worlds fail closed. Both selected-assault and voluntary-finish
