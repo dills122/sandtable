@@ -155,7 +155,9 @@ repeat-or-finish cycle choice; its Core event and normal Host cold replay enter
 same-side Movement ordinal two or same-slot Truck Convoy. Repeat currently has
 a released-unit movement witness; V29 now accepts one such owner movement
 through normal Core/Host World/contact replay and a restart-stable receipt.
-Repeated Breakdown/Combat/Reserve Release and public routing remain pending;
+V30 records the cohortless Breakdown System determination into Combat with
+normal Host cold replay. Repeated Combat/Reserve Release, vehicle accounting,
+and public routing remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

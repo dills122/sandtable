@@ -7,6 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeRepeatBreakdownV30 breakdown => breakdown.SerializeCanonical(),
         CampaignNativeRepeatMovementV29 repeatedMove => repeatedMove.SerializeCanonical(),
         CampaignNativeCycleControlV28 cycleControl => cycleControl.SerializeCanonical(),
         CampaignNativeReserveReleaseEventV27 reserveRelease => reserveRelease.SerializeCanonical(),
@@ -44,6 +45,8 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
+            "cycle-repeat-breakdown-none" =>
+                CampaignNativeRepeatBreakdownV30.Deserialize(canonicalJson),
             "cycle-repeat-element-moved" =>
                 CampaignNativeRepeatMovementV29.Deserialize(canonicalJson),
             "movement-combat-cycle-control" =>

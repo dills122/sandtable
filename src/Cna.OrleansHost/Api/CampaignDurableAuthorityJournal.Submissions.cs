@@ -3,6 +3,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
 
@@ -308,6 +309,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
+        if (kind == CampaignOwnerOpeningKind.RepeatMovement)
+            AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.Custody)
             AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.ReserveRelease)
@@ -359,6 +362,22 @@ internal sealed partial class CampaignDurableAuthorityJournal
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));
+    }
+
+    private void AppendNativeRepeatBreakdown(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var head = Load(connection, transaction, campaignId);
+        var completed = CampaignHostAdapter.CompleteNativeRepeatBreakdown(
+            head.Session);
+        if (!completed.IsAccepted)
+            throw new InvalidOperationException(
+                "Accepted repeated Movement cannot complete Breakdown.");
+        var command = CampaignHostAdapter.NativeRepeatBreakdownCommand(
+            head.Session, completed);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.NativeRepeatBreakdownKind,
+            null, null, null, null, command, completed);
     }
 
     private static string AcceptedKind(CampaignOwnerOpeningKind kind,

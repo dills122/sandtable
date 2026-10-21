@@ -858,7 +858,9 @@ choice receipt, System completion when the queue empties, and a separate
 side-safe cycle opening/receipt. Internal V29 now accepts one released-unit
 repeated Movement action from the side-safe contact cut, applies its retained
 release ceiling to World, updates contact evidence, and cold-replays the normal
-Host opening/submission/receipt. Repeated Breakdown/Combat/Reserve Release,
+Host opening/submission/receipt. V30 now records the cohortless Breakdown
+System determination after that accepted move and advances to Combat in the
+same durable transaction. Vehicle accounting, repeated Combat/Reserve Release,
 other legal continuation witnesses, and public route remain pending.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.

@@ -178,6 +178,27 @@ public sealed class CampaignReserveReleaseRulesTests
             completedRelease.World, repeatedWorld, repeatedMove, session.Context);
         Assert.Equal(repeatedMove.StateVersion,
             afterMovementContacts.AuthorityVersion);
+        var breakdown = CampaignNativeRepeatBreakdownV30.Create(
+            completedRelease, repeat, repeatedMove, repeatedWorld,
+            session.Context, afterMovementContacts);
+        Assert.Equal(repeatedMove.StateVersion + 1, breakdown.StateVersion);
+        Assert.Equal(breakdown, CampaignNativeRepeatBreakdownV30.Replay(
+            completedRelease, repeat, repeatedMove, repeatedWorld,
+            session.Context, afterMovementContacts,
+            breakdown.SerializeCanonical()));
+        Assert.Equal(breakdown.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    breakdown.SerializeCanonical())));
+        Assert.Equal(breakdown.StateVersion,
+            afterMovementContacts.AdvanceNativeRepeatBreakdown(breakdown)
+                .AuthorityVersion);
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeRepeatBreakdownV30.Replay(completedRelease,
+                repeat, repeatedMove, repeatedWorld, session.Context,
+                afterMovementContacts,
+                (breakdown with { WorldHash = "sha256:" + new string('0', 64) })
+                    .SerializeCanonical()));
         Assert.Equal(repeatedMove, CampaignNativeRepeatMovementV29.Replay(
             completedRelease, repeat, session.Context, repeatContacts,
             repeatedMove.SerializeCanonical()));

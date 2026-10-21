@@ -93,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentRepeatBreakdown is { } repeatBreakdown)
+            return new ExerciseCheckpoint(repeatBreakdown, session.CurrentCombatDecision!);
         if (session.CurrentRepeatMove is { } repeatedMove)
             return new ExerciseCheckpoint(repeatedMove, session.CurrentCombatDecision!);
         if (session.CurrentCycleControl is { } cycleControl)
@@ -1184,6 +1186,43 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult CompleteNativeRepeatBreakdown(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryNativeReserveReleaseState(session);
+            var control = session.CurrentCycleControl;
+            var movement = session.CurrentRepeatMove;
+            var world = session.CurrentRepeatMoveWorld;
+            if (control is null || movement is null || world is null
+                || session.CurrentRepeatBreakdown is not null
+                || session.CurrentContacts.AuthorityVersion != movement.StateVersion)
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var breakdown = CampaignNativeRepeatBreakdownV30.Create(
+                release, control, movement, world, session.Context,
+                session.CurrentContacts);
+            var contacts = session.CurrentContacts
+                .AdvanceNativeRepeatBreakdown(breakdown);
+            var next = session.WithRepeatBreakdownEvent(breakdown, contacts);
+            var bytes = breakdown.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                movement.StateVersion, breakdown.StateVersion,
+                breakdown.NextPositionId, CampaignActionAudience.System, Hash(bytes));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, bytes));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);
@@ -1387,6 +1426,8 @@ public static class CampaignExercises
             expectedBytes = cycleControl.SerializeCanonical();
         if (completedSession.CurrentRepeatMove is { } repeatMove)
             expectedBytes = repeatMove.SerializeCanonical();
+        if (completedSession.CurrentRepeatBreakdown is { } repeatBreakdown)
+            expectedBytes = repeatBreakdown.SerializeCanonical();
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
 
@@ -1416,6 +1457,7 @@ public static class CampaignExercises
                         + completedSession.CurrentReserveReleaseEvents.Count
                         + (completedSession.CurrentCycleControl is null ? 0 : 1)
                         + (completedSession.CurrentRepeatMove is null ? 0 : 1)
+                        + (completedSession.CurrentRepeatBreakdown is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -1757,6 +1799,22 @@ public static class CampaignExercises
                                                             reserveState.World, repeatedWorld, verifiedMove,
                                                             completedSession.Context);
                                                         replayedBytes = verifiedMove.SerializeCanonical();
+                                                        if (completedSession.CurrentRepeatBreakdown is not null)
+                                                        {
+                                                            if (replayEvents.ElementAtOrDefault(resultIndex + 7
+                                                                + completedSession.CurrentReserveReleaseEvents.Count)
+                                                                is not CampaignNativeRepeatBreakdownV30 breakdownEvent)
+                                                                throw new InvalidCampaignHistoryException(
+                                                                    "Repeated Breakdown event is missing.");
+                                                            var verifiedBreakdown = CampaignNativeRepeatBreakdownV30.Replay(
+                                                                reserveState, verifiedControl,
+                                                                verifiedMove, repeatedWorld,
+                                                                completedSession.Context, replayedContacts,
+                                                                breakdownEvent.SerializeCanonical());
+                                                            replayedContacts = replayedContacts
+                                                                .AdvanceNativeRepeatBreakdown(verifiedBreakdown);
+                                                            replayedBytes = verifiedBreakdown.SerializeCanonical();
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1778,7 +1836,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentRepeatMove?.StateVersion
+                == (completedSession.CurrentRepeatBreakdown?.StateVersion
+                    ?? completedSession.CurrentRepeatMove?.StateVersion
                     ?? completedSession.CurrentCycleControl?.StateVersion
                     ?? completedSession.CurrentReserveRelease?.StateVersion
                     ?? completedSession.CurrentCombatSuccessor?.StateVersion

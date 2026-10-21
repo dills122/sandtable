@@ -168,8 +168,10 @@ finish enters same-slot Truck Convoy. Core Exercise and normal Host cold-replay
 that choice and retain its receipt. Internal V29 accepts one released-unit
 repeated Movement action from the same-cut side contact offer, applies its
 release ceiling to World, advances both contact ledgers and retains the normal
-Host receipt across restart. Repeated Breakdown/Combat/Reserve Release, other
-legal continuation witnesses and public routing remain pending.
+Host receipt across restart. V30 records the cohortless Breakdown System
+determination and same-slot Combat entry after that move with normal Host cold
+replay. Vehicle accounting, repeated Combat/Reserve Release, other legal
+continuation witnesses, and public routing remain pending.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

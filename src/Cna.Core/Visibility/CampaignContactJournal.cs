@@ -313,6 +313,18 @@ internal sealed class CampaignContactJournal
             .AtAuthorityVersion(movement.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeRepeatBreakdown(
+        CampaignNativeRepeatBreakdownV30 breakdown)
+    {
+        ArgumentNullException.ThrowIfNull(breakdown);
+        if (breakdown.CampaignId != CampaignId
+            || breakdown.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated Breakdown does not bind contact authority.",
+                nameof(breakdown));
+        return AtAuthorityVersion(breakdown.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

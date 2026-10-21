@@ -386,7 +386,10 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(moved.IsAccepted);
         var afterMove = fixture.Open(clock);
         var movedSession = afterMove.ReadVerified(request.CampaignId);
-        Assert.Equal(29, CampaignExercises.QueryCheckpoint(movedSession).ContractVersion);
+        var afterBreakdown = CampaignExercises.QueryCheckpoint(movedSession);
+        Assert.Equal(30, afterBreakdown.ContractVersion);
+        Assert.Contains("combat.position-determination", afterBreakdown.PositionId,
+            StringComparison.Ordinal);
         Assert.True(CampaignExercises.Reconstruct(movedSession).IsVerified);
         var movedRetry = afterMove.SubmitOwnerRepeatMovement(attacker,
             movementOpening.Revision, movementOpening.PublicActionRefs[0]);

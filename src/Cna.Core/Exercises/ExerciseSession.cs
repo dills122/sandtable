@@ -33,7 +33,8 @@ public sealed class ExerciseSession
         IEnumerable<CampaignNativeReserveReleaseEventV27>? reserveReleaseEvents = null,
         CampaignNativeCycleControlV28? cycleControl = null,
         CampaignNativeRepeatMovementV29? repeatMove = null,
-        CampaignWorldSnapshotV6? repeatMoveWorld = null)
+        CampaignWorldSnapshotV6? repeatMoveWorld = null,
+        CampaignNativeRepeatBreakdownV30? repeatBreakdown = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -190,9 +191,11 @@ public sealed class ExerciseSession
                 || combatCustodyDisposition is null || combatCustodyWorld is null
                 || CurrentHistory.Count < reserveEvents.Length
                     + (cycleControl is null ? 0 : 1) + (repeatMove is null ? 0 : 1)
+                    + (repeatBreakdown is null ? 0 : 1)
                 || !CurrentHistory.TakeLast(reserveEvents.Length
                         + (cycleControl is null ? 0 : 1)
-                        + (repeatMove is null ? 0 : 1)).Take(reserveEvents.Length)
+                        + (repeatMove is null ? 0 : 1)
+                        + (repeatBreakdown is null ? 0 : 1)).Take(reserveEvents.Length)
                     .SequenceEqual(reserveEvents.Cast<object>()))
                 throw new ArgumentException("Reserve Release requires the retained Combat successor and events.",
                     nameof(reserveReleaseEvents));
@@ -217,9 +220,10 @@ public sealed class ExerciseSession
             || cycleControl.PriorCycleOrdinal != release.CycleOrdinal
             || cycleControl.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(release.World)
             || CurrentContacts.AuthorityVersion
-                != (repeatMove?.StateVersion ?? cycleControl.StateVersion)
+                != (repeatBreakdown?.StateVersion
+                    ?? repeatMove?.StateVersion ?? cycleControl.StateVersion)
             || !Equals(CurrentHistory[CurrentHistory.Count
-                - (repeatMove is null ? 1 : 2)], cycleControl)))
+                - (repeatMove is null ? 1 : repeatBreakdown is null ? 2 : 3)], cycleControl)))
             throw new ArgumentException("Cycle control must bind completed Reserve Release.",
                 nameof(cycleControl));
         CurrentCycleControl = cycleControl;
@@ -233,7 +237,7 @@ public sealed class ExerciseSession
                 != CampaignNativeCombatPaidWorldV22.Hash(repeatedRelease.World)
             || repeatMove.ResultWorldHash
                 != CampaignNativeCombatPaidWorldV22.Hash(repeatMoveWorld)
-            || !Equals(CurrentHistory[^1], repeatMove)))
+            || !Equals(CurrentHistory[repeatBreakdown is null ? ^1 : ^2], repeatMove)))
             throw new ArgumentException("Repeated Movement must bind accepted repeat and World.",
                 nameof(repeatMove));
         if (repeatMove is null && repeatMoveWorld is not null)
@@ -241,6 +245,14 @@ public sealed class ExerciseSession
                 nameof(repeatMoveWorld));
         CurrentRepeatMove = repeatMove;
         CurrentRepeatMoveWorld = repeatMoveWorld;
+        if (repeatBreakdown is not null && (repeatMove is null
+            || repeatBreakdown.CampaignId != snapshot.CampaignId
+            || repeatBreakdown.PriorStateVersion != repeatMove.StateVersion
+            || repeatBreakdown.WorldHash != repeatMove.ResultWorldHash
+            || !Equals(CurrentHistory[^1], repeatBreakdown)))
+            throw new ArgumentException("Repeated Breakdown must bind accepted Movement.",
+                nameof(repeatBreakdown));
+        CurrentRepeatBreakdown = repeatBreakdown;
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -341,6 +353,34 @@ public sealed class ExerciseSession
             cycleControl: CurrentCycleControl,
             repeatMove: movement,
             repeatMoveWorld: world);
+
+    internal ExerciseSession WithRepeatBreakdownEvent(
+        CampaignNativeRepeatBreakdownV30 breakdown,
+        CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
+            CurrentHistory.Add(breakdown), contacts, CurrentCombatDecision,
+            combatBarrage: CurrentCombatBarrage,
+            combatRetreatDecline: CurrentCombatRetreatDecline,
+            combatRetreatMove: CurrentCombatRetreatMove,
+            combatRetreatWorld: CurrentCombatRetreatWorld,
+            combatRetreatPriorContacts: CurrentCombatRetreatPriorContacts,
+            combatRetreatMoves: CurrentCombatRetreatMoves,
+            combatForceSeals: CurrentCombatForceSeals,
+            combatForceCompletion: CurrentCombatForceCompletion,
+            combatAntiArmor: CurrentCombatAntiArmor,
+            combatAssaultResult: CurrentCombatAssaultResult,
+            combatPaidWorld: CurrentCombatPaidWorld,
+            combatPostResultRetreat: CurrentCombatPostResultRetreat,
+            combatSettlement: CurrentCombatSettlement,
+            combatSettledWorld: CurrentCombatSettledWorld,
+            combatCustodyDisposition: CurrentCombatCustodyDisposition,
+            combatCustodyWorld: CurrentCombatCustodyWorld,
+            combatCustodyState: CurrentCombatCustodyState,
+            combatSuccessor: CurrentCombatSuccessor,
+            reserveReleaseEvents: CurrentReserveReleaseEvents,
+            cycleControl: CurrentCycleControl,
+            repeatMove: CurrentRepeatMove,
+            repeatMoveWorld: CurrentRepeatMoveWorld,
+            repeatBreakdown: breakdown);
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
     internal ImmutableList<object> CurrentHistory { get; }
@@ -372,5 +412,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCycleControlV28? CurrentCycleControl { get; }
     internal CampaignNativeRepeatMovementV29? CurrentRepeatMove { get; }
     internal CampaignWorldSnapshotV6? CurrentRepeatMoveWorld { get; }
+    internal CampaignNativeRepeatBreakdownV30? CurrentRepeatBreakdown { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

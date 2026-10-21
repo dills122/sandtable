@@ -645,6 +645,24 @@ public static class CampaignHostAdapter
             CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
     }
 
+    public static ExerciseStepResult CompleteNativeRepeatBreakdown(
+        ExerciseSession session) =>
+        CampaignExercises.CompleteNativeRepeatBreakdown(session);
+
+    public static CampaignActionSubmission NativeRepeatBreakdownCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted
+            || accepted.SuccessorSession?.CurrentRepeatBreakdown is null)
+            throw new ArgumentException("Accepted repeated Breakdown required.",
+                nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
     public static CampaignActionSubmission NativeCombatSuccessorCommand(
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
@@ -787,6 +805,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind
                 or CampaignHostAcceptedStep.ContactCycleControlKind
                 or CampaignHostAcceptedStep.ContactRepeatMovementKind
+                or CampaignHostAcceptedStep.NativeRepeatBreakdownKind
                 or CampaignHostAcceptedStep.ContactCombatCustodyKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignNativeCombatForceCancellationV19? forceCancellation = null;
@@ -846,6 +865,8 @@ public static class CampaignHostAdapter
                     SubmitNativeCycleControl(session, submission),
                 CampaignHostAcceptedStep.ContactRepeatMovementKind =>
                     SubmitNativeRepeatMovement(session, submission),
+                CampaignHostAcceptedStep.NativeRepeatBreakdownKind =>
+                    CompleteNativeRepeatBreakdown(session),
                 CampaignHostAcceptedStep.ContactCombatCustodyKind =>
                     SubmitNativeCombatCustody(session, submission,
                         step.ActingElementId!),
@@ -1214,6 +1235,7 @@ public sealed class CampaignHostAcceptedStep
     public const int ContactReserveReleaseChoiceContractVersion = 21;
     public const int ContactCycleControlContractVersion = 22;
     public const int ContactRepeatMovementContractVersion = 23;
+    public const int NativeRepeatBreakdownContractVersion = 24;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -1237,6 +1259,7 @@ public sealed class CampaignHostAcceptedStep
     public const string ContactReserveReleaseChoiceKind = "contact-reserve-release-choice";
     public const string ContactCycleControlKind = "contact-cycle-control";
     public const string ContactRepeatMovementKind = "contact-repeat-movement";
+    public const string NativeRepeatBreakdownKind = "native-repeat-breakdown";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -1257,7 +1280,7 @@ public sealed class CampaignHostAcceptedStep
                 or ContactCombatCustodyKind or NativeCombatSuccessorKind
                 or NativeReserveReleaseCompletionKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind
-                or ContactRepeatMovementKind)
+                or ContactRepeatMovementKind or NativeRepeatBreakdownKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
@@ -1270,6 +1293,7 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or NativeCombatSuccessorKind or NativeReserveReleaseCompletionKind
+                or NativeRepeatBreakdownKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
@@ -1295,6 +1319,7 @@ public sealed class CampaignHostAcceptedStep
             ContactReserveReleaseChoiceKind => ContactReserveReleaseChoiceContractVersion,
             ContactCycleControlKind => ContactCycleControlContractVersion,
             ContactRepeatMovementKind => ContactRepeatMovementContractVersion,
+            NativeRepeatBreakdownKind => NativeRepeatBreakdownContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

@@ -168,7 +168,9 @@ and completes an empty queue in the same SQLite transaction. It also retains
 the side-safe cycle choice and restart-stable receipt. Internal V29 now accepts
 one released-unit repeated Movement action from the same-cut contact offer,
 updates World and contacts, and retains its normal Host receipt across restart.
-Repeated Breakdown/Combat/Reserve Release, other continuation witnesses, and
+V30 records the cohortless Breakdown determination as a System step before
+same-slot Combat, with atomic Host append and cold replay. Repeated Combat and
+Reserve Release, vehicle accounting, other continuation witnesses, and
 the public route remain to be wired.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
