@@ -13,30 +13,28 @@ internal sealed class CampaignNativePostRepeatRuntime
         CampaignSnapshotV11 initial,
         CampaignContentContext context,
         RandomStreamState randomState,
-        CampaignNativeRepeatCombatDecisionV31 firstSelection,
-        CampaignNativeRepeatCombatNoAttackV32 firstCompletion,
-        CampaignWorldSnapshotV6 world,
+        CampaignNativeReserveReleaseStateV27 release,
+        CampaignNativeCycleControlV28? control,
         CampaignContactJournal contacts,
+        IReadOnlyList<object> priorHistory,
         IReadOnlyList<object> events)
     {
         Initial = initial;
         Context = context;
         RandomState = randomState;
-        FirstSelection = firstSelection;
-        FirstCompletion = firstCompletion;
-        World = world;
+        assaultRandomState = randomState;
+        World = release.World;
         Contacts = contacts;
+        PriorHistory = priorHistory;
         Events = events;
-        Release = CampaignNativeReserveReleaseStateV27
-            .InitializeAfterRepeatNoAttack(initial, firstSelection,
-                firstCompletion, world, context);
+        Release = release;
+        Control = control;
     }
 
     internal CampaignSnapshotV11 Initial { get; }
     internal CampaignContentContext Context { get; }
-    internal RandomStreamState RandomState { get; }
-    internal CampaignNativeRepeatCombatDecisionV31 FirstSelection { get; }
-    internal CampaignNativeRepeatCombatNoAttackV32 FirstCompletion { get; }
+    internal RandomStreamState RandomState { get; private set; }
+    internal IReadOnlyList<object> PriorHistory { get; }
     internal IReadOnlyList<object> Events { get; }
     internal CampaignWorldSnapshotV6 World { get; private set; }
     internal CampaignContactJournal Contacts { get; private set; }
@@ -46,6 +44,11 @@ internal sealed class CampaignNativePostRepeatRuntime
     internal CampaignWorldSnapshotV6? MovedWorld { get; private set; }
     internal CampaignNativeRepeatBreakdownV30? Breakdown { get; private set; }
     internal CampaignNativeRepeatCombatDecisionV31? Selection { get; private set; }
+    internal CampaignNativeRepeatAssaultRuntime? ActiveAssault { get; private set; }
+    private CampaignContactJournal? assaultBaseContacts;
+    private int assaultSelectionIndex = -1;
+    private CampaignWorldSnapshotV6? assaultWorld;
+    private RandomStreamState assaultRandomState;
 
     internal static CampaignNativePostRepeatRuntime Replay(
         CampaignSnapshotV11 initial,
@@ -55,6 +58,7 @@ internal sealed class CampaignNativePostRepeatRuntime
         CampaignNativeRepeatCombatNoAttackV32 firstCompletion,
         CampaignWorldSnapshotV6 world,
         CampaignContactJournal contactsAfterCompletion,
+        IReadOnlyList<object> priorHistory,
         IEnumerable<object> events)
     {
         ArgumentNullException.ThrowIfNull(events);
@@ -62,16 +66,65 @@ internal sealed class CampaignNativePostRepeatRuntime
         if (retained.Length > 1024)
             throw new InvalidCampaignHistoryException(
                 "Later cycle history exceeds its retained event bound.");
+        var release = CampaignNativeReserveReleaseStateV27
+            .InitializeAfterRepeatNoAttack(initial, firstSelection,
+                firstCompletion, world, context);
         var runtime = new CampaignNativePostRepeatRuntime(initial, context,
-            randomState, firstSelection, firstCompletion, world,
-            contactsAfterCompletion, retained);
-        foreach (var item in retained)
-            runtime.Apply(item);
+            randomState, release, null, contactsAfterCompletion,
+            priorHistory, retained);
+        for (var index = 0; index < retained.Length; index++)
+            runtime.Apply(retained[index], index);
         return runtime;
     }
 
-    private void Apply(object item)
+    internal static CampaignNativePostRepeatRuntime ReplayAfterSecondAssault(
+        CampaignSnapshotV11 initial,
+        CampaignContentContext context,
+        RandomStreamState randomState,
+        CampaignNativeReserveReleaseStateV27 release,
+        CampaignNativeCycleControlV28 control,
+        CampaignContactJournal contactsAfterControl,
+        IReadOnlyList<object> priorHistory,
+        IEnumerable<object> events)
     {
+        ArgumentNullException.ThrowIfNull(events);
+        var retained = events.ToArray();
+        if (retained.Length > 1024 || !release.Completed
+            || control.Choice != CampaignNativeCycleControlChoiceV28.Repeat
+            || control.PriorStateVersion != release.StateVersion
+            || contactsAfterControl.AuthorityVersion != control.StateVersion)
+            throw new InvalidCampaignHistoryException(
+                "Later cycle lacks a completed repeated-assault control cut.");
+        var runtime = new CampaignNativePostRepeatRuntime(initial, context,
+            randomState, release, control, contactsAfterControl,
+            priorHistory, retained);
+        for (var index = 0; index < retained.Length; index++)
+            runtime.Apply(retained[index], index);
+        return runtime;
+    }
+
+    private void Apply(object item, int eventIndex)
+    {
+        if (ActiveAssault is
+            {
+                Release: { } completedRelease,
+                Control: { Choice: CampaignNativeCycleControlChoiceV28.Repeat } completedControl
+            }
+            && item is CampaignNativeRepeatMovementV29)
+        {
+            Release = completedRelease;
+            Control = completedControl;
+            World = completedRelease.World;
+            RandomState = ActiveAssault.Result?.AfterRandomState ?? RandomState;
+            Contacts = ActiveAssault.Contacts;
+            ActiveAssault = null;
+            assaultBaseContacts = null;
+            assaultSelectionIndex = -1;
+            Movement = null;
+            MovedWorld = null;
+            Breakdown = null;
+            Selection = null;
+        }
         if (!Release.Completed)
         {
             if (item is not CampaignNativeReserveReleaseEventV27 reserveEvent)
@@ -137,6 +190,33 @@ internal sealed class CampaignNativePostRepeatRuntime
                 Control, Movement, Breakdown, World, Context, Contacts,
                 selection.SerializeCanonical());
             Contacts = Contacts.AdvanceNativeRepeatCombatSelection(Selection);
+            if (Selection.Choice == "select-contact-assault")
+            {
+                assaultSelectionIndex = eventIndex;
+                assaultBaseContacts = Contacts;
+                assaultWorld = World;
+                assaultRandomState = RandomState;
+                ActiveAssault = CampaignNativeRepeatAssaultRuntime.Replay(Initial,
+                    Selection, World, RandomState, Context, Contacts,
+                    PriorHistory.Concat(Events.Take(eventIndex + 1)).ToArray(), []);
+            }
+            return;
+        }
+        if (ActiveAssault is not null)
+        {
+            var assaultEvents = Events.Skip(assaultSelectionIndex + 1)
+                .Take(eventIndex - assaultSelectionIndex).ToArray();
+            ActiveAssault = CampaignNativeRepeatAssaultRuntime.Replay(Initial,
+                Selection, assaultWorld!, assaultRandomState, Context,
+                assaultBaseContacts!, PriorHistory.Concat(
+                    Events.Take(assaultSelectionIndex + 1)).ToArray(),
+                assaultEvents);
+            Contacts = ActiveAssault.Contacts;
+            if (ActiveAssault.Release is { } released)
+            {
+                Release = released;
+                World = released.World;
+            }
             return;
         }
         if (item is not CampaignNativeRepeatCombatNoAttackV32 noAttack)

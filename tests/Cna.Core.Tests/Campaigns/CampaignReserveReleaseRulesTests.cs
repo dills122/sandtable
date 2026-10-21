@@ -156,6 +156,20 @@ public sealed class CampaignReserveReleaseRulesTests
         var witness = CampaignCycleContinuationMovementWitnessV28.Find(
             completedRelease, session.Context, contactCut);
         Assert.NotNull(witness);
+        var laterCycle = completedRelease with
+        {
+            CycleOrdinal = 3,
+            NextMovement = completedRelease.NextMovement.Select(value =>
+                value with { NextCycleOrdinal = 4 }).ToArray(),
+        };
+        Assert.NotNull(CampaignCycleContinuationMovementWitnessV28.Find(
+            laterCycle, session.Context, contactCut));
+        Assert.Contains(CampaignNativeCycleControlChoiceV28.Repeat,
+            CampaignCycleControlOwnerCutV28.Project(laterCycle, session.Context,
+                contactCut, firstSide).Choices);
+        Assert.Equal(4, CampaignNativeCycleControlV28.Create(laterCycle,
+            session.Context, contactCut, CampaignNativeCycleControlChoiceV28.Repeat)
+            .NextCycleOrdinal);
         var controlCut = CampaignCycleControlOwnerCutV28.Project(
             completedRelease, session.Context, contactCut, firstSide);
         Assert.Equal([CampaignNativeCycleControlChoiceV28.Repeat,

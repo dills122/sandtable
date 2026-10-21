@@ -169,7 +169,10 @@ World, contact, and RNG authority, including World settlement and a restart-safe
 Host receipt. A repeated defender RBA move now updates World/contact authority
 before decline and remains replayable through the local owner HTTP route.
 The repeated Force timeout retains cancellation and a no-result path to
-same-slot Reserve Release. V28 offers Finish only after cycle ordinal two;
+same-slot Reserve Release. A second V28 Repeat can enter ordinal three when
+a released-unit movement witness and retained Combat cursor exist. V28 has no
+fixed ordinal cutoff; the tested third-cycle cut offers Finish only because
+no legal witness remains;
 Core rejects an unoffered Repeat event on replay. Further selected cycles, vehicle
 accounting, and public routing remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,

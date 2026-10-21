@@ -43,11 +43,12 @@ obligations block campaign activation; they cannot disappear from the action
 set at runtime. The selected or no-attack event advances ordinary Core
 authority and has a durable command, event, state, and receipt schema.
 
-The first internal selection implementation retains a V12 selected-contact event and
-checkpoint in normal Exercise evidence. Host import replays its accepted-step kind and
-checks the private defender binding against independently replayed contact authority.
-The event records the exact sequence successor, Barrage, and cold replay rejects a
-different route; subsequent Combat position handlers still need implementation.
+The initial V12 milestone retained a selected-contact event and checkpoint in
+normal Exercise evidence. Host import still replays its accepted-step kind and
+checks the private defender binding against independently replayed contact
+authority. That milestone stopped at Barrage; the current V12–V32 path below
+also implements the later Combat handlers and rejects a different route on
+cold replay.
 The internal cut now checks voluntary-finish eligibility against opposing ZOC
 authority. Current V6 campaign worlds certify no positive ZOC source, while
 unsupported future worlds fail closed. Both selected-assault and voluntary-finish
@@ -192,13 +193,16 @@ Host accept it with a fenced owner reference and cold-replayed receipt. A
 voluntary finish creates a V32 no-attack System event, advances through the
 five remaining Combat positions, and enters the same ordinal's Reserve
 Release. A replay reducer carries subsequent reserve and repeat-or-finish
-choices without resetting the settled World or random cursor. A selected
-second-cycle assault now carries its Barrage, defender retreat (including a
+choices without resetting the settled World or random cursor. Selected
+second- and third-cycle assaults now carry their Barrage, defender retreat (including a
 move), Force seals or timeout, Anti Armor, result, World settlement, custody,
-and Reserve Release through Exercise and the normal durable Host. Further
-selected cycles, vehicle accounting, other legal continuation witnesses,
-following ordinary phases, and public routing remain pending.
-contact bound to a unit with no combat component
+and Reserve Release through Exercise and the normal durable Host. Repeat
+decisions have no fixed ordinal cutoff: Core requires a retained Combat
+random cursor and a source-legal same-cut released-unit Movement witness. The
+tested third-cycle cut has no such witness and therefore offers Finish only.
+Other selected cycle shapes, vehicle accounting, continuation witnesses
+beyond released-unit Movement, following ordinary phases, and public routing
+remain pending. A contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.
 
