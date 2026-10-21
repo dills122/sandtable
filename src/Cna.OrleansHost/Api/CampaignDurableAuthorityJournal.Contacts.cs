@@ -13,14 +13,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         ArgumentNullException.ThrowIfNull(records);
         if (records.Count > MaxContactRecords)
             throw new InvalidOperationException("Contact record count is invalid.");
+        var encodedLength = (long)sizeof(int);
+        foreach (var record in records)
+        {
+            if (record is not { Length: > 0 and <= MaxContactRecordBytes })
+                throw new InvalidOperationException("Contact record length is invalid.");
+            encodedLength += sizeof(int) + record.Length;
+            if (encodedLength > MaxEvidenceBytes)
+                throw new InvalidOperationException("Contact evidence length is invalid.");
+        }
         using var stream = new MemoryStream();
         using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
         {
             writer.Write(records.Count);
             foreach (var record in records)
             {
-                if (record is not { Length: > 0 and <= MaxContactRecordBytes })
-                    throw new InvalidOperationException("Contact record length is invalid.");
                 writer.Write(record.Length);
                 writer.Write(record);
             }
