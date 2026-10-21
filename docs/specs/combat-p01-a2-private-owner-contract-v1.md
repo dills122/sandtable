@@ -42,6 +42,20 @@ owner; transfer creates a different authority ID. New session generation does
 not change retry key. Grant/secret never enters ordinary logs, Maproom,
 Signals or intelligence plane.
 
+This R03 v1 profile pins `campaignId` to
+`rules-lab.combat-creation.1`: all 300 retained CreationRequest and resulting
+Control vectors in the 11 SHA-256-pinned chunks under the physical R03 manifest
+(`sha256:39cae77c405b83a793b3d806fcf4a67860b9ff8514e59c9bfa83384d7dfc2b35`)
+carry that exact ID. The prior synthetic `campaign-demo` value is not an
+authenticated import and is rejected. The retained Control boundary also uses
+`land.position.operation-1.first-player.movement-and-combat.combat.position-determination`
+as its position ID in all 300 rows. The proposed owner-opening golden carries
+those source-backed identifiers but remains **synthetic** for public refs,
+opening, seat authority, journal, Core transition and receipt. A closed R03
+Control boundary does not establish an authentic owner opening. Position IDs
+use lowercase segments separated by a single dot or hyphen; the host must
+still verify the exact Core-derived position at issue time.
+
 ## Canonical v1 bytes and bounds
 
 Each closed shape has `contractVersion:1` and exactly ordered keys in
@@ -119,10 +133,10 @@ Frozen domain-separated record digests:
 
 | Sequence | Kind | Canonical digest |
 | --- | --- | --- |
-| 0 | `r03-import-checkpoint` | `sha256:119b5192966b5ede1b6a2e56f6af58052b847a53ae40ecf221bd3d15035f71be` |
-| 1 | `owner-opening` | `sha256:3e5b5e45a09e4f38ace9061e544a2a5e3cb7578aa178d0b4d62d34942303b380` |
-| 2 selected | `owner-accepted-input` | `sha256:0c00028064988dbd78cc21b4b3099418015f316314f1b7bf7fa3df598148ee45` |
-| 2 decline | `owner-accepted-input` | `sha256:97c61fa8254cebc21ffa30166b7e8259d17f464662b471859c014b6e0277b287` |
+| 0 | `r03-import-checkpoint` | `sha256:d2d7b4b9c5d136b263ffb3baa5e70037c4df2ee9036245c9a666172643382d2e` |
+| 1 | `owner-opening` | `sha256:1416a042e0dc4a723ba9b055d75343a6c62c537d1724db05c7ca67af837ef9fd` |
+| 2 selected | `owner-accepted-input` | `sha256:1c60846551e6322bc76477efa386b60797053816f403d1747d368953e3761a7f` |
+| 2 decline | `owner-accepted-input` | `sha256:bc211a13c91b3b7fc2b90cc60e2052cc36c46740c4e476d14516950054bc8e54` |
 
 These are **codec goldens only**; fabricated `sha256:` values inside sample
 are placeholders, not actual CreationRequest, source, event or receipt pins.
@@ -135,10 +149,10 @@ without changing v1 field definitions.
 Sequence 0 binds A1 checkpoint and *already represented* R03 System
 input/event/receipt. It does not append game event twice or consume twelfth
 P01 input. It has no seat authority. Sequence 1 is conditional
-`owner-opening` authority-metadata append: the exact 1,656-byte synthetic
+`owner-opening` authority-metadata append: the exact 1,755-byte synthetic
 `privateOpeningPayload` golden is retained as **canonical bytes**, not merely
 as a digest. Its frozen digest is
-`sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d`.
+`sha256:e9ab5214e5bc4eeace6a369ce59572f3365bbfe52f77c0f7a67212cde2a4659b`.
 The payload contains full visible opening, frozen combat base, alias mapping,
 source/cut binding and trusted deadline. The record digest binds those bytes;
 recovery must read and rehash them before returning the same offer. Sequence
@@ -146,10 +160,10 @@ recovery must read and rehash them before returning the same offer. Sequence
 visible revision to one; it does **not** change game state version/prefix or
 emit game input/event/receipt, debit or RNG draw. Sequence 2 is the **only**
 accepted owner input in v1. Selected and decline synthetic
-`acceptedTransitionPayload` byte counts/digests are respectively 6,382 /
-`sha256:d691899a1cc9e40663134c647e06236e88cc25042bd8e3e691cf818122d63ef5`
-and 6,050 /
-`sha256:bce610b150e1951ec0b08b0286f3fab00038bd81a3b3a152c58924a32422ee70`.
+`acceptedTransitionPayload` byte counts/digests are respectively 6,508 /
+`sha256:e68ae85099afc320d3241566080f03cc11c66da45c313dc2ee4a2a02ea6f20f5`
+and 6,176 /
+`sha256:dcfd889b9a396e9391fc95326e864b43e0657c542db3fe3b8a2959544a3d29f4`.
 Exact capped payload bytes, including owner input/receipt objects and decoded
 Core input/event/receipt bytes, must be durably published in the same
 transaction as record and retry key. Sequence 2 may change game state

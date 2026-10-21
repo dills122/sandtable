@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import re
+import runpy
 from pathlib import Path
 
 
@@ -18,6 +19,9 @@ ROOT = Path(__file__).resolve().parent
 SCHEMA = ROOT / "combat-p01-a2-private-owner-contract-v1.schema.json"
 GOLDENS = ROOT / "fixtures/combat-p01-a2-private-owner-contract-v1.json"
 OWNER_GOLDENS = ROOT / "fixtures/combat-p01-owner-decision-proposal-v1.json"
+OWNER_CODEC = runpy.run_path(str(ROOT / "verify-combat-p01-owner-decision-proposal-v1.py"))
+R03_CAMPAIGN_ID = "rules-lab.combat-creation.1"
+R03_POSITION_ID = "land.position.operation-1.first-player.movement-and-combat.combat.position-determination"
 KINDS = (
     "importBinding", "seatGrant", "actorFacts", "ownerOpening",
     "privateOpeningPayload", "ownerInput", "journalRecord", "ownerReceipt",
@@ -279,20 +283,30 @@ def check_case(schema: dict, case: dict) -> None:
     check_terminal_history([checkpoint, opening_record, record])
     check_chain_fields(bind, checkpoint, opening_record, record)
     approved_owner_cases = parse(OWNER_GOLDENS.read_bytes())["cases"]
-    owner_case = next(
-        (row for row in approved_owner_cases if row["expected"]["decisionRef"] == opening["decisionRef"]),
-        None,
-    )
+    owner_case = next((row for row in approved_owner_cases if row["name"] == "axis-next-ordinal"), None)
     if owner_case is None:
         raise ValueError("opening not anchored to approved owner codec golden")
-    seed = owner_case["decisionSeed"]
+    # Retain the approved owner codec and synthetic owner-visible fields, but
+    # derive fresh refs from the authenticated R03 identifiers. The approved
+    # owner's campaign-demo golden is not an authenticated A1 source cut.
+    seed = copy.deepcopy(owner_case["decisionSeed"])
+    seed["context"]["campaignId"] = R03_CAMPAIGN_ID
+    seed["positionId"] = R03_POSITION_ID
+    seed["targetRef"] = OWNER_CODEC["target_ref"](seed["context"], owner_case["ownerHex"])
+    derived_decision = OWNER_CODEC["decision_ref"](seed)
+    alias_seed = copy.deepcopy(owner_case["aliasSeed"])
+    alias_seed["decisionRef"] = derived_decision
+    alias_seed["apparentTargetRef"] = seed["targetRef"]
+    derived_alias = OWNER_CODEC["alias"](alias_seed)
     if (
         opening["context"] != seed["context"]
         or opening["cycleRef"] != seed["cycleRef"]
         or opening["positionId"] != seed["positionId"]
+        or opening["openingRevision"] != seed["openingRevision"]
         or opening["participantRef"] != seed["participantRef"]
-        or opening["targetRef"] != owner_case["expected"]["targetRef"]
-        or opening["candidateRefs"] != [owner_case["expected"]["alias"]]
+        or opening["decisionRef"] != derived_decision
+        or opening["targetRef"] != seed["targetRef"]
+        or opening["candidateRefs"] != [derived_alias]
     ):
         raise ValueError("opening changed owner-approved vector")
     if payload["visibleOpening"] != opening:
@@ -425,6 +439,24 @@ def check_negatives(schema: dict, case: dict) -> None:
             row["digest"] = digest("journalRecord", raw)
 
     value = case["values"]["ownerInput"]
+    for wrong in ("campaign-demo", "rules-lab.combat-creation.2", R03_CAMPAIGN_ID + "\n"):
+        changed = copy.deepcopy(case["values"]["importBinding"])
+        changed["campaignId"] = wrong
+        try:
+            canonical(schema, "importBinding", changed)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"unretained R03 campaign ID accepted: {wrong!r}")
+    for wrong in ("land..position", "land/position", "Land.position", R03_POSITION_ID + "\n"):
+        changed = copy.deepcopy(case["values"]["ownerOpening"])
+        changed["positionId"] = wrong
+        try:
+            canonical(schema, "ownerOpening", changed)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid position form accepted: {wrong!r}")
     for mutation in (
         {"extra": "bad"},
         {"contractVersion": 2},
@@ -802,6 +834,9 @@ def check_terminal_case_negatives(cases: list[dict]) -> None:
 
 def main() -> None:
     schema = parse(SCHEMA.read_bytes())
+    if schema["$defs"]["campaignId"].get("const") != R03_CAMPAIGN_ID:
+        raise ValueError("R03 campaign ID scope drift")
+    validate(schema, schema["$defs"]["ownerOpening"]["properties"]["positionId"], R03_POSITION_ID)
     goldens = parse(GOLDENS.read_bytes())
     if goldens["contract"] != schema["$id"] or goldens["status"] != "synthetic proposal only; no authenticated owner path":
         raise ValueError("fixture status")
