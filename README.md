@@ -115,6 +115,9 @@ scenario exercises that normal owner path through restart. Core V20 now records 
 infantry-only empty Anti Armor step after either Force completion or cancellation;
 normal Host appends it atomically and cold replays it. On a cancelled Force round,
 Core V21 closes Close Assault without a draw and reaches same-slot Reserve Release.
+Normal Content 6 now resolves a versioned Combat source supplement for formation
+morale and offensive ratings, bound to the exact pack hash; positive adjudication
+must pin that source identity before drawing or settling.
 Positive Close Assault adjudication, non-infantry disposition, and public route
 remain unfinished; historical
 observation readers remain readable while the complete successor path is built.

@@ -130,6 +130,8 @@ trusted deadline/high-water checks close incomplete rounds through Core V19 with
 inventing an owner seal. Core V20/normal Host complete the infantry-only empty
 Anti Armor step from either Force outcome. Core V21 retains cancelled Close Assault
 closure and same-slot Reserve Release;
+normal Content 6 can resolve an exact-pack Combat source supplement for Basic Morale
+and offensive ratings, with no positive draw until its hash is retained and replayed;
 positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

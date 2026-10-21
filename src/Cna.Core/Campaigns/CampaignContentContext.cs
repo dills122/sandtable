@@ -46,6 +46,7 @@ internal sealed class CampaignContentContext
         ContentPackV6Artifact? artifactV6 = null)
     {
         ArtifactV6 = artifactV6;
+        CombatSource = artifactV6 is null ? null : ContentCombatSourceV1.Resolve(artifactV6);
         Artifact = artifact;
         ArtifactV5 = artifactV5;
         Scenario = scenario;
@@ -56,6 +57,8 @@ internal sealed class CampaignContentContext
     public ContentPackV5Artifact? ArtifactV5 { get; }
 
     public ContentPackV6Artifact? ArtifactV6 { get; }
+
+    public ContentCombatSourceV1? CombatSource { get; }
 
     public ContentScenario Scenario { get; }
 

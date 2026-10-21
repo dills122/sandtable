@@ -800,6 +800,10 @@ event; normal Host appends it in the same transaction and verifies cold replay.
 For a cancelled Force round, Core V21 completes Close Assault without a result
 draw and advances to same-slot Reserve Release; normal Host retains that event in
 the same transaction. Positive Close Assault adjudication remains to implement.
+Normal Content 6 resolves a canonical, source-indexed Combat supplement for formation
+Basic Morale and offensive component ratings. It is keyed to exact Content 6 bytes;
+the positive event must retain its hash and revalidate it on cold replay before any
+Core random draw. Defensive ratings and current TOE remain in Content 6 and World.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
