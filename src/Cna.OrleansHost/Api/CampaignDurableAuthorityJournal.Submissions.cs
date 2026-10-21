@@ -44,6 +44,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, defenderElementId, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.PostAssaultRetreat);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerCustody(
+        CampaignSeatCredential credential, string captorElementId,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, captorElementId, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.Custody);
+
     private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef,
         CampaignOwnerOpeningKind kind, bool retreatMove = false)
@@ -174,6 +180,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.Custody)
+            {
+                var draft = CampaignHostAdapter.QueryContactCustodyOwnerDraft(
+                    head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else
             {
                 var draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
@@ -238,6 +251,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     submission, actingElementId),
             CampaignOwnerOpeningKind.PostAssaultRetreat =>
                 CampaignHostAdapter.SubmitContactPostAssaultRetreat(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.Custody =>
+                CampaignHostAdapter.SubmitNativeCombatCustody(head.Session,
                     submission, actingElementId),
             _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
                 submission, actingElementId),
@@ -306,6 +322,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,
             CampaignOwnerOpeningKind.PostAssaultRetreat =>
                 CampaignHostAcceptedStep.ContactPostAssaultRetreatKind,
+            CampaignOwnerOpeningKind.Custody =>
+                CampaignHostAcceptedStep.ContactCombatCustodyKind,
             _ => throw new ArgumentOutOfRangeException(nameof(kind)),
         };
 

@@ -146,13 +146,15 @@ Core now derives captor custody route/guard candidates from that accepted World,
 an exact current captor contact, and published terrain. Core V25 accepts an
 offered disposition into a versioned event, World update, and typed custody
 assets; independent replay verifies all three. Normal Host atomically retains
-the System no-captive disposition. Captor owner opening, replacement maturation,
-and the next normal campaign position remain before outward issuance.
+the System no-captive disposition. Normal Host also retains a captor credential,
+side-safe opening, accepted choice, and restart-stable receipt for a captured
+lot. Replacement maturation, the next normal campaign position, and the public
+route remain before public issuance.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.
-Custody choice after pending capture, non-infantry disposition, and public route
-remain unfinished; historical
+Next-position custody carry, non-infantry disposition, and public route remain
+unfinished; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

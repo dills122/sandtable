@@ -145,9 +145,11 @@ escape candidates from accepted World, current captor contact, and published
 routes/terrain. It binds the V24 settlement hash and authority version privately.
 Core V25 now accepts the cut choice as a canonical event, World update, and
 typed guard or delayed replacement asset; replay independently reprojects it.
-Normal Host appends the no-captive System disposition. Equal-visible outward
-offer proof, captor owner opening and submit, and the next versioned campaign
-position must be complete before Host issues this cut to an owner.
+Normal Host appends the no-captive System disposition and retains a captor-only
+visible opening, accepted choice, and cold receipt for an authenticated capture.
+Core action IDs stay stable under private settlement-binding changes with the
+same visible offers. Broader equal-visible history coverage, public routing,
+and the next versioned campaign position remain before admission.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

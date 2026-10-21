@@ -837,11 +837,14 @@ transitions, event bytes, and checkpoint. Core V25 now accepts a captor custody
 choice or System no-captive disposition into an exact event, World update, and
 typed guard or replacement assets. Exercise replay independently reprojects
 the assets; normal Host appends and cold-replays the System no-captive case.
+Its captor-only opening omits victim identity, private settlement binding,
+authority version, and Core action IDs. It retains the selected action and
+idempotent receipt with cold replay of V25.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
-It keeps private target identity and authority in Core; captor-facing issuance
-still requires equal-visible offer validation, normal Host opening and submit,
-and custody assets in the next versioned campaign position.
+It keeps private target identity and authority in Core. Public routing,
+broader equal-visible history coverage, and custody assets in the next
+versioned campaign position remain before admission.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

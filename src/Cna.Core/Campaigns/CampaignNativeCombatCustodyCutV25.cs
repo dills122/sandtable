@@ -110,8 +110,13 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
         CampaignNativeCombatCustodyChoiceV25 Choice(
             string kind, IReadOnlyList<string> route)
         {
+            // Stable across private settlement changes that leave the owner's
+            // quantity, route and offer semantics unchanged. V25 replay still
+            // binds the accepted choice to the exact settlement hash.
             var payload = Encoding.UTF8.GetBytes(string.Join('\0',
-                [settlement.CampaignId, settlementHash, kind, .. route]));
+                [settlement.CampaignId, captor.ElementId,
+                    lot.Quantity.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    kind, .. route]));
             return new(kind, "sha256:" + Convert.ToHexStringLower(
                 SHA256.HashData(payload)), route);
         }

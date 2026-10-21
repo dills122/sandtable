@@ -306,6 +306,78 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void CaptorCustodyUsesSideSafeOpeningAndColdReceipt()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true, seed: 5);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var session = journal.ReadVerified(request.CampaignId);
+        if (CampaignExercises.QueryCheckpoint(session).ContractVersion == 22)
+        {
+            var defenderOpening = journal.QueryPostAssaultRetreatOwnerOpening(
+                defender, defenderId);
+            Assert.True(journal.SubmitOwnerPostAssaultRetreat(defender, defenderId,
+                defenderOpening.Revision, defenderOpening.PublicActionRefs[0]).IsAccepted);
+            session = journal.ReadVerified(request.CampaignId);
+        }
+        Assert.True(CampaignHostAdapter.IsNativeCombatCustodyPending(session));
+        CampaignSeatCredential captor;
+        string captorId;
+        CampaignOwnerOpening opening;
+        try
+        {
+            opening = journal.QueryCustodyOwnerOpening(attacker, "axis-infantry");
+            captor = attacker;
+            captorId = "axis-infantry";
+            Assert.Throws<InvalidOperationException>(() =>
+                journal.QueryCustodyOwnerOpening(defender, captorId));
+        }
+        catch (InvalidOperationException)
+        {
+            opening = journal.QueryCustodyOwnerOpening(defender, defenderId);
+            captor = defender;
+            captorId = defenderId;
+            Assert.Throws<InvalidOperationException>(() =>
+                journal.QueryCustodyOwnerOpening(attacker, captorId));
+        }
+        Assert.NotEmpty(opening.PublicActionRefs);
+        var coldOpening = fixture.Open(clock).QueryCustodyOwnerOpening(
+            captor, captorId);
+        Assert.Equal(opening.VisibleBytes, coldOpening.VisibleBytes);
+        Assert.Equal(opening.PublicActionRefs, coldOpening.PublicActionRefs);
+        Assert.Equal(opening.Revision, coldOpening.Revision);
+        using (var visible = System.Text.Json.JsonDocument.Parse(opening.VisibleBytes))
+        {
+            Assert.False(visible.RootElement.TryGetProperty("authorityVersion", out _));
+            Assert.False(visible.RootElement.TryGetProperty("settlementHash", out _));
+            Assert.False(visible.RootElement.TryGetProperty("victimElementId", out _));
+            Assert.False(visible.RootElement.GetProperty("offers")[0]
+                .TryGetProperty("actionId", out _));
+        }
+        Assert.False(journal.SubmitOwnerCustody(captor, captorId,
+            opening.Revision, "act." + new string('0', 64)).IsAccepted);
+        var accepted = journal.SubmitOwnerCustody(captor, captorId,
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(accepted.IsAccepted);
+        var cold = fixture.Open(clock);
+        var retained = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(25, CampaignExercises.QueryCheckpoint(retained).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(retained).IsVerified);
+        var retry = cold.SubmitOwnerCustody(captor, captorId,
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
+    }
+
+    [Fact]
     public void ForceRoundSharesDeadlineAndCancelsOneSealAtEqualityAfterColdReadback()
     {
         using var fixture = new JournalFixture();

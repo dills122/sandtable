@@ -84,6 +84,26 @@ public static class CampaignHostAdapter
                 .Append(cut.RefuseOffer.ActionId).ToArray());
     }
 
+    /// <summary>Trusted captor draft; private authority and Core action IDs stay in Host custody.</summary>
+    public static CampaignHostContactCustodyOwnerDraft QueryContactCustodyOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience,
+        string captorElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var cut = CampaignExercises.QueryNativeCombatCustodyCut(session)
+            ?? throw new InvalidOperationException("No captive lot awaits an owner.");
+        var sideId = session.Context.ArtifactV6!.Definition.LegacyDefinition.Elements
+            .Single(value => value.ElementId == cut.CaptorElementId).SideId;
+        var captorAudience = sideId == "axis" ? CampaignActionAudience.Axis
+            : sideId == "commonwealth" ? CampaignActionAudience.Commonwealth
+            : throw new InvalidOperationException("Unknown captor side.");
+        if (audience != captorAudience || captorElementId != cut.CaptorElementId)
+            throw new InvalidOperationException("Only the bound captor may receive this cut.");
+        return new CampaignHostContactCustodyOwnerDraft(cut.AuthorityVersion,
+            CampaignContactCustodyOwnerVisibleCutV1.SerializeCanonical(cut),
+            cut.Choices.Select(value => value.ActionId).ToArray());
+    }
+
     /// <summary>Trusted Force Assignment draft for one authenticated owner.</summary>
     public static CampaignHostContactForceOwnerDraft QueryContactForceOwnerDraft(
         ExerciseSession session, CampaignActionAudience audience, string elementId)
@@ -419,6 +439,10 @@ public static class CampaignHostAdapter
 
     public static bool IsNativeCombatNoCustody(ExerciseSession session) =>
         session.CurrentCombatSettlement is { PendingCaptives.Count: 0 }
+            && session.CurrentCombatCustodyDisposition is null;
+
+    public static bool IsNativeCombatCustodyPending(ExerciseSession session) =>
+        session.CurrentCombatSettlement is { PendingCaptives.Count: > 0 }
             && session.CurrentCombatCustodyDisposition is null;
 
     public static ExerciseStepResult SubmitNativeCombatCustody(
@@ -757,6 +781,29 @@ public sealed class CampaignHostContactPostAssaultRetreatOwnerDraft
     public byte[] VisibleBytes => visibleBytes.ToArray();
     [JsonIgnore]
     public IReadOnlyList<string> PrivateActionIds => Array.AsReadOnly(privateActionIds.ToArray());
+}
+
+/// <summary>Host-private captor action map and side-safe visible bytes.</summary>
+public sealed class CampaignHostContactCustodyOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly string[] privateActionIds;
+
+    internal CampaignHostContactCustodyOwnerDraft(long authorityVersion,
+        byte[] visibleBytes, IReadOnlyList<string> privateActionIds)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateActionIds = privateActionIds.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<string> PrivateActionIds =>
+        Array.AsReadOnly(privateActionIds.ToArray());
 }
 
 /// <summary>Host-private Force Assignment action map and side-safe bytes.</summary>

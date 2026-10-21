@@ -144,7 +144,9 @@ captives; Core V25 accepts custody disposition with typed guard or delayed
 replacement assets and independent replay, while normal Host cold-replays the
 System no-captive case;
 the internal Core custody cut derives captor choices from accepted V24 World,
-current captor contact, and published route/terrain; no captor outward opening exists;
+current captor contact, and published route/terrain; normal Host now retains a
+captor-only side-safe opening, submission and restart receipt, while the public
+route and next campaign position remain pending;
 the normal 10-TOE pack's separate retreat-source supplement pins side supply
 anchors and Core derives post-result defender route/refusal offers from the
 side contact cut; Core V23 and normal Host accept and cold-replay that

@@ -262,9 +262,46 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(Assert.Single(captureSettlement.PendingCaptives).Quantity,
             custody.Quantity);
         Assert.NotEmpty(custody.Choices);
+        var alternatePrivateSettlement = captureSettlement with
+        {
+            DecisionActionId = "sha256:" + new string('0', 64),
+        };
+        var alternatePrivateCut = Assert.IsType<CampaignNativeCombatCustodyCutV25>(
+            CampaignNativeCombatCustodyCutV25.Project(alternatePrivateSettlement,
+                captureProjection.World, context, captureSettledContacts));
+        Assert.NotEqual(custody.SettlementHash,
+            alternatePrivateCut.SettlementHash);
+        Assert.Equal(custody.Choices.Select(value => value.ActionId),
+            alternatePrivateCut.Choices.Select(value => value.ActionId));
+        Assert.Equal(CampaignContactCustodyOwnerVisibleCutV1.SerializeCanonical(custody),
+            CampaignContactCustodyOwnerVisibleCutV1.SerializeCanonical(
+                alternatePrivateCut));
         Assert.All(custody.Choices, choice =>
             Assert.Equal(captureSettlement.PendingCaptives[0].OriginLocationId,
                 choice.Route[0]));
+        var captorVisible = CampaignContactCustodyOwnerVisibleCutV1.SerializeCanonical(
+            custody);
+        var privateFork = custody with
+        {
+            SettlementHash = "sha256:" + new string('1', 64),
+            VictimElementId = "hidden-other-victim",
+            LotId = "hidden-other-lot",
+            Choices = custody.Choices.Select(choice => choice with
+            {
+                ActionId = "sha256:" + new string('2', 64),
+            }).ToArray(),
+        };
+        Assert.Equal(captorVisible,
+            CampaignContactCustodyOwnerVisibleCutV1.SerializeCanonical(privateFork));
+        using (var visible = JsonDocument.Parse(captorVisible))
+        {
+            Assert.Equal(custody.Quantity,
+                visible.RootElement.GetProperty("captiveQuantity").GetInt32());
+            Assert.False(visible.RootElement.TryGetProperty("settlementHash", out _));
+            Assert.False(visible.RootElement.TryGetProperty("victimElementId", out _));
+            Assert.False(visible.RootElement.GetProperty("offers")[0]
+                .TryGetProperty("actionId", out _));
+        }
         foreach (var choice in custody.Choices)
         {
             var disposition = CampaignNativeCombatCustodyProjectionV25.Project(
