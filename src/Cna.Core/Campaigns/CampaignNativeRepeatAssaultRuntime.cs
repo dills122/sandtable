@@ -26,6 +26,25 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
     internal CampaignContactJournal Contacts { get; private set; }
     private IReadOnlyList<object> PriorHistory { get; }
     internal CampaignNativeCombatBarrageV14? Barrage { get; private set; }
+    private readonly List<CampaignNativeCombatRetreatMoveV16> retreatMoves = [];
+    private readonly List<CampaignWorldSnapshotV6> retreatWorlds = [];
+    internal IReadOnlyList<CampaignNativeCombatRetreatMoveV16> RetreatMoves => retreatMoves;
+    internal CampaignWorldSnapshotV6? RetreatWorld { get; private set; }
+    internal CampaignContactJournal? RetreatPriorContacts { get; private set; }
+    internal byte[] SerializeRetreatMoveState()
+    {
+        if (retreatMoves.Count == 0 || RetreatPriorContacts is null)
+            throw new InvalidOperationException("Repeated RBA move state is absent.");
+        var state = retreatMoves[0].SerializeStateCanonical(Selection, Barrage!,
+            Context, RetreatPriorContacts);
+        for (var index = 1; index < retreatMoves.Count; index++)
+            state = retreatMoves[index].SerializeNextStateCanonical(state,
+                retreatWorlds[index]);
+        return state;
+    }
+    internal byte[] SerializeDeclineState() => retreatMoves.Count > 0
+        ? Decline!.SerializeAfterMoveStateCanonical(SerializeRetreatMoveState())
+        : Decline!.SerializeStateCanonical(Selection, Barrage!);
     internal CampaignNativeCombatRetreatDeclineV15? Decline { get; private set; }
     private readonly List<CampaignNativeCombatForceSealV17> seals = [];
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> Seals => seals;
@@ -87,11 +106,38 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
         }
         if (Decline is null)
         {
+            if (item is CampaignNativeCombatRetreatMoveV16 move)
+            {
+                var previous = retreatMoves.Count == 0 ? null : retreatMoves[^1];
+                var verified = previous is null
+                    ? CampaignNativeCombatRetreatMoveV16.ReplayFirst(Selection,
+                        Barrage, Context, Contacts, move.SerializeCanonical())
+                    : CampaignNativeCombatRetreatMoveV16.ReplayNext(Selection,
+                        Barrage, previous, RetreatWorld!, retreatMoves[0].OriginLocationId,
+                        Context, Contacts, move.SerializeCanonical());
+                var world = previous is null
+                    ? verified.ProjectWorld(Selection, Barrage, Context, Contacts)
+                    : verified.ProjectWorldAfter(Selection, Barrage, previous,
+                        RetreatWorld!, retreatMoves[0].OriginLocationId, Context, Contacts);
+                var beforeWorld = RetreatWorld ?? Selection.World;
+                RetreatPriorContacts ??= Contacts;
+                Contacts = Contacts.AdvanceNativeCombatRetreatMove(beforeWorld,
+                    world, verified, Selection.Decision.BoundRepresentationId!, Context);
+                RetreatWorld = world;
+                retreatMoves.Add(verified);
+                retreatWorlds.Add(world);
+                return;
+            }
             if (item is not CampaignNativeCombatRetreatDeclineV15 decline)
                 throw new InvalidCampaignHistoryException(
                     "Repeated assault needs an accepted defender RBA decision.");
-            Decline = CampaignNativeCombatRetreatDeclineV15.Replay(Selection,
-                Barrage, Context, Contacts, decline.SerializeCanonical());
+            Decline = retreatMoves.Count == 0
+                ? CampaignNativeCombatRetreatDeclineV15.Replay(Selection,
+                    Barrage, Context, Contacts, decline.SerializeCanonical())
+                : CampaignNativeCombatRetreatDeclineV15.ReplayAfterMove(
+                    Selection, Barrage, retreatMoves[^1], RetreatWorld!,
+                    retreatMoves[0].OriginLocationId, Context, Contacts,
+                    decline.SerializeCanonical());
             Contacts = Contacts.AdvanceNativeCombatRetreatDecline(Decline);
             return;
         }
@@ -101,7 +147,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
                 throw new InvalidCampaignHistoryException(
                     "Repeated assault needs both accepted Force seals.");
             var verified = CampaignNativeCombatForceSealV17.Replay(Selection,
-                Decline, Selection.World, Context, Contacts,
+                Decline, RetreatWorld ?? Selection.World, Context, Contacts,
                 seal.SerializeCanonical(), seals.Count == 0 ? null : seals[0]);
             seals.Add(verified);
             Contacts = Contacts.AdvanceNativeCombatForceSeal(verified);
@@ -135,7 +181,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
                 Context, PriorHistory);
             var inputs = CampaignNativeCombatAssaultInputs.Create(Selection,
-                ForceCompletion, AntiArmor, seals, Selection.World,
+                ForceCompletion, AntiArmor, seals, RetreatWorld ?? Selection.World,
                 Context, ammunition);
             Result = CampaignNativeCombatAssaultResultV22.Replay(Selection,
                 AntiArmor, inputs, Selection.RandomState,

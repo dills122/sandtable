@@ -100,6 +100,22 @@ public sealed class ExerciseCheckpoint
         PositionId = move.PositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatRetreatMoveV16 move,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (move.CampaignId != decision.CampaignId
+            || move.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated RBA move must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatRetreatMoveV16.CurrentContractVersion;
+        CampaignId = move.CampaignId;
+        StateVersion = move.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = move.PositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatForceSealV17 seal,
         CampaignNativeCombatDecisionStateV12 decision)
     {

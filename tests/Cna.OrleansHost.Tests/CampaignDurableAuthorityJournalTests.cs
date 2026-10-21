@@ -476,8 +476,10 @@ public sealed class CampaignDurableAuthorityJournalTests
         var offers = visible.RootElement.GetProperty("assaultOffers");
         var west = Enumerable.Range(0, offers.GetArrayLength()).Single(index =>
             offers[index].GetProperty("apparentLocationId").GetString() == "west");
-        await SubmitRepeatCombatThroughHttp(journal, request.CampaignId, attacker,
-            "axis-infantry-second", opening, opening.PublicActionRefs[west]);
+        await using var outward = await OwnerHttpHarness.Start(journal, request.CampaignId);
+        await outward.Submit(attacker, "axis-infantry-second",
+            "repeat-combat-selection", "repeat-combat-selection", opening,
+            opening.PublicActionRefs[west]);
         var cold = fixture.Open(clock);
         var session = cold.ReadVerified(request.CampaignId);
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
@@ -491,29 +493,37 @@ public sealed class CampaignDurableAuthorityJournalTests
             session, CampaignActionAudience.Commonwealth);
         Assert.Equal("commonwealth-infantry-west", westDefender);
         var rba = cold.QueryRbaOwnerOpening(defender, westDefender);
-        var declined = cold.SubmitOwnerRbaDecline(defender, westDefender,
-            rba.Revision, rba.PublicActionRefs[^1]);
-        Assert.True(declined.IsAccepted);
+        Assert.True(rba.PublicActionRefs.Count > 1);
+        await outward.Submit(defender, westDefender,
+            "retreat-before-assault", "rba-move", rba,
+            rba.PublicActionRefs[0]);
+        var afterMove = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterMove).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterMove).IsVerified);
+        rba = cold.QueryRbaOwnerOpening(defender, westDefender);
+        await outward.Submit(defender, westDefender,
+            "retreat-before-assault", "rba-decline", rba,
+            rba.PublicActionRefs[^1]);
         var afterDecline = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(afterDecline).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterDecline).IsVerified);
         var secondAttackerForce = cold.QueryForceOwnerOpening(attacker, "axis-infantry-second");
         var secondDefenderForce = cold.QueryForceOwnerOpening(defender, westDefender);
         clock.Advance(TimeSpan.FromSeconds(1));
-        Assert.True(cold.SubmitOwnerForceSeal(attacker, "axis-infantry-second",
-            secondAttackerForce.Revision,
-            secondAttackerForce.PublicActionRefs[0]).IsAccepted);
+        await outward.Submit(attacker, "axis-infantry-second",
+            "force-assignment", "force-assignment", secondAttackerForce,
+            secondAttackerForce.PublicActionRefs[0]);
         clock.Advance(TimeSpan.FromSeconds(1));
-        Assert.True(cold.SubmitOwnerForceSeal(defender, westDefender,
-            secondDefenderForce.Revision,
-            secondDefenderForce.PublicActionRefs[0]).IsAccepted);
+        await outward.Submit(defender, westDefender,
+            "force-assignment", "force-assignment", secondDefenderForce,
+            secondDefenderForce.PublicActionRefs[0]);
         var afterForce = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(afterForce).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterForce).IsVerified);
         var nextCycle = cold.QueryCycleControlOwnerOpening(attacker);
-        var finished = cold.SubmitOwnerCycleControl(attacker,
-            nextCycle.Revision, nextCycle.PublicActionRefs[^1]);
-        Assert.True(finished.IsAccepted);
+        await outward.Submit(attacker, nextCycle.ActingElementId,
+            "cycle-control", "cycle-control", nextCycle,
+            nextCycle.PublicActionRefs[^1]);
         var afterFinish = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.Equal(28, CampaignExercises.QueryCheckpoint(afterFinish).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterFinish).IsVerified);
@@ -1104,27 +1114,44 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(command.CampaignId));
     }
 
-    private static async Task SubmitRepeatCombatThroughHttp(
-        CampaignDurableAuthorityJournal journal, string campaignId,
-        CampaignSeatCredential credential, string actor,
-        CampaignOwnerOpening expected, string reference)
+    private sealed class OwnerHttpHarness : IAsyncDisposable
     {
-        var builder = WebApplication.CreateBuilder();
-        builder.Environment.EnvironmentName = "Development";
-        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        builder.Services.AddSingleton(journal);
-        await using var app = builder.Build();
-        app.MapDurableCampaignApi();
-        await app.StartAsync(TestContext.Current.CancellationToken);
-        try
+        private readonly WebApplication app;
+        private readonly HttpClient client;
+        private readonly string campaignId;
+
+        private OwnerHttpHarness(WebApplication app, HttpClient client, string campaignId)
         {
+            this.app = app;
+            this.client = client;
+            this.campaignId = campaignId;
+        }
+
+        internal static async Task<OwnerHttpHarness> Start(
+            CampaignDurableAuthorityJournal journal, string campaignId)
+        {
+            var builder = WebApplication.CreateBuilder();
+            builder.Environment.EnvironmentName = "Development";
+            builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+            builder.Services.AddSingleton(journal);
+            var app = builder.Build();
+            app.MapDurableCampaignApi();
+            await app.StartAsync(TestContext.Current.CancellationToken);
             var address = app.Services.GetRequiredService<IServer>().Features
                 .Get<IServerAddressesFeature>()!.Addresses.Single();
-            using var client = new HttpClient { BaseAddress = new Uri(address) };
+            return new OwnerHttpHarness(app, new HttpClient { BaseAddress = new Uri(address) },
+                campaignId);
+        }
+
+        internal async Task Submit(CampaignSeatCredential credential, string actor,
+            string openingStage, string actionStage, CampaignOwnerOpening expected,
+            string reference)
+        {
             var seat = new
             {
                 campaignId = credential.CampaignId,
-                audience = "axis",
+                audience = credential.Audience == CampaignActionAudience.Axis
+                    ? "axis" : "commonwealth",
                 epoch = credential.Epoch,
                 secret = credential.Secret,
                 expiresUnixMs = credential.ExpiresUnixMs,
@@ -1133,7 +1160,7 @@ public sealed class CampaignDurableAuthorityJournalTests
             {
                 contractVersion = 2,
                 credential = seat,
-                stage = "repeat-combat-selection",
+                stage = openingStage,
                 actingElementId = actor,
             });
             using var opened = await client.PostAsync($"/api/v2/campaigns/{campaignId}/openings",
@@ -1152,7 +1179,7 @@ public sealed class CampaignDurableAuthorityJournalTests
             {
                 contractVersion = 2,
                 credential = seat,
-                stage = "repeat-combat-selection",
+                stage = actionStage,
                 actingElementId = actor,
                 openingRevision = expected.Revision,
                 publicActionRef = reference,
@@ -1171,9 +1198,12 @@ public sealed class CampaignDurableAuthorityJournalTests
             Assert.Equal(receipt, await retried.Content.ReadAsStringAsync(
                 TestContext.Current.CancellationToken));
         }
-        finally
+
+        public async ValueTask DisposeAsync()
         {
             await app.StopAsync(TestContext.Current.CancellationToken);
+            client.Dispose();
+            await app.DisposeAsync();
         }
     }
 

@@ -176,9 +176,10 @@ fenced owner reference and cold-replayed receipt. A voluntary finish commits
 a V32 no-attack System event and reaches the same ordinal's Reserve Release;
 its following repeat-or-finish choice also survives restart. A selected later-cycle
 assault now uses the retained World, contact journal, ammunition ledger and RNG
-cursor through Barrage, defender decline, two owner Force seals, adjudication,
+cursor through Barrage, defender RBA move or decline, two owner Force seals, adjudication,
 retreat, World settlement, custody, and the next Reserve Release/cycle choice.
-The normal SQLite Host replays the accepted chain after restart. RBA movement,
+The local HTTP owner route accepts the repeated selection, RBA move, Force seals,
+and cycle finish; the normal SQLite Host replays that chain after restart.
 Force cancellation, further selected cycles, vehicle accounting, other
 continuation witnesses, ordinary phase continuation, and public routing remain.
 The normal journal now has an opt-in, loopback-only version-2 HTTP entry for
