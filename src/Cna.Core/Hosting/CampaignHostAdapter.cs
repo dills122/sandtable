@@ -31,6 +31,20 @@ public static class CampaignHostAdapter
             CampaignContactOwnerVisibleCutV1.SerializeCanonical(cut), cut.MovementOffers);
     }
 
+    /// <summary>Trusted Combat owner draft; only visible contact values enter outward bytes.</summary>
+    public static CampaignHostContactCombatOwnerDraft QueryContactCombatOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            throw new ArgumentOutOfRangeException(nameof(audience));
+        var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var cut = CampaignExercises.QueryContactOwnerCombatCut(session, side, actingElementId);
+        return new CampaignHostContactCombatOwnerDraft(cut.AuthorityVersion,
+            CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(cut),
+            cut.AssaultOffers.Select(value => value.ActionId).ToArray());
+    }
+
     /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
     public static IReadOnlyList<byte[]> QueryContactRecords(ExerciseSession session)
     {
@@ -252,6 +266,29 @@ public sealed class CampaignHostContactOwnerDraft
     [JsonIgnore]
     public IReadOnlyList<MoveElementAction> PrivateMovementActions =>
         Array.AsReadOnly(privateMovementActions.ToArray());
+}
+
+/// <summary>Host-private Combat action map paired with canonical side-safe owner bytes.</summary>
+public sealed class CampaignHostContactCombatOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly string[] privateAssaultActionIds;
+
+    internal CampaignHostContactCombatOwnerDraft(long authorityVersion, byte[] visibleBytes,
+        IReadOnlyList<string> privateAssaultActionIds)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateAssaultActionIds = privateAssaultActionIds.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<string> PrivateAssaultActionIds =>
+        Array.AsReadOnly(privateAssaultActionIds.ToArray());
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }

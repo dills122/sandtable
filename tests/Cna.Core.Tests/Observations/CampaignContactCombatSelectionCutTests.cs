@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
@@ -201,6 +203,14 @@ public sealed class CampaignContactCombatSelectionCutTests
         var cut = CampaignContactCombatSelectionCut.Project(atCombat, context,
             contacts, LandSide.Axis, "axis-infantry");
         var offer = Assert.Single(cut.AssaultOffers);
+        var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(
+            new ExerciseSession(atCombat, context, [], contacts),
+            CampaignActionAudience.Axis, "axis-infantry");
+        var visible = Encoding.UTF8.GetString(draft.VisibleBytes);
+        Assert.Contains(offer.ContactHandle, visible, StringComparison.Ordinal);
+        Assert.DoesNotContain(offer.ActionId, visible, StringComparison.Ordinal);
+        Assert.DoesNotContain("boundRepresentationId", visible, StringComparison.Ordinal);
+        Assert.Equal("{}", JsonSerializer.Serialize(draft));
 
         var selected = CampaignNativeCombatSelectionStateV12.Select(atCombat,
             context, contacts, LandSide.Axis, "axis-infantry", offer.ActionId);
