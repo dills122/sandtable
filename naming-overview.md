@@ -118,7 +118,9 @@ separate from private action IDs. An explicit defender decline uses a V15 owner 
 and the normal durable Host receipt. A first defender retreat move uses a V16 owner
 event, updates Core World/contact authority, and returns to the RBA choice through
 the normal durable Host receipt. Further offered moves use the same ordered Core/Host
-path; public
+path. The next Core Force Assignment candidate binds only the owner's own current
+infantry TOE; opponent allocation stays private, while sealing and non-infantry
+disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself

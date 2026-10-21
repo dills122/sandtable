@@ -782,7 +782,10 @@ both contact audiences, returns to a defender RBA cut, and cold replays through 
 normal durable Host seat/receipt path. Further offered moves append ordered events
 through the same path; checkpoints bind their predecessor by hash without nesting each
 prior World. An explicit stop from the updated cut reaches Force Assignment.
-Reserve Release, assault adjudication and the public
+The first Force Assignment Core cut derives each owner's own full-current-TOE
+infantry allocation without exposing the opposing allocation or private version.
+Normal durable seals and a source-backed disposition for contacts lacking combat
+components still need implementation before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

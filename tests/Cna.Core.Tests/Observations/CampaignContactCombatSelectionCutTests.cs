@@ -237,6 +237,13 @@ public sealed class CampaignContactCombatSelectionCutTests
                 .Single(position => position.PositionId ==
                     CampaignExercises.QueryCheckpoint(acceptedDecline.SuccessorSession!).PositionId)
                 .StepId);
+        var truckContact = acceptedDecline.SuccessorSession!;
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignContactForceAssignmentCut.Project(
+                truckContact.CurrentCombatDecision!,
+                truckContact.CurrentCombatRetreatDecline!,
+                truckContact.CurrentSnapshot.World, truckContact.Context,
+                truckContact.CurrentContacts, LandSide.Commonwealth));
         Assert.False(CampaignHostAdapter.SubmitContactDefenderRbaDecline(
             rbaSession, declineSubmission with { Audience = CampaignActionAudience.Axis },
             rba.DefenderElementId).IsAccepted);
@@ -510,6 +517,25 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(selected.SerializeCanonical(), readback.SerializeCanonical());
         Assert.Equal(offer.ContactHandle, selected.Decision.ContactHandle);
         Assert.NotEqual("forged", selected.Decision.BoundRepresentationId);
+        var selectedContacts = contacts.AdvanceNativeCombatSelection(selected);
+        var barrage = CampaignNativeCombatBarrageV14.Create(selected, context);
+        var rbaContacts = selectedContacts.AdvanceNativeCombatBarrage(barrage);
+        var rba = CampaignContactRetreatBeforeAssaultCut.Project(selected,
+            barrage, context, rbaContacts);
+        var decline = CampaignNativeCombatRetreatDeclineV15.Create(selected,
+            barrage, context, rbaContacts, rba.DeclineOffer.ActionId);
+        var forceContacts = rbaContacts.AdvanceNativeCombatRetreatDecline(decline);
+        var attackerForce = CampaignContactForceAssignmentCut.Project(selected,
+            decline, atCombat.World, context, forceContacts, LandSide.Axis);
+        var defenderForce = CampaignContactForceAssignmentCut.Project(selected,
+            decline, atCombat.World, context, forceContacts, LandSide.Commonwealth);
+        Assert.Equal("attacker", attackerForce.Role);
+        Assert.Equal("defender", defenderForce.Role);
+        Assert.Equal("axis-infantry", attackerForce.SealOffer.ElementId);
+        Assert.Equal("commonwealth-infantry", defenderForce.SealOffer.ElementId);
+        Assert.Equal(5, attackerForce.SealOffer.CommittedToe);
+        Assert.Equal(5, defenderForce.SealOffer.CommittedToe);
+        Assert.NotEqual(attackerForce.SealOffer.ActionId, defenderForce.SealOffer.ActionId);
         var forged = selected.Decision with { BoundRepresentationId = "forged" };
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeCombatDecisionStateV12.Replay(atCombat, context,

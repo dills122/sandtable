@@ -99,7 +99,9 @@ from private action IDs. An explicit defender decline and the first actual retre
 now pass through the normal seat-bound Host opening, accepted event, retained receipt
 and cold replay. Each move updates Core World and both contact audiences, then returns to
 the defender decision; repeat moves retain a canonical event and an explicit stop advances
-to Force Assignment. Reserve Release, assault
+to Force Assignment. Core now derives the next owner's full-current-TOE infantry
+allocation candidate from that owner's facts; sealed decisions and non-infantry
+contact disposition still need the normal durable path. Reserve Release, assault
 adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

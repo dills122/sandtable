@@ -92,6 +92,16 @@ accepts further offered moves or an explicit stop from each next cut. This is th
 normal campaign owner path, still internal until later Combat stages and outward
 visibility contracts are complete.
 
+At Force Assignment, Core derives each owner's allocation candidate from that
+owner's current component TOE and pinned Content at the retained post-RBA cut.
+The candidate action ID binds role, own element, component and committed TOE;
+neither opponent allocation nor private authority version enters its semantics.
+The current infantry path offers its full current TOE, including a five-TOE
+unit. This owner cut is internal until both sealed decisions and System
+completion are durable. A contact bound to a unit with no combat component
+has no Force Assignment candidate; normal contact selection must gain a
+source-backed non-infantry disposition before outward Combat issuance.
+
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,
 loss, custody, and Reserve Release. Each enabled family needs an exact owner
