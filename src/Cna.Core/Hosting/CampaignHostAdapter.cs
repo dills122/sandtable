@@ -31,6 +31,13 @@ public static class CampaignHostAdapter
             CampaignContactOwnerVisibleCutV1.SerializeCanonical(cut), cut.MovementOffers);
     }
 
+    /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
+    public static IReadOnlyList<byte[]> QueryContactRecords(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return session.CurrentContacts.Records;
+    }
+
     public static CampaignHostAudienceCut QueryAudience(
         ExerciseSession session, CampaignActionAudience audience)
     {
@@ -147,10 +154,15 @@ public static class CampaignHostAdapter
         CampaignCreationRequest request,
         ReadOnlyMemory<byte> creationEvent,
         ReadOnlyMemory<byte> initialSnapshot,
-        IReadOnlyList<CampaignHostAcceptedStep> steps)
+        IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IReadOnlyList<byte[]>? initialContactRecords = null,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(steps);
+        if ((initialContactRecords is null) != (stepContactRecords is null)
+            || (stepContactRecords is not null && stepContactRecords.Count != steps.Count))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
         var started = Create(request);
         if (!started.IsStarted
             || !creationEvent.Span.SequenceEqual(started.CreationEventBytes)
@@ -158,8 +170,12 @@ public static class CampaignHostAdapter
             return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
 
         var session = started.Session!;
-        foreach (var step in steps)
+        if (initialContactRecords is not null
+            && !ContactRecordsMatch(session.CurrentContacts.Records, initialContactRecords))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
+        for (var index = 0; index < steps.Count; index++)
         {
+            var step = steps[index];
             if (step is null)
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignActionSubmission submission;
@@ -182,11 +198,25 @@ public static class CampaignHostAdapter
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (stepContactRecords is not null)
+            {
+                var before = session.CurrentContacts.Records;
+                var after = accepted.SuccessorSession!.CurrentContacts.Records;
+                if (after.Count < before.Count
+                    || !ContactRecordsMatch(after.Take(before.Count).ToArray(), before)
+                    || !ContactRecordsMatch(after.Skip(before.Count).ToArray(), stepContactRecords[index]))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
             session = accepted.SuccessorSession!;
         }
 
         return CampaignHostImportResult.Verified(session);
     }
+
+    private static bool ContactRecordsMatch(IReadOnlyList<byte[]> actual,
+        IReadOnlyList<byte[]> retained) =>
+        actual.Count == retained.Count
+        && actual.Zip(retained).All(pair => pair.First.AsSpan().SequenceEqual(pair.Second));
 }
 
 /// <summary>Host-private authority fence and action map paired with one side-safe Core cut.</summary>

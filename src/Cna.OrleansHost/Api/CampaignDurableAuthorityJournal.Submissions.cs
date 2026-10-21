@@ -72,7 +72,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
             authorityVersion = reader.GetInt64(2);
             actionCount = reader.GetInt64(3);
         }
-        if (authorityVersion != CampaignExercises.QueryCheckpoint(head.Session).StateVersion
+        // A hidden accepted step may advance private authority without changing this owner's
+        // visible opening. Revalidate the current visible cut and action map below instead of
+        // making that private version change an observable rejection.
+        if (authorityVersion < 1
+            || authorityVersion > CampaignExercises.QueryCheckpoint(head.Session).StateVersion
             || visibleDigest != "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visibleBytes)))
             return CampaignOwnerSubmissionResult.Rejected();
         CampaignHostContactOwnerDraft draft;

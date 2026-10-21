@@ -76,11 +76,13 @@ hidden opposing positions for offer membership. Core now supplies a canonical ow
 draft to the trusted Host adapter while retaining its authority fence and action IDs privately.
 The normal Host now has an internal [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md)
 that atomically retains accepted Core evidence and verifies it by full Core replay on cold read.
+It retains and rechecks canonical contact transitions with each source event.
 It now retains one-time side grants and restart-safe credential digests with epoch revocation.
 An internal authenticated owner-opening query retains a side-safe visible cut and private
 reference-to-Core-action map. It keeps outward bytes and refs stable across unseen authority
 changes. Internal contact-derived owner movement now commits once with seat, opening and
-reference fences; cold replay verifies the same path and an exact retry returns the retained
+reference fences, while an unchanged visible cut remains usable across private authority advances;
+cold replay verifies the same path and an exact retry returns the retained
 receipt. There is no public opening route or native Combat action stage yet; historical
 observation readers remain readable while the complete successor path is built.
 

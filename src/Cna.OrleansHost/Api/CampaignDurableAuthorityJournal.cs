@@ -15,7 +15,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 4;
+    private const int SchemaVersion = 5;
     private const int MaxEvidenceBytes = 2_097_152;
     private readonly string path;
     private readonly TimeProvider clock;
@@ -52,6 +52,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               setup_hash TEXT NOT NULL, content_pack_id TEXT NOT NULL,
               content_hash TEXT NOT NULL, scenario_id TEXT NOT NULL,
               creation_event BLOB NOT NULL, initial_snapshot BLOB NOT NULL,
+              initial_contacts BLOB NOT NULL,
               head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL
             )
             """);
@@ -62,6 +63,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               owner_public_ref TEXT, seat_epoch INTEGER, owner_revision INTEGER,
               canonical_command BLOB NOT NULL, canonical_event BLOB NOT NULL,
               canonical_receipt BLOB NOT NULL, snapshot_checkpoint BLOB NOT NULL,
+              canonical_contacts BLOB NOT NULL,
               prior_hash TEXT NOT NULL, record_hash TEXT NOT NULL,
               PRIMARY KEY(campaign_id,sequence),
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
@@ -155,6 +157,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!created.IsStarted) throw new InvalidOperationException("Core rejected campaign creation.");
         var creation = created.CreationEventBytes!;
         var snapshot = created.InitialSnapshotBytes!;
+        var contacts = EncodeContactRecords(
+            CampaignHostAdapter.QueryContactRecords(created.Session!));
         RequireBounded(creation);
         RequireBounded(snapshot);
         using var connection = Connect(create: false);
@@ -163,7 +167,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         command.Transaction = transaction;
         command.CommandText = """
             INSERT INTO campaigns VALUES ($id,$version,$rules,$seed,$setup,$setupHash,
-              $pack,$content,$scenario,$creation,$snapshot,0,$head)
+              $pack,$content,$scenario,$creation,$snapshot,$contacts,0,$head)
             """;
         command.Parameters.AddWithValue("$id", request.CampaignId);
         command.Parameters.AddWithValue("$version", request.ContractVersion);
@@ -176,7 +180,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         command.Parameters.AddWithValue("$scenario", request.ScenarioId);
         command.Parameters.AddWithValue("$creation", creation);
         command.Parameters.AddWithValue("$snapshot", snapshot);
-        command.Parameters.AddWithValue("$head", InitialHash(request, creation, snapshot));
+        command.Parameters.AddWithValue("$contacts", contacts);
+        command.Parameters.AddWithValue("$head", InitialHash(request, creation, snapshot, contacts));
         command.ExecuteNonQuery();
         transaction.Commit();
         return created.Session!;
@@ -214,19 +219,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var eventBytes = evidence.EventRecords.Single();
         var receiptBytes = CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt);
         var checkpoint = evidence.SnapshotCheckpoint;
+        var contactBytes = EncodeContactRecords(AppendedContactRecords(
+            head.Session, result.SuccessorSession!));
         foreach (var bytes in new[] { commandBytes, eventBytes, receiptBytes, checkpoint })
             RequireBounded(bytes);
         var nextSequence = checked(head.Sequence + 1);
         var nextHash = StepHash(head.Hash, nextSequence,
             kind, actingElementId, ownerPublicRef, seatEpoch, ownerRevision,
             commandBytes, eventBytes,
-            receiptBytes, checkpoint);
+            receiptBytes, checkpoint, contactBytes);
         using (var insert = connection.CreateCommand())
         {
             insert.Transaction = transaction;
             insert.CommandText = """
                 INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,
-                  $command,$event,$receipt,$checkpoint,$prior,$hash)
+                  $command,$event,$receipt,$checkpoint,$contacts,$prior,$hash)
                 """;
             insert.Parameters.AddWithValue("$id", campaignId);
             insert.Parameters.AddWithValue("$seq", nextSequence);
@@ -239,6 +246,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             insert.Parameters.AddWithValue("$event", eventBytes);
             insert.Parameters.AddWithValue("$receipt", receiptBytes);
             insert.Parameters.AddWithValue("$checkpoint", checkpoint);
+            insert.Parameters.AddWithValue("$contacts", contactBytes);
             insert.Parameters.AddWithValue("$prior", head.Hash);
             insert.Parameters.AddWithValue("$hash", nextHash);
             insert.ExecuteNonQuery();
@@ -267,6 +275,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         CampaignCreationRequest request;
         byte[] creation;
         byte[] initial;
+        byte[] initialContactBytes;
         long headSequence;
         string headHash;
         using (var command = connection.CreateCommand())
@@ -274,7 +283,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             command.Transaction = transaction;
             command.CommandText = """
                 SELECT contract_version,ruleset_hash,seed,setup_id,setup_hash,content_pack_id,
-                  content_hash,scenario_id,creation_event,initial_snapshot,head_sequence,head_hash
+                  content_hash,scenario_id,creation_event,initial_snapshot,initial_contacts,
+                  head_sequence,head_hash
                 FROM campaigns WHERE campaign_id=$id
                 """;
             command.Parameters.AddWithValue("$id", campaignId);
@@ -286,12 +296,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 reader.GetString(7));
             creation = ReadBounded(reader, 8);
             initial = ReadBounded(reader, 9);
-            headSequence = reader.GetInt64(10);
-            headHash = reader.GetString(11);
+            initialContactBytes = ReadBounded(reader, 10);
+            headSequence = reader.GetInt64(11);
+            headHash = reader.GetString(12);
         }
         var sequence = 0L;
-        var hash = InitialHash(request, creation, initial);
+        var hash = InitialHash(request, creation, initial, initialContactBytes);
         var steps = new List<CampaignHostAcceptedStep>();
+        var stepContacts = new List<IReadOnlyList<byte[]>>();
         using (var command = connection.CreateCommand())
         {
             command.Transaction = transaction;
@@ -299,6 +311,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 SELECT sequence,action_kind,acting_element_id,owner_public_ref,seat_epoch,
                   owner_revision,
                   canonical_command,canonical_event,canonical_receipt,snapshot_checkpoint,
+                  canonical_contacts,
                   prior_hash,record_hash
                 FROM accepted_steps WHERE campaign_id=$id ORDER BY sequence
                 """;
@@ -306,7 +319,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                if (reader.GetInt64(0) != checked(++sequence) || reader.GetString(10) != hash)
+                if (reader.GetInt64(0) != checked(++sequence) || reader.GetString(11) != hash)
                     throw new InvalidOperationException("Campaign journal order changed.");
                 var kind = reader.GetString(1);
                 var actingElementId = reader.IsDBNull(2) ? null : reader.GetString(2);
@@ -317,18 +330,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var eventBytes = ReadBounded(reader, 7);
                 var receiptBytes = ReadBounded(reader, 8);
                 var checkpoint = ReadBounded(reader, 9);
+                var contacts = ReadBounded(reader, 10);
                 hash = StepHash(hash, sequence, kind, actingElementId, ownerPublicRef,
                     seatEpoch, ownerRevision, commandBytes,
-                    eventBytes, receiptBytes, checkpoint);
-                if (reader.GetString(11) != hash)
+                    eventBytes, receiptBytes, checkpoint, contacts);
+                if (reader.GetString(12) != hash)
                     throw new InvalidOperationException("Campaign journal record changed.");
                 steps.Add(new CampaignHostAcceptedStep(commandBytes, [eventBytes], receiptBytes,
                     checkpoint, kind, actingElementId));
+                stepContacts.Add(DecodeContactRecords(contacts));
             }
         }
         if (sequence != headSequence || hash != headHash)
             throw new InvalidOperationException("Campaign journal head changed.");
-        var imported = CampaignHostAdapter.Import(request, creation, initial, steps);
+        var imported = CampaignHostAdapter.Import(request, creation, initial, steps,
+            DecodeContactRecords(initialContactBytes), stepContacts);
         if (!imported.IsVerified)
             throw new InvalidOperationException("Core rejected retained campaign authority.");
         return new Loaded(imported.Session!, sequence, hash);
@@ -367,9 +383,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     private static string InitialHash(CampaignCreationRequest request, byte[] creation,
-        byte[] initial) => Hash(writer =>
+        byte[] initial, byte[] contacts) => Hash(writer =>
     {
-        writer.Write("campaign-durable-authority-v1:creation");
+        writer.Write("campaign-durable-authority-v2:creation");
         writer.Write(request.ContractVersion);
         writer.Write(request.CampaignId);
         writer.Write(request.RulesetHash);
@@ -381,15 +397,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
         writer.Write(request.ScenarioId);
         WriteBytes(writer, creation);
         WriteBytes(writer, initial);
+        WriteBytes(writer, contacts);
     });
 
     private static string StepHash(string prior, long sequence, string kind,
         string? actingElementId, string? ownerPublicRef, long? seatEpoch,
         long? ownerRevision,
         byte[] command, byte[] eventBytes,
-        byte[] receipt, byte[] checkpoint) => Hash(writer =>
+        byte[] receipt, byte[] checkpoint, byte[] contacts) => Hash(writer =>
     {
-        writer.Write("campaign-durable-authority-v2:step");
+        writer.Write("campaign-durable-authority-v3:step");
         writer.Write(prior);
         writer.Write(sequence);
         writer.Write(kind);
@@ -401,6 +418,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         WriteBytes(writer, eventBytes);
         WriteBytes(writer, receipt);
         WriteBytes(writer, checkpoint);
+        WriteBytes(writer, contacts);
     });
 
     private static string Hash(Action<BinaryWriter> write)

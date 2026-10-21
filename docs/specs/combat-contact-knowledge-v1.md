@@ -84,6 +84,8 @@ inside Core and rejects stale or inaccessible handles.
 
 Core now retains contact transitions with campaign evidence and supplies a same-cut owner
 movement view and offers. Host stores a private owner opening and accepts contact-derived
-movement through the durable journal; the public route and native Combat action stage are still
+movement through the durable journal. Host atomically stores the initial and per-step canonical
+contact records with their source evidence, then compares them to Core re-adjudication on cold
+read. The public route and native Combat action stage are still
 absent. Explicit sharing and the full source-backed detection rule remain open. This contract
 does not by itself admit Combat.

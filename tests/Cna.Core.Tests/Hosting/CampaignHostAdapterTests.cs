@@ -157,6 +157,19 @@ public sealed class CampaignHostAdapterTests
         Assert.True(restored.IsVerified);
         Assert.Equal(hosted.Evidence.SnapshotCheckpoint,
             CampaignCurrentSnapshotSerializer.Serialize(restored.Session!.CurrentSnapshot));
+        var initialContacts = CampaignHostAdapter.QueryContactRecords(started.Session!);
+        var stepContacts = CampaignHostAdapter.QueryContactRecords(hosted.SuccessorSession!)
+            .Skip(initialContacts.Count).ToArray();
+        Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes!,
+            started.InitialSnapshotBytes!, [step], initialContacts, [stepContacts]).IsVerified);
+        Assert.Equal(CampaignHostImportRejectionReason.InvalidCreation,
+            CampaignHostAdapter.Import(request, started.CreationEventBytes!,
+                started.InitialSnapshotBytes!, [step], [.. initialContacts, new byte[] { 1 }],
+                [stepContacts]).RejectionReason);
+        Assert.Equal(CampaignHostImportRejectionReason.InvalidStep,
+            CampaignHostAdapter.Import(request, started.CreationEventBytes!,
+                started.InitialSnapshotBytes!, [step], initialContacts,
+                [[.. stepContacts, new byte[] { 1 }]]).RejectionReason);
 
         Assert.Equal(CampaignHostImportRejectionReason.InvalidCreation,
             CampaignHostAdapter.Import(request, new byte[] { 0 }, started.InitialSnapshotBytes!, [step])

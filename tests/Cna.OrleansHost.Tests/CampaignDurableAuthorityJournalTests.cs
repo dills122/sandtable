@@ -160,6 +160,68 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void RetainedMovementReferenceUsesCurrentVisibleCutWhenPrivateFenceIsOlder()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = ContactRequest();
+        AdvanceToContactMovement(journal, request);
+        var grant = journal.IssueSeatGrant(request.CampaignId,
+            CampaignActionAudience.Axis, OperatorSecret);
+        var credential = journal.RedeemSeatGrant(grant)!;
+        var opening = journal.QueryOwnerOpening(credential, "axis-infantry");
+        Assert.NotEmpty(opening.PublicActionRefs);
+
+        // Retain the same opening/action map with an earlier private authority fence. This
+        // isolates the host's equal-visible submission rule from the small fixture's sight
+        // changes when another formation moves.
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var update = connection.CreateCommand();
+            update.CommandText = "UPDATE owner_openings SET authority_version=authority_version-1 "
+                + "WHERE campaign_id=$id AND acting_element_id='axis-infantry'";
+            update.Parameters.AddWithValue("$id", request.CampaignId);
+            Assert.Equal(1, update.ExecuteNonQuery());
+        }
+        Assert.True(fixture.Open().SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]).IsAccepted);
+    }
+
+    [Fact]
+    public void ContactEvidenceIsRetainedAndTamperingBlocksColdRead()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = ContactRequest();
+        var session = AdvanceToContactMovement(journal, request);
+        var grant = journal.IssueSeatGrant(request.CampaignId,
+            CampaignActionAudience.Axis, OperatorSecret);
+        var credential = journal.RedeemSeatGrant(grant)!;
+        var opening = journal.QueryOwnerOpening(credential, "axis-infantry");
+        Assert.NotEmpty(opening.PublicActionRefs);
+        Assert.True(journal.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]).IsAccepted);
+        Assert.NotNull(fixture.Open().ReadVerified(request.CampaignId));
+
+        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT initial_contacts FROM campaigns WHERE campaign_id=$id";
+        query.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.True(((byte[])query.ExecuteScalar()!).Length >= sizeof(int));
+        query.CommandText = "SELECT canonical_contacts FROM accepted_steps "
+            + "WHERE campaign_id=$id AND action_kind='contact-movement'";
+        Assert.True(((byte[])query.ExecuteScalar()!).Length >= sizeof(int));
+        using var tamper = connection.CreateCommand();
+        tamper.CommandText = "UPDATE accepted_steps SET canonical_contacts=x'01000000' "
+            + "WHERE campaign_id=$id AND action_kind='contact-movement'";
+        tamper.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.Equal(1, tamper.ExecuteNonQuery());
+        Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(request.CampaignId));
+    }
+
+    [Fact]
     public void ExistingSharedDirectoryIsRejectedWithoutChangingItsPermissions()
     {
         if (OperatingSystem.IsWindows()) return;
@@ -233,6 +295,35 @@ public sealed class CampaignDurableAuthorityJournalTests
             "rules-lab.breakdown.truck.v1", TemporaryCampaignGrain.SetupHash,
             "rules-lab.content.breakdown-truck.v1", TemporaryCampaignGrain.ContentHash,
             TemporaryCampaignGrain.ScenarioId);
+    }
+
+    private static CampaignCreationRequest ContactRequest() => new(1,
+        "campaign-contact-owner-host", Cna1979Ruleset.Manifest.Hash, 12345,
+        "rules-lab.breakdown.reaction.v1",
+        "sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e",
+        "rules-lab.content.breakdown-reaction.v1",
+        "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd",
+        "breakdown-reaction-lab");
+
+    private static ExerciseSession AdvanceToContactMovement(
+        CampaignDurableAuthorityJournal journal, CampaignCreationRequest request)
+    {
+        var session = journal.CreateCampaign(request);
+        for (var index = 0; index < 20; index++)
+        {
+            var set = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(value => value.Candidates.Count > 0);
+            if (set.Candidates.OfType<MoveElementAction>().Any()) return session;
+            var next = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
+                ?? set.Candidates[0];
+            var accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
+                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId));
+            Assert.True(accepted.IsAccepted);
+            session = accepted.SuccessorSession!;
+        }
+        throw new InvalidOperationException("No owner movement cut was reached.");
     }
 
     private sealed class JournalFixture : IDisposable
