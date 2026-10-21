@@ -115,6 +115,17 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.All(rba.MoveOffers, move =>
             Assert.DoesNotContain(rba.ContactObservation.CurrentTargets,
                 target => target.ApparentLocationId == move.DestinationLocationId));
+        var defenderDraft = CampaignHostAdapter.QueryContactRbaOwnerDraft(rbaSession,
+            CampaignActionAudience.Commonwealth, rba.DefenderElementId);
+        Assert.Equal(rba.AuthorityVersion, defenderDraft.AuthorityVersion);
+        Assert.Equal(rba.MoveOffers.Count + 1, defenderDraft.PrivateActionIds.Count);
+        Assert.Equal("{}", JsonSerializer.Serialize(defenderDraft));
+        var visibleRba = Encoding.UTF8.GetString(defenderDraft.VisibleBytes);
+        Assert.DoesNotContain("authorityVersion", visibleRba, StringComparison.Ordinal);
+        Assert.DoesNotContain("actionId", visibleRba, StringComparison.Ordinal);
+        Assert.DoesNotContain("boundRepresentationId", visibleRba, StringComparison.Ordinal);
+        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QueryContactRbaOwnerDraft(
+            rbaSession, CampaignActionAudience.Axis, rba.DefenderElementId));
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignContactRetreatBeforeAssaultCut.Project(
                 rbaSession.CurrentCombatDecision!,

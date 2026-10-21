@@ -74,6 +74,9 @@ destinations; hidden opposing occupancy cannot silently remove an offer. Land §
 13.21–13.26 govern eligibility, cost, initial adjacency and stopping. This candidate
 cut is still internal: accepting movement, handling an unseen encounter, a timed
 defender opening and continuing the sequence require the same durable authority path.
+The first V1 defender-visible retreat draft contains contact observation, own unit,
+map, initial-adjacency fact, move costs and explicit decline. Core action IDs and
+authority version stay in the trusted Host adapter, separate from visible bytes.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,

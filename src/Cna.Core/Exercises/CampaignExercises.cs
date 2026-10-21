@@ -58,6 +58,17 @@ public static class CampaignExercises
             session.CurrentContacts, side, actingElementId);
     }
 
+    internal static CampaignContactRetreatBeforeAssaultCut QueryContactRbaCut(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatBarrage is not { } barrage)
+            throw new InvalidOperationException("Defender retreat requires completed Barrage authority.");
+        return CampaignContactRetreatBeforeAssaultCut.Project(selected, barrage,
+            session.Context, session.CurrentContacts);
+    }
+
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);

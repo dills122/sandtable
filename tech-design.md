@@ -774,7 +774,8 @@ its source capability and exact route, and Host retains both steps atomically. D
 Retreat Before Assault candidates use the bound defender's own formation, current
 contacts, published map and movement costs. Hidden opposing occupancy cannot remove an
 offer; an unseen encounter needs an accepted event rather than a hidden rejection.
-Defender submission, Reserve Release, assault adjudication and the public
+The trusted defender draft keeps canonical visible bytes separate from private action IDs
+and authority version. Defender submission, Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

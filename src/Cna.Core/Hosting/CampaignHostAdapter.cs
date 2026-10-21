@@ -49,6 +49,21 @@ public static class CampaignHostAdapter
                 .ToArray());
     }
 
+    /// <summary>Trusted defender draft after accepted Barrage; action IDs stay private.</summary>
+    public static CampaignHostContactRbaOwnerDraft QueryContactRbaOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string defenderElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var cut = CampaignExercises.QueryContactRbaCut(session);
+        var defenderAudience = cut.DefenderSide == LandSide.Axis
+            ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        if (audience != defenderAudience || defenderElementId != cut.DefenderElementId)
+            throw new InvalidOperationException("Only the bound defender may receive this retreat cut.");
+        return new CampaignHostContactRbaOwnerDraft(cut.AuthorityVersion,
+            CampaignContactRetreatBeforeAssaultOwnerVisibleCutV1.SerializeCanonical(cut),
+            cut.MoveOffers.Select(value => value.ActionId).Append(cut.DeclineOffer.ActionId).ToArray());
+    }
+
     /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
     public static IReadOnlyList<byte[]> QueryContactRecords(ExerciseSession session)
     {
@@ -348,6 +363,28 @@ public sealed class CampaignHostContactCombatOwnerDraft
     [JsonIgnore]
     public IReadOnlyList<string> PrivateCombatActionIds =>
         Array.AsReadOnly(privateCombatActionIds.ToArray());
+}
+
+/// <summary>Host-private defender action map paired with canonical contact-only bytes.</summary>
+public sealed class CampaignHostContactRbaOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly string[] privateActionIds;
+
+    internal CampaignHostContactRbaOwnerDraft(long authorityVersion, byte[] visibleBytes,
+        IReadOnlyList<string> privateActionIds)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateActionIds = privateActionIds.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<string> PrivateActionIds => Array.AsReadOnly(privateActionIds.ToArray());
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }

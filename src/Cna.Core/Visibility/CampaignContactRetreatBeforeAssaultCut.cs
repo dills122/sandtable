@@ -10,12 +10,16 @@ namespace Cna.Core.Visibility;
 // selected attack. Hidden opposing occupancy never controls offer presence.
 internal sealed record CampaignContactRetreatBeforeAssaultCut(
     long AuthorityVersion,
+    string PositionId,
     LandSide DefenderSide,
     string DefenderElementId,
     string DefenderFormationId,
     string InitialLocationId,
     bool InitiallyAdjacentToKnownEnemy,
     CampaignContactObservationV1 ContactObservation,
+    ObservedOwnElement Defender,
+    IReadOnlyList<CampaignObservationLocation> Locations,
+    IReadOnlyList<CampaignObservationEdge> Edges,
     IReadOnlyList<RetreatBeforeAssaultMoveAction> MoveOffers,
     DeclineRetreatBeforeAssaultAction DeclineOffer)
 {
@@ -76,8 +80,9 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
         var moves = eligible
             ? DeriveOneEdgeMoves(observed, own, knowledge.CurrentTargets, locations, edges)
             : [];
-        return new(barrage.StateVersion, side, defenderId, defender.ParentFormationId,
-            observed.CurrentLocationId, initiallyAdjacent, knowledge,
+        return new(barrage.StateVersion, barrage.NextPositionId, side, defenderId,
+            defender.ParentFormationId, observed.CurrentLocationId, initiallyAdjacent,
+            knowledge, observed, Array.AsReadOnly(locations), Array.AsReadOnly(edges),
             Array.AsReadOnly(moves), new DeclineRetreatBeforeAssaultAction(defenderId));
     }
 
