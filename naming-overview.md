@@ -133,6 +133,8 @@ closure and same-slot Reserve Release;
 normal Content 6 can resolve an exact-pack Combat source supplement for Basic Morale,
 offensive ratings, and initial ammunition, with no positive draw until its hash is retained and replayed;
 the 10-TOE adjacent-infantry assault setup is a normal catalog campaign;
+its Core ammunition ledger is seeded by the same exact-pack source and must be
+debited by replayed accepted settlements;
 positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

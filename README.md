@@ -120,6 +120,8 @@ morale, offensive ratings, and initial ammunition, bound to the exact pack hash;
 must pin that source identity before drawing or settling.
 The registered adjacent-infantry assault scenario starts both sides at the
 procedure's required 10 TOE; its setup uses normal campaign creation and replay.
+Core derives the initial ammunition ledger from that exact source; accepted Combat
+settlements will debit it in replay order, so a spent balance cannot be reused.
 Positive Close Assault adjudication, non-infantry disposition, and public route
 remain unfinished; historical
 observation readers remain readable while the complete successor path is built.

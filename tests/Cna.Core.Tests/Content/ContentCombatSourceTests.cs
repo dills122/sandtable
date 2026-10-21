@@ -69,6 +69,24 @@ public sealed class ContentCombatSourceTests
             Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes) + " "), Artifact));
     }
 
+    [Fact]
+    public void NormalCombatAmmunitionCannotBeSpentTwiceFromTheInitialBalance()
+    {
+        var context = CampaignContentContext.Create(Artifact,
+            Assert.Single(Artifact.Definition.LegacyDefinition.Scenarios).ScenarioId);
+        var initial = CampaignCombatAmmunitionLedgerV1.CreateInitial(context);
+        var afterAttacker = initial.Spend("axis-infantry", 10);
+        var afterDefender = afterAttacker.Spend("commonwealth-infantry", 10);
+
+        Assert.Equal(10, initial.Remaining("axis-infantry"));
+        Assert.Equal(0, afterAttacker.Remaining("axis-infantry"));
+        Assert.Equal(0, afterDefender.Remaining("commonwealth-infantry"));
+        Assert.NotEqual(initial.Hash, afterDefender.Hash);
+        Assert.Throws<InvalidOperationException>(() => afterDefender.Spend("axis-infantry", 1));
+        Assert.Throws<InvalidOperationException>(() => afterDefender.Spend("axis-truck", 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => initial.Spend("axis-infantry", 0));
+    }
+
     private static byte[] ReadResource()
     {
         using var source = typeof(ContentPackV6Artifact).Assembly.GetManifestResourceStream(

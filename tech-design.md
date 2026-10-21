@@ -807,6 +807,9 @@ Core random draw. Defensive ratings and current TOE remain in Content 6 and Worl
 The normal catalog has a separate adjacent-infantry assault seed at 10 TOE per
 side, so the selected procedure's committed-strength precondition can be checked
 without altering historical 5-TOE campaigns.
+Core seeds a canonical ammunition ledger from that exact Content supplement;
+accepted Combat settlement events must apply costs in replay order, then retain
+the resulting balance. Positive settlement and Host integration are still pending.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
