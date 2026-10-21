@@ -225,6 +225,31 @@ public sealed class CampaignReserveReleaseRulesTests
                     PriorEventHash = "sha256:" + new string('0', 64),
                 }, breakdown, repeatedWorld, session.Context,
                 repeatedCombatContacts, repeatedMove.ElementId));
+        var repeatedFinish = CampaignNativeRepeatCombatDecisionV31.Select(
+            completedRelease, repeat, repeatedMove, breakdown,
+            repeatedWorld, session.Context, repeatedCombatContacts,
+            repeatedMove.ElementId, repeatedCombat.FinishOffer.ActionId);
+        Assert.Equal("finish-combat-without-attack", repeatedFinish.Choice);
+        Assert.Null(repeatedFinish.BoundRepresentationId);
+        Assert.Equal(breakdown.StateVersion + 1,
+            repeatedFinish.StateVersion);
+        Assert.Equal(repeatedFinish,
+            CampaignNativeRepeatCombatDecisionV31.Replay(completedRelease,
+                repeat, repeatedMove, breakdown, repeatedWorld,
+                session.Context, repeatedCombatContacts,
+                repeatedFinish.SerializeCanonical()));
+        Assert.Equal(repeatedFinish.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    repeatedFinish.SerializeCanonical())));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeRepeatCombatDecisionV31.Replay(completedRelease,
+                repeat, repeatedMove, breakdown, repeatedWorld,
+                session.Context, repeatedCombatContacts,
+                (repeatedFinish with
+                {
+                    PriorEventHash = "sha256:" + new string('0', 64),
+                }).SerializeCanonical()));
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeRepeatBreakdownV30.Replay(completedRelease,
                 repeat, repeatedMove, repeatedWorld, session.Context,

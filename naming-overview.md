@@ -157,7 +157,8 @@ a released-unit movement witness; V29 now accepts one such owner movement
 through normal Core/Host World/contact replay and a restart-stable receipt.
 V30 records the cohortless Breakdown System determination into Combat with
 normal Host cold replay. Internal V31 projects repeated Combat owner offers
-without rebuilding V11. Repeated Combat/Reserve Release, vehicle accounting,
+without rebuilding V11 and binds an exact replayed choice. Exercise/Host
+acceptance, later repeated Combat/Reserve Release, vehicle accounting,
 and public routing remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a

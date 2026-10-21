@@ -171,7 +171,8 @@ updates World and contacts, and retains its normal Host receipt across restart.
 V30 records the cohortless Breakdown determination as a System step before
 same-slot Combat, with atomic Host append and cold replay. An internal V31 owner
 cut now projects repeated Combat offers from retained World and contacts.
-Repeated Combat selection and
+The internal V31 selection event binds and replays the chosen offer; Exercise
+and Host acceptance and
 Reserve Release, vehicle accounting, other continuation witnesses, and
 the public route remain to be wired.
 The normal journal now has an opt-in, loopback-only version-2 HTTP entry for

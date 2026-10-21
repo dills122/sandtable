@@ -863,7 +863,8 @@ System determination after that accepted move and advances to Combat in the
 same durable transaction. Vehicle accounting, repeated Combat/Reserve Release,
 other legal continuation witnesses, and public route remain pending.
 An internal V31 owner cut derives the repeated Combat view and offers directly
-from accepted World and contact authority; selection and later stages remain pending.
+from accepted World and contact authority. Its selection event binds and replays
+the chosen offer; Exercise/Host acceptance and later stages remain pending.
 The normal durable journal has an opt-in local `/api/v2/campaigns` adapter.
 It authenticates operator creation and seat rotation, exposes only the
 versioned side cut and public references, and maps submissions back through
