@@ -115,6 +115,12 @@ scenario exercises that normal owner path through restart. Core V20 now records 
 infantry-only empty Anti Armor step after either Force completion or cancellation;
 normal Host appends it atomically and cold replays it. On a cancelled Force round,
 Core V21 closes Close Assault without a draw and reaches same-slot Reserve Release.
+An accepted assault without a payable pinned role pair or timing envelope
+closes through a Core-verified
+V19 `force-unavailable` event before any Force round or clock evidence is opened.
+Its contact offer remains side-visible; normal Host takes the no-result path through
+V20/V21 and V27 Reserve Release. Initial voluntary finish reaches V27 as well.
+V28 offers Finish only if that initial path has no retained Combat result cursor.
 Normal Content 6 now resolves a versioned Combat source supplement for formation
 morale, offensive ratings, and initial ammunition, bound to the exact pack hash; positive adjudication
 must pin that source identity before drawing or settling.

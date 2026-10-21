@@ -23,6 +23,9 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
     string? RetainedSealHash)
 {
     internal const int CurrentContractVersion = 19;
+    // An absent timing envelope has no budget, deadline or trusted clock cut.
+    internal const string NoTimingConfigurationHash = "sha256:" +
+        "0000000000000000000000000000000000000000000000000000000000000000";
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     internal static CampaignNativeCombatForceCancellationV19 Create(
@@ -40,12 +43,17 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
                 || seals[0].DecisionActionId != selected.Decision.ActionId
                 || seals[0].PositionId != decline.NextPositionId))
             || !IsHash(configurationHash)
-            || openedAtUnixMilliseconds < 0
-            || deadlineUnixMilliseconds <= openedAtUnixMilliseconds
-            || highWaterUnixMilliseconds < openedAtUnixMilliseconds
-            || highWaterUnixMilliseconds >= deadlineUnixMilliseconds
+            || (reason == "force-unavailable"
+                ? seals.Count != 0
+                    || openedAtUnixMilliseconds != -1
+                    || deadlineUnixMilliseconds != -1
+                    || highWaterUnixMilliseconds != -1
+                : openedAtUnixMilliseconds < 0
+                    || deadlineUnixMilliseconds <= openedAtUnixMilliseconds
+                    || highWaterUnixMilliseconds < openedAtUnixMilliseconds
+                    || highWaterUnixMilliseconds >= deadlineUnixMilliseconds)
             || reason is not ("deadline" or "clock-unavailable" or "clock-regression"
-                or "controller-unavailable"))
+                or "controller-unavailable" or "force-unavailable"))
             throw new InvalidOperationException("Incomplete Force round cancellation has invalid authority.");
         if ((reason == "deadline"
                 && (cancelledAtUnixMilliseconds is null
@@ -54,7 +62,8 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
                 && (cancelledAtUnixMilliseconds is null
                     || cancelledAtUnixMilliseconds < 0
                     || cancelledAtUnixMilliseconds >= highWaterUnixMilliseconds))
-            || (reason is "clock-unavailable" or "controller-unavailable"
+            || ((reason is "clock-unavailable" or "controller-unavailable"
+                or "force-unavailable")
                 && cancelledAtUnixMilliseconds is not null))
             throw new InvalidOperationException("Force cancellation clock and reason differ.");
         var position = Cna1979LandSequenceV4.CreateTurn(

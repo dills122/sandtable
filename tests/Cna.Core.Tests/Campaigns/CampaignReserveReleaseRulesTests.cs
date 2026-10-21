@@ -108,7 +108,7 @@ public sealed class CampaignReserveReleaseRulesTests
         var authority = new CampaignNativeReserveReleaseStateV27(
             request.CampaignId, session.CurrentSnapshot.StateVersion,
             "sha256:" + new string('1', 64), firstSide, 1,
-            releasePosition, world, [], [], false);
+            releasePosition, world, [], [], false, true);
         var ownerCut = CampaignReserveReleaseOwnerCutV27.Project(authority,
             session.Context, firstSide, member.ElementId);
         Assert.Equal(2, ownerCut.ActionIds.Count);
@@ -160,6 +160,16 @@ public sealed class CampaignReserveReleaseRulesTests
             completedRelease, session.Context, contactCut, firstSide);
         Assert.Equal([CampaignNativeCycleControlChoiceV28.Repeat,
             CampaignNativeCycleControlChoiceV28.Finish], controlCut.Choices);
+        var withoutResultCursor = completedRelease with
+        {
+            HasRetainedCombatRandomCursor = false,
+        };
+        Assert.Equal([CampaignNativeCycleControlChoiceV28.Finish],
+            CampaignCycleControlOwnerCutV28.Project(withoutResultCursor,
+                session.Context, contactCut, firstSide).Choices);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCycleControlV28.Create(withoutResultCursor,
+                session.Context, contactCut, CampaignNativeCycleControlChoiceV28.Repeat));
         var repeat = CampaignNativeCycleControlV28.Create(completedRelease,
             session.Context, contactCut, CampaignNativeCycleControlChoiceV28.Repeat);
         Assert.Equal(2, repeat.NextCycleOrdinal);

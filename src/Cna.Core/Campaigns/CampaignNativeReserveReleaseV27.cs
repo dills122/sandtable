@@ -100,7 +100,8 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
     LandSide ActingSide, int CycleOrdinal,
     LandSequencePosition Position, CampaignWorldSnapshotV6 World,
     IReadOnlyList<CampaignReserveReleaseMovementAllowance> NextMovement,
-    IReadOnlyList<string> ResolvedElementIds, bool Completed)
+    IReadOnlyList<string> ResolvedElementIds, bool Completed,
+    bool HasRetainedCombatRandomCursor)
 {
     internal byte[] SerializeCanonical()
     {
@@ -131,6 +132,7 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
                 writer.WriteStringValue(elementId);
             writer.WriteEndArray();
             writer.WriteBoolean("completed", Completed);
+            writer.WriteBoolean("hasRetainedCombatRandomCursor", HasRetainedCombatRandomCursor);
             writer.WriteEndObject();
         }
         return stream.ToArray();
@@ -161,7 +163,72 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             firstSide, 1);
         return new(predecessor.CampaignId, predecessor.StateVersion,
             CampaignNativeReserveReleaseEventV27.Hash(predecessor.SerializeCanonical()),
-            firstSide, 1, projection.NextPosition, projection.World, [], [], false);
+            firstSide, 1, projection.NextPosition, projection.World, [], [], false, true);
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterInitialNoAttack(
+        CampaignCombatSelectionFrame selected,
+        CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(context);
+        var world = selected.PriorSnapshot.World;
+        if (selected.Decision.Choice != "finish-combat-without-attack"
+            || completion.CampaignId != selected.CampaignId
+            || completion.PriorStateVersion != selected.StateVersion
+            || completion.DecisionActionId != selected.Decision.ActionId
+            || context.ArtifactV6 is not { } artifact
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new InvalidOperationException(
+                "Initial no-attack Reserve Release lacks accepted World authority.");
+        return InitializeAfterInitialCompletion(selected, completion.StateVersion,
+            completion.Steps[^1].NextPositionId,
+            CampaignNativeReserveReleaseEventV27.Hash(completion.SerializeCanonical()),
+            world, context);
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterInitialCancellation(
+        CampaignCombatSelectionFrame selected,
+        CampaignNativeCombatCancelledAssaultV21 completion,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(context);
+        if (completion.CampaignId != selected.CampaignId
+            || completion.DecisionActionId != selected.Decision.ActionId
+            || context.ArtifactV6 is not { } artifact
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new InvalidOperationException(
+                "Initial cancelled assault lacks retained World authority.");
+        return InitializeAfterInitialCompletion(selected, completion.StateVersion,
+            completion.NextPositionId,
+            CampaignNativeReserveReleaseEventV27.Hash(completion.SerializeCanonical()),
+            world, context);
+    }
+
+    private static CampaignNativeReserveReleaseStateV27 InitializeAfterInitialCompletion(
+        CampaignCombatSelectionFrame selected, long stateVersion,
+        string nextPositionId, string eventHash, CampaignWorldSnapshotV6 world,
+        CampaignContentContext context)
+    {
+        var position = Cna1979LandSequenceV4.CreateTurn(
+            selected.PriorSnapshot.CurrentPosition.SequenceContext.GameTurn)
+            .Single(value => value.PositionId == nextPositionId);
+        if (position.SegmentId != LandSegmentIds.ReserveRelease
+            || position.ActorRole != LandActorRole.FirstActingSide
+            || position.OperationStage != selected.PriorSnapshot.CurrentPosition
+                .SequenceContext.OperationStage)
+            throw new InvalidOperationException(
+                "Initial Combat must reach same-slot Reserve Release.");
+        _ = CampaignReserveReleaseRules.Pending(world, context,
+            selected.Decision.Side, 1);
+        return new(selected.CampaignId, stateVersion, eventHash,
+            selected.Decision.Side, 1, position, world, [], [], false, false);
     }
 
     internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatNoAttack(
@@ -206,7 +273,7 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
         return new(completion.CampaignId, completion.StateVersion,
             CampaignNativeReserveReleaseEventV27.Hash(
                 completion.SerializeCanonical()), selection.Side,
-            selection.CycleOrdinal, position, world, [], [], false);
+            selection.CycleOrdinal, position, world, [], [], false, true);
     }
 
     internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatAssault(
@@ -237,7 +304,7 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
         return new(successor.CampaignId, successor.StateVersion,
             CampaignNativeReserveReleaseEventV27.Hash(successor.SerializeCanonical()),
             selection.Side, selection.CycleOrdinal, projection.NextPosition,
-            projection.World, [], [], false);
+            projection.World, [], [], false, true);
     }
 
     internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatCancelledAssault(
@@ -273,7 +340,7 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             repeat.Side, repeat.CycleOrdinal);
         return new(completion.CampaignId, completion.StateVersion,
             CampaignNativeReserveReleaseEventV27.Hash(completion.SerializeCanonical()),
-            repeat.Side, repeat.CycleOrdinal, position, world, [], [], false);
+            repeat.Side, repeat.CycleOrdinal, position, world, [], [], false, true);
     }
 
     internal IReadOnlyList<CampaignReserveReleaseMember> Pending(

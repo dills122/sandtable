@@ -325,6 +325,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
+        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
+            AppendUnavailableForceCancellation(connection, transaction,
+                seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.Custody)
@@ -345,6 +348,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind, null,
                 null, null, null, systemCommand, noAttack);
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
         }
         else if (kind == CampaignOwnerOpeningKind.CombatSelection
             && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))

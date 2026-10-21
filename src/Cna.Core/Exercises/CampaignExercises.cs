@@ -711,13 +711,12 @@ public static class CampaignExercises
     }
 
     internal static ExerciseStepResult CancelNativeCombatForceAssignment(
-        ExerciseSession session, CampaignDecisionTimingConfigurationV1 configuration,
+        ExerciseSession session, CampaignDecisionTimingConfigurationV1? configuration,
         long openedAtUnixMilliseconds, long deadlineUnixMilliseconds,
         long highWaterUnixMilliseconds, long? cancelledAtUnixMilliseconds,
         string reason)
     {
         ArgumentNullException.ThrowIfNull(session);
-        ArgumentNullException.ThrowIfNull(configuration);
         if (session.CurrentRepeatAssault is
             {
                 Decline: not null,
@@ -725,7 +724,10 @@ public static class CampaignExercises
                 ForceCancellation: null,
                 Seals.Count: < 2
             })
-            return CancelRepeatedForceAssignment(session, configuration,
+            return configuration is null
+                ? ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority)
+                : CancelRepeatedForceAssignment(session, configuration,
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds,
                 highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
         if (session.CurrentCombatDecision is not { } selected
@@ -733,16 +735,29 @@ public static class CampaignExercises
             || session.CurrentCombatForceSeals.Count > 1
             || session.CurrentCombatForceCompletion is not null
             || session.CurrentCombatForceCancellation is not null
-            || configuration.RulesetHash != selected.PriorSnapshot.RulesetHash
-            || openedAtUnixMilliseconds < 0
-            || deadlineUnixMilliseconds - openedAtUnixMilliseconds
-                != configuration.Budget("force-assignment"))
+            || (configuration is not null
+                && configuration.RulesetHash != selected.PriorSnapshot.RulesetHash)
+            || (configuration is null && reason != "force-unavailable")
+            || (reason == "force-unavailable"
+                ? openedAtUnixMilliseconds != -1
+                    || deadlineUnixMilliseconds != -1
+                    || highWaterUnixMilliseconds != -1
+                : configuration is null || openedAtUnixMilliseconds < 0
+                    || deadlineUnixMilliseconds - openedAtUnixMilliseconds
+                        != configuration.Budget("force-assignment")))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
+            if (reason == "force-unavailable"
+                && configuration is not null
+                && CanCompleteNativeCombatForceAssignment(session))
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var cancellation = CampaignNativeCombatForceCancellationV19.Create(
                 selected, decline, session.CurrentCombatForceSeals,
-                configuration.Hash, openedAtUnixMilliseconds,
+                configuration?.Hash
+                    ?? CampaignNativeCombatForceCancellationV19.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds,
                 deadlineUnixMilliseconds, highWaterUnixMilliseconds,
                 cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts.AdvanceNativeCombatForceCancellation(cancellation);
@@ -771,6 +786,29 @@ public static class CampaignExercises
             or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static bool CanCompleteNativeCombatForceAssignment(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatRetreatDecline is not { } decline
+            || session.CurrentCombatForceCompletion is not null
+            || session.CurrentCombatForceCancellation is not null)
+            return false;
+        try
+        {
+            return CampaignNativeCombatForceEligibility.CanCompleteAssault(
+                selected, decline,
+                session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
+                session.Context, session.CurrentHistory);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or InvalidOperationException or InvalidCampaignHistoryException)
+        {
+            return false;
         }
     }
 
@@ -1758,6 +1796,20 @@ public static class CampaignExercises
             return repeated;
         if (session.CurrentPostRepeat is { } later)
             return later.Release;
+        if (session.CurrentCombatDecision is { } initial)
+        {
+            if (session.CurrentNoAttackCompletion is { } noAttack)
+                return session.CurrentReserveRelease
+                    ?? CampaignNativeReserveReleaseStateV27
+                        .InitializeAfterInitialNoAttack(initial, noAttack,
+                            session.Context);
+            if (session.CurrentCombatCancelledAssault is { } cancelled)
+                return session.CurrentReserveRelease
+                    ?? CampaignNativeReserveReleaseStateV27
+                        .InitializeAfterInitialCancellation(initial, cancelled,
+                            session.CurrentCombatRetreatWorld
+                                ?? initial.PriorSnapshot.World, session.Context);
+        }
         if (session.CurrentCombatSuccessor is not { } successor
             || session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatAssaultResult is not { } result
@@ -2432,7 +2484,10 @@ public static class CampaignExercises
                         + (completedSession.CurrentRepeatNoAttack is null ? 0 : 1)
                         + completedSession.CurrentRepeatAssaultEvents.Count
                         + completedSession.CurrentPostRepeatEvents.Count
-                : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
+                : completedSession.CurrentNoAttackCompletion is not null
+                    ? 2 + completedSession.CurrentReserveReleaseEvents.Count
+                        + (completedSession.CurrentCycleControl is null ? 0 : 1)
+                    : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
             var priorEvents = combatTailCount == 0 ? replayEvents
@@ -2457,7 +2512,8 @@ public static class CampaignExercises
                 replayedContacts = replayedContacts.AdvanceNativeCombatSelection(verified);
                 if (completedSession.CurrentNoAttackCompletion is not null)
                 {
-                    if (replayEvents[^1] is not CampaignNativeCombatNoAttackCompletionV13 noAttack)
+                    if (replayEvents[decisionIndex + 1]
+                        is not CampaignNativeCombatNoAttackCompletionV13 noAttack)
                         throw new InvalidCampaignHistoryException("Native no-attack completion is missing.");
                     var verifiedCompletion = CampaignNativeCombatNoAttackCompletionV13.Replay(
                         verified, completedSession.Context, noAttack.SerializeCanonical());
@@ -2573,6 +2629,15 @@ public static class CampaignExercises
                             var verifiedCancellation = CampaignNativeCombatForceCancellationV19.Replay(
                                 verified, verifiedDecline, completedSession.CurrentCombatForceSeals,
                                 cancellationEvent.SerializeCanonical());
+                            if (verifiedCancellation.Reason == "force-unavailable"
+                                && verifiedCancellation.ConfigurationHash
+                                    != CampaignNativeCombatForceCancellationV19
+                                        .NoTimingConfigurationHash
+                                && CampaignNativeCombatForceEligibility.CanCompleteAssault(
+                                    verified, verifiedDecline, world,
+                                    completedSession.Context, priorEvents))
+                                throw new InvalidCampaignHistoryException(
+                                    "Force-unavailable cancellation has a legal assault role pair.");
                             replayedBytes = verifiedCancellation.SerializeStateCanonical(replayedBytes);
                             replayedContacts = replayedContacts.AdvanceNativeCombatForceCancellation(
                                 verifiedCancellation);
@@ -2871,6 +2936,52 @@ public static class CampaignExercises
                     else replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
                 }
                 else replayedBytes = verified.SerializeCanonical();
+                if (completedSession.CurrentReserveReleaseEvents.Count > 0
+                    && (completedSession.CurrentNoAttackCompletion is not null
+                        || completedSession.CurrentCombatCancelledAssault is not null))
+                {
+                    var initialRelease = completedSession.CurrentNoAttackCompletion
+                        is { } noAttack
+                        ? CampaignNativeReserveReleaseStateV27
+                            .InitializeAfterInitialNoAttack(verified, noAttack,
+                                completedSession.Context)
+                        : CampaignNativeReserveReleaseStateV27
+                            .InitializeAfterInitialCancellation(verified,
+                                completedSession.CurrentCombatCancelledAssault!,
+                                completedSession.CurrentCombatRetreatWorld
+                                    ?? verified.PriorSnapshot.World,
+                                completedSession.Context);
+                    var reserveStart = decisionIndex + 1 + checked((int)(
+                        initialRelease.StateVersion - verified.StateVersion));
+                    for (var index = 0;
+                         index < completedSession.CurrentReserveReleaseEvents.Count;
+                         index++)
+                    {
+                        if (replayEvents.ElementAtOrDefault(reserveStart + index)
+                            is not CampaignNativeReserveReleaseEventV27 reserveEvent)
+                            throw new InvalidCampaignHistoryException(
+                                "Initial Reserve Release event is missing.");
+                        initialRelease = CampaignNativeReserveReleaseStateV27.Replay(
+                            initialRelease, completedSession.Context,
+                            [(ReadOnlyMemory<byte>)reserveEvent.SerializeCanonical()]);
+                        replayedContacts = replayedContacts.AdvanceNativeReserveRelease(
+                            reserveEvent);
+                    }
+                    replayedBytes = initialRelease.SerializeCanonical();
+                    if (completedSession.CurrentCycleControl is not null)
+                    {
+                        if (replayEvents.ElementAtOrDefault(reserveStart
+                                + completedSession.CurrentReserveReleaseEvents.Count)
+                            is not CampaignNativeCycleControlV28 controlEvent)
+                            throw new InvalidCampaignHistoryException(
+                                "Initial cycle control event is missing.");
+                        var control = CampaignNativeCycleControlV28.Replay(
+                            initialRelease, completedSession.Context,
+                            replayedContacts, controlEvent.SerializeCanonical());
+                        replayedContacts = replayedContacts.AdvanceNativeCycleControl(control);
+                        replayedBytes = control.SerializeCanonical();
+                    }
+                }
             }
             else
             {

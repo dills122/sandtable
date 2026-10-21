@@ -799,7 +799,13 @@ explicit no-effect Anti Armor outcome for infantry-only content, bound to that F
 event; normal Host appends it in the same transaction and verifies cold replay.
 For a cancelled Force round, Core V21 completes Close Assault without a result
 draw and advances to same-slot Reserve Release; normal Host retains that event in
-the same transaction. Positive Close Assault adjudication remains to implement.
+the same transaction. If an accepted contact assault lacks a payable pinned
+role pair or a timing envelope, Core and normal Host record V19 `force-unavailable` before opening a
+round, with no fabricated clock or seal. Replay rechecks World, source and
+ammunition eligibility. Both initial V13 voluntary finish and V21 cancellation
+continue through V27 Reserve Release; V28 closes Repeat when no Combat result
+cursor exists. Positive Close Assault uses the registered source and retained
+random cursor described below.
 Normal Content 6 resolves a canonical, source-indexed Combat supplement for formation
 Basic Morale, offensive component ratings, and per-element initial ammunition. It is keyed to exact Content 6 bytes;
 the positive event must retain its hash and revalidate it on cold replay before any

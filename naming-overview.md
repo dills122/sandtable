@@ -129,7 +129,11 @@ create new campaigns. Schema 7 retains one shared Force round for both seats;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
 inventing an owner seal. Core V20/normal Host complete the infantry-only empty
 Anti Armor step from either Force outcome. Core V21 retains cancelled Close Assault
-closure and same-slot Reserve Release;
+closure and same-slot Reserve Release. `force-unavailable` names a Core-verified
+V19 System cancellation before a Force round exists when the selected contact
+has no payable pinned role pair or timing envelope; it does not alter visible offer presence.
+Initial V13/V21 completion enters V27 Reserve Release, and V28 offers Finish
+alone when no Combat result cursor is retained;
 normal Content 6 can resolve an exact-pack Combat source supplement for Basic Morale,
 offensive ratings, and initial ammunition, with no positive draw until its hash is retained and replayed;
 the 10-TOE adjacent-infantry assault setup is a normal catalog campaign;

@@ -115,8 +115,21 @@ alone; it binds the prior Force outcome, advances to same-slot Close Assault,
 and normal Host retains it atomically. Cancellation is marked no-attack and
 cannot draw a result. Core V21 completes that cancelled path through same-slot
 Close Assault to Reserve Release without RNG or settlement, with an independent
-canonical event and normal Host cold replay. A positive two-seal path now
-retains a V22 ordered Core result and source-derived ammunition spend in the
+canonical event and normal Host cold replay.
+When a selected contact assault has no payable pinned chart role pair or no
+timing envelope to open a Force round, normal
+Host appends a V19 `force-unavailable` System cancellation before opening a
+Force round. Its `-1` clock fields mean no clock evidence was taken; no owner
+seal or result is invented. Core checks the retained World, source facts, and
+ammo ledger during acceptance and replay. Contact offer presence remains
+side-visible and does not inspect the hidden defender resources. Initial V13
+finish and V21 cancelled assault both enter normal V27 Reserve Release and
+V28 cycle control after cold replay. Without an accepted Combat result cursor,
+cycle control offers Finish only; the repeat runtime still needs that cursor.
+An absent timing envelope uses the canonical zero-hash absence marker in V19;
+it supplies no deadline or default decision budget.
+A positive two-seal path now retains a V22 ordered Core result and
+source-derived ammunition spend in the
 normal Host, with exact event and checkpoint cold replay. V22 also binds canonical
 prior and paid World hashes; Core retains the paid World projection after charging
 both roles' capability points, and cold replay re-derives that projection from

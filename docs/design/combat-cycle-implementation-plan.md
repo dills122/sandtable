@@ -1,6 +1,12 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
 **Status (2026-10-21):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and one selected repeated assault, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. The second Reserve Release exposes Finish only; further Combat repeats remain an implementation gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
+
+The initial voluntary finish and initial cancelled assault now pass through V27
+Reserve Release and V28 cycle control. A selected assault with no payable pinned
+role pair or timing envelope records a no-round V19 System cancellation and follows that same
+no-result route. Repeat is closed without a retained Combat result cursor;
+the visible contact offer itself is not conditioned on hidden defender resources.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the

@@ -97,6 +97,32 @@ internal sealed partial class CampaignDurableAuthorityJournal
         AppendEmptyAntiArmor(connection, transaction, round.CampaignId);
     }
 
+    private void AppendUnavailableForceCancellation(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var authority = Load(connection, transaction, campaignId);
+        if (!CampaignHostAdapter.IsInitialNativeCombatForceRound(
+                authority.Session)
+            || authority.Timing is not null
+                && CampaignHostAdapter.CanCompleteNativeCombatForceAssignment(
+                    authority.Session))
+            return;
+        // No round was opened: -1 records absence of clock evidence rather than
+        // manufacturing a deadline or claiming an owner failed to respond.
+        var cancelled = CampaignHostAdapter.CancelNativeCombatForceAssignment(
+            authority.Session, authority.Timing, -1, -1, -1, null,
+            "force-unavailable");
+        if (!cancelled.IsAccepted)
+            throw new InvalidOperationException(
+                "Core rejected the unavailable Force continuation.");
+        var command = CampaignHostAdapter.NativeCombatForceCancellationCommand(
+            authority.Session, cancelled);
+        PersistAccepted(connection, transaction, campaignId, authority,
+            CampaignHostAcceptedStep.NativeCombatForceCancellationKind,
+            null, null, null, null, command, cancelled);
+        AppendEmptyAntiArmor(connection, transaction, campaignId);
+    }
+
     private void AppendEmptyAntiArmor(SqliteConnection connection,
         SqliteTransaction transaction, string campaignId)
     {
@@ -341,6 +367,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var activeByDecision = new Dictionary<string, string>(StringComparer.Ordinal);
         var endings = new Dictionary<string, string>(StringComparer.Ordinal);
         var requiredRounds = new HashSet<string>(StringComparer.Ordinal);
+        var noRoundCancellations = new HashSet<string>(StringComparer.Ordinal);
         var cancellations = new Dictionary<string, (string ConfigurationHash,
             long OpenedMs, long DeadlineMs, long HighWaterMs)>(StringComparer.Ordinal);
         foreach (var step in steps)
@@ -362,7 +389,29 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 if (!activeByDecision.TryGetValue(decision, out var declineHash))
                     throw new InvalidOperationException("Force event has no prior decline.");
-                requiredRounds.Add(declineHash);
+                var unavailable = step.Kind
+                    == CampaignHostAcceptedStep.NativeCombatForceCancellationKind
+                    && document.RootElement.GetProperty("reason").GetString()
+                        == "force-unavailable";
+                if (unavailable)
+                {
+                    var root = document.RootElement;
+                    if (root.GetProperty("configurationHash").GetString()
+                            != (timing?.Hash
+                                ?? CampaignHostAdapter.NoTimingForceCancellationHash)
+                        || root.GetProperty("openedAtUnixMilliseconds").GetInt64()
+                            != -1
+                        || root.GetProperty("deadlineUnixMilliseconds").GetInt64()
+                            != -1
+                        || root.GetProperty("highWaterUnixMilliseconds").GetInt64()
+                            != -1
+                        || root.TryGetProperty("retainedSealHash", out _)
+                        || requiredRounds.Contains(declineHash))
+                        throw new InvalidOperationException(
+                            "Force-unavailable cancellation claimed a round.");
+                    noRoundCancellations.Add(declineHash);
+                }
+                else requiredRounds.Add(declineHash);
                 if (step.Kind != CampaignHostAcceptedStep.ContactForceSealKind)
                     endings.Add(declineHash,
                         step.Kind == CampaignHostAcceptedStep.NativeCombatForceCompletionKind
@@ -409,5 +458,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         if (!requiredRounds.IsSubsetOf(foundRounds))
             throw new InvalidOperationException("Accepted Force decision has no retained round.");
+        if (noRoundCancellations.Overlaps(foundRounds))
+            throw new InvalidOperationException(
+                "Force-unavailable cancellation has a retained round.");
     }
 }

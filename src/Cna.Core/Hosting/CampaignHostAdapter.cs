@@ -279,12 +279,24 @@ public static class CampaignHostAdapter
         CampaignExercises.CompleteNativeCombatForceAssignment(session);
 
     public static ExerciseStepResult CancelNativeCombatForceAssignment(ExerciseSession session,
-        CampaignDecisionTimingConfigurationV1 configuration, long openedAtUnixMilliseconds,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
         long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
         long? cancelledAtUnixMilliseconds, string reason) =>
         CampaignExercises.CancelNativeCombatForceAssignment(session, configuration,
             openedAtUnixMilliseconds, deadlineUnixMilliseconds,
             highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
+    public static string NoTimingForceCancellationHash =>
+        CampaignNativeCombatForceCancellationV19.NoTimingConfigurationHash;
+
+    public static bool CanCompleteNativeCombatForceAssignment(ExerciseSession session) =>
+        CampaignExercises.CanCompleteNativeCombatForceAssignment(session);
+
+    public static bool IsInitialNativeCombatForceRound(ExerciseSession session) =>
+        session.CurrentRepeatAssault is null && session.CurrentPostRepeat is null
+        && session.CurrentCombatRetreatDecline is not null
+        && session.CurrentCombatForceCompletion is null
+        && session.CurrentCombatForceCancellation is null;
 
     public static ExerciseStepResult CompleteNativeCombatAntiArmor(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatAntiArmor(session);
@@ -965,12 +977,17 @@ public static class CampaignHostAdapter
             CampaignNativeCombatForceCancellationV19? forceCancellation = null;
             if (step.Kind == CampaignHostAcceptedStep.NativeCombatForceCancellationKind)
             {
-                if (timing is null || step.EventRecords.Count != 1)
+                if (step.EventRecords.Count != 1)
                     return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
                 try
                 {
                     forceCancellation = CampaignNativeCombatForceCancellationV19.Deserialize(
                         step.EventRecords[0]);
+                    if (timing is null && (forceCancellation.Reason != "force-unavailable"
+                        || forceCancellation.ConfigurationHash
+                            != NoTimingForceCancellationHash))
+                        return CampaignHostImportResult.Rejected(
+                            CampaignHostImportRejectionReason.InvalidStep);
                 }
                 catch (System.Text.Json.JsonException)
                 {
@@ -987,7 +1004,7 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.NativeCombatForceCompletionKind =>
                     CompleteNativeCombatForceAssignment(session),
                 CampaignHostAcceptedStep.NativeCombatForceCancellationKind =>
-                    CancelNativeCombatForceAssignment(session, timing!,
+                    CancelNativeCombatForceAssignment(session, timing,
                         forceCancellation!.OpenedAtUnixMilliseconds,
                         forceCancellation.DeadlineUnixMilliseconds,
                         forceCancellation.HighWaterUnixMilliseconds,

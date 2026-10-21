@@ -218,20 +218,28 @@ public sealed class ExerciseSession
         var reserveEvents = reserveReleaseEvents?.ToArray() ?? [];
         if (reserveEvents.Length > 0)
         {
-            if (combatSuccessor is null || combatSelection is null
-                || combatAssaultResult is null || combatSettlement is null
-                || combatCustodyDisposition is null || combatCustodyWorld is null
+            if (combatSelection is null
+                || (combatSuccessor is null && noAttackCompletion is null
+                    && combatCancelledAssault is null)
                 || prePostHistory.Length < reserveEvents.Length + cycleTail.Length
                 || !prePostHistory.TakeLast(reserveEvents.Length
                         + cycleTail.Length).Take(reserveEvents.Length)
                     .SequenceEqual(reserveEvents.Cast<object>()))
-                throw new ArgumentException("Reserve Release requires the retained Combat successor and events.",
+                throw new ArgumentException("Reserve Release requires accepted Combat completion and events.",
                     nameof(reserveReleaseEvents));
-            var projection = CampaignNativeCombatSuccessorV26.Project(combatSelection,
-                combatAssaultResult, combatSettlement, combatCustodyDisposition,
-                combatCustodyWorld, combatCustodyState, context);
-            var initial = CampaignNativeReserveReleaseStateV27.Initialize(
-                combatSuccessor, projection, context);
+            var initial = noAttackCompletion is not null
+                ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialNoAttack(
+                    combatSelection, noAttackCompletion, context)
+                : combatCancelledAssault is not null
+                    ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialCancellation(
+                        combatSelection, combatCancelledAssault,
+                        combatRetreatWorld ?? combatSelection.PriorSnapshot.World,
+                        context)
+                    : CampaignNativeReserveReleaseStateV27.Initialize(
+                        combatSuccessor!, CampaignNativeCombatSuccessorV26.Project(
+                            combatSelection, combatAssaultResult!, combatSettlement!,
+                            combatCustodyDisposition!, combatCustodyWorld!,
+                            combatCustodyState, context), context);
             CurrentReserveRelease = CampaignNativeReserveReleaseStateV27.Replay(
                 initial, context, reserveEvents.Select(value =>
                     (ReadOnlyMemory<byte>)value.SerializeCanonical()));
@@ -393,6 +401,7 @@ public sealed class ExerciseSession
         CampaignNativeReserveReleaseEventV27 reserveEvent,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(reserveEvent), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -401,7 +410,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -417,6 +428,7 @@ public sealed class ExerciseSession
         CampaignNativeCycleControlV28 control,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(control), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -425,7 +437,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -443,6 +457,7 @@ public sealed class ExerciseSession
         CampaignWorldSnapshotV6 world,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(movement), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -451,7 +466,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -470,6 +487,7 @@ public sealed class ExerciseSession
         CampaignNativeRepeatBreakdownV30 breakdown,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(breakdown), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -478,7 +496,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -498,6 +518,7 @@ public sealed class ExerciseSession
         CampaignNativeRepeatCombatDecisionV31 selection,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(selection), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -506,7 +527,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -529,6 +552,7 @@ public sealed class ExerciseSession
         CampaignNativeRepeatCombatNoAttackV32 completion,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(completion), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -537,7 +561,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -559,6 +585,7 @@ public sealed class ExerciseSession
     internal ExerciseSession WithPostRepeatEvent(object campaignEvent,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(campaignEvent), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -567,7 +594,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,
@@ -590,6 +619,7 @@ public sealed class ExerciseSession
     internal ExerciseSession WithRepeatAssaultEvent(object campaignEvent,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(campaignEvent), contacts, CurrentCombatDecision,
+            noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
             combatRetreatDecline: CurrentCombatRetreatDecline,
             combatRetreatMove: CurrentCombatRetreatMove,
@@ -598,7 +628,9 @@ public sealed class ExerciseSession
             combatRetreatMoves: CurrentCombatRetreatMoves,
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
+            combatForceCancellation: CurrentCombatForceCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
+            combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
             combatPaidWorld: CurrentCombatPaidWorld,
             combatPostResultRetreat: CurrentCombatPostResultRetreat,

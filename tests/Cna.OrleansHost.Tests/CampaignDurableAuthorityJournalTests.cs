@@ -170,7 +170,8 @@ public sealed class CampaignDurableAuthorityJournalTests
         var verified = reopened.ReadVerified(request.CampaignId);
         Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion + 2,
             CampaignExercises.QueryCheckpoint(verified).StateVersion);
-        Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
+        var reconstruction = CampaignExercises.Reconstruct(verified);
+        Assert.True(reconstruction.IsVerified, reconstruction.FailureReason.ToString());
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(verified).ContractVersion);
         var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(verified,
             CampaignActionAudience.Commonwealth);
@@ -195,7 +196,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(declineRetry.IsAccepted);
         Assert.Equal(acceptedDecline.CanonicalReceipt, declineRetry.CanonicalReceipt);
         var afterDecline = coldDecline.ReadVerified(request.CampaignId);
-        Assert.Equal(15, CampaignExercises.QueryCheckpoint(afterDecline).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(afterDecline).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterDecline).IsVerified);
         Assert.Throws<InvalidOperationException>(() =>
             coldDecline.QueryForceOwnerOpening(credential, "axis-infantry"));
@@ -217,7 +218,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
         var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
-            PrepareInfantryForceRound(journal);
+            PrepareInfantryForceRound(journal, positive: true);
         clock.Advance(TimeSpan.FromSeconds(1));
         Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
             attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
@@ -225,7 +226,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
             defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(20, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
@@ -710,7 +711,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
         var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
-            PrepareInfantryForceRound(journal);
+            PrepareInfantryForceRound(journal, positive: true);
         using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
         {
             connection.Open();
@@ -729,7 +730,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.False(expired.IsAccepted);
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(21, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(after).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         Assert.Throws<InvalidOperationException>(() =>
             cold.QueryForceOwnerOpening(defender, defenderId));
@@ -756,13 +757,13 @@ public sealed class CampaignDurableAuthorityJournalTests
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
-        var (request, _, _, _, _, _) = PrepareInfantryForceRound(journal);
+        var (request, _, _, _, _, _) = PrepareInfantryForceRound(journal, positive: true);
         clock.IsAvailable = false;
         Assert.True(journal.TickForceRound(request.CampaignId));
         Assert.False(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(21, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(after).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
@@ -782,13 +783,13 @@ public sealed class CampaignDurableAuthorityJournalTests
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
-        var (request, attacker, _, _, _, _) = PrepareInfantryForceRound(journal);
+        var (request, attacker, _, _, _, _) = PrepareInfantryForceRound(journal, positive: true);
         clock.Advance(TimeSpan.FromSeconds(5));
         _ = journal.QueryForceOwnerOpening(attacker, "axis-infantry");
         clock.Advance(TimeSpan.FromSeconds(-1));
         Assert.True(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(21, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
     }
 
@@ -853,8 +854,10 @@ public sealed class CampaignDurableAuthorityJournalTests
             finalOpening.Revision, finalOpening.PublicActionRefs[^1]);
         Assert.True(stopped.IsAccepted);
         var final = fixture.Open().ReadVerified(request.CampaignId);
-        Assert.Equal(15, CampaignExercises.QueryCheckpoint(final).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(final).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(final).IsVerified);
+        var control = cold.QueryCycleControlOwnerOpening(attacker);
+        Assert.Single(control.PublicActionRefs);
     }
 
     [Fact]
@@ -885,17 +888,77 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(reconstruction.IsVerified);
         using var snapshot = System.Text.Json.JsonDocument.Parse(
             reconstruction.ReconstructedSnapshotBytes!);
-        Assert.Equal(13, snapshot.RootElement.GetProperty("contractVersion").GetInt32());
+        Assert.Equal(27, snapshot.RootElement.GetProperty("contractVersion").GetInt32());
         Assert.Equal(CampaignExercises.QueryCheckpoint(verified).PositionId,
             snapshot.RootElement.GetProperty("positionId").GetString());
-        var decision = snapshot.RootElement.GetProperty("priorDecisionState")
-            .GetProperty("decision");
-        Assert.Equal("finish-combat-without-attack",
-            decision.GetProperty("choice").GetString());
-        Assert.Equal(System.Text.Json.JsonValueKind.Null,
-            decision.GetProperty("boundRepresentationId").ValueKind);
-        Assert.Equal(5, snapshot.RootElement.GetProperty("completion")
-            .GetProperty("steps").GetArrayLength());
+        Assert.True(snapshot.RootElement.GetProperty("completed").GetBoolean());
+        var control = reopened.QueryCycleControlOwnerOpening(credential);
+        var finished = reopened.SubmitOwnerCycleControl(credential,
+            control.Revision, control.PublicActionRefs[^1]);
+        Assert.True(finished.IsAccepted);
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(
+            fixture.Open().ReadVerified(request.CampaignId)).ContractVersion);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    public void VisibleAssaultWithoutPayableForceRoundCancelsAndContinues(
+        bool withTiming, bool positive)
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create(new ManualClock());
+        var request = positive ? PositiveCombatRequest() : CombatInfantryRequest();
+        AdvanceToContactCombat(journal, request,
+            withTiming ? Timing(request) : null,
+            preserveAdjacentInfantry: true);
+        var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var opening = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
+        Assert.Contains("assaultOffers", System.Text.Encoding.UTF8.GetString(
+            opening.VisibleBytes), StringComparison.Ordinal);
+        var chosen = journal.SubmitOwnerCombatSelection(attacker, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(chosen.IsAccepted);
+        var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(
+            journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
+        var rba = journal.QueryRbaOwnerOpening(defender, defenderId);
+        var declined = journal.SubmitOwnerRbaDecline(defender, defenderId,
+            rba.Revision, rba.PublicActionRefs[^1]);
+        Assert.True(declined.IsAccepted);
+
+        var cold = fixture.Open(new ManualClock());
+        var verified = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(verified).ContractVersion);
+        var reconstruction = CampaignExercises.Reconstruct(verified);
+        Assert.True(reconstruction.IsVerified, reconstruction.FailureReason.ToString());
+        Assert.Throws<InvalidOperationException>(() =>
+            cold.QueryForceOwnerOpening(attacker, "axis-infantry"));
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var query = connection.CreateCommand();
+            query.CommandText = "SELECT COUNT(*) FROM force_rounds WHERE campaign_id=$id";
+            query.Parameters.AddWithValue("$id", request.CampaignId);
+            Assert.Equal(0L, query.ExecuteScalar());
+            query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+                + "AND action_kind='native-combat-force-cancellation'";
+            Assert.Equal(1L, query.ExecuteScalar());
+        }
+        var retry = cold.SubmitOwnerRbaDecline(defender, defenderId,
+            rba.Revision, rba.PublicActionRefs[^1]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(declined.CanonicalReceipt, retry.CanonicalReceipt);
+        var control = cold.QueryCycleControlOwnerOpening(attacker);
+        Assert.Single(control.PublicActionRefs);
+        Assert.True(cold.SubmitOwnerCycleControl(attacker,
+            control.Revision, control.PublicActionRefs[^1]).IsAccepted);
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(
+            fixture.Open(new ManualClock()).ReadVerified(request.CampaignId))
+            .ContractVersion);
     }
 
     [Fact]
