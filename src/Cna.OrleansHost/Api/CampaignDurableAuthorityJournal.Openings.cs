@@ -13,7 +13,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// transactionally with the current Core action IDs and authority fence.
     /// </summary>
     internal CampaignOwnerOpening QueryOwnerOpening(CampaignSeatCredential credential,
-        string actingElementId)
+        string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId, combat: false);
+
+    internal CampaignOwnerOpening QueryCombatOwnerOpening(CampaignSeatCredential credential,
+        string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId, combat: true);
+
+    private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
+        string actingElementId, bool combat)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
         using var connection = Connect(create: false);
@@ -21,17 +27,34 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var seat = AuthenticateSeat(connection, transaction, credential)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
         var authority = Load(connection, transaction, seat.CampaignId);
-        CampaignHostContactOwnerDraft draft;
+        byte[] visible;
+        long authorityVersion;
+        string[] actionIds;
         try
         {
-            draft = CampaignHostAdapter.QueryContactOwnerDraft(authority.Session,
-                seat.Audience, actingElementId);
+            if (combat)
+            {
+                var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(authority.Session,
+                    seat.Audience, actingElementId);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateAssaultActionIds.ToArray();
+            }
+            else
+            {
+                var draft = CampaignHostAdapter.QueryContactOwnerDraft(authority.Session,
+                    seat.Audience, actingElementId);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateMovementActions.OrderBy(value => value.OriginLocationId,
+                    StringComparer.Ordinal).ThenBy(value => value.DestinationLocationId,
+                    StringComparer.Ordinal).Select(value => value.ActionId).ToArray();
+            }
         }
-        catch (ArgumentException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             throw new InvalidOperationException("No owner opening is available at this cut.");
         }
-        var visible = draft.VisibleBytes;
         RequireBounded(visible);
         var digest = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visible));
         var side = Side(seat.Audience);
@@ -59,11 +82,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     revision = checked(reader.GetInt64(1) + 1);
             }
         }
-        var actions = draft.PrivateMovementActions.OrderBy(value => value.OriginLocationId,
-            StringComparer.Ordinal).ThenBy(value => value.DestinationLocationId,
-            StringComparer.Ordinal).ToArray();
         var key = ReadReferenceKey(connection, transaction);
-        var refs = actions.Select((_, index) => Reference(key, seat.CampaignId, side,
+        var refs = actionIds.Select((_, index) => Reference(key, seat.CampaignId, side,
             actingElementId, seat.Epoch, revision, digest, index)).ToArray();
         using (var upsert = connection.CreateCommand())
         {
@@ -81,7 +101,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             upsert.Parameters.AddWithValue("$revision", revision);
             upsert.Parameters.AddWithValue("$digest", digest);
             upsert.Parameters.AddWithValue("$visible", visible);
-            upsert.Parameters.AddWithValue("$authority", draft.AuthorityVersion);
+            upsert.Parameters.AddWithValue("$authority", authorityVersion);
             upsert.Parameters.AddWithValue("$count", refs.Length);
             upsert.ExecuteNonQuery();
         }
@@ -105,7 +125,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             BindOpeningKey(insert, seat.CampaignId, side, actingElementId);
             insert.Parameters.AddWithValue("$ref", refs[index]);
             insert.Parameters.AddWithValue("$ordinal", index);
-            insert.Parameters.AddWithValue("$action", actions[index].ActionId);
+            insert.Parameters.AddWithValue("$action", actionIds[index]);
             insert.ExecuteNonQuery();
         }
         transaction.Commit();

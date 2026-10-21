@@ -48,6 +48,8 @@ projection, with private target binding retained only by Umpire.
 `CampaignNativeCombatSelectionStateV12` is the first internal Combat authority step:
 it stores the selected contact action and private defender binding for deterministic
 Exercise and Host replay. It is not a public Combat route or adjudicated result.
+The normal Host's internal Combat opening and submission use the same seat and durable
+journal as owner Movement; they do not publish a playable endpoint yet.
 The private [actual repeated Movement completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
 uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
 `complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner

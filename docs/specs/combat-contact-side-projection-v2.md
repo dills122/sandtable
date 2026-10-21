@@ -49,7 +49,9 @@ checks the private defender binding against independently replayed contact autho
 Core's trusted Combat owner draft serializes current contact handles, apparent hexes and
 assault offers in a V2 visible cut; its action IDs, authority fence and defender binding
 remain private to Host/Core. The draft is not a public route.
-It does not yet provide an owner opening, finish-without-attack, or adjudication.
+The normal Host now retains a seat-bound internal Combat opening, accepted selection,
+and idempotent receipt across cold replay. Finish-without-attack and adjudication remain open;
+there is no public Combat route.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,

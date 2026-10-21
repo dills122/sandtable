@@ -13,6 +13,65 @@ public sealed class CampaignDurableAuthorityJournalTests
     private const string OperatorSecret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
 
     [Fact]
+    public void ContactCombatOpeningCommitsOnceAndColdReplaysSelectedAuthority()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = Request();
+        var session = journal.CreateCampaign(request);
+        for (var index = 0; index < 80; index++)
+        {
+            try
+            {
+                _ = CampaignHostAdapter.QueryContactCombatOwnerDraft(session,
+                    CampaignActionAudience.Axis, "axis-infantry");
+                break;
+            }
+            catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+            {
+                // Continue through admitted pre-Combat positions.
+            }
+            var set = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet)
+                .FirstOrDefault(value => value?.Candidates.Count > 0);
+            Assert.NotNull(set);
+            var next = set.Candidates.OfType<MoveElementAction>().FirstOrDefault(value =>
+                value.ElementId == "axis-infantry" && value.DestinationLocationId == "north")
+                ?? set.Candidates[0];
+            var accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
+                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId));
+            Assert.True(accepted.IsAccepted);
+            session = accepted.SuccessorSession!;
+        }
+        Assert.NotEmpty(CampaignHostAdapter.QueryContactCombatOwnerDraft(session,
+            CampaignActionAudience.Axis, "axis-infantry").PrivateAssaultActionIds);
+        var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var opening = journal.QueryCombatOwnerOpening(credential, "axis-infantry");
+        Assert.Single(opening.PublicActionRefs);
+        var visible = System.Text.Encoding.UTF8.GetString(opening.VisibleBytes);
+        Assert.DoesNotContain("boundRepresentationId", visible, StringComparison.Ordinal);
+        var privateAction = Assert.Single(CampaignHostAdapter.QueryContactCombatOwnerDraft(
+            session, CampaignActionAudience.Axis, "axis-infantry").PrivateAssaultActionIds);
+        Assert.DoesNotContain(privateAction, visible, StringComparison.Ordinal);
+        var actionRef = opening.PublicActionRefs[0];
+        Assert.False(journal.SubmitOwnerCombatSelection(credential, "axis-infantry",
+            opening.Revision, "act.forged").IsAccepted);
+        var acceptedCombat = journal.SubmitOwnerCombatSelection(credential, "axis-infantry",
+            opening.Revision, actionRef);
+        Assert.True(acceptedCombat.IsAccepted);
+        var reopened = fixture.Open();
+        var retry = reopened.SubmitOwnerCombatSelection(credential, "axis-infantry",
+            opening.Revision, actionRef);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(acceptedCombat.CanonicalReceipt, retry.CanonicalReceipt);
+        var verified = reopened.ReadVerified(request.CampaignId);
+        Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion + 1,
+            CampaignExercises.QueryCheckpoint(verified).StateVersion);
+        Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
+    }
+
+    [Fact]
     public void SeatCredentialSurvivesRestartAndRotationRevokesIt()
     {
         using var fixture = new JournalFixture();

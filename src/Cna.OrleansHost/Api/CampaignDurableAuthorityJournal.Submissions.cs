@@ -14,7 +14,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// A retry of the same accepted reference returns the retained receipt after cold replay.
     /// </summary>
     internal CampaignOwnerSubmissionResult SubmitOwnerMovement(CampaignSeatCredential credential,
-        string actingElementId, long openingRevision, string publicActionRef)
+        string actingElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef, combat: false);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerCombatSelection(CampaignSeatCredential credential,
+        string actingElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef, combat: true);
+
+    private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
+        string actingElementId, long openingRevision, string publicActionRef, bool combat)
     {
         ArgumentNullException.ThrowIfNull(credential);
         using var connection = Connect(create: false);
@@ -37,7 +45,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   AND seat_epoch=$epoch AND owner_revision=$revision
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
-            retry.Parameters.AddWithValue("$kind", CampaignHostAcceptedStep.ContactMovementKind);
+            retry.Parameters.AddWithValue("$kind", combat
+                ? CampaignHostAcceptedStep.ContactCombatSelectionKind
+                : CampaignHostAcceptedStep.ContactMovementKind);
             retry.Parameters.AddWithValue("$element", actingElementId);
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
@@ -79,22 +89,34 @@ internal sealed partial class CampaignDurableAuthorityJournal
             || authorityVersion > CampaignExercises.QueryCheckpoint(head.Session).StateVersion
             || visibleDigest != "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visibleBytes)))
             return CampaignOwnerSubmissionResult.Rejected();
-        CampaignHostContactOwnerDraft draft;
+        byte[] currentVisible;
+        string[] actionIds;
         try
         {
-            draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
-                seat.Audience, actingElementId);
+            if (combat)
+            {
+                var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateAssaultActionIds.ToArray();
+            }
+            else
+            {
+                var draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateMovementActions.OrderBy(value => value.OriginLocationId,
+                    StringComparer.Ordinal).ThenBy(value => value.DestinationLocationId,
+                    StringComparer.Ordinal).Select(value => value.ActionId).ToArray();
+            }
         }
-        catch (ArgumentException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             return CampaignOwnerSubmissionResult.Rejected();
         }
-        if (!draft.VisibleBytes.AsSpan().SequenceEqual(visibleBytes))
+        if (!currentVisible.AsSpan().SequenceEqual(visibleBytes))
             return CampaignOwnerSubmissionResult.Rejected();
-        var actions = draft.PrivateMovementActions.OrderBy(value => value.OriginLocationId,
-            StringComparer.Ordinal).ThenBy(value => value.DestinationLocationId,
-            StringComparer.Ordinal).ToArray();
-        if (actions.Length != actionCount) return CampaignOwnerSubmissionResult.Rejected();
+        if (actionIds.Length != actionCount) return CampaignOwnerSubmissionResult.Rejected();
 
         int ordinal;
         string coreActionId;
@@ -113,8 +135,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             ordinal = reader.GetInt32(0);
             coreActionId = reader.GetString(1);
         }
-        if (ordinal < 0 || ordinal >= actions.Length
-            || coreActionId != actions[ordinal].ActionId)
+        if (ordinal < 0 || ordinal >= actionIds.Length
+            || coreActionId != actionIds[ordinal])
             return CampaignOwnerSubmissionResult.Rejected();
         var expectedRef = Reference(ReadReferenceKey(connection, transaction), seat.CampaignId,
             Side(seat.Audience), actingElementId, seat.Epoch, openingRevision,
@@ -126,11 +148,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var checkpoint = CampaignExercises.QueryCheckpoint(head.Session);
         var submission = new CampaignActionSubmission(1, seat.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, seat.Audience, coreActionId);
-        var result = CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
-            submission, actingElementId);
+        var result = combat
+            ? CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
+                submission, actingElementId)
+            : CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
+                submission, actingElementId);
         if (!result.IsAccepted) return CampaignOwnerSubmissionResult.Rejected();
         PersistAccepted(connection, transaction, seat.CampaignId, head,
-            CampaignHostAcceptedStep.ContactMovementKind, actingElementId,
+            combat ? CampaignHostAcceptedStep.ContactCombatSelectionKind
+                : CampaignHostAcceptedStep.ContactMovementKind, actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(

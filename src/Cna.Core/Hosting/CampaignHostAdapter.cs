@@ -42,7 +42,9 @@ public static class CampaignHostAdapter
         var cut = CampaignExercises.QueryContactOwnerCombatCut(session, side, actingElementId);
         return new CampaignHostContactCombatOwnerDraft(cut.AuthorityVersion,
             CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(cut),
-            cut.AssaultOffers.Select(value => value.ActionId).ToArray());
+            cut.AssaultOffers.OrderBy(value => value.ContactHandle, StringComparer.Ordinal)
+                .ThenBy(value => value.ApparentLocationId, StringComparer.Ordinal)
+                .Select(value => value.ActionId).ToArray());
     }
 
     /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
