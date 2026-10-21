@@ -172,6 +172,11 @@ V30 records the cohortless Breakdown determination as a System step before
 same-slot Combat, with atomic Host append and cold replay. Repeated Combat and
 Reserve Release, vehicle accounting, other continuation witnesses, and
 the public route remain to be wired.
+The normal journal now has an opt-in, loopback-only version-2 HTTP entry for
+campaign creation, operator seat grants, owner openings, and fenced action
+submission. It uses the permanent Core contact projection and durable Host;
+the outward response omits private Core receipt fields. Public hosting and
+Combat admission remain gated by complete continuation and source proof.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

@@ -197,6 +197,45 @@ offer or a distinguishable error.
 
 ## Submission, replay, and publication
 
+### Normal durable HTTP contract
+
+`/api/v2/campaigns` is the version-2 route for the same normal Core/Host
+authority. It is configured with `CampaignJournal:Path` and a 64-lowercase-hex
+`CampaignJournal:OperatorSecret`; `CampaignJournal:EnableOutwardApi=true` maps
+it in local Development hosting. It is off by default, accepts loopback callers
+only, requires same-origin browser requests, limits JSON bodies to 8 KiB, and
+returns `Cache-Control: no-store`. This deployment guard does not select a
+different fog rule or campaign engine.
+
+Every request body has `contractVersion:2` and exactly the named fields.
+`POST /` takes the nine `CampaignCreationRequest` fields (`campaignId`,
+`rulesetHash`, `seed`, `setupId`, `setupHash`, `contentPackId`, `contentHash`,
+`scenarioId`) plus a canonical seven-window `timing` object; it requires
+`X-Sandtable-Operator`. `POST /{campaignId}/grants/{axis|commonwealth}`
+requires the same operator header and returns an expiring single-use grant.
+`POST /{campaignId}/seats` takes that grant and returns a rotating seat
+credential. Grant and credential envelopes carry campaign ID, audience,
+epoch, 64-hex secret, and expiry; the secret is never put in a URL.
+
+`POST /{campaignId}/openings` takes the credential, stage, and acting element
+ID. It returns canonical side-visible cut bytes as base64, owner revision, and
+ordered public action references. Supported stage names are `movement`,
+`combat-selection`, `retreat-before-assault`, `force-assignment`,
+`post-assault-retreat`, `custody`, `reserve-release`, `cycle-control`, and
+`repeat-movement`. `POST /{campaignId}/actions` takes the same credential,
+stage, acting element, opening revision, and public action reference.
+Retreat-before-assault submissions use `rba-decline` or `rba-move`; other
+submission names match opening names. The response acknowledges the public
+reference and owner revision only. It never serializes the retained internal
+Core receipt, private action ID, authority version, or hidden-state hash.
+Exact accepted retries return the same outward acknowledgement. Invalid
+or stale actions use one generic rejection envelope.
+
+This route uses the normal durable SQLite journal and seat fence. It does not
+make a public Combat claim: a full repeated Combat cycle, source-legal
+terminal cases, normal campaign continuation, public hosting, and the support
+certificate still gate activation.
+
 Host authenticates the seat and retains the opening, accepted input, public
 receipt, Core event, and canonical contact transitions in one durable history.
 It replays Core authority and contact records on cold read. If private history

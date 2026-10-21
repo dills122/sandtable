@@ -172,6 +172,10 @@ their normal campaign path. A replay
 checkpoint does not by itself
 constitute a durable player save/resume product.
 
+The normal journal's opt-in local `/api/v2/campaigns` route is a versioned
+Host adapter for operator creation, seat grants, owner openings, and accepted
+action acknowledgements; the private Core receipt stays in Chronicle/Archives.
+
 **Maproom** is the player application: map, orders, legal actions and audience-safe reports.
 `site/` is the existing project website, with labeled concept illustrations. The first Maproom target
 is local hot-seat play; it must use the same typed, side-safe action boundary as every other client.

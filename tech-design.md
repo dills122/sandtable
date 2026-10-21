@@ -862,6 +862,12 @@ Host opening/submission/receipt. V30 now records the cohortless Breakdown
 System determination after that accepted move and advances to Combat in the
 same durable transaction. Vehicle accounting, repeated Combat/Reserve Release,
 other legal continuation witnesses, and public route remain pending.
+The normal durable journal has an opt-in local `/api/v2/campaigns` adapter.
+It authenticates operator creation and seat rotation, exposes only the
+versioned side cut and public references, and maps submissions back through
+the journal's private action fence. Public responses never serialize Core's
+internal acceptance receipt. Deployment outside local hosting waits for the
+complete Combat capability and production Host configuration.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
 It keeps private target identity and authority in Core. Public routing,

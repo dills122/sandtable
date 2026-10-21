@@ -10,7 +10,7 @@ namespace Cna.OrleansHost.Api;
 
 /// <summary>
 /// Durable authority for normal campaigns. Callers must authenticate a seat and bind an owner
-/// opening before passing a command here; this type has no public route or service registration.
+/// opening before passing a command here; its local route is disabled unless configured.
 /// </summary>
 internal sealed partial class CampaignDurableAuthorityJournal
 {

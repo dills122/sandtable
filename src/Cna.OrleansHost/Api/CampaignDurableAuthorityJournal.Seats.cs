@@ -10,6 +10,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private static readonly TimeSpan GrantLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan CredentialLifetime = TimeSpan.FromHours(2);
 
+    internal bool AuthenticateOperator(string secret)
+    {
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction();
+        try
+        {
+            RequireOperator(connection, transaction, secret);
+            return true;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
     internal CampaignSeatGrant IssueSeatGrant(string campaignId, CampaignActionAudience audience,
         string operatorSecret)
     {
