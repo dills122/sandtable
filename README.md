@@ -129,6 +129,9 @@ each accepted/rejected byte, selected chart facts, and before/after ammunition h
 exact replay rejects altered result bytes. The same V22 transition derives both
 roles' paid capability points in a retained normal World projection and binds
 the prior/paid canonical World hashes for subsequent loss settlement.
+The normal post-result loss assessor reuses selected Rules rounding and capture
+arithmetic, with defender refusal affecting only its selected loss; retained
+retreat choice and World settlement are the next implementation step.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

@@ -120,6 +120,23 @@ public sealed class CampaignContactCombatSelectionCutTests
             .SerializeCanonical());
         Assert.Equal(canonical, CampaignCurrentEventSerializer.Serialize(
             CampaignCurrentEventSerializer.Deserialize(canonical)));
+        var losses = CampaignNativeCombatLossAssessment.Project(result, inputs,
+            refuseRetreat: false);
+        Assert.Equal(inputs.Attacker.CommittedToe,
+            losses.Attacker.TotalLoss + losses.Attacker.RemainingToe);
+        Assert.Equal(inputs.Defender.CommittedToe,
+            losses.Defender.TotalLoss + losses.Defender.RemainingToe);
+        if (result.Facts.RequiredRetreat == 1)
+        {
+            var refusal = CampaignNativeCombatLossAssessment.Project(result, inputs,
+                refuseRetreat: true);
+            Assert.Equal(losses.Attacker, refusal.Attacker);
+            Assert.True(refusal.Defender.TotalLoss >= losses.Defender.TotalLoss);
+            Assert.True(refusal.RefusedRetreat);
+        }
+        else
+            Assert.Throws<ArgumentException>(() => CampaignNativeCombatLossAssessment.Project(
+                result, inputs, refuseRetreat: true));
         Assert.NotEmpty(result.SerializeStateCanonical(antiArmor.SerializeCanonical()));
         var replayedAmmunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
             context, [result]);
