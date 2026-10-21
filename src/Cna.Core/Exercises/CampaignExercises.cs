@@ -63,6 +63,8 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(session);
         if (session.CurrentNoAttackCompletion is { } completion)
             return new ExerciseCheckpoint(completion, session.CurrentCombatDecision!);
+        if (session.CurrentCombatBarrage is { } barrage)
+            return new ExerciseCheckpoint(barrage, session.CurrentCombatDecision!);
         return session.CurrentCombatDecision is { } selected
             ? new ExerciseCheckpoint(selected)
             : new ExerciseCheckpoint(session.CurrentSnapshot);
@@ -185,6 +187,34 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult CompleteNativeCombatBarrage(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentNoAttackCompletion is not null
+            || session.CurrentCombatBarrage is not null
+            || session.CurrentContacts.AuthorityVersion != selected.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var barrage = CampaignNativeCombatBarrageV14.Create(selected, session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatBarrage(barrage);
+            var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
+                session.CurrentHistory.Add(barrage), contacts, selected, combatBarrage: barrage);
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                selected.StateVersion, barrage.StateVersion, barrage.NextPositionId,
+                CampaignActionAudience.System,
+                $"sha256:{Convert.ToHexStringLower(SHA256.HashData(barrage.SerializeCanonical()))}");
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
+                barrage.SerializeCanonical(), barrage.SerializeStateCanonical(selected)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static ExerciseStepResult Complete(ExerciseSession session,
         CampaignCurrentActionExecutionResult execution)
     {
@@ -214,6 +244,8 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(completedSession);
         var expectedBytes = completedSession.CurrentNoAttackCompletion is { } completion
             ? completion.SerializeStateCanonical(completedSession.CurrentCombatDecision!)
+            : completedSession.CurrentCombatBarrage is { } barrage
+                ? barrage.SerializeStateCanonical(completedSession.CurrentCombatDecision!)
             : completedSession.CurrentCombatDecision is { } combat
                 ? combat.SerializeCanonical()
                 : CampaignCurrentSnapshotSerializer.Serialize(completedSession.CurrentSnapshot);
@@ -230,11 +262,13 @@ public static class CampaignExercises
                 .Select(value => CampaignCurrentEventSerializer.Deserialize(value))
                 .ToArray();
             if (completedSession.CurrentCombatDecision is not null
-                && replayEvents.Length < (completedSession.CurrentNoAttackCompletion is null ? 2 : 3))
+                && replayEvents.Length < (completedSession.CurrentNoAttackCompletion is null
+                    && completedSession.CurrentCombatBarrage is null ? 2 : 3))
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
             var priorEvents = completedSession.CurrentCombatDecision is null
                 ? replayEvents
                 : completedSession.CurrentNoAttackCompletion is null
+                    && completedSession.CurrentCombatBarrage is null
                     ? replayEvents[..^1]
                     : replayEvents[..^2];
             var replayed = CampaignCurrentProjector.Replay(priorEvents, completedSession.Context);
@@ -243,7 +277,8 @@ public static class CampaignExercises
             byte[] replayedBytes;
             if (completedSession.CurrentCombatDecision is not null)
             {
-                var decisionIndex = completedSession.CurrentNoAttackCompletion is null ? ^1 : ^2;
+                var decisionIndex = completedSession.CurrentNoAttackCompletion is null
+                    && completedSession.CurrentCombatBarrage is null ? ^1 : ^2;
                 if (replayEvents[decisionIndex] is not CampaignNativeCombatDecisionV12 selected)
                     throw new InvalidCampaignHistoryException("Native Combat selection is missing.");
                 var verified = CampaignNativeCombatDecisionStateV12.Replay(replayed,
@@ -259,6 +294,15 @@ public static class CampaignExercises
                     replayedContacts = replayedContacts.AdvanceNativeCombatNoAttackCompletion(
                         verifiedCompletion);
                 }
+                else if (completedSession.CurrentCombatBarrage is not null)
+                {
+                    if (replayEvents[^1] is not CampaignNativeCombatBarrageV14 barrageEvent)
+                        throw new InvalidCampaignHistoryException("Native Barrage completion is missing.");
+                    var verifiedBarrage = CampaignNativeCombatBarrageV14.Replay(
+                        verified, completedSession.Context, barrageEvent.SerializeCanonical());
+                    replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
+                    replayedContacts = replayedContacts.AdvanceNativeCombatBarrage(verifiedBarrage);
+                }
                 else replayedBytes = verified.SerializeCanonical();
             }
             else
@@ -269,6 +313,7 @@ public static class CampaignExercises
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
                 == (completedSession.CurrentNoAttackCompletion?.StateVersion
+                    ?? completedSession.CurrentCombatBarrage?.StateVersion
                     ?? completedSession.CurrentCombatDecision?.StateVersion
                     ?? completedSession.CurrentSnapshot.StateVersion)
                 && completedSession.CurrentContacts.AuthorityVersion == replayedContacts.AuthorityVersion

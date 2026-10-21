@@ -768,7 +768,10 @@ Host import replay. For an accepted voluntary finish, Core now records one V13 S
 the five exact remaining no-attack structural successors through same-slot Reserve Release entry;
 replay rejects forged or omitted positions and preserves prior World and contact records. The
 normal Host commits owner decision and System completion in one SQLite transaction, then returns
-the owner's retained receipt across restart. Reserve Release, assault adjudication and the public
+the owner's retained receipt across restart. A selected infantry assault takes a V14 System
+no-effect Barrage step to the same-slot Retreat Before Assault position. Core replay verifies
+its source capability and exact route, and Host retains both steps atomically. Defender
+Retreat Before Assault, Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

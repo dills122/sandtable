@@ -9,7 +9,8 @@ public sealed class ExerciseSession
     internal ExerciseSession(CampaignSnapshotV11 snapshot, CampaignContentContext context,
         IEnumerable<object> history, CampaignContactJournal? contacts = null,
         CampaignNativeCombatDecisionStateV12? combatSelection = null,
-        CampaignNativeCombatNoAttackCompletionV13? noAttackCompletion = null)
+        CampaignNativeCombatNoAttackCompletionV13? noAttackCompletion = null,
+        CampaignNativeCombatBarrageV14? combatBarrage = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -22,8 +23,14 @@ public sealed class ExerciseSession
             || noAttackCompletion.PriorStateVersion != combatSelection.StateVersion
             || noAttackCompletion.DecisionActionId != combatSelection.Decision.ActionId))
             throw new ArgumentException("No-attack completion must bind the owner decision.", nameof(noAttackCompletion));
+        if (combatBarrage is not null && (combatSelection is null
+            || noAttackCompletion is not null
+            || combatBarrage.PriorStateVersion != combatSelection.StateVersion
+            || combatBarrage.DecisionActionId != combatSelection.Decision.ActionId))
+            throw new ArgumentException("Barrage must bind a selected assault.", nameof(combatBarrage));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
+        CurrentCombatBarrage = combatBarrage;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -31,5 +38,6 @@ public sealed class ExerciseSession
     internal CampaignContactJournal CurrentContacts { get; }
     internal CampaignNativeCombatDecisionStateV12? CurrentCombatDecision { get; }
     internal CampaignNativeCombatNoAttackCompletionV13? CurrentNoAttackCompletion { get; }
+    internal CampaignNativeCombatBarrageV14? CurrentCombatBarrage { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

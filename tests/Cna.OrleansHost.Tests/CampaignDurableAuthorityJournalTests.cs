@@ -42,9 +42,17 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(retry.IsAccepted);
         Assert.Equal(acceptedCombat.CanonicalReceipt, retry.CanonicalReceipt);
         var verified = reopened.ReadVerified(request.CampaignId);
-        Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion + 1,
+        Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion + 2,
             CampaignExercises.QueryCheckpoint(verified).StateVersion);
         Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
+        Assert.Equal(14, CampaignExercises.QueryCheckpoint(verified).ContractVersion);
+        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps "
+            + "WHERE campaign_id=$id AND action_kind='native-combat-barrage'";
+        query.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.Equal(1L, query.ExecuteScalar());
     }
 
     [Fact]

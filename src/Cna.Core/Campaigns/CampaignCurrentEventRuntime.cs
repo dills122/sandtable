@@ -7,6 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeCombatBarrageV14 barrage => barrage.SerializeCanonical(),
         CampaignNativeCombatNoAttackCompletionV13 completion => completion.SerializeCanonical(),
         CampaignNativeCombatDecisionV12 selected => selected.SerializeCanonical(),
         CampaignCreatedV10 created => SerializeCreated(created),
@@ -28,6 +29,7 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
+            "combat-barrage-no-effect" => CampaignNativeCombatBarrageV14.Deserialize(canonicalJson),
             "combat-no-attack-completed" => CampaignNativeCombatNoAttackCompletionV13.Deserialize(canonicalJson),
             "combat-selection-decided" => CampaignNativeCombatDecisionV12.Deserialize(canonicalJson),
             "element-moved" or "reacting-element-moved" or "reaction-participant-completed" or "reaction-window-closed"

@@ -99,6 +99,31 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(acceptedCombat.Evidence.SnapshotCheckpoint,
             imported.Session!.CurrentCombatDecision!.SerializeCanonical());
         Assert.True(CampaignExercises.Reconstruct(imported.Session).IsVerified);
+        var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(imported.Session);
+        Assert.True(barrage.IsAccepted, barrage.RejectionReason.ToString());
+        Assert.True(CampaignExercises.Reconstruct(barrage.SuccessorSession!).IsVerified);
+        var barrageCommand = CampaignHostAdapter.NativeCombatBarrageCommand(imported.Session,
+            barrage);
+        var barrageSteps = retainedSteps.Append(new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(barrageCommand),
+            barrage.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(barrage.Evidence.Receipt),
+            barrage.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.NativeCombatBarrageKind)).ToArray();
+        Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, barrageSteps).IsVerified);
+        var forgedBarrage = barrage.SuccessorSession!.CurrentCombatBarrage! with
+        {
+            NextPositionId = "forged-barrage-route",
+        };
+        barrageSteps[^1] = new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(barrageCommand),
+            [forgedBarrage.SerializeCanonical()],
+            CampaignActionAcceptanceReceiptSerializer.Serialize(barrage.Evidence.Receipt),
+            barrage.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.NativeCombatBarrageKind);
+        Assert.False(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, barrageSteps).IsVerified);
         var forgedSelection = imported.Session.CurrentCombatDecision.Decision with
         {
             BoundRepresentationId = "forged",

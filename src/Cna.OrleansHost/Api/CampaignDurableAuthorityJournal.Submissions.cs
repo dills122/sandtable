@@ -170,6 +170,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind, null,
                 null, null, null, systemCommand, noAttack);
         }
+        else if (combat && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
+        {
+            var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);
+            if (!barrage.IsAccepted)
+                throw new InvalidOperationException("Accepted infantry assault cannot complete Barrage.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
+                systemHead.Session, barrage);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatBarrageKind, null,
+                null, null, null, systemCommand, barrage);
+        }
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));

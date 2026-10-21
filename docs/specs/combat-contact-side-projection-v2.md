@@ -62,6 +62,10 @@ remain private to Host/Core. The draft is not a public route.
 The normal Host now retains a seat-bound internal Combat opening, accepted selection,
 System completion and idempotent owner receipt across cold replay. Assault adjudication remains open;
 there is no public Combat route.
+For a selected infantry-only assault, a V14 System event records the no-effect Barrage
+successor to same-slot Retreat Before Assault. Core replay rechecks Content capability and
+the exact successor; Host commits selection and Barrage in one transaction and retains the
+owner receipt. Defender retreat choice and subsequent assault stages remain open.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,

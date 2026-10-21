@@ -110,7 +110,9 @@ contact-derived movement submission against the current equal-visible owner cut.
 The same normal journal now retains internal contact-based Combat assault or no-attack
 decisions with cold-replay receipts. Voluntary finish adds a V13 System no-attack completion
 that records each remaining Combat successor through Reserve Release entry without releasing
-reserves or adjudicating an assault. Public opening, Combat submission, and resume still need
+reserves or adjudicating an assault. Selected infantry assault adds a V14 System no-effect
+Barrage successor into Retreat Before Assault under the same durable owner submission. Defender
+choice, public opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself
 constitute a durable player save/resume product.

@@ -135,6 +135,16 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(completion.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatBarrage(
+        CampaignNativeCombatBarrageV14 barrage)
+    {
+        ArgumentNullException.ThrowIfNull(barrage);
+        if (barrage.CampaignId != CampaignId
+            || barrage.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Barrage does not bind contact authority.", nameof(barrage));
+        return AtAuthorityVersion(barrage.StateVersion);
+    }
+
     private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
     {
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId
