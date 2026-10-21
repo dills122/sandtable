@@ -93,7 +93,9 @@ The normal Host retains both steps atomically with an internal authenticated Com
 accepted submission and restart-safe receipt. A selected infantry assault now also records a
 no-effect V14 Barrage successor to Retreat Before Assault in that same transaction. Core cold
 replay recomputes the route from the owner decision; a forged successor is rejected. Defender
-Retreat Before Assault, Reserve Release, assault adjudication and a public opening route remain unfinished; historical
+Retreat Before Assault candidates now derive from the retained defender contact cut without
+using hidden occupancy to suppress offers. Defender submission, Reserve Release, assault
+adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

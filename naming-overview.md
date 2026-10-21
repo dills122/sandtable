@@ -112,7 +112,9 @@ decisions with cold-replay receipts. Voluntary finish adds a V13 System no-attac
 that records each remaining Combat successor through Reserve Release entry without releasing
 reserves or adjudicating an assault. Selected infantry assault adds a V14 System no-effect
 Barrage successor into Retreat Before Assault under the same durable owner submission. Defender
-choice, public opening, Combat submission, and resume still need
+RBA move/decline candidates now come from the first side-scoped defender contact cut;
+hidden occupancy does not control offer presence. Defender choice acceptance, public
+opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself
 constitute a durable player save/resume product.

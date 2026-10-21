@@ -771,7 +771,10 @@ normal Host commits owner decision and System completion in one SQLite transacti
 the owner's retained receipt across restart. A selected infantry assault takes a V14 System
 no-effect Barrage step to the same-slot Retreat Before Assault position. Core replay verifies
 its source capability and exact route, and Host retains both steps atomically. Defender
-Retreat Before Assault, Reserve Release, assault adjudication and the public
+Retreat Before Assault candidates use the bound defender's own formation, current
+contacts, published map and movement costs. Hidden opposing occupancy cannot remove an
+offer; an unseen encounter needs an accepted event rather than a hidden rejection.
+Defender submission, Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

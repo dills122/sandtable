@@ -102,6 +102,24 @@ public sealed class CampaignContactCombatSelectionCutTests
         var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(imported.Session);
         Assert.True(barrage.IsAccepted, barrage.RejectionReason.ToString());
         Assert.True(CampaignExercises.Reconstruct(barrage.SuccessorSession!).IsVerified);
+        var rbaSession = barrage.SuccessorSession!;
+        var rba = CampaignContactRetreatBeforeAssaultCut.Project(
+            rbaSession.CurrentCombatDecision!, rbaSession.CurrentCombatBarrage!,
+            rbaSession.Context, rbaSession.CurrentContacts);
+        Assert.Equal(LandSide.Commonwealth, rba.DefenderSide);
+        Assert.Equal(rbaSession.CurrentCombatBarrage!.StateVersion,
+            rba.AuthorityVersion);
+        Assert.True(rba.InitiallyAdjacentToKnownEnemy);
+        Assert.Equal("decline-retreat-before-assault", rba.DeclineOffer.Kind);
+        Assert.NotEmpty(rba.MoveOffers);
+        Assert.All(rba.MoveOffers, move =>
+            Assert.DoesNotContain(rba.ContactObservation.CurrentTargets,
+                target => target.ApparentLocationId == move.DestinationLocationId));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignContactRetreatBeforeAssaultCut.Project(
+                rbaSession.CurrentCombatDecision!,
+                rbaSession.CurrentCombatBarrage! with { NextPositionId = "forged-rba-position" },
+                rbaSession.Context, rbaSession.CurrentContacts));
         var barrageCommand = CampaignHostAdapter.NativeCombatBarrageCommand(imported.Session,
             barrage);
         var barrageSteps = retainedSteps.Append(new CampaignHostAcceptedStep(

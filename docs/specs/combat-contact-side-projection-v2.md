@@ -66,6 +66,14 @@ For a selected infantry-only assault, a V14 System event records the no-effect B
 successor to same-slot Retreat Before Assault. Core replay rechecks Content capability and
 the exact successor; Host commits selection and Barrage in one transaction and retains the
 owner receipt. Defender retreat choice and subsequent assault stages remain open.
+Core now derives the first defender RBA candidate cut from that retained Barrage state.
+It identifies the bound defender privately, reads only that defender's own formation,
+current contacts, published map and exact movement costs for move-offer presence, and
+always includes an explicit decline. Known occupied contact hexes cannot be retreat
+destinations; hidden opposing occupancy cannot silently remove an offer. Land §§13.1,
+13.21–13.26 govern eligibility, cost, initial adjacency and stopping. This candidate
+cut is still internal: accepting movement, handling an unseen encounter, a timed
+defender opening and continuing the sequence require the same durable authority path.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,
