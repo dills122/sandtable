@@ -193,7 +193,7 @@ voluntary finish creates a V32 no-attack System event, advances through the
 five remaining Combat positions, and enters the same ordinal's Reserve
 Release. A replay reducer carries subsequent reserve and repeat-or-finish
 choices without resetting the settled World or random cursor. A selected
-second-cycle assault now carries its Barrage, defender retreat (including a
+second- and third-cycle assault now carry their Barrage, defender retreat (including a
 move), Force seals or timeout, Anti Armor, result, World settlement, custody,
 and Reserve Release through Exercise and the normal durable Host. Further
 selected cycles, vehicle accounting, other legal continuation witnesses,

@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Bounded native Combat implementation in review | Core and normal durable Host retain contact-safe first and second selected assaults through result, settlement, custody and Reserve Release, with owner receipts and cold replay. Later repeat is closed at second-cycle Reserve Release; general continuation, public activation and admission remain open. Original authenticated P01 has 44 provisional candidate shapes, 256 absent shapes and zero admitted. |
+| Combat and continual cycle | Bounded native Combat implementation in review | Core and normal durable Host retain contact-safe first, second, and third selected assaults through result, settlement, custody and Reserve Release, with owner receipts and cold replay. Repeat closes at third-cycle Reserve Release; general continuation, public activation and admission remain open. Original authenticated P01 has 44 provisional candidate shapes, 256 absent shapes and zero admitted. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Angular foundation and bounded connected read mode | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The main Maproom route offers a synthetic fixture study and URL-backed `?mode=campaign` local read mode using the same map presentation; `/connected` remains a development deep link. Campaign mode can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -188,7 +188,10 @@ The local HTTP owner route accepts the repeated selection, RBA move, Force seals
 and cycle finish; the normal SQLite Host replays that chain after restart.
 An incomplete repeated Force round closes on the retained trusted deadline,
 skips the result and resumes Reserve Release without a missing seal.
-Further selected cycles, vehicle accounting, other
+The second Reserve Release can repeat through a fresh released-unit movement
+witness into a third contact-safe assault or voluntary finish. The third
+Reserve Release offers Finish only; its accepted owner choice and cold replay
+close this bounded cycle. Further selected cycles, vehicle accounting, other
 continuation witnesses, ordinary phase continuation, and public routing remain.
 The normal journal now has an opt-in, loopback-only version-2 HTTP entry for
 campaign creation, operator seat grants, owner openings, and fenced action

@@ -1,6 +1,6 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status (2026-10-21):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and one selected repeated assault, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. The second Reserve Release exposes Finish only; further Combat repeats remain an implementation gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
+**Status (2026-10-21):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and two selected repeated assaults, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. The third Reserve Release exposes Finish only; further Combat repeats remain an implementation gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
 
 The initial voluntary finish and initial cancelled assault now pass through V27
 Reserve Release and V28 cycle control. A selected assault with no payable pinned
@@ -18,7 +18,7 @@ parent evidence are accepted with strict clock privacy and versioned round/settl
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Permanent contact-based native Core/normal durable Host path reaches a first and one repeated selected assault through settlement and Reserve Release; later repeat is closed at the second cycle | Complete general later-cycle assault continuation, original-300-root support certificate and parent017–019 reconciliation |
+| Runtime | Permanent contact-based native Core/normal durable Host path reaches a first and two repeated selected assaults through settlement and Reserve Release; later repeat is closed at the third cycle | Complete general later-cycle assault continuation, original-300-root support certificate and parent017–019 reconciliation |
 | Public and simulator | Tasks020–024 have no certified ordinal-two Combat admission | Activate only a reviewed, certified side-safe profile through020–021, then prove strict Exercise/Runner reconstruction and repeatability through022–024 |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
