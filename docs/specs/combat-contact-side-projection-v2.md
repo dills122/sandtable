@@ -97,8 +97,12 @@ owner's current component TOE and pinned Content at the retained post-RBA cut.
 The candidate action ID binds role, own element, component and committed TOE;
 neither opponent allocation nor private authority version enters its semantics.
 The current infantry path offers its full current TOE, including a five-TOE
-unit. This owner cut is internal until both sealed decisions and System
-completion are durable. A contact bound to a unit with no combat component
+unit. Core V17 retains the two owner-only seals as separate canonical events.
+The first keeps the Force Assignment position and the other owner's visible
+cut unchanged; the second advances to Anti Armor. Normal Host retains each
+under its seat, opaque ref and cold-replay receipt. Shared deadline and
+System cancellation remain to be implemented before outward issuance. A
+contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.
 

@@ -66,6 +66,23 @@ public static class CampaignHostAdapter
                 .Select(value => value.ActionId).Append(cut.DeclineOffer.ActionId).ToArray());
     }
 
+    /// <summary>Trusted Force Assignment draft for one authenticated owner.</summary>
+    public static CampaignHostContactForceOwnerDraft QueryContactForceOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            throw new ArgumentOutOfRangeException(nameof(audience));
+        var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var cut = CampaignExercises.QueryContactForceAssignmentCut(session, side);
+        if (cut.SealOffer.ElementId != elementId)
+            throw new InvalidOperationException("Only the bound owner may receive this seal cut.");
+        return new CampaignHostContactForceOwnerDraft(
+            session.CurrentContacts.AuthorityVersion,
+            CampaignContactForceAssignmentOwnerVisibleCutV1.SerializeCanonical(cut),
+            [cut.SealOffer.ActionId]);
+    }
+
     /// <summary>Trusted seat routing for the pending defender decision.</summary>
     public static string QueryContactRbaDefenderId(ExerciseSession session,
         CampaignActionAudience audience)
@@ -204,6 +221,10 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission, string defenderElementId) =>
         CampaignExercises.SubmitContactDefenderRbaMove(session, submission, defenderElementId);
 
+    public static ExerciseStepResult SubmitContactOwnerForceSeal(
+        ExerciseSession session, CampaignActionSubmission submission, string elementId) =>
+        CampaignExercises.SubmitContactOwnerForceSeal(session, submission, elementId);
+
     /// <summary>System-only structural continuation of an accepted voluntary finish.</summary>
     public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatNoAttack(session);
@@ -300,7 +321,8 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeCombatBarrageKind
                 or CampaignHostAcceptedStep.ContactRbaDeclineKind
-                or CampaignHostAcceptedStep.ContactRbaMoveKind))
+                or CampaignHostAcceptedStep.ContactRbaMoveKind
+                or CampaignHostAcceptedStep.ContactForceSealKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             var accepted = step.Kind switch
             {
@@ -312,6 +334,8 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.ContactRbaDeclineKind => SubmitContactDefenderRbaDecline(
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactRbaMoveKind => SubmitContactDefenderRbaMove(
+                    session, submission, step.ActingElementId!),
+                CampaignHostAcceptedStep.ContactForceSealKind => SubmitContactOwnerForceSeal(
                     session, submission, step.ActingElementId!),
                 _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
             };
@@ -417,6 +441,28 @@ public sealed class CampaignHostContactRbaOwnerDraft
     public IReadOnlyList<string> PrivateActionIds => Array.AsReadOnly(privateActionIds.ToArray());
 }
 
+/// <summary>Host-private Force Assignment action map and side-safe bytes.</summary>
+public sealed class CampaignHostContactForceOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly string[] privateActionIds;
+
+    internal CampaignHostContactForceOwnerDraft(long authorityVersion, byte[] visibleBytes,
+        IReadOnlyList<string> privateActionIds)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateActionIds = privateActionIds.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<string> PrivateActionIds => Array.AsReadOnly(privateActionIds.ToArray());
+}
+
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }
 
 // Host-private source data. These records must never be returned from an HTTP endpoint.
@@ -470,6 +516,7 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeCombatBarrageContractVersion = 5;
     public const int ContactRbaDeclineContractVersion = 6;
     public const int ContactRbaMoveContractVersion = 7;
+    public const int ContactForceSealContractVersion = 8;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -477,6 +524,7 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeCombatBarrageKind = "native-combat-barrage";
     public const string ContactRbaDeclineKind = "contact-rba-decline";
     public const string ContactRbaMoveKind = "contact-rba-move";
+    public const string ContactForceSealKind = "contact-force-seal";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -489,9 +537,9 @@ public sealed class CampaignHostAcceptedStep
     {
         if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind
                 or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
-                or ContactRbaMoveKind)
+                or ContactRbaMoveKind or ContactForceSealKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
-                or ContactRbaMoveKind
+                or ContactRbaMoveKind or ContactForceSealKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 && actingElementId is not null))
@@ -503,6 +551,7 @@ public sealed class CampaignHostAcceptedStep
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
             ContactRbaDeclineKind => ContactRbaDeclineContractVersion,
             ContactRbaMoveKind => ContactRbaMoveContractVersion,
+            ContactForceSealKind => ContactForceSealContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

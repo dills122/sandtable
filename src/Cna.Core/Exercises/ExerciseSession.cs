@@ -15,7 +15,8 @@ public sealed class ExerciseSession
         CampaignNativeCombatRetreatMoveV16? combatRetreatMove = null,
         CampaignWorldSnapshotV6? combatRetreatWorld = null,
         CampaignContactJournal? combatRetreatPriorContacts = null,
-        IEnumerable<CampaignNativeCombatRetreatMoveV16>? combatRetreatMoves = null)
+        IEnumerable<CampaignNativeCombatRetreatMoveV16>? combatRetreatMoves = null,
+        IEnumerable<CampaignNativeCombatForceSealV17>? combatForceSeals = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -62,6 +63,17 @@ public sealed class ExerciseSession
             && (combatRetreatWorld is not null || combatRetreatPriorContacts is not null))
             throw new ArgumentException("RBA world and prior contact cut require a retained move.",
                 nameof(combatRetreatWorld));
+        var forceSeals = combatForceSeals?.ToArray() ?? [];
+        if (forceSeals.Length > 2 || (forceSeals.Length > 0 && (
+            combatRetreatDecline is null || combatSelection is null
+            || forceSeals[0].PriorStateVersion != combatRetreatDecline.StateVersion
+            || forceSeals[0].DecisionActionId != combatSelection.Decision.ActionId))
+            || (forceSeals.Length == 2 && (
+                forceSeals[1].PriorStateVersion != forceSeals[0].StateVersion
+                || forceSeals[1].OwnerSide == forceSeals[0].OwnerSide
+                || forceSeals[1].PriorSealHash is null)))
+            throw new ArgumentException("Force seals must bind distinct owners and retained Combat authority.",
+                nameof(combatForceSeals));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -70,6 +82,7 @@ public sealed class ExerciseSession
         CurrentCombatRetreatWorld = combatRetreatWorld;
         CurrentCombatRetreatPriorContacts = combatRetreatPriorContacts;
         CurrentCombatRetreatMoves = Array.AsReadOnly(moves);
+        CurrentCombatForceSeals = Array.AsReadOnly(forceSeals);
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -83,5 +96,6 @@ public sealed class ExerciseSession
     internal CampaignWorldSnapshotV6? CurrentCombatRetreatWorld { get; }
     internal CampaignContactJournal? CurrentCombatRetreatPriorContacts { get; }
     internal IReadOnlyList<CampaignNativeCombatRetreatMoveV16> CurrentCombatRetreatMoves { get; }
+    internal IReadOnlyList<CampaignNativeCombatForceSealV17> CurrentCombatForceSeals { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

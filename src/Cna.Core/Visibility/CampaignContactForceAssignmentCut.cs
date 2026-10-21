@@ -37,7 +37,8 @@ internal sealed record CampaignContactForceAssignmentCut(
             || decline.DecisionActionId != selected.Decision.ActionId
             || decline.PriorStateVersion < selected.StateVersion
             || contacts.CampaignId != selected.CampaignId
-            || contacts.AuthorityVersion != decline.StateVersion
+            || contacts.AuthorityVersion < decline.StateVersion
+            || contacts.AuthorityVersion > decline.StateVersion + 1
             || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
             throw new InvalidOperationException("Force Assignment lacks retained Combat authority.");
         var boundDefender = world.Representations.SingleOrDefault(value =>

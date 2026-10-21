@@ -100,8 +100,11 @@ now pass through the normal seat-bound Host opening, accepted event, retained re
 and cold replay. Each move updates Core World and both contact audiences, then returns to
 the defender decision; repeat moves retain a canonical event and an explicit stop advances
 to Force Assignment. Core now derives the next owner's full-current-TOE infantry
-allocation candidate from that owner's facts; sealed decisions and non-infantry
-contact disposition still need the normal durable path. Reserve Release, assault
+allocation candidate from that owner's facts. Core now accepts two
+owner-only full-TOE seals at that cut and records V17 events, advancing to Anti
+Armor only after both. Normal Host binds each to its own seat, opaque reference,
+atomic evidence and restart-safe receipt. The shared deadline, cancellation,
+non-infantry disposition and public route remain unfinished. Reserve Release, assault
 adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

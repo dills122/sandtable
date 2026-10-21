@@ -536,6 +536,72 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(5, attackerForce.SealOffer.CommittedToe);
         Assert.Equal(5, defenderForce.SealOffer.CommittedToe);
         Assert.NotEqual(attackerForce.SealOffer.ActionId, defenderForce.SealOffer.ActionId);
+        var attackerSeal = CampaignNativeCombatForceSealV17.Create(selected,
+            decline, atCombat.World, context, forceContacts, LandSide.Axis,
+            attackerForce.SealOffer.ActionId);
+        var afterAttackerSeal = forceContacts.AdvanceNativeCombatForceSeal(attackerSeal);
+        var defenderAfterSeal = CampaignContactForceAssignmentCut.Project(selected,
+            decline, atCombat.World, context, afterAttackerSeal,
+            LandSide.Commonwealth);
+        Assert.Equal(defenderForce.SealOffer.ActionId,
+            defenderAfterSeal.SealOffer.ActionId);
+        Assert.Equal(decline.NextPositionId, attackerSeal.NextPositionId);
+        Assert.Equal(attackerSeal, CampaignNativeCombatForceSealV17.Replay(selected,
+            decline, atCombat.World, context, forceContacts,
+            attackerSeal.SerializeCanonical()));
+        Assert.Equal(attackerSeal, CampaignCurrentEventSerializer.Deserialize(
+            attackerSeal.SerializeCanonical()));
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatForceSealV17.Create(selected, decline,
+                atCombat.World, context, afterAttackerSeal, LandSide.Axis,
+                attackerForce.SealOffer.ActionId, attackerSeal));
+        var defenderSeal = CampaignNativeCombatForceSealV17.Create(selected,
+            decline, atCombat.World, context, afterAttackerSeal,
+            LandSide.Commonwealth, defenderForce.SealOffer.ActionId, attackerSeal);
+        Assert.Equal(LandStepIds.AntiArmor,
+            Cna1979LandSequenceV4.CreateTurn(
+                atCombat.CurrentPosition.SequencePosition!.GameTurn).Single(value =>
+                value.PositionId == defenderSeal.NextPositionId).StepId);
+        Assert.Equal(defenderSeal, CampaignNativeCombatForceSealV17.Replay(selected,
+            decline, atCombat.World, context, afterAttackerSeal,
+            defenderSeal.SerializeCanonical(), attackerSeal));
+        var forceSession = new ExerciseSession(atCombat, context,
+            [selected.Decision, barrage, decline], forceContacts, selected,
+            combatBarrage: barrage, combatRetreatDecline: decline);
+        var defenderDraftBefore = CampaignHostAdapter.QueryContactForceOwnerDraft(
+            forceSession, CampaignActionAudience.Commonwealth, "commonwealth-infantry");
+        var attackerSubmission = new CampaignActionSubmission(
+            CampaignActionSubmission.CurrentContractVersion, selected.CampaignId,
+            decline.StateVersion, decline.NextPositionId, CampaignActionAudience.Axis,
+            attackerForce.SealOffer.ActionId);
+        var acceptedAttackerSeal = CampaignHostAdapter.SubmitContactOwnerForceSeal(
+            forceSession, attackerSubmission, "axis-infantry");
+        Assert.True(acceptedAttackerSeal.IsAccepted,
+            acceptedAttackerSeal.RejectionReason.ToString());
+        var defenderDraftAfter = CampaignHostAdapter.QueryContactForceOwnerDraft(
+            acceptedAttackerSeal.SuccessorSession!, CampaignActionAudience.Commonwealth,
+            "commonwealth-infantry");
+        Assert.Equal(defenderDraftBefore.VisibleBytes, defenderDraftAfter.VisibleBytes);
+        Assert.Equal(defenderDraftBefore.PrivateActionIds, defenderDraftAfter.PrivateActionIds);
+        Assert.Equal("{}", JsonSerializer.Serialize(defenderDraftAfter));
+        var defenderSubmission = attackerSubmission with
+        {
+            ExpectedStateVersion = attackerSeal.StateVersion,
+            Audience = CampaignActionAudience.Commonwealth,
+            ActionId = defenderForce.SealOffer.ActionId,
+        };
+        var acceptedDefenderSeal = CampaignHostAdapter.SubmitContactOwnerForceSeal(
+            acceptedAttackerSeal.SuccessorSession!, defenderSubmission,
+            "commonwealth-infantry");
+        Assert.True(acceptedDefenderSeal.IsAccepted,
+            acceptedDefenderSeal.RejectionReason.ToString());
+        Assert.Equal(defenderSeal.StateVersion,
+            CampaignExercises.QueryCheckpoint(acceptedDefenderSeal.SuccessorSession!).StateVersion);
+        Assert.Equal(defenderSeal.NextPositionId,
+            CampaignExercises.QueryCheckpoint(acceptedDefenderSeal.SuccessorSession!).PositionId);
+        Assert.False(CampaignHostAdapter.SubmitContactOwnerForceSeal(
+            acceptedAttackerSeal.SuccessorSession!, defenderSubmission with
+            { ActionId = attackerForce.SealOffer.ActionId }, "commonwealth-infantry").IsAccepted);
         var forged = selected.Decision with { BoundRepresentationId = "forged" };
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeCombatDecisionStateV12.Replay(atCombat, context,
