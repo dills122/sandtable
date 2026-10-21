@@ -155,6 +155,10 @@ same-slot Reserve Release position, settled World, retained Core RNG, and
 custody state. V11 snapshot admission remains at its historical Combat-entry
 boundary. Exercise and normal Host retain and cold-replay the V26 checkpoint;
 the following ordinary action and outward opening remain unwired.
+The normal Reserve Release rule derives only due own members and their legal
+I/II choices from the settled World. It carries resulting World and next-cycle
+movement allowance. A versioned accepted decision and Host opening still need
+to connect it to V26 authority.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

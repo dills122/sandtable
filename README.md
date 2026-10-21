@@ -154,6 +154,10 @@ An internal V26 successor event now binds the accepted custody event to a
 derived same-slot Reserve Release position, settled World, Core RNG, and custody
 state. Exercise and normal Host retain and cold-replay its V26 checkpoint after
 custody. The following ordinary action and public opening remain unwired.
+Core now derives the acting side's Reserve I or II queue and applies the
+source-rule release, conversion, or retention choice with its next-cycle
+movement allowance. Acceptance, Host owner opening, and sequence completion
+from this rule remain to be wired.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.
