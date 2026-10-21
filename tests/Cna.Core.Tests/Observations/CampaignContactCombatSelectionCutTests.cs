@@ -97,9 +97,9 @@ public sealed class CampaignContactCombatSelectionCutTests
             started.InitialSnapshotBytes, retainedSteps);
         Assert.True(imported.IsVerified, imported.RejectionReason.ToString());
         Assert.Equal(acceptedCombat.Evidence.SnapshotCheckpoint,
-            imported.Session!.CurrentCombatSelection!.SerializeCanonical());
+            imported.Session!.CurrentCombatDecision!.SerializeCanonical());
         Assert.True(CampaignExercises.Reconstruct(imported.Session).IsVerified);
-        var forgedSelection = imported.Session.CurrentCombatSelection.Selection with
+        var forgedSelection = imported.Session.CurrentCombatDecision.Decision with
         {
             BoundRepresentationId = "forged",
         };
@@ -114,6 +114,23 @@ public sealed class CampaignContactCombatSelectionCutTests
             started.InitialSnapshotBytes, forgedSteps).IsVerified);
         Assert.False(CampaignHostAdapter.SubmitContactOwnerCombatSelection(
             successor, submission, actor.ElementId).IsAccepted);
+        var finishSubmission = submission with { ActionId = cut.FinishOffer!.ActionId };
+        var acceptedFinish = CampaignHostAdapter.SubmitContactOwnerCombatSelection(
+            session, finishSubmission, actor.ElementId);
+        Assert.True(acceptedFinish.IsAccepted);
+        Assert.Equal("finish-combat-without-attack",
+            acceptedFinish.SuccessorSession!.CurrentCombatDecision!.Decision.Choice);
+        Assert.Equal(acceptedFinish.SuccessorSession.CurrentCombatDecision.Decision.NextPositionId,
+            CampaignExercises.QueryCheckpoint(acceptedFinish.SuccessorSession).PositionId);
+        Assert.True(CampaignExercises.Reconstruct(acceptedFinish.SuccessorSession).IsVerified);
+        var finishSteps = retainedSteps.Take(retainedSteps.Count - 1).Append(new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(finishSubmission),
+            acceptedFinish.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(acceptedFinish.Evidence.Receipt),
+            acceptedFinish.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.ContactCombatSelectionKind, actor.ElementId)).ToArray();
+        Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, finishSteps).IsVerified);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
             CampaignHostAdapter.SubmitContactOwnerCombatSelection(session,
                 submission with { ActionId = $"sha256:{new string('0', 64)}" },
@@ -174,23 +191,7 @@ public sealed class CampaignContactCombatSelectionCutTests
         var artifact = BreakdownContentFixture.Artifact();
         var scenario = BreakdownSnapshotTests.Scenario();
         var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
-        var movement = CampaignBreakdownLifecycleFactory.CreateMovementCompletion(
-            prior, artifact, scenario);
-        var atBreakdown = new CampaignSnapshotV11(11, prior.CampaignId,
-            movement.StateVersion, prior.RulesetHash, prior.Setup, prior.World,
-            prior.InitiativeHolder, prior.OperationStageOrders,
-            prior.OperationStageWeather, prior.RandomState,
-            CampaignPositionV11.FromSequence(movement.SequencePosition),
-            null, new CampaignBreakdownFlow.Idle());
-        var completion = CampaignBreakdownLifecycleFactory.CreateBreakdownCompletion(
-            atBreakdown, artifact, scenario,
-            CampaignBreakdownLifecycleFactory.CreateBreakdownCompletionActionId());
-        var atCombat = new CampaignSnapshotV11(11, prior.CampaignId,
-            completion.StateVersion, prior.RulesetHash, prior.Setup, prior.World,
-            prior.InitiativeHolder, prior.OperationStageOrders,
-            prior.OperationStageWeather, prior.RandomState,
-            CampaignPositionV11.FromSequence(completion.SequencePosition),
-            null, new CampaignBreakdownFlow.Idle());
+        var atCombat = CombatCutFrom(prior, artifact, scenario);
         Assert.Equal(LandStepIds.PositionDetermination,
             atCombat.CurrentPosition.SequenceContext.StepId);
         Assert.Equal(LandPhaseIds.MovementAndCombat,
@@ -210,16 +211,17 @@ public sealed class CampaignContactCombatSelectionCutTests
             CampaignActionAudience.Axis, "axis-infantry");
         var visible = Encoding.UTF8.GetString(draft.VisibleBytes);
         Assert.Contains(offer.ContactHandle, visible, StringComparison.Ordinal);
+        Assert.Contains("finish-combat-without-attack", visible, StringComparison.Ordinal);
         Assert.DoesNotContain(offer.ActionId, visible, StringComparison.Ordinal);
         Assert.DoesNotContain("boundRepresentationId", visible, StringComparison.Ordinal);
         Assert.Equal("{}", JsonSerializer.Serialize(draft));
 
-        var selected = CampaignNativeCombatSelectionStateV12.Select(atCombat,
+        var selected = CampaignNativeCombatDecisionStateV12.Select(atCombat,
             context, contacts, LandSide.Axis, "axis-infantry", offer.ActionId);
-        var canonicalEvent = selected.Selection.SerializeCanonical();
-        var replayed = CampaignNativeCombatSelectionStateV12.Replay(atCombat,
+        var canonicalEvent = selected.Decision.SerializeCanonical();
+        var replayed = CampaignNativeCombatDecisionStateV12.Replay(atCombat,
             context, contacts, canonicalEvent);
-        var readback = CampaignNativeCombatSelectionStateV12.DeserializeCanonical(
+        var readback = CampaignNativeCombatDecisionStateV12.DeserializeCanonical(
             selected.SerializeCanonical(), context, contacts);
 
         Assert.Equal(atCombat.StateVersion + 1, selected.StateVersion);
@@ -227,19 +229,76 @@ public sealed class CampaignContactCombatSelectionCutTests
             Cna1979LandSequenceV4.GetNext(atCombat.CurrentPosition.SequencePosition!).StepId);
         Assert.Equal(Cna1979LandSequenceV4.GetNext(
             atCombat.CurrentPosition.SequencePosition!).PositionId,
-            selected.Selection.NextPositionId);
+            selected.Decision.NextPositionId);
         Assert.Equal(selected.SerializeCanonical(), replayed.SerializeCanonical());
         Assert.Equal(selected.SerializeCanonical(), readback.SerializeCanonical());
-        Assert.Equal(offer.ContactHandle, selected.Selection.ContactHandle);
-        Assert.NotEqual("forged", selected.Selection.BoundRepresentationId);
-        var forged = selected.Selection with { BoundRepresentationId = "forged" };
+        Assert.Equal(offer.ContactHandle, selected.Decision.ContactHandle);
+        Assert.NotEqual("forged", selected.Decision.BoundRepresentationId);
+        var forged = selected.Decision with { BoundRepresentationId = "forged" };
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignNativeCombatSelectionStateV12.Replay(atCombat, context,
+            CampaignNativeCombatDecisionStateV12.Replay(atCombat, context,
                 contacts, forged.SerializeCanonical()));
-        var forgedRoute = selected.Selection with { NextPositionId = selected.Selection.PositionId };
+        var forgedRoute = selected.Decision with { NextPositionId = selected.Decision.PositionId };
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignNativeCombatSelectionStateV12.Replay(atCombat, context,
+            CampaignNativeCombatDecisionStateV12.Replay(atCombat, context,
                 contacts, forgedRoute.SerializeCanonical()));
 
+        var finish = CampaignNativeCombatDecisionStateV12.Select(atCombat,
+            context, contacts, LandSide.Axis, "axis-infantry", cut.FinishOffer!.ActionId);
+        Assert.Equal("finish-combat-without-attack", finish.Decision.Choice);
+        Assert.Null(finish.Decision.ContactHandle);
+        Assert.Null(finish.Decision.BoundRepresentationId);
+        Assert.Equal(finish.SerializeCanonical(),
+            CampaignNativeCombatDecisionStateV12.Replay(atCombat, context,
+                contacts, finish.Decision.SerializeCanonical()).SerializeCanonical());
+        Assert.Throws<JsonException>(() => (finish.Decision with
+        {
+            BoundRepresentationId = selected.Decision.BoundRepresentationId,
+        }).SerializeCanonical());
+
+    }
+
+    [Fact]
+    public void HiddenEnemyPositionsKeepFinishOfferAndVisibleBytesEqual()
+    {
+        var source = BreakdownSnapshotTests.Create(true);
+        var artifact = BreakdownContentFixture.Artifact();
+        var scenario = BreakdownSnapshotTests.Scenario();
+        var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
+        var left = CombatCutFrom(BreakdownMovementTests.ChangeElement(source,
+            "commonwealth-infantry", "east"), artifact, scenario);
+        var right = CombatCutFrom(BreakdownMovementTests.ChangeElement(source,
+            "commonwealth-infantry", "south-east"), artifact, scenario);
+        var first = CampaignContactCombatSelectionCut.Project(left, context,
+            CampaignContactJournal.Initialize(left, context), LandSide.Axis, "axis-infantry");
+        var second = CampaignContactCombatSelectionCut.Project(right, context,
+            CampaignContactJournal.Initialize(right, context), LandSide.Axis, "axis-infantry");
+
+        Assert.NotNull(first.FinishOffer);
+        Assert.Equal(first.FinishOffer.ActionId, second.FinishOffer!.ActionId);
+        Assert.Equal(CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(first),
+            CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(second));
+    }
+
+    private static CampaignSnapshotV11 CombatCutFrom(CampaignSnapshotV11 prior,
+        ContentPackV6Artifact artifact, ContentScenario scenario)
+    {
+        var movement = CampaignBreakdownLifecycleFactory.CreateMovementCompletion(
+            prior, artifact, scenario);
+        var atBreakdown = new CampaignSnapshotV11(11, prior.CampaignId,
+            movement.StateVersion, prior.RulesetHash, prior.Setup, prior.World,
+            prior.InitiativeHolder, prior.OperationStageOrders,
+            prior.OperationStageWeather, prior.RandomState,
+            CampaignPositionV11.FromSequence(movement.SequencePosition),
+            null, new CampaignBreakdownFlow.Idle());
+        var completion = CampaignBreakdownLifecycleFactory.CreateBreakdownCompletion(
+            atBreakdown, artifact, scenario,
+            CampaignBreakdownLifecycleFactory.CreateBreakdownCompletionActionId());
+        return new CampaignSnapshotV11(11, prior.CampaignId,
+            completion.StateVersion, prior.RulesetHash, prior.Setup, prior.World,
+            prior.InitiativeHolder, prior.OperationStageOrders,
+            prior.OperationStageWeather, prior.RandomState,
+            CampaignPositionV11.FromSequence(completion.SequencePosition),
+            null, new CampaignBreakdownFlow.Idle());
     }
 }

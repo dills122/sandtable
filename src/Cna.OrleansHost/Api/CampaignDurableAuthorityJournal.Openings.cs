@@ -38,7 +38,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     seat.Audience, actingElementId);
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;
-                actionIds = draft.PrivateAssaultActionIds.ToArray();
+                actionIds = draft.PrivateCombatActionIds.ToArray();
             }
             else
             {

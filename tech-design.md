@@ -760,11 +760,12 @@ visible bytes and HMAC action references separately from the current private aut
 and Core action map; equal visible cuts keep the same refs across hidden transitions. Internal
 contact-derived movement submission checks those references against the current visible cut and
 offers, accepts an unchanged opening across private authority advances, and retains a distinct replay kind,
-with exact retry returning the retained receipt. The first internal native Combat selection
-stage now accepts a current-contact action at Position Determination, stores its defender binding
-only in the private Core event, and verifies the resulting V12 checkpoint through Exercise and
-Host import replay. The normal Host issues an internal seat-bound Combat opening, commits its
-selected action atomically, and returns a retained receipt across restart. Combat adjudication
+with exact retry returning the retained receipt. The first internal native Combat decision
+stage accepts a current-contact assault or a source-eligible voluntary no-attack choice at
+Position Determination. Only selected assault stores a private defender binding; both choices
+record the exact Barrage successor and verify the resulting V12 checkpoint through Exercise and
+Host import replay. The normal Host issues an internal seat-bound Combat opening, commits the
+decision atomically, and returns a retained receipt across restart. No-attack traversal and Combat adjudication
 and the public opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

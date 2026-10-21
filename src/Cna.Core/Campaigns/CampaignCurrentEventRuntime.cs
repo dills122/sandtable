@@ -7,7 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
-        CampaignNativeCombatSelectedV12 selected => selected.SerializeCanonical(),
+        CampaignNativeCombatDecisionV12 selected => selected.SerializeCanonical(),
         CampaignCreatedV10 created => SerializeCreated(created),
         CampaignSuccessorEvent successor => CampaignBreakdownEventSerializer.Serialize(successor),
         CampaignEvent unchanged => CampaignV11PreambleCodec.Serialize(unchanged),
@@ -27,7 +27,7 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
-            "contact-assault-selected" => CampaignNativeCombatSelectedV12.Deserialize(canonicalJson),
+            "combat-selection-decided" => CampaignNativeCombatDecisionV12.Deserialize(canonicalJson),
             "element-moved" or "reacting-element-moved" or "reaction-participant-completed" or "reaction-window-closed"
                 or "movement-segment-completed" or "element-movement-stopped" or "breakdown-stop-resolved"
                 or "breakdown-segment-completed" => CampaignBreakdownEventSerializer.Deserialize(canonicalJson.Span),

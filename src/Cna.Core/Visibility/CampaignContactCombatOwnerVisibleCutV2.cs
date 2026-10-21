@@ -46,6 +46,14 @@ internal static class CampaignContactCombatOwnerVisibleCutV2
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
+            if (cut.FinishOffer is { } finish)
+            {
+                writer.WriteStartObject("finishOffer");
+                writer.WriteString("kind", "finish-combat-without-attack");
+                writer.WriteString("actingElementId", finish.ActingElementId);
+                writer.WriteEndObject();
+            }
+            else writer.WriteNull("finishOffer");
             writer.WriteEndObject();
         }
         return stream.ToArray();

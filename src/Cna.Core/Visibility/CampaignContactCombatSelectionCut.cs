@@ -11,8 +11,10 @@ internal sealed record CampaignContactCombatSelectionCut(
     long AuthorityVersion,
     CampaignContactOwnerMovementCut OwnerCut,
     IReadOnlyList<SelectContactAssaultAction> AssaultOffers,
-    bool MayFinishWithoutAttack)
+    FinishCombatWithoutAttackAction? FinishOffer)
 {
+    public bool MayFinishWithoutAttack => FinishOffer is not null;
+
     public static CampaignContactCombatSelectionCut Project(CampaignSnapshotV11 snapshot,
         CampaignContentContext context, CampaignContactJournal contacts, LandSide side,
         string actingElementId)
@@ -42,7 +44,8 @@ internal sealed record CampaignContactCombatSelectionCut(
         var mayFinish = context.ArtifactV6 is { } artifact
             && CampaignElementMovedV3Factory.DeriveControlledLocationIds(
                 snapshot.World, artifact, context.Scenario, opposing).Count == 0;
-        return new(snapshot.StateVersion, owner, Array.AsReadOnly(offers), mayFinish);
+        return new(snapshot.StateVersion, owner, Array.AsReadOnly(offers),
+            mayFinish ? new FinishCombatWithoutAttackAction(actingElementId) : null);
     }
 
     internal static SelectContactAssaultAction[] DeriveAdjacentOffers(string actingElementId,

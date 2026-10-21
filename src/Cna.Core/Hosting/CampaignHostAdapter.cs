@@ -44,7 +44,9 @@ public static class CampaignHostAdapter
             CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(cut),
             cut.AssaultOffers.OrderBy(value => value.ContactHandle, StringComparer.Ordinal)
                 .ThenBy(value => value.ApparentLocationId, StringComparer.Ordinal)
-                .Select(value => value.ActionId).ToArray());
+                .Select(value => value.ActionId)
+                .Concat(cut.FinishOffer is { } finish ? [finish.ActionId] : [])
+                .ToArray());
     }
 
     /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
@@ -58,7 +60,7 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentCombatSelection is not null)
+        if (session.CurrentCombatDecision is not null)
             return CampaignHostAudienceCut.Rejected(CampaignHostQueryRejectionReason.InvalidState);
         if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
             return CampaignHostAudienceCut.Rejected(CampaignHostQueryRejectionReason.InvalidAudience);
@@ -274,14 +276,14 @@ public sealed class CampaignHostContactOwnerDraft
 public sealed class CampaignHostContactCombatOwnerDraft
 {
     private readonly byte[] visibleBytes;
-    private readonly string[] privateAssaultActionIds;
+    private readonly string[] privateCombatActionIds;
 
     internal CampaignHostContactCombatOwnerDraft(long authorityVersion, byte[] visibleBytes,
-        IReadOnlyList<string> privateAssaultActionIds)
+        IReadOnlyList<string> privateCombatActionIds)
     {
         AuthorityVersion = authorityVersion;
         this.visibleBytes = visibleBytes.ToArray();
-        this.privateAssaultActionIds = privateAssaultActionIds.ToArray();
+        this.privateCombatActionIds = privateCombatActionIds.ToArray();
     }
 
     [JsonIgnore]
@@ -289,8 +291,8 @@ public sealed class CampaignHostContactCombatOwnerDraft
     [JsonIgnore]
     public byte[] VisibleBytes => visibleBytes.ToArray();
     [JsonIgnore]
-    public IReadOnlyList<string> PrivateAssaultActionIds =>
-        Array.AsReadOnly(privateAssaultActionIds.ToArray());
+    public IReadOnlyList<string> PrivateCombatActionIds =>
+        Array.AsReadOnly(privateCombatActionIds.ToArray());
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }

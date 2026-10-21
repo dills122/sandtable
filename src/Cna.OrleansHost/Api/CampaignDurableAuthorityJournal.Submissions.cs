@@ -98,7 +98,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(head.Session,
                     seat.Audience, actingElementId);
                 currentVisible = draft.VisibleBytes;
-                actionIds = draft.PrivateAssaultActionIds.ToArray();
+                actionIds = draft.PrivateCombatActionIds.ToArray();
             }
             else
             {

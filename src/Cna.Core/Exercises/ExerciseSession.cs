@@ -8,7 +8,7 @@ public sealed class ExerciseSession
 {
     internal ExerciseSession(CampaignSnapshotV11 snapshot, CampaignContentContext context,
         IEnumerable<object> history, CampaignContactJournal? contacts = null,
-        CampaignNativeCombatSelectionStateV12? combatSelection = null)
+        CampaignNativeCombatDecisionStateV12? combatSelection = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -17,12 +17,12 @@ public sealed class ExerciseSession
         CurrentContacts = contacts ?? CampaignContactJournal.Empty(snapshot.CampaignId);
         if (combatSelection is not null && combatSelection.PriorSnapshot != snapshot)
             throw new ArgumentException("Combat selection must bind the session's prior snapshot.", nameof(combatSelection));
-        CurrentCombatSelection = combatSelection;
+        CurrentCombatDecision = combatSelection;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
     internal ImmutableList<object> CurrentHistory { get; }
     internal CampaignContactJournal CurrentContacts { get; }
-    internal CampaignNativeCombatSelectionStateV12? CurrentCombatSelection { get; }
+    internal CampaignNativeCombatDecisionStateV12? CurrentCombatDecision { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

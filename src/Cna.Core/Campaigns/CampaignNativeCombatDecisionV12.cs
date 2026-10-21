@@ -6,19 +6,21 @@ using Cna.Core.Visibility;
 
 namespace Cna.Core.Campaigns;
 
-// This is the first native Combat authority transition. The defender binding stays
-// in the private event; public action identity contains only contact-visible data.
-internal sealed record CampaignNativeCombatSelectedV12(
+// This is the first native Combat authority transition. Selected assault binds a
+// defender privately; voluntary finish carries no target. Public action identity
+// contains only owner-visible data.
+internal sealed record CampaignNativeCombatDecisionV12(
     int ContractVersion,
     string CampaignId,
     long PriorStateVersion,
     string PositionId,
     string NextPositionId,
+    string Choice,
     LandSide Side,
     string ActingElementId,
-    string ContactHandle,
-    string ApparentLocationId,
-    string BoundRepresentationId,
+    string? ContactHandle,
+    string? ApparentLocationId,
+    string? BoundRepresentationId,
     string ActionId)
 {
     public const int CurrentContractVersion = 12;
@@ -32,19 +34,28 @@ internal sealed record CampaignNativeCombatSelectedV12(
         _ = ContentContractGuards.RequireStableId(PositionId, nameof(PositionId));
         _ = ContentContractGuards.RequireStableId(NextPositionId, nameof(NextPositionId));
         _ = ContentContractGuards.RequireStableId(ActingElementId, nameof(ActingElementId));
-        _ = ContentContractGuards.RequireStableId(ContactHandle, nameof(ContactHandle));
-        _ = ContentContractGuards.RequireStableId(ApparentLocationId, nameof(ApparentLocationId));
-        _ = ContentContractGuards.RequireStableId(BoundRepresentationId, nameof(BoundRepresentationId));
+        if (Choice is not ("select-contact-assault" or "finish-combat-without-attack"))
+            throw new JsonException("Invalid native Combat choice.");
+        if (Choice == "select-contact-assault")
+        {
+            _ = ContentContractGuards.RequireStableId(ContactHandle!, nameof(ContactHandle));
+            _ = ContentContractGuards.RequireStableId(ApparentLocationId!, nameof(ApparentLocationId));
+            _ = ContentContractGuards.RequireStableId(BoundRepresentationId!, nameof(BoundRepresentationId));
+        }
+        else if (ContactHandle is not null || ApparentLocationId is not null
+            || BoundRepresentationId is not null)
+            throw new JsonException("A voluntary finish has no target binding.");
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
             writer.WriteNumber("contractVersion", ContractVersion);
-            writer.WriteString("eventType", "contact-assault-selected");
+            writer.WriteString("eventType", "combat-selection-decided");
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("priorStateVersion", PriorStateVersion);
             writer.WriteString("positionId", PositionId);
             writer.WriteString("nextPositionId", NextPositionId);
+            writer.WriteString("choice", Choice);
             writer.WriteString("side", CampaignSnapshotSerializer.FormatSide(Side));
             writer.WriteString("actingElementId", ActingElementId);
             writer.WriteString("contactHandle", ContactHandle);
@@ -56,28 +67,29 @@ internal sealed record CampaignNativeCombatSelectedV12(
         return stream.ToArray();
     }
 
-    public static CampaignNativeCombatSelectedV12 Deserialize(ReadOnlyMemory<byte> canonicalJson)
+    public static CampaignNativeCombatDecisionV12 Deserialize(ReadOnlyMemory<byte> canonicalJson)
     {
         try
         {
             using var document = JsonDocument.Parse(canonicalJson);
             var root = document.RootElement;
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
-                "campaignId", "priorStateVersion", "positionId", "nextPositionId", "side", "actingElementId",
+                "campaignId", "priorStateVersion", "positionId", "nextPositionId", "choice", "side", "actingElementId",
                 "contactHandle", "apparentLocationId", "boundRepresentationId", "actionId");
-            if (root.GetProperty("eventType").GetString() != "contact-assault-selected")
+            if (root.GetProperty("eventType").GetString() != "combat-selection-decided")
                 throw new JsonException("Unknown native Combat event.");
-            var selected = new CampaignNativeCombatSelectedV12(
+            var selected = new CampaignNativeCombatDecisionV12(
                 root.GetProperty("contractVersion").GetInt32(),
                 root.GetProperty("campaignId").GetString()!,
                 root.GetProperty("priorStateVersion").GetInt64(),
                 root.GetProperty("positionId").GetString()!,
                 root.GetProperty("nextPositionId").GetString()!,
+                root.GetProperty("choice").GetString()!,
                 CampaignSnapshotSerializer.ParseSide(root.GetProperty("side").GetString()),
                 root.GetProperty("actingElementId").GetString()!,
-                root.GetProperty("contactHandle").GetString()!,
-                root.GetProperty("apparentLocationId").GetString()!,
-                root.GetProperty("boundRepresentationId").GetString()!,
+                root.GetProperty("contactHandle").GetString(),
+                root.GetProperty("apparentLocationId").GetString(),
+                root.GetProperty("boundRepresentationId").GetString(),
                 root.GetProperty("actionId").GetString()!);
             if (!canonicalJson.Span.SequenceEqual(selected.SerializeCanonical()))
                 throw new JsonException("Native Combat selection event is not canonical.");
@@ -91,48 +103,51 @@ internal sealed record CampaignNativeCombatSelectedV12(
     }
 }
 
-internal sealed record CampaignNativeCombatSelectionStateV12(
+internal sealed record CampaignNativeCombatDecisionStateV12(
     CampaignSnapshotV11 PriorSnapshot,
-    CampaignNativeCombatSelectedV12 Selection)
+    CampaignNativeCombatDecisionV12 Decision)
 {
     public const int CurrentContractVersion = 12;
     public long StateVersion => checked(PriorSnapshot.StateVersion + 1);
     public string CampaignId => PriorSnapshot.CampaignId;
 
-    public static CampaignNativeCombatSelectionStateV12 Select(CampaignSnapshotV11 prior,
+    public static CampaignNativeCombatDecisionStateV12 Select(CampaignSnapshotV11 prior,
         CampaignContentContext context, CampaignContactJournal contacts, LandSide side,
         string actingElementId, string actionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(actionId);
         var cut = CampaignContactCombatSelectionCut.Project(prior, context, contacts,
             side, actingElementId);
-        var offer = cut.AssaultOffers.SingleOrDefault(candidate => candidate.ActionId == actionId)
-            ?? throw new InvalidOperationException("Combat selection is not offered at this owner cut.");
-        var binding = contacts.ResolvePrivateTarget(side,
+        var offer = cut.AssaultOffers.SingleOrDefault(candidate => candidate.ActionId == actionId);
+        var finish = cut.FinishOffer?.ActionId == actionId;
+        if (offer is null && !finish)
+            throw new InvalidOperationException("Combat selection is not offered at this owner cut.");
+        var binding = offer is null ? null : contacts.ResolvePrivateTarget(side,
             cut.OwnerCut.ContactObservation.ActingFormationId, offer.ContactHandle);
         var nextPosition = Cna1979LandSequenceV4.GetNext(
             prior.CurrentPosition.SequencePosition!);
         if (nextPosition.StepId != LandStepIds.Barrage
             || nextPosition.SegmentId != LandSegmentIds.Combat)
             throw new InvalidOperationException("Combat selection must advance to Barrage.");
-        var selected = new CampaignNativeCombatSelectedV12(
-            CampaignNativeCombatSelectedV12.CurrentContractVersion, prior.CampaignId,
+        var selected = new CampaignNativeCombatDecisionV12(
+            CampaignNativeCombatDecisionV12.CurrentContractVersion, prior.CampaignId,
             prior.StateVersion, prior.CurrentPosition.SequenceContext.PositionId,
             nextPosition.PositionId,
-            side, actingElementId, offer.ContactHandle, offer.ApparentLocationId,
-            binding, offer.ActionId);
+            finish ? "finish-combat-without-attack" : "select-contact-assault",
+            side, actingElementId, offer?.ContactHandle, offer?.ApparentLocationId,
+            binding, actionId);
         _ = selected.SerializeCanonical();
         return new(prior, selected);
     }
 
-    public static CampaignNativeCombatSelectionStateV12 Replay(CampaignSnapshotV11 prior,
+    public static CampaignNativeCombatDecisionStateV12 Replay(CampaignSnapshotV11 prior,
         CampaignContentContext context, CampaignContactJournal contacts,
         ReadOnlyMemory<byte> canonicalEvent)
     {
-        var selected = CampaignNativeCombatSelectedV12.Deserialize(canonicalEvent);
+        var selected = CampaignNativeCombatDecisionV12.Deserialize(canonicalEvent);
         var expected = Select(prior, context, contacts, selected.Side,
             selected.ActingElementId, selected.ActionId);
-        if (!canonicalEvent.Span.SequenceEqual(expected.Selection.SerializeCanonical()))
+        if (!canonicalEvent.Span.SequenceEqual(expected.Decision.SerializeCanonical()))
             throw new InvalidCampaignHistoryException("Native Combat selection differs from the authority cut.");
         return expected;
     }
@@ -148,14 +163,14 @@ internal sealed record CampaignNativeCombatSelectionStateV12(
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WritePropertyName("priorSnapshot");
             writer.WriteRawValue(CampaignSnapshotV11Serializer.Serialize(PriorSnapshot));
-            writer.WritePropertyName("selection");
-            writer.WriteRawValue(Selection.SerializeCanonical());
+            writer.WritePropertyName("decision");
+            writer.WriteRawValue(Decision.SerializeCanonical());
             writer.WriteEndObject();
         }
         return stream.ToArray();
     }
 
-    public static CampaignNativeCombatSelectionStateV12 DeserializeCanonical(
+    public static CampaignNativeCombatDecisionStateV12 DeserializeCanonical(
         ReadOnlyMemory<byte> canonicalJson, CampaignContentContext context,
         CampaignContactJournal contacts)
     {
@@ -164,12 +179,12 @@ internal sealed record CampaignNativeCombatSelectionStateV12(
             using var document = JsonDocument.Parse(canonicalJson);
             var root = document.RootElement;
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "campaignId",
-                "stateVersion", "priorSnapshot", "selection");
+                "stateVersion", "priorSnapshot", "decision");
             if (root.GetProperty("contractVersion").GetInt32() != CurrentContractVersion)
                 throw new JsonException("Unsupported native Combat snapshot contract.");
             var priorBytes = JsonSerializer.SerializeToUtf8Bytes(root.GetProperty("priorSnapshot"));
             var prior = CampaignSnapshotV11Serializer.Deserialize(priorBytes);
-            var eventBytes = JsonSerializer.SerializeToUtf8Bytes(root.GetProperty("selection"));
+            var eventBytes = JsonSerializer.SerializeToUtf8Bytes(root.GetProperty("decision"));
             var state = Replay(prior, context, contacts, eventBytes);
             if (root.GetProperty("campaignId").GetString() != state.CampaignId
                 || root.GetProperty("stateVersion").GetInt64() != state.StateVersion

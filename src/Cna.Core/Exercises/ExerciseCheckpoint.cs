@@ -17,14 +17,14 @@ public sealed class ExerciseCheckpoint
         PositionId = CampaignCurrentActionExecution.CurrentPositionId(snapshot);
     }
 
-    internal ExerciseCheckpoint(CampaignNativeCombatSelectionStateV12 selection)
+    internal ExerciseCheckpoint(CampaignNativeCombatDecisionStateV12 decision)
     {
-        ArgumentNullException.ThrowIfNull(selection);
-        ContractVersion = CampaignNativeCombatSelectionStateV12.CurrentContractVersion;
-        CampaignId = selection.CampaignId;
-        StateVersion = selection.StateVersion;
-        RulesetHash = selection.PriorSnapshot.RulesetHash;
-        PositionId = selection.Selection.PositionId;
+        ArgumentNullException.ThrowIfNull(decision);
+        ContractVersion = CampaignNativeCombatDecisionStateV12.CurrentContractVersion;
+        CampaignId = decision.CampaignId;
+        StateVersion = decision.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = decision.Decision.NextPositionId;
     }
 
     public int ContractVersion { get; }

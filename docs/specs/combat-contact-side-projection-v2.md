@@ -50,7 +50,10 @@ The event records the exact sequence successor, Barrage, and cold replay rejects
 different route; subsequent Combat position handlers still need implementation.
 The internal cut now checks voluntary-finish eligibility against opposing ZOC
 authority. Current V6 campaign worlds certify no positive ZOC source, while
-unsupported future worlds fail closed. This does not yet emit a finish action.
+unsupported future worlds fail closed. Both selected-assault and voluntary-finish
+choices now append a canonical V12 owner decision through the same normal Core/Host
+receipt and cold-replay path. A finish carries no target binding; subsequent
+no-attack structural steps through Reserve Release still need implementation.
 Core's trusted Combat owner draft serializes current contact handles, apparent hexes and
 assault offers in a V2 visible cut; its action IDs, authority fence and defender binding
 remain private to Host/Core. The draft is not a public route.

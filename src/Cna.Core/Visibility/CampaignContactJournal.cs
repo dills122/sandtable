@@ -114,7 +114,7 @@ internal sealed class CampaignContactJournal
     }
 
     internal CampaignContactJournal AdvanceNativeCombatSelection(
-        CampaignNativeCombatSelectionStateV12 selected)
+        CampaignNativeCombatDecisionStateV12 selected)
     {
         ArgumentNullException.ThrowIfNull(selected);
         if (selected.CampaignId != CampaignId
