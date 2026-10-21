@@ -975,9 +975,26 @@ dormant authority. No second assault is claimed without a separately certified s
 
 ### Checkpoint I — side-safe public activation
 
+**Permanent fog dependency before Task 020:** the frozen
+[Combat side projection v1](../specs/combat-side-projection-v1.md) uses a
+World-derived apparent opponent location. Retain that codec for historical
+P01/private replay; do not publish it as the new campaign visibility rule.
+Freeze a versioned successor to `CMB-CON-005` first, following the
+[permanent fog architecture plan](../research/combat-fog-of-war-architecture-spike.md).
+Its contract must define Core-owned side contact transitions, audience-safe
+loss/rediscovery, public revision distinct from private authority version,
+same-cut action offers, owner opening/submission, and source-backed forced and
+surprise Combat behavior. Activation must freeze and validate a closed
+rules/config capability manifest for every family reachable later, including
+mandatory actions; reject an uncovered family before play and revalidate on
+restore or rule change. Task 020 cannot start its outward implementation
+against the historical World-derived projection. V7/V6 and old P01 readers
+remain historical until migrated or gated; new campaign readers use only the
+successor. This dependency does not alter frozen v1 canonical bytes.
+
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
-| `CMB-TASK-020` / M, 3–5 files | Implement frozen observation/action projection and authenticated-audience submission mapping. Enforce allowlisted custody/replacement inferences; hide raw authority history/counters and unapproved opponent facts. | `CombatCycleDisclosure` equal-authorized-history byte/action/outcome pairs across every window, including seal order, hidden forks and terminal reasons. | 004/019; [Observations](../../src/Cna.Core/Observations/), [Actions](../../src/Cna.Core/Actions/), focused Core tests. |
+| `CMB-TASK-020` / M, 3–5 files | Implement the frozen `CMB-CON-005` successor observation/action projection and authenticated-audience submission mapping. Enforce allowlisted custody/replacement inferences; hide raw authority history/counters and unapproved opponent facts. | `CombatCycleDisclosure` equal-owner-visible-history byte/action/opening/notification/rejection pairs across hidden forks, seal order and terminal reasons; forced-action and capability-closure negatives. | 004/019/**successor freeze**; [Observations](../../src/Cna.Core/Observations/), [Actions](../../src/Cna.Core/Actions/), focused Core tests. |
 | `CMB-TASK-021` / M, 3–5 files | Activate the new certified capability coherently in ordinary Core authority. Reject unsupported initial profiles/terminals before decisions; keep old readers and new recovery available. | `CombatCycleAdmission` ordinary entry-to-terminal public traces, dormant/active separation, historical compatibility and all Core AC evidence indexed. | 020; Core admission/registration files and focused Core tests. |
 
 Checkpoint I: full repository gate and privacy/admission review before simulator adoption. No

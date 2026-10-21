@@ -125,12 +125,35 @@ single game rule, not a second visibility mode.
 Core derives the observation and its action set at one authoritative cut.
 Chronicle durably stores the contact transition and Host's owner opening
 before a player sees an action. The opening binds the side, seat, cut,
-observation digest, public aliases and deadline. On submission, Host
-authenticates and fences the request; Core verifies the contact/action is
-still current and commits one result and receipt. Retry reads back the same
-opening or receipt. Maproom displays current contacts, stale markers and
-available intents from that one owner view; Intelligence receives only the
-same side-safe information.
+observation digest, public aliases and deadline. Its private fence carries
+the authority cut; the outward opening carries only a side-audience revision
+and stable public decision/action references. A hidden authority transition
+may advance the private cut without changing the audience revision, opening,
+notification or available actions. On submission, Host authenticates and
+fences the request against the retained opening. An offered, timely action is
+accepted against that side-visible opening; hidden truth is adjudicated
+inside Core, not returned as a new stale/illegal rejection category. Only a
+source-authorized, actually observed result may distinguish the histories.
+Retry reads back the same opening or receipt. Test byte-identical outward
+openings, notifications, offers and generic rejections for equal-visible
+histories with different hidden transitions. Maproom displays current
+contacts, stale markers and available intents from that one owner view;
+Intelligence receives only the same side-safe information.
+
+### Capability admission
+
+At campaign activation, Core freezes a closed capability manifest for the
+selected Land rules/config: movement and ZOC families, surprise/forced
+engagements, unit and weapon classes, terrain/weather/detection rules,
+information-sharing rules and any optional variants. The manifest includes
+all families that can become reachable later from that configuration, not
+just conditions true in the starting World. Each enabled family must map to
+a versioned contact/disclosure transition, a defined owner or System action,
+and an adjudication handler. Unknown or uncovered families reject activation
+with a generic owner-safe result. A rules/config change or restored campaign
+must revalidate the same closure before it can produce another turn; it cannot
+silently enable a new family mid-campaign. Tests cover every declared family,
+the first state where each becomes reachable, and an unknown-family negative.
 
 ### Migration and publication
 
@@ -152,6 +175,16 @@ Inventory every outward reader before enabling a fog-enabled campaign:
 Existing snapshot and observation versions remain readable for historical
 replay. New activations select the new visibility-policy version; they must
 not combine a new contact action set with an old World-derived observation.
+The frozen [Combat side projection v1](../specs/combat-side-projection-v1.md)
+uses an apparent opponent location declassified from World. It remains a
+historical/private P01 codec, not the new campaign visibility contract. Before
+`CMB-TASK-020` implements any outward path, freeze a **versioned successor to
+`CMB-CON-005`** with the contact lifecycle, side-audience revision, public
+opening and submission rules above. Add it as an explicit Task 020 dependency
+in the [Combat delivery plan](../design/combat-cycle-implementation-plan.md).
+Existing V7/V6 observation consumers and the frozen P01 codec remain
+historical readers only; new campaign observation, actions and Host/Maproom
+publication consume the successor together.
 The publication gate is a same-head Core observation/action pair, source-legal
 forced/surprise cases, two-side privacy tests, durable opening/receipt restart,
 and a normal Maproom read/submit path. Until every outward reader is on this
@@ -159,12 +192,15 @@ path or explicitly gated as historical, do not call it the production default.
 
 ## Build the feature in the real path
 
-1. Write the versioned **campaign visibility rule** and contact/event schemas
-   into Core/Rules and Core/Observations. Specify initial detection from
+1. Freeze the `CMB-CON-005` successor and versioned **campaign visibility
+   rule** before Task 020; write contact/event schemas into Core/Rules and
+   Core/Observations. Specify initial detection from
    authentic movement/contact/combat events, continued sight, observer-visible
    loss, rediscovery, identity levels and information sharing. Pin forced ZOC,
    surprise engagement and hidden-participant transitions against source rules
-   before enabling those capabilities. Do not add an alternate RC profile.
+   before enabling those capabilities. Freeze the complete activation
+   capability manifest and reachability check. Do not add an alternate RC
+   profile.
 2. Make one Core observation projector consume replayed contact knowledge,
    replacing caller-supplied apparent target facts for new campaigns. Generate
    voluntary direct-assault intents from current actionable contacts and
@@ -182,7 +218,9 @@ path or explicitly gated as historical, do not call it the production default.
    cannot be selected for direct assault; source-required ZOC and surprise
    cases reach their defined choices; hidden participants stay private; two
    seats see only their own knowledge; restart returns the same opening;
-   accepted input resolves once. Include paired equal-visible histories with
+   accepted input resolves once. Check authority-cut/public-revision
+   separation and byte-identical openings, notifications and generic
+   rejections. Include paired equal-visible histories with
    different hidden movement as a focused regression, without turning the
    implementation into a separate synthetic proof program.
 5. Capture new authenticated campaign histories from this actual feature and
