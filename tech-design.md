@@ -749,7 +749,9 @@ omit those bindings. Creation, ordinary Movement, and Reaction movement cuts app
 adjacency rule, with exact contact-record checks against independently replayed
 authority events. The Core journal advances across accepted turns without new sight,
 and an internal owner movement cut binds its contact view and visible movement offers
-to the same authority version. Encounter adjudication and normal durable Host
+to the same authority version. The trusted Host adapter receives canonical owner-visible
+bytes separately from the private authority fence and Core action map. Encounter
+adjudication and normal durable Host
 persistence must precede issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.
 

@@ -59,6 +59,19 @@ read side knowledge; they never inspect opposing World state to invent a contact
 
 ## Player view and action boundary
 
+Core's `CampaignContactOwnerVisibleCutV1` serializes the owner-facing part of
+one contact/action cut in fixed JSON order: contract and campaign identity,
+side and acting formation, contact audience revision, side contact observation,
+published locations and edges, acting own element, and Movement offers with
+origin, destination and exact total cost. Existing observation writers retain
+full published map and own-element fields. It excludes the private authority
+version, opposing representation binding, contact source event, and Core action
+ID. Equal owner-visible cuts must produce identical bytes even when hidden
+opponent positions differ. Host must durably bind these bytes to an authenticated
+seat, opening revision and private action mapping before issuing a public action
+reference. The projection is an input to that normal campaign path, not an
+independently issuable decision.
+
 `CampaignContactObservationV1` projects only contacts accessible to the acting
 formation and an observer-scoped audience revision. A current contact can become a
 visibility-qualified target candidate. A stale contact remains a last-known

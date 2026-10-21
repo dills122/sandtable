@@ -72,7 +72,9 @@ default adjacency rule at creation and accepted ordinary and Reaction movement c
 exercise session retains contact records and checks them against authority-event
 replay. Core now fences contact knowledge to each accepted authority cut and derives an
 acting element's contact view and movement offers from that same cut, without consulting
-hidden opposing positions for offer membership. These internal offers are not yet issued
+hidden opposing positions for offer membership. Core now supplies a canonical owner-visible
+draft to the trusted Host adapter while retaining its authority fence and action IDs privately.
+These internal offers are not yet issued
 or accepted through the normal durable Host; historical observation readers remain
 readable while the complete successor path is built.
 

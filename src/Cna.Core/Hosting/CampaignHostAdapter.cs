@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Hosting;
 
@@ -11,6 +13,23 @@ public static class CampaignHostAdapter
 {
     public static ExerciseStartResult Create(CampaignCreationRequest request) =>
         CampaignExercises.Begin(request);
+
+    /// <summary>
+    /// Trusted successor input for the normal campaign host. The visible bytes contain no
+    /// private authority version or Core action ID; Host must durably bind an authenticated
+    /// owner opening and its private action map before any client can receive them.
+    /// </summary>
+    public static CampaignHostContactOwnerDraft QueryContactOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            throw new ArgumentOutOfRangeException(nameof(audience));
+        var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var cut = CampaignExercises.QueryContactOwnerMovementCut(session, side, actingElementId);
+        return new CampaignHostContactOwnerDraft(cut.AuthorityVersion,
+            CampaignContactOwnerVisibleCutV1.SerializeCanonical(cut), cut.MovementOffers);
+    }
 
     public static CampaignHostAudienceCut QueryAudience(
         ExerciseSession session, CampaignActionAudience audience)
@@ -158,6 +177,29 @@ public static class CampaignHostAdapter
 
         return CampaignHostImportResult.Verified(session);
     }
+}
+
+/// <summary>Host-private authority fence and action map paired with one side-safe Core cut.</summary>
+public sealed class CampaignHostContactOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly MoveElementAction[] privateMovementActions;
+
+    internal CampaignHostContactOwnerDraft(long authorityVersion, byte[] visibleBytes,
+        IReadOnlyList<MoveElementAction> privateMovementActions)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateMovementActions = privateMovementActions.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<MoveElementAction> PrivateMovementActions =>
+        Array.AsReadOnly(privateMovementActions.ToArray());
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }
