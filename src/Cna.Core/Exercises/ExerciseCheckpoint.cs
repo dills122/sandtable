@@ -87,6 +87,16 @@ public sealed class ExerciseCheckpoint
         PositionId = completion.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatForceCancellationV19 cancellation,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeCombatForceCancellationV19.CurrentContractVersion;
+        CampaignId = cancellation.CampaignId;
+        StateVersion = cancellation.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = cancellation.NextPositionId;
+    }
+
     public int ContractVersion { get; }
     public string CampaignId { get; }
     public long StateVersion { get; }

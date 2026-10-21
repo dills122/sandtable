@@ -17,7 +17,8 @@ public sealed class ExerciseSession
         CampaignContactJournal? combatRetreatPriorContacts = null,
         IEnumerable<CampaignNativeCombatRetreatMoveV16>? combatRetreatMoves = null,
         IEnumerable<CampaignNativeCombatForceSealV17>? combatForceSeals = null,
-        CampaignNativeCombatForceCompletionV18? combatForceCompletion = null)
+        CampaignNativeCombatForceCompletionV18? combatForceCompletion = null,
+        CampaignNativeCombatForceCancellationV19? combatForceCancellation = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -80,6 +81,14 @@ public sealed class ExerciseSession
             || combatForceCompletion.CampaignId != snapshot.CampaignId))
             throw new ArgumentException("Force completion requires both retained owner seals.",
                 nameof(combatForceCompletion));
+        if (combatForceCancellation is not null && (combatForceCompletion is not null
+            || forceSeals.Length > 1 || combatRetreatDecline is null
+            || combatForceCancellation.PriorStateVersion
+                != (forceSeals.Length == 0 ? combatRetreatDecline.StateVersion
+                    : forceSeals[0].StateVersion)
+            || combatForceCancellation.CampaignId != snapshot.CampaignId))
+            throw new ArgumentException("Force cancellation requires an incomplete retained round.",
+                nameof(combatForceCancellation));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -90,6 +99,7 @@ public sealed class ExerciseSession
         CurrentCombatRetreatMoves = Array.AsReadOnly(moves);
         CurrentCombatForceSeals = Array.AsReadOnly(forceSeals);
         CurrentCombatForceCompletion = combatForceCompletion;
+        CurrentCombatForceCancellation = combatForceCancellation;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -105,5 +115,6 @@ public sealed class ExerciseSession
     internal IReadOnlyList<CampaignNativeCombatRetreatMoveV16> CurrentCombatRetreatMoves { get; }
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> CurrentCombatForceSeals { get; }
     internal CampaignNativeCombatForceCompletionV18? CurrentCombatForceCompletion { get; }
+    internal CampaignNativeCombatForceCancellationV19? CurrentCombatForceCancellation { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

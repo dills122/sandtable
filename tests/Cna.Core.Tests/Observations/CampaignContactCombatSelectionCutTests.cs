@@ -587,6 +587,50 @@ public sealed class CampaignContactCombatSelectionCutTests
             forceSession, attackerSubmission, "axis-infantry");
         Assert.True(acceptedAttackerSeal.IsAccepted,
             acceptedAttackerSeal.RejectionReason.ToString());
+        var timing = new CampaignDecisionTimingConfigurationV1(
+            "rules-lab.native-combat-timing.1", atCombat.RulesetHash,
+            context.ArtifactV6!.Identity.Hash,
+            [new("custody", 30_000, "leave-unguarded"),
+                new("cycle-control", 30_000, "finish-phase"),
+                new("force-assignment", 30_000, "cancel-incomplete-voluntary-round"),
+                new("rba", 30_000, "cancel-without-decline"),
+                new("reserve-release", 30_000, "convert-unresolved-i-retain-ii"),
+                new("retreat", 30_000, "refuse-retreat"),
+                new("selection", 30_000, "no-selection")]);
+        var cancelled = CampaignExercises.CancelNativeCombatForceAssignment(
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 31_000,
+            "deadline");
+        Assert.True(cancelled.IsAccepted, cancelled.RejectionReason.ToString());
+        Assert.Single(cancelled.SuccessorSession!.CurrentCombatForceSeals);
+        Assert.Equal(LandStepIds.AntiArmor,
+            Cna1979LandSequenceV4.CreateTurn(
+                atCombat.CurrentPosition.SequencePosition!.GameTurn).Single(value =>
+                value.PositionId == CampaignExercises.QueryCheckpoint(cancelled.SuccessorSession).PositionId)
+                .StepId);
+        var cancelledEvent = cancelled.SuccessorSession.CurrentCombatForceCancellation!;
+        Assert.Equal(cancelledEvent, CampaignNativeCombatForceCancellationV19.Replay(
+            selected, decline, [attackerSeal], cancelledEvent.SerializeCanonical()));
+        Assert.Equal(cancelledEvent, CampaignCurrentEventSerializer.Deserialize(
+            cancelledEvent.SerializeCanonical()));
+        Assert.False(CampaignExercises.CancelNativeCombatForceAssignment(
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 30_999,
+            "deadline").IsAccepted);
+        Assert.False(CampaignExercises.CancelNativeCombatForceAssignment(
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, null,
+            "deadline").IsAccepted);
+        var noSealCancellation = CampaignExercises.CancelNativeCombatForceAssignment(
+            forceSession, timing, 1_000, 31_000, 31_000, "deadline");
+        Assert.True(noSealCancellation.IsAccepted,
+            noSealCancellation.RejectionReason.ToString());
+        Assert.Empty(noSealCancellation.SuccessorSession!.CurrentCombatForceSeals);
+        Assert.Null(noSealCancellation.SuccessorSession.CurrentCombatForceCancellation!
+            .RetainedSealHash);
+        Assert.False(CampaignHostAdapter.SubmitContactOwnerForceSeal(
+            cancelled.SuccessorSession, attackerSubmission, "axis-infantry").IsAccepted);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatForceCancellationV19.Create(selected, decline,
+                [attackerSeal, defenderSeal], timing.Hash, 1_000, 31_000, 31_000,
+                "deadline"));
         var defenderDraftAfter = CampaignHostAdapter.QueryContactForceOwnerDraft(
             acceptedAttackerSeal.SuccessorSession!, CampaignActionAudience.Commonwealth,
             "commonwealth-infantry");
