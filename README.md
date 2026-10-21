@@ -169,7 +169,9 @@ the side-safe cycle choice and restart-stable receipt. Internal V29 now accepts
 one released-unit repeated Movement action from the same-cut contact offer,
 updates World and contacts, and retains its normal Host receipt across restart.
 V30 records the cohortless Breakdown determination as a System step before
-same-slot Combat, with atomic Host append and cold replay. Repeated Combat and
+same-slot Combat, with atomic Host append and cold replay. An internal V31 owner
+cut now projects repeated Combat offers from retained World and contacts.
+Repeated Combat selection and
 Reserve Release, vehicle accounting, other continuation witnesses, and
 the public route remain to be wired.
 The normal journal now has an opt-in, loopback-only version-2 HTTP entry for

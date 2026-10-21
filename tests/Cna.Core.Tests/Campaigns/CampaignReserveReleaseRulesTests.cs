@@ -3,6 +3,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -193,6 +194,37 @@ public sealed class CampaignReserveReleaseRulesTests
         Assert.Equal(breakdown.StateVersion,
             afterMovementContacts.AdvanceNativeRepeatBreakdown(breakdown)
                 .AuthorityVersion);
+        var repeatedCombatContacts = afterMovementContacts
+            .AdvanceNativeRepeatBreakdown(breakdown);
+        var repeatedCombat = CampaignRepeatCombatOwnerCutV31.Project(
+            completedRelease, repeat, repeatedMove, breakdown,
+            repeatedWorld, session.Context, repeatedCombatContacts,
+            repeatedMove.ElementId);
+        Assert.Equal(breakdown.StateVersion, repeatedCombat.AuthorityVersion);
+        Assert.Equal(repeatedMove.DestinationLocationId,
+            repeatedCombat.ActingElement.CurrentLocationId);
+        Assert.NotNull(repeatedCombat.FinishOffer);
+        var visibleCombat = System.Text.Encoding.UTF8.GetString(
+            repeatedCombat.VisibleBytes);
+        Assert.Contains("finish-combat-without-attack", visibleCombat,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("boundRepresentationId", visibleCombat,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("actionId", visibleCombat,
+            StringComparison.Ordinal);
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignRepeatCombatOwnerCutV31.Project(completedRelease,
+                repeat, repeatedMove,
+                breakdown with { WorldHash = "sha256:" + new string('0', 64) },
+                repeatedWorld, session.Context, repeatedCombatContacts,
+                repeatedMove.ElementId));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignRepeatCombatOwnerCutV31.Project(completedRelease,
+                repeat, repeatedMove with
+                {
+                    PriorEventHash = "sha256:" + new string('0', 64),
+                }, breakdown, repeatedWorld, session.Context,
+                repeatedCombatContacts, repeatedMove.ElementId));
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeRepeatBreakdownV30.Replay(completedRelease,
                 repeat, repeatedMove, repeatedWorld, session.Context,
