@@ -77,8 +77,10 @@ draft to the trusted Host adapter while retaining its authority fence and action
 The normal Host now has an internal [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md)
 that atomically retains accepted Core evidence and verifies it by full Core replay on cold read.
 It now retains one-time side grants and restart-safe credential digests with epoch revocation.
-These internal offers are not yet issued or accepted through an authenticated durable owner
-opening; historical observation readers remain readable while the complete successor path is built.
+An internal authenticated owner-opening query retains a side-safe visible cut and private
+reference-to-Core-action map. It keeps outward bytes and refs stable across unseen authority
+changes. There is no public opening route or contact-derived submit path yet; historical
+observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 and native reader authenticate ordinary outward/return Movement and all three direct Reaction closure

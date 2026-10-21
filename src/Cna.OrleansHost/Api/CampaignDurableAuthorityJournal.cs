@@ -15,7 +15,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 2;
+    private const int SchemaVersion = 3;
     private const int MaxEvidenceBytes = 2_097_152;
     private readonly string path;
     private readonly TimeProvider clock;
@@ -80,10 +80,40 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE reference_key (
+              singleton INTEGER PRIMARY KEY CHECK(singleton=1), secret BLOB NOT NULL
+            )
+            """);
+        Execute(connection, """
+            CREATE TABLE owner_openings (
+              campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
+              seat_epoch INTEGER NOT NULL, revision INTEGER NOT NULL,
+              visible_digest TEXT NOT NULL, visible_bytes BLOB NOT NULL,
+              authority_version INTEGER NOT NULL, action_count INTEGER NOT NULL,
+              PRIMARY KEY(campaign_id,side,acting_element_id),
+              FOREIGN KEY(campaign_id,side) REFERENCES seats(campaign_id,side)
+            )
+            """);
+        Execute(connection, """
+            CREATE TABLE owner_actions (
+              campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
+              public_ref TEXT NOT NULL, ordinal INTEGER NOT NULL, core_action_id TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,side,acting_element_id,public_ref),
+              FOREIGN KEY(campaign_id,side,acting_element_id)
+                REFERENCES owner_openings(campaign_id,side,acting_element_id)
+            )
+            """);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
             command.Parameters.AddWithValue("$digest", operatorDigest);
+            command.ExecuteNonQuery();
+        }
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandText = "INSERT INTO reference_key VALUES (1,$secret)";
+            command.Parameters.AddWithValue("$secret", RandomNumberGenerator.GetBytes(32));
             command.ExecuteNonQuery();
         }
         Execute(connection, $"PRAGMA application_id={ApplicationId}");

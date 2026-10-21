@@ -103,12 +103,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     internal CampaignSeatAuthority? AuthenticateSeat(CampaignSeatCredential credential)
     {
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction();
+        return AuthenticateSeat(connection, transaction, credential);
+    }
+
+    private CampaignSeatAuthority? AuthenticateSeat(SqliteConnection connection,
+        SqliteTransaction transaction, CampaignSeatCredential credential)
+    {
         ArgumentNullException.ThrowIfNull(credential);
         var digest = TryCredentialDigest("seat-credential", credential.Secret);
         if (digest is null) return null;
         var side = Side(credential.Audience);
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction();
         using var query = connection.CreateCommand();
         query.Transaction = transaction;
         query.CommandText = """

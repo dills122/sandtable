@@ -1,6 +1,7 @@
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.OrleansHost.Api;
 using Microsoft.Data.Sqlite;
@@ -55,6 +56,42 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.NotNull(fixture.Open(clock).AuthenticateSeat(credential));
         clock.Advance(TimeSpan.FromHours(2));
         Assert.Null(fixture.Open(clock).AuthenticateSeat(credential));
+    }
+
+    [Fact]
+    public void OwnerOpeningRemainsByteIdenticalAcrossUnseenAuthorityAdvanceAndRestart()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var session = journal.CreateCampaign(Request());
+        var grant = journal.IssueSeatGrant("campaign-durable-journal",
+            CampaignActionAudience.Axis, OperatorSecret);
+        var credential = journal.RedeemSeatGrant(grant)!;
+        var elementId = CampaignHostAdapter.QueryPrivateSideCut(session,
+            CampaignActionAudience.Axis)!.OwnElements[0].ElementId;
+        var first = journal.QueryOwnerOpening(credential, elementId);
+        var reopened = fixture.Open().QueryOwnerOpening(credential, elementId);
+        Assert.Equal(first.VisibleBytes, reopened.VisibleBytes);
+        Assert.Equal(first.PublicActionRefs, reopened.PublicActionRefs);
+        Assert.Equal(first.Revision, reopened.Revision);
+
+        var system = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
+        var advance = new CampaignActionSubmission(1, system.CampaignId,
+            system.StateVersion, system.PositionId, system.Audience,
+            system.Candidates.Single().ActionId);
+        Assert.True(journal.Append(advance.CampaignId, advance).IsAccepted);
+        var after = fixture.Open().QueryOwnerOpening(credential, elementId);
+        Assert.Equal(first.VisibleBytes, after.VisibleBytes);
+        Assert.Equal(first.PublicActionRefs, after.PublicActionRefs);
+        Assert.Equal(first.Revision, after.Revision);
+
+        var replacementGrant = journal.IssueSeatGrant("campaign-durable-journal",
+            CampaignActionAudience.Axis, OperatorSecret);
+        var replacement = journal.RedeemSeatGrant(replacementGrant)!;
+        Assert.Throws<UnauthorizedAccessException>(() => journal.QueryOwnerOpening(
+            credential, elementId));
+        Assert.Equal(first.Revision + 1,
+            journal.QueryOwnerOpening(replacement, elementId).Revision);
     }
 
     [Fact]
