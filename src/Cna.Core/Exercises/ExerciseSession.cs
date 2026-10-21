@@ -22,7 +22,8 @@ public sealed class ExerciseSession
         CampaignNativeCombatAntiArmorV20? combatAntiArmor = null,
         CampaignNativeCombatCancelledAssaultV21? combatCancelledAssault = null,
         CampaignNativeCombatAssaultResultV22? combatAssaultResult = null,
-        CampaignWorldSnapshotV6? combatPaidWorld = null)
+        CampaignWorldSnapshotV6? combatPaidWorld = null,
+        CampaignNativeCombatRetreatAfterAssaultV23? combatPostResultRetreat = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -118,6 +119,15 @@ public sealed class ExerciseSession
         if (combatAssaultResult is null && combatPaidWorld is not null)
             throw new ArgumentException("Paid World requires a retained assault result.",
                 nameof(combatPaidWorld));
+        if (combatPostResultRetreat is not null && (combatAssaultResult is null
+            || combatPostResultRetreat.CampaignId != snapshot.CampaignId
+            || combatPostResultRetreat.PriorStateVersion != combatAssaultResult.StateVersion
+            || combatPostResultRetreat.ResultHash != "sha256:"
+                + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+                    combatAssaultResult.SerializeCanonical()))
+            || combatPostResultRetreat.PaidWorldHash != combatAssaultResult.PaidWorldHash))
+            throw new ArgumentException("Post-result retreat must bind the retained assault.",
+                nameof(combatPostResultRetreat));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -133,6 +143,7 @@ public sealed class ExerciseSession
         CurrentCombatCancelledAssault = combatCancelledAssault;
         CurrentCombatAssaultResult = combatAssaultResult;
         CurrentCombatPaidWorld = combatPaidWorld;
+        CurrentCombatPostResultRetreat = combatPostResultRetreat;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -153,5 +164,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatCancelledAssaultV21? CurrentCombatCancelledAssault { get; }
     internal CampaignNativeCombatAssaultResultV22? CurrentCombatAssaultResult { get; }
     internal CampaignWorldSnapshotV6? CurrentCombatPaidWorld { get; }
+    internal CampaignNativeCombatRetreatAfterAssaultV23? CurrentCombatPostResultRetreat { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

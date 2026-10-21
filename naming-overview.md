@@ -142,7 +142,8 @@ and normal Host retains it with source-derived ammunition spend on cold readback
 but has not yet accepted World losses, retreat, or custody settlement;
 the normal 10-TOE pack's separate retreat-source supplement pins side supply
 anchors and Core derives post-result defender route/refusal offers from the
-side contact cut; these offers have no accepted Host transition yet;
+side contact cut; Core V23 accepts and replays that choice, while normal Host
+submission remains pending;
 positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

@@ -825,7 +825,10 @@ Normal Combat retreat directions are a versioned exact-pack source supplement,
 resolved on cold replay. The post-result defender cut uses its side anchor,
 published graph, own combat occupancy and current contact targets to offer
 only one-hex routes closer to supply; it always includes explicit refusal.
-Owner acceptance and World settlement remain pending.
+Core V23 binds an accepted route/refusal or System not-required choice to the
+V22 result, paid World, source, and contact cut; Exercise cold replay checks
+the canonical event and checkpoint. Normal Host owner acceptance and World
+settlement remain pending.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

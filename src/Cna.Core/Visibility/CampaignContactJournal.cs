@@ -220,6 +220,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(result.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatRetreatAfterAssault(
+        CampaignNativeCombatRetreatAfterAssaultV23 retreat)
+    {
+        ArgumentNullException.ThrowIfNull(retreat);
+        if (retreat.CampaignId != CampaignId
+            || retreat.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Post-result retreat does not bind contact authority.",
+                nameof(retreat));
+        return AtAuthorityVersion(retreat.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

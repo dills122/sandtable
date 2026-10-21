@@ -163,6 +163,37 @@ public sealed class CampaignContactCombatSelectionCutTests
             contacts.AdvanceNativeCombatAssaultResult(routeResult));
         Assert.Equal("east", Assert.Single(routeCut.MoveOffers).DestinationLocationId);
         Assert.Equal("commonwealth-infantry", routeCut.RefuseOffer.ElementId);
+        var routeContacts = contacts.AdvanceNativeCombatAssaultResult(routeResult);
+        var routeDecision = CampaignNativeCombatRetreatAfterAssaultV23.Create(
+            selected, routeResult, inputs.PaidWorld, context, routeContacts,
+            Assert.Single(routeCut.MoveOffers).ActionId);
+        Assert.Equal("moved", routeDecision.Disposition);
+        Assert.Equal("east", routeDecision.DestinationLocationId);
+        Assert.Equal(routeDecision.SerializeCanonical(),
+            CampaignNativeCombatRetreatAfterAssaultV23.Replay(selected, routeResult,
+                inputs.PaidWorld, context, routeContacts,
+                routeDecision.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(routeDecision.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(CampaignCurrentEventSerializer.Deserialize(
+                routeDecision.SerializeCanonical())));
+        Assert.Equal(routeDecision.StateVersion, routeContacts
+            .AdvanceNativeCombatRetreatAfterAssault(routeDecision).AuthorityVersion);
+        var refusalDecision = CampaignNativeCombatRetreatAfterAssaultV23.Create(
+            selected, routeResult, inputs.PaidWorld, context, routeContacts,
+            routeCut.RefuseOffer.ActionId);
+        Assert.Equal("refused", refusalDecision.Disposition);
+        Assert.Null(refusalDecision.DestinationLocationId);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
+                routeResult, inputs.PaidWorld, context, routeContacts,
+                "sha256:" + new string('0', 64)));
+        var forgedDecision = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(
+            routeDecision.SerializeCanonical()).Replace(routeDecision.ResultHash,
+                "sha256:" + new string('0', 64), StringComparison.Ordinal));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatRetreatAfterAssaultV23.Replay(selected,
+                routeResult, inputs.PaidWorld, context, routeContacts,
+                forgedDecision));
         using (var visible = JsonDocument.Parse(
                    CampaignContactRetreatAfterAssaultOwnerVisibleCutV1.SerializeCanonical(
                        routeCut)))
@@ -194,6 +225,27 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(inputs.PaidWorld,
             acceptedResult.SuccessorSession!.CurrentCombatPaidWorld);
         Assert.True(CampaignExercises.Reconstruct(acceptedResult.SuccessorSession!).IsVerified);
+        ExerciseStepResult postResult;
+        if (result.Facts.RequiredRetreat == 1)
+        {
+            var cut = CampaignExercises.QueryContactPostResultRetreatCut(
+                acceptedResult.SuccessorSession);
+            var choice = Assert.Single(cut.MoveOffers);
+            postResult = CampaignExercises.SubmitContactPostResultRetreat(
+                acceptedResult.SuccessorSession,
+                new CampaignActionSubmission(
+                    CampaignActionSubmission.CurrentContractVersion,
+                    result.CampaignId, result.StateVersion, result.PositionId,
+                    CampaignActionAudience.Commonwealth, choice.ActionId),
+                cut.DefenderElementId);
+        }
+        else
+            postResult = CampaignExercises.CompleteNoPostResultRetreat(
+                acceptedResult.SuccessorSession);
+        Assert.True(postResult.IsAccepted, postResult.RejectionReason.ToString());
+        Assert.Equal(23, CampaignExercises.QueryCheckpoint(
+            postResult.SuccessorSession!).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(postResult.SuccessorSession!).IsVerified);
         Assert.Throws<ArgumentException>(() => new ExerciseSession(atCombat, context,
             acceptedResult.SuccessorSession.CurrentHistory,
             acceptedResult.SuccessorSession.CurrentContacts, selected,
