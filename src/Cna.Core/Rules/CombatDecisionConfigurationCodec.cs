@@ -22,9 +22,9 @@ internal sealed class CombatDecisionConfiguration
         if (windowCopy.Any(value => value is null))
             throw new ArgumentException("Null Combat window is unsupported.", nameof(windows));
         Windows = Array.AsReadOnly(windowCopy.OrderBy(value => value.Kind, StringComparer.Ordinal).ToArray());
-        if (Windows.Count != CombatDecisionConfigurationCodec.RequiredFallbacks.Count ||
+        if (Windows.Count != CampaignDecisionFallbacks.Required.Count ||
             Windows.Any(value => value is null ||
-                !CombatDecisionConfigurationCodec.RequiredFallbacks.TryGetValue(value.Kind, out var fallback) ||
+                !CampaignDecisionFallbacks.Required.TryGetValue(value.Kind, out var fallback) ||
                 value.Fallback != fallback || value.DecisionBudgetMilliseconds < 1) ||
             Windows.Select(value => value.Kind).Distinct(StringComparer.Ordinal).Count() != Windows.Count)
             throw new ArgumentException("All seven supported window kinds need positive budgets and exact fallbacks.",
@@ -41,17 +41,8 @@ internal sealed class CombatDecisionConfiguration
 
 internal static class CombatDecisionConfigurationCodec
 {
-    internal static readonly IReadOnlyDictionary<string, string> RequiredFallbacks =
-        new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["custody"] = "leave-unguarded",
-            ["cycle-control"] = "finish-phase",
-            ["force-assignment"] = "cancel-incomplete-voluntary-round",
-            ["rba"] = "cancel-without-decline",
-            ["reserve-release"] = "convert-unresolved-i-retain-ii",
-            ["retreat"] = "refuse-retreat",
-            ["selection"] = "no-selection",
-        };
+    internal static IReadOnlyDictionary<string, string> RequiredFallbacks =>
+        CampaignDecisionFallbacks.Required;
 
     public static byte[] Serialize(CombatDecisionConfiguration config)
     {

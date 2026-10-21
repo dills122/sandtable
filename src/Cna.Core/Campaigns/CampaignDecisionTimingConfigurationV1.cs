@@ -24,9 +24,9 @@ public sealed class CampaignDecisionTimingConfigurationV1
         ContentHash = ContentContractGuards.RequireSha256(contentHash, nameof(contentHash));
         ArgumentNullException.ThrowIfNull(windows);
         var ordered = windows.OrderBy(value => value.Kind, StringComparer.Ordinal).ToArray();
-        if (ordered.Length != CombatDecisionConfigurationCodec.RequiredFallbacks.Count
+        if (ordered.Length != CampaignDecisionFallbacks.Required.Count
             || ordered.Any(value => value is null
-                || !CombatDecisionConfigurationCodec.RequiredFallbacks.TryGetValue(
+                || !CampaignDecisionFallbacks.Required.TryGetValue(
                     value.Kind, out var fallback)
                 || value.Fallback != fallback || value.DecisionBudgetMilliseconds < 1)
             || ordered.Select(value => value.Kind).Distinct(StringComparer.Ordinal).Count() != ordered.Length)
