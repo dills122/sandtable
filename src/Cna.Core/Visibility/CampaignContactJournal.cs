@@ -16,23 +16,25 @@ internal sealed class CampaignContactJournal
     private readonly CampaignContactKnowledge commonwealth;
     private readonly byte[][] records;
 
-    private CampaignContactJournal(string campaignId, CampaignContactKnowledge axis,
-        CampaignContactKnowledge commonwealth, byte[][] records)
+    private CampaignContactJournal(string campaignId, long authorityVersion,
+        CampaignContactKnowledge axis, CampaignContactKnowledge commonwealth, byte[][] records)
     {
         CampaignId = campaignId;
+        AuthorityVersion = authorityVersion;
         this.axis = axis;
         this.commonwealth = commonwealth;
         this.records = records;
     }
 
     public string CampaignId { get; }
+    public long AuthorityVersion { get; }
     public IReadOnlyList<byte[]> Records =>
         Array.AsReadOnly(records.Select(record => record.ToArray()).ToArray());
 
     public static CampaignContactJournal Empty(string campaignId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(campaignId);
-        return new CampaignContactJournal(campaignId,
+        return new CampaignContactJournal(campaignId, 0,
             new CampaignContactKnowledge(campaignId, LandSide.Axis),
             new CampaignContactKnowledge(campaignId, LandSide.Commonwealth), []);
     }
@@ -44,7 +46,8 @@ internal sealed class CampaignContactJournal
         var empty = Empty(created.CampaignId);
         return empty.ApplySources(
             CampaignContactAdjacencySource.OnCreation(created, context, empty.axis),
-            CampaignContactAdjacencySource.OnCreation(created, context, empty.commonwealth));
+            CampaignContactAdjacencySource.OnCreation(created, context, empty.commonwealth))
+            .AtAuthorityVersion(created.StateVersion);
     }
 
     internal static CampaignContactJournal FromEvents(CampaignContentContext context,
@@ -61,7 +64,7 @@ internal sealed class CampaignContactJournal
                 ? Initialize(after, context)
                 : value is ElementMovedV3 movement
                     ? journal!.AppendMovement(snapshot, after, movement, context)
-                    : journal;
+                    : journal!.AdvanceNonMovement(snapshot, after);
             snapshot = after;
         }
         return journal ?? throw new InvalidCampaignHistoryException("Contact replay requires creation authority.");
@@ -76,10 +79,32 @@ internal sealed class CampaignContactJournal
         ArgumentNullException.ThrowIfNull(movement);
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId)
             throw new ArgumentException("Movement belongs to another campaign.", nameof(movement));
+        RequireNextAuthority(before, after);
         return ApplySources(
             CampaignContactAdjacencySource.OnMovement(before, after, movement, context, axis),
-            CampaignContactAdjacencySource.OnMovement(before, after, movement, context, commonwealth));
+            CampaignContactAdjacencySource.OnMovement(before, after, movement, context, commonwealth))
+            .AtAuthorityVersion(after.StateVersion);
     }
+
+    public CampaignContactJournal AdvanceNonMovement(
+        CampaignSnapshotV11 before, CampaignSnapshotV11 after)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        RequireNextAuthority(before, after);
+        return AtAuthorityVersion(after.StateVersion);
+    }
+
+    private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
+    {
+        if (before.CampaignId != CampaignId || after.CampaignId != CampaignId
+            || before.StateVersion != AuthorityVersion
+            || after.StateVersion != checked(before.StateVersion + 1))
+            throw new ArgumentException("Contact journal does not bind the accepted authority cut.");
+    }
+
+    private CampaignContactJournal AtAuthorityVersion(long version) =>
+        new(CampaignId, version, axis, commonwealth, records);
 
     private CampaignContactJournal ApplySources(
         IReadOnlyList<CampaignContactTransition> axisTransitions,
@@ -105,7 +130,8 @@ internal sealed class CampaignContactJournal
                 knowledge.Apply(transition);
                 appended[index++] = canonical;
             }
-        return new CampaignContactJournal(CampaignId, nextAxis, nextCommonwealth, appended);
+        return new CampaignContactJournal(CampaignId, AuthorityVersion,
+            nextAxis, nextCommonwealth, appended);
     }
 
     /// <summary>
@@ -142,8 +168,11 @@ internal sealed class CampaignContactJournal
         return journal;
     }
 
+    public CampaignContactObservationV1 ObserveFor(LandSide side, string actingFormationId) =>
+        CampaignContactObservationV1.Project(Knowledge(side), actingFormationId);
+
     public byte[] ObserveCanonical(LandSide side, string actingFormationId) =>
-        CampaignContactObservationV1.Project(Knowledge(side), actingFormationId).SerializeCanonical();
+        ObserveFor(side, actingFormationId).SerializeCanonical();
 
     public IReadOnlyList<CampaignContactTargetCandidate> CurrentTargetsFor(
         LandSide side, string actingFormationId) => Knowledge(side).CurrentTargetsFor(actingFormationId);

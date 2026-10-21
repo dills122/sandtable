@@ -35,6 +35,14 @@ public static class CampaignExercises
             audience);
     }
 
+    internal static CampaignContactOwnerMovementCut QueryContactOwnerMovementCut(
+        ExerciseSession session, Cna.Core.Rules.LandSide side, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return CampaignContactOwnerMovementCut.Project(session.CurrentSnapshot, session.Context,
+            session.CurrentContacts, side, actingElementId);
+    }
+
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -64,7 +72,8 @@ public static class CampaignExercises
         var contacts = execution.AcceptedEvent is ElementMovedV3 movement
             ? session.CurrentContacts.AppendMovement(session.CurrentSnapshot,
                 execution.SuccessorSnapshot!, movement, session.Context)
-            : session.CurrentContacts;
+            : session.CurrentContacts.AdvanceNonMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!);
         var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,
@@ -95,7 +104,9 @@ public static class CampaignExercises
             var contactRecords = completedSession.CurrentContacts.Records;
             var replayedContacts = CampaignContactJournal.FromEvents(
                 completedSession.Context, replayEvents).Records;
-            var contactsMatch = contactRecords.Count == replayedContacts.Count
+            var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
+                == completedSession.CurrentSnapshot.StateVersion
+                && contactRecords.Count == replayedContacts.Count
                 && contactRecords.Zip(replayedContacts).All(pair =>
                     pair.First.AsSpan().SequenceEqual(pair.Second));
             var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes) && contactsMatch

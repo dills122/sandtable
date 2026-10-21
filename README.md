@@ -70,7 +70,10 @@ The permanent fog implementation has started in Core with
 side contacts, a side-safe view, visibility-qualified target candidates and a
 default adjacency rule at creation and committed Movement cuts. Core's campaign
 exercise session retains contact records and checks them against authority-event
-replay. It is not yet wired to durable Host storage or player actions; historical observation readers remain
+replay. Core now fences contact knowledge to each accepted authority cut and derives an
+acting element's contact view and movement offers from that same cut, without consulting
+hidden opposing positions for offer membership. These internal offers are not yet issued
+or accepted through the normal durable Host; historical observation readers remain
 readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

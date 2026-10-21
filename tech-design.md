@@ -747,7 +747,10 @@ transitions retain private target bindings and replay into observer-scoped curre
 or stale contacts; the side view and visibility-qualified target candidates
 omit those bindings. Creation and committed Movement cuts apply the permanent
 adjacency rule, with exact contact-record checks against independently replayed
-authority events. Durable Host persistence, complete detection policy,
+authority events. The Core journal advances across accepted turns without new sight,
+and an internal owner movement cut binds its contact view and visible movement offers
+to the same authority version. Encounter adjudication and normal durable Host
+persistence must precede issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.
 
 Task019F0's private actual-selection executable contract merged in PR #161; Task019F1's
