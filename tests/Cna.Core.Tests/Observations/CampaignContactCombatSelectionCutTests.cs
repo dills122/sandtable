@@ -163,6 +163,17 @@ public sealed class CampaignContactCombatSelectionCutTests
             contacts.AdvanceNativeCombatAssaultResult(routeResult));
         Assert.Equal("east", Assert.Single(routeCut.MoveOffers).DestinationLocationId);
         Assert.Equal("commonwealth-infantry", routeCut.RefuseOffer.ElementId);
+        using (var visible = JsonDocument.Parse(
+                   CampaignContactRetreatAfterAssaultOwnerVisibleCutV1.SerializeCanonical(
+                       routeCut)))
+        {
+            Assert.Equal(routeCut.RetreatSourceHash,
+                visible.RootElement.GetProperty("retreatSourceHash").GetString());
+            Assert.False(visible.RootElement.TryGetProperty("authorityVersion", out _));
+            Assert.False(visible.RootElement.TryGetProperty("attackerElementId", out _));
+            Assert.False(visible.RootElement.GetProperty("moveOffers")[0]
+                .TryGetProperty("actionId", out _));
+        }
         Assert.NotEmpty(result.SerializeStateCanonical(antiArmor.SerializeCanonical()));
         var replayedAmmunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
             context, [result]);

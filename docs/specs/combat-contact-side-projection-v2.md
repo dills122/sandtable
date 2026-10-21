@@ -127,6 +127,9 @@ per side in the normal 10-TOE campaign. Core derives post-result defender
 one-hex offers from strictly decreasing distance to that anchor on the
 published graph, excluding current contact targets and own combat occupancy;
 explicit refusal is always present. Route offers are not yet public or accepted.
+The defender-visible cut carries the source hash, side contact revision, own
+element and route/refusal semantics; private authority version and Core action
+IDs stay in the Host fence rather than the visible bytes.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.
