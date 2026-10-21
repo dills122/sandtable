@@ -1074,6 +1074,48 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void RetainedMovementReferenceSurvivesActualUnseenFormationMove()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = ContactRequest();
+        var session = AdvanceToContactMovement(journal, request);
+        var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var opening = journal.QueryOwnerOpening(credential, "axis-infantry");
+        var set = CampaignExercises.Query(session, CampaignActionAudience.Axis).ActionSet!;
+        var move = set.Candidates.OfType<MoveElementAction>()
+            .First(value => value.ElementId == "axis-truck");
+        var accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
+            set.CampaignId, set.StateVersion, set.PositionId, set.Audience, move.ActionId));
+        var next = accepted.SuccessorSession!;
+        var pending = CampaignExercises.Query(next, CampaignActionAudience.Axis).ActionSet!;
+        var stop = pending.Candidates.OfType<StopElementMovementAction>().Single();
+        accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
+            pending.CampaignId, pending.StateVersion, pending.PositionId,
+            pending.Audience, stop.ActionId));
+        Assert.True(accepted.IsAccepted);
+        next = accepted.SuccessorSession!;
+        var system = CampaignExercises.Query(next, CampaignActionAudience.System).ActionSet!;
+        var resolve = system.Candidates.OfType<ResolveBreakdownStopAction>().Single();
+        accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
+            system.CampaignId, system.StateVersion, system.PositionId,
+            system.Audience, resolve.ActionId));
+        Assert.True(accepted.IsAccepted);
+        var afterHiddenStep = fixture.Open();
+        var current = CampaignHostAdapter.QueryContactOwnerDraft(
+            afterHiddenStep.ReadVerified(request.CampaignId), CampaignActionAudience.Axis,
+            "axis-infantry");
+        Assert.Equal(opening.VisibleBytes, current.VisibleBytes);
+        var submitted = afterHiddenStep.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(submitted.IsAccepted);
+        Assert.Equal(submitted.CanonicalReceipt, fixture.Open().SubmitOwnerMovement(
+            credential, "axis-infantry", opening.Revision,
+            opening.PublicActionRefs[0]).CanonicalReceipt);
+    }
+
+    [Fact]
     public void ContactEvidenceIsRetainedAndTamperingBlocksColdRead()
     {
         using var fixture = new JournalFixture();
