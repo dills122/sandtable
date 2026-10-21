@@ -183,6 +183,39 @@ public sealed class CampaignContactCombatSelectionCutTests
             routeCut.RefuseOffer.ActionId);
         Assert.Equal("refused", refusalDecision.Disposition);
         Assert.Null(refusalDecision.DestinationLocationId);
+        var movedSettlement = CampaignNativeCombatSettledWorldV24.Project(
+            routeResult, routeDecision, inputs, context);
+        var refusedSettlement = CampaignNativeCombatSettledWorldV24.Project(
+            routeResult, refusalDecision, inputs, context);
+        var paidDefender = inputs.PaidWorld.Elements.Single(value =>
+            value.ElementId == inputs.Defender.ElementId);
+        var movedDefender = movedSettlement.World.Elements.Single(value =>
+            value.ElementId == inputs.Defender.ElementId);
+        var refusedDefender = refusedSettlement.World.Elements.Single(value =>
+            value.ElementId == inputs.Defender.ElementId);
+        Assert.Equal("east", movedDefender.CurrentLocationId);
+        Assert.Equal(paidDefender.CurrentLocationId, refusedDefender.CurrentLocationId);
+        Assert.Equal(paidDefender.OperationalState.CapabilityPointsExpended
+            + new CapabilityPointAmount(1, 1),
+            movedDefender.OperationalState.CapabilityPointsExpended);
+        Assert.Equal(paidDefender.OperationalState.CapabilityPointsExpended,
+            refusedDefender.OperationalState.CapabilityPointsExpended);
+        Assert.Equal(movedSettlement.Losses.Defender.RemainingToe,
+            movedDefender.Components.Single(value =>
+                value.ComponentId == inputs.Defender.ComponentId).CurrentToe);
+        Assert.True(refusedSettlement.Losses.Defender.TotalLoss
+            >= movedSettlement.Losses.Defender.TotalLoss);
+        Assert.Equal(movedDefender.CurrentLocationId,
+            movedSettlement.World.Representations.Single(value =>
+                value.BoundElementIds[0] == movedDefender.ElementId).CurrentLocationId);
+        Assert.Equal(movedSettlement.PendingCaptives.Sum(value => value.Quantity),
+            movedSettlement.Losses.Attacker.CapturedLoss
+                + movedSettlement.Losses.Defender.CapturedLoss);
+        Assert.Equal(refusedSettlement.PendingCaptives.Sum(value => value.Quantity),
+            refusedSettlement.Losses.Attacker.CapturedLoss
+                + refusedSettlement.Losses.Defender.CapturedLoss);
+        Assert.NotEqual(CampaignNativeCombatPaidWorldV22.Hash(inputs.PaidWorld),
+            CampaignNativeCombatPaidWorldV22.Hash(movedSettlement.World));
         Assert.Throws<InvalidOperationException>(() =>
             CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
                 routeResult, inputs.PaidWorld, context, routeContacts,
