@@ -779,8 +779,10 @@ and authority version. An explicit defender decline is a V15 owner event through
 normal durable Host seat/opening/receipt path; silence remains pending. Actual retreat
 movement now uses a V16 retained Core event: the first accepted move updates World and
 both contact audiences, returns to a defender RBA cut, and cold replays through the
-normal durable Host seat/receipt path. An explicit stop from that updated cut reaches
-Force Assignment. Repeat retreat movement, Reserve Release, assault adjudication and the public
+normal durable Host seat/receipt path. Further offered moves append ordered events
+through the same path; checkpoints bind their predecessor by hash without nesting each
+prior World. An explicit stop from the updated cut reaches Force Assignment.
+Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

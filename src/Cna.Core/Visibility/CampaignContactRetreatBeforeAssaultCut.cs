@@ -56,10 +56,25 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
         CampaignContentContext context,
         CampaignContactJournal contacts)
     {
+        if (move.PriorStateVersion != barrage.StateVersion)
+            throw new InvalidOperationException("First RBA move must follow retained Barrage.");
+        return ProjectAfterMove(selected, barrage, move, world,
+            move.OriginLocationId, context, contacts);
+    }
+
+    internal static CampaignContactRetreatBeforeAssaultCut ProjectAfterMove(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignWorldSnapshotV6 world,
+        string initialLocationId,
+        CampaignContentContext context,
+        CampaignContactJournal contacts)
+    {
         ArgumentNullException.ThrowIfNull(move);
         ArgumentNullException.ThrowIfNull(world);
         if (move.CampaignId != selected.CampaignId
-            || move.PriorStateVersion != barrage.StateVersion
+            || move.PriorStateVersion < barrage.StateVersion
             || move.DecisionActionId != selected.Decision.ActionId
             || move.PositionId != barrage.NextPositionId
             || contacts.AuthorityVersion != move.StateVersion
@@ -67,7 +82,7 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
             throw new InvalidOperationException("Post-move RBA cut lacks retained authority.");
         return ProjectAtWorld(selected, barrage, context, contacts, world,
             move.StateVersion, move.InitiallyAdjacentToKnownEnemy,
-            move.OriginLocationId, move.InitiallyAdjacentToKnownEnemy);
+            initialLocationId, move.InitiallyAdjacentToKnownEnemy);
     }
 
     private static CampaignContactRetreatBeforeAssaultCut ProjectAtWorld(
@@ -113,12 +128,15 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
             value.Features.Select(feature => new CampaignObservationEdgeFeature(
                 feature.FeatureId, feature.DirectionFromLocationId)).ToArray())).ToArray();
         var adjacent = AdjacentLocationIds(observed.CurrentLocationId, edges);
+        var currentlyAdjacent = knowledge.CurrentTargets.Any(target =>
+            adjacent.Contains(target.ApparentLocationId));
         var initiallyAdjacent = initialAdjacency ?? knowledge.CurrentTargets.Any(target =>
             adjacent.Contains(target.ApparentLocationId));
         var eligible = state.ReserveStatus == CampaignElementReserveStatus.None
             && observed.CohesionLevel > -26
             && observed.VehicleBreakdownRisk is not { WorkingPointCount: 0 };
         var moves = eligible && allowFurtherMoves
+            && (initialAdjacency is null || !currentlyAdjacent)
             ? DeriveOneEdgeMoves(observed, own, knowledge.CurrentTargets, locations, edges)
             : [];
         return new(authorityVersion, barrage.NextPositionId, side, defenderId,

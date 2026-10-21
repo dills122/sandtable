@@ -98,23 +98,47 @@ public sealed class CampaignDurableAuthorityJournalTests
             request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
         var opening = journal.QueryRbaOwnerOpening(defender, defenderId);
         Assert.True(opening.PublicActionRefs.Count > 1);
-        var moveRef = opening.PublicActionRefs[0];
+        var startingSession = journal.ReadVerified(request.CampaignId);
+        var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(startingSession,
+            CampaignActionAudience.Commonwealth, defenderId);
+        var moveOrdinal = Enumerable.Range(0, draft.PrivateActionIds.Count - 1).First(index =>
+        {
+            var candidate = CampaignHostAdapter.SubmitContactDefenderRbaMove(startingSession,
+                new CampaignActionSubmission(1, request.CampaignId,
+                    CampaignExercises.QueryCheckpoint(startingSession).StateVersion,
+                    CampaignExercises.QueryCheckpoint(startingSession).PositionId,
+                    CampaignActionAudience.Commonwealth, draft.PrivateActionIds[index]),
+                defenderId);
+            return candidate.IsAccepted
+                && CampaignHostAdapter.QueryContactRbaOwnerDraft(candidate.SuccessorSession!,
+                    CampaignActionAudience.Commonwealth, defenderId).PrivateActionIds.Count > 1;
+        });
+        var moveRef = opening.PublicActionRefs[moveOrdinal];
         Assert.False(journal.SubmitOwnerRbaDecline(defender, defenderId,
             opening.Revision, moveRef).IsAccepted);
-        var moved = journal.SubmitOwnerRbaFirstMove(defender, defenderId,
+        var moved = journal.SubmitOwnerRbaMove(defender, defenderId,
             opening.Revision, moveRef);
         Assert.True(moved.IsAccepted);
         var cold = fixture.Open();
         Assert.Equal(moved.CanonicalReceipt,
-            cold.SubmitOwnerRbaFirstMove(defender, defenderId,
+            cold.SubmitOwnerRbaMove(defender, defenderId,
                 opening.Revision, moveRef).CanonicalReceipt);
         var afterMove = cold.ReadVerified(request.CampaignId);
         Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterMove).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterMove).IsVerified);
         var next = cold.QueryRbaOwnerOpening(defender, defenderId);
         Assert.True(next.Revision > opening.Revision);
+        Assert.True(next.PublicActionRefs.Count > 1);
+        var repeated = cold.SubmitOwnerRbaMove(defender, defenderId,
+            next.Revision, next.PublicActionRefs[0]);
+        Assert.True(repeated.IsAccepted);
+        var afterRepeat = fixture.Open().ReadVerified(request.CampaignId);
+        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterRepeat).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterRepeat).IsVerified);
+        var finalOpening = cold.QueryRbaOwnerOpening(defender, defenderId);
+        Assert.True(finalOpening.Revision > next.Revision);
         var stopped = cold.SubmitOwnerRbaDecline(defender, defenderId,
-            next.Revision, next.PublicActionRefs[^1]);
+            finalOpening.Revision, finalOpening.PublicActionRefs[^1]);
         Assert.True(stopped.IsAccepted);
         var final = fixture.Open().ReadVerified(request.CampaignId);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(final).ContractVersion);

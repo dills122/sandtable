@@ -67,8 +67,9 @@ public static class CampaignExercises
             || session.CurrentCombatRetreatDecline is not null)
             throw new InvalidOperationException("Defender retreat requires completed Barrage authority.");
         if (session.CurrentCombatRetreatMove is { } move)
-            return CampaignContactRetreatBeforeAssaultCut.ProjectAfterFirstMove(
+            return CampaignContactRetreatBeforeAssaultCut.ProjectAfterMove(
                 selected, barrage, move, session.CurrentCombatRetreatWorld!,
+                session.CurrentCombatRetreatMoves[0].OriginLocationId,
                 session.Context, session.CurrentContacts);
         return CampaignContactRetreatBeforeAssaultCut.Project(selected, barrage,
             session.Context, session.CurrentContacts);
@@ -265,10 +266,10 @@ public static class CampaignExercises
                 || submission.ActionId != cut.DeclineOffer.ActionId)
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
             var decline = session.CurrentCombatRetreatMove is { } previousMove
-                ? CampaignNativeCombatRetreatDeclineV15.CreateAfterFirstMove(
+                ? CampaignNativeCombatRetreatDeclineV15.CreateAfterMove(
                     selected, barrage, previousMove, session.CurrentCombatRetreatWorld!,
-                    session.Context, session.CurrentCombatRetreatPriorContacts!,
-                    session.CurrentContacts, submission.ActionId)
+                    session.CurrentCombatRetreatMoves[0].OriginLocationId,
+                    session.Context, session.CurrentContacts, submission.ActionId)
                 : CampaignNativeCombatRetreatDeclineV15.Create(selected, barrage,
                     session.Context, session.CurrentContacts, submission.ActionId);
             var contacts = session.CurrentContacts.AdvanceNativeCombatRetreatDecline(decline);
@@ -277,13 +278,14 @@ public static class CampaignExercises
                 combatBarrage: barrage, combatRetreatDecline: decline,
                 combatRetreatMove: session.CurrentCombatRetreatMove,
                 combatRetreatWorld: session.CurrentCombatRetreatWorld,
-                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts);
+                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                combatRetreatMoves: session.CurrentCombatRetreatMoves);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 decline.PriorStateVersion, decline.StateVersion, decline.PositionId,
                 submission.Audience, submission.ActionId);
             var checkpoint = session.CurrentCombatRetreatMove is { } move
-                ? decline.SerializeAfterFirstMoveStateCanonical(selected, barrage, move,
-                    session.Context, session.CurrentCombatRetreatPriorContacts!)
+                ? decline.SerializeAfterMoveStateCanonical(
+                    SerializeRetreatMoveState(session))
                 : decline.SerializeStateCanonical(selected, barrage);
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 decline.SerializeCanonical(), checkpoint));
@@ -295,7 +297,7 @@ public static class CampaignExercises
         }
     }
 
-    internal static ExerciseStepResult SubmitContactDefenderRbaFirstMove(
+    internal static ExerciseStepResult SubmitContactDefenderRbaMove(
         ExerciseSession session, CampaignActionSubmission submission, string defenderElementId)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -306,12 +308,13 @@ public static class CampaignExercises
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatBarrage is not { } barrage
             || session.CurrentCombatRetreatDecline is not null
-            || session.CurrentCombatRetreatMove is not null
-            || session.CurrentContacts.AuthorityVersion != barrage.StateVersion)
+            || session.CurrentContacts.AuthorityVersion
+                != (session.CurrentCombatRetreatMove?.StateVersion ?? barrage.StateVersion))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (submission.CampaignId != selected.CampaignId)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
-        if (submission.ExpectedStateVersion != barrage.StateVersion)
+        if (submission.ExpectedStateVersion
+            != (session.CurrentCombatRetreatMove?.StateVersion ?? barrage.StateVersion))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
         if (submission.ExpectedPositionId != barrage.NextPositionId)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
@@ -323,23 +326,41 @@ public static class CampaignExercises
             if (submission.Audience != audience || defenderElementId != cut.DefenderElementId
                 || !cut.MoveOffers.Any(value => value.ActionId == submission.ActionId))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
-            var movement = CampaignNativeCombatRetreatMoveV16.CreateFirst(selected, barrage,
-                session.Context, session.CurrentContacts, submission.ActionId);
-            var world = movement.ProjectWorld(selected, barrage, session.Context,
-                session.CurrentContacts);
+            var previous = session.CurrentCombatRetreatMove;
+            var initialLocationId = session.CurrentCombatRetreatMoves.Count == 0
+                ? cut.InitialLocationId : session.CurrentCombatRetreatMoves[0].OriginLocationId;
+            var movement = previous is null
+                ? CampaignNativeCombatRetreatMoveV16.CreateFirst(selected, barrage,
+                    session.Context, session.CurrentContacts, submission.ActionId)
+                : CampaignNativeCombatRetreatMoveV16.CreateNext(selected, barrage,
+                    previous, session.CurrentCombatRetreatWorld!, initialLocationId,
+                    session.Context, session.CurrentContacts, submission.ActionId);
+            var world = previous is null
+                ? movement.ProjectWorld(selected, barrage, session.Context,
+                    session.CurrentContacts)
+                : movement.ProjectWorldAfter(selected, barrage, previous,
+                    session.CurrentCombatRetreatWorld!, initialLocationId,
+                    session.Context, session.CurrentContacts);
+            var beforeWorld = session.CurrentCombatRetreatWorld ?? session.CurrentSnapshot.World;
             var contacts = session.CurrentContacts.AdvanceNativeCombatRetreatMove(
-                session.CurrentSnapshot.World, world, movement,
+                beforeWorld, world, movement,
                 selected.Decision.BoundRepresentationId!, session.Context);
+            var checkpoint = previous is null
+                ? movement.SerializeStateCanonical(selected, barrage,
+                    session.Context, session.CurrentContacts)
+                : movement.SerializeNextStateCanonical(
+                    SerializeRetreatMoveState(session), world);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
                 session.CurrentHistory.Add(movement), contacts, selected,
                 combatBarrage: barrage, combatRetreatMove: movement, combatRetreatWorld: world,
-                combatRetreatPriorContacts: session.CurrentContacts);
+                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts
+                    ?? session.CurrentContacts,
+                combatRetreatMoves: session.CurrentCombatRetreatMoves.Append(movement));
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
-                barrage.StateVersion, movement.StateVersion, movement.PositionId,
+                movement.PriorStateVersion, movement.StateVersion, movement.PositionId,
                 submission.Audience, submission.ActionId);
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
-                movement.SerializeCanonical(), movement.SerializeStateCanonical(selected,
-                    barrage, session.Context, session.CurrentContacts)));
+                movement.SerializeCanonical(), checkpoint));
         }
         catch (Exception exception) when (exception is ArgumentException or ArithmeticException
             or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
@@ -372,24 +393,50 @@ public static class CampaignExercises
         return ExerciseStepResult.Accepted(successor, evidence);
     }
 
+    private static byte[] SerializeRetreatMoveState(ExerciseSession session)
+    {
+        var selected = session.CurrentCombatDecision
+            ?? throw new InvalidOperationException("Retreat move lacks selected assault.");
+        var barrage = session.CurrentCombatBarrage
+            ?? throw new InvalidOperationException("Retreat move lacks Barrage.");
+        var contacts = session.CurrentCombatRetreatPriorContacts
+            ?? throw new InvalidOperationException("Retreat move lacks its first contact cut.");
+        var world = selected.PriorSnapshot.World;
+        CampaignNativeCombatRetreatMoveV16? previous = null;
+        byte[] state = [];
+        foreach (var move in session.CurrentCombatRetreatMoves)
+        {
+            var nextWorld = previous is null
+                ? move.ProjectWorld(selected, barrage, session.Context, contacts)
+                : move.ProjectWorldAfter(selected, barrage, previous, world,
+                    session.CurrentCombatRetreatMoves[0].OriginLocationId,
+                    session.Context, contacts);
+            state = previous is null
+                ? move.SerializeStateCanonical(selected, barrage, session.Context, contacts)
+                : move.SerializeNextStateCanonical(state, nextWorld);
+            contacts = contacts.AdvanceNativeCombatRetreatMove(world, nextWorld, move,
+                selected.Decision.BoundRepresentationId!, session.Context);
+            world = nextWorld;
+            previous = move;
+        }
+        if (previous is null)
+            throw new InvalidOperationException("Retreat movement state is empty.");
+        return state;
+    }
+
     public static ExerciseReconstructionResult Reconstruct(ExerciseSession completedSession)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
         var expectedBytes = completedSession.CurrentNoAttackCompletion is { } completion
             ? completion.SerializeStateCanonical(completedSession.CurrentCombatDecision!)
             : completedSession.CurrentCombatRetreatDecline is { } decline
-                ? completedSession.CurrentCombatRetreatMove is { } beforeDeclineMove
-                    ? decline.SerializeAfterFirstMoveStateCanonical(
-                        completedSession.CurrentCombatDecision!,
-                        completedSession.CurrentCombatBarrage!, beforeDeclineMove,
-                        completedSession.Context,
-                        completedSession.CurrentCombatRetreatPriorContacts!)
+                ? completedSession.CurrentCombatRetreatMove is not null
+                    ? decline.SerializeAfterMoveStateCanonical(
+                        SerializeRetreatMoveState(completedSession))
                     : decline.SerializeStateCanonical(completedSession.CurrentCombatDecision!,
                         completedSession.CurrentCombatBarrage!)
-            : completedSession.CurrentCombatRetreatMove is { } retreatMove
-                ? retreatMove.SerializeStateCanonical(completedSession.CurrentCombatDecision!,
-                    completedSession.CurrentCombatBarrage!, completedSession.Context,
-                    completedSession.CurrentCombatRetreatPriorContacts!)
+            : completedSession.CurrentCombatRetreatMove is not null
+                ? SerializeRetreatMoveState(completedSession)
             : completedSession.CurrentCombatBarrage is { } barrage
                 ? barrage.SerializeStateCanonical(completedSession.CurrentCombatDecision!)
             : completedSession.CurrentCombatDecision is { } combat
@@ -408,12 +455,10 @@ public static class CampaignExercises
                 .Select(value => CampaignCurrentEventSerializer.Deserialize(value))
                 .ToArray();
             var combatTailCount = completedSession.CurrentCombatDecision is null ? 0
-                : completedSession.CurrentCombatRetreatDecline is not null
-                    && completedSession.CurrentCombatRetreatMove is not null ? 4
-                : completedSession.CurrentCombatRetreatDecline is not null
-                    || completedSession.CurrentCombatRetreatMove is not null ? 3
-                : completedSession.CurrentNoAttackCompletion is not null
-                    || completedSession.CurrentCombatBarrage is not null ? 2 : 1;
+                : completedSession.CurrentCombatBarrage is not null
+                    ? 2 + completedSession.CurrentCombatRetreatMoves.Count
+                        + (completedSession.CurrentCombatRetreatDecline is null ? 0 : 1)
+                : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
             var priorEvents = combatTailCount == 0 ? replayEvents
@@ -448,60 +493,64 @@ public static class CampaignExercises
                     var verifiedBarrage = CampaignNativeCombatBarrageV14.Replay(
                         verified, completedSession.Context, barrageEvent.SerializeCanonical());
                     replayedContacts = replayedContacts.AdvanceNativeCombatBarrage(verifiedBarrage);
+                    var world = verified.PriorSnapshot.World;
+                    CampaignNativeCombatRetreatMoveV16? previousMove = null;
+                    string? initialLocationId = null;
+                    byte[] moveState = [];
+                    for (var moveIndex = 0;
+                         moveIndex < completedSession.CurrentCombatRetreatMoves.Count;
+                         moveIndex++)
+                    {
+                        if (replayEvents[decisionIndex + 2 + moveIndex]
+                            is not CampaignNativeCombatRetreatMoveV16 moveEvent)
+                            throw new InvalidCampaignHistoryException("Native defender move is missing.");
+                        var beforeContacts = replayedContacts;
+                        var verifiedMove = previousMove is null
+                            ? CampaignNativeCombatRetreatMoveV16.ReplayFirst(
+                                verified, verifiedBarrage, completedSession.Context,
+                                beforeContacts, moveEvent.SerializeCanonical())
+                            : CampaignNativeCombatRetreatMoveV16.ReplayNext(
+                                verified, verifiedBarrage, previousMove, world,
+                                initialLocationId!, completedSession.Context,
+                                beforeContacts, moveEvent.SerializeCanonical());
+                        var nextWorld = previousMove is null
+                            ? verifiedMove.ProjectWorld(verified, verifiedBarrage,
+                                completedSession.Context, beforeContacts)
+                            : verifiedMove.ProjectWorldAfter(verified, verifiedBarrage,
+                                previousMove, world, initialLocationId!,
+                                completedSession.Context, beforeContacts);
+                        moveState = previousMove is null
+                            ? verifiedMove.SerializeStateCanonical(verified, verifiedBarrage,
+                                completedSession.Context, beforeContacts)
+                            : verifiedMove.SerializeNextStateCanonical(moveState, nextWorld);
+                        replayedContacts = replayedContacts.AdvanceNativeCombatRetreatMove(
+                            world, nextWorld, verifiedMove,
+                            verified.Decision.BoundRepresentationId!, completedSession.Context);
+                        initialLocationId ??= verifiedMove.OriginLocationId;
+                        world = nextWorld;
+                        previousMove = verifiedMove;
+                    }
+                    if (previousMove is not null)
+                        worldMatch = world.Equals(completedSession.CurrentCombatRetreatWorld);
                     if (completedSession.CurrentCombatRetreatDecline is not null)
                     {
                         if (replayEvents[^1] is not CampaignNativeCombatRetreatDeclineV15 declineEvent)
                             throw new InvalidCampaignHistoryException("Native defender decline is missing.");
-                        CampaignNativeCombatRetreatDeclineV15 verifiedDecline;
-                        if (completedSession.CurrentCombatRetreatMove is not null)
-                        {
-                            if (replayEvents[^2] is not CampaignNativeCombatRetreatMoveV16 moveEvent)
-                                throw new InvalidCampaignHistoryException("Prior defender move is missing.");
-                            var priorContacts = replayedContacts;
-                            var verifiedMove = CampaignNativeCombatRetreatMoveV16.ReplayFirst(
+                        var verifiedDecline = previousMove is null
+                            ? CampaignNativeCombatRetreatDeclineV15.Replay(
                                 verified, verifiedBarrage, completedSession.Context,
-                                priorContacts, moveEvent.SerializeCanonical());
-                            var world = verifiedMove.ProjectWorld(verified, verifiedBarrage,
-                                completedSession.Context, priorContacts);
-                            worldMatch = world.Equals(completedSession.CurrentCombatRetreatWorld);
-                            replayedContacts = replayedContacts.AdvanceNativeCombatRetreatMove(
-                                verified.PriorSnapshot.World, world, verifiedMove,
-                                verified.Decision.BoundRepresentationId!, completedSession.Context);
-                            verifiedDecline = CampaignNativeCombatRetreatDeclineV15.ReplayAfterFirstMove(
-                                verified, verifiedBarrage, verifiedMove, world,
-                                completedSession.Context, priorContacts, replayedContacts,
-                                declineEvent.SerializeCanonical());
-                            replayedBytes = verifiedDecline.SerializeAfterFirstMoveStateCanonical(
-                                verified, verifiedBarrage, verifiedMove,
-                                completedSession.Context, priorContacts);
-                        }
-                        else
-                        {
-                            verifiedDecline = CampaignNativeCombatRetreatDeclineV15.Replay(
-                                verified, verifiedBarrage, completedSession.Context,
+                                replayedContacts, declineEvent.SerializeCanonical())
+                            : CampaignNativeCombatRetreatDeclineV15.ReplayAfterMove(
+                                verified, verifiedBarrage, previousMove, world,
+                                initialLocationId!, completedSession.Context,
                                 replayedContacts, declineEvent.SerializeCanonical());
-                            replayedBytes = verifiedDecline.SerializeStateCanonical(verified,
-                                verifiedBarrage);
-                        }
+                        replayedBytes = previousMove is null
+                            ? verifiedDecline.SerializeStateCanonical(verified, verifiedBarrage)
+                            : verifiedDecline.SerializeAfterMoveStateCanonical(moveState);
                         replayedContacts = replayedContacts.AdvanceNativeCombatRetreatDecline(
                             verifiedDecline);
                     }
-                    else if (completedSession.CurrentCombatRetreatMove is not null)
-                    {
-                        if (replayEvents[^1] is not CampaignNativeCombatRetreatMoveV16 moveEvent)
-                            throw new InvalidCampaignHistoryException("Native defender move is missing.");
-                        var verifiedMove = CampaignNativeCombatRetreatMoveV16.ReplayFirst(
-                            verified, verifiedBarrage, completedSession.Context,
-                            replayedContacts, moveEvent.SerializeCanonical());
-                        var world = verifiedMove.ProjectWorld(verified, verifiedBarrage,
-                            completedSession.Context, replayedContacts);
-                        worldMatch = world.Equals(completedSession.CurrentCombatRetreatWorld);
-                        replayedBytes = verifiedMove.SerializeStateCanonical(verified,
-                            verifiedBarrage, completedSession.Context, replayedContacts);
-                        replayedContacts = replayedContacts.AdvanceNativeCombatRetreatMove(
-                            verified.PriorSnapshot.World, world, verifiedMove,
-                            verified.Decision.BoundRepresentationId!, completedSession.Context);
-                    }
+                    else if (previousMove is not null) replayedBytes = moveState;
                     else replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
                 }
                 else replayedBytes = verified.SerializeCanonical();

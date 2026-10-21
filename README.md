@@ -97,9 +97,9 @@ Retreat Before Assault candidates now derive from the retained defender contact 
 using hidden occupancy to suppress offers; a trusted Host draft separates visible bytes
 from private action IDs. An explicit defender decline and the first actual retreat move
 now pass through the normal seat-bound Host opening, accepted event, retained receipt
-and cold replay. A move updates Core World and both contact audiences, then returns to
-the defender decision; an explicit stop advances to Force Assignment. Further retreat
-moves, Reserve Release, assault
+and cold replay. Each move updates Core World and both contact audiences, then returns to
+the defender decision; repeat moves retain a canonical event and an explicit stop advances
+to Force Assignment. Reserve Release, assault
 adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

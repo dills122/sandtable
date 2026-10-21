@@ -28,7 +28,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.RetreatBeforeAssault);
 
-    internal CampaignOwnerSubmissionResult SubmitOwnerRbaFirstMove(CampaignSeatCredential credential,
+    internal CampaignOwnerSubmissionResult SubmitOwnerRbaMove(CampaignSeatCredential credential,
         string defenderElementId, long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.RetreatBeforeAssault, retreatMove: true);
@@ -173,7 +173,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     submission, actingElementId),
             CampaignOwnerOpeningKind.RetreatBeforeAssault =>
                 retreatMove
-                    ? CampaignHostAdapter.SubmitContactDefenderRbaFirstMove(head.Session,
+                    ? CampaignHostAdapter.SubmitContactDefenderRbaMove(head.Session,
                         submission, actingElementId)
                     : CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
                         submission, actingElementId),

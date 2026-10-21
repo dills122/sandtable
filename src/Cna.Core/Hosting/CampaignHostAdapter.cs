@@ -200,9 +200,9 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission, string defenderElementId) =>
         CampaignExercises.SubmitContactDefenderRbaDecline(session, submission, defenderElementId);
 
-    public static ExerciseStepResult SubmitContactDefenderRbaFirstMove(
+    public static ExerciseStepResult SubmitContactDefenderRbaMove(
         ExerciseSession session, CampaignActionSubmission submission, string defenderElementId) =>
-        CampaignExercises.SubmitContactDefenderRbaFirstMove(session, submission, defenderElementId);
+        CampaignExercises.SubmitContactDefenderRbaMove(session, submission, defenderElementId);
 
     /// <summary>System-only structural continuation of an accepted voluntary finish.</summary>
     public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
@@ -311,7 +311,7 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.NativeCombatBarrageKind => CompleteNativeCombatBarrage(session),
                 CampaignHostAcceptedStep.ContactRbaDeclineKind => SubmitContactDefenderRbaDecline(
                     session, submission, step.ActingElementId!),
-                CampaignHostAcceptedStep.ContactRbaMoveKind => SubmitContactDefenderRbaFirstMove(
+                CampaignHostAcceptedStep.ContactRbaMoveKind => SubmitContactDefenderRbaMove(
                     session, submission, step.ActingElementId!),
                 _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
             };

@@ -14,7 +14,8 @@ public sealed class ExerciseSession
         CampaignNativeCombatRetreatDeclineV15? combatRetreatDecline = null,
         CampaignNativeCombatRetreatMoveV16? combatRetreatMove = null,
         CampaignWorldSnapshotV6? combatRetreatWorld = null,
-        CampaignContactJournal? combatRetreatPriorContacts = null)
+        CampaignContactJournal? combatRetreatPriorContacts = null,
+        IEnumerable<CampaignNativeCombatRetreatMoveV16>? combatRetreatMoves = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -39,9 +40,16 @@ public sealed class ExerciseSession
             || combatRetreatDecline.DecisionActionId != combatSelection.Decision.ActionId))
             throw new ArgumentException("RBA decline must bind the selected Barrage.",
                 nameof(combatRetreatDecline));
-        if (combatRetreatMove is not null && (combatBarrage is null
+        var moves = combatRetreatMoves?.ToArray()
+            ?? (combatRetreatMove is null ? [] : [combatRetreatMove]);
+        if (moves.Length > 0 && (combatRetreatMove != moves[^1]
+            || combatBarrage is null
             || combatSelection is null
-            || combatRetreatMove.PriorStateVersion != combatBarrage.StateVersion
+            || moves[0].PriorStateVersion != combatBarrage.StateVersion
+            || moves.Skip(1).Where((move, index) =>
+                move.PriorStateVersion != moves[index].StateVersion
+                || move.DefenderElementId != moves[0].DefenderElementId
+                || move.InitiallyAdjacentToKnownEnemy != moves[0].InitiallyAdjacentToKnownEnemy).Any()
             || combatRetreatMove.DecisionActionId != combatSelection.Decision.ActionId
             || combatRetreatWorld is null
             || combatRetreatPriorContacts?.AuthorityVersion != combatBarrage.StateVersion
@@ -61,6 +69,7 @@ public sealed class ExerciseSession
         CurrentCombatRetreatMove = combatRetreatMove;
         CurrentCombatRetreatWorld = combatRetreatWorld;
         CurrentCombatRetreatPriorContacts = combatRetreatPriorContacts;
+        CurrentCombatRetreatMoves = Array.AsReadOnly(moves);
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -73,5 +82,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatRetreatMoveV16? CurrentCombatRetreatMove { get; }
     internal CampaignWorldSnapshotV6? CurrentCombatRetreatWorld { get; }
     internal CampaignContactJournal? CurrentCombatRetreatPriorContacts { get; }
+    internal IReadOnlyList<CampaignNativeCombatRetreatMoveV16> CurrentCombatRetreatMoves { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

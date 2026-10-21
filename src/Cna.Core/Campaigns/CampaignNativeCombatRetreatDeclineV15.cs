@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using Cna.Core.Content;
 using Cna.Core.Rules;
@@ -63,8 +64,22 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
                 context, priorContacts, move.ActionId)
             || !world.Equals(move.ProjectWorld(selected, barrage, context, priorContacts)))
             throw new InvalidCampaignHistoryException("RBA move does not bind the retained world.");
-        var cut = CampaignContactRetreatBeforeAssaultCut.ProjectAfterFirstMove(
-            selected, barrage, move, world, context, currentContacts);
+        return CreateAfterMove(selected, barrage, move, world,
+            move.OriginLocationId, context, currentContacts, actionId);
+    }
+
+    public static CampaignNativeCombatRetreatDeclineV15 CreateAfterMove(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignWorldSnapshotV6 world,
+        string initialLocationId,
+        CampaignContentContext context,
+        CampaignContactJournal currentContacts,
+        string actionId)
+    {
+        var cut = CampaignContactRetreatBeforeAssaultCut.ProjectAfterMove(
+            selected, barrage, move, world, initialLocationId, context, currentContacts);
         if (actionId != cut.DeclineOffer.ActionId)
             throw new InvalidOperationException("Defender decline is absent from the updated RBA cut.");
         var position = Cna1979LandSequenceV4.CreateTurn(
@@ -140,6 +155,24 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
         return expected;
     }
 
+    public static CampaignNativeCombatRetreatDeclineV15 ReplayAfterMove(
+        CampaignNativeCombatDecisionStateV12 selected,
+        CampaignNativeCombatBarrageV14 barrage,
+        CampaignNativeCombatRetreatMoveV16 move,
+        CampaignWorldSnapshotV6 world,
+        string initialLocationId,
+        CampaignContentContext context,
+        CampaignContactJournal currentContacts,
+        ReadOnlyMemory<byte> canonicalEvent)
+    {
+        var parsed = Deserialize(canonicalEvent);
+        var expected = CreateAfterMove(selected, barrage, move, world,
+            initialLocationId, context, currentContacts, parsed.ActionId);
+        if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
+            throw new InvalidCampaignHistoryException("Post-move decline differs from defender authority.");
+        return expected;
+    }
+
     public static CampaignNativeCombatRetreatDeclineV15 Deserialize(ReadOnlyMemory<byte> canonicalEvent)
     {
         try
@@ -205,6 +238,14 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
         if (selected.CampaignId != CampaignId || move.StateVersion != PriorStateVersion
             || selected.Decision.ActionId != DecisionActionId)
             throw new InvalidOperationException("Post-move decline does not bind retained authority.");
+        return SerializeAfterMoveStateCanonical(move.SerializeStateCanonical(selected, barrage,
+            context, priorContacts));
+    }
+
+    public byte[] SerializeAfterMoveStateCanonical(ReadOnlySpan<byte> priorMoveState)
+    {
+        if (priorMoveState.IsEmpty)
+            throw new ArgumentException("Post-move decline requires retained movement state.");
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
@@ -213,9 +254,8 @@ internal sealed record CampaignNativeCombatRetreatDeclineV15(
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WriteString("positionId", NextPositionId);
-            writer.WritePropertyName("priorMoveState");
-            writer.WriteRawValue(move.SerializeStateCanonical(selected, barrage,
-                context, priorContacts));
+            writer.WriteString("priorMoveHash", "sha256:" +
+                Convert.ToHexStringLower(SHA256.HashData(priorMoveState)));
             writer.WritePropertyName("decline");
             writer.WriteRawValue(SerializeCanonical());
             writer.WriteEndObject();
