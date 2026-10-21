@@ -810,6 +810,10 @@ without altering historical 5-TOE campaigns.
 Core seeds a canonical ammunition ledger from that exact Content supplement;
 accepted Combat settlement events must apply costs in replay order, then retain
 the resulting balance. Positive settlement and Host integration are still pending.
+The private positive-assault input cut checks both Force seal hashes against
+completion, exact Content/source/rules identities, committed TOE, morale,
+offensive and defensive ratings, cohesion, capability budget, and ammunition.
+It rejects a second attempt after the ledger has spent that ammunition.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

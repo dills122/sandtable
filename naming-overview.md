@@ -135,6 +135,7 @@ offensive ratings, and initial ammunition, with no positive draw until its hash 
 the 10-TOE adjacent-infantry assault setup is a normal catalog campaign;
 its Core ammunition ledger is seeded by the same exact-pack source and must be
 debited by replayed accepted settlements;
+the normal positive-assault input cut binds both owner seals to those private facts;
 positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

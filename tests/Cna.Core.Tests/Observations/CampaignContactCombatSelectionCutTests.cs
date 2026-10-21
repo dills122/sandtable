@@ -17,6 +17,88 @@ namespace Cna.Core.Tests.Observations;
 public sealed class CampaignContactCombatSelectionCutTests
 {
     [Fact]
+    public void NormalTenToeAssaultBindsBothSealsAndDebitsPinnedAmmunition()
+    {
+        var setup = CampaignSetupSnapshotV6.FromDefinition(
+            Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
+                value.SetupId == "rules-lab.breakdown.reaction.combat-assault.v1"));
+        var request = new CampaignCreationRequest(1, "campaign-native-positive-assault",
+            Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.SetupHash,
+            setup.Content.Pack.PackId, setup.Content.Pack.Hash, setup.Content.ScenarioId);
+        var started = CampaignExercises.Begin(request);
+        Assert.True(started.IsStarted);
+        var session = started.Session!;
+        for (var index = 0; index < 80; index++)
+        {
+            var position = session.CurrentSnapshot.CurrentPosition.SequenceContext;
+            if (position.PhaseId == LandPhaseIds.MovementAndCombat
+                && position.SegmentId == LandSegmentIds.Combat
+                && position.StepId == LandStepIds.PositionDetermination)
+                break;
+            var actionSet = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet)
+                .FirstOrDefault(value => value?.Candidates.Count > 0);
+            Assert.NotNull(actionSet);
+            var action = position.SegmentId == LandSegmentIds.Movement
+                ? actionSet.Candidates.OfType<CompleteMovementSegmentAction>().FirstOrDefault()
+                    ?? actionSet.Candidates[0]
+                : actionSet.Candidates[0];
+            var command = new CampaignActionSubmission(
+                CampaignActionSubmission.CurrentContractVersion, actionSet.CampaignId,
+                actionSet.StateVersion, actionSet.PositionId, actionSet.Audience,
+                action.ActionId);
+            var accepted = CampaignExercises.Submit(session, command);
+            Assert.True(accepted.IsAccepted, accepted.RejectionReason.ToString());
+            session = accepted.SuccessorSession!;
+        }
+        var atCombat = session.CurrentSnapshot;
+        Assert.Equal(LandStepIds.PositionDetermination,
+            atCombat.CurrentPosition.SequenceContext.StepId);
+        var context = session.Context;
+        var contacts = session.CurrentContacts;
+        var offer = Assert.Single(CampaignContactCombatSelectionCut.Project(atCombat,
+            context, contacts, LandSide.Axis, "axis-infantry").AssaultOffers);
+        var selected = CampaignNativeCombatDecisionStateV12.Select(atCombat,
+            context, contacts, LandSide.Axis, "axis-infantry", offer.ActionId);
+        contacts = contacts.AdvanceNativeCombatSelection(selected);
+        var barrage = CampaignNativeCombatBarrageV14.Create(selected, context);
+        contacts = contacts.AdvanceNativeCombatBarrage(barrage);
+        var declineOffer = CampaignContactRetreatBeforeAssaultCut.Project(selected,
+            barrage, context, contacts).DeclineOffer;
+        var decline = CampaignNativeCombatRetreatDeclineV15.Create(selected,
+            barrage, context, contacts, declineOffer.ActionId);
+        contacts = contacts.AdvanceNativeCombatRetreatDecline(decline);
+        var attackerOffer = CampaignContactForceAssignmentCut.Project(selected,
+            decline, atCombat.World, context, contacts, LandSide.Axis).SealOffer;
+        var attackerSeal = CampaignNativeCombatForceSealV17.Create(selected,
+            decline, atCombat.World, context, contacts, LandSide.Axis,
+            attackerOffer.ActionId);
+        contacts = contacts.AdvanceNativeCombatForceSeal(attackerSeal);
+        var defenderOffer = CampaignContactForceAssignmentCut.Project(selected,
+            decline, atCombat.World, context, contacts, LandSide.Commonwealth).SealOffer;
+        var defenderSeal = CampaignNativeCombatForceSealV17.Create(selected,
+            decline, atCombat.World, context, contacts, LandSide.Commonwealth,
+            defenderOffer.ActionId, attackerSeal);
+        var completion = CampaignNativeCombatForceCompletionV18.Create(selected,
+            decline, [attackerSeal, defenderSeal]);
+        var antiArmor = CampaignNativeCombatAntiArmorV20.Create(selected,
+            completion, null, context);
+        var ammunition = CampaignCombatAmmunitionLedgerV1.CreateInitial(context);
+
+        var inputs = CampaignNativeCombatAssaultInputs.Create(selected, completion,
+            antiArmor, [attackerSeal, defenderSeal], atCombat.World, context, ammunition);
+
+        Assert.Equal(10, inputs.Attacker.CommittedToe);
+        Assert.Equal(10, inputs.Defender.CommittedToe);
+        Assert.Equal(0, inputs.AfterAmmunition.Remaining("axis-infantry"));
+        Assert.Equal(0, inputs.AfterAmmunition.Remaining("commonwealth-infantry"));
+        Assert.Equal(context.CombatSource!.Hash, inputs.SourceHash);
+        Assert.Throws<InvalidOperationException>(() => CampaignNativeCombatAssaultInputs.Create(
+            selected, completion, antiArmor, [attackerSeal, defenderSeal],
+            atCombat.World, context, inputs.AfterAmmunition));
+    }
+
+    [Fact]
     public void AcceptedContactSelectionRetainsReceiptAndReplaysFromOrdinaryExercise()
     {
         var setup = CampaignSetupSnapshotV6.FromDefinition(

@@ -122,6 +122,8 @@ The registered adjacent-infantry assault scenario starts both sides at the
 procedure's required 10 TOE; its setup uses normal campaign creation and replay.
 Core derives the initial ammunition ledger from that exact source; accepted Combat
 settlements will debit it in replay order, so a spent balance cannot be reused.
+The normal positive-assault input cut now binds both accepted Force seals to the
+content facts, capability budget, and current ammunition before a result draw.
 Positive Close Assault adjudication, non-infantry disposition, and public route
 remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
