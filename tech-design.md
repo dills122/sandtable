@@ -887,8 +887,9 @@ cancelled-assault System event and same-slot Reserve Release without a random
 result. The second Reserve Release may repeat through a retained legal
 movement witness into third-cycle contact Combat; normal HTTP owner selection,
 Force resolution, receipt and cold replay cover that cycle. V28 exposes Finish
-only at the third Reserve Release and rejects a forged further Repeat;
-general later selected cycles remain open.
+at the tested third Reserve Release because no legal movement witness remains;
+V28 has no fixed ordinal cutoff and rejects a forged Repeat without a same-cut
+witness or retained Combat cursor. More later-cycle cases remain to verify.
 The normal durable journal has an opt-in local `/api/v2/campaigns` adapter.
 It authenticates operator creation and seat rotation, exposes only the
 versioned side cut and public references, and maps submissions back through

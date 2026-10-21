@@ -46,10 +46,10 @@ internal sealed record CampaignNativeCycleControlV28(
         string? witnessActionId = null;
         if (choice == CampaignNativeCycleControlChoiceV28.Repeat)
         {
-            if (release.CycleOrdinal is < 1 or > 2
+            if (release.CycleOrdinal < 1
                 || !release.HasRetainedCombatRandomCursor)
                 throw new InvalidOperationException(
-                    "Only two repeat cycles have complete native Combat continuation.");
+                    "Repeat needs a retained Combat cursor and legal movement witness.");
             var witness = CampaignCycleContinuationMovementWitnessV28.Find(
                 release, context, contacts)
                 ?? throw new InvalidOperationException(

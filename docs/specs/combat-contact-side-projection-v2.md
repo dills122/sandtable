@@ -192,13 +192,16 @@ Host accept it with a fenced owner reference and cold-replayed receipt. A
 voluntary finish creates a V32 no-attack System event, advances through the
 five remaining Combat positions, and enters the same ordinal's Reserve
 Release. A replay reducer carries subsequent reserve and repeat-or-finish
-choices without resetting the settled World or random cursor. A selected
-second- and third-cycle assault now carry their Barrage, defender retreat (including a
+choices without resetting the settled World or random cursor. Selected
+second- and third-cycle assaults now carry their Barrage, defender retreat (including a
 move), Force seals or timeout, Anti Armor, result, World settlement, custody,
-and Reserve Release through Exercise and the normal durable Host. Further
-selected cycles, vehicle accounting, other legal continuation witnesses,
-following ordinary phases, and public routing remain pending.
-contact bound to a unit with no combat component
+and Reserve Release through Exercise and the normal durable Host. Repeat
+decisions have no fixed ordinal cutoff: Core requires a retained Combat
+random cursor and a source-legal same-cut released-unit Movement witness. The
+tested third-cycle cut has no such witness and therefore offers Finish only.
+Other selected cycle shapes, vehicle accounting, continuation witnesses
+beyond released-unit Movement, following ordinary phases, and public routing
+remain pending. A contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.
 
