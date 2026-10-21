@@ -131,6 +131,9 @@ public sealed class CampaignContactOwnerMovementCutTests
         Assert.Equal(offered.DestinationLocationId, accepted.DestinationLocationId);
         Assert.Contains(seenCut.ContactObservation.CurrentTargets,
             target => target.ApparentLocationId == "north");
+        Assert.Equal("axis-infantry.formation", seenCut.ContactObservation.ActingFormationId);
+        Assert.All(seenCut.ContactObservation.Contacts, contact =>
+            Assert.Equal("axis-infantry.formation", contact.ObserverFormationId));
         Assert.DoesNotContain(seenCut.MovementOffers, offer => offer.DestinationLocationId == "north");
     }
 

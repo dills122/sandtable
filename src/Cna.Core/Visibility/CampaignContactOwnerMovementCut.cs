@@ -53,7 +53,7 @@ internal sealed record CampaignContactOwnerMovementCut(
                 element, worldByElement[element.ElementId]))
             .ToArray();
         var owner = own.Single(element => element.ElementId == content.ElementId);
-        var knowledge = contacts.ObserveFor(side, actingElementId);
+        var knowledge = contacts.ObserveFor(side, content.ParentFormationId);
         var locations = definition.Locations.Select(location =>
             new CampaignObservationLocation(location.LocationId, location.TerrainId)).ToArray();
         var edges = definition.Edges.Select(edge => new CampaignObservationEdge(

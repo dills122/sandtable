@@ -23,10 +23,10 @@ public sealed class CampaignContactJournalTests
         var replayed = CampaignContactJournal.Replay(prior, context, [moved], committed.Records);
 
         Assert.True(committed.Records.Count > initial.Records.Count);
-        Assert.Equal(committed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"),
-            replayed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"));
+        Assert.Equal(committed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"),
+            replayed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
         var reacting = Assert.Single(moved.OpenedReactionWindow!.FrozenOpportunities);
-        var observer = Assert.Single(reacting.ReactingRepresentation.BoundElementIds);
+        var observer = Assert.Single(reacting.ReactingRepresentation.BoundElementIds) + ".formation";
         Assert.Contains(replayed.CurrentTargetsFor(LandSide.Commonwealth, observer),
             candidate => candidate.ApparentLocationId == moved.DestinationLocationId);
         Assert.DoesNotContain(moved.RepresentationId,
@@ -75,7 +75,7 @@ public sealed class CampaignContactJournalTests
         var knowledge = new CampaignContactKnowledge(prior.CampaignId, LandSide.Commonwealth);
         foreach (var transition in CampaignContactAdjacencySource.OnCreation(prior, context, knowledge))
             knowledge.Apply(transition);
-        var before = Assert.Single(knowledge.CurrentTargetsFor("commonwealth-infantry"));
+        var before = Assert.Single(knowledge.CurrentTargetsFor("commonwealth-infantry.formation"));
         var movement = BreakdownMovementTests.Move(prior, "axis-infantry", "north", "north-west");
         var movedWorld = BreakdownMovementTests.ChangeElement(prior, "axis-infantry", "north-west").World;
         var after = new CampaignSnapshotV11(11, prior.CampaignId, movement.StateVersion,
@@ -86,8 +86,8 @@ public sealed class CampaignContactJournalTests
         foreach (var transition in CampaignContactAdjacencySource.OnMovement(
                      prior, after, movement, context, knowledge))
             knowledge.Apply(transition);
-        Assert.Empty(knowledge.CurrentTargetsFor("commonwealth-infantry"));
-        var stale = Assert.Single(knowledge.ObserveFor("commonwealth-infantry"),
+        Assert.Empty(knowledge.CurrentTargetsFor("commonwealth-infantry.formation"));
+        var stale = Assert.Single(knowledge.ObserveFor("commonwealth-infantry.formation"),
             value => value.Handle == before.ContactHandle);
         Assert.False(stale.IsCurrent);
         Assert.Equal("north", stale.ApparentLocationId);
@@ -101,7 +101,7 @@ public sealed class CampaignContactJournalTests
         var context = CampaignContentContext.Create(BreakdownContentFixture.Artifact(),
             BreakdownSnapshotTests.Scenario().ScenarioId);
         var journal = CampaignContactJournal.Initialize(prior, context);
-        var before = journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry");
+        var before = journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation");
         var movement = BreakdownMovementTests.Move(prior, "axis-infantry", "north-west", "north");
         var movedWorld = BreakdownMovementTests.ChangeElement(prior, "axis-infantry", "north").World;
         var after = new CampaignSnapshotV11(11, prior.CampaignId, movement.StateVersion,
@@ -110,7 +110,7 @@ public sealed class CampaignContactJournalTests
             prior.CurrentPosition, null, prior.BreakdownFlow);
 
         journal = journal.AppendMovement(prior, after, movement, context);
-        Assert.Equal(before, journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"));
+        Assert.Equal(before, journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
     }
 
     [Fact]
@@ -135,10 +135,10 @@ public sealed class CampaignContactJournalTests
         Assert.Equal(session.CurrentContacts.Records.Count, readback.Records.Count);
         Assert.True(session.CurrentContacts.Records.Zip(readback.Records)
             .All(pair => pair.First.AsSpan().SequenceEqual(pair.Second)));
-        Assert.Equal(session.CurrentContacts.ObserveCanonical(LandSide.Axis, "axis-infantry"),
-            readback.ObserveCanonical(LandSide.Axis, "axis-infantry"));
-        Assert.Equal(session.CurrentContacts.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"),
-            readback.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry"));
+        Assert.Equal(session.CurrentContacts.ObserveCanonical(LandSide.Axis, "axis-infantry.formation"),
+            readback.ObserveCanonical(LandSide.Axis, "axis-infantry.formation"));
+        Assert.Equal(session.CurrentContacts.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"),
+            readback.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
     }
 
     private static (CampaignSnapshotV11 Prior, CampaignSnapshotV11 After,
