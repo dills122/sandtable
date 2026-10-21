@@ -83,7 +83,9 @@ reference-to-Core-action map. It keeps outward bytes and refs stable across unse
 changes. Internal contact-derived owner movement now commits once with seat, opening and
 reference fences, while an unchanged visible cut remains usable across private authority advances;
 cold replay verifies the same path and an exact retry returns the retained
-receipt. There is no public opening route or native Combat action stage yet; historical
+receipt. A first internal native Combat selection step now consumes the same current-contact
+authority cut, retains a private defender binding, and round-trips through Exercise and Host
+import replay. Combat adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

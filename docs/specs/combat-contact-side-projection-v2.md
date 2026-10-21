@@ -43,6 +43,11 @@ obligations block campaign activation; they cannot disappear from the action
 set at runtime. The selected or no-attack event advances ordinary Core
 authority and has a durable command, event, state, and receipt schema.
 
+The first internal selection implementation retains a V12 selected-contact event and
+checkpoint in normal Exercise evidence. Host import replays its accepted-step kind and
+checks the private defender binding against independently replayed contact authority.
+It does not yet provide an owner opening, finish-without-attack, or adjudication.
+
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,
 loss, custody, and Reserve Release. Each enabled family needs an exact owner

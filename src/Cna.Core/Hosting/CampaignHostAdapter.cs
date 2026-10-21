@@ -42,6 +42,8 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatSelection is not null)
+            return CampaignHostAudienceCut.Rejected(CampaignHostQueryRejectionReason.InvalidState);
         if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
             return CampaignHostAudienceCut.Rejected(CampaignHostQueryRejectionReason.InvalidAudience);
 
@@ -140,6 +142,11 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission, string actingElementId) =>
         CampaignExercises.SubmitContactOwnerMovement(session, submission, actingElementId);
 
+    /// <summary>Trusted native Combat selection against the same contact authority cut.</summary>
+    public static ExerciseStepResult SubmitContactOwnerCombatSelection(
+        ExerciseSession session, CampaignActionSubmission submission, string actingElementId) =>
+        CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, actingElementId);
+
     /// <summary>Private typed decision proof for one accepted step. It neither publishes a
     /// second transition nor supplies browser diary content.</summary>
     public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
@@ -190,11 +197,16 @@ public static class CampaignHostAdapter
             }
 
             if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind
-                or CampaignHostAcceptedStep.ContactMovementKind))
+                or CampaignHostAcceptedStep.ContactMovementKind
+                or CampaignHostAcceptedStep.ContactCombatSelectionKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
-            var accepted = step.Kind == CampaignHostAcceptedStep.LegacyKind
-                ? Submit(session, submission)
-                : SubmitContactOwnerMovement(session, submission, step.ActingElementId!);
+            var accepted = step.Kind switch
+            {
+                CampaignHostAcceptedStep.LegacyKind => Submit(session, submission),
+                CampaignHostAcceptedStep.ContactMovementKind => SubmitContactOwnerMovement(
+                    session, submission, step.ActingElementId!),
+                _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
+            };
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
@@ -290,8 +302,10 @@ public sealed class CampaignHostAcceptedStep
 {
     public const int CurrentContractVersion = 1;
     public const int ContactMovementContractVersion = 2;
+    public const int ContactCombatSelectionContractVersion = 3;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
+    public const string ContactCombatSelectionKind = "contact-combat-selection";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -302,11 +316,16 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or ContactMovementKind)
-            || (kind == ContactMovementKind && string.IsNullOrWhiteSpace(actingElementId))
+        if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind)
+            || (kind != LegacyKind && string.IsNullOrWhiteSpace(actingElementId))
             || (kind == LegacyKind && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
-        ContractVersion = kind == LegacyKind ? CurrentContractVersion : ContactMovementContractVersion;
+        ContractVersion = kind switch
+        {
+            LegacyKind => CurrentContractVersion,
+            ContactMovementKind => ContactMovementContractVersion,
+            _ => ContactCombatSelectionContractVersion,
+        };
         Kind = kind;
         ActingElementId = actingElementId;
         this.canonicalCommand = canonicalCommand?.ToArray()

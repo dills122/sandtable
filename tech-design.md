@@ -760,8 +760,10 @@ visible bytes and HMAC action references separately from the current private aut
 and Core action map; equal visible cuts keep the same refs across hidden transitions. Internal
 contact-derived movement submission checks those references against the current visible cut and
 offers, accepts an unchanged opening across private authority advances, and retains a distinct replay kind,
-with exact retry returning the retained receipt. There is still no public opening route or native
-Combat action stage.
+with exact retry returning the retained receipt. The first internal native Combat selection
+stage now accepts a current-contact action at Position Determination, stores its defender binding
+only in the private Core event, and verifies the resulting V12 checkpoint through Exercise and
+Host import replay. Combat adjudication and the public opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.

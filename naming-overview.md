@@ -45,6 +45,9 @@ Intelligence and Maproom cannot invent outcomes or mutate authority. Internally,
 `CampaignContactKnowledge` is a plain Core technical name for replayed side
 knowledge in the permanent fog rule; `CampaignContactView` is its outward
 projection, with private target binding retained only by Umpire.
+`CampaignNativeCombatSelectionStateV12` is the first internal Combat authority step:
+it stores the selected contact action and private defender binding for deterministic
+Exercise and Host replay. It is not a public Combat route or adjudicated result.
 The private [actual repeated Movement completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
 uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
 `complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner

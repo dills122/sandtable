@@ -113,6 +113,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(after.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatSelection(
+        CampaignNativeCombatSelectionStateV12 selected)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        if (selected.CampaignId != CampaignId
+            || selected.PriorSnapshot.StateVersion != AuthorityVersion
+            || selected.StateVersion != checked(AuthorityVersion + 1))
+            throw new ArgumentException("Combat selection does not bind the contact authority cut.", nameof(selected));
+        return AtAuthorityVersion(selected.StateVersion);
+    }
+
     private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
     {
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId
