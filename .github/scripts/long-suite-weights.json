@@ -158,6 +158,9 @@
     "Cna.Core.Tests.Campaigns.CampaignReserveEndToEndTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Campaigns.CampaignReserveReleaseRulesTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Campaigns.CampaignSnapshotV10ContractTests": {
       "parts": 1
     },
@@ -473,6 +476,9 @@
     "Cna.Core.Tests.Content.ContentCanonicalTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Content.ContentCombatSourceTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Content.ContentContractsTests": {
       "parts": 1
     },
@@ -501,6 +507,9 @@
       "parts": 1
     },
     "Cna.Core.Tests.Hosting.CampaignHostAdapterTests": {
+      "parts": 1
+    },
+    "Cna.Core.Tests.Observations.CampaignContactCombatSelectionCutTests": {
       "parts": 1
     },
     "Cna.Core.Tests.Observations.CampaignContactJournalTests": {
@@ -706,6 +715,7 @@
     "05aa52945c4ec72e516a02ae3609f434d7885b89eefca52cfd1eb26b9c7e5884": 1470,
     "05ad6f3ec0694f88f90c7d9f4d45b79e94eabd3f9171755c6b28bf69c91f82e5": 4130,
     "05b4e3efdac2171bbd5ad428e4828d45547a1b4c8cee15bf8ad0e49ae92b7f19": 607,
+    "05cd233556f8bd84798899faab967a0fd56cd02e2c4cf98f8a2398838b4cb293": 12,
     "05d35b860ac404e7549fb7db2d25b752d52097db2136f2dc109b5bc4d9a6fa3e": 2,
     "0617239942d83bcec3136e66c9599b803d7445bcf674556656db3f5e8844ffb4": 7990,
     "061cebdfb3991dca1ee96a170acff24793167e7cc2fe611537a0f3d3e4c03e06": 1883,
@@ -1441,6 +1451,7 @@
     "3f8b7f0bf945326f1f18ad4eabb6ad92143bb0d51e99c39469bf3f3e02a3d6b9": 1,
     "3f8e611f2a713accb93f8b2c275a45bb6179dbdbf198d3c041ffda74a548c628": 1,
     "3fa46c14127020bb6d2bf2ef0329c73571d91b1ca6b022b706b5a0e0472c6b5c": 57,
+    "3faf3e9cc3aa90aae48cd9ec1ed128bc390a82eeaab493d84981513fcfc55718": 3,
     "3fbe4fb5be69517af63a62d3a0c3b1314acbd98d84db8caa22e59e1bd0913333": 299,
     "3fc365466f30cb2994526dbc1ef40434d3e4f4e6491f5f4384e9e00bb19d7359": 16,
     "3ffcced3bcb30458d17660a0c9ec1985a2b8cf13ac55b14450f706aaee838447": 1,
@@ -1787,6 +1798,7 @@
     "5a77e8aaea0b6fb84f4bade0f3cd62dc61ba56eb131f69e1bfe9ffd97d8e1a8c": 1,
     "5a960ef917812e54ace32b080bd0f74c68652ee509d489ef0786a1ebcc1f699e": 3,
     "5a9d93c10baf46456f25ddd43aa79a34d839b37ad50618d13f3d2b45ed843dac": 1,
+    "5aa6b175d05ab745d86948e1285c4b15893c9a078c775dcc3d0ad408cf23546a": 2,
     "5ab26f9580adffaa12eb1150c07e96a9ce5de2d41271c11fb024183f4945fbd7": 8335,
     "5b0b8f2d8b3484036e0db96f333abedaa5372acb6efb572eb003dffaf89876b9": 36,
     "5b2d82aa6f56e7cadccfd5b91623c8ef213789aa201ffab2d18528869ec122fe": 23,
@@ -1828,6 +1840,7 @@
     "5e3b1e75d5260b7cf91ee1187030f418439d2b5bffb563e95fc1af22a07f2431": 23384,
     "5e426a85f1eaf2faf6d6626c6c0dba1c641f748fdd6adc4021d87043eacd7880": 137,
     "5e4bbde84454ed4063a3d3ab91da9e3c78e64dc729f0a0772f20735ffed71849": 1,
+    "5e52cc4c8c43593348dbccc7d3a73ac298e6cce4768f3b2d55c7a13e86671efd": 83,
     "5e5cbab51f6e08c47242899f6b3032d98a2fd3ed996a5ea18a82676354cdcc51": 3,
     "5e65102f5402c90e8f7ba5b9201736e1147524ec71b4be2366cb3cdc707bb61b": 2991,
     "5e70fe9fc9be7a8d9fca0f8c26b41d5a9b385cfdef16af99d9b32ac7a5e97a33": 129,
@@ -1844,6 +1857,7 @@
     "5f21b3ecf43048bd81dbb17b7695f3509e8c8acd11c28608b3eed0eb2c8a62db": 3066,
     "5f26f505ab616299f7f678f59d6beb436647edc6126f5f9e208642906bf05d0e": 34,
     "5f586d267dc37bfc4e9eb091a8ffa4188b7012f0a1a17ae9c164f82b1485eb88": 11141,
+    "5f5db497f01ac36184343dba45968780170f13ddeff868e795329cc8fbe1b74e": 1,
     "5f845099997e6327563e654726ba02851427f5c94374e9c45479e38b2d76cfd2": 1861,
     "5f8f9d3a8c4009b35beb83eb70e7f79953b82658d428006b06d5fc4b3fe9a3c1": 1,
     "5fa7e0ebb52c057be381ce3636fc985477ce55f1ab3c48839e2290bd100e40f3": 1,
@@ -2099,6 +2113,8 @@
     "756328dc4408ba5d9fdeab8efd41899912116c268869aa1fd79850834672a8ac": 12,
     "75841c9d905da27c0b0913f5dfc4a11f37e66bfc7898a91ae78abee8e42c885f": 336,
     "75868dd7f3ca0a98d33419b0cda4acc878493500692b526e8ebc6970265187d7": 1,
+    "75bdb39b0df1f52960f710a89c4c49ccfc38cb6748515a348b6ff569b3f04c14": 1,
+    "75d3d3045b857fb48599abbd0e067b998cf120f972f630edc366e6e0d47e1b98": 94,
     "75d79ecfc9c5eef42ae3dcadb5e8c4d7c0c81a222b2092a0137929748793b365": 1703,
     "75e0f7278eb5125b4d2c9c9ec0c4d8250145c9b2725ba48e66a3e2132cb99291": 1,
     "75f0d89b35dfc43fe7ad5d00157c56ed71f4369255bfc49fd1d2693e0dbbb030": 58317,
@@ -2118,6 +2134,7 @@
     "76f4610aa3f6a7cdc67aa9a612a50efd0073a204cc265c733867cfaa2dba29f0": 341,
     "7719db27bbf9f1c4eb10d2dffa081a4c8cadd40bf1fdb3388622fb458d240800": 1,
     "771d96340fc80e67ed09fc485f5bd2fcec27e1623bf53f681e9f4f0436cd8fb0": 705,
+    "772c5bb44de3734e4787ad99540ba62eb42292f47d9a308bdf22f85c151b9d68": 2039,
     "77393794fcc9e2c0991cc475c57cf027ac5b492c12d4cc3cec7445702204e905": 23,
     "7740f486817503f888e4357bd5ae6d4bc5d549afacda9f33d511931097247479": 1752,
     "778325b314f1983b2c423df44dc24e822ccedb544b52c2f1870fd6268e012187": 1,
@@ -2544,6 +2561,7 @@
     "978e82247cf8e94365a39898bd87f2b94f7c10f77ed15c360283bb4a84359321": 349,
     "97a8f0e3a2abb6f098883166019f46ce945fcf757adbecaa8e4a2983322275f1": 107,
     "97f371e97e33d2b26798c515e323e81b865a8e4d34a04d7d7d2413403af8668b": 2,
+    "980c66a3e663fe6d760b158bc4253d7b582e38b8d0b8ca1211bb73e87ae268d8": 4527,
     "98150fb4b49cf56a15c6c1cee7279be96e3c5ed19e8e16b3171a2fbd67ba6bbc": 73,
     "981c83beac4c873774408736e2b12d1f47617a28ace36a3097f3375e89ee18ec": 1,
     "9820e2fe26a9d10101e6e1427bac07fc2d8b6519488d1ff495e14dfc387b6082": 1506,
@@ -3513,6 +3531,7 @@
     "e1e55acd0b581f4bc64c68de188a1b0335a64e68b716d4879fa46739d1a5a67b": 2734,
     "e1eb5920b6130b20db30c110bbb97575ce19ff21827d580b57ba5ed7ec51d67a": 3875,
     "e20f0f61f19ff762c8f1ef6dd7916135a6820793b1125aa4db44f91f37e63683": 1889,
+    "e212130fc60ebc6658d0c8f40efe1700123f9522b68013441d17fced4b503a20": 83,
     "e21ec6d41806aa936829e5158eca4e9bfc40aa274e2c2a7d95107eba4f78740c": 70,
     "e243254b12b31477c7eeb802575323b5d9c4d325d6b09e4a50e1bd4df637424b": 1844,
     "e249767110de9af7818beb59b7cb2d803c768faf197fda26c4b2170218bde44b": 1,
@@ -3719,6 +3738,7 @@
     "f167026fad332a8a385c6b52d9cb1c8237902c67637ab6f6bbc3754fb67f6f31": 785,
     "f168eb0fa183fb253b675e253e96c7f9a16112ee4f81c67f627fc75d589e5532": 1,
     "f16fc8a3c543b6ccd5dbabc2d932e641bac6d3df63d8f25a2e539cd1f3eb0fec": 37,
+    "f1743f6f3f65a4141560b67f39d65e487fc8c47da424a4002a7c9c6537f51d32": 411,
     "f18b0cdf1dcd5915fa502c4bf852a1792e1877c3404a9ba9523c67bdeb48ef53": 1199,
     "f1a5e49597c3eb874fcfb43986cc8ad66854e40e4cb36518d64cd4980cfa6b6d": 21,
     "f1b2752cb08a7c899fecff6b13e1dab5734a6099693347ed41ce54deddaabc84": 70,
@@ -3896,15 +3916,24 @@
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "04159b9654fcce88b5a4d1abfae1ddd4e6bf79ce92c4a6e94463ceae7c9e5311": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
+    "05cd233556f8bd84798899faab967a0fd56cd02e2c4cf98f8a2398838b4cb293": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
     "0cf66e3695cfa2bc0a5aab36df368940b9c013b6ca19c2ac18aa69b621cc6f46": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "0dd787ea3ae718ac246268ea0843c68b6a72c29e0340372093a5fccb5ce53093": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "132105f2141f6489fd99c3a8055266ddc987e752e66f176ddd6b7f137284b287": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "22aa2e5143a4fbed875b78f14127068118fa38e41c41d579cf1e7d2859406aef": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "284b0df70fd02a8e63dc5d13fb17bb4fc0b83d5552e069bbec1c12c4220e8b74": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
     "3bb45012c1337929e12734dac6fc977c2da436091e5e46d33ee37e8a3e1d629b": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "3faf3e9cc3aa90aae48cd9ec1ed128bc390a82eeaab493d84981513fcfc55718": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
+    "5aa6b175d05ab745d86948e1285c4b15893c9a078c775dcc3d0ad408cf23546a": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
+    "5e52cc4c8c43593348dbccc7d3a73ac298e6cce4768f3b2d55c7a13e86671efd": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
+    "5f5db497f01ac36184343dba45968780170f13ddeff868e795329cc8fbe1b74e": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
     "6c524d3cd49aa23212ce1c14e2c4e53ac255a2843e097c1c047406021be45071": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "749f92d5ebdb0a12838f1f1c8be437e9035aca5f10d497f9ba2e22abb8a8aa50": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "75bdb39b0df1f52960f710a89c4c49ccfc38cb6748515a348b6ff569b3f04c14": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
+    "75d3d3045b857fb48599abbd0e067b998cf120f972f630edc366e6e0d47e1b98": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
+    "772c5bb44de3734e4787ad99540ba62eb42292f47d9a308bdf22f85c151b9d68": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
     "8855b5d1eb9a9bbca433a1bd38e537ed253c53978db054be3e7568879f71556c": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "980c66a3e663fe6d760b158bc4253d7b582e38b8d0b8ca1211bb73e87ae268d8": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
     "ac2b56ad9ffbe118baa46ce99dbbd4492b592011ff161c760c4f707fb91e958d": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "b3704b64db90a92547d324fb79e7b277fc5f1b0f1b5d8e073022928c34ebae4e": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "c13540b4245c84794e4afe8b273a656c46bfe4c698a26d220c8028b6aaa0fd45": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -3912,9 +3941,11 @@
     "c26be8ecbcb2fde7a9e95ee7643c10caaa92a1f03189b207f42093eedd59300a": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "d04eb9a57ff3b7f3ac9ab4fb8a4e48b7fba5dac7c42b9932c71ac6ef1405fa50": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "d1fc33f17b1b452f9233d67f71367c9bf931a7092eb53a1fe70dc7a8999090f3": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "e212130fc60ebc6658d0c8f40efe1700123f9522b68013441d17fced4b503a20": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
     "e5b02d332f38bbb2eafaa052e8b1c8bcef0b6be2d7dff11043e4539a0e3038f6": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "ecef322572999390263f7ca9e6dee52a5ed6933ff043b6a46f1de0b751da3994": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
     "efa5b3b9285820f832a63a3b88e4bb73652a9fc759a19e60de3722c6633ebfef": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "f1743f6f3f65a4141560b67f39d65e487fc8c47da424a4002a7c9c6537f51d32": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
     "fa28d0993dcbb3f3c316b9eac84005cde5a267381d4fc7680240701d15a784cc": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration"
   },
   "supplemental_measurements": {
