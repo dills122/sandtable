@@ -339,11 +339,13 @@ public static class CampaignHostAdapter
         session.CurrentCombatDecision?.Decision.Choice == "select-contact-assault";
 
     public static bool IsNativeRepeatCombatVoluntaryFinish(ExerciseSession session) =>
-        session.CurrentRepeatCombatSelection?.Choice
+        (session.CurrentPostRepeat?.Selection
+            ?? session.CurrentRepeatCombatSelection)?.Choice
             == "finish-combat-without-attack";
 
     public static bool IsNativeRepeatCombatSelectedAssault(ExerciseSession session) =>
-        session.CurrentRepeatCombatSelection?.Choice
+        (session.CurrentPostRepeat?.Selection
+            ?? session.CurrentRepeatCombatSelection)?.Choice
             == "select-contact-assault";
 
     public static (string DecisionActionId, string DeclineEventHash)
@@ -388,8 +390,11 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || predecessor.CurrentRepeatCombatSelection is null
-            || accepted.SuccessorSession?.CurrentRepeatNoAttack is null)
+            || (predecessor.CurrentPostRepeat?.Selection is null
+                ? predecessor.CurrentRepeatCombatSelection is null
+                    || accepted.SuccessorSession?.CurrentRepeatNoAttack is null
+                : accepted.SuccessorSession?.CurrentPostRepeatEvents
+                    is not [.., CampaignNativeRepeatCombatNoAttackV32]))
             throw new ArgumentException(
                 "Accepted repeated no-attack completion required.",
                 nameof(accepted));
@@ -613,8 +618,9 @@ public static class CampaignHostAdapter
         };
         if ((session.CurrentRepeatAssault?.Release is not null
                 ? session.CurrentRepeatAssault.Control
-                : session.CurrentPostRepeat is null
-                    ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not null)
+                : session.CurrentPostRepeat is not null
+                    ? session.CurrentPostRepeat.Control
+                    : session.CurrentCycleControl) is not null)
             throw new InvalidOperationException("Cycle control is already committed.");
         var release = CampaignExercises.QueryNativeReserveReleaseState(session);
         var cut = CampaignCycleControlOwnerCutV28.Project(release,
@@ -639,8 +645,9 @@ public static class CampaignHostAdapter
             };
             if ((session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
-                    : session.CurrentPostRepeat is null
-                        ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not null)
+                    : session.CurrentPostRepeat is not null
+                        ? session.CurrentPostRepeat.Control
+                        : session.CurrentCycleControl) is not null)
                 throw new InvalidOperationException("Cycle control is already committed.");
             cut = CampaignCycleControlOwnerCutV28.Project(release,
                 session.Context, session.CurrentContacts, side);
@@ -678,8 +685,13 @@ public static class CampaignHostAdapter
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Repeated Movement needs an owner side."),
         };
-        if ((session.CurrentPostRepeat is null ? session.CurrentRepeatMove : session.CurrentPostRepeat.Movement) is not null
-            || (session.CurrentPostRepeat is null ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not { } control)
+        if ((session.CurrentPostRepeat?.Movement is not null
+                || session.CurrentPostRepeat is null
+                    && session.CurrentRepeatAssault?.Control is null
+                    && session.CurrentRepeatMove is not null)
+            || (session.CurrentPostRepeat is not null
+                ? session.CurrentPostRepeat.Control
+                : session.CurrentRepeatAssault?.Control ?? session.CurrentCycleControl) is not { } control)
             throw new InvalidOperationException("Repeated Movement is unavailable.");
         var release = CampaignExercises.QueryNativeReserveReleaseState(session);
         var cut = CampaignRepeatMovementOwnerCutV29.Project(release, control,

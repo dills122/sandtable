@@ -531,6 +531,131 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(CampaignExercises.Reconstruct(afterFinish).IsVerified);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void SecondAssaultCanRepeatIntoThirdContactCombatAfterColdRestart(
+        bool thirdAssault)
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, firstDefenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true,
+                reserveElementId: "axis-infantry-second", tripleContact: true,
+                secondReserveElementId: "axis-infantry-third");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, firstDefenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var release = journal.QueryReserveReleaseOwnerOpening(attacker,
+            "axis-infantry-second");
+        Assert.True(journal.SubmitOwnerReserveRelease(attacker,
+            "axis-infantry-second", release.Revision,
+            release.PublicActionRefs[0]).IsAccepted);
+        var heldThird = journal.QueryReserveReleaseOwnerOpening(attacker,
+            "axis-infantry-third");
+        Assert.True(journal.SubmitOwnerReserveRelease(attacker,
+            "axis-infantry-third", heldThird.Revision,
+            heldThird.PublicActionRefs[^1]).IsAccepted);
+        var control = journal.QueryCycleControlOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerCycleControl(attacker, control.Revision,
+            control.PublicActionRefs[0]).IsAccepted);
+        var movement = journal.QueryRepeatMovementOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerRepeatMovement(attacker, movement.Revision,
+            movement.PublicActionRefs[1]).IsAccepted,
+            System.Text.Encoding.UTF8.GetString(movement.VisibleBytes));
+        var selection = journal.QueryRepeatCombatOwnerOpening(attacker,
+            "axis-infantry-second");
+        using (var visible = JsonDocument.Parse(selection.VisibleBytes))
+        {
+            var offers = visible.RootElement.GetProperty("assaultOffers");
+            var west = Enumerable.Range(0, offers.GetArrayLength()).Single(index =>
+                offers[index].GetProperty("apparentLocationId").GetString() == "west");
+            Assert.True(journal.SubmitOwnerRepeatCombat(attacker,
+                "axis-infantry-second", selection.Revision,
+                selection.PublicActionRefs[west]).IsAccepted);
+        }
+        var westDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
+            journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
+        var rba = journal.QueryRbaOwnerOpening(defender, westDefender);
+        Assert.True(journal.SubmitOwnerRbaDecline(defender, westDefender,
+            rba.Revision, rba.PublicActionRefs[^1]).IsAccepted);
+        var secondAttackerForce = journal.QueryForceOwnerOpening(attacker,
+            "axis-infantry-second");
+        var secondDefenderForce = journal.QueryForceOwnerOpening(defender,
+            westDefender);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry-second",
+            secondAttackerForce.Revision,
+            secondAttackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, westDefender,
+            secondDefenderForce.Revision,
+            secondDefenderForce.PublicActionRefs[0]).IsAccepted);
+        release = journal.QueryReserveReleaseOwnerOpening(attacker, "axis-infantry-third");
+        Assert.True(journal.SubmitOwnerReserveRelease(attacker, "axis-infantry-third",
+            release.Revision, release.PublicActionRefs[0]).IsAccepted);
+        control = journal.QueryCycleControlOwnerOpening(attacker);
+        Assert.Contains("Repeat", System.Text.Encoding.UTF8.GetString(control.VisibleBytes),
+            StringComparison.Ordinal);
+        Assert.True(journal.SubmitOwnerCycleControl(attacker, control.Revision,
+            control.PublicActionRefs[0]).IsAccepted);
+        movement = journal.QueryRepeatMovementOwnerOpening(attacker);
+        Assert.True(journal.SubmitOwnerRepeatMovement(attacker, movement.Revision,
+            movement.PublicActionRefs[0]).IsAccepted);
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        Assert.Equal(30, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        var thirdCombat = fixture.Open(clock).QueryRepeatCombatOwnerOpening(attacker,
+            "axis-infantry-third");
+        using var thirdVisible = JsonDocument.Parse(thirdCombat.VisibleBytes);
+        var thirdOffers = thirdVisible.RootElement.GetProperty("assaultOffers");
+        var farNorthWest = Enumerable.Range(0, thirdOffers.GetArrayLength())
+            .Single(index => thirdOffers[index]
+                .GetProperty("apparentLocationId").GetString() == "far-north-west");
+        Assert.True(fixture.Open(clock).SubmitOwnerRepeatCombat(attacker,
+            "axis-infantry-third", thirdCombat.Revision,
+            thirdAssault ? thirdCombat.PublicActionRefs[farNorthWest]
+                : thirdCombat.PublicActionRefs[^1]).IsAccepted);
+        cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        if (thirdAssault)
+        {
+            Assert.Equal(14, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+            var thirdDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
+                cold, CampaignActionAudience.Commonwealth);
+            var thirdRba = journal.QueryRbaOwnerOpening(defender, thirdDefender);
+            Assert.True(journal.SubmitOwnerRbaDecline(defender, thirdDefender,
+                thirdRba.Revision, thirdRba.PublicActionRefs[^1]).IsAccepted);
+            var thirdAttackerForce = journal.QueryForceOwnerOpening(attacker,
+                "axis-infantry-third");
+            var thirdDefenderForce = journal.QueryForceOwnerOpening(defender,
+                thirdDefender);
+            clock.Advance(TimeSpan.FromSeconds(1));
+            Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry-third",
+                thirdAttackerForce.Revision,
+                thirdAttackerForce.PublicActionRefs[0]).IsAccepted);
+            clock.Advance(TimeSpan.FromSeconds(1));
+            Assert.True(journal.SubmitOwnerForceSeal(defender, thirdDefender,
+                thirdDefenderForce.Revision,
+                thirdDefenderForce.PublicActionRefs[0]).IsAccepted);
+            cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+            Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        }
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        control = fixture.Open(clock).QueryCycleControlOwnerOpening(attacker);
+        Assert.True(control.Revision <= CampaignExercises.QueryCheckpoint(cold).StateVersion,
+            $"opening={control.Revision} checkpoint={CampaignExercises.QueryCheckpoint(cold).StateVersion}");
+        Assert.True(fixture.Open(clock).SubmitOwnerCycleControl(attacker,
+            control.Revision, control.PublicActionRefs[^1]).IsAccepted);
+        cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+    }
+
     [Fact]
     public void TimedOutSecondAssaultReturnsToReserveReleaseWithoutResult()
     {
@@ -1389,13 +1514,16 @@ public sealed class CampaignDurableAuthorityJournalTests
         CampaignOwnerOpening AttackerForce, CampaignOwnerOpening DefenderForce)
         PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal,
             bool positive = false, ulong? seed = null,
-            string? reserveElementId = null, bool doubleContact = false)
+            string? reserveElementId = null, bool doubleContact = false,
+            bool tripleContact = false, string? secondReserveElementId = null)
     {
-        var request = doubleContact ? PositiveDoubleContactRequest(seed ?? 12345)
+        var request = tripleContact ? PositiveTripleContactRequest(seed ?? 12345)
+            : doubleContact ? PositiveDoubleContactRequest(seed ?? 12345)
             : positive ? PositiveCombatRequest(seed ?? 12345) : CombatInfantryRequest();
         AdvanceToContactCombat(journal, request, Timing(request),
             preserveAdjacentInfantry: true,
-            reserveElementId: reserveElementId);
+            reserveElementId: reserveElementId,
+            secondReserveElementId: secondReserveElementId);
         var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
         var selected = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
@@ -1471,13 +1599,23 @@ public sealed class CampaignDurableAuthorityJournalTests
         "sha256:44a76f21f1b492493c898495721f5f684acc83a14c391289c5e8d66220b6a648",
         "breakdown-reaction-combat-double-fresh");
 
+    private static CampaignCreationRequest PositiveTripleContactRequest(ulong seed) => new(1,
+        "campaign-native-combat-triple", Cna1979Ruleset.Manifest.Hash, seed,
+        "rules-lab.breakdown.reaction.combat-triple.v1",
+        "sha256:9383b8fda7d2b33cedbd699d5bd564cbbea9900f520c00a9d3827d6447328049",
+        "rules-lab.content.breakdown-reaction.combat-triple.v1",
+        "sha256:eb81034809fcbb7403de47db4e3f3bd6abb42fec430f9017603484f7764c7d71",
+        "breakdown-reaction-combat-triple");
+
     private static ExerciseSession AdvanceToContactCombat(
         CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,
         CampaignDecisionTimingConfigurationV1? timing = null,
         string movementDestination = "north", bool preserveAdjacentInfantry = false,
-        string? reserveElementId = null)
+        string? reserveElementId = null, string? secondReserveElementId = null)
     {
         var session = journal.CreateCampaign(request, timing);
+        var pendingReserves = new Queue<string>(new[] { reserveElementId,
+            secondReserveElementId }.OfType<string>());
         for (var index = 0; index < 80; index++)
         {
             try
@@ -1494,10 +1632,10 @@ public sealed class CampaignDurableAuthorityJournalTests
                 .Select(audience => CampaignExercises.Query(session, audience).ActionSet)
                 .FirstOrDefault(value => value?.Candidates.Count > 0);
             Assert.NotNull(set);
-            var reserveDesignation = reserveElementId is null ? null
+            var reserveDesignation = pendingReserves.Count == 0 ? null
                 : set.Candidates.OfType<DesignateReserveAction>()
-                    .FirstOrDefault(value => value.ElementId == reserveElementId);
-            if (reserveElementId is not null
+                    .FirstOrDefault(value => value.ElementId == pendingReserves.Peek());
+            if (pendingReserves.Count > 0
                 && set.Candidates.OfType<DesignateReserveAction>().Any())
                 Assert.NotNull(reserveDesignation);
             var next = reserveDesignation is not null
@@ -1515,7 +1653,7 @@ public sealed class CampaignDurableAuthorityJournalTests
                 set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId));
             Assert.True(accepted.IsAccepted);
             if (reserveDesignation is not null)
-                reserveElementId = null;
+                _ = pendingReserves.Dequeue();
             session = accepted.SuccessorSession!;
         }
         throw new InvalidOperationException("Combat position was not reached.");

@@ -117,7 +117,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentPostRepeatEvents.Count > 0)
+        if (session.CurrentPostRepeatEvents.Count > 0
+            && session.CurrentPostRepeat?.ActiveAssault is null)
         {
             var decision = session.CurrentCombatDecision!;
             var later = session.CurrentPostRepeat!;
@@ -140,51 +141,52 @@ public static class CampaignExercises
             };
         }
         if (session.CurrentRepeatAssault is { Release: { } repeatedRelease }
-            && session.CurrentRepeatAssaultEvents.Count > 0
-            && session.CurrentRepeatAssaultEvents[^1]
-                is CampaignNativeReserveReleaseEventV27)
-            return new ExerciseCheckpoint(repeatedRelease, session.CurrentSnapshot);
+            && (session.CurrentRepeatAssaultEvents is [.., CampaignNativeReserveReleaseEventV27]
+                || session.CurrentPostRepeatEvents is [.., CampaignNativeReserveReleaseEventV27]))
+            return new ExerciseCheckpoint(
+                session.CurrentPostRepeat?.Release ?? repeatedRelease,
+                session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Control is { } repeatedControl)
             return new ExerciseCheckpoint(repeatedControl, session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.CancelledAssault is { } repeatedCancelled)
             return new ExerciseCheckpoint(repeatedCancelled,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Successor is { } repeatedSuccessor)
             return new ExerciseCheckpoint(repeatedSuccessor,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Custody is { } repeatedCustody)
             return new ExerciseCheckpoint(repeatedCustody,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Settlement is { } repeatedSettlement)
             return new ExerciseCheckpoint(repeatedSettlement,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.PostResultRetreat is { } repeatedPostResult)
             return new ExerciseCheckpoint(repeatedPostResult,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Result is { } repeatedResult)
             return new ExerciseCheckpoint(repeatedResult,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.AntiArmor is { } repeatedAntiArmor)
             return new ExerciseCheckpoint(repeatedAntiArmor,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.ForceCancellation is { } repeatedCancellation)
             return new ExerciseCheckpoint(repeatedCancellation,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.ForceCompletion is { } repeatedForceCompletion)
             return new ExerciseCheckpoint(repeatedForceCompletion,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Seals is { Count: > 0 } repeatedSeals)
             return new ExerciseCheckpoint(repeatedSeals[^1],
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Decline is { } repeatedDecline)
             return new ExerciseCheckpoint(repeatedDecline,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.RetreatMoves is { Count: > 0 } repeatedMoves)
             return new ExerciseCheckpoint(repeatedMoves[^1],
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Barrage is { } repeatedBarrage)
             return new ExerciseCheckpoint(repeatedBarrage,
-                session.CurrentRepeatCombatSelection!, session.CurrentSnapshot);
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatNoAttack is { } repeatNoAttack)
             return new ExerciseCheckpoint(repeatNoAttack,
                 session.CurrentCombatDecision!);
@@ -1792,10 +1794,10 @@ public static class CampaignExercises
         ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentRepeatAssault?.Release is { } repeated)
-            return repeated;
         if (session.CurrentPostRepeat is { } later)
             return later.Release;
+        if (session.CurrentRepeatAssault?.Release is { } repeated)
+            return repeated;
         if (session.CurrentCombatDecision is { } initial)
         {
             if (session.CurrentNoAttackCompletion is { } noAttack)
@@ -1841,11 +1843,11 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Choose(session.Context, elementId, choice);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentRepeatAssault?.Release is not null
-                ? session.WithRepeatAssaultEvent(emitted, contacts)
-                : session.CurrentPostRepeat is null
-                    ? session.WithReserveReleaseEvent(emitted, contacts)
-                    : session.WithPostRepeatEvent(emitted, contacts);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(emitted, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(emitted, contacts)
+                    : session.WithReserveReleaseEvent(emitted, contacts);
             var bytes = emitted.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(state.CampaignId,
                 state.StateVersion, nextState.StateVersion,
@@ -1874,11 +1876,11 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Complete(session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentRepeatAssault?.Release is not null
-                ? session.WithRepeatAssaultEvent(emitted, contacts)
-                : session.CurrentPostRepeat is null
-                    ? session.WithReserveReleaseEvent(emitted, contacts)
-                    : session.WithPostRepeatEvent(emitted, contacts);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(emitted, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(emitted, contacts)
+                    : session.WithReserveReleaseEvent(emitted, contacts);
             var bytes = emitted.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(state.CampaignId,
                 state.StateVersion, nextState.StateVersion,
@@ -1908,8 +1910,9 @@ public static class CampaignExercises
                 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
             if ((session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
-                    : session.CurrentPostRepeat is null
-                        ? session.CurrentCycleControl : session.CurrentPostRepeat.Control) is not null
+                    : session.CurrentPostRepeat is not null
+                        ? session.CurrentPostRepeat.Control
+                        : session.CurrentCycleControl) is not null
                 || !release.Completed
                 || audience != expectedAudience
                 || release.StateVersion != session.CurrentContacts.AuthorityVersion)
@@ -1918,11 +1921,11 @@ public static class CampaignExercises
             var control = CampaignNativeCycleControlV28.Create(release,
                 session.Context, session.CurrentContacts, choice);
             var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
-            var next = session.CurrentRepeatAssault?.Release is not null
-                ? session.WithRepeatAssaultEvent(control, contacts)
-                : session.CurrentPostRepeat is null
-                    ? session.WithCycleControlEvent(control, contacts)
-                    : session.WithPostRepeatEvent(control, contacts);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(control, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(control, contacts)
+                    : session.WithCycleControlEvent(control, contacts);
             var bytes = control.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
                 release.StateVersion, control.StateVersion,
@@ -1947,12 +1950,17 @@ public static class CampaignExercises
         try
         {
             var release = QueryNativeReserveReleaseState(session);
-            var control = session.CurrentPostRepeat is null ? session.CurrentCycleControl : session.CurrentPostRepeat.Control;
+            var control = session.CurrentPostRepeat is not null
+                ? session.CurrentPostRepeat.Control
+                : session.CurrentRepeatAssault?.Control ?? session.CurrentCycleControl;
             var expectedAudience = release.ActingSide == LandSide.Axis
                 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
             if (control is null || control.Choice
                     != CampaignNativeCycleControlChoiceV28.Repeat
-                || (session.CurrentPostRepeat is null ? session.CurrentRepeatMove : session.CurrentPostRepeat.Movement) is not null
+                || (session.CurrentPostRepeat?.Movement is not null
+                    || session.CurrentPostRepeat is null
+                        && session.CurrentRepeatAssault?.Control is null
+                        && session.CurrentRepeatMove is not null)
                 || audience != expectedAudience
                 || control.StateVersion != session.CurrentContacts.AuthorityVersion)
                 return ExerciseStepResult.Rejected(
@@ -1963,9 +1971,10 @@ public static class CampaignExercises
                 session.Context, session.CurrentContacts);
             var contacts = session.CurrentContacts.AdvanceNativeRepeatMove(
                 release.World, world, movement, session.Context);
-            var next = session.CurrentPostRepeat is null
-                ? session.WithRepeatMovementEvent(movement, world, contacts)
-                : session.WithPostRepeatEvent(movement, contacts);
+            var next = session.CurrentPostRepeat is not null
+                || session.CurrentRepeatAssault?.Control is not null
+                ? session.WithPostRepeatEvent(movement, contacts)
+                : session.WithRepeatMovementEvent(movement, world, contacts);
             var bytes = movement.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
                 control.StateVersion, movement.StateVersion,
@@ -2130,8 +2139,9 @@ public static class CampaignExercises
         ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentRepeatCombatSelection is not
-            { Choice: "select-contact-assault" } selected
+        if ((session.CurrentPostRepeat?.Selection
+                ?? session.CurrentRepeatCombatSelection) is not
+                { Choice: "select-contact-assault" } selected
             || session.CurrentRepeatAssault is not { Barrage: null } runtime
             || session.CurrentContacts.AuthorityVersion != selected.StateVersion)
             return ExerciseStepResult.Rejected(
@@ -2897,6 +2907,9 @@ public static class CampaignExercises
                                                                             verifiedResult.AfterRandomState,
                                                                             verifiedSelection, verifiedNoAttack,
                                                                             repeatedWorld, replayedContacts,
+                                                                            replayEvents.Take(resultIndex + 10
+                                                                                + completedSession.CurrentReserveReleaseEvents.Count)
+                                                                                .ToArray(),
                                                                             laterEvents);
                                                                         postWorldMatch = later.World.Equals(
                                                                             completedSession.CurrentPostRepeat!.World);
@@ -2907,8 +2920,11 @@ public static class CampaignExercises
                                                                 }
                                                                 else if (completedSession.CurrentRepeatAssaultEvents.Count > 0)
                                                                 {
-                                                                    var assaultEvents = replayEvents.Skip(resultIndex + 9
-                                                                        + completedSession.CurrentReserveReleaseEvents.Count).ToArray();
+                                                                    var assaultStart = resultIndex + 9
+                                                                        + completedSession.CurrentReserveReleaseEvents.Count;
+                                                                    var assaultEvents = replayEvents.Skip(assaultStart)
+                                                                        .Take(completedSession.CurrentRepeatAssaultEvents.Count)
+                                                                        .ToArray();
                                                                     var assault = CampaignNativeRepeatAssaultRuntime.Replay(
                                                                         replayed, verifiedSelection, repeatedWorld,
                                                                         verifiedResult.AfterRandomState,
@@ -2920,6 +2936,29 @@ public static class CampaignExercises
                                                                     replayedContacts = assault.Contacts;
                                                                     replayedBytes = CampaignCurrentEventSerializer.Serialize(
                                                                         assaultEvents[^1]);
+                                                                    if (completedSession.CurrentPostRepeatEvents.Count > 0)
+                                                                    {
+                                                                        var laterEvents = replayEvents.Skip(assaultStart
+                                                                            + assaultEvents.Length).ToArray();
+                                                                        if (assault.Release is null || assault.Control is null)
+                                                                            throw new InvalidCampaignHistoryException(
+                                                                                "Later cycle lacks repeated-assault control.");
+                                                                        var later = CampaignNativePostRepeatRuntime
+                                                                            .ReplayAfterSecondAssault(replayed,
+                                                                                completedSession.Context,
+                                                                                assault.Result?.AfterRandomState
+                                                                                    ?? verifiedResult.AfterRandomState,
+                                                                                assault.Release, assault.Control,
+                                                                                replayedContacts,
+                                                                                replayEvents.Take(assaultStart
+                                                                                    + assaultEvents.Length).ToArray(),
+                                                                                laterEvents);
+                                                                        postWorldMatch = later.World.Equals(
+                                                                            completedSession.CurrentPostRepeat!.World);
+                                                                        replayedContacts = later.Contacts;
+                                                                        replayedBytes = CampaignCurrentEventSerializer.Serialize(
+                                                                            laterEvents[^1]);
+                                                                    }
                                                                 }
                                                             }
                                                         }
