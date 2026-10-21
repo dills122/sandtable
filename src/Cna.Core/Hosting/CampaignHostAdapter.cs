@@ -236,6 +236,14 @@ public static class CampaignHostAdapter
     public static ExerciseStepResult CompleteNativeCombatForceAssignment(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatForceAssignment(session);
 
+    public static ExerciseStepResult CancelNativeCombatForceAssignment(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1 configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.CancelNativeCombatForceAssignment(session, configuration,
+            openedAtUnixMilliseconds, deadlineUnixMilliseconds,
+            highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
     public static bool IsNativeCombatForcePrepared(ExerciseSession session) =>
         session.CurrentCombatForceSeals.Count == 2
         && session.CurrentCombatForceCompletion is null;
@@ -245,6 +253,20 @@ public static class CampaignHostAdapter
 
     public static bool IsNativeCombatSelectedAssault(ExerciseSession session) =>
         session.CurrentCombatDecision?.Decision.Choice == "select-contact-assault";
+
+    public static (string DecisionActionId, string DeclineEventHash)
+        QueryNativeCombatForceRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatRetreatDecline is not { } decline
+            || session.CurrentCombatForceCompletion is not null
+            || session.CurrentCombatForceCancellation is not null)
+            throw new InvalidOperationException("No collecting Force round is available.");
+        return (selected.Decision.ActionId,
+            "sha256:" + Convert.ToHexStringLower(
+                System.Security.Cryptography.SHA256.HashData(decline.SerializeCanonical())));
+    }
 
     /// <summary>Deterministic System command retained alongside the no-attack event.</summary>
     public static CampaignActionSubmission NativeCombatNoAttackCommand(
@@ -286,6 +308,19 @@ public static class CampaignHostAdapter
             CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
     }
 
+    public static CampaignActionSubmission NativeCombatForceCancellationCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || predecessor.CurrentCombatForceSeals.Count > 1
+            || accepted.SuccessorSession?.CurrentCombatForceCancellation is null)
+            throw new ArgumentException("Accepted Force cancellation required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
     /// <summary>Private typed decision proof for one accepted step. It neither publishes a
     /// second transition nor supplies browser diary content.</summary>
     public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
@@ -302,7 +337,8 @@ public static class CampaignHostAdapter
         ReadOnlyMemory<byte> initialSnapshot,
         IReadOnlyList<CampaignHostAcceptedStep> steps,
         IReadOnlyList<byte[]>? initialContactRecords = null,
-        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null)
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null,
+        CampaignDecisionTimingConfigurationV1? timing = null)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(steps);
@@ -343,8 +379,24 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactRbaDeclineKind
                 or CampaignHostAcceptedStep.ContactRbaMoveKind
                 or CampaignHostAcceptedStep.ContactForceSealKind
-                or CampaignHostAcceptedStep.NativeCombatForceCompletionKind))
+                or CampaignHostAcceptedStep.NativeCombatForceCompletionKind
+                or CampaignHostAcceptedStep.NativeCombatForceCancellationKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            CampaignNativeCombatForceCancellationV19? forceCancellation = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatForceCancellationKind)
+            {
+                if (timing is null || step.EventRecords.Count != 1)
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try
+                {
+                    forceCancellation = CampaignNativeCombatForceCancellationV19.Deserialize(
+                        step.EventRecords[0]);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+            }
             var accepted = step.Kind switch
             {
                 CampaignHostAcceptedStep.LegacyKind => Submit(session, submission),
@@ -354,6 +406,13 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.NativeCombatBarrageKind => CompleteNativeCombatBarrage(session),
                 CampaignHostAcceptedStep.NativeCombatForceCompletionKind =>
                     CompleteNativeCombatForceAssignment(session),
+                CampaignHostAcceptedStep.NativeCombatForceCancellationKind =>
+                    CancelNativeCombatForceAssignment(session, timing!,
+                        forceCancellation!.OpenedAtUnixMilliseconds,
+                        forceCancellation.DeadlineUnixMilliseconds,
+                        forceCancellation.HighWaterUnixMilliseconds,
+                        forceCancellation.CancelledAtUnixMilliseconds,
+                        forceCancellation.Reason),
                 CampaignHostAcceptedStep.ContactRbaDeclineKind => SubmitContactDefenderRbaDecline(
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactRbaMoveKind => SubmitContactDefenderRbaMove(
@@ -376,6 +435,11 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         NativeCombatForceCompletionCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatForceCancellationKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeCombatForceCancellationCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
@@ -546,6 +610,7 @@ public sealed class CampaignHostAcceptedStep
     public const int ContactRbaMoveContractVersion = 7;
     public const int ContactForceSealContractVersion = 8;
     public const int NativeCombatForceCompletionContractVersion = 9;
+    public const int NativeCombatForceCancellationContractVersion = 10;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -555,6 +620,7 @@ public sealed class CampaignHostAcceptedStep
     public const string ContactRbaMoveKind = "contact-rba-move";
     public const string ContactForceSealKind = "contact-force-seal";
     public const string NativeCombatForceCompletionKind = "native-combat-force-completion";
+    public const string NativeCombatForceCancellationKind = "native-combat-force-cancellation";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -567,12 +633,13 @@ public sealed class CampaignHostAcceptedStep
     {
         if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind
                 or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
-                or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind)
+                or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
+                or NativeCombatForceCancellationKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
-                or NativeCombatForceCompletionKind
+                or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
@@ -584,6 +651,7 @@ public sealed class CampaignHostAcceptedStep
             ContactRbaMoveKind => ContactRbaMoveContractVersion,
             ContactForceSealKind => ContactForceSealContractVersion,
             NativeCombatForceCompletionKind => NativeCombatForceCompletionContractVersion,
+            NativeCombatForceCancellationKind => NativeCombatForceCancellationContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

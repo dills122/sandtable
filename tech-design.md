@@ -788,10 +788,14 @@ Core V17 records two owner-only seals at Force Assignment. Core V18 System
 completion then reaches Anti Armor. Normal Host retains each accepted seal
 under its own seat, opaque ref and cold-replay receipt, appending V18 with the
 second seal atomically. Normal campaign creation now accepts an explicit seven-window
-timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 6, and binds them in
-the initial journal hash. Existing schema-5 journals remain readable; new campaign
+timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 7, and binds them in
+the initial journal hash. Existing schema-5/6 journals remain readable; new campaign
 creation in them is closed. No configuration means no Force Assignment opening or seal.
-The configured budget is not yet enforced; shared deadline and cancellation plus source-backed disposition for
+The normal Host stores a shared Force Assignment round for both seats with trusted opened,
+deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
+deadline or clock failure, and verifies round status and evidence on cold replay. V19
+preserves zero or one seal and advances to Anti Armor; subsequent clock-free no-attack
+completions remain to implement. Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede

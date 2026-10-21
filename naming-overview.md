@@ -124,9 +124,11 @@ retain each owner's separate seal and cold-replay receipt. A distinct V18
 System completion advances after both seals.
 Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
-Force Assignment opening and seals. Schema-5 journals stay readable but cannot
-create new campaigns. Deadline enforcement is still pending.
-Shared deadline, cancellation and non-infantry disposition remain unissued. Public
+Force Assignment opening and seals. Schema-5/6 journals stay readable but cannot
+create new campaigns. Schema 7 retains one shared Force round for both seats;
+trusted deadline/high-water checks close incomplete rounds through Core V19 without
+inventing an owner seal. Anti Armor and Close Assault structural closure and
+non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself

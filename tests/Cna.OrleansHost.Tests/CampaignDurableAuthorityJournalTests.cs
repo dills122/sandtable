@@ -112,6 +112,25 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void SchemaSixCampaignRetainsTimingButCannotCreateNewCampaign()
+    {
+        using var fixture = new JournalFixture();
+        var request = Request();
+        fixture.Create().CreateCampaign(request, Timing(request));
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var change = connection.CreateCommand();
+            change.CommandText = "DROP TABLE force_rounds; PRAGMA user_version=6";
+            change.ExecuteNonQuery();
+        }
+        var previous = fixture.Open();
+        Assert.NotNull(previous.ReadVerified(request.CampaignId));
+        Assert.Throws<InvalidOperationException>(() =>
+            previous.CreateCampaign(CombatInfantryRequest(), Timing(CombatInfantryRequest())));
+    }
+
+    [Fact]
     public void ContactCombatOpeningCommitsOnceAndColdReplaysSelectedAuthority()
     {
         using var fixture = new JournalFixture();
@@ -181,6 +200,92 @@ public sealed class CampaignDurableAuthorityJournalTests
             + "WHERE campaign_id=$id AND action_kind='native-combat-barrage'";
         query.Parameters.AddWithValue("$id", request.CampaignId);
         Assert.Equal(1L, query.ExecuteScalar());
+    }
+
+    [Fact]
+    public void ForceRoundSharesDeadlineAndCancelsOneSealAtEqualityAfterColdReadback()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal);
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var query = connection.CreateCommand();
+            query.CommandText = "SELECT COUNT(*) FROM force_rounds WHERE campaign_id=$id";
+            query.Parameters.AddWithValue("$id", request.CampaignId);
+            Assert.Equal(1L, query.ExecuteScalar());
+        }
+        clock.Advance(TimeSpan.FromSeconds(1));
+        var first = journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]);
+        Assert.True(first.IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(29));
+        var expired = journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]);
+        Assert.False(expired.IsAccepted);
+        var cold = fixture.Open(clock);
+        var after = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(19, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
+        Assert.Throws<InvalidOperationException>(() =>
+            cold.QueryForceOwnerOpening(defender, defenderId));
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var seals = connection.CreateCommand();
+            seals.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+                + "AND action_kind='contact-force-seal'";
+            seals.Parameters.AddWithValue("$id", request.CampaignId);
+            Assert.Equal(1L, seals.ExecuteScalar());
+            using var update = connection.CreateCommand();
+            update.CommandText = "UPDATE force_rounds SET high_water_ms=high_water_ms+1 "
+                + "WHERE campaign_id=$id";
+            update.Parameters.AddWithValue("$id", request.CampaignId);
+            Assert.Equal(1, update.ExecuteNonQuery());
+        }
+        Assert.Throws<InvalidOperationException>(() => cold.ReadVerified(request.CampaignId));
+    }
+
+    [Fact]
+    public void ForceRoundTickCancelsWithoutFabricatingASealWhenClockUnavailable()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, _, _, _, _, _) = PrepareInfantryForceRound(journal);
+        clock.IsAvailable = false;
+        Assert.True(journal.TickForceRound(request.CampaignId));
+        Assert.False(journal.TickForceRound(request.CampaignId));
+        var cold = fixture.Open(clock);
+        var after = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(19, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
+        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+            + "AND action_kind='contact-force-seal'";
+        query.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.Equal(0L, query.ExecuteScalar());
+    }
+
+    [Fact]
+    public void ForceRoundTickCancelsWhenTrustedClockRegressesBelowHighWater()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, _, _, _, _) = PrepareInfantryForceRound(journal);
+        clock.Advance(TimeSpan.FromSeconds(5));
+        _ = journal.QueryForceOwnerOpening(attacker, "axis-infantry");
+        clock.Advance(TimeSpan.FromSeconds(-1));
+        Assert.True(journal.TickForceRound(request.CampaignId));
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(19, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
     }
 
     [Fact]
@@ -565,6 +670,48 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(command.CampaignId));
     }
 
+    private static (CampaignCreationRequest Request, CampaignSeatCredential Attacker,
+        CampaignSeatCredential Defender, string DefenderId,
+        CampaignOwnerOpening AttackerForce, CampaignOwnerOpening DefenderForce)
+        PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal)
+    {
+        var request = CombatInfantryRequest();
+        AdvanceToContactCombat(journal, request, Timing(request),
+            preserveAdjacentInfantry: true);
+        var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var selected = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
+        using var combatVisible = System.Text.Json.JsonDocument.Parse(selected.VisibleBytes);
+        var assaultOffers = combatVisible.RootElement.GetProperty("assaultOffers");
+        var infantryOffer = Enumerable.Range(0, assaultOffers.GetArrayLength())
+            .Single(index => assaultOffers[index].GetProperty("apparentLocationId")
+                .GetString() == "north-east");
+        Assert.True(journal.SubmitOwnerCombatSelection(attacker, "axis-infantry",
+            selected.Revision, selected.PublicActionRefs[infantryOffer]).IsAccepted);
+        var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(
+            journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
+        var rba = journal.QueryRbaOwnerOpening(defender, defenderId);
+        Assert.True(journal.SubmitOwnerRbaDecline(defender, defenderId,
+            rba.Revision, rba.PublicActionRefs[^1]).IsAccepted);
+        var attackerForce = journal.QueryForceOwnerOpening(attacker, "axis-infantry");
+        var defenderForce = journal.QueryForceOwnerOpening(defender, defenderId);
+        Assert.Single(attackerForce.PublicActionRefs);
+        Assert.Single(defenderForce.PublicActionRefs);
+        return (request, attacker, defender, defenderId, attackerForce, defenderForce);
+    }
+
+    private static CampaignDecisionTimingConfigurationV1 Timing(CampaignCreationRequest request) =>
+        new("rules-lab.campaign-timing.1", request.RulesetHash, request.ContentHash,
+            [new("custody", 30_000, "leave-unguarded"),
+                new("cycle-control", 30_000, "finish-phase"),
+                new("force-assignment", 30_000, "cancel-incomplete-voluntary-round"),
+                new("rba", 30_000, "cancel-without-decline"),
+                new("reserve-release", 30_000, "convert-unresolved-i-retain-ii"),
+                new("retreat", 30_000, "refuse-retreat"),
+                new("selection", 30_000, "no-selection")]);
+
     private static CampaignCreationRequest Request()
     {
         return new CampaignCreationRequest(1, "campaign-durable-journal",
@@ -582,10 +729,20 @@ public sealed class CampaignDurableAuthorityJournalTests
         "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd",
         "breakdown-reaction-lab");
 
+    private static CampaignCreationRequest CombatInfantryRequest() => new(1,
+        "campaign-native-combat-infantry", Cna1979Ruleset.Manifest.Hash, 12345,
+        "rules-lab.breakdown.reaction.combat-infantry.v1",
+        "sha256:18734d3693747a35d855205f869917dc53dfdbdb9333ee32cb7764cbddaff3ac",
+        "rules-lab.content.breakdown-reaction.combat-infantry.v1",
+        "sha256:f6c8e7cbed61be1e99c877323471857b2d6b43a5bcfbe9475a59df9599e3498e",
+        "breakdown-reaction-combat-infantry");
+
     private static ExerciseSession AdvanceToContactCombat(
-        CampaignDurableAuthorityJournal journal, CampaignCreationRequest request)
+        CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,
+        CampaignDecisionTimingConfigurationV1? timing = null,
+        string movementDestination = "north", bool preserveAdjacentInfantry = false)
     {
-        var session = journal.CreateCampaign(request);
+        var session = journal.CreateCampaign(request, timing);
         for (var index = 0; index < 80; index++)
         {
             try
@@ -602,9 +759,15 @@ public sealed class CampaignDurableAuthorityJournalTests
                 .Select(audience => CampaignExercises.Query(session, audience).ActionSet)
                 .FirstOrDefault(value => value?.Candidates.Count > 0);
             Assert.NotNull(set);
-            var next = set.Candidates.OfType<MoveElementAction>().FirstOrDefault(value =>
-                value.ElementId == "axis-infantry" && value.DestinationLocationId == "north")
-                ?? set.Candidates[0];
+            var next = preserveAdjacentInfantry
+                ? set.Candidates.FirstOrDefault(value => value is not MoveElementAction)
+                    ?? set.Candidates.FirstOrDefault(value => value is MoveElementAction move
+                        && move.ElementId is not ("axis-infantry" or "commonwealth-infantry"))
+                    ?? set.Candidates[0]
+                : set.Candidates.OfType<MoveElementAction>().FirstOrDefault(value =>
+                    value.ElementId == "axis-infantry"
+                    && value.DestinationLocationId == movementDestination)
+                    ?? set.Candidates[0];
             var accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
                 set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId));
             Assert.True(accepted.IsAccepted);
@@ -650,7 +813,9 @@ public sealed class CampaignDurableAuthorityJournalTests
     {
         private DateTimeOffset now = DateTimeOffset.Parse("2026-01-01T00:00:00Z",
             global::System.Globalization.CultureInfo.InvariantCulture);
-        public override DateTimeOffset GetUtcNow() => now;
+        internal bool IsAvailable { get; set; } = true;
+        public override DateTimeOffset GetUtcNow() => IsAvailable
+            ? now : throw new InvalidOperationException("Trusted clock unavailable.");
         internal void Advance(TimeSpan duration) => now = now.Add(duration);
     }
 }

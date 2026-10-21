@@ -598,7 +598,7 @@ public sealed class CampaignContactCombatSelectionCutTests
                 new("retreat", 30_000, "refuse-retreat"),
                 new("selection", 30_000, "no-selection")]);
         var cancelled = CampaignExercises.CancelNativeCombatForceAssignment(
-            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 31_000,
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 2_000, 31_000,
             "deadline");
         Assert.True(cancelled.IsAccepted, cancelled.RejectionReason.ToString());
         Assert.Single(cancelled.SuccessorSession!.CurrentCombatForceSeals);
@@ -613,13 +613,16 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(cancelledEvent, CampaignCurrentEventSerializer.Deserialize(
             cancelledEvent.SerializeCanonical()));
         Assert.False(CampaignExercises.CancelNativeCombatForceAssignment(
-            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 30_999,
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 2_000, 30_999,
             "deadline").IsAccepted);
         Assert.False(CampaignExercises.CancelNativeCombatForceAssignment(
-            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, null,
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 2_000, null,
             "deadline").IsAccepted);
+        Assert.True(CampaignExercises.CancelNativeCombatForceAssignment(
+            acceptedAttackerSeal.SuccessorSession!, timing, 1_000, 31_000, 2_000, 1_500,
+            "clock-regression").IsAccepted);
         var noSealCancellation = CampaignExercises.CancelNativeCombatForceAssignment(
-            forceSession, timing, 1_000, 31_000, 31_000, "deadline");
+            forceSession, timing, 1_000, 31_000, 1_000, 31_000, "deadline");
         Assert.True(noSealCancellation.IsAccepted,
             noSealCancellation.RejectionReason.ToString());
         Assert.Empty(noSealCancellation.SuccessorSession!.CurrentCombatForceSeals);
@@ -629,7 +632,8 @@ public sealed class CampaignContactCombatSelectionCutTests
             cancelled.SuccessorSession, attackerSubmission, "axis-infantry").IsAccepted);
         Assert.Throws<InvalidOperationException>(() =>
             CampaignNativeCombatForceCancellationV19.Create(selected, decline,
-                [attackerSeal, defenderSeal], timing.Hash, 1_000, 31_000, 31_000,
+                [attackerSeal, defenderSeal], timing.Hash, 1_000, 31_000, 2_000,
+                31_000,
                 "deadline"));
         var defenderDraftAfter = CampaignHostAdapter.QueryContactForceOwnerDraft(
             acceptedAttackerSeal.SuccessorSession!, CampaignActionAudience.Commonwealth,

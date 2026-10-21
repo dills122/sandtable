@@ -105,11 +105,12 @@ receipt and appends V18 atomically with the second.
 Normal campaign creation can pin canonical seven-window timing bytes to its
 durable journal head, bound to its ruleset and content hashes. Absent timing
 configuration blocks Force Assignment opening and seals; the pinned budget
-is not yet live-gated. Core V19 now validates a System cancellation for an
-incomplete Force Assignment round, preserves zero or one owner seal, and moves
-to the same-slot Anti Armor step. The normal Host still needs a durable shared
-opening, trusted deadline and high-water gate; subsequent clock-free no-attack
-completions must reach Reserve Release before outward issuance. A
+is now enforced by a normal Host shared Force round. SQLite schema 7 retains
+one trusted deadline/high-water gate for both seats and verifies its source,
+status and cancellation evidence on cold replay. Core V19 validates System
+cancellation, preserves zero or one owner seal, and moves to the same-slot
+Anti Armor step. Subsequent clock-free no-attack completions must reach
+Reserve Release before outward issuance. A
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

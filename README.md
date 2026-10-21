@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core and bounded P01 evidence; public activation pending | R03's private native consumer and bounded P01 reference/proof slices are merged. Authentic CreationRequest plus eleven R03 ledgers replay across 300 rows: 44 provisional candidate shapes, 256 provisional empty shapes, zero admitted. Private zero-assault/RBA, selected-assault, Force Assignment and paid-commit continuations have no native or public consumer. The 44-row classification does not prove 44 supported transitions. Action exhaustiveness, full surrender/RBA, outward privacy, replay/resource caps and the support certificate remain open; Runner stops before public Combat. |
+| Combat and continual cycle | Permanent contact fog and normal owner movement merged; native Combat incomplete | Core and normal durable Host now retain contact-safe owner movement, selected assault, defender RBA, Force seals and a shared deadline with cancellation. Later Combat stages, public route and admission remain open. Original authenticated P01 has 44 provisional candidate shapes, 256 absent shapes and zero admitted; its classification does not prove supported public transitions. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Angular foundation and bounded connected read mode | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The main Maproom route offers a synthetic fixture study and URL-backed `?mode=campaign` local read mode using the same map presentation; `/connected` remains a development deep link. Campaign mode can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -107,8 +107,12 @@ each seal to its own seat, opaque reference, atomic evidence and restart-safe
 receipt, then retains System completion in the same transaction.
 Normal campaign creation can now pin a canonical seven-window timing configuration to
 the durable journal head; campaigns without one cannot issue Force Assignment seals.
-The configuration supplies no implicit budget, and live deadline enforcement is still open.
-The shared deadline, cancellation, non-infantry disposition, Reserve Release,
+The configuration supplies no implicit budget. SQLite schema 7 retains one shared
+Force Assignment opening and trusted high-water/deadline for both seats. A late or
+unavailable-clock callback records Core V19 cancellation with zero or one accepted seal;
+verified cold replay rejects changed round evidence. A permanent adjacent-infantry Rules Lab
+scenario exercises that normal owner path through restart. Clock-free Anti Armor/Close
+Assault closure, non-infantry disposition, Reserve Release,
 assault adjudication and public route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

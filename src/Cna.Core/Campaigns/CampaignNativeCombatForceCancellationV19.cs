@@ -17,6 +17,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
     string ConfigurationHash,
     long OpenedAtUnixMilliseconds,
     long DeadlineUnixMilliseconds,
+    long HighWaterUnixMilliseconds,
     long? CancelledAtUnixMilliseconds,
     string Reason,
     string? RetainedSealHash)
@@ -29,7 +30,8 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
         CampaignNativeCombatRetreatDeclineV15 decline,
         IReadOnlyList<CampaignNativeCombatForceSealV17> seals,
         string configurationHash, long openedAtUnixMilliseconds,
-        long deadlineUnixMilliseconds, long? cancelledAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds,
         string reason)
     {
         if (selected.Decision.Choice != "select-contact-assault"
@@ -40,6 +42,8 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
             || !IsHash(configurationHash)
             || openedAtUnixMilliseconds < 0
             || deadlineUnixMilliseconds <= openedAtUnixMilliseconds
+            || highWaterUnixMilliseconds < openedAtUnixMilliseconds
+            || highWaterUnixMilliseconds >= deadlineUnixMilliseconds
             || reason is not ("deadline" or "clock-unavailable" or "clock-regression"
                 or "controller-unavailable"))
             throw new InvalidOperationException("Incomplete Force round cancellation has invalid authority.");
@@ -49,7 +53,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
             || (reason == "clock-regression"
                 && (cancelledAtUnixMilliseconds is null
                     || cancelledAtUnixMilliseconds < 0
-                    || cancelledAtUnixMilliseconds >= openedAtUnixMilliseconds))
+                    || cancelledAtUnixMilliseconds >= highWaterUnixMilliseconds))
             || (reason is "clock-unavailable" or "controller-unavailable"
                 && cancelledAtUnixMilliseconds is not null))
             throw new InvalidOperationException("Force cancellation clock and reason differ.");
@@ -69,7 +73,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
             seals.Count == 0 ? decline.StateVersion : seals[0].StateVersion,
             selected.Decision.ActionId, decline.NextPositionId, position.PositionId,
             configurationHash, openedAtUnixMilliseconds, deadlineUnixMilliseconds,
-            cancelledAtUnixMilliseconds, reason,
+            highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason,
             seals.Count == 0 ? null : Hash(seals[0].SerializeCanonical()));
     }
 
@@ -93,6 +97,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
             writer.WriteString("configurationHash", ConfigurationHash);
             writer.WriteNumber("openedAtUnixMilliseconds", OpenedAtUnixMilliseconds);
             writer.WriteNumber("deadlineUnixMilliseconds", DeadlineUnixMilliseconds);
+            writer.WriteNumber("highWaterUnixMilliseconds", HighWaterUnixMilliseconds);
             if (CancelledAtUnixMilliseconds is { } cancelled)
                 writer.WriteNumber("cancelledAtUnixMilliseconds", cancelled);
             writer.WriteString("reason", Reason);
@@ -112,7 +117,8 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
         var parsed = Deserialize(canonicalEvent);
         var expected = Create(selected, decline, seals, parsed.ConfigurationHash,
             parsed.OpenedAtUnixMilliseconds, parsed.DeadlineUnixMilliseconds,
-            parsed.CancelledAtUnixMilliseconds, parsed.Reason);
+            parsed.HighWaterUnixMilliseconds, parsed.CancelledAtUnixMilliseconds,
+            parsed.Reason);
         if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
             throw new InvalidCampaignHistoryException("Force cancellation differs from retained authority.");
         return expected;
@@ -128,7 +134,8 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
             var sealedFirst = root.TryGetProperty("retainedSealHash", out var sealHash);
             var properties = new List<string> { "contractVersion", "eventType", "campaignId",
                 "priorStateVersion", "decisionActionId", "positionId", "nextPositionId",
-                "configurationHash", "openedAtUnixMilliseconds", "deadlineUnixMilliseconds" };
+                "configurationHash", "openedAtUnixMilliseconds", "deadlineUnixMilliseconds",
+                "highWaterUnixMilliseconds" };
             if (cancelled) properties.Add("cancelledAtUnixMilliseconds");
             properties.Add("reason");
             if (sealedFirst) properties.Add("retainedSealHash");
@@ -145,6 +152,7 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
                 root.GetProperty("configurationHash").GetString()!,
                 root.GetProperty("openedAtUnixMilliseconds").GetInt64(),
                 root.GetProperty("deadlineUnixMilliseconds").GetInt64(),
+                root.GetProperty("highWaterUnixMilliseconds").GetInt64(),
                 cancelled ? cancelledAt.GetInt64() : null,
                 root.GetProperty("reason").GetString()!,
                 sealedFirst ? sealHash.GetString() : null);

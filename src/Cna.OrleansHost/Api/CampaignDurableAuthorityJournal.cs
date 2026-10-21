@@ -15,7 +15,8 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 6;
+    private const int SchemaVersion = 7;
+    private const int TimingSchemaVersion = 6;
     private const int LegacySchemaVersion = 5;
     private const int MaxEvidenceBytes = 2_097_152;
     private readonly string path;
@@ -117,6 +118,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 REFERENCES owner_openings(campaign_id,side,acting_element_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE force_rounds (
+              campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
+              decline_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
+              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+              high_water_ms INTEGER NOT NULL,
+              status TEXT NOT NULL CHECK(status IN ('collecting','completed','cancelled')),
+              record_hash TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,decline_event_hash),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
@@ -154,7 +167,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || version is not (SchemaVersion or LegacySchemaVersion))
+            || version is not (SchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version);
@@ -380,9 +393,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (sequence != headSequence || hash != headHash)
             throw new InvalidOperationException("Campaign journal head changed.");
         var imported = CampaignHostAdapter.Import(request, creation, initial, steps,
-            DecodeContactRecords(initialContactBytes), stepContacts);
+            DecodeContactRecords(initialContactBytes), stepContacts, timing);
         if (!imported.IsVerified)
             throw new InvalidOperationException("Core rejected retained campaign authority.");
+        VerifyForceRounds(connection, transaction, campaignId, steps, timing);
         return new Loaded(imported.Session!, sequence, hash, timing);
     }
 

@@ -83,6 +83,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             throw new InvalidOperationException("No owner opening is available at this cut.");
         }
+        if (kind == CampaignOwnerOpeningKind.ForceAssignment)
+        {
+            var round = GetOrOpenForceRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateForceRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelForceRound(connection, transaction, authority, gate.Round,
+                    reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Force Assignment round is closed.");
+            }
+        }
         RequireBounded(visible);
         var digest = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visible));
         var side = Side(seat.Audience);

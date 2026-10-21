@@ -7,7 +7,7 @@ internal static class Cna1979BreakdownContentCatalog
     public static ContentPackV6Artifact ReactionArtifact { get; } = CreateArtifact("rules-lab.content.breakdown-reaction.v1.json");
 
     public static IReadOnlyList<ContentPackV6Artifact> RunnerArtifacts { get; } = Array.AsReadOnly(
-        new[] { "reaction.adjacent", "reaction.low-defense", "reaction.headquarters", "reaction.noncombat",
+        new[] { "reaction.adjacent", "reaction.combat-infantry", "reaction.low-defense", "reaction.headquarters", "reaction.noncombat",
             "reaction.recurrence", "reaction.last-cp", "reaction.truck-mover", "truck-cost", "truck-one-point", "battalion-matrix" }
             .Select(variant => CreateArtifact($"rules-lab.content.breakdown-{variant}.v1.json")).ToArray());
 

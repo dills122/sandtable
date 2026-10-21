@@ -432,7 +432,8 @@ public static class CampaignExercises
     internal static ExerciseStepResult CancelNativeCombatForceAssignment(
         ExerciseSession session, CampaignDecisionTimingConfigurationV1 configuration,
         long openedAtUnixMilliseconds, long deadlineUnixMilliseconds,
-        long? cancelledAtUnixMilliseconds, string reason)
+        long highWaterUnixMilliseconds, long? cancelledAtUnixMilliseconds,
+        string reason)
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -451,7 +452,8 @@ public static class CampaignExercises
             var cancellation = CampaignNativeCombatForceCancellationV19.Create(
                 selected, decline, session.CurrentCombatForceSeals,
                 configuration.Hash, openedAtUnixMilliseconds,
-                deadlineUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+                deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts.AdvanceNativeCombatForceCancellation(cancellation);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
                 session.CurrentHistory.Add(cancellation), contacts, selected,

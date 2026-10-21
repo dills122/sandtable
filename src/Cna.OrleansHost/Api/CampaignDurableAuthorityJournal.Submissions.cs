@@ -77,6 +77,35 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
         }
 
+        ForceRound? forceRound = null;
+        if (kind == CampaignOwnerOpeningKind.ForceAssignment)
+        {
+            if (schemaVersion != SchemaVersion) return CampaignOwnerSubmissionResult.Rejected();
+            (string DecisionActionId, string DeclineEventHash) binding;
+            try
+            {
+                binding = CampaignHostAdapter.QueryNativeCombatForceRoundBinding(head.Session);
+            }
+            catch (InvalidOperationException)
+            {
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+            if (!ForceRoundExists(connection, transaction, seat.CampaignId,
+                binding.DeclineEventHash))
+                return CampaignOwnerSubmissionResult.Rejected();
+            forceRound = GetOrOpenForceRound(connection, transaction, head,
+                seat.CampaignId, requireExisting: true);
+            var gate = GateForceRound(connection, transaction, forceRound);
+            forceRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelForceRound(connection, transaction, head, forceRound,
+                    reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
+
         long authorityVersion;
         string visibleDigest;
         byte[] visibleBytes;
@@ -240,6 +269,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
                 CampaignHostAcceptedStep.NativeCombatForceCompletionKind, null,
                 null, null, null, systemCommand, completion);
+            UpdateForceRound(connection, transaction, forceRound! with { Status = "completed" });
         }
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
