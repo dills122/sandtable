@@ -161,8 +161,12 @@ movement allowance. Internal V27 events bind ordered choices and completion
 to V26 authority with exact Exercise and Host cold replay. The normal Host
 offers the next owned reserve member with a side-safe opening and private
 action map, accepts a fenced choice, and appends System completion when the
-queue empties. This does not yet publish the next ordinary action or public
-route.
+queue empties. Completion stays at Reserve Release. V28 carries a separate
+authenticated side-safe repeat-or-finish choice: repeat needs a source-legal
+released-unit next-Movement witness and enters the same-side Movement ordinal;
+finish enters same-slot Truck Convoy. Core Exercise and normal Host cold-replay
+that choice and retain its receipt. Repeated Movement acceptance, other legal
+continuation witnesses and public routing remain pending.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

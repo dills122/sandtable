@@ -283,6 +283,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(reserveEvent.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCycleControl(
+        CampaignNativeCycleControlV28 control)
+    {
+        ArgumentNullException.ThrowIfNull(control);
+        if (control.CampaignId != CampaignId
+            || control.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Cycle control does not bind contact authority.",
+                nameof(control));
+        return AtAuthorityVersion(control.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

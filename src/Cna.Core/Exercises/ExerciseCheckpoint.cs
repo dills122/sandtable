@@ -177,6 +177,16 @@ public sealed class ExerciseCheckpoint
         PositionId = reserveRelease.Position.PositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCycleControlV28 control,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeCycleControlV28.CurrentContractVersion;
+        CampaignId = control.CampaignId;
+        StateVersion = control.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = control.NextPositionId;
+    }
+
     public int ContractVersion { get; }
     public string CampaignId { get; }
     public long StateVersion { get; }

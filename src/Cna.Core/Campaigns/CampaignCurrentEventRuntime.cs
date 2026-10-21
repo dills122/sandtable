@@ -7,6 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeCycleControlV28 cycleControl => cycleControl.SerializeCanonical(),
         CampaignNativeReserveReleaseEventV27 reserveRelease => reserveRelease.SerializeCanonical(),
         CampaignNativeCombatSuccessorV26 successor => successor.SerializeCanonical(),
         CampaignNativeCombatCustodyDispositionV25 custody => custody.SerializeCanonical(),
@@ -42,6 +43,8 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
+            "movement-combat-cycle-control" =>
+                CampaignNativeCycleControlV28.Deserialize(canonicalJson),
             "reserve-release-member-choice" or "reserve-release-completed" =>
                 CampaignNativeReserveReleaseEventV27.Deserialize(canonicalJson),
             "combat-sequence-resumed" => CampaignNativeCombatSuccessorV26.Deserialize(canonicalJson),

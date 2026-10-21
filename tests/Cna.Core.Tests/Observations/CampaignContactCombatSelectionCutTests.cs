@@ -535,8 +535,8 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Empty(release.Pending(context));
         var (afterRelease, releaseEvent) = release.Complete(context);
         Assert.True(afterRelease.Completed);
-        Assert.Equal(LandPhaseIds.TruckConvoyMovement,
-            afterRelease.Position.PhaseId);
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            afterRelease.Position.SegmentId);
         Assert.Equal(releaseEvent.SerializeCanonical(),
             CampaignNativeReserveReleaseEventV27.Deserialize(
                 releaseEvent.SerializeCanonical()).SerializeCanonical());
@@ -551,6 +551,47 @@ public sealed class CampaignContactCombatSelectionCutTests
             releasedStep.Evidence!.SnapshotCheckpoint);
         Assert.True(CampaignExercises.Reconstruct(
             releasedStep.SuccessorSession!).IsVerified);
+        var finish = CampaignNativeCycleControlV28.Create(afterRelease, context,
+            releasedStep.SuccessorSession!.CurrentContacts,
+            CampaignNativeCycleControlChoiceV28.Finish);
+        Assert.Equal(LandPhaseIds.TruckConvoyMovement,
+            Cna1979LandSequenceV4.CreateTurn(1).Single(position =>
+                position.PositionId == finish.NextPositionId).PhaseId);
+        Assert.Equal(finish, CampaignNativeCycleControlV28.Replay(
+            afterRelease, context, releasedStep.SuccessorSession.CurrentContacts,
+            finish.SerializeCanonical()));
+        _ = releasedStep.SuccessorSession.WithCycleControlEvent(finish,
+            releasedStep.SuccessorSession.CurrentContacts.AdvanceNativeCycleControl(finish));
+        var finishedStep = CampaignExercises.SubmitNativeCycleControl(
+            releasedStep.SuccessorSession,
+            afterRelease.ActingSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth,
+            CampaignNativeCycleControlChoiceV28.Finish,
+            "sha256:" + new string('f', 64));
+        Assert.True(finishedStep.IsAccepted,
+            finishedStep.RejectionReason.ToString());
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(
+            finishedStep.SuccessorSession!).ContractVersion);
+        Assert.Equal(finish.SerializeCanonical(),
+            finishedStep.Evidence!.EventRecords[0]);
+        var reconstructedCycle = CampaignExercises.Reconstruct(
+            finishedStep.SuccessorSession!);
+        Assert.True(reconstructedCycle.IsVerified,
+            reconstructedCycle.FailureReason.ToString());
+        Assert.Equal(finish.SerializeCanonical(), CampaignCurrentEventSerializer.Serialize(
+            CampaignCurrentEventSerializer.Deserialize(
+                finishedStep.Evidence.EventRecords[0])));
+        Assert.False(CampaignExercises.SubmitNativeCycleControl(
+            finishedStep.SuccessorSession!,
+            afterRelease.ActingSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth,
+            CampaignNativeCycleControlChoiceV28.Finish,
+            "sha256:" + new string('e', 64)).IsAccepted);
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCycleControlV28.Replay(afterRelease, context,
+                releasedStep.SuccessorSession.CurrentContacts,
+                (finish with { PriorEventHash = "sha256:" + new string('0', 64) })
+                    .SerializeCanonical()));
         Assert.False(CampaignExercises.CompleteNativeReserveRelease(
             releasedStep.SuccessorSession!).IsAccepted);
         Assert.Equal(releaseEvent.SerializeCanonical(),

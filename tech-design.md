@@ -848,11 +848,15 @@ action still needs a versioned path from that checkpoint.
 Core Reserve Release rules now derive the acting side's due Reserve I/II queue,
 apply the legal release, conversion, or retention choice to World, and retain
 the next-cycle movement allowance as typed data. An internal V27 event chain
-replays each ordered choice and completion against its predecessor and reaches
-same-slot Truck Convoy Movement. Exercise accepts and cold-replays V27. Normal
+replays each ordered choice and completion against its predecessor, remaining
+at Reserve Release for cycle control. V28 separately records an owner repeat
+into the same-side Movement ordinal or finish into same-slot Truck Convoy.
+Repeat currently requires a legal released-unit movement witness. Exercise and
+normal Host cold-replay both chains. Normal
 Host retains an authenticated acting-side opening, private action map, fenced
-choice receipt, and System completion when the queue empties. The next ordinary
-action and public route remain pending.
+choice receipt, System completion when the queue empties, and a separate
+side-safe cycle opening/receipt. The repeated Movement action, other legal
+continuation witnesses, and public route remain pending.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
 It keeps private target identity and authority in Core. Public routing,

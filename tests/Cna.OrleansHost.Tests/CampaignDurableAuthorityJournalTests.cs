@@ -311,6 +311,69 @@ public sealed class CampaignDurableAuthorityJournalTests
             opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(retry.IsAccepted);
         Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
+        Assert.Throws<InvalidOperationException>(() =>
+            cold.QueryCycleControlOwnerOpening(defender));
+        var controlOpening = cold.QueryCycleControlOwnerOpening(attacker);
+        Assert.NotEmpty(controlOpening.PublicActionRefs);
+        using (var visible = System.Text.Json.JsonDocument.Parse(
+                   controlOpening.VisibleBytes))
+        {
+            Assert.False(visible.RootElement.TryGetProperty("worldHash", out _));
+            Assert.False(visible.RootElement.TryGetProperty("authorityVersion", out _));
+            Assert.Equal("Finish", visible.RootElement.GetProperty("choices")
+                .EnumerateArray().Last().GetString());
+        }
+        Assert.False(cold.SubmitOwnerCycleControl(attacker,
+            controlOpening.Revision, "act." + new string('0', 64)).IsAccepted);
+        var finished = cold.SubmitOwnerCycleControl(attacker,
+            controlOpening.Revision, controlOpening.PublicActionRefs[^1]);
+        Assert.True(finished.IsAccepted);
+        var afterControl = fixture.Open(clock);
+        var controlHead = afterControl.ReadVerified(request.CampaignId);
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(controlHead).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(controlHead).IsVerified);
+        var controlRetry = afterControl.SubmitOwnerCycleControl(attacker,
+            controlOpening.Revision, controlOpening.PublicActionRefs[^1]);
+        Assert.True(controlRetry.IsAccepted);
+        Assert.Equal(finished.CanonicalReceipt, controlRetry.CanonicalReceipt);
+    }
+
+    [Fact]
+    public void ReleasedMemberCanRepeatIntoSameSideMovementAfterColdRestart()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true,
+                reserveElementId: "axis-infantry");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var release = journal.QueryReserveReleaseOwnerOpening(attacker,
+            "axis-infantry");
+        Assert.True(journal.SubmitOwnerReserveRelease(attacker, "axis-infantry",
+            release.Revision, release.PublicActionRefs[0]).IsAccepted);
+        var opening = journal.QueryCycleControlOwnerOpening(attacker);
+        using (var visible = System.Text.Json.JsonDocument.Parse(opening.VisibleBytes))
+            Assert.Equal("Repeat", visible.RootElement.GetProperty("choices")
+                .EnumerateArray().First().GetString());
+        var repeated = journal.SubmitOwnerCycleControl(attacker,
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(repeated.IsAccepted);
+        var cold = fixture.Open(clock);
+        var next = cold.ReadVerified(request.CampaignId);
+        var checkpoint = CampaignExercises.QueryCheckpoint(next);
+        Assert.Equal(28, checkpoint.ContractVersion);
+        Assert.Contains("movement", checkpoint.PositionId, StringComparison.Ordinal);
+        Assert.True(CampaignExercises.Reconstruct(next).IsVerified);
+        var retry = cold.SubmitOwnerCycleControl(attacker,
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(repeated.CanonicalReceipt, retry.CanonicalReceipt);
     }
 
     [Fact]

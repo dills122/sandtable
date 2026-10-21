@@ -207,23 +207,18 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
         if (Completed || Pending(context).Count != 0)
             throw new InvalidOperationException(
                 "Reserve Release cannot finish with unresolved members.");
-        var nextPosition = Cna1979LandSequenceV4.GetNext(Position);
-        if (nextPosition.PhaseId != LandPhaseIds.TruckConvoyMovement
-            || nextPosition.GameTurn != Position.GameTurn
-            || nextPosition.OperationStage != Position.OperationStage)
-            throw new InvalidOperationException(
-                "Reserve Release must advance to same-slot Truck Convoy Movement.");
+        // Segment completion leaves cycle control at Reserve Release. The
+        // owner must choose the source-backed repeat or same-slot finish edge.
         var emitted = new CampaignNativeReserveReleaseEventV27(
             CampaignNativeReserveReleaseEventV27.CurrentContractVersion,
             CampaignId, StateVersion, HeadEventHash, "completed", null, null,
             CampaignNativeCombatPaidWorldV22.Hash(World),
-            nextPosition.PositionId);
+            Position.PositionId);
         var next = this with
         {
             StateVersion = emitted.StateVersion,
             HeadEventHash = CampaignNativeReserveReleaseEventV27.Hash(
                 emitted.SerializeCanonical()),
-            Position = nextPosition,
             Completed = true,
         };
         return (next, emitted);

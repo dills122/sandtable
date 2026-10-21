@@ -30,7 +30,8 @@ public sealed class ExerciseSession
         CampaignWorldSnapshotV6? combatCustodyWorld = null,
         CampaignNativeCombatCustodyStateV25? combatCustodyState = null,
         CampaignNativeCombatSuccessorV26? combatSuccessor = null,
-        IEnumerable<CampaignNativeReserveReleaseEventV27>? reserveReleaseEvents = null)
+        IEnumerable<CampaignNativeReserveReleaseEventV27>? reserveReleaseEvents = null,
+        CampaignNativeCycleControlV28? cycleControl = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -185,8 +186,9 @@ public sealed class ExerciseSession
             if (combatSuccessor is null || combatSelection is null
                 || combatAssaultResult is null || combatSettlement is null
                 || combatCustodyDisposition is null || combatCustodyWorld is null
-                || CurrentHistory.Count < reserveEvents.Length
-                || !CurrentHistory.TakeLast(reserveEvents.Length)
+                || CurrentHistory.Count < reserveEvents.Length + (cycleControl is null ? 0 : 1)
+                || !CurrentHistory.TakeLast(reserveEvents.Length
+                        + (cycleControl is null ? 0 : 1)).Take(reserveEvents.Length)
                     .SequenceEqual(reserveEvents.Cast<object>()))
                 throw new ArgumentException("Reserve Release requires the retained Combat successor and events.",
                     nameof(reserveReleaseEvents));
@@ -198,11 +200,23 @@ public sealed class ExerciseSession
             CurrentReserveRelease = CampaignNativeReserveReleaseStateV27.Replay(
                 initial, context, reserveEvents.Select(value =>
                     (ReadOnlyMemory<byte>)value.SerializeCanonical()));
-            if (CurrentReserveRelease.StateVersion != CurrentContacts.AuthorityVersion)
+            if (CurrentReserveRelease.StateVersion
+                != (cycleControl?.PriorStateVersion ?? CurrentContacts.AuthorityVersion))
                 throw new ArgumentException("Reserve Release contact authority is stale.",
                     nameof(contacts));
         }
         CurrentReserveReleaseEvents = Array.AsReadOnly(reserveEvents);
+        if (cycleControl is not null && (CurrentReserveRelease is not { Completed: true } release
+            || cycleControl.CampaignId != snapshot.CampaignId
+            || cycleControl.PriorStateVersion != release.StateVersion
+            || cycleControl.PriorEventHash != release.HeadEventHash
+            || cycleControl.PriorCycleOrdinal != release.CycleOrdinal
+            || cycleControl.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(release.World)
+            || CurrentContacts.AuthorityVersion != cycleControl.StateVersion
+            || !Equals(CurrentHistory[^1], cycleControl)))
+            throw new ArgumentException("Cycle control must bind completed Reserve Release.",
+                nameof(cycleControl));
+        CurrentCycleControl = cycleControl;
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -250,6 +264,31 @@ public sealed class ExerciseSession
             combatCustodyState: CurrentCombatCustodyState,
             combatSuccessor: CurrentCombatSuccessor,
             reserveReleaseEvents: [.. CurrentReserveReleaseEvents, reserveEvent]);
+
+    internal ExerciseSession WithCycleControlEvent(
+        CampaignNativeCycleControlV28 control,
+        CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
+            CurrentHistory.Add(control), contacts, CurrentCombatDecision,
+            combatBarrage: CurrentCombatBarrage,
+            combatRetreatDecline: CurrentCombatRetreatDecline,
+            combatRetreatMove: CurrentCombatRetreatMove,
+            combatRetreatWorld: CurrentCombatRetreatWorld,
+            combatRetreatPriorContacts: CurrentCombatRetreatPriorContacts,
+            combatRetreatMoves: CurrentCombatRetreatMoves,
+            combatForceSeals: CurrentCombatForceSeals,
+            combatForceCompletion: CurrentCombatForceCompletion,
+            combatAntiArmor: CurrentCombatAntiArmor,
+            combatAssaultResult: CurrentCombatAssaultResult,
+            combatPaidWorld: CurrentCombatPaidWorld,
+            combatPostResultRetreat: CurrentCombatPostResultRetreat,
+            combatSettlement: CurrentCombatSettlement,
+            combatSettledWorld: CurrentCombatSettledWorld,
+            combatCustodyDisposition: CurrentCombatCustodyDisposition,
+            combatCustodyWorld: CurrentCombatCustodyWorld,
+            combatCustodyState: CurrentCombatCustodyState,
+            combatSuccessor: CurrentCombatSuccessor,
+            reserveReleaseEvents: CurrentReserveReleaseEvents,
+            cycleControl: control);
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
     internal ImmutableList<object> CurrentHistory { get; }
@@ -278,5 +317,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatSuccessorV26? CurrentCombatSuccessor { get; }
     internal IReadOnlyList<CampaignNativeReserveReleaseEventV27> CurrentReserveReleaseEvents { get; }
     internal CampaignNativeReserveReleaseStateV27? CurrentReserveRelease { get; }
+    internal CampaignNativeCycleControlV28? CurrentCycleControl { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

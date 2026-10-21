@@ -93,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCycleControl is { } cycleControl)
+            return new ExerciseCheckpoint(cycleControl, session.CurrentCombatDecision!);
         if (session.CurrentReserveRelease is { } reserveRelease)
             return new ExerciseCheckpoint(reserveRelease, session.CurrentCombatDecision!);
         if (session.CurrentCombatSuccessor is { } successor)
@@ -1104,6 +1106,41 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult SubmitNativeCycleControl(
+        ExerciseSession session, CampaignActionAudience audience,
+        CampaignNativeCycleControlChoiceV28 choice, string actionId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryNativeReserveReleaseState(session);
+            var expectedAudience = release.ActingSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+            if (session.CurrentCycleControl is not null || !release.Completed
+                || audience != expectedAudience
+                || release.StateVersion != session.CurrentContacts.AuthorityVersion)
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var control = CampaignNativeCycleControlV28.Create(release,
+                session.Context, session.CurrentContacts, choice);
+            var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
+            var next = session.WithCycleControlEvent(control, contacts);
+            var bytes = control.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                release.StateVersion, control.StateVersion,
+                control.NextPositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, bytes));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);
@@ -1303,6 +1340,8 @@ public static class CampaignExercises
                 completedSession.Context).SerializeCanonical();
         if (completedSession.CurrentReserveRelease is { } reserveRelease)
             expectedBytes = reserveRelease.SerializeCanonical();
+        if (completedSession.CurrentCycleControl is { } cycleControl)
+            expectedBytes = cycleControl.SerializeCanonical();
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
 
@@ -1330,6 +1369,7 @@ public static class CampaignExercises
                         + (completedSession.CurrentCombatCustodyDisposition is null ? 0 : 1)
                         + (completedSession.CurrentCombatSuccessor is null ? 0 : 1)
                         + completedSession.CurrentReserveReleaseEvents.Count
+                        + (completedSession.CurrentCycleControl is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -1637,6 +1677,20 @@ public static class CampaignExercises
                                                         reserveEvent);
                                                 }
                                                 replayedBytes = reserveState.SerializeCanonical();
+                                                if (completedSession.CurrentCycleControl is not null)
+                                                {
+                                                    if (replayEvents.ElementAtOrDefault(resultIndex + 5
+                                                        + completedSession.CurrentReserveReleaseEvents.Count)
+                                                        is not CampaignNativeCycleControlV28 controlEvent)
+                                                        throw new InvalidCampaignHistoryException(
+                                                            "Movement/Combat cycle control event is missing.");
+                                                    var verifiedControl = CampaignNativeCycleControlV28.Replay(
+                                                        reserveState, completedSession.Context,
+                                                        replayedContacts, controlEvent.SerializeCanonical());
+                                                    replayedContacts = replayedContacts.AdvanceNativeCycleControl(
+                                                        verifiedControl);
+                                                    replayedBytes = verifiedControl.SerializeCanonical();
+                                                }
                                             }
                                         }
                                     }
@@ -1656,7 +1710,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentReserveRelease?.StateVersion
+                == (completedSession.CurrentCycleControl?.StateVersion
+                    ?? completedSession.CurrentReserveRelease?.StateVersion
                     ?? completedSession.CurrentCombatSuccessor?.StateVersion
                     ?? completedSession.CurrentCombatCustodyDisposition?.StateVersion
                     ?? completedSession.CurrentCombatSettlement?.StateVersion

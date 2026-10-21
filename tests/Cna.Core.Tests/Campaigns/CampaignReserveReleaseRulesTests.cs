@@ -130,8 +130,8 @@ public sealed class CampaignReserveReleaseRulesTests
                 value.ElementId == member.ElementId).ReserveStatus);
         Assert.Empty(chosen.Pending(session.Context));
         var (finished, completionEvent) = chosen.Complete(session.Context);
-        Assert.Equal(LandPhaseIds.TruckConvoyMovement,
-            finished.Position.PhaseId);
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            finished.Position.SegmentId);
         var replayed = CampaignNativeReserveReleaseStateV27.Replay(
             authority, session.Context,
             [choiceEvent.SerializeCanonical(), completionEvent.SerializeCanonical()]);
@@ -144,6 +144,54 @@ public sealed class CampaignReserveReleaseRulesTests
                 {
                     ElementId = "forged-element",
                 }).SerializeCanonical()]));
+
+        var (releasedAuthority, releaseChoiceEvent) = authority.Choose(
+            session.Context, member.ElementId, CampaignReserveReleaseChoice.ReleaseI);
+        var (completedRelease, releasedCompletionEvent) =
+            releasedAuthority.Complete(session.Context);
+        var contactCut = session.CurrentContacts
+            .AdvanceNativeReserveRelease(releaseChoiceEvent)
+            .AdvanceNativeReserveRelease(releasedCompletionEvent);
+        var witness = CampaignCycleContinuationMovementWitnessV28.Find(
+            completedRelease, session.Context, contactCut);
+        Assert.NotNull(witness);
+        var controlCut = CampaignCycleControlOwnerCutV28.Project(
+            completedRelease, session.Context, contactCut, firstSide);
+        Assert.Equal([CampaignNativeCycleControlChoiceV28.Repeat,
+            CampaignNativeCycleControlChoiceV28.Finish], controlCut.Choices);
+        var repeat = CampaignNativeCycleControlV28.Create(completedRelease,
+            session.Context, contactCut, CampaignNativeCycleControlChoiceV28.Repeat);
+        Assert.Equal(2, repeat.NextCycleOrdinal);
+        Assert.Equal(witness.ActionId, repeat.MovementWitnessActionId);
+        Assert.Equal(repeat, CampaignNativeCycleControlV28.Replay(
+            completedRelease, session.Context, contactCut, repeat.SerializeCanonical()));
+        var hiddenPrefixFork = completedRelease with
+        {
+            HeadEventHash = "sha256:" + new string('3', 64),
+        };
+        var repeatFork = CampaignNativeCycleControlV28.Create(hiddenPrefixFork,
+            session.Context, contactCut, CampaignNativeCycleControlChoiceV28.Repeat);
+        var equalVisibleControl = CampaignCycleControlOwnerCutV28.Project(
+            hiddenPrefixFork, session.Context, contactCut, firstSide);
+        Assert.Equal(controlCut.VisibleBytes, equalVisibleControl.VisibleBytes);
+        Assert.Equal(controlCut.ActionIds, equalVisibleControl.ActionIds);
+        Assert.Equal(repeat.MovementWitnessActionId,
+            repeatFork.MovementWitnessActionId);
+        Assert.NotEqual(repeat.PriorEventHash, repeatFork.PriorEventHash);
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCycleControlV28.Replay(completedRelease,
+                session.Context, contactCut, repeatFork.SerializeCanonical()));
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCycleControlV28.Create(finished, session.Context,
+                session.CurrentContacts.AdvanceNativeReserveRelease(choiceEvent)
+                    .AdvanceNativeReserveRelease(completionEvent),
+                CampaignNativeCycleControlChoiceV28.Repeat));
+        var noReleaseCut = CampaignCycleControlOwnerCutV28.Project(finished,
+            session.Context,
+            session.CurrentContacts.AdvanceNativeReserveRelease(choiceEvent)
+                .AdvanceNativeReserveRelease(completionEvent), firstSide);
+        Assert.Equal([CampaignNativeCycleControlChoiceV28.Finish],
+            noReleaseCut.Choices);
 
         var secondCycleAuthority = authority with
         {

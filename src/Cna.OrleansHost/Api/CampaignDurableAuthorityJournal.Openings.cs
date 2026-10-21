@@ -7,6 +7,7 @@ namespace Cna.OrleansHost.Api;
 
 internal sealed partial class CampaignDurableAuthorityJournal
 {
+    private const string CycleControlOpeningKey = "land.cycle-control";
     /// <summary>
     /// Project one normal owner opening from the committed Core head. Visible bytes and public
     /// references remain stable when only hidden authority changes; the private map is replaced
@@ -42,6 +43,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         CampaignSeatCredential credential, string reserveElementId) =>
         QueryOwnerOpeningCore(credential, reserveElementId,
             CampaignOwnerOpeningKind.ReserveRelease);
+
+    internal CampaignOwnerOpening QueryCycleControlOwnerOpening(
+        CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, CycleControlOpeningKey,
+            CampaignOwnerOpeningKind.CycleControl);
 
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
         string actingElementId, CampaignOwnerOpeningKind kind)
@@ -103,6 +109,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 var draft = CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft(
                     authority.Session, seat.Audience, actingElementId);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.CycleControl)
+            {
+                var draft = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(
+                    authority.Session, seat.Audience);
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
@@ -259,6 +273,7 @@ internal enum CampaignOwnerOpeningKind
     PostAssaultRetreat,
     Custody,
     ReserveRelease,
+    CycleControl,
 }
 
 internal sealed class CampaignOwnerOpening

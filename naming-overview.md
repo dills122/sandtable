@@ -150,7 +150,11 @@ ordinary action remains pending;
 normal Core Reserve Release rules derive only the acting side's due members,
 choices, resulting World, and next-cycle movement allowance; Exercise and normal
 Host retain and cold-replay V27 ordered choices and completion, with a side-safe
-owner opening and fenced receipt. Following ordinary action remains pending;
+owner opening and fenced receipt. V28 names the separate authenticated
+repeat-or-finish cycle choice; its Core event and normal Host cold replay enter
+same-side Movement ordinal two or same-slot Truck Convoy. Repeat currently has
+a released-unit movement witness; repeated Movement and public routing remain
+pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

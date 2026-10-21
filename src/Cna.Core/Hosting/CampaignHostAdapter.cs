@@ -519,6 +519,67 @@ public static class CampaignHostAdapter
     public static ExerciseStepResult CompleteNativeReserveRelease(ExerciseSession session) =>
         CampaignExercises.CompleteNativeReserveRelease(session);
 
+    public static CampaignHostCycleControlOwnerDraft QueryNativeCycleControlOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Cycle control needs an owner side."),
+        };
+        if (session.CurrentCycleControl is not null)
+            throw new InvalidOperationException("Cycle control is already committed.");
+        var release = CampaignExercises.QueryNativeReserveReleaseState(session);
+        var cut = CampaignCycleControlOwnerCutV28.Project(release,
+            session.Context, session.CurrentContacts, side);
+        return new CampaignHostCycleControlOwnerDraft(release.StateVersion,
+            cut.VisibleBytes, cut.ActionIds);
+    }
+
+    public static ExerciseStepResult SubmitNativeCycleControl(
+        ExerciseSession session, CampaignActionSubmission submission)
+    {
+        CampaignNativeReserveReleaseStateV27 release;
+        CampaignCycleControlOwnerCutV28 cut;
+        try
+        {
+            release = CampaignExercises.QueryNativeReserveReleaseState(session);
+            var side = submission.Audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Cycle control needs an owner side."),
+            };
+            if (session.CurrentCycleControl is not null)
+                throw new InvalidOperationException("Cycle control is already committed.");
+            cut = CampaignCycleControlOwnerCutV28.Project(release,
+                session.Context, session.CurrentContacts, side);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or InvalidOperationException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+        if (submission.CampaignId != release.CampaignId)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != release.StateVersion)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != release.Position.PositionId)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var ordinal = Array.FindIndex(cut.ActionIds.ToArray(), value =>
+            value == submission.ActionId);
+        if (ordinal < 0)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitNativeCycleControl(session,
+            submission.Audience, cut.Choices[ordinal], submission.ActionId);
+    }
+
     public static CampaignActionSubmission NativeReserveReleaseCompletionCommand(
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
@@ -673,6 +734,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeCombatSuccessorKind
                 or CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
                 or CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind
+                or CampaignHostAcceptedStep.ContactCycleControlKind
                 or CampaignHostAcceptedStep.ContactCombatCustodyKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignNativeCombatForceCancellationV19? forceCancellation = null;
@@ -728,6 +790,8 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind =>
                     SubmitNativeReserveReleaseChoice(session, submission,
                         step.ActingElementId!),
+                CampaignHostAcceptedStep.ContactCycleControlKind =>
+                    SubmitNativeCycleControl(session, submission),
                 CampaignHostAcceptedStep.ContactCombatCustodyKind =>
                     SubmitNativeCombatCustody(session, submission,
                         step.ActingElementId!),
@@ -959,6 +1023,29 @@ public sealed class CampaignHostReserveReleaseOwnerDraft
         Array.AsReadOnly(privateActionIds.ToArray());
 }
 
+/// <summary>Host-private same-slot cycle choice map paired with side-safe bytes.</summary>
+public sealed class CampaignHostCycleControlOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly string[] privateActionIds;
+
+    internal CampaignHostCycleControlOwnerDraft(long authorityVersion,
+        byte[] visibleBytes, IReadOnlyList<string> privateActionIds)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateActionIds = privateActionIds.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<string> PrivateActionIds =>
+        Array.AsReadOnly(privateActionIds.ToArray());
+}
+
 /// <summary>Host-private Force Assignment action map and side-safe bytes.</summary>
 public sealed class CampaignHostContactForceOwnerDraft
 {
@@ -1048,6 +1135,7 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeCombatSuccessorContractVersion = 19;
     public const int NativeReserveReleaseCompletionContractVersion = 20;
     public const int ContactReserveReleaseChoiceContractVersion = 21;
+    public const int ContactCycleControlContractVersion = 22;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -1069,6 +1157,7 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeCombatSuccessorKind = "native-combat-successor";
     public const string NativeReserveReleaseCompletionKind = "native-reserve-release-completion";
     public const string ContactReserveReleaseChoiceKind = "contact-reserve-release-choice";
+    public const string ContactCycleControlKind = "contact-cycle-control";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -1088,11 +1177,11 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or ContactCombatCustodyKind or NativeCombatSuccessorKind
                 or NativeReserveReleaseCompletionKind
-                or ContactReserveReleaseChoiceKind)
+                or ContactReserveReleaseChoiceKind or ContactCycleControlKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
-                or ContactReserveReleaseChoiceKind
+                or ContactReserveReleaseChoiceKind or ContactCycleControlKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
@@ -1123,6 +1212,7 @@ public sealed class CampaignHostAcceptedStep
             NativeCombatSuccessorKind => NativeCombatSuccessorContractVersion,
             NativeReserveReleaseCompletionKind => NativeReserveReleaseCompletionContractVersion,
             ContactReserveReleaseChoiceKind => ContactReserveReleaseChoiceContractVersion,
+            ContactCycleControlKind => ContactCycleControlContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };
