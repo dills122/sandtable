@@ -237,3 +237,20 @@ metadata remain unchanged; this class uses one ordinary suite part.
 | `RetainedBytesAndForeignRootsFailClosed` | `08e4fca9b2d2` | 2 |
 
 Command: `dotnet artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-class Cna.Core.Tests.Campaigns.P01A1PhysicalHostImportTests --report-xunit-xml --results-directory /private/tmp/sandtable-p01-a1-import-core-timing --progress off`. Result: 2 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `ec7c59a5181d4e2c6ef3436d7dac219ebad69755a98774ff31d8eb816f76f60e`; XML SHA-256 `83062d9167ebea63a500dd2c76b09d3d4b4c10f19af115047ed3b964a5d058aa`. The failed prepare job in run `39504461958` reported unknown or missing measured rows on the synthetic merge. The coordinated rebase retains the three already measured `P01OwnerVisibleCodecV1Tests` rows from #308 main. This local timing note is not a passing exact-head hosted run.
+
+## Permanent contact Core rows (PR #314)
+
+The 18 new rows in `CampaignContactJournalTests`, `CampaignContactKnowledgeTests`, and
+`CampaignContactOwnerMovementCutTests` were measured by three passing focused
+macOS arm64 .NET 10 Release Microsoft.Testing.Platform XML runs on source head
+`ac82837757f07b2ba6b7f97da37710c9379d920c`. Each class uses one ordinary
+suite part. Values are local scheduling hints, not hosted timing or admission
+evidence. Existing measured rows and baseline metadata remain unchanged.
+
+| Class | Row hash prefixes and elapsed milliseconds |
+| --- | --- |
+| `CampaignContactJournalTests` | `efa5b3b92858` 334; `6c524d3cd49a` 20; `c13540b4245c` 216; `c182ffed3df9` 291; `0dd787ea3ae7` 324; `c26be8ecbcb2` 69 |
+| `CampaignContactKnowledgeTests` | `000957e018b8` 1; `d1fc33f17b1b` 2; `22aa2e5143a4` 6; `3bb45012c133` 1; `132105f2141f` 1; `e5b02d332f38` 13 |
+| `CampaignContactOwnerMovementCutTests` | `749f92d5ebdb` 28; `8855b5d1eb9a` 674; `d04eb9a57ff3` 45; `0cf66e3695cf` 11; `b3704b64db90` 30; `ac2b56ad9ffb` 77 |
+
+Command for each class: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Observations.<class> --report-xunit-xml --results-directory /private/tmp/sandtable-pr314-timing-<class> --progress off`. Each run passed 6/6. Release Core test DLL SHA-256 `9366a99b46b31f718ae917ab241ff10b391f450620b6ae9c1eacd711aed42799`; retained XML SHA-256 by table class order: `b089df0405571139a788987561e3c22013f54edecfac103906fb43217cd7f036`, `3f59755ee068843ae8ae28a7d3f362325be174163107970167ead98928a7f765`, `806325285ed453f7addb7a99ac05b5c903cb0aa9dc2cffb78d0d3e05d2bebf01`. Exact-head local discovery found 18 missing rows, zero stale rows; after refresh, all 3,264 rows allocate once across 61 groups and the same 12 jobs. PR #314's first hosted `prepare` failed on the missing-row guard; this update requires a new exact-head hosted run.

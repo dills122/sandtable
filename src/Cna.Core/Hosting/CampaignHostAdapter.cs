@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Hosting;
 
@@ -11,6 +13,30 @@ public static class CampaignHostAdapter
 {
     public static ExerciseStartResult Create(CampaignCreationRequest request) =>
         CampaignExercises.Begin(request);
+
+    /// <summary>
+    /// Trusted successor input for the normal campaign host. The visible bytes contain no
+    /// private authority version or Core action ID; Host must durably bind an authenticated
+    /// owner opening and its private action map before any client can receive them.
+    /// </summary>
+    public static CampaignHostContactOwnerDraft QueryContactOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            throw new ArgumentOutOfRangeException(nameof(audience));
+        var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var cut = CampaignExercises.QueryContactOwnerMovementCut(session, side, actingElementId);
+        return new CampaignHostContactOwnerDraft(cut.AuthorityVersion,
+            CampaignContactOwnerVisibleCutV1.SerializeCanonical(cut), cut.MovementOffers);
+    }
+
+    /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
+    public static IReadOnlyList<byte[]> QueryContactRecords(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return session.CurrentContacts.Records;
+    }
 
     public static CampaignHostAudienceCut QueryAudience(
         ExerciseSession session, CampaignActionAudience audience)
@@ -109,6 +135,11 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission) =>
         CampaignExercises.Submit(session, submission);
 
+    /// <summary>Trusted Core submission against the contact-derived owner cut, never V7 actions.</summary>
+    public static ExerciseStepResult SubmitContactOwnerMovement(
+        ExerciseSession session, CampaignActionSubmission submission, string actingElementId) =>
+        CampaignExercises.SubmitContactOwnerMovement(session, submission, actingElementId);
+
     /// <summary>Private typed decision proof for one accepted step. It neither publishes a
     /// second transition nor supplies browser diary content.</summary>
     public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
@@ -123,10 +154,15 @@ public static class CampaignHostAdapter
         CampaignCreationRequest request,
         ReadOnlyMemory<byte> creationEvent,
         ReadOnlyMemory<byte> initialSnapshot,
-        IReadOnlyList<CampaignHostAcceptedStep> steps)
+        IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IReadOnlyList<byte[]>? initialContactRecords = null,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(steps);
+        if ((initialContactRecords is null) != (stepContactRecords is null)
+            || (stepContactRecords is not null && stepContactRecords.Count != steps.Count))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
         var started = Create(request);
         if (!started.IsStarted
             || !creationEvent.Span.SequenceEqual(started.CreationEventBytes)
@@ -134,8 +170,12 @@ public static class CampaignHostAdapter
             return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
 
         var session = started.Session!;
-        foreach (var step in steps)
+        if (initialContactRecords is not null
+            && !ContactRecordsMatch(session.CurrentContacts.Records, initialContactRecords))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
+        for (var index = 0; index < steps.Count; index++)
         {
+            var step = steps[index];
             if (step is null)
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignActionSubmission submission;
@@ -149,15 +189,57 @@ public static class CampaignHostAdapter
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             }
 
-            var accepted = Submit(session, submission);
+            if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind
+                or CampaignHostAcceptedStep.ContactMovementKind))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            var accepted = step.Kind == CampaignHostAcceptedStep.LegacyKind
+                ? Submit(session, submission)
+                : SubmitContactOwnerMovement(session, submission, step.ActingElementId!);
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (stepContactRecords is not null)
+            {
+                var before = session.CurrentContacts.Records;
+                var after = accepted.SuccessorSession!.CurrentContacts.Records;
+                if (after.Count < before.Count
+                    || !ContactRecordsMatch(after.Take(before.Count).ToArray(), before)
+                    || !ContactRecordsMatch(after.Skip(before.Count).ToArray(), stepContactRecords[index]))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
             session = accepted.SuccessorSession!;
         }
 
         return CampaignHostImportResult.Verified(session);
     }
+
+    private static bool ContactRecordsMatch(IReadOnlyList<byte[]> actual,
+        IReadOnlyList<byte[]> retained) =>
+        actual.Count == retained.Count
+        && actual.Zip(retained).All(pair => pair.First.AsSpan().SequenceEqual(pair.Second));
+}
+
+/// <summary>Host-private authority fence and action map paired with one side-safe Core cut.</summary>
+public sealed class CampaignHostContactOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly MoveElementAction[] privateMovementActions;
+
+    internal CampaignHostContactOwnerDraft(long authorityVersion, byte[] visibleBytes,
+        IReadOnlyList<MoveElementAction> privateMovementActions)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateMovementActions = privateMovementActions.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<MoveElementAction> PrivateMovementActions =>
+        Array.AsReadOnly(privateMovementActions.ToArray());
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }
@@ -207,6 +289,9 @@ public sealed class CampaignHostAudienceCut
 public sealed class CampaignHostAcceptedStep
 {
     public const int CurrentContractVersion = 1;
+    public const int ContactMovementContractVersion = 2;
+    public const string LegacyKind = "legacy-action";
+    public const string ContactMovementKind = "contact-movement";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -214,9 +299,16 @@ public sealed class CampaignHostAcceptedStep
     private readonly byte[] snapshotCheckpoint;
 
     public CampaignHostAcceptedStep(byte[] canonicalCommand, IReadOnlyList<byte[]> eventRecords,
-        byte[] canonicalReceipt, byte[] snapshotCheckpoint)
+        byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
+        string? actingElementId = null)
     {
-        ContractVersion = CurrentContractVersion;
+        if (kind is not (LegacyKind or ContactMovementKind)
+            || (kind == ContactMovementKind && string.IsNullOrWhiteSpace(actingElementId))
+            || (kind == LegacyKind && actingElementId is not null))
+            throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
+        ContractVersion = kind == LegacyKind ? CurrentContractVersion : ContactMovementContractVersion;
+        Kind = kind;
+        ActingElementId = actingElementId;
         this.canonicalCommand = canonicalCommand?.ToArray()
             ?? throw new ArgumentNullException(nameof(canonicalCommand));
         ArgumentNullException.ThrowIfNull(eventRecords);
@@ -231,6 +323,8 @@ public sealed class CampaignHostAcceptedStep
 
     public byte[] CanonicalCommand => canonicalCommand.ToArray();
     public int ContractVersion { get; }
+    public string Kind { get; }
+    public string? ActingElementId { get; }
     public IReadOnlyList<byte[]> EventRecords =>
         Array.AsReadOnly(eventRecords.Select(value => value.ToArray()).ToArray());
     public byte[] CanonicalReceipt => canonicalReceipt.ToArray();

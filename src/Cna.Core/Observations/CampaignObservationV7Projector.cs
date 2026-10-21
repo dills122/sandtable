@@ -74,7 +74,7 @@ internal static class CampaignObservationV7Projector
         var ownElements = definition.Elements
             .Where(value => string.Equals(value.SideId, sideId, StringComparison.Ordinal)
                 && value.PlacementMode == ContentPlacementMode.Independent)
-            .Select(value => ProjectOwnElement(value, worldByElement[value.ElementId]))
+            .Select(value => CampaignOwnElementProjection.Project(value, worldByElement[value.ElementId]))
             .ToArray();
         var opposingRepresentations = snapshot.World.Representations
             .Where(representation => representation.BoundElementIds.Any(elementId =>
@@ -133,7 +133,7 @@ internal static class CampaignObservationV7Projector
                 group.Aggregate(0, (total, value) => checked(total + value.PointCount))))
             .ToArray();
         var movementEndedElementIds = publishedOwnElements
-            .Where(element => IsMovementEndedFor(
+            .Where(element => CampaignOwnElementProjection.IsMovementEndedFor(
                 worldByElement[element.ElementId].OperationalState.MovementEnded,
                 sequence))
             .Select(element => element.ElementId)
@@ -275,68 +275,12 @@ internal static class CampaignObservationV7Projector
             aliases);
     }
 
-    private static ObservedOwnElement ProjectOwnElement(
-        ContentCombatElement content,
-        CampaignElementStateV5 state) => new(
-            content.ElementId,
-            content.ParentFormationId,
-            content.OrganizationId,
-            content.BaseCapabilityPointAllowance,
-            state.CurrentLocationId,
-            ProjectReserveStatus(state.ReserveStatus),
-            content.MobilityId,
-            state.OperationalState.LedgerGameTurn,
-            state.OperationalState.LedgerOperationStage,
-            state.OperationalState.CapabilityPointsExpended,
-            state.OperationalState.CohesionLevel,
-            ProjectVehicleBreakdownRisk(content, state));
-
-    private static bool IsMovementEndedFor(
-        CampaignMovementEndedState? ended,
-        LandSequencePosition position) => ended is not null
-        && ended.SequenceContractVersion == position.ContractVersion
-        && string.Equals(ended.PositionId, position.PositionId, StringComparison.Ordinal)
-        && ended.GameTurn == position.GameTurn
-        && ended.OperationStage == position.OperationStage
-        && string.Equals(ended.StageId, position.StageId, StringComparison.Ordinal)
-        && string.Equals(ended.PhaseId, position.PhaseId, StringComparison.Ordinal)
-        && string.Equals(ended.SegmentId, position.SegmentId, StringComparison.Ordinal)
-        && ended.PhasingSide == position.ActiveSide;
-
-    private static ObservedOwnVehicleBreakdownRisk? ProjectVehicleBreakdownRisk(
-        ContentCombatElement content,
-        CampaignElementStateV5 state)
-    {
-        var cohort = content.BreakdownVehicleCohort;
-        var breakdown = state.OperationalState.VehicleBreakdownState;
-        return cohort is null || breakdown is null
-            ? null
-            : new ObservedOwnVehicleBreakdownRisk(
-                breakdown.CohortId,
-                cohort.VehicleTypeId,
-                cohort.ProfileId,
-                breakdown.CumulativeBreakdownPoints,
-                breakdown.SandstormAttributedBreakdownPoints,
-                breakdown.HighestEffectiveCheckedBandId,
-                breakdown.WorkingPointCount,
-                breakdown.BrokenPointCount);
-    }
-
     private static string FormatSideId(LandSide side) => side switch
     {
         LandSide.Axis => "axis",
         LandSide.Commonwealth => "commonwealth",
         _ => throw new ArgumentOutOfRangeException(nameof(side)),
     };
-
-    private static CampaignObservationReserveStatus ProjectReserveStatus(
-        CampaignElementReserveStatus status) => status switch
-        {
-            CampaignElementReserveStatus.None => CampaignObservationReserveStatus.None,
-            CampaignElementReserveStatus.ReserveI => CampaignObservationReserveStatus.ReserveI,
-            CampaignElementReserveStatus.ReserveII => CampaignObservationReserveStatus.ReserveII,
-            _ => throw new ArgumentOutOfRangeException(nameof(status)),
-        };
 
     private sealed record DecisionProjection(
         CampaignObservationV7DecisionState DecisionState,

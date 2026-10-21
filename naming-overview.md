@@ -42,6 +42,9 @@ Intelligence provider or authoritative game component. Its proposed
 checks orders, resolves uncertainty and reports only what each side may know. Command, Staff,
 Intelligence and Maproom cannot invent outcomes or mutate authority. Internally, use names such as
 `CampaignEngine`, `MovementValidator` and `CombatResolver`, not a second layer of product branding.
+`CampaignContactKnowledge` is a plain Core technical name for replayed side
+knowledge in the permanent fog rule; `CampaignContactView` is its outward
+projection, with private target binding retained only by Umpire.
 The private [actual repeated Movement completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
 uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
 `complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner
@@ -95,7 +98,12 @@ contract lives in `Cna.Intelligence.Contracts`; preserving message versions and 
 is a transport responsibility, while order legality stays in Core.
 
 **Chronicle** is authoritative event history and replay. **War Diary** is its derived human-readable
-account. **Archives** is campaign storage, snapshots and saves. A replay checkpoint does not by itself
+account. **Archives** is campaign storage, snapshots and saves. The normal Host's internal
+durable authority journal retains Core evidence and verifies it by replay, with private side
+credential custody, owner-opening binding, atomic contact-record custody, and internal
+contact-derived movement submission against the current equal-visible owner cut.
+Public opening, Combat submission, and resume still need their normal campaign path. A replay
+checkpoint does not by itself
 constitute a durable player save/resume product.
 
 **Maproom** is the player application: map, orders, legal actions and audience-safe reports.

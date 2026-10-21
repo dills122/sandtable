@@ -1,6 +1,7 @@
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Actions;
 
@@ -39,6 +40,60 @@ internal sealed record CampaignCurrentActionExecutionResult
 
 internal static class CampaignCurrentActionExecution
 {
+    internal static CampaignCurrentActionExecutionResult ExecuteContactMovement(
+        CampaignSnapshotV11 snapshot, CampaignContentContext context,
+        CampaignContactJournal contacts, CampaignActionSubmission submission,
+        string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(contacts);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (string.IsNullOrWhiteSpace(actingElementId)
+            || !CampaignActionContractValidator.IsValidSubmission(submission))
+            return Reject(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        var artifact = context.ArtifactV6;
+        if (artifact is null || !CampaignSnapshotV11Admission.IsValid(snapshot, artifact,
+                context.Scenario) || contacts.AuthorityVersion != snapshot.StateVersion)
+            return Reject(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.CampaignId != snapshot.CampaignId)
+            return Reject(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != snapshot.StateVersion)
+            return Reject(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CurrentPositionId(snapshot))
+            return Reject(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var side = submission.Audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => (LandSide?)null,
+        };
+        if (side is null) return Reject(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        try
+        {
+            var cut = CampaignContactOwnerMovementCut.Project(snapshot, context, contacts,
+                side.Value, actingElementId);
+            var move = cut.MovementOffers.SingleOrDefault(value => value.ActionId == submission.ActionId);
+            if (move is null)
+                return Reject(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+            var movement = CampaignElementMovedV3Factory.Create(snapshot, artifact,
+                context.Scenario, new ElementMovedV3ReplayInput(snapshot.CampaignId,
+                    snapshot.StateVersion, CurrentPositionId(snapshot), side.Value,
+                    move.ElementId, move.OriginLocationId, move.DestinationLocationId));
+            var successor = CampaignV11BreakdownProjector.Apply(snapshot, movement, artifact,
+                context.Scenario);
+            if (!CampaignSnapshotV11Admission.IsValid(successor, artifact, context.Scenario))
+                return Reject(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            return Complete(snapshot, successor, movement, submission.Audience, move.ActionId);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException)
+        {
+            return Reject(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     public static CampaignCurrentActionExecutionResult Execute(
         CampaignSnapshotV11 snapshot,
         CampaignContentContext context,

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Exercises;
 
@@ -16,7 +17,8 @@ public static class CampaignExercises
         var session = new ExerciseSession(
             execution.CurrentSnapshot!,
             execution.Context!,
-            [execution.CurrentCreatedEvent!]);
+            [execution.CurrentCreatedEvent!],
+            CampaignContactJournal.Initialize(execution.CurrentSnapshot!, execution.Context!));
         return ExerciseStartResult.Started(
             session,
             CampaignCurrentEventSerializer.Serialize(execution.CurrentCreatedEvent!),
@@ -31,6 +33,14 @@ public static class CampaignExercises
         return CampaignLegalActions.Query(
             new CampaignAuthorityHandle(session.CurrentSnapshot, session.Context),
             audience);
+    }
+
+    internal static CampaignContactOwnerMovementCut QueryContactOwnerMovementCut(
+        ExerciseSession session, Cna.Core.Rules.LandSide side, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return CampaignContactOwnerMovementCut.Project(session.CurrentSnapshot, session.Context,
+            session.CurrentContacts, side, actingElementId);
     }
 
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
@@ -55,11 +65,37 @@ public static class CampaignExercises
             session.CurrentSnapshot,
             session.Context,
             submission);
+        return Complete(session, execution);
+    }
+
+    internal static ExerciseStepResult SubmitContactOwnerMovement(
+        ExerciseSession session, CampaignActionSubmission submission, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        var execution = CampaignCurrentActionExecution.ExecuteContactMovement(
+            session.CurrentSnapshot, session.Context, session.CurrentContacts,
+            submission, actingElementId);
+        return Complete(session, execution);
+    }
+
+    private static ExerciseStepResult Complete(ExerciseSession session,
+        CampaignCurrentActionExecutionResult execution)
+    {
         if (!execution.IsAccepted)
             return ExerciseStepResult.Rejected(execution.RejectionReason);
 
         var history = session.CurrentHistory.Add(execution.AcceptedEvent!);
-        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history);
+        var contacts = execution.AcceptedEvent switch
+        {
+            ElementMovedV3 movement => session.CurrentContacts.AppendMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!, movement, session.Context),
+            ReactingElementMovedV2 movement => session.CurrentContacts.AppendMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!, movement, session.Context),
+            _ => session.CurrentContacts.AdvanceNonMovement(
+                session.CurrentSnapshot, execution.SuccessorSnapshot!),
+        };
+        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,
             CampaignCurrentEventSerializer.Serialize(execution.AcceptedEvent!),
@@ -86,7 +122,15 @@ public static class CampaignExercises
             var replayed = CampaignCurrentProjector.Replay(replayEvents, completedSession.Context);
             var replayedBytes = CampaignCurrentSnapshotSerializer.Serialize(replayed);
             var replayedHash = Hash(replayedBytes);
-            var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes)
+            var contactRecords = completedSession.CurrentContacts.Records;
+            var replayedContacts = CampaignContactJournal.FromEvents(
+                completedSession.Context, replayEvents).Records;
+            var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
+                == completedSession.CurrentSnapshot.StateVersion
+                && contactRecords.Count == replayedContacts.Count
+                && contactRecords.Zip(replayedContacts).All(pair =>
+                    pair.First.AsSpan().SequenceEqual(pair.Second));
+            var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes) && contactsMatch
                 ? ExerciseReconstructionFailureReason.None
                 : ExerciseReconstructionFailureReason.SnapshotMismatch;
             return new ExerciseReconstructionResult(

@@ -65,6 +65,27 @@ stack, and simulate checked rules-lab Movement/Reaction/Breakdown paths. You can
 campaign or resolve Combat through public Runner actions. Combat internals are exercised through
 dormant Core tests; they are not yet exposed as playable actions.
 
+The permanent fog implementation has started in Core with
+[versioned contact knowledge](docs/specs/combat-contact-knowledge-v1.md): replayed
+side contacts, a side-safe view, visibility-qualified target candidates and a
+default adjacency rule at creation and accepted ordinary and Reaction movement cuts. Core's campaign
+exercise session retains contact records and checks them against authority-event
+replay. Core now fences contact knowledge to each accepted authority cut and derives an
+acting element's contact view and movement offers from that same cut, without consulting
+hidden opposing positions for offer membership. Core now supplies a canonical owner-visible
+draft to the trusted Host adapter while retaining its authority fence and action IDs privately.
+The normal Host now has an internal [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md)
+that atomically retains accepted Core evidence and verifies it by full Core replay on cold read.
+It retains and rechecks canonical contact transitions with each source event.
+It now retains one-time side grants and restart-safe credential digests with epoch revocation.
+An internal authenticated owner-opening query retains a side-safe visible cut and private
+reference-to-Core-action map. It keeps outward bytes and refs stable across unseen authority
+changes. Internal contact-derived owner movement now commits once with seat, opening and
+reference fences, while an unchanged visible cut remains usable across private authority advances;
+cold replay verifies the same path and an exact retry returns the retained
+receipt. There is no public opening route or native Combat action stage yet; historical
+observation readers remain readable while the complete successor path is built.
+
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 and native reader authenticate ordinary outward/return Movement and all three direct Reaction closure
 reasons through stop, System resolution, Movement completion and Breakdown into positive Combat entry.
