@@ -9,15 +9,18 @@ internal sealed class ContentCombatSourceV1
 {
     private readonly IReadOnlyDictionary<string, int> moraleByFormation;
     private readonly IReadOnlyDictionary<string, int> offensiveRatingByComponent;
+    private readonly IReadOnlyDictionary<string, int> initialAmmunitionByElement;
 
     private ContentCombatSourceV1(string contentHash, string hash,
         IReadOnlyDictionary<string, int> moraleByFormation,
-        IReadOnlyDictionary<string, int> offensiveRatingByComponent)
+        IReadOnlyDictionary<string, int> offensiveRatingByComponent,
+        IReadOnlyDictionary<string, int> initialAmmunitionByElement)
     {
         ContentHash = contentHash;
         Hash = hash;
         this.moraleByFormation = moraleByFormation;
         this.offensiveRatingByComponent = offensiveRatingByComponent;
+        this.initialAmmunitionByElement = initialAmmunitionByElement;
     }
 
     internal string ContentHash { get; }
@@ -25,6 +28,7 @@ internal sealed class ContentCombatSourceV1
 
     internal int BasicMorale(string formationId) => moraleByFormation[formationId];
     internal int OffensiveRating(string componentId) => offensiveRatingByComponent[componentId];
+    internal int InitialAmmunition(string elementId) => initialAmmunitionByElement[elementId];
 
     internal static ContentCombatSourceV1? Resolve(ContentPackV6Artifact artifact)
     {
@@ -47,7 +51,7 @@ internal sealed class ContentCombatSourceV1
             new JsonDocumentOptions { MaxDepth = 16 });
         var root = document.RootElement;
         RequireProperties(root, "contractVersion", "contentPackId", "contentHash",
-            "formationMorale", "componentRatings");
+            "formationMorale", "componentRatings", "elementAmmunition");
         if (root.GetProperty("contractVersion").GetInt32() != 1
             || root.GetProperty("contentPackId").GetString() != artifact.Identity.PackId
             || root.GetProperty("contentHash").GetString() != artifact.Identity.Hash)
@@ -59,21 +63,28 @@ internal sealed class ContentCombatSourceV1
             sourceIds, -3, 3);
         var ratings = ReadFacts(root.GetProperty("componentRatings"), "componentId",
             "offensiveCloseAssaultRating", sourceIds, 0, int.MaxValue);
+        var ammunition = ReadFacts(root.GetProperty("elementAmmunition"), "elementId",
+            "initialPoints", sourceIds, 0, int.MaxValue);
         var expectedFormations = artifact.Definition.LegacyDefinition.Formations
             .Select(value => value.FormationId).Order(StringComparer.Ordinal);
         var expectedComponents = artifact.Definition.ElementCombatFacts
             .SelectMany(value => value.Components).Select(value => value.ComponentId)
             .Order(StringComparer.Ordinal);
+        var expectedElements = artifact.Definition.LegacyDefinition.Elements
+            .Select(value => value.ElementId).Order(StringComparer.Ordinal);
         if (!morale.Keys.Order(StringComparer.Ordinal).SequenceEqual(expectedFormations)
-            || !ratings.Keys.Order(StringComparer.Ordinal).SequenceEqual(expectedComponents))
+            || !ratings.Keys.Order(StringComparer.Ordinal).SequenceEqual(expectedComponents)
+            || !ammunition.Keys.Order(StringComparer.Ordinal).SequenceEqual(expectedElements))
             throw new JsonException("Combat source does not cover the pack's formations and components exactly.");
 
         var canonical = Serialize(artifact.Identity.PackId, artifact.Identity.Hash,
-            root.GetProperty("formationMorale"), root.GetProperty("componentRatings"));
+            root.GetProperty("formationMorale"), root.GetProperty("componentRatings"),
+            root.GetProperty("elementAmmunition"));
         if (!canonicalBytes.SequenceEqual(canonical))
             throw new JsonException("Combat source must use canonical bytes and ordering.");
         return new ContentCombatSourceV1(artifact.Identity.Hash,
-            "sha256:" + Convert.ToHexStringLower(SHA256.HashData(canonical)), morale, ratings);
+            "sha256:" + Convert.ToHexStringLower(SHA256.HashData(canonical)), morale, ratings,
+            ammunition);
     }
 
     private static Dictionary<string, int> ReadFacts(JsonElement array, string idName,
@@ -98,7 +109,7 @@ internal sealed class ContentCombatSourceV1
     }
 
     private static byte[] Serialize(string packId, string contentHash, JsonElement formations,
-        JsonElement components)
+        JsonElement components, JsonElement ammunition)
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
@@ -110,6 +121,7 @@ internal sealed class ContentCombatSourceV1
             WriteFacts(writer, "formationMorale", formations, "formationId", "basicMorale");
             WriteFacts(writer, "componentRatings", components, "componentId",
                 "offensiveCloseAssaultRating");
+            WriteFacts(writer, "elementAmmunition", ammunition, "elementId", "initialPoints");
             writer.WriteEndObject();
         }
         return stream.ToArray();

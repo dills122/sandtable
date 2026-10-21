@@ -21,6 +21,9 @@ public sealed class ContentCombatSourceTests
         Assert.Equal(0, source.BasicMorale("commonwealth-infantry.formation"));
         Assert.Equal(1, source.OffensiveRating("axis-infantry.toe"));
         Assert.Equal(1, source.OffensiveRating("commonwealth-infantry.toe"));
+        Assert.Equal(10, source.InitialAmmunition("axis-infantry"));
+        Assert.Equal(10, source.InitialAmmunition("commonwealth-infantry"));
+        Assert.Equal(0, source.InitialAmmunition("axis-truck"));
         Assert.StartsWith("sha256:", source.Hash);
         Assert.All(Artifact.Definition.ElementCombatFacts.SelectMany(value => value.Components),
             component => Assert.Equal(10, component.MaximumToe));
@@ -51,6 +54,11 @@ public sealed class ContentCombatSourceTests
         missingComponent["componentRatings"]!.AsArray().RemoveAt(0);
         Assert.Throws<JsonException>(() => ContentCombatSourceV1.Parse(
             Encoding.UTF8.GetBytes(missingComponent.ToJsonString()), Artifact));
+
+        var missingAmmunition = root.DeepClone().AsObject();
+        missingAmmunition["elementAmmunition"]!.AsArray().RemoveAt(0);
+        Assert.Throws<JsonException>(() => ContentCombatSourceV1.Parse(
+            Encoding.UTF8.GetBytes(missingAmmunition.ToJsonString()), Artifact));
 
         var unindexedSource = root.DeepClone().AsObject();
         unindexedSource["formationMorale"]![0]!["sourceId"] = "unindexed-source";
