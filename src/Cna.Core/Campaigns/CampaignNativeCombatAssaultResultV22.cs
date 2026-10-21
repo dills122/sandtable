@@ -21,16 +21,33 @@ internal sealed class CampaignNativeCombatAssaultResultV22
         int attackerMoraleCoordinate,
         int defenderMoraleCoordinate,
         CampaignCombatResultFacts facts)
+        : this(selected.CampaignId, selected.Decision.ActionId,
+            antiArmor.StateVersion, antiArmor.NextPositionId,
+            Hash(antiArmor.SerializeCanonical()), inputs.ContentHash,
+            inputs.SourceHash, inputs.RulesInputHash, inputs.PriorAmmunitionHash,
+            inputs.AfterAmmunition.Hash, before, after, draws,
+            attackerMoraleCoordinate, defenderMoraleCoordinate, facts)
+    { }
+
+    private CampaignNativeCombatAssaultResultV22(string campaignId,
+        string decisionActionId, long priorStateVersion, string positionId,
+        string priorAntiArmorHash, string contentHash, string sourceHash,
+        string rulesInputHash, string priorAmmunitionHash,
+        string afterAmmunitionHash, RandomStreamState before,
+        RandomStreamState after, IReadOnlyList<CombatResolutionDraw> draws,
+        int attackerMoraleCoordinate, int defenderMoraleCoordinate,
+        CampaignCombatResultFacts facts)
     {
-        CampaignId = selected.CampaignId;
-        DecisionActionId = selected.Decision.ActionId;
-        PriorStateVersion = antiArmor.StateVersion;
-        PriorAntiArmorHash = Hash(antiArmor.SerializeCanonical());
-        ContentHash = inputs.ContentHash;
-        SourceHash = inputs.SourceHash;
-        RulesInputHash = inputs.RulesInputHash;
-        PriorAmmunitionHash = inputs.PriorAmmunitionHash;
-        AfterAmmunitionHash = inputs.AfterAmmunition.Hash;
+        CampaignId = campaignId;
+        DecisionActionId = decisionActionId;
+        PriorStateVersion = priorStateVersion;
+        PositionId = positionId;
+        PriorAntiArmorHash = priorAntiArmorHash;
+        ContentHash = contentHash;
+        SourceHash = sourceHash;
+        RulesInputHash = rulesInputHash;
+        PriorAmmunitionHash = priorAmmunitionHash;
+        AfterAmmunitionHash = afterAmmunitionHash;
         BeforeRandomState = before;
         AfterRandomState = after;
         Draws = Array.AsReadOnly(draws.ToArray());
@@ -43,6 +60,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
     internal string DecisionActionId { get; }
     internal long PriorStateVersion { get; }
     internal long StateVersion => checked(PriorStateVersion + 1);
+    internal string PositionId { get; }
+    internal string NextPositionId => PositionId;
     internal string PriorAntiArmorHash { get; }
     internal string ContentHash { get; }
     internal string SourceHash { get; }
@@ -147,6 +166,7 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("priorStateVersion", PriorStateVersion);
             writer.WriteString("decisionActionId", DecisionActionId);
+            writer.WriteString("positionId", PositionId);
             writer.WriteString("priorAntiArmorHash", PriorAntiArmorHash);
             writer.WriteString("contentHash", ContentHash);
             writer.WriteString("sourceHash", SourceHash);
@@ -192,6 +212,94 @@ internal sealed class CampaignNativeCombatAssaultResultV22
         }
         return stream.ToArray();
     }
+
+    internal byte[] SerializeStateCanonical(ReadOnlySpan<byte> priorState)
+    {
+        if (priorState.IsEmpty)
+            throw new ArgumentException("Combat result requires retained Anti Armor authority.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CurrentContractVersion);
+            writer.WriteString("campaignId", CampaignId);
+            writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("positionId", NextPositionId);
+            writer.WriteString("priorStateHash", Hash(priorState));
+            writer.WritePropertyName("result");
+            writer.WriteRawValue(SerializeCanonical());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal static CampaignNativeCombatAssaultResultV22 Deserialize(
+        ReadOnlyMemory<byte> canonicalEvent)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(canonicalEvent);
+            var root = document.RootElement;
+            CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
+                "campaignId", "priorStateVersion", "decisionActionId", "positionId",
+                "priorAntiArmorHash", "contentHash", "sourceHash", "rulesInputHash",
+                "priorAmmunitionHash", "afterAmmunitionHash", "beforeRandomState",
+                "afterRandomState", "draws", "attackerMoraleCoordinate",
+                "defenderMoraleCoordinate", "facts");
+            if (root.GetProperty("contractVersion").GetInt32() != CurrentContractVersion
+                || root.GetProperty("eventType").GetString() != "combat-assault-resolved")
+                throw new JsonException("Unknown native assault result.");
+            var facts = root.GetProperty("facts");
+            var parsed = new CampaignNativeCombatAssaultResultV22(
+                root.GetProperty("campaignId").GetString()!,
+                root.GetProperty("decisionActionId").GetString()!,
+                root.GetProperty("priorStateVersion").GetInt64(),
+                root.GetProperty("positionId").GetString()!,
+                root.GetProperty("priorAntiArmorHash").GetString()!,
+                root.GetProperty("contentHash").GetString()!,
+                root.GetProperty("sourceHash").GetString()!,
+                root.GetProperty("rulesInputHash").GetString()!,
+                root.GetProperty("priorAmmunitionHash").GetString()!,
+                root.GetProperty("afterAmmunitionHash").GetString()!,
+                ParseRandom(root.GetProperty("beforeRandomState")),
+                ParseRandom(root.GetProperty("afterRandomState")),
+                root.GetProperty("draws").EnumerateArray().Select(draw =>
+                    new CombatResolutionDraw(draw.GetProperty("purpose").GetString()!,
+                        draw.GetProperty("beforeCursor").GetUInt64(),
+                        draw.GetProperty("afterCursor").GetUInt64(),
+                        draw.GetProperty("die").GetInt32(),
+                        draw.GetProperty("consumed").EnumerateArray()
+                            .Select(value => value.GetInt32()))).ToArray(),
+                root.GetProperty("attackerMoraleCoordinate").GetInt32(),
+                root.GetProperty("defenderMoraleCoordinate").GetInt32(),
+                new CampaignCombatResultFacts(
+                    facts.GetProperty("differential").GetInt32(),
+                    facts.GetProperty("attackerCoordinate").GetInt32(),
+                    facts.GetProperty("defenderCoordinate").GetInt32(),
+                    facts.GetProperty("captureDie").ValueKind == JsonValueKind.Null
+                        ? null : facts.GetProperty("captureDie").GetInt32(),
+                    facts.GetProperty("attackerPercent").GetInt32(),
+                    facts.GetProperty("defenderPercent").GetInt32(),
+                    facts.GetProperty("rawEngaged").GetBoolean(),
+                    facts.GetProperty("requiredRetreat").GetInt32(),
+                    facts.GetProperty("capturedRole").GetString(),
+                    facts.GetProperty("captureShare").GetInt32()));
+            if (!canonicalEvent.Span.SequenceEqual(parsed.SerializeCanonical()))
+                throw new JsonException("Noncanonical native assault result.");
+            return parsed;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or KeyNotFoundException or OverflowException)
+        {
+            throw new JsonException("Invalid native assault result.", exception);
+        }
+    }
+
+    private static RandomStreamState ParseRandom(JsonElement value) => new(
+        value.GetProperty("contractVersion").GetInt32(),
+        value.GetProperty("algorithmId").GetString()!,
+        value.GetProperty("seed").GetUInt64(),
+        value.GetProperty("nextByteCursor").GetUInt64());
 
     private static void WriteRandom(Utf8JsonWriter writer, RandomStreamState state)
     {

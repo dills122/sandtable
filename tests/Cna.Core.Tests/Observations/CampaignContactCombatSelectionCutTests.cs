@@ -102,6 +102,9 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(canonical, CampaignNativeCombatAssaultResultV22.Replay(
             selected, antiArmor, inputs, atCombat.RandomState, canonical)
             .SerializeCanonical());
+        Assert.Equal(canonical, CampaignCurrentEventSerializer.Serialize(
+            CampaignCurrentEventSerializer.Deserialize(canonical)));
+        Assert.NotEmpty(result.SerializeStateCanonical(antiArmor.SerializeCanonical()));
         var tampered = canonical.ToArray();
         tampered[^2] ^= 1;
         Assert.Throws<InvalidCampaignHistoryException>(() =>

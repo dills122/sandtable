@@ -7,6 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeCombatAssaultResultV22 result => result.SerializeCanonical(),
         CampaignNativeCombatCancelledAssaultV21 cancelledAssault => cancelledAssault.SerializeCanonical(),
         CampaignNativeCombatAntiArmorV20 antiArmor => antiArmor.SerializeCanonical(),
         CampaignNativeCombatForceCancellationV19 forceCancellation => forceCancellation.SerializeCanonical(),
@@ -36,6 +37,7 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
+            "combat-assault-resolved" => CampaignNativeCombatAssaultResultV22.Deserialize(canonicalJson),
             "combat-cancelled-assault-completed" => CampaignNativeCombatCancelledAssaultV21.Deserialize(canonicalJson),
             "combat-anti-armor-completed" => CampaignNativeCombatAntiArmorV20.Deserialize(canonicalJson),
             "combat-force-cancelled" => CampaignNativeCombatForceCancellationV19.Deserialize(canonicalJson),
