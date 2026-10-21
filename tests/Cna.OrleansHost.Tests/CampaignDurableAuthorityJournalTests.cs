@@ -243,7 +243,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
             defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(26, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
@@ -251,6 +251,9 @@ public sealed class CampaignDurableAuthorityJournalTests
         query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
             + "AND action_kind='native-combat-assault-result'";
         query.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.Equal(1L, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+            + "AND action_kind='native-reserve-release-completion'";
         Assert.Equal(1L, query.ExecuteScalar());
         query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
             + "AND action_kind='native-combat-no-post-assault-retreat'";
@@ -264,6 +267,50 @@ public sealed class CampaignDurableAuthorityJournalTests
         query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
             + "AND action_kind='native-combat-successor'";
         Assert.Equal(1L, query.ExecuteScalar());
+    }
+
+    [Fact]
+    public void SourceBackedReserveReleaseChoiceRetainsOwnerReceiptAfterRestart()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true,
+                reserveElementId: "axis-infantry");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        Assert.Equal(26, CampaignExercises.QueryCheckpoint(
+            journal.ReadVerified(request.CampaignId)).ContractVersion);
+        Assert.Throws<InvalidOperationException>(() =>
+            journal.QueryReserveReleaseOwnerOpening(defender, "axis-infantry"));
+        var opening = journal.QueryReserveReleaseOwnerOpening(attacker,
+            "axis-infantry");
+        Assert.Equal(2, opening.PublicActionRefs.Count);
+        using (var visible = System.Text.Json.JsonDocument.Parse(opening.VisibleBytes))
+        {
+            Assert.False(visible.RootElement.TryGetProperty("authorityVersion", out _));
+            Assert.False(visible.RootElement.TryGetProperty("worldHash", out _));
+            Assert.Equal("axis-infantry",
+                visible.RootElement.GetProperty("elementId").GetString());
+        }
+        Assert.False(journal.SubmitOwnerReserveRelease(attacker, "axis-infantry",
+            opening.Revision, "act." + new string('0', 64)).IsAccepted);
+        var accepted = journal.SubmitOwnerReserveRelease(attacker, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(accepted.IsAccepted);
+        var cold = fixture.Open(clock);
+        var retained = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(retained).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(retained).IsVerified);
+        var retry = cold.SubmitOwnerReserveRelease(attacker, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
     }
 
     [Fact]
@@ -298,7 +345,7 @@ public sealed class CampaignDurableAuthorityJournalTests
             opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(first.IsAccepted);
         var cold = fixture.Open(clock);
-        Assert.Equal(26, CampaignExercises.QueryCheckpoint(
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(
             cold.ReadVerified(request.CampaignId)).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(
             cold.ReadVerified(request.CampaignId)).IsVerified);
@@ -372,7 +419,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(accepted.IsAccepted);
         var cold = fixture.Open(clock);
         var retained = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(26, CampaignExercises.QueryCheckpoint(retained).ContractVersion);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(retained).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(retained).IsVerified);
         var retry = cold.SubmitOwnerCustody(captor, captorId,
             opening.Revision, opening.PublicActionRefs[0]);
@@ -855,11 +902,13 @@ public sealed class CampaignDurableAuthorityJournalTests
         CampaignSeatCredential Defender, string DefenderId,
         CampaignOwnerOpening AttackerForce, CampaignOwnerOpening DefenderForce)
         PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal,
-            bool positive = false, ulong? seed = null)
+            bool positive = false, ulong? seed = null,
+            string? reserveElementId = null)
     {
         var request = positive ? PositiveCombatRequest(seed ?? 12345) : CombatInfantryRequest();
         AdvanceToContactCombat(journal, request, Timing(request),
-            preserveAdjacentInfantry: true);
+            preserveAdjacentInfantry: true,
+            reserveElementId: reserveElementId);
         var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
         var selected = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
@@ -930,7 +979,8 @@ public sealed class CampaignDurableAuthorityJournalTests
     private static ExerciseSession AdvanceToContactCombat(
         CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,
         CampaignDecisionTimingConfigurationV1? timing = null,
-        string movementDestination = "north", bool preserveAdjacentInfantry = false)
+        string movementDestination = "north", bool preserveAdjacentInfantry = false,
+        string? reserveElementId = null)
     {
         var session = journal.CreateCampaign(request, timing);
         for (var index = 0; index < 80; index++)
@@ -949,7 +999,15 @@ public sealed class CampaignDurableAuthorityJournalTests
                 .Select(audience => CampaignExercises.Query(session, audience).ActionSet)
                 .FirstOrDefault(value => value?.Candidates.Count > 0);
             Assert.NotNull(set);
-            var next = preserveAdjacentInfantry
+            var reserveDesignation = reserveElementId is null ? null
+                : set.Candidates.OfType<DesignateReserveAction>()
+                    .FirstOrDefault(value => value.ElementId == reserveElementId);
+            if (reserveElementId is not null
+                && set.Candidates.OfType<DesignateReserveAction>().Any())
+                Assert.NotNull(reserveDesignation);
+            var next = reserveDesignation is not null
+                ? reserveDesignation
+                : preserveAdjacentInfantry
                 ? set.Candidates.FirstOrDefault(value => value is not MoveElementAction)
                     ?? set.Candidates.FirstOrDefault(value => value is MoveElementAction move
                         && move.ElementId is not ("axis-infantry" or "commonwealth-infantry"))

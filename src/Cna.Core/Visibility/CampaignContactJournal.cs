@@ -272,6 +272,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(successor.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeReserveRelease(
+        CampaignNativeReserveReleaseEventV27 reserveEvent)
+    {
+        ArgumentNullException.ThrowIfNull(reserveEvent);
+        if (reserveEvent.CampaignId != CampaignId
+            || reserveEvent.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Reserve Release does not bind contact authority.",
+                nameof(reserveEvent));
+        return AtAuthorityVersion(reserveEvent.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

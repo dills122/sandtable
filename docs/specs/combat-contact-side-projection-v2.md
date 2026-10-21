@@ -158,8 +158,11 @@ the following ordinary action and outward opening remain unwired.
 The normal Reserve Release rule derives only due own members and their legal
 I/II choices from the settled World. It carries resulting World and next-cycle
 movement allowance. Internal V27 events bind ordered choices and completion
-to V26 authority with exact replay. Exercise acceptance and Host opening still
-need wiring.
+to V26 authority with exact Exercise and Host cold replay. The normal Host
+offers the next owned reserve member with a side-safe opening and private
+action map, accepts a fenced choice, and appends System completion when the
+queue empties. This does not yet publish the next ordinary action or public
+route.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

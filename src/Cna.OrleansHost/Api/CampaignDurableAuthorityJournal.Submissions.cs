@@ -50,6 +50,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, captorElementId, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.Custody);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerReserveRelease(
+        CampaignSeatCredential credential, string reserveElementId,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, reserveElementId, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.ReserveRelease);
+
     private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef,
         CampaignOwnerOpeningKind kind, bool retreatMove = false)
@@ -187,6 +193,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+            {
+                var draft = CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft(
+                    head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else
             {
                 var draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
@@ -255,6 +268,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignOwnerOpeningKind.Custody =>
                 CampaignHostAdapter.SubmitNativeCombatCustody(head.Session,
                     submission, actingElementId),
+            CampaignOwnerOpeningKind.ReserveRelease =>
+                CampaignHostAdapter.SubmitNativeReserveReleaseChoice(head.Session,
+                    submission, actingElementId),
             _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
                 submission, actingElementId),
         };
@@ -264,6 +280,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (kind == CampaignOwnerOpeningKind.Custody)
             AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
             AppendWorldSettlement(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.CombatSelection
@@ -326,6 +344,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.ContactPostAssaultRetreatKind,
             CampaignOwnerOpeningKind.Custody =>
                 CampaignHostAcceptedStep.ContactCombatCustodyKind,
+            CampaignOwnerOpeningKind.ReserveRelease =>
+                CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind,
             _ => throw new ArgumentOutOfRangeException(nameof(kind)),
         };
 

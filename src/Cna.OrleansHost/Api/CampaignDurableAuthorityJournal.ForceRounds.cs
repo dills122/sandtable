@@ -188,6 +188,26 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.NativeCombatSuccessorKind,
             null, null, null, null, command, completed);
+        AppendEmptyReserveRelease(connection, transaction, campaignId);
+    }
+
+    private void AppendEmptyReserveRelease(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var reserveHead = Load(connection, transaction, campaignId);
+        if (CampaignHostAdapter.IsNativeReserveReleaseEmpty(reserveHead.Session))
+        {
+            var released = CampaignHostAdapter.CompleteNativeReserveRelease(
+                reserveHead.Session);
+            if (!released.IsAccepted)
+                throw new InvalidOperationException(
+                    "Empty Reserve Release cannot finish after Combat.");
+            var releaseCommand = CampaignHostAdapter.NativeReserveReleaseCompletionCommand(
+                reserveHead.Session, released);
+            PersistAccepted(connection, transaction, campaignId, reserveHead,
+                CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind,
+                null, null, null, null, releaseCommand, released);
+        }
     }
 
     internal bool TickForceRound(string campaignId)

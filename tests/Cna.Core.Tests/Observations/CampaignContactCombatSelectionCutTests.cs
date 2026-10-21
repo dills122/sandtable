@@ -542,6 +542,21 @@ public sealed class CampaignContactCombatSelectionCutTests
                 releaseEvent.SerializeCanonical()).SerializeCanonical());
         Assert.Equal(afterRelease, CampaignNativeReserveReleaseStateV27.Replay(
             release, context, [releaseEvent.SerializeCanonical()]));
+        var releasedStep = CampaignExercises.CompleteNativeReserveRelease(
+            successorSession);
+        Assert.True(releasedStep.IsAccepted, releasedStep.RejectionReason.ToString());
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(
+            releasedStep.SuccessorSession!).ContractVersion);
+        Assert.Equal(afterRelease.SerializeCanonical(),
+            releasedStep.Evidence!.SnapshotCheckpoint);
+        Assert.True(CampaignExercises.Reconstruct(
+            releasedStep.SuccessorSession!).IsVerified);
+        Assert.False(CampaignExercises.CompleteNativeReserveRelease(
+            releasedStep.SuccessorSession!).IsAccepted);
+        Assert.Equal(releaseEvent.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    releasedStep.Evidence.EventRecords[0])));
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeReserveReleaseStateV27.Replay(release, context,
                 [(releaseEvent with

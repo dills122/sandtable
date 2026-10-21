@@ -440,6 +440,99 @@ public static class CampaignHostAdapter
     public static ExerciseStepResult CompleteNativeCombatSuccessor(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatSuccessor(session);
 
+    public static bool IsNativeReserveReleaseEmpty(ExerciseSession session)
+    {
+        try
+        {
+            var state = CampaignExercises.QueryNativeReserveReleaseState(session);
+            return !state.Completed && state.Pending(session.Context).Count == 0;
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    public static CampaignHostReserveReleaseOwnerDraft QueryNativeReserveReleaseOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string elementId)
+    {
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Reserve Release needs an owner side."),
+        };
+        var state = CampaignExercises.QueryNativeReserveReleaseState(session);
+        var cut = CampaignReserveReleaseOwnerCutV27.Project(state, session.Context,
+            side, elementId);
+        return new CampaignHostReserveReleaseOwnerDraft(state.StateVersion,
+            cut.VisibleBytes, cut.ActionIds);
+    }
+
+    public static ExerciseStepResult SubmitNativeReserveReleaseChoice(
+        ExerciseSession session, CampaignActionSubmission submission,
+        string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignNativeReserveReleaseStateV27 state;
+        CampaignReserveReleaseOwnerCutV27 cut;
+        try
+        {
+            state = CampaignExercises.QueryNativeReserveReleaseState(session);
+            var side = submission.Audience == CampaignActionAudience.Axis
+                ? LandSide.Axis : submission.Audience == CampaignActionAudience.Commonwealth
+                    ? LandSide.Commonwealth : (LandSide?)null;
+            if (side is null)
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.ActionNotLegal);
+            cut = CampaignReserveReleaseOwnerCutV27.Project(state, session.Context,
+                side.Value, elementId);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or InvalidOperationException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+        if (submission.CampaignId != state.CampaignId)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != state.StateVersion)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != state.Position.PositionId)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var ordinal = Array.FindIndex(cut.ActionIds.ToArray(), value =>
+            value == submission.ActionId);
+        if (ordinal < 0)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitNativeReserveReleaseChoice(session,
+            submission.Audience, elementId, cut.Member.Choices[ordinal],
+            submission.ActionId);
+    }
+
+    public static ExerciseStepResult CompleteNativeReserveRelease(ExerciseSession session) =>
+        CampaignExercises.CompleteNativeReserveRelease(session);
+
+    public static CampaignActionSubmission NativeReserveReleaseCompletionCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted
+            || accepted.SuccessorSession?.CurrentReserveRelease is not { Completed: true })
+            throw new ArgumentException("Accepted Reserve Release completion required.",
+                nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
     public static CampaignActionSubmission NativeCombatSuccessorCommand(
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
@@ -578,6 +671,8 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeCombatSettlementKind
                 or CampaignHostAcceptedStep.NativeCombatNoCustodyKind
                 or CampaignHostAcceptedStep.NativeCombatSuccessorKind
+                or CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
+                or CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind
                 or CampaignHostAcceptedStep.ContactCombatCustodyKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignNativeCombatForceCancellationV19? forceCancellation = null;
@@ -628,6 +723,11 @@ public static class CampaignHostAdapter
                     CompleteNoNativeCombatCustody(session),
                 CampaignHostAcceptedStep.NativeCombatSuccessorKind =>
                     CompleteNativeCombatSuccessor(session),
+                CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind =>
+                    CompleteNativeReserveRelease(session),
+                CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind =>
+                    SubmitNativeReserveReleaseChoice(session, submission,
+                        step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactCombatCustodyKind =>
                     SubmitNativeCombatCustody(session, submission,
                         step.ActingElementId!),
@@ -693,6 +793,11 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         NativeCombatSuccessorCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeReserveReleaseCompletionCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
@@ -831,6 +936,29 @@ public sealed class CampaignHostContactCustodyOwnerDraft
         Array.AsReadOnly(privateActionIds.ToArray());
 }
 
+/// <summary>Host-private Reserve Release action map paired with own-member bytes.</summary>
+public sealed class CampaignHostReserveReleaseOwnerDraft
+{
+    private readonly byte[] visibleBytes;
+    private readonly string[] privateActionIds;
+
+    internal CampaignHostReserveReleaseOwnerDraft(long authorityVersion,
+        byte[] visibleBytes, IReadOnlyList<string> privateActionIds)
+    {
+        AuthorityVersion = authorityVersion;
+        this.visibleBytes = visibleBytes.ToArray();
+        this.privateActionIds = privateActionIds.ToArray();
+    }
+
+    [JsonIgnore]
+    public long AuthorityVersion { get; }
+    [JsonIgnore]
+    public byte[] VisibleBytes => visibleBytes.ToArray();
+    [JsonIgnore]
+    public IReadOnlyList<string> PrivateActionIds =>
+        Array.AsReadOnly(privateActionIds.ToArray());
+}
+
 /// <summary>Host-private Force Assignment action map and side-safe bytes.</summary>
 public sealed class CampaignHostContactForceOwnerDraft
 {
@@ -918,6 +1046,8 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeCombatNoCustodyContractVersion = 17;
     public const int ContactCombatCustodyContractVersion = 18;
     public const int NativeCombatSuccessorContractVersion = 19;
+    public const int NativeReserveReleaseCompletionContractVersion = 20;
+    public const int ContactReserveReleaseChoiceContractVersion = 21;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -937,6 +1067,8 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeCombatNoCustodyKind = "native-combat-no-custody";
     public const string ContactCombatCustodyKind = "contact-combat-custody";
     public const string NativeCombatSuccessorKind = "native-combat-successor";
+    public const string NativeReserveReleaseCompletionKind = "native-reserve-release-completion";
+    public const string ContactReserveReleaseChoiceKind = "contact-reserve-release-choice";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -954,17 +1086,20 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatCancelledAssaultKind or NativeCombatAssaultResultKind
                 or ContactPostAssaultRetreatKind or NativeCombatNoPostAssaultRetreatKind
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
-                or ContactCombatCustodyKind or NativeCombatSuccessorKind)
+                or ContactCombatCustodyKind or NativeCombatSuccessorKind
+                or NativeReserveReleaseCompletionKind
+                or ContactReserveReleaseChoiceKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
+                or ContactReserveReleaseChoiceKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 or NativeCombatAntiArmorKind or NativeCombatCancelledAssaultKind
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
-                or NativeCombatSuccessorKind
+                or NativeCombatSuccessorKind or NativeReserveReleaseCompletionKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
@@ -986,6 +1121,8 @@ public sealed class CampaignHostAcceptedStep
             NativeCombatNoCustodyKind => NativeCombatNoCustodyContractVersion,
             ContactCombatCustodyKind => ContactCombatCustodyContractVersion,
             NativeCombatSuccessorKind => NativeCombatSuccessorContractVersion,
+            NativeReserveReleaseCompletionKind => NativeReserveReleaseCompletionContractVersion,
+            ContactReserveReleaseChoiceKind => ContactReserveReleaseChoiceContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

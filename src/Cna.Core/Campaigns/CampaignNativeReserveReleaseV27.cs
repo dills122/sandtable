@@ -102,6 +102,40 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
     IReadOnlyList<CampaignReserveReleaseMovementAllowance> NextMovement,
     IReadOnlyList<string> ResolvedElementIds, bool Completed)
 {
+    internal byte[] SerializeCanonical()
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativeReserveReleaseEventV27.CurrentContractVersion);
+            writer.WriteString("campaignId", CampaignId);
+            writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("headEventHash", HeadEventHash);
+            writer.WriteString("actingSide", ActingSide.ToString());
+            writer.WriteNumber("cycleOrdinal", CycleOrdinal);
+            writer.WriteString("positionId", Position.PositionId);
+            writer.WriteString("worldHash", CampaignNativeCombatPaidWorldV22.Hash(World));
+            writer.WriteStartArray("nextMovement");
+            foreach (var allowance in NextMovement)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("elementId", allowance.ElementId);
+                writer.WriteNumber("nextCycleOrdinal", allowance.NextCycleOrdinal);
+                writer.WriteNumber("capabilityPointCeiling", allowance.CapabilityPointCeiling);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteStartArray("resolvedElementIds");
+            foreach (var elementId in ResolvedElementIds)
+                writer.WriteStringValue(elementId);
+            writer.WriteEndArray();
+            writer.WriteBoolean("completed", Completed);
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
     internal static CampaignNativeReserveReleaseStateV27 Initialize(
         CampaignNativeCombatSuccessorV26 predecessor,
         CampaignNativeCombatSuccessorV26.Projection projection,

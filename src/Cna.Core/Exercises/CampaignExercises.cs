@@ -93,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentReserveRelease is { } reserveRelease)
+            return new ExerciseCheckpoint(reserveRelease, session.CurrentCombatDecision!);
         if (session.CurrentCombatSuccessor is { } successor)
             return new ExerciseCheckpoint(successor, session.CurrentCombatDecision!);
         if (session.CurrentCombatCustodyDisposition is { } custody)
@@ -1020,6 +1022,88 @@ public static class CampaignExercises
         }
     }
 
+    internal static CampaignNativeReserveReleaseStateV27 QueryNativeReserveReleaseState(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatSuccessor is not { } successor
+            || session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatAssaultResult is not { } result
+            || session.CurrentCombatSettlement is not { } settlement
+            || session.CurrentCombatCustodyDisposition is not { } custody
+            || session.CurrentCombatCustodyWorld is not { } world)
+            throw new InvalidOperationException("Reserve Release requires accepted Combat successor.");
+        var projected = CampaignNativeCombatSuccessorV26.Project(selected, result,
+            settlement, custody, world, session.CurrentCombatCustodyState,
+            session.Context);
+        return session.CurrentReserveRelease
+            ?? CampaignNativeReserveReleaseStateV27.Initialize(successor, projected,
+                session.Context);
+    }
+
+    internal static ExerciseStepResult SubmitNativeReserveReleaseChoice(
+        ExerciseSession session, CampaignActionAudience audience,
+        string elementId, CampaignReserveReleaseChoice choice, string actionId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var state = QueryNativeReserveReleaseState(session);
+            var expectedAudience = state.ActingSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+            if (audience != expectedAudience || state.Completed
+                || state.StateVersion != session.CurrentContacts.AuthorityVersion)
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var (nextState, emitted) = state.Choose(session.Context, elementId, choice);
+            var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
+            var next = session.WithReserveReleaseEvent(emitted, contacts);
+            var bytes = emitted.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(state.CampaignId,
+                state.StateVersion, nextState.StateVersion,
+                nextState.Position.PositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, nextState.SerializeCanonical()));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static ExerciseStepResult CompleteNativeReserveRelease(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var state = QueryNativeReserveReleaseState(session);
+            if (state.StateVersion != session.CurrentContacts.AuthorityVersion)
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var (nextState, emitted) = state.Complete(session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
+            var next = session.WithReserveReleaseEvent(emitted, contacts);
+            var bytes = emitted.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(state.CampaignId,
+                state.StateVersion, nextState.StateVersion,
+                nextState.Position.PositionId, CampaignActionAudience.System,
+                Hash(bytes));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, nextState.SerializeCanonical()));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);
@@ -1217,6 +1301,8 @@ public static class CampaignExercises
                 completedSession.CurrentCombatCustodyWorld!,
                 completedSession.CurrentCombatCustodyState,
                 completedSession.Context).SerializeCanonical();
+        if (completedSession.CurrentReserveRelease is { } reserveRelease)
+            expectedBytes = reserveRelease.SerializeCanonical();
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
 
@@ -1243,6 +1329,7 @@ public static class CampaignExercises
                         + (completedSession.CurrentCombatSettlement is null ? 0 : 1)
                         + (completedSession.CurrentCombatCustodyDisposition is null ? 0 : 1)
                         + (completedSession.CurrentCombatSuccessor is null ? 0 : 1)
+                        + completedSession.CurrentReserveReleaseEvents.Count
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -1526,6 +1613,31 @@ public static class CampaignExercises
                                                 completedSession.Context).SerializeCanonical();
                                             replayedContacts = replayedContacts.AdvanceNativeCombatSuccessor(
                                                 verifiedSuccessor);
+                                            if (completedSession.CurrentReserveReleaseEvents.Count > 0)
+                                            {
+                                                var projectedSuccessor = CampaignNativeCombatSuccessorV26.Project(
+                                                    verified, verifiedResult, verifiedSettlement,
+                                                    verifiedCustody, custodyProjection.World,
+                                                    custodyProjection.Custody, completedSession.Context);
+                                                var reserveState = CampaignNativeReserveReleaseStateV27.Initialize(
+                                                    verifiedSuccessor, projectedSuccessor,
+                                                    completedSession.Context);
+                                                for (var index = 0;
+                                                    index < completedSession.CurrentReserveReleaseEvents.Count;
+                                                    index++)
+                                                {
+                                                    if (replayEvents.ElementAtOrDefault(resultIndex + 5 + index)
+                                                        is not CampaignNativeReserveReleaseEventV27 reserveEvent)
+                                                        throw new InvalidCampaignHistoryException(
+                                                            "Native Reserve Release event is missing.");
+                                                    reserveState = CampaignNativeReserveReleaseStateV27.Replay(
+                                                        reserveState, completedSession.Context,
+                                                        [(ReadOnlyMemory<byte>)reserveEvent.SerializeCanonical()]);
+                                                    replayedContacts = replayedContacts.AdvanceNativeReserveRelease(
+                                                        reserveEvent);
+                                                }
+                                                replayedBytes = reserveState.SerializeCanonical();
+                                            }
                                         }
                                     }
                                 }
@@ -1544,7 +1656,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentCombatSuccessor?.StateVersion
+                == (completedSession.CurrentReserveRelease?.StateVersion
+                    ?? completedSession.CurrentCombatSuccessor?.StateVersion
                     ?? completedSession.CurrentCombatCustodyDisposition?.StateVersion
                     ?? completedSession.CurrentCombatSettlement?.StateVersion
                     ?? completedSession.CurrentCombatPostResultRetreat?.StateVersion

@@ -108,6 +108,21 @@ public sealed class CampaignReserveReleaseRulesTests
             request.CampaignId, session.CurrentSnapshot.StateVersion,
             "sha256:" + new string('1', 64), firstSide, 1,
             releasePosition, world, [], [], false);
+        var ownerCut = CampaignReserveReleaseOwnerCutV27.Project(authority,
+            session.Context, firstSide, member.ElementId);
+        Assert.Equal(2, ownerCut.ActionIds.Count);
+        var hiddenAuthorityChange = authority with
+        {
+            StateVersion = authority.StateVersion + 1,
+            HeadEventHash = "sha256:" + new string('2', 64),
+        };
+        var equalVisibleCut = CampaignReserveReleaseOwnerCutV27.Project(
+            hiddenAuthorityChange, session.Context, firstSide, member.ElementId);
+        Assert.Equal(ownerCut.VisibleBytes, equalVisibleCut.VisibleBytes);
+        Assert.Equal(ownerCut.ActionIds, equalVisibleCut.ActionIds);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignReserveReleaseOwnerCutV27.Project(authority,
+                session.Context, otherSide, member.ElementId));
         var (chosen, choiceEvent) = authority.Choose(session.Context,
             member.ElementId, CampaignReserveReleaseChoice.ConvertToII);
         Assert.Equal(CampaignElementReserveStatus.ReserveII,
