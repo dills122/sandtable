@@ -126,7 +126,9 @@ The normal positive-assault input cut now binds both accepted Force seals to the
 content facts, capability budget, and current ammunition before a result draw.
 Core now derives a V22 result from that cut and the retained random cursor, recording
 each accepted/rejected byte, selected chart facts, and before/after ammunition hashes;
-exact replay rejects altered result bytes.
+exact replay rejects altered result bytes. The same V22 transition derives both
+roles' paid capability points in a retained normal World projection and binds
+the prior/paid canonical World hashes for subsequent loss settlement.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

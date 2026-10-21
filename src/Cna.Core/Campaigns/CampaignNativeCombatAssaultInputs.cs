@@ -16,9 +16,11 @@ internal sealed record CampaignNativeCombatAssaultRoleInputs(
 internal sealed record CampaignNativeCombatAssaultInputs(
     string ContentHash, string SourceHash, string RulesInputHash,
     string CompletionHash, string AntiArmorHash, string PriorAmmunitionHash,
+    string PriorWorldHash, string PaidWorldHash,
     CampaignNativeCombatAssaultRoleInputs Attacker,
     CampaignNativeCombatAssaultRoleInputs Defender,
-    CampaignCombatAmmunitionLedgerV1 AfterAmmunition)
+    CampaignCombatAmmunitionLedgerV1 AfterAmmunition,
+    CampaignWorldSnapshotV6 PaidWorld)
 {
     internal static CampaignNativeCombatAssaultInputs Create(
         CampaignNativeCombatDecisionStateV12 selected,
@@ -70,10 +72,15 @@ internal sealed record CampaignNativeCombatAssaultInputs(
             checked(attacker.CommittedToe * costs.AmmunitionPointsPerToe));
         afterAmmunition = afterAmmunition.Spend(defender.ElementId,
             checked(defender.CommittedToe * costs.AmmunitionPointsPerToe));
+        var paidWorld = CampaignNativeCombatPaidWorldV22.Project(world, attacker, defender);
+        if (!CampaignWorldV6Validator.IsValid(paidWorld, artifact, context.Scenario))
+            throw new InvalidOperationException("Assault costs produced an invalid normal World.");
         return new(artifact.Identity.Hash, source.Hash,
             Cna1979CombatAdjudication.CreateArtifact().ContentHash,
             Hash(completion.SerializeCanonical()), Hash(antiArmor.SerializeCanonical()),
-            ammunition.Hash, attacker, defender, afterAmmunition);
+            ammunition.Hash, CampaignNativeCombatPaidWorldV22.Hash(world),
+            CampaignNativeCombatPaidWorldV22.Hash(paidWorld),
+            attacker, defender, afterAmmunition, paidWorld);
 
         CampaignNativeCombatAssaultRoleInputs Role(CampaignNativeCombatForceSealV17 seal,
             int capabilityCost)

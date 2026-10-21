@@ -117,7 +117,10 @@ cannot draw a result. Core V21 completes that cancelled path through same-slot
 Close Assault to Reserve Release without RNG or settlement, with an independent
 canonical event and normal Host cold replay. A positive two-seal path now
 retains a V22 ordered Core result and source-derived ammunition spend in the
-normal Host, with exact event and checkpoint cold replay; World loss, retreat,
+normal Host, with exact event and checkpoint cold replay. V22 also binds canonical
+prior and paid World hashes; Core retains the paid World projection after charging
+both roles' capability points, and cold replay re-derives that projection from
+the sealed input cut. World loss, retreat,
 and custody settlement remain before outward issuance. A
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a

@@ -21,7 +21,8 @@ public sealed class ExerciseSession
         CampaignNativeCombatForceCancellationV19? combatForceCancellation = null,
         CampaignNativeCombatAntiArmorV20? combatAntiArmor = null,
         CampaignNativeCombatCancelledAssaultV21? combatCancelledAssault = null,
-        CampaignNativeCombatAssaultResultV22? combatAssaultResult = null)
+        CampaignNativeCombatAssaultResultV22? combatAssaultResult = null,
+        CampaignWorldSnapshotV6? combatPaidWorld = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -108,9 +109,15 @@ public sealed class ExerciseSession
             || combatForceCompletion is null || combatForceCancellation is not null
             || combatCancelledAssault is not null
             || combatAssaultResult.PriorStateVersion != combatAntiArmor.StateVersion
-            || combatAssaultResult.CampaignId != snapshot.CampaignId))
+            || combatAssaultResult.CampaignId != snapshot.CampaignId
+            || combatPaidWorld is null
+            || combatAssaultResult.PaidWorldHash
+                != CampaignNativeCombatPaidWorldV22.Hash(combatPaidWorld)))
             throw new ArgumentException("Assault result must bind completed Force and Anti Armor.",
                 nameof(combatAssaultResult));
+        if (combatAssaultResult is null && combatPaidWorld is not null)
+            throw new ArgumentException("Paid World requires a retained assault result.",
+                nameof(combatPaidWorld));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -125,6 +132,7 @@ public sealed class ExerciseSession
         CurrentCombatAntiArmor = combatAntiArmor;
         CurrentCombatCancelledAssault = combatCancelledAssault;
         CurrentCombatAssaultResult = combatAssaultResult;
+        CurrentCombatPaidWorld = combatPaidWorld;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -144,5 +152,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatAntiArmorV20? CurrentCombatAntiArmor { get; }
     internal CampaignNativeCombatCancelledAssaultV21? CurrentCombatCancelledAssault { get; }
     internal CampaignNativeCombatAssaultResultV22? CurrentCombatAssaultResult { get; }
+    internal CampaignWorldSnapshotV6? CurrentCombatPaidWorld { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

@@ -620,7 +620,8 @@ public static class CampaignExercises
                 combatForceSeals: session.CurrentCombatForceSeals,
                 combatForceCompletion: completion,
                 combatAntiArmor: antiArmor,
-                combatAssaultResult: result);
+                combatAssaultResult: result,
+                combatPaidWorld: inputs.PaidWorld);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var seal in session.CurrentCombatForceSeals)
                 priorState = seal.SerializeStateCanonical(priorState);
@@ -845,6 +846,7 @@ public static class CampaignExercises
                 completedSession.Context, priorEvents);
             byte[] replayedBytes;
             var worldMatch = completedSession.CurrentCombatRetreatWorld is null;
+            var paidWorldMatch = completedSession.CurrentCombatPaidWorld is null;
             if (completedSession.CurrentCombatDecision is not null)
             {
                 var decisionIndex = replayEvents.Length - combatTailCount;
@@ -1029,6 +1031,8 @@ public static class CampaignExercises
                                 verified, verifiedAntiArmor, inputs,
                                 verified.PriorSnapshot.RandomState,
                                 resultEvent.SerializeCanonical());
+                            paidWorldMatch = inputs.PaidWorld.Equals(
+                                completedSession.CurrentCombatPaidWorld);
                             replayedBytes = verifiedResult.SerializeStateCanonical(replayedBytes);
                             replayedContacts = replayedContacts.AdvanceNativeCombatAssaultResult(
                                 verifiedResult);
@@ -1064,7 +1068,7 @@ public static class CampaignExercises
                 && contactRecords.Zip(replayedContacts.Records).All(pair =>
                     pair.First.AsSpan().SequenceEqual(pair.Second));
             var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes)
-                && contactsMatch && worldMatch
+                && contactsMatch && worldMatch && paidWorldMatch
                 ? ExerciseReconstructionFailureReason.None
                 : ExerciseReconstructionFailureReason.SnapshotMismatch;
             return new ExerciseReconstructionResult(

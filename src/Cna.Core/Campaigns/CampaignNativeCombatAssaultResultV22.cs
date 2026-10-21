@@ -25,7 +25,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             antiArmor.StateVersion, antiArmor.NextPositionId,
             Hash(antiArmor.SerializeCanonical()), inputs.ContentHash,
             inputs.SourceHash, inputs.RulesInputHash, inputs.PriorAmmunitionHash,
-            inputs.AfterAmmunition.Hash,
+            inputs.AfterAmmunition.Hash, inputs.PriorWorldHash,
+            inputs.PaidWorldHash,
             inputs.Attacker.ElementId, inputs.Defender.ElementId,
             inputs.Attacker.AmmunitionBefore - inputs.Attacker.AmmunitionAfter,
             inputs.Defender.AmmunitionBefore - inputs.Defender.AmmunitionAfter,
@@ -37,7 +38,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
         string decisionActionId, long priorStateVersion, string positionId,
         string priorAntiArmorHash, string contentHash, string sourceHash,
         string rulesInputHash, string priorAmmunitionHash,
-        string afterAmmunitionHash, string attackerElementId,
+        string afterAmmunitionHash, string priorWorldHash, string paidWorldHash,
+        string attackerElementId,
         string defenderElementId, int attackerAmmunitionSpent,
         int defenderAmmunitionSpent, RandomStreamState before,
         RandomStreamState after, IReadOnlyList<CombatResolutionDraw> draws,
@@ -54,6 +56,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
         RulesInputHash = rulesInputHash;
         PriorAmmunitionHash = priorAmmunitionHash;
         AfterAmmunitionHash = afterAmmunitionHash;
+        PriorWorldHash = priorWorldHash;
+        PaidWorldHash = paidWorldHash;
         AttackerElementId = attackerElementId;
         DefenderElementId = defenderElementId;
         AttackerAmmunitionSpent = attackerAmmunitionSpent;
@@ -78,6 +82,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
     internal string RulesInputHash { get; }
     internal string PriorAmmunitionHash { get; }
     internal string AfterAmmunitionHash { get; }
+    internal string PriorWorldHash { get; }
+    internal string PaidWorldHash { get; }
     internal string AttackerElementId { get; }
     internal string DefenderElementId { get; }
     internal int AttackerAmmunitionSpent { get; }
@@ -187,6 +193,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             writer.WriteString("rulesInputHash", RulesInputHash);
             writer.WriteString("priorAmmunitionHash", PriorAmmunitionHash);
             writer.WriteString("afterAmmunitionHash", AfterAmmunitionHash);
+            writer.WriteString("priorWorldHash", PriorWorldHash);
+            writer.WriteString("paidWorldHash", PaidWorldHash);
             writer.WriteString("attackerElementId", AttackerElementId);
             writer.WriteString("defenderElementId", DefenderElementId);
             writer.WriteNumber("attackerAmmunitionSpent", AttackerAmmunitionSpent);
@@ -261,7 +269,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
                 "campaignId", "priorStateVersion", "decisionActionId", "positionId",
                 "priorAntiArmorHash", "contentHash", "sourceHash", "rulesInputHash",
-                "priorAmmunitionHash", "afterAmmunitionHash", "attackerElementId",
+                "priorAmmunitionHash", "afterAmmunitionHash", "priorWorldHash",
+                "paidWorldHash", "attackerElementId",
                 "defenderElementId", "attackerAmmunitionSpent",
                 "defenderAmmunitionSpent", "beforeRandomState",
                 "afterRandomState", "draws", "attackerMoraleCoordinate",
@@ -281,6 +290,8 @@ internal sealed class CampaignNativeCombatAssaultResultV22
                 root.GetProperty("rulesInputHash").GetString()!,
                 root.GetProperty("priorAmmunitionHash").GetString()!,
                 root.GetProperty("afterAmmunitionHash").GetString()!,
+                root.GetProperty("priorWorldHash").GetString()!,
+                root.GetProperty("paidWorldHash").GetString()!,
                 root.GetProperty("attackerElementId").GetString()!,
                 root.GetProperty("defenderElementId").GetString()!,
                 root.GetProperty("attackerAmmunitionSpent").GetInt32(),

@@ -96,6 +96,19 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(0, inputs.AfterAmmunition.Remaining("axis-infantry"));
         Assert.Equal(0, inputs.AfterAmmunition.Remaining("commonwealth-infantry"));
         Assert.Equal(context.CombatSource!.Hash, inputs.SourceHash);
+        Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(atCombat.World),
+            inputs.PriorWorldHash);
+        Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(inputs.PaidWorld),
+            inputs.PaidWorldHash);
+        Assert.Equal(inputs.Attacker.CapabilityPointsAfter,
+            inputs.PaidWorld.Elements.Single(value =>
+                value.ElementId == inputs.Attacker.ElementId)
+                .OperationalState.CapabilityPointsExpended);
+        Assert.Equal(inputs.Defender.CapabilityPointsAfter,
+            inputs.PaidWorld.Elements.Single(value =>
+                value.ElementId == inputs.Defender.ElementId)
+                .OperationalState.CapabilityPointsExpended);
+        Assert.NotEqual(inputs.PriorWorldHash, inputs.PaidWorldHash);
         var result = CampaignNativeCombatAssaultResultV22.Create(selected,
             antiArmor, inputs, atCombat.RandomState);
         var canonical = result.SerializeCanonical();
@@ -124,7 +137,16 @@ public sealed class CampaignContactCombatSelectionCutTests
         var acceptedResult = CampaignExercises.ResolveNativeCombatAssault(positiveSession);
         Assert.True(acceptedResult.IsAccepted, acceptedResult.RejectionReason.ToString());
         Assert.Equal(canonical, Assert.Single(acceptedResult.Evidence!.EventRecords));
+        Assert.Equal(inputs.PaidWorld,
+            acceptedResult.SuccessorSession!.CurrentCombatPaidWorld);
         Assert.True(CampaignExercises.Reconstruct(acceptedResult.SuccessorSession!).IsVerified);
+        Assert.Throws<ArgumentException>(() => new ExerciseSession(atCombat, context,
+            acceptedResult.SuccessorSession.CurrentHistory,
+            acceptedResult.SuccessorSession.CurrentContacts, selected,
+            combatBarrage: barrage, combatRetreatDecline: decline,
+            combatForceSeals: [attackerSeal, defenderSeal],
+            combatForceCompletion: completion, combatAntiArmor: antiArmor,
+            combatAssaultResult: result, combatPaidWorld: atCombat.World));
         var tampered = canonical.ToArray();
         tampered[^2] ^= 1;
         Assert.Throws<InvalidCampaignHistoryException>(() =>
