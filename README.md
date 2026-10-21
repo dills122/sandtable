@@ -101,9 +101,10 @@ and cold replay. Each move updates Core World and both contact audiences, then r
 the defender decision; repeat moves retain a canonical event and an explicit stop advances
 to Force Assignment. Core now derives the next owner's full-current-TOE infantry
 allocation candidate from that owner's facts. Core now accepts two
-owner-only full-TOE seals at that cut and records V17 events, advancing to Anti
-Armor only after both. Normal Host binds each to its own seat, opaque reference,
-atomic evidence and restart-safe receipt. The shared deadline, cancellation,
+owner-only full-TOE seals at that cut and records V17 events. After both,
+a separate V18 System completion advances to Anti Armor. Normal Host binds
+each seal to its own seat, opaque reference, atomic evidence and restart-safe
+receipt, then retains System completion in the same transaction. The shared deadline, cancellation,
 non-infantry disposition and public route remain unfinished. Reserve Release, assault
 adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.

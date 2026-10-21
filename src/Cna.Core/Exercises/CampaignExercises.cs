@@ -81,6 +81,7 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(session);
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
+            || session.CurrentCombatForceCompletion is not null
             || session.CurrentCombatForceSeals.Count == 2
             || session.CurrentCombatForceSeals.Any(value => value.OwnerSide == ownerSide))
             throw new InvalidOperationException("Owner Force Assignment seal is unavailable.");
@@ -92,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatForceCompletion is { } forceCompletion)
+            return new ExerciseCheckpoint(forceCompletion, session.CurrentCombatDecision!);
         if (session.CurrentCombatForceSeals.Count > 0)
             return new ExerciseCheckpoint(session.CurrentCombatForceSeals[^1],
                 session.CurrentCombatDecision!);
@@ -324,6 +327,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
+            || session.CurrentCombatForceCompletion is not null
             || session.CurrentCombatForceSeals.Count == 2)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (submission.CampaignId != selected.CampaignId)
@@ -371,6 +375,48 @@ public static class CampaignExercises
                 submission.Audience, submission.ActionId);
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 seal.SerializeCanonical(), seal.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static ExerciseStepResult CompleteNativeCombatForceAssignment(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatRetreatDecline is not { } decline
+            || session.CurrentCombatForceSeals.Count != 2
+            || session.CurrentCombatForceCompletion is not null
+            || session.CurrentContacts.AuthorityVersion
+                != session.CurrentCombatForceSeals[^1].StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var completion = CampaignNativeCombatForceCompletionV18.Create(selected,
+                decline, session.CurrentCombatForceSeals);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatForceCompletion(completion);
+            var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
+                session.CurrentHistory.Add(completion), contacts, selected,
+                combatBarrage: session.CurrentCombatBarrage,
+                combatRetreatDecline: decline,
+                combatRetreatMove: session.CurrentCombatRetreatMove,
+                combatRetreatWorld: session.CurrentCombatRetreatWorld,
+                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                combatForceSeals: session.CurrentCombatForceSeals,
+                combatForceCompletion: completion);
+            var priorState = SerializeRetreatDeclineState(session);
+            foreach (var seal in session.CurrentCombatForceSeals)
+                priorState = seal.SerializeStateCanonical(priorState);
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                completion.PriorStateVersion, completion.StateVersion,
+                completion.NextPositionId, CampaignActionAudience.System,
+                $"sha256:{Convert.ToHexStringLower(SHA256.HashData(completion.SerializeCanonical()))}");
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
+                completion.SerializeCanonical(), completion.SerializeStateCanonical(priorState)));
         }
         catch (Exception exception) when (exception is ArgumentException or ArithmeticException
             or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
@@ -539,6 +585,8 @@ public static class CampaignExercises
             expectedBytes = SerializeRetreatDeclineState(completedSession);
             foreach (var seal in completedSession.CurrentCombatForceSeals)
                 expectedBytes = seal.SerializeStateCanonical(expectedBytes);
+            if (completedSession.CurrentCombatForceCompletion is { } forceCompletion)
+                expectedBytes = forceCompletion.SerializeStateCanonical(expectedBytes);
         }
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
@@ -557,6 +605,7 @@ public static class CampaignExercises
                     ? 2 + completedSession.CurrentCombatRetreatMoves.Count
                         + (completedSession.CurrentCombatRetreatDecline is null ? 0 : 1)
                         + completedSession.CurrentCombatForceSeals.Count
+                        + (completedSession.CurrentCombatForceCompletion is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -665,6 +714,21 @@ public static class CampaignExercises
                             replayedContacts = replayedContacts.AdvanceNativeCombatForceSeal(verifiedSeal);
                             firstSeal ??= verifiedSeal;
                         }
+                        if (completedSession.CurrentCombatForceCompletion is not null)
+                        {
+                            var completionIndex = decisionIndex + 3
+                                + completedSession.CurrentCombatRetreatMoves.Count
+                                + completedSession.CurrentCombatForceSeals.Count;
+                            if (replayEvents[completionIndex]
+                                is not CampaignNativeCombatForceCompletionV18 completionEvent)
+                                throw new InvalidCampaignHistoryException("Native Force completion is missing.");
+                            var verifiedCompletion = CampaignNativeCombatForceCompletionV18.Replay(
+                                verified, verifiedDecline, completedSession.CurrentCombatForceSeals,
+                                completionEvent.SerializeCanonical());
+                            replayedBytes = verifiedCompletion.SerializeStateCanonical(replayedBytes);
+                            replayedContacts = replayedContacts.AdvanceNativeCombatForceCompletion(
+                                verifiedCompletion);
+                        }
                     }
                     else if (previousMove is not null) replayedBytes = moveState;
                     else replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
@@ -678,14 +742,15 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentCombatForceSeals.Count > 0
+                == (completedSession.CurrentCombatForceCompletion?.StateVersion
+                    ?? (completedSession.CurrentCombatForceSeals.Count > 0
                     ? completedSession.CurrentCombatForceSeals[^1].StateVersion
                     : completedSession.CurrentNoAttackCompletion?.StateVersion
                     ?? completedSession.CurrentCombatRetreatDecline?.StateVersion
                     ?? completedSession.CurrentCombatRetreatMove?.StateVersion
                     ?? completedSession.CurrentCombatBarrage?.StateVersion
                     ?? completedSession.CurrentCombatDecision?.StateVersion
-                    ?? completedSession.CurrentSnapshot.StateVersion)
+                    ?? completedSession.CurrentSnapshot.StateVersion))
                 && completedSession.CurrentContacts.AuthorityVersion == replayedContacts.AuthorityVersion
                 && contactRecords.Count == replayedContacts.Records.Count
                 && contactRecords.Zip(replayedContacts.Records).All(pair =>

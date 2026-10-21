@@ -51,11 +51,7 @@ internal sealed record CampaignNativeCombatForceSealV17(
         var position = Cna1979LandSequenceV4.CreateTurn(
                 selected.PriorSnapshot.CurrentPosition.SequencePosition!.GameTurn)
             .Single(value => value.PositionId == decline.NextPositionId);
-        var nextPositionId = firstSeal is null ? position.PositionId
-            : Cna1979LandSequenceV4.GetNext(position).PositionId;
-        if (firstSeal is not null && Cna1979LandSequenceV4.GetNext(position).StepId
-            != LandStepIds.AntiArmor)
-            throw new InvalidOperationException("Completed Force Assignment must enter Anti Armor.");
+        var nextPositionId = position.PositionId;
         return new(CurrentContractVersion, selected.CampaignId,
             firstSeal?.StateVersion ?? decline.StateVersion,
             selected.Decision.ActionId, position.PositionId, nextPositionId,

@@ -16,7 +16,8 @@ public sealed class ExerciseSession
         CampaignWorldSnapshotV6? combatRetreatWorld = null,
         CampaignContactJournal? combatRetreatPriorContacts = null,
         IEnumerable<CampaignNativeCombatRetreatMoveV16>? combatRetreatMoves = null,
-        IEnumerable<CampaignNativeCombatForceSealV17>? combatForceSeals = null)
+        IEnumerable<CampaignNativeCombatForceSealV17>? combatForceSeals = null,
+        CampaignNativeCombatForceCompletionV18? combatForceCompletion = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -74,6 +75,11 @@ public sealed class ExerciseSession
                 || forceSeals[1].PriorSealHash is null)))
             throw new ArgumentException("Force seals must bind distinct owners and retained Combat authority.",
                 nameof(combatForceSeals));
+        if (combatForceCompletion is not null && (forceSeals.Length != 2
+            || combatForceCompletion.PriorStateVersion != forceSeals[1].StateVersion
+            || combatForceCompletion.CampaignId != snapshot.CampaignId))
+            throw new ArgumentException("Force completion requires both retained owner seals.",
+                nameof(combatForceCompletion));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -83,6 +89,7 @@ public sealed class ExerciseSession
         CurrentCombatRetreatPriorContacts = combatRetreatPriorContacts;
         CurrentCombatRetreatMoves = Array.AsReadOnly(moves);
         CurrentCombatForceSeals = Array.AsReadOnly(forceSeals);
+        CurrentCombatForceCompletion = combatForceCompletion;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -97,5 +104,6 @@ public sealed class ExerciseSession
     internal CampaignContactJournal? CurrentCombatRetreatPriorContacts { get; }
     internal IReadOnlyList<CampaignNativeCombatRetreatMoveV16> CurrentCombatRetreatMoves { get; }
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> CurrentCombatForceSeals { get; }
+    internal CampaignNativeCombatForceCompletionV18? CurrentCombatForceCompletion { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

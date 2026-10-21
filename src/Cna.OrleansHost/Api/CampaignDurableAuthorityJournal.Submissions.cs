@@ -225,6 +225,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.NativeCombatBarrageKind, null,
                 null, null, null, systemCommand, barrage);
         }
+        else if (kind == CampaignOwnerOpeningKind.ForceAssignment
+            && CampaignHostAdapter.IsNativeCombatForcePrepared(result.SuccessorSession!))
+        {
+            var completion = CampaignHostAdapter.CompleteNativeCombatForceAssignment(
+                result.SuccessorSession!);
+            if (!completion.IsAccepted)
+                throw new InvalidOperationException("Two accepted seals cannot complete Force Assignment.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatForceCompletionCommand(
+                systemHead.Session, completion);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatForceCompletionKind, null,
+                null, null, null, systemCommand, completion);
+        }
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));

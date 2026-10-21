@@ -120,7 +120,8 @@ event, updates Core World/contact authority, and returns to the RBA choice throu
 the normal durable Host receipt. Further offered moves use the same ordered Core/Host
 path. The next Core Force Assignment candidate binds only the owner's own current
 infantry TOE; opponent allocation stays private. Core V17 and normal Host now
-retain each owner's separate seal and cold-replay receipt. Shared deadline,
+retain each owner's separate seal and cold-replay receipt. A distinct V18
+System completion advances after both seals. Shared deadline,
 cancellation and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

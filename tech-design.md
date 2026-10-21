@@ -784,9 +784,10 @@ through the same path; checkpoints bind their predecessor by hash without nestin
 prior World. An explicit stop from the updated cut reaches Force Assignment.
 The first Force Assignment Core cut derives each owner's own full-current-TOE
 infantry allocation without exposing the opposing allocation or private version.
-Core V17 records two owner-only seals; the second reaches Anti Armor. Normal
-Host retains each accepted seal under its own seat, opaque ref and cold-replay
-receipt. Shared deadline and cancellation plus source-backed disposition for
+Core V17 records two owner-only seals at Force Assignment. Core V18 System
+completion then reaches Anti Armor. Normal Host retains each accepted seal
+under its own seat, opaque ref and cold-replay receipt, appending V18 with the
+second seal atomically. Shared deadline and cancellation plus source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede

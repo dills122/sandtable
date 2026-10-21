@@ -165,6 +165,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(seal.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatForceCompletion(
+        CampaignNativeCombatForceCompletionV18 completion)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        if (completion.CampaignId != CampaignId
+            || completion.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Force completion does not bind contact authority.",
+                nameof(completion));
+        return AtAuthorityVersion(completion.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,
