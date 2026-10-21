@@ -46,6 +46,8 @@ authority and has a durable command, event, state, and receipt schema.
 The first internal selection implementation retains a V12 selected-contact event and
 checkpoint in normal Exercise evidence. Host import replays its accepted-step kind and
 checks the private defender binding against independently replayed contact authority.
+The event records the exact sequence successor, Barrage, and cold replay rejects a
+different route; subsequent Combat position handlers still need implementation.
 Core's trusted Combat owner draft serializes current contact handles, apparent hexes and
 assault offers in a V2 visible cut; its action IDs, authority fence and defender binding
 remain private to Host/Core. The draft is not a public route.

@@ -221,6 +221,11 @@ public sealed class CampaignContactCombatSelectionCutTests
             selected.SerializeCanonical(), context, contacts);
 
         Assert.Equal(atCombat.StateVersion + 1, selected.StateVersion);
+        Assert.Equal(LandStepIds.Barrage,
+            Cna1979LandSequenceV4.GetNext(atCombat.CurrentPosition.SequencePosition!).StepId);
+        Assert.Equal(Cna1979LandSequenceV4.GetNext(
+            atCombat.CurrentPosition.SequencePosition!).PositionId,
+            selected.Selection.NextPositionId);
         Assert.Equal(selected.SerializeCanonical(), replayed.SerializeCanonical());
         Assert.Equal(selected.SerializeCanonical(), readback.SerializeCanonical());
         Assert.Equal(offer.ContactHandle, selected.Selection.ContactHandle);
@@ -229,6 +234,10 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignNativeCombatSelectionStateV12.Replay(atCombat, context,
                 contacts, forged.SerializeCanonical()));
+        var forgedRoute = selected.Selection with { NextPositionId = selected.Selection.PositionId };
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatSelectionStateV12.Replay(atCombat, context,
+                contacts, forgedRoute.SerializeCanonical()));
 
     }
 }
