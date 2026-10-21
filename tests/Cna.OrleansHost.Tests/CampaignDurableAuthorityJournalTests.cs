@@ -534,7 +534,7 @@ public sealed class CampaignDurableAuthorityJournalTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void SecondAssaultCanRepeatIntoThirdContactCombatAfterColdRestart(
+    public async Task SecondAssaultCanRepeatIntoThirdContactCombatAfterColdRestart(
         bool thirdAssault)
     {
         using var fixture = new JournalFixture();
@@ -616,10 +616,12 @@ public sealed class CampaignDurableAuthorityJournalTests
         var farNorthWest = Enumerable.Range(0, thirdOffers.GetArrayLength())
             .Single(index => thirdOffers[index]
                 .GetProperty("apparentLocationId").GetString() == "far-north-west");
-        Assert.True(fixture.Open(clock).SubmitOwnerRepeatCombat(attacker,
-            "axis-infantry-third", thirdCombat.Revision,
+        await using var outward = await OwnerHttpHarness.Start(journal,
+            request.CampaignId);
+        await outward.Submit(attacker, "axis-infantry-third",
+            "repeat-combat-selection", "repeat-combat-selection", thirdCombat,
             thirdAssault ? thirdCombat.PublicActionRefs[farNorthWest]
-                : thirdCombat.PublicActionRefs[^1]).IsAccepted);
+                : thirdCombat.PublicActionRefs[^1]);
         cold = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         if (thirdAssault)
