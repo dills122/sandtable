@@ -649,6 +649,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         }
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         control = fixture.Open(clock).QueryCycleControlOwnerOpening(attacker);
+        Assert.Single(control.PublicActionRefs);
         Assert.True(control.Revision <= CampaignExercises.QueryCheckpoint(cold).StateVersion,
             $"opening={control.Revision} checkpoint={CampaignExercises.QueryCheckpoint(cold).StateVersion}");
         Assert.True(fixture.Open(clock).SubmitOwnerCycleControl(attacker,
