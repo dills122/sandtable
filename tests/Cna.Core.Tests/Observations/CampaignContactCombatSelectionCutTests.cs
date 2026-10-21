@@ -455,6 +455,63 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(25, CampaignExercises.QueryCheckpoint(custodySession).ContractVersion);
         Assert.NotNull(custodySession.CurrentCombatCustodyWorld);
         Assert.True(CampaignExercises.Reconstruct(custodySession).IsVerified);
+        var successor = CampaignNativeCombatSuccessorV26.Create(
+            custodySession.CurrentCombatDecision!,
+            custodySession.CurrentCombatAssaultResult!,
+            custodySession.CurrentCombatSettlement!,
+            custodySession.CurrentCombatCustodyDisposition!,
+            custodySession.CurrentCombatCustodyWorld!,
+            custodySession.CurrentCombatCustodyState, context);
+        var successorProjection = CampaignNativeCombatSuccessorV26.Project(
+            custodySession.CurrentCombatDecision!,
+            custodySession.CurrentCombatAssaultResult!,
+            custodySession.CurrentCombatSettlement!,
+            custodySession.CurrentCombatCustodyDisposition!,
+            custodySession.CurrentCombatCustodyWorld!,
+            custodySession.CurrentCombatCustodyState, context);
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            successorProjection.NextPosition.SegmentId);
+        Assert.Equal(custodySession.CurrentCombatCustodyWorld,
+            successorProjection.World);
+        Assert.Equal(custodySession.CurrentCombatAssaultResult!.AfterRandomState,
+            successorProjection.RandomState);
+        Assert.Equal(successor.SerializeCanonical(),
+            CampaignNativeCombatSuccessorV26.Replay(
+                custodySession.CurrentCombatDecision!,
+                custodySession.CurrentCombatAssaultResult!,
+                custodySession.CurrentCombatSettlement!,
+                custodySession.CurrentCombatCustodyDisposition!,
+                custodySession.CurrentCombatCustodyWorld!,
+                custodySession.CurrentCombatCustodyState, context,
+                successor.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(successor.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    successor.SerializeCanonical())));
+        var forgedSuccessor = successor with
+        {
+            StateHash = "sha256:" + new string('0', 64),
+        };
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatSuccessorV26.Replay(
+                custodySession.CurrentCombatDecision!,
+                custodySession.CurrentCombatAssaultResult!,
+                custodySession.CurrentCombatSettlement!,
+                custodySession.CurrentCombatCustodyDisposition!,
+                custodySession.CurrentCombatCustodyWorld!,
+                custodySession.CurrentCombatCustodyState, context,
+                forgedSuccessor.SerializeCanonical()));
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatSuccessorV26.Create(
+                custodySession.CurrentCombatDecision!,
+                custodySession.CurrentCombatAssaultResult!,
+                custodySession.CurrentCombatSettlement!,
+                custodySession.CurrentCombatCustodyDisposition! with
+                {
+                    SettlementHash = "sha256:" + new string('0', 64),
+                },
+                custodySession.CurrentCombatCustodyWorld!,
+                custodySession.CurrentCombatCustodyState, context));
         Assert.Equal(custodyStep.Evidence!.EventRecords[0],
             CampaignCurrentEventSerializer.Serialize(
                 CampaignCurrentEventSerializer.Deserialize(

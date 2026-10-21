@@ -150,6 +150,10 @@ visible opening, accepted choice, and cold receipt for an authenticated capture.
 Core action IDs stay stable under private settlement-binding changes with the
 same visible offers. Broader equal-visible history coverage, public routing,
 and the next versioned campaign position remain before admission.
+An internal V26 successor event now binds accepted V25 custody to a derived
+same-slot Reserve Release position, settled World, retained Core RNG, and
+custody state. V11 snapshot admission remains at its historical Combat-entry
+boundary. V26 has no outward opening or Exercise/Host next-turn replay yet.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

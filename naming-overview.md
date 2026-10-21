@@ -143,6 +143,9 @@ and V24 now accepts World TOE/cohesion losses, moved retreat and pending
 captives; Core V25 accepts custody disposition with typed guard or delayed
 replacement assets and independent replay, while normal Host cold-replays the
 System no-captive case;
+internal V26 successor state derives Reserve Release, settled World, RNG,
+and custody from accepted V25 without widening the historical V11 snapshot;
+Exercise/Host next-turn replay remains pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

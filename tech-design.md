@@ -839,7 +839,11 @@ typed guard or replacement assets. Exercise replay independently reprojects
 the assets; normal Host appends and cold-replays the System no-captive case.
 Its captor-only opening omits victim identity, private settlement binding,
 authority version, and Core action IDs. It retains the selected action and
-idempotent receipt with cold replay of V25.
+idempotent receipt with cold replay of V25. An internal V26 event now binds
+that accepted custody event to a derived Reserve Release position, settled
+World, Core RNG, and custody state. V11 snapshot admission deliberately stops
+at Combat entry; V26 does not widen that historical contract. Exercise and
+Host still need a versioned next-turn checkpoint and cold replay.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
 It keeps private target identity and authority in Core. Public routing,
