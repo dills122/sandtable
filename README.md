@@ -65,6 +65,13 @@ stack, and simulate checked rules-lab Movement/Reaction/Breakdown paths. You can
 campaign or resolve Combat through public Runner actions. Combat internals are exercised through
 dormant Core tests; they are not yet exposed as playable actions.
 
+The permanent fog implementation has started in Core with
+[versioned contact knowledge](docs/specs/combat-contact-knowledge-v1.md): replayed
+side contacts, a side-safe view, visibility-qualified target candidates and a
+source from committed Movement/Reaction evidence. It is not yet wired to
+campaign persistence or player actions; historical observation readers remain
+readable while the complete successor path is built.
+
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 and native reader authenticate ordinary outward/return Movement and all three direct Reaction closure
 reasons through stop, System resolution, Movement completion and Breakdown into positive Combat entry.

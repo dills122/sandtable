@@ -42,6 +42,9 @@ Intelligence provider or authoritative game component. Its proposed
 checks orders, resolves uncertainty and reports only what each side may know. Command, Staff,
 Intelligence and Maproom cannot invent outcomes or mutate authority. Internally, use names such as
 `CampaignEngine`, `MovementValidator` and `CombatResolver`, not a second layer of product branding.
+`CampaignContactKnowledge` is a plain Core technical name for replayed side
+knowledge in the permanent fog rule; `CampaignContactView` is its outward
+projection, with private target binding retained only by Umpire.
 The private [actual repeated Movement completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
 uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
 `complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner

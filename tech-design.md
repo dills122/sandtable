@@ -741,6 +741,14 @@ Exercises own fresh local capabilities and retained evidence. Raw authority and 
 player mutation seams. A public campaign handle is opaque; opposing state is disclosed only through
 versioned allowlists, never by serializing full snapshots.
 
+The permanent Combat fog path now begins with Core-owned
+[contact knowledge](docs/specs/combat-contact-knowledge-v1.md). Authority
+transitions retain private target bindings and replay into side-scoped current
+or stale contacts; the side view and visibility-qualified target candidates
+omit those bindings. A committed Movement/Reaction opportunity is the first
+source-backed contact producer. Persistence, complete detection policy,
+coherent owner actions and public readers must join this path before activation.
+
 Task019F0's private actual-selection executable contract merged in PR #161; Task019F1's
 private native consumer merged in PR #165. Task019F2 defines actual prepared-round entry;
 Task019F3 implements its private native consumer in PR #169, requiring two independently
