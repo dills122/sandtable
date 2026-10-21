@@ -165,8 +165,11 @@ Exercise and normal Host retain both event chains and cold-replay their
 checkpoints. Normal Host offers the ordered acting-side reserve member through
 an authenticated side-safe opening, accepts a fenced choice, retains its receipt,
 and completes an empty queue in the same SQLite transaction. It also retains
-the side-safe cycle choice and restart-stable receipt. The repeated Movement
-action, other continuation witnesses, and public route remain to be wired.
+the side-safe cycle choice and restart-stable receipt. Internal V29 now accepts
+one released-unit repeated Movement action from the same-cut contact offer,
+updates World and contacts, and retains its normal Host receipt across restart.
+Repeated Breakdown/Combat/Reserve Release, other continuation witnesses, and
+the public route remain to be wired.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.

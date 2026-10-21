@@ -855,8 +855,11 @@ Repeat currently requires a legal released-unit movement witness. Exercise and
 normal Host cold-replay both chains. Normal
 Host retains an authenticated acting-side opening, private action map, fenced
 choice receipt, System completion when the queue empties, and a separate
-side-safe cycle opening/receipt. The repeated Movement action, other legal
-continuation witnesses, and public route remain pending.
+side-safe cycle opening/receipt. Internal V29 now accepts one released-unit
+repeated Movement action from the side-safe contact cut, applies its retained
+release ceiling to World, updates contact evidence, and cold-replays the normal
+Host opening/submission/receipt. Repeated Breakdown/Combat/Reserve Release,
+other legal continuation witnesses, and public route remain pending.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
 It keeps private target identity and authority in Core. Public routing,

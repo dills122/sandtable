@@ -165,12 +165,44 @@ public sealed class CampaignReserveReleaseRulesTests
         Assert.Equal(witness.ActionId, repeat.MovementWitnessActionId);
         Assert.Equal(repeat, CampaignNativeCycleControlV28.Replay(
             completedRelease, session.Context, contactCut, repeat.SerializeCanonical()));
+        var repeatContacts = contactCut.AdvanceNativeCycleControl(repeat);
+        var repeatedMove = CampaignNativeRepeatMovementV29.Create(
+            completedRelease, repeat, session.Context, repeatContacts,
+            witness.ActionId);
+        var repeatedWorld = repeatedMove.ProjectWorld(completedRelease,
+            repeat, session.Context, repeatContacts);
+        Assert.Equal(witness.DestinationLocationId,
+            repeatedWorld.Elements.Single(value =>
+                value.ElementId == witness.ElementId).CurrentLocationId);
+        var afterMovementContacts = repeatContacts.AdvanceNativeRepeatMove(
+            completedRelease.World, repeatedWorld, repeatedMove, session.Context);
+        Assert.Equal(repeatedMove.StateVersion,
+            afterMovementContacts.AuthorityVersion);
+        Assert.Equal(repeatedMove, CampaignNativeRepeatMovementV29.Replay(
+            completedRelease, repeat, session.Context, repeatContacts,
+            repeatedMove.SerializeCanonical()));
+        Assert.Equal(repeatedMove.SerializeCanonical(),
+            CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(
+                    repeatedMove.SerializeCanonical())));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeRepeatMovementV29.Replay(completedRelease,
+                repeat, session.Context, repeatContacts,
+                (repeatedMove with { ResultWorldHash = "sha256:" + new string('0', 64) })
+                    .SerializeCanonical()));
         var hiddenPrefixFork = completedRelease with
         {
             HeadEventHash = "sha256:" + new string('3', 64),
         };
         var repeatFork = CampaignNativeCycleControlV28.Create(hiddenPrefixFork,
             session.Context, contactCut, CampaignNativeCycleControlChoiceV28.Repeat);
+        var visibleMovement = CampaignRepeatMovementOwnerCutV29.Project(
+            completedRelease, repeat, session.Context, repeatContacts, firstSide);
+        var forkMovement = CampaignRepeatMovementOwnerCutV29.Project(
+            hiddenPrefixFork, repeatFork, session.Context,
+            contactCut.AdvanceNativeCycleControl(repeatFork), firstSide);
+        Assert.Equal(visibleMovement.VisibleBytes, forkMovement.VisibleBytes);
+        Assert.Equal(visibleMovement.ActionIds, forkMovement.ActionIds);
         var equalVisibleControl = CampaignCycleControlOwnerCutV28.Project(
             hiddenPrefixFork, session.Context, contactCut, firstSide);
         Assert.Equal(controlCut.VisibleBytes, equalVisibleControl.VisibleBytes);

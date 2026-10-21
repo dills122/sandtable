@@ -62,6 +62,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, CycleControlOpeningKey, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.CycleControl);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerRepeatMovement(
+        CampaignSeatCredential credential, long openingRevision,
+        string publicActionRef) =>
+        SubmitOwnerActionCore(credential, RepeatMovementOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.RepeatMovement);
+
     private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef,
         CampaignOwnerOpeningKind kind, bool retreatMove = false)
@@ -213,6 +219,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.RepeatMovement)
+            {
+                var draft = CampaignHostAdapter.QueryNativeRepeatMovementOwnerDraft(
+                    head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else
             {
                 var draft = CampaignHostAdapter.QueryContactOwnerDraft(head.Session,
@@ -286,6 +299,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     submission, actingElementId),
             CampaignOwnerOpeningKind.CycleControl =>
                 CampaignHostAdapter.SubmitNativeCycleControl(head.Session, submission),
+            CampaignOwnerOpeningKind.RepeatMovement =>
+                CampaignHostAdapter.SubmitNativeRepeatMovement(head.Session, submission),
             _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
                 submission, actingElementId),
         };
@@ -363,6 +378,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind,
             CampaignOwnerOpeningKind.CycleControl =>
                 CampaignHostAcceptedStep.ContactCycleControlKind,
+            CampaignOwnerOpeningKind.RepeatMovement =>
+                CampaignHostAcceptedStep.ContactRepeatMovementKind,
             _ => throw new ArgumentOutOfRangeException(nameof(kind)),
         };
 

@@ -153,8 +153,9 @@ Host retain and cold-replay V27 ordered choices and completion, with a side-safe
 owner opening and fenced receipt. V28 names the separate authenticated
 repeat-or-finish cycle choice; its Core event and normal Host cold replay enter
 same-side Movement ordinal two or same-slot Truck Convoy. Repeat currently has
-a released-unit movement witness; repeated Movement and public routing remain
-pending;
+a released-unit movement witness; V29 now accepts one such owner movement
+through normal Core/Host World/contact replay and a restart-stable receipt.
+Repeated Breakdown/Combat/Reserve Release and public routing remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

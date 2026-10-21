@@ -8,6 +8,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const string CycleControlOpeningKey = "land.cycle-control";
+    private const string RepeatMovementOpeningKey = "land.repeat-movement";
     /// <summary>
     /// Project one normal owner opening from the committed Core head. Visible bytes and public
     /// references remain stable when only hidden authority changes; the private map is replaced
@@ -48,6 +49,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, CycleControlOpeningKey,
             CampaignOwnerOpeningKind.CycleControl);
+
+    internal CampaignOwnerOpening QueryRepeatMovementOwnerOpening(
+        CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, RepeatMovementOpeningKey,
+            CampaignOwnerOpeningKind.RepeatMovement);
 
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
         string actingElementId, CampaignOwnerOpeningKind kind)
@@ -116,6 +122,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
             else if (kind == CampaignOwnerOpeningKind.CycleControl)
             {
                 var draft = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(
+                    authority.Session, seat.Audience);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RepeatMovement)
+            {
+                var draft = CampaignHostAdapter.QueryNativeRepeatMovementOwnerDraft(
                     authority.Session, seat.Audience);
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;
@@ -274,6 +288,7 @@ internal enum CampaignOwnerOpeningKind
     Custody,
     ReserveRelease,
     CycleControl,
+    RepeatMovement,
 }
 
 internal sealed class CampaignOwnerOpening

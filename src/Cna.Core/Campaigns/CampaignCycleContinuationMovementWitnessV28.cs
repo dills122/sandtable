@@ -25,10 +25,33 @@ internal static class CampaignCycleContinuationMovementWitnessV28
         CampaignContactJournal contacts)
     {
         ArgumentNullException.ThrowIfNull(release);
+        return OffersAt(release, context, contacts, release.StateVersion);
+    }
+
+    internal static IReadOnlyList<MoveElementAction> OffersAfterRepeat(
+        CampaignNativeReserveReleaseStateV27 release,
+        CampaignNativeCycleControlV28 control,
+        CampaignContentContext context,
+        CampaignContactJournal contacts)
+    {
+        if (control.Choice != CampaignNativeCycleControlChoiceV28.Repeat
+            || control.CampaignId != release.CampaignId
+            || control.PriorStateVersion != release.StateVersion)
+            throw new InvalidOperationException("Movement needs an accepted repeat edge.");
+        return OffersAt(release, context, contacts, control.StateVersion);
+    }
+
+    private static System.Collections.ObjectModel.ReadOnlyCollection<MoveElementAction> OffersAt(
+        CampaignNativeReserveReleaseStateV27 release,
+        CampaignContentContext context,
+        CampaignContactJournal contacts,
+        long authorityVersion)
+    {
+        ArgumentNullException.ThrowIfNull(release);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(contacts);
         if (!release.Completed || contacts.CampaignId != release.CampaignId
-            || contacts.AuthorityVersion != release.StateVersion
+            || contacts.AuthorityVersion != authorityVersion
             || release.CycleOrdinal == int.MaxValue)
             throw new InvalidOperationException(
                 "Continuation needs completed same-cut Reserve Release authority.");
@@ -56,7 +79,8 @@ internal static class CampaignCycleContinuationMovementWitnessV28
         {
             if (!ownContent.TryGetValue(allowance.ElementId, out var content)
                 || allowance.NextCycleOrdinal != release.CycleOrdinal + 1
-                || allowance.CapabilityPointCeiling < 1)
+                || allowance.CapabilityPointCeiling < 1
+                || content.BreakdownVehicleCohort is not null)
                 continue;
             var owner = own.Single(value => value.ElementId == allowance.ElementId);
             if (owner.ReserveStatus != CampaignObservationReserveStatus.None

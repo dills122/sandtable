@@ -187,6 +187,16 @@ public sealed class ExerciseCheckpoint
         PositionId = control.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeRepeatMovementV29 movement,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeRepeatMovementV29.CurrentContractVersion;
+        CampaignId = movement.CampaignId;
+        StateVersion = movement.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = movement.PositionId;
+    }
+
     public int ContractVersion { get; }
     public string CampaignId { get; }
     public long StateVersion { get; }

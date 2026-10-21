@@ -374,6 +374,24 @@ public sealed class CampaignDurableAuthorityJournalTests
             opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(retry.IsAccepted);
         Assert.Equal(repeated.CanonicalReceipt, retry.CanonicalReceipt);
+        Assert.Throws<InvalidOperationException>(() =>
+            cold.QueryRepeatMovementOwnerOpening(defender));
+        var movementOpening = cold.QueryRepeatMovementOwnerOpening(attacker);
+        Assert.NotEmpty(movementOpening.PublicActionRefs);
+        Assert.False(cold.SubmitOwnerRepeatMovement(attacker,
+            movementOpening.Revision,
+            "act." + new string('0', 64)).IsAccepted);
+        var moved = cold.SubmitOwnerRepeatMovement(attacker,
+            movementOpening.Revision, movementOpening.PublicActionRefs[0]);
+        Assert.True(moved.IsAccepted);
+        var afterMove = fixture.Open(clock);
+        var movedSession = afterMove.ReadVerified(request.CampaignId);
+        Assert.Equal(29, CampaignExercises.QueryCheckpoint(movedSession).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(movedSession).IsVerified);
+        var movedRetry = afterMove.SubmitOwnerRepeatMovement(attacker,
+            movementOpening.Revision, movementOpening.PublicActionRefs[0]);
+        Assert.True(movedRetry.IsAccepted);
+        Assert.Equal(moved.CanonicalReceipt, movedRetry.CanonicalReceipt);
     }
 
     [Fact]

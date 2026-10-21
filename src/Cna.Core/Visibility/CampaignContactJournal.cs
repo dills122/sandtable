@@ -294,6 +294,25 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(control.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeRepeatMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeRepeatMovementV29 movement,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        if (movement.CampaignId != CampaignId
+            || movement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException(
+                "Repeated Movement does not bind contact authority.",
+                nameof(movement));
+        return ApplySources(
+                CampaignContactAdjacencySource.OnNativeRepeatMove(before, after,
+                    movement, context, axis),
+                CampaignContactAdjacencySource.OnNativeRepeatMove(before, after,
+                    movement, context, commonwealth))
+            .AtAuthorityVersion(movement.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatRetreatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatRetreatMoveV16 movement, string representationId,

@@ -165,8 +165,11 @@ queue empties. Completion stays at Reserve Release. V28 carries a separate
 authenticated side-safe repeat-or-finish choice: repeat needs a source-legal
 released-unit next-Movement witness and enters the same-side Movement ordinal;
 finish enters same-slot Truck Convoy. Core Exercise and normal Host cold-replay
-that choice and retain its receipt. Repeated Movement acceptance, other legal
-continuation witnesses and public routing remain pending.
+that choice and retain its receipt. Internal V29 accepts one released-unit
+repeated Movement action from the same-cut side contact offer, applies its
+release ceiling to World, advances both contact ledgers and retains the normal
+Host receipt across restart. Repeated Breakdown/Combat/Reserve Release, other
+legal continuation witnesses and public routing remain pending.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.
