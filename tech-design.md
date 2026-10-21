@@ -817,7 +817,9 @@ It rejects a second attempt after the ledger has spent that ammunition.
 The V22 positive result derives ordered chart dice only from retained Core RNG,
 retains the full rejection trace and resulting cursor, and binds exact source,
 rules, Force/Anti Armor, and ammunition hashes. Replay independently recomputes
-the result bytes. Accepted World loss and Host settlement remain pending.
+the result bytes. Core and normal Host now accept the result as a versioned
+System step and cold replay its event, checkpoint, and source-derived ammunition
+spend. World loss, retreat, and custody settlement remain pending.
 Source-backed disposition for
 contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
 opening route remain unfinished.

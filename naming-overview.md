@@ -137,7 +137,8 @@ its Core ammunition ledger is seeded by the same exact-pack source and must be
 debited by replayed accepted settlements;
 the normal positive-assault input cut binds both owner seals to those private facts;
 Core V22 derives an ordered, replayable chart result from the retained RNG cursor,
-but has not yet accepted World losses or a durable Host settlement;
+and normal Host retains it with source-derived ammunition spend on cold readback,
+but has not yet accepted World losses, retreat, or custody settlement;
 positive Close Assault and non-infantry disposition remain unissued. Public
 opening, Combat submission, and resume still need
 their normal campaign path. A replay

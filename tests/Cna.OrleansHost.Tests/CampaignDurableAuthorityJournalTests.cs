@@ -229,6 +229,32 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void SourceBackedTenToeForceRoundRetainsResultAndColdReplays()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(22, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+            + "AND action_kind='native-combat-assault-result'";
+        query.Parameters.AddWithValue("$id", request.CampaignId);
+        Assert.Equal(1L, query.ExecuteScalar());
+    }
+
+    [Fact]
     public void ForceRoundSharesDeadlineAndCancelsOneSealAtEqualityAfterColdReadback()
     {
         using var fixture = new JournalFixture();
@@ -702,9 +728,9 @@ public sealed class CampaignDurableAuthorityJournalTests
     private static (CampaignCreationRequest Request, CampaignSeatCredential Attacker,
         CampaignSeatCredential Defender, string DefenderId,
         CampaignOwnerOpening AttackerForce, CampaignOwnerOpening DefenderForce)
-        PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal)
+        PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal, bool positive = false)
     {
-        var request = CombatInfantryRequest();
+        var request = positive ? PositiveCombatRequest() : CombatInfantryRequest();
         AdvanceToContactCombat(journal, request, Timing(request),
             preserveAdjacentInfantry: true);
         var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
@@ -765,6 +791,14 @@ public sealed class CampaignDurableAuthorityJournalTests
         "rules-lab.content.breakdown-reaction.combat-infantry.v1",
         "sha256:f6c8e7cbed61be1e99c877323471857b2d6b43a5bcfbe9475a59df9599e3498e",
         "breakdown-reaction-combat-infantry");
+
+    private static CampaignCreationRequest PositiveCombatRequest() => new(1,
+        "campaign-native-combat-ten-toe", Cna1979Ruleset.Manifest.Hash, 12345,
+        "rules-lab.breakdown.reaction.combat-assault.v1",
+        "sha256:69db7f2c961f88f5469627a9e82f76c6a8b85330aa48a94ee3eaf0d22d18bbb3",
+        "rules-lab.content.breakdown-reaction.combat-assault.v1",
+        "sha256:d2d569a3f04f4915108e2220ac27ddfc25c97fcc047a4d4a67b496a6d62ca19c",
+        "breakdown-reaction-combat-assault");
 
     private static ExerciseSession AdvanceToContactCombat(
         CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,

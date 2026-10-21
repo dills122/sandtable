@@ -41,6 +41,44 @@ internal sealed class CampaignCombatAmmunitionLedgerV1
         return new CampaignCombatAmmunitionLedgerV1(artifact.Identity.Hash, source.Hash, initial);
     }
 
+    internal static CampaignCombatAmmunitionLedgerV1 FromAcceptedEvents(
+        CampaignContentContext context, IEnumerable<object> events)
+    {
+        ArgumentNullException.ThrowIfNull(events);
+        var current = CreateInitial(context);
+        var expectedSpend = Cna.Core.Rules.Cna1979CombatAdjudication.Definition.Costs
+            .CommittedToePerRole * Cna.Core.Rules.Cna1979CombatAdjudication.Definition.Costs
+            .AmmunitionPointsPerToe;
+        foreach (var result in events.OfType<CampaignNativeCombatAssaultResultV22>())
+        {
+            if (result.ContentHash != current.ContentHash
+                || result.SourceHash != current.SourceHash
+                || result.PriorAmmunitionHash != current.Hash
+                || result.AttackerElementId == result.DefenderElementId
+                || result.AttackerAmmunitionSpent != expectedSpend
+                || result.DefenderAmmunitionSpent != expectedSpend)
+                throw new InvalidCampaignHistoryException(
+                    "Combat ammunition differs from retained source and event order.");
+            try
+            {
+                current = current.Spend(result.AttackerElementId,
+                    result.AttackerAmmunitionSpent);
+                current = current.Spend(result.DefenderElementId,
+                    result.DefenderAmmunitionSpent);
+            }
+            catch (Exception exception) when (exception is ArgumentException
+                or InvalidOperationException or KeyNotFoundException)
+            {
+                throw new InvalidCampaignHistoryException(
+                    "Combat ammunition spend exceeds retained source.");
+            }
+            if (result.AfterAmmunitionHash != current.Hash)
+                throw new InvalidCampaignHistoryException(
+                    "Combat ammunition successor hash differs from accepted spend.");
+        }
+        return current;
+    }
+
     internal CampaignCombatAmmunitionLedgerV1 Spend(string elementId, int points)
     {
         ContentContractGuards.RequireStableId(elementId, nameof(elementId));

@@ -25,7 +25,11 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             antiArmor.StateVersion, antiArmor.NextPositionId,
             Hash(antiArmor.SerializeCanonical()), inputs.ContentHash,
             inputs.SourceHash, inputs.RulesInputHash, inputs.PriorAmmunitionHash,
-            inputs.AfterAmmunition.Hash, before, after, draws,
+            inputs.AfterAmmunition.Hash,
+            inputs.Attacker.ElementId, inputs.Defender.ElementId,
+            inputs.Attacker.AmmunitionBefore - inputs.Attacker.AmmunitionAfter,
+            inputs.Defender.AmmunitionBefore - inputs.Defender.AmmunitionAfter,
+            before, after, draws,
             attackerMoraleCoordinate, defenderMoraleCoordinate, facts)
     { }
 
@@ -33,7 +37,9 @@ internal sealed class CampaignNativeCombatAssaultResultV22
         string decisionActionId, long priorStateVersion, string positionId,
         string priorAntiArmorHash, string contentHash, string sourceHash,
         string rulesInputHash, string priorAmmunitionHash,
-        string afterAmmunitionHash, RandomStreamState before,
+        string afterAmmunitionHash, string attackerElementId,
+        string defenderElementId, int attackerAmmunitionSpent,
+        int defenderAmmunitionSpent, RandomStreamState before,
         RandomStreamState after, IReadOnlyList<CombatResolutionDraw> draws,
         int attackerMoraleCoordinate, int defenderMoraleCoordinate,
         CampaignCombatResultFacts facts)
@@ -48,6 +54,10 @@ internal sealed class CampaignNativeCombatAssaultResultV22
         RulesInputHash = rulesInputHash;
         PriorAmmunitionHash = priorAmmunitionHash;
         AfterAmmunitionHash = afterAmmunitionHash;
+        AttackerElementId = attackerElementId;
+        DefenderElementId = defenderElementId;
+        AttackerAmmunitionSpent = attackerAmmunitionSpent;
+        DefenderAmmunitionSpent = defenderAmmunitionSpent;
         BeforeRandomState = before;
         AfterRandomState = after;
         Draws = Array.AsReadOnly(draws.ToArray());
@@ -68,6 +78,10 @@ internal sealed class CampaignNativeCombatAssaultResultV22
     internal string RulesInputHash { get; }
     internal string PriorAmmunitionHash { get; }
     internal string AfterAmmunitionHash { get; }
+    internal string AttackerElementId { get; }
+    internal string DefenderElementId { get; }
+    internal int AttackerAmmunitionSpent { get; }
+    internal int DefenderAmmunitionSpent { get; }
     internal RandomStreamState BeforeRandomState { get; }
     internal RandomStreamState AfterRandomState { get; }
     internal IReadOnlyList<CombatResolutionDraw> Draws { get; }
@@ -173,6 +187,10 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             writer.WriteString("rulesInputHash", RulesInputHash);
             writer.WriteString("priorAmmunitionHash", PriorAmmunitionHash);
             writer.WriteString("afterAmmunitionHash", AfterAmmunitionHash);
+            writer.WriteString("attackerElementId", AttackerElementId);
+            writer.WriteString("defenderElementId", DefenderElementId);
+            writer.WriteNumber("attackerAmmunitionSpent", AttackerAmmunitionSpent);
+            writer.WriteNumber("defenderAmmunitionSpent", DefenderAmmunitionSpent);
             writer.WritePropertyName("beforeRandomState");
             WriteRandom(writer, BeforeRandomState);
             writer.WritePropertyName("afterRandomState");
@@ -243,7 +261,9 @@ internal sealed class CampaignNativeCombatAssaultResultV22
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
                 "campaignId", "priorStateVersion", "decisionActionId", "positionId",
                 "priorAntiArmorHash", "contentHash", "sourceHash", "rulesInputHash",
-                "priorAmmunitionHash", "afterAmmunitionHash", "beforeRandomState",
+                "priorAmmunitionHash", "afterAmmunitionHash", "attackerElementId",
+                "defenderElementId", "attackerAmmunitionSpent",
+                "defenderAmmunitionSpent", "beforeRandomState",
                 "afterRandomState", "draws", "attackerMoraleCoordinate",
                 "defenderMoraleCoordinate", "facts");
             if (root.GetProperty("contractVersion").GetInt32() != CurrentContractVersion
@@ -261,6 +281,10 @@ internal sealed class CampaignNativeCombatAssaultResultV22
                 root.GetProperty("rulesInputHash").GetString()!,
                 root.GetProperty("priorAmmunitionHash").GetString()!,
                 root.GetProperty("afterAmmunitionHash").GetString()!,
+                root.GetProperty("attackerElementId").GetString()!,
+                root.GetProperty("defenderElementId").GetString()!,
+                root.GetProperty("attackerAmmunitionSpent").GetInt32(),
+                root.GetProperty("defenderAmmunitionSpent").GetInt32(),
                 ParseRandom(root.GetProperty("beforeRandomState")),
                 ParseRandom(root.GetProperty("afterRandomState")),
                 root.GetProperty("draws").EnumerateArray().Select(draw =>

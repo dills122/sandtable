@@ -79,10 +79,13 @@ public sealed class CampaignContactCombatSelectionCutTests
         var defenderSeal = CampaignNativeCombatForceSealV17.Create(selected,
             decline, atCombat.World, context, contacts, LandSide.Commonwealth,
             defenderOffer.ActionId, attackerSeal);
+        contacts = contacts.AdvanceNativeCombatForceSeal(defenderSeal);
         var completion = CampaignNativeCombatForceCompletionV18.Create(selected,
             decline, [attackerSeal, defenderSeal]);
+        contacts = contacts.AdvanceNativeCombatForceCompletion(completion);
         var antiArmor = CampaignNativeCombatAntiArmorV20.Create(selected,
             completion, null, context);
+        contacts = contacts.AdvanceNativeCombatAntiArmor(antiArmor);
         var ammunition = CampaignCombatAmmunitionLedgerV1.CreateInitial(context);
 
         var inputs = CampaignNativeCombatAssaultInputs.Create(selected, completion,
@@ -105,6 +108,23 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(canonical, CampaignCurrentEventSerializer.Serialize(
             CampaignCurrentEventSerializer.Deserialize(canonical)));
         Assert.NotEmpty(result.SerializeStateCanonical(antiArmor.SerializeCanonical()));
+        var replayedAmmunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+            context, [result]);
+        Assert.Equal(inputs.AfterAmmunition.Hash, replayedAmmunition.Hash);
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                context, [result, result]));
+        var positiveSession = new ExerciseSession(atCombat, context,
+            session.CurrentHistory.AddRange(new object[] { selected.Decision,
+                barrage, decline, attackerSeal, defenderSeal, completion, antiArmor }),
+            contacts, selected, combatBarrage: barrage,
+            combatRetreatDecline: decline,
+            combatForceSeals: [attackerSeal, defenderSeal],
+            combatForceCompletion: completion, combatAntiArmor: antiArmor);
+        var acceptedResult = CampaignExercises.ResolveNativeCombatAssault(positiveSession);
+        Assert.True(acceptedResult.IsAccepted, acceptedResult.RejectionReason.ToString());
+        Assert.Equal(canonical, Assert.Single(acceptedResult.Evidence!.EventRecords));
+        Assert.True(CampaignExercises.Reconstruct(acceptedResult.SuccessorSession!).IsVerified);
         var tampered = canonical.ToArray();
         tampered[^2] ^= 1;
         Assert.Throws<InvalidCampaignHistoryException>(() =>

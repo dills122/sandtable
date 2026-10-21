@@ -93,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatAssaultResult is { } result)
+            return new ExerciseCheckpoint(result, session.CurrentCombatDecision!);
         if (session.CurrentCombatCancelledAssault is { } cancelledAssault)
             return new ExerciseCheckpoint(cancelledAssault, session.CurrentCombatDecision!);
         if (session.CurrentCombatAntiArmor is { } antiArmor)
@@ -585,6 +587,60 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult ResolveNativeCombatAssault(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatForceCompletion is not { } completion
+            || session.CurrentCombatAntiArmor is not { } antiArmor
+            || session.CurrentCombatAssaultResult is not null
+            || session.CurrentCombatCancelledAssault is not null
+            || session.CurrentCombatForceCancellation is not null
+            || session.CurrentContacts.AuthorityVersion != antiArmor.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                session.Context, session.CurrentHistory);
+            var inputs = CampaignNativeCombatAssaultInputs.Create(selected, completion,
+                antiArmor, session.CurrentCombatForceSeals,
+                session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
+                session.Context, ammunition);
+            var result = CampaignNativeCombatAssaultResultV22.Create(selected,
+                antiArmor, inputs, selected.PriorSnapshot.RandomState);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatAssaultResult(result);
+            var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
+                session.CurrentHistory.Add(result), contacts, selected,
+                combatBarrage: session.CurrentCombatBarrage,
+                combatRetreatDecline: session.CurrentCombatRetreatDecline,
+                combatRetreatMove: session.CurrentCombatRetreatMove,
+                combatRetreatWorld: session.CurrentCombatRetreatWorld,
+                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                combatForceSeals: session.CurrentCombatForceSeals,
+                combatForceCompletion: completion,
+                combatAntiArmor: antiArmor,
+                combatAssaultResult: result);
+            var priorState = SerializeRetreatDeclineState(session);
+            foreach (var seal in session.CurrentCombatForceSeals)
+                priorState = seal.SerializeStateCanonical(priorState);
+            priorState = completion.SerializeStateCanonical(priorState);
+            priorState = antiArmor.SerializeStateCanonical(priorState);
+            var bytes = result.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                result.PriorStateVersion, result.StateVersion, result.NextPositionId,
+                CampaignActionAudience.System,
+                $"sha256:{Convert.ToHexStringLower(SHA256.HashData(bytes))}");
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(
+                receipt, bytes, result.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     internal static ExerciseStepResult SubmitContactDefenderRbaMove(
         ExerciseSession session, CampaignActionSubmission submission, string defenderElementId)
     {
@@ -754,6 +810,8 @@ public static class CampaignExercises
                 expectedBytes = antiArmor.SerializeStateCanonical(expectedBytes);
             if (completedSession.CurrentCombatCancelledAssault is { } cancelledAssault)
                 expectedBytes = cancelledAssault.SerializeStateCanonical(expectedBytes);
+            if (completedSession.CurrentCombatAssaultResult is { } assaultResult)
+                expectedBytes = assaultResult.SerializeStateCanonical(expectedBytes);
         }
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
@@ -776,6 +834,7 @@ public static class CampaignExercises
                         + (completedSession.CurrentCombatForceCancellation is null ? 0 : 1)
                         + (completedSession.CurrentCombatAntiArmor is null ? 0 : 1)
                         + (completedSession.CurrentCombatCancelledAssault is null ? 0 : 1)
+                        + (completedSession.CurrentCombatAssaultResult is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -884,6 +943,7 @@ public static class CampaignExercises
                             replayedContacts = replayedContacts.AdvanceNativeCombatForceSeal(verifiedSeal);
                             firstSeal ??= verifiedSeal;
                         }
+                        CampaignNativeCombatForceCompletionV18? verifiedForceCompletion = null;
                         if (completedSession.CurrentCombatForceCompletion is not null)
                         {
                             var completionIndex = decisionIndex + 3
@@ -895,6 +955,7 @@ public static class CampaignExercises
                             var verifiedCompletion = CampaignNativeCombatForceCompletionV18.Replay(
                                 verified, verifiedDecline, completedSession.CurrentCombatForceSeals,
                                 completionEvent.SerializeCanonical());
+                            verifiedForceCompletion = verifiedCompletion;
                             replayedBytes = verifiedCompletion.SerializeStateCanonical(replayedBytes);
                             replayedContacts = replayedContacts.AdvanceNativeCombatForceCompletion(
                                 verifiedCompletion);
@@ -914,6 +975,7 @@ public static class CampaignExercises
                             replayedContacts = replayedContacts.AdvanceNativeCombatForceCancellation(
                                 verifiedCancellation);
                         }
+                        CampaignNativeCombatAntiArmorV20? verifiedAntiArmor = null;
                         if (completedSession.CurrentCombatAntiArmor is not null)
                         {
                             var antiArmorIndex = decisionIndex + 3
@@ -922,13 +984,14 @@ public static class CampaignExercises
                             if (replayEvents[antiArmorIndex]
                                 is not CampaignNativeCombatAntiArmorV20 antiArmorEvent)
                                 throw new InvalidCampaignHistoryException("Native Anti Armor completion is missing.");
-                            var verifiedAntiArmor = CampaignNativeCombatAntiArmorV20.Replay(
+                            var replayedAntiArmor = CampaignNativeCombatAntiArmorV20.Replay(
                                 verified, completedSession.CurrentCombatForceCompletion,
                                 completedSession.CurrentCombatForceCancellation,
                                 completedSession.Context, antiArmorEvent.SerializeCanonical());
-                            replayedBytes = verifiedAntiArmor.SerializeStateCanonical(replayedBytes);
+                            verifiedAntiArmor = replayedAntiArmor;
+                            replayedBytes = replayedAntiArmor.SerializeStateCanonical(replayedBytes);
                             replayedContacts = replayedContacts.AdvanceNativeCombatAntiArmor(
-                                verifiedAntiArmor);
+                                replayedAntiArmor);
                         }
                         if (completedSession.CurrentCombatCancelledAssault is not null)
                         {
@@ -945,6 +1008,31 @@ public static class CampaignExercises
                             replayedContacts = replayedContacts.AdvanceNativeCombatCancelledAssault(
                                 verifiedCancelled);
                         }
+                        if (completedSession.CurrentCombatAssaultResult is not null)
+                        {
+                            var resultIndex = decisionIndex + 3
+                                + completedSession.CurrentCombatRetreatMoves.Count
+                                + completedSession.CurrentCombatForceSeals.Count + 2;
+                            if (replayEvents[resultIndex]
+                                is not CampaignNativeCombatAssaultResultV22 resultEvent
+                                || verifiedForceCompletion is null
+                                || verifiedAntiArmor is null)
+                                throw new InvalidCampaignHistoryException(
+                                    "Native Combat result or its prior authority is missing.");
+                            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                                completedSession.Context, priorEvents);
+                            var inputs = CampaignNativeCombatAssaultInputs.Create(verified,
+                                verifiedForceCompletion, verifiedAntiArmor,
+                                completedSession.CurrentCombatForceSeals, world,
+                                completedSession.Context, ammunition);
+                            var verifiedResult = CampaignNativeCombatAssaultResultV22.Replay(
+                                verified, verifiedAntiArmor, inputs,
+                                verified.PriorSnapshot.RandomState,
+                                resultEvent.SerializeCanonical());
+                            replayedBytes = verifiedResult.SerializeStateCanonical(replayedBytes);
+                            replayedContacts = replayedContacts.AdvanceNativeCombatAssaultResult(
+                                verifiedResult);
+                        }
                     }
                     else if (previousMove is not null) replayedBytes = moveState;
                     else replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
@@ -958,7 +1046,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentCombatCancelledAssault?.StateVersion
+                == (completedSession.CurrentCombatAssaultResult?.StateVersion
+                    ?? completedSession.CurrentCombatCancelledAssault?.StateVersion
                     ?? completedSession.CurrentCombatAntiArmor?.StateVersion
                     ?? completedSession.CurrentCombatForceCancellation?.StateVersion
                     ?? completedSession.CurrentCombatForceCompletion?.StateVersion
