@@ -258,7 +258,8 @@ public sealed class CampaignHostAudienceCut
 /// <summary>Private replay evidence; bytes are copied on both ingress and egress.</summary>
 public sealed class CampaignHostAcceptedStep
 {
-    public const int CurrentContractVersion = 2;
+    public const int CurrentContractVersion = 1;
+    public const int ContactMovementContractVersion = 2;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
 
@@ -275,7 +276,7 @@ public sealed class CampaignHostAcceptedStep
             || (kind == ContactMovementKind && string.IsNullOrWhiteSpace(actingElementId))
             || (kind == LegacyKind && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
-        ContractVersion = kind == LegacyKind ? 1 : CurrentContractVersion;
+        ContractVersion = kind == LegacyKind ? CurrentContractVersion : ContactMovementContractVersion;
         Kind = kind;
         ActingElementId = actingElementId;
         this.canonicalCommand = canonicalCommand?.ToArray()
