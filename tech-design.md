@@ -764,9 +764,12 @@ with exact retry returning the retained receipt. The first internal native Comba
 stage accepts a current-contact assault or a source-eligible voluntary no-attack choice at
 Position Determination. Only selected assault stores a private defender binding; both choices
 record the exact Barrage successor and verify the resulting V12 checkpoint through Exercise and
-Host import replay. The normal Host issues an internal seat-bound Combat opening, commits the
-decision atomically, and returns a retained receipt across restart. No-attack traversal and Combat adjudication
-and the public opening route remain unfinished.
+Host import replay. For an accepted voluntary finish, Core now records one V13 System event with
+the five exact remaining no-attack structural successors through same-slot Reserve Release entry;
+replay rejects forged or omitted positions and preserves prior World and contact records. The
+normal Host commits owner decision and System completion in one SQLite transaction, then returns
+the owner's retained receipt across restart. Reserve Release, assault adjudication and the public
+opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.

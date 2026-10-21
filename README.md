@@ -86,8 +86,11 @@ cold replay verifies the same path and an exact retry returns the retained
 receipt. A first internal native Combat decision now consumes the same current-contact
 authority cut. Selected assault retains a private defender binding; voluntary no-attack
 retains none, and both record the exact Barrage successor and round-trip through Exercise and
-Host import replay. The normal Host retains an internal authenticated Combat opening, accepted
-submission and restart-safe receipt. Combat structural completion, adjudication and a public opening route remain unfinished; historical
+Host import replay. An accepted voluntary finish now records an ordered V13 System no-attack
+completion through the five remaining Combat positions to same-slot Reserve Release entry;
+Core replay checks every successor and leaves World, contact knowledge and resources unchanged.
+The normal Host retains both steps atomically with an internal authenticated Combat opening,
+accepted submission and restart-safe receipt. Reserve Release, assault adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

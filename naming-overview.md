@@ -108,7 +108,9 @@ durable authority journal retains Core evidence and verifies it by replay, with 
 credential custody, owner-opening binding, atomic contact-record custody, and internal
 contact-derived movement submission against the current equal-visible owner cut.
 The same normal journal now retains internal contact-based Combat assault or no-attack
-decisions with cold-replay receipts. Public opening, Combat submission, and resume still need
+decisions with cold-replay receipts. Voluntary finish adds a V13 System no-attack completion
+that records each remaining Combat successor through Reserve Release entry without releasing
+reserves or adjudicating an assault. Public opening, Combat submission, and resume still need
 their normal campaign path. A replay
 checkpoint does not by itself
 constitute a durable player save/resume product.

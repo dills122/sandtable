@@ -52,13 +52,15 @@ The internal cut now checks voluntary-finish eligibility against opposing ZOC
 authority. Current V6 campaign worlds certify no positive ZOC source, while
 unsupported future worlds fail closed. Both selected-assault and voluntary-finish
 choices now append a canonical V12 owner decision through the same normal Core/Host
-receipt and cold-replay path. A finish carries no target binding; subsequent
-no-attack structural steps through Reserve Release still need implementation.
+receipt and cold-replay path. A finish carries no target binding. Host atomically appends
+a V13 System completion with the five exact remaining no-attack Combat successors,
+from Barrage through same-slot Reserve Release entry. Core replay checks each successor
+and leaves World, resources and contact records unchanged; release itself remains separate.
 Core's trusted Combat owner draft serializes current contact handles, apparent hexes and
 assault offers in a V2 visible cut; its action IDs, authority fence and defender binding
 remain private to Host/Core. The draft is not a public route.
 The normal Host now retains a seat-bound internal Combat opening, accepted selection,
-and idempotent receipt across cold replay. Finish-without-attack and adjudication remain open;
+System completion and idempotent owner receipt across cold replay. Assault adjudication remains open;
 there is no public Combat route.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat

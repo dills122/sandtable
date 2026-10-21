@@ -158,6 +158,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
             combat ? CampaignHostAcceptedStep.ContactCombatSelectionKind
                 : CampaignHostAcceptedStep.ContactMovementKind, actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
+        if (combat && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
+        {
+            var noAttack = CampaignHostAdapter.CompleteNativeCombatNoAttack(result.SuccessorSession!);
+            if (!noAttack.IsAccepted)
+                throw new InvalidOperationException("Accepted voluntary finish cannot complete Combat.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatNoAttackCommand(
+                systemHead.Session, noAttack);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatNoAttackKind, null,
+                null, null, null, systemCommand, noAttack);
+        }
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));

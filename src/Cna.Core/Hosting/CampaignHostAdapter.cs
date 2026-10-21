@@ -165,6 +165,27 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission, string actingElementId) =>
         CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, actingElementId);
 
+    /// <summary>System-only structural continuation of an accepted voluntary finish.</summary>
+    public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
+        CampaignExercises.CompleteNativeCombatNoAttack(session);
+
+    public static bool IsNativeCombatVoluntaryFinish(ExerciseSession session) =>
+        session.CurrentCombatDecision?.Decision.Choice == "finish-combat-without-attack";
+
+    /// <summary>Deterministic System command retained alongside the no-attack event.</summary>
+    public static CampaignActionSubmission NativeCombatNoAttackCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || predecessor.CurrentCombatDecision is null
+            || accepted.SuccessorSession?.CurrentNoAttackCompletion is null)
+            throw new ArgumentException("Accepted no-attack completion required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
     /// <summary>Private typed decision proof for one accepted step. It neither publishes a
     /// second transition nor supplies browser diary content.</summary>
     public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
@@ -216,15 +237,22 @@ public static class CampaignHostAdapter
 
             if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind
                 or CampaignHostAcceptedStep.ContactMovementKind
-                or CampaignHostAcceptedStep.ContactCombatSelectionKind))
+                or CampaignHostAcceptedStep.ContactCombatSelectionKind
+                or CampaignHostAcceptedStep.NativeCombatNoAttackKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             var accepted = step.Kind switch
             {
                 CampaignHostAcceptedStep.LegacyKind => Submit(session, submission),
                 CampaignHostAcceptedStep.ContactMovementKind => SubmitContactOwnerMovement(
                     session, submission, step.ActingElementId!),
+                CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
                 _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
             };
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatNoAttackKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeCombatNoAttackCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
@@ -344,9 +372,11 @@ public sealed class CampaignHostAcceptedStep
     public const int CurrentContractVersion = 1;
     public const int ContactMovementContractVersion = 2;
     public const int ContactCombatSelectionContractVersion = 3;
+    public const int NativeCombatNoAttackContractVersion = 4;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
+    public const string NativeCombatNoAttackKind = "native-combat-no-attack";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -357,15 +387,18 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind)
-            || (kind != LegacyKind && string.IsNullOrWhiteSpace(actingElementId))
-            || (kind == LegacyKind && actingElementId is not null))
+        if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind
+                or NativeCombatNoAttackKind)
+            || (kind is ContactMovementKind or ContactCombatSelectionKind
+                && string.IsNullOrWhiteSpace(actingElementId))
+            || (kind is LegacyKind or NativeCombatNoAttackKind && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
         {
             LegacyKind => CurrentContractVersion,
             ContactMovementKind => ContactMovementContractVersion,
-            _ => ContactCombatSelectionContractVersion,
+            ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
+            _ => NativeCombatNoAttackContractVersion,
         };
         Kind = kind;
         ActingElementId = actingElementId;

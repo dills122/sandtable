@@ -124,6 +124,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(selected.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatNoAttackCompletion(
+        CampaignNativeCombatNoAttackCompletionV13 completion)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        if (completion.CampaignId != CampaignId
+            || completion.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("No-attack completion does not bind contact authority.",
+                nameof(completion));
+        return AtAuthorityVersion(completion.StateVersion);
+    }
+
     private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
     {
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId

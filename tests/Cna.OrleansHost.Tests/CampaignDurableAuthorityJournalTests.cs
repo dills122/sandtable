@@ -75,11 +75,17 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(reconstruction.IsVerified);
         using var snapshot = System.Text.Json.JsonDocument.Parse(
             reconstruction.ReconstructedSnapshotBytes!);
+        Assert.Equal(13, snapshot.RootElement.GetProperty("contractVersion").GetInt32());
+        Assert.Equal(CampaignExercises.QueryCheckpoint(verified).PositionId,
+            snapshot.RootElement.GetProperty("positionId").GetString());
+        var decision = snapshot.RootElement.GetProperty("priorDecisionState")
+            .GetProperty("decision");
         Assert.Equal("finish-combat-without-attack",
-            snapshot.RootElement.GetProperty("decision").GetProperty("choice").GetString());
+            decision.GetProperty("choice").GetString());
         Assert.Equal(System.Text.Json.JsonValueKind.Null,
-            snapshot.RootElement.GetProperty("decision")
-                .GetProperty("boundRepresentationId").ValueKind);
+            decision.GetProperty("boundRepresentationId").ValueKind);
+        Assert.Equal(5, snapshot.RootElement.GetProperty("completion")
+            .GetProperty("steps").GetArrayLength());
     }
 
     [Fact]

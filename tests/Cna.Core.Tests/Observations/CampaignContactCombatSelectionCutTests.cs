@@ -123,6 +123,31 @@ public sealed class CampaignContactCombatSelectionCutTests
         Assert.Equal(acceptedFinish.SuccessorSession.CurrentCombatDecision.Decision.NextPositionId,
             CampaignExercises.QueryCheckpoint(acceptedFinish.SuccessorSession).PositionId);
         Assert.True(CampaignExercises.Reconstruct(acceptedFinish.SuccessorSession).IsVerified);
+        var directCompletion = CampaignNativeCombatNoAttackCompletionV13.Create(
+            acceptedFinish.SuccessorSession.CurrentCombatDecision!,
+            acceptedFinish.SuccessorSession.Context);
+        Assert.Equal(acceptedFinish.SuccessorSession.CurrentCombatDecision!.StateVersion,
+            acceptedFinish.SuccessorSession.CurrentContacts.AuthorityVersion);
+        _ = acceptedFinish.SuccessorSession.CurrentContacts
+            .AdvanceNativeCombatNoAttackCompletion(directCompletion);
+        _ = directCompletion.SerializeStateCanonical(
+            acceptedFinish.SuccessorSession.CurrentCombatDecision);
+        var completed = CampaignHostAdapter.CompleteNativeCombatNoAttack(
+            acceptedFinish.SuccessorSession);
+        Assert.True(completed.IsAccepted, completed.RejectionReason.ToString());
+        Assert.Equal(CampaignExercises.QueryCheckpoint(completed.SuccessorSession!).PositionId,
+            completed.Evidence!.Receipt.ResultingPositionId);
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            Cna1979LandSequenceV4.CreateTurn(
+                session.CurrentSnapshot.CurrentPosition.SequencePosition!.GameTurn)
+                .Single(position => position.PositionId ==
+                    CampaignExercises.QueryCheckpoint(completed.SuccessorSession!).PositionId)
+                .SegmentId);
+        Assert.True(CampaignExercises.Reconstruct(completed.SuccessorSession!).IsVerified);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignHostAdapter.CompleteNativeCombatNoAttack(completed.SuccessorSession!).RejectionReason);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignHostAdapter.CompleteNativeCombatNoAttack(acceptedCombat.SuccessorSession!).RejectionReason);
         var finishSteps = retainedSteps.Take(retainedSteps.Count - 1).Append(new CampaignHostAcceptedStep(
             CampaignActionSubmissionSerializer.SerializeCanonical(finishSubmission),
             acceptedFinish.Evidence!.EventRecords,
@@ -131,6 +156,35 @@ public sealed class CampaignContactCombatSelectionCutTests
             CampaignHostAcceptedStep.ContactCombatSelectionKind, actor.ElementId)).ToArray();
         Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
             started.InitialSnapshotBytes, finishSteps).IsVerified);
+        var completionCommand = CampaignHostAdapter.NativeCombatNoAttackCommand(
+            acceptedFinish.SuccessorSession, completed);
+        var completionStep = new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(completionCommand),
+            completed.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(completed.Evidence.Receipt),
+            completed.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.NativeCombatNoAttackKind);
+        var completedSteps = finishSteps.Append(completionStep).ToArray();
+        var importedCompletion = CampaignHostAdapter.Import(request,
+            started.CreationEventBytes, started.InitialSnapshotBytes, completedSteps);
+        Assert.True(importedCompletion.IsVerified, importedCompletion.RejectionReason.ToString());
+        Assert.True(CampaignExercises.Reconstruct(importedCompletion.Session!).IsVerified);
+        var forgedRoute = completed.SuccessorSession!.CurrentNoAttackCompletion! with
+        {
+            Steps = completed.SuccessorSession.CurrentNoAttackCompletion!.Steps
+                .Select((step, index) => index == 3
+                    ? step with { NextPositionId = step.PositionId }
+                    : step).ToArray(),
+        };
+        var forgedCompletionStep = new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(completionCommand),
+            [forgedRoute.SerializeCanonical()],
+            CampaignActionAcceptanceReceiptSerializer.Serialize(completed.Evidence.Receipt),
+            completed.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.NativeCombatNoAttackKind);
+        Assert.False(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes,
+            finishSteps.Append(forgedCompletionStep).ToArray()).IsVerified);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
             CampaignHostAdapter.SubmitContactOwnerCombatSelection(session,
                 submission with { ActionId = $"sha256:{new string('0', 64)}" },
@@ -255,6 +309,28 @@ public sealed class CampaignContactCombatSelectionCutTests
         {
             BoundRepresentationId = selected.Decision.BoundRepresentationId,
         }).SerializeCanonical());
+
+        var completion = CampaignNativeCombatNoAttackCompletionV13.Create(finish, context);
+        var completionBytes = completion.SerializeCanonical();
+        Assert.Equal(5, completion.Steps.Count);
+        Assert.Equal(finish.Decision.NextPositionId, completion.Steps[0].PositionId);
+        Assert.Equal(LandSegmentIds.ReserveRelease,
+            Cna1979LandSequenceV4.CreateTurn(atCombat.CurrentPosition.SequencePosition!.GameTurn)
+                .Single(position => position.PositionId == completion.Steps[^1].NextPositionId).SegmentId);
+        Assert.Equal(completionBytes,
+            CampaignNativeCombatNoAttackCompletionV13.Replay(finish, context,
+                completionBytes).SerializeCanonical());
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignNativeCombatNoAttackCompletionV13.Create(selected, context));
+        var forgedCompletion = completion with
+        {
+            Steps = completion.Steps.Select((step, index) => index == 2
+                ? step with { NextPositionId = completion.Steps[0].NextPositionId }
+                : step).ToArray(),
+        };
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignNativeCombatNoAttackCompletionV13.Replay(finish, context,
+                forgedCompletion.SerializeCanonical()));
 
     }
 
