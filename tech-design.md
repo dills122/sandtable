@@ -753,8 +753,9 @@ to the same authority version. The trusted Host adapter receives canonical owner
 bytes separately from the private authority fence and Core action map. The normal Host's
 [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md) now retains
 canonical creation and accepted-step evidence in SQLite, commits each step with its head,
-and requires full Core replay before a cold read or next append. It has no seat or outward
-opening yet. Encounter adjudication and authenticated Host owner lifecycle must precede
+and requires full Core replay before a cold read or next append. Its durable side grants
+and credentials are bound to revocable seat epochs; it has no outward opening yet.
+Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.
 

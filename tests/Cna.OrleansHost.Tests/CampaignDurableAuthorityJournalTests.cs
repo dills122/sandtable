@@ -9,6 +9,54 @@ namespace Cna.OrleansHost.Tests;
 
 public sealed class CampaignDurableAuthorityJournalTests
 {
+    private const string OperatorSecret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
+
+    [Fact]
+    public void SeatCredentialSurvivesRestartAndRotationRevokesIt()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        journal.CreateCampaign(Request());
+        Assert.Throws<UnauthorizedAccessException>(() => journal.IssueSeatGrant(
+            "campaign-durable-journal", CampaignActionAudience.Axis,
+            new string('0', 64)));
+        var grant = journal.IssueSeatGrant("campaign-durable-journal",
+            CampaignActionAudience.Axis, OperatorSecret);
+        Assert.DoesNotContain(grant.Secret, grant.ToString());
+        var credential = fixture.Open().RedeemSeatGrant(grant)!;
+        Assert.NotNull(credential);
+        Assert.DoesNotContain(credential.Secret, credential.ToString());
+        Assert.Null(fixture.Open().RedeemSeatGrant(grant));
+        Assert.Equal(grant.Epoch, fixture.Open().AuthenticateSeat(credential)!.Epoch);
+        Assert.Null(fixture.Open().AuthenticateSeat(credential with { Secret = new string('0', 64) }));
+
+        var replacement = fixture.Open().IssueSeatGrant("campaign-durable-journal",
+            CampaignActionAudience.Axis, OperatorSecret);
+        Assert.Equal(grant.Epoch + 1, replacement.Epoch);
+        Assert.Null(fixture.Open().AuthenticateSeat(credential));
+        Assert.NotNull(fixture.Open().AuthenticateSeat(fixture.Open().RedeemSeatGrant(replacement)!));
+    }
+
+    [Fact]
+    public void GrantAndCredentialExpireAtTheirStoredDeadlines()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        journal.CreateCampaign(Request());
+        var expiredGrant = journal.IssueSeatGrant("campaign-durable-journal",
+            CampaignActionAudience.Axis, OperatorSecret);
+        clock.Advance(TimeSpan.FromMinutes(10));
+        Assert.Null(fixture.Open(clock).RedeemSeatGrant(expiredGrant));
+
+        var grant = journal.IssueSeatGrant("campaign-durable-journal",
+            CampaignActionAudience.Axis, OperatorSecret);
+        var credential = fixture.Open(clock).RedeemSeatGrant(grant)!;
+        Assert.NotNull(fixture.Open(clock).AuthenticateSeat(credential));
+        clock.Advance(TimeSpan.FromHours(2));
+        Assert.Null(fixture.Open(clock).AuthenticateSeat(credential));
+    }
+
     [Fact]
     public void ExistingSharedDirectoryIsRejectedWithoutChangingItsPermissions()
     {
@@ -23,7 +71,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         {
             Assert.Throws<InvalidOperationException>(() =>
                 CampaignDurableAuthorityJournal.CreateNew(System.IO.Path.Combine(directory,
-                    "campaign.sqlite")));
+                    "campaign.sqlite"), OperatorSecret));
             Assert.Equal(sharedMode, File.GetUnixFileMode(directory));
         }
         finally
@@ -90,10 +138,18 @@ public sealed class CampaignDurableAuthorityJournalTests
         private readonly string directory = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
             "sandtable-authority-journal-" + Guid.NewGuid().ToString("N"));
         internal string Path => System.IO.Path.Combine(directory, "campaign.sqlite");
-        internal CampaignDurableAuthorityJournal Create() =>
-            CampaignDurableAuthorityJournal.CreateNew(Path);
-        internal CampaignDurableAuthorityJournal Open() =>
-            CampaignDurableAuthorityJournal.OpenExisting(Path);
+        internal CampaignDurableAuthorityJournal Create(TimeProvider? clock = null) =>
+            CampaignDurableAuthorityJournal.CreateNew(Path, OperatorSecret, clock);
+        internal CampaignDurableAuthorityJournal Open(TimeProvider? clock = null) =>
+            CampaignDurableAuthorityJournal.OpenExisting(Path, clock);
         public void Dispose() => Directory.Delete(directory, recursive: true);
+    }
+
+    private sealed class ManualClock : TimeProvider
+    {
+        private DateTimeOffset now = DateTimeOffset.Parse("2026-01-01T00:00:00Z",
+            global::System.Globalization.CultureInfo.InvariantCulture);
+        public override DateTimeOffset GetUtcNow() => now;
+        internal void Advance(TimeSpan duration) => now = now.Add(duration);
     }
 }

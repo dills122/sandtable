@@ -12,18 +12,25 @@ namespace Cna.OrleansHost.Api;
 /// Durable authority for normal campaigns. Callers must authenticate a seat and bind an owner
 /// opening before passing a command here; this type has no public route or service registration.
 /// </summary>
-internal sealed class CampaignDurableAuthorityJournal
+internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 1;
+    private const int SchemaVersion = 2;
     private const int MaxEvidenceBytes = 2_097_152;
     private readonly string path;
+    private readonly TimeProvider clock;
 
-    private CampaignDurableAuthorityJournal(string path) => this.path = path;
+    private CampaignDurableAuthorityJournal(string path, TimeProvider clock)
+    {
+        this.path = path;
+        this.clock = clock;
+    }
 
-    internal static CampaignDurableAuthorityJournal CreateNew(string absolutePath)
+    internal static CampaignDurableAuthorityJournal CreateNew(string absolutePath,
+        string operatorSecret, TimeProvider? clock = null)
     {
         RequirePath(absolutePath);
+        var operatorDigest = CredentialDigest("operator", operatorSecret);
         if (File.Exists(absolutePath)) throw new InvalidOperationException("Journal already exists.");
         var directory = Path.GetDirectoryName(absolutePath)!;
         if (!Directory.Exists(directory))
@@ -34,7 +41,7 @@ internal sealed class CampaignDurableAuthorityJournal
                     | UnixFileMode.UserExecute);
         }
         RequirePrivateDirectory(directory);
-        var journal = new CampaignDurableAuthorityJournal(absolutePath);
+        var journal = new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System);
         using var connection = journal.Connect(create: true);
         Execute(connection, "PRAGMA journal_mode=WAL");
         Execute(connection, "PRAGMA synchronous=FULL");
@@ -58,6 +65,27 @@ internal sealed class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE operator_capability (
+              singleton INTEGER PRIMARY KEY CHECK(singleton=1), digest BLOB NOT NULL
+            )
+            """);
+        Execute(connection, """
+            CREATE TABLE seats (
+              campaign_id TEXT NOT NULL, side TEXT NOT NULL CHECK(side IN ('axis','commonwealth')),
+              epoch INTEGER NOT NULL CHECK(epoch>0),
+              grant_digest BLOB, grant_expires_ms INTEGER,
+              credential_digest BLOB, credential_expires_ms INTEGER,
+              PRIMARY KEY(campaign_id,side),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """);
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
+            command.Parameters.AddWithValue("$digest", operatorDigest);
+            command.ExecuteNonQuery();
+        }
         Execute(connection, $"PRAGMA application_id={ApplicationId}");
         Execute(connection, $"PRAGMA user_version={SchemaVersion}");
         if (!OperatingSystem.IsWindows())
@@ -65,7 +93,8 @@ internal sealed class CampaignDurableAuthorityJournal
         return journal;
     }
 
-    internal static CampaignDurableAuthorityJournal OpenExisting(string absolutePath)
+    internal static CampaignDurableAuthorityJournal OpenExisting(string absolutePath,
+        TimeProvider? clock = null)
     {
         RequirePath(absolutePath);
         if (!File.Exists(absolutePath)) throw new InvalidOperationException("Journal is missing.");
@@ -74,7 +103,7 @@ internal sealed class CampaignDurableAuthorityJournal
             & (UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead
                | UnixFileMode.OtherWrite)) != 0)
             throw new InvalidOperationException("Journal permissions are not private.");
-        var journal = new CampaignDurableAuthorityJournal(absolutePath);
+        var journal = new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System);
         using var connection = journal.Connect(create: false);
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
             || ScalarInt(connection, "PRAGMA user_version") != SchemaVersion)

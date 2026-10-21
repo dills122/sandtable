@@ -76,6 +76,7 @@ hidden opposing positions for offer membership. Core now supplies a canonical ow
 draft to the trusted Host adapter while retaining its authority fence and action IDs privately.
 The normal Host now has an internal [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md)
 that atomically retains accepted Core evidence and verifies it by full Core replay on cold read.
+It now retains one-time side grants and restart-safe credential digests with epoch revocation.
 These internal offers are not yet issued or accepted through an authenticated durable owner
 opening; historical observation readers remain readable while the complete successor path is built.
 
