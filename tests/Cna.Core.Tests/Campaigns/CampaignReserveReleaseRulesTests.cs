@@ -14,7 +14,7 @@ public sealed class CampaignReserveReleaseRulesTests
     {
         var setup = CampaignSetupSnapshotV6.FromDefinition(
             Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
-                value.SetupId == "rules-lab.breakdown.reaction.combat-assault.v1"));
+                value.SetupId == "rules-lab.breakdown.reaction.combat-double.v1"));
         var request = new CampaignCreationRequest(1,
             "campaign-native-reserve-release", Cna1979Ruleset.Manifest.Hash,
             12345, setup.SetupId, setup.SetupHash,
@@ -204,6 +204,8 @@ public sealed class CampaignReserveReleaseRulesTests
         Assert.Equal(repeatedMove.DestinationLocationId,
             repeatedCombat.ActingElement.CurrentLocationId);
         Assert.NotNull(repeatedCombat.FinishOffer);
+        Assert.Contains(repeatedCombat.AssaultOffers, offer =>
+            offer.ApparentLocationId == "west");
         var visibleCombat = System.Text.Encoding.UTF8.GetString(
             repeatedCombat.VisibleBytes);
         Assert.Contains("finish-combat-without-attack", visibleCombat,
@@ -212,6 +214,20 @@ public sealed class CampaignReserveReleaseRulesTests
             StringComparison.Ordinal);
         Assert.DoesNotContain("actionId", visibleCombat,
             StringComparison.Ordinal);
+        var repeatedAssault = CampaignNativeRepeatCombatDecisionV31.Select(
+            completedRelease, repeat, repeatedMove, breakdown,
+            repeatedWorld, session.Context, repeatedCombatContacts,
+            repeatedMove.ElementId,
+            repeatedCombat.AssaultOffers.Single(offer =>
+                offer.ApparentLocationId == "west").ActionId);
+        var assaultFrame = CampaignCombatSelectionFrame.FromRepeat(
+            session.CurrentSnapshot, repeatedAssault, repeatedWorld,
+            session.CurrentSnapshot.RandomState);
+        var barrage = CampaignNativeCombatBarrageV14.Create(assaultFrame,
+            session.Context);
+        Assert.Equal(barrage.SerializeCanonical(),
+            CampaignNativeCombatBarrageV14.Replay(assaultFrame,
+                session.Context, barrage.SerializeCanonical()).SerializeCanonical());
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignRepeatCombatOwnerCutV31.Project(completedRelease,
                 repeat, repeatedMove,
