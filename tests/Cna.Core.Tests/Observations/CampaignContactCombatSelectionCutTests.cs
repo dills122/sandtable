@@ -131,6 +131,26 @@ public sealed class CampaignContactCombatSelectionCutTests
                 rbaSession.CurrentCombatDecision!,
                 rbaSession.CurrentCombatBarrage! with { NextPositionId = "forged-rba-position" },
                 rbaSession.Context, rbaSession.CurrentContacts));
+        var declineSubmission = new CampaignActionSubmission(
+            CampaignActionSubmission.CurrentContractVersion, rbaSession.CurrentSnapshot.CampaignId,
+            rba.AuthorityVersion, rba.PositionId, CampaignActionAudience.Commonwealth,
+            rba.DeclineOffer.ActionId);
+        var acceptedDecline = CampaignHostAdapter.SubmitContactDefenderRbaDecline(
+            rbaSession, declineSubmission, rba.DefenderElementId);
+        Assert.True(acceptedDecline.IsAccepted, acceptedDecline.RejectionReason.ToString());
+        Assert.True(CampaignExercises.Reconstruct(acceptedDecline.SuccessorSession!).IsVerified);
+        Assert.Equal(LandStepIds.ForceAssignment,
+            Cna1979LandSequenceV4.CreateTurn(
+                rbaSession.CurrentSnapshot.CurrentPosition.SequencePosition!.GameTurn)
+                .Single(position => position.PositionId ==
+                    CampaignExercises.QueryCheckpoint(acceptedDecline.SuccessorSession!).PositionId)
+                .StepId);
+        Assert.False(CampaignHostAdapter.SubmitContactDefenderRbaDecline(
+            rbaSession, declineSubmission with { Audience = CampaignActionAudience.Axis },
+            rba.DefenderElementId).IsAccepted);
+        Assert.False(CampaignHostAdapter.SubmitContactDefenderRbaDecline(
+            rbaSession, declineSubmission with { ActionId = rba.MoveOffers[0].ActionId },
+            rba.DefenderElementId).IsAccepted);
         var barrageCommand = CampaignHostAdapter.NativeCombatBarrageCommand(imported.Session,
             barrage);
         var barrageSteps = retainedSteps.Append(new CampaignHostAcceptedStep(
@@ -141,6 +161,26 @@ public sealed class CampaignContactCombatSelectionCutTests
             CampaignHostAcceptedStep.NativeCombatBarrageKind)).ToArray();
         Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
             started.InitialSnapshotBytes, barrageSteps).IsVerified);
+        var declineSteps = barrageSteps.Append(new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(declineSubmission),
+            acceptedDecline.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(acceptedDecline.Evidence.Receipt),
+            acceptedDecline.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.ContactRbaDeclineKind, rba.DefenderElementId)).ToArray();
+        Assert.True(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, declineSteps).IsVerified);
+        var forgedDecline = acceptedDecline.SuccessorSession!.CurrentCombatRetreatDecline! with
+        {
+            NextPositionId = "forged-force-assignment",
+        };
+        declineSteps[^1] = new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(declineSubmission),
+            [forgedDecline.SerializeCanonical()],
+            CampaignActionAcceptanceReceiptSerializer.Serialize(acceptedDecline.Evidence.Receipt),
+            acceptedDecline.Evidence.SnapshotCheckpoint,
+            CampaignHostAcceptedStep.ContactRbaDeclineKind, rba.DefenderElementId);
+        Assert.False(CampaignHostAdapter.Import(request, started.CreationEventBytes,
+            started.InitialSnapshotBytes, declineSteps).IsVerified);
         var forgedBarrage = barrage.SuccessorSession!.CurrentCombatBarrage! with
         {
             NextPositionId = "forged-barrage-route",

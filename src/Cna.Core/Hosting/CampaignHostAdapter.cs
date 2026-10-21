@@ -61,7 +61,22 @@ public static class CampaignHostAdapter
             throw new InvalidOperationException("Only the bound defender may receive this retreat cut.");
         return new CampaignHostContactRbaOwnerDraft(cut.AuthorityVersion,
             CampaignContactRetreatBeforeAssaultOwnerVisibleCutV1.SerializeCanonical(cut),
-            cut.MoveOffers.Select(value => value.ActionId).Append(cut.DeclineOffer.ActionId).ToArray());
+            cut.MoveOffers.OrderBy(value => value.ElementId, StringComparer.Ordinal)
+                .ThenBy(value => value.DestinationLocationId, StringComparer.Ordinal)
+                .Select(value => value.ActionId).Append(cut.DeclineOffer.ActionId).ToArray());
+    }
+
+    /// <summary>Trusted seat routing for the pending defender decision.</summary>
+    public static string QueryContactRbaDefenderId(ExerciseSession session,
+        CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var cut = CampaignExercises.QueryContactRbaCut(session);
+        var defenderAudience = cut.DefenderSide == LandSide.Axis
+            ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        if (audience != defenderAudience)
+            throw new InvalidOperationException("This seat does not own the pending defender decision.");
+        return cut.DefenderElementId;
     }
 
     /// <summary>Trusted canonical contact evidence for durable campaign custody.</summary>
@@ -180,6 +195,11 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission, string actingElementId) =>
         CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, actingElementId);
 
+    /// <summary>Trusted explicit defender decline at the retained RBA contact cut.</summary>
+    public static ExerciseStepResult SubmitContactDefenderRbaDecline(
+        ExerciseSession session, CampaignActionSubmission submission, string defenderElementId) =>
+        CampaignExercises.SubmitContactDefenderRbaDecline(session, submission, defenderElementId);
+
     /// <summary>System-only structural continuation of an accepted voluntary finish.</summary>
     public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatNoAttack(session);
@@ -274,7 +294,8 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactMovementKind
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
-                or CampaignHostAcceptedStep.NativeCombatBarrageKind))
+                or CampaignHostAcceptedStep.NativeCombatBarrageKind
+                or CampaignHostAcceptedStep.ContactRbaDeclineKind))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             var accepted = step.Kind switch
             {
@@ -283,6 +304,8 @@ public static class CampaignHostAdapter
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
                 CampaignHostAcceptedStep.NativeCombatBarrageKind => CompleteNativeCombatBarrage(session),
+                CampaignHostAcceptedStep.ContactRbaDeclineKind => SubmitContactDefenderRbaDecline(
+                    session, submission, step.ActingElementId!),
                 _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
             };
             if (step.Kind == CampaignHostAcceptedStep.NativeCombatNoAttackKind
@@ -438,11 +461,13 @@ public sealed class CampaignHostAcceptedStep
     public const int ContactCombatSelectionContractVersion = 3;
     public const int NativeCombatNoAttackContractVersion = 4;
     public const int NativeCombatBarrageContractVersion = 5;
+    public const int ContactRbaDeclineContractVersion = 6;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
     public const string NativeCombatNoAttackKind = "native-combat-no-attack";
     public const string NativeCombatBarrageKind = "native-combat-barrage";
+    public const string ContactRbaDeclineKind = "contact-rba-decline";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -454,8 +479,8 @@ public sealed class CampaignHostAcceptedStep
         string? actingElementId = null)
     {
         if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind
-                or NativeCombatNoAttackKind or NativeCombatBarrageKind)
-            || (kind is ContactMovementKind or ContactCombatSelectionKind
+                or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind)
+            || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 && actingElementId is not null))
@@ -465,6 +490,7 @@ public sealed class CampaignHostAcceptedStep
             LegacyKind => CurrentContractVersion,
             ContactMovementKind => ContactMovementContractVersion,
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
+            ContactRbaDeclineKind => ContactRbaDeclineContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

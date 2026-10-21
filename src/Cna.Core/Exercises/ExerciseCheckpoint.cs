@@ -47,6 +47,16 @@ public sealed class ExerciseCheckpoint
         PositionId = barrage.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatRetreatDeclineV15 decline,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeCombatRetreatDeclineV15.CurrentContractVersion;
+        CampaignId = decline.CampaignId;
+        StateVersion = decline.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = decline.NextPositionId;
+    }
+
     public int ContractVersion { get; }
     public string CampaignId { get; }
     public long StateVersion { get; }

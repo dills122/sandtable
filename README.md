@@ -95,7 +95,9 @@ no-effect V14 Barrage successor to Retreat Before Assault in that same transacti
 replay recomputes the route from the owner decision; a forged successor is rejected. Defender
 Retreat Before Assault candidates now derive from the retained defender contact cut without
 using hidden occupancy to suppress offers; a trusted Host draft separates visible bytes
-from private action IDs. Defender submission, Reserve Release, assault
+from private action IDs. An explicit defender decline now passes through the normal
+seat-bound Host opening, accepted event, retained receipt and cold replay. Actual
+retreat movement, Reserve Release, assault
 adjudication and a public opening route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

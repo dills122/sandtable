@@ -13,13 +13,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// transactionally with the current Core action IDs and authority fence.
     /// </summary>
     internal CampaignOwnerOpening QueryOwnerOpening(CampaignSeatCredential credential,
-        string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId, combat: false);
+        string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId,
+            CampaignOwnerOpeningKind.Movement);
 
     internal CampaignOwnerOpening QueryCombatOwnerOpening(CampaignSeatCredential credential,
-        string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId, combat: true);
+        string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId,
+            CampaignOwnerOpeningKind.CombatSelection);
+
+    internal CampaignOwnerOpening QueryRbaOwnerOpening(CampaignSeatCredential credential,
+        string defenderElementId) => QueryOwnerOpeningCore(credential, defenderElementId,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault);
 
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
-        string actingElementId, bool combat)
+        string actingElementId, CampaignOwnerOpeningKind kind)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
         using var connection = Connect(create: false);
@@ -32,13 +38,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string[] actionIds;
         try
         {
-            if (combat)
+            if (kind == CampaignOwnerOpeningKind.CombatSelection)
             {
                 var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(authority.Session,
                     seat.Audience, actingElementId);
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateCombatActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
+            {
+                var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(authority.Session,
+                    seat.Audience, actingElementId);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
             }
             else
             {
@@ -169,6 +183,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         return "act." + Convert.ToHexStringLower(HMACSHA256.HashData(key, stream.ToArray()));
     }
+}
+
+internal enum CampaignOwnerOpeningKind
+{
+    Movement,
+    CombatSelection,
+    RetreatBeforeAssault,
 }
 
 internal sealed class CampaignOwnerOpening

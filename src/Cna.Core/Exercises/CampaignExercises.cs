@@ -63,7 +63,8 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         if (session.CurrentCombatDecision is not { } selected
-            || session.CurrentCombatBarrage is not { } barrage)
+            || session.CurrentCombatBarrage is not { } barrage
+            || session.CurrentCombatRetreatDecline is not null)
             throw new InvalidOperationException("Defender retreat requires completed Barrage authority.");
         return CampaignContactRetreatBeforeAssaultCut.Project(selected, barrage,
             session.Context, session.CurrentContacts);
@@ -72,6 +73,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatRetreatDecline is { } decline)
+            return new ExerciseCheckpoint(decline, session.CurrentCombatDecision!);
         if (session.CurrentNoAttackCompletion is { } completion)
             return new ExerciseCheckpoint(completion, session.CurrentCombatDecision!);
         if (session.CurrentCombatBarrage is { } barrage)
@@ -226,6 +229,52 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult SubmitContactDefenderRbaDecline(
+        ExerciseSession session, CampaignActionSubmission submission, string defenderElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (string.IsNullOrWhiteSpace(defenderElementId)
+            || !CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatBarrage is not { } barrage
+            || session.CurrentCombatRetreatDecline is not null
+            || session.CurrentContacts.AuthorityVersion != barrage.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.CampaignId != selected.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != barrage.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != barrage.NextPositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        try
+        {
+            var cut = QueryContactRbaCut(session);
+            var audience = cut.DefenderSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+            if (submission.Audience != audience || defenderElementId != cut.DefenderElementId
+                || submission.ActionId != cut.DeclineOffer.ActionId)
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+            var decline = CampaignNativeCombatRetreatDeclineV15.Create(selected, barrage,
+                session.Context, session.CurrentContacts, submission.ActionId);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatRetreatDecline(decline);
+            var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
+                session.CurrentHistory.Add(decline), contacts, selected,
+                combatBarrage: barrage, combatRetreatDecline: decline);
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                barrage.StateVersion, decline.StateVersion, decline.PositionId,
+                submission.Audience, submission.ActionId);
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
+                decline.SerializeCanonical(), decline.SerializeStateCanonical(selected, barrage)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static ExerciseStepResult Complete(ExerciseSession session,
         CampaignCurrentActionExecutionResult execution)
     {
@@ -255,6 +304,9 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(completedSession);
         var expectedBytes = completedSession.CurrentNoAttackCompletion is { } completion
             ? completion.SerializeStateCanonical(completedSession.CurrentCombatDecision!)
+            : completedSession.CurrentCombatRetreatDecline is { } decline
+                ? decline.SerializeStateCanonical(completedSession.CurrentCombatDecision!,
+                    completedSession.CurrentCombatBarrage!)
             : completedSession.CurrentCombatBarrage is { } barrage
                 ? barrage.SerializeStateCanonical(completedSession.CurrentCombatDecision!)
             : completedSession.CurrentCombatDecision is { } combat
@@ -272,24 +324,21 @@ public static class CampaignExercises
             var replayEvents = canonicalEvents
                 .Select(value => CampaignCurrentEventSerializer.Deserialize(value))
                 .ToArray();
-            if (completedSession.CurrentCombatDecision is not null
-                && replayEvents.Length < (completedSession.CurrentNoAttackCompletion is null
-                    && completedSession.CurrentCombatBarrage is null ? 2 : 3))
+            var combatTailCount = completedSession.CurrentCombatDecision is null ? 0
+                : completedSession.CurrentCombatRetreatDecline is not null ? 3
+                : completedSession.CurrentNoAttackCompletion is not null
+                    || completedSession.CurrentCombatBarrage is not null ? 2 : 1;
+            if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
-            var priorEvents = completedSession.CurrentCombatDecision is null
-                ? replayEvents
-                : completedSession.CurrentNoAttackCompletion is null
-                    && completedSession.CurrentCombatBarrage is null
-                    ? replayEvents[..^1]
-                    : replayEvents[..^2];
+            var priorEvents = combatTailCount == 0 ? replayEvents
+                : replayEvents[..^combatTailCount];
             var replayed = CampaignCurrentProjector.Replay(priorEvents, completedSession.Context);
             var replayedContacts = CampaignContactJournal.FromEvents(
                 completedSession.Context, priorEvents);
             byte[] replayedBytes;
             if (completedSession.CurrentCombatDecision is not null)
             {
-                var decisionIndex = completedSession.CurrentNoAttackCompletion is null
-                    && completedSession.CurrentCombatBarrage is null ? ^1 : ^2;
+                var decisionIndex = replayEvents.Length - combatTailCount;
                 if (replayEvents[decisionIndex] is not CampaignNativeCombatDecisionV12 selected)
                     throw new InvalidCampaignHistoryException("Native Combat selection is missing.");
                 var verified = CampaignNativeCombatDecisionStateV12.Replay(replayed,
@@ -307,12 +356,24 @@ public static class CampaignExercises
                 }
                 else if (completedSession.CurrentCombatBarrage is not null)
                 {
-                    if (replayEvents[^1] is not CampaignNativeCombatBarrageV14 barrageEvent)
+                    if (replayEvents[decisionIndex + 1] is not CampaignNativeCombatBarrageV14 barrageEvent)
                         throw new InvalidCampaignHistoryException("Native Barrage completion is missing.");
                     var verifiedBarrage = CampaignNativeCombatBarrageV14.Replay(
                         verified, completedSession.Context, barrageEvent.SerializeCanonical());
-                    replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
                     replayedContacts = replayedContacts.AdvanceNativeCombatBarrage(verifiedBarrage);
+                    if (completedSession.CurrentCombatRetreatDecline is not null)
+                    {
+                        if (replayEvents[^1] is not CampaignNativeCombatRetreatDeclineV15 declineEvent)
+                            throw new InvalidCampaignHistoryException("Native defender decline is missing.");
+                        var verifiedDecline = CampaignNativeCombatRetreatDeclineV15.Replay(
+                            verified, verifiedBarrage, completedSession.Context,
+                            replayedContacts, declineEvent.SerializeCanonical());
+                        replayedBytes = verifiedDecline.SerializeStateCanonical(verified,
+                            verifiedBarrage);
+                        replayedContacts = replayedContacts.AdvanceNativeCombatRetreatDecline(
+                            verifiedDecline);
+                    }
+                    else replayedBytes = verifiedBarrage.SerializeStateCanonical(verified);
                 }
                 else replayedBytes = verified.SerializeCanonical();
             }
@@ -324,6 +385,7 @@ public static class CampaignExercises
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
                 == (completedSession.CurrentNoAttackCompletion?.StateVersion
+                    ?? completedSession.CurrentCombatRetreatDecline?.StateVersion
                     ?? completedSession.CurrentCombatBarrage?.StateVersion
                     ?? completedSession.CurrentCombatDecision?.StateVersion
                     ?? completedSession.CurrentSnapshot.StateVersion)

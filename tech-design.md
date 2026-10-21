@@ -775,7 +775,9 @@ Retreat Before Assault candidates use the bound defender's own formation, curren
 contacts, published map and movement costs. Hidden opposing occupancy cannot remove an
 offer; an unseen encounter needs an accepted event rather than a hidden rejection.
 The trusted defender draft keeps canonical visible bytes separate from private action IDs
-and authority version. Defender submission, Reserve Release, assault adjudication and the public
+and authority version. An explicit defender decline is a V15 owner event through the
+normal durable Host seat/opening/receipt path; silence remains pending. Actual retreat
+movement, Reserve Release, assault adjudication and the public
 opening route remain unfinished.
 Encounter adjudication and authenticated Host owner lifecycle must precede
 issuance of those offers. Complete detection policy,

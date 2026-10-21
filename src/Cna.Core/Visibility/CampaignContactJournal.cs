@@ -145,6 +145,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(barrage.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatRetreatDecline(
+        CampaignNativeCombatRetreatDeclineV15 decline)
+    {
+        ArgumentNullException.ThrowIfNull(decline);
+        if (decline.CampaignId != CampaignId
+            || decline.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Defender decline does not bind contact authority.",
+                nameof(decline));
+        return AtAuthorityVersion(decline.StateVersion);
+    }
+
     private void RequireNextAuthority(CampaignSnapshotV11 before, CampaignSnapshotV11 after)
     {
         if (before.CampaignId != CampaignId || after.CampaignId != CampaignId

@@ -15,14 +15,22 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// </summary>
     internal CampaignOwnerSubmissionResult SubmitOwnerMovement(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef) =>
-        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef, combat: false);
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.Movement);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerCombatSelection(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef) =>
-        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef, combat: true);
+        SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.CombatSelection);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerRbaDecline(CampaignSeatCredential credential,
+        string defenderElementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.RetreatBeforeAssault);
 
     private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
-        string actingElementId, long openingRevision, string publicActionRef, bool combat)
+        string actingElementId, long openingRevision, string publicActionRef,
+        CampaignOwnerOpeningKind kind)
     {
         ArgumentNullException.ThrowIfNull(credential);
         using var connection = Connect(create: false);
@@ -45,9 +53,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   AND seat_epoch=$epoch AND owner_revision=$revision
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
-            retry.Parameters.AddWithValue("$kind", combat
-                ? CampaignHostAcceptedStep.ContactCombatSelectionKind
-                : CampaignHostAcceptedStep.ContactMovementKind);
+            retry.Parameters.AddWithValue("$kind", AcceptedKind(kind));
             retry.Parameters.AddWithValue("$element", actingElementId);
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
@@ -93,12 +99,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string[] actionIds;
         try
         {
-            if (combat)
+            if (kind == CampaignOwnerOpeningKind.CombatSelection)
             {
                 var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(head.Session,
                     seat.Audience, actingElementId);
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateCombatActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
+            {
+                var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(head.Session,
+                    seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
             }
             else
             {
@@ -148,17 +161,23 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var checkpoint = CampaignExercises.QueryCheckpoint(head.Session);
         var submission = new CampaignActionSubmission(1, seat.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, seat.Audience, coreActionId);
-        var result = combat
-            ? CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
-                submission, actingElementId)
-            : CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
-                submission, actingElementId);
+        var result = kind switch
+        {
+            CampaignOwnerOpeningKind.CombatSelection =>
+                CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
+                    submission, actingElementId),
+            CampaignOwnerOpeningKind.RetreatBeforeAssault =>
+                CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
+                    submission, actingElementId),
+            _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
+                submission, actingElementId),
+        };
         if (!result.IsAccepted) return CampaignOwnerSubmissionResult.Rejected();
         PersistAccepted(connection, transaction, seat.CampaignId, head,
-            combat ? CampaignHostAcceptedStep.ContactCombatSelectionKind
-                : CampaignHostAcceptedStep.ContactMovementKind, actingElementId,
+            AcceptedKind(kind), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
-        if (combat && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
+        if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
         {
             var noAttack = CampaignHostAdapter.CompleteNativeCombatNoAttack(result.SuccessorSession!);
             if (!noAttack.IsAccepted)
@@ -170,7 +189,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind, null,
                 null, null, null, systemCommand, noAttack);
         }
-        else if (combat && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
+        else if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
         {
             var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);
             if (!barrage.IsAccepted)
@@ -186,6 +206,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));
     }
+
+    private static string AcceptedKind(CampaignOwnerOpeningKind kind) => kind switch
+    {
+        CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
+        CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
+        CampaignOwnerOpeningKind.RetreatBeforeAssault => CampaignHostAcceptedStep.ContactRbaDeclineKind,
+        _ => throw new ArgumentOutOfRangeException(nameof(kind)),
+    };
 
     private static bool IsPublicReference(string? value)
     {

@@ -77,6 +77,12 @@ defender opening and continuing the sequence require the same durable authority 
 The first V1 defender-visible retreat draft contains contact observation, own unit,
 map, initial-adjacency fact, move costs and explicit decline. Core action IDs and
 authority version stay in the trusted Host adapter, separate from visible bytes.
+An explicit defender decline now records a V15 owner event from the Barrage cut to
+same-slot Force Assignment. Normal Host binds it to the defender seat, retains the
+opening/ref and accepted receipt atomically, and replays the exact event after restart.
+No query or timeout fabricates a decline. Move-offer acceptance, unseen encounter
+resolution, and subsequent assignment/adjudication remain to implement on this
+production branch.
 
 The remaining Combat sequence must use the same authority: Barrage, Retreat
 Before Assault, Force Assignment, Anti Armor, Close Assault, result, retreat,

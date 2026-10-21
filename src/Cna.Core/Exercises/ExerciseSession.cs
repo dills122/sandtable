@@ -10,7 +10,8 @@ public sealed class ExerciseSession
         IEnumerable<object> history, CampaignContactJournal? contacts = null,
         CampaignNativeCombatDecisionStateV12? combatSelection = null,
         CampaignNativeCombatNoAttackCompletionV13? noAttackCompletion = null,
-        CampaignNativeCombatBarrageV14? combatBarrage = null)
+        CampaignNativeCombatBarrageV14? combatBarrage = null,
+        CampaignNativeCombatRetreatDeclineV15? combatRetreatDecline = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -28,9 +29,16 @@ public sealed class ExerciseSession
             || combatBarrage.PriorStateVersion != combatSelection.StateVersion
             || combatBarrage.DecisionActionId != combatSelection.Decision.ActionId))
             throw new ArgumentException("Barrage must bind a selected assault.", nameof(combatBarrage));
+        if (combatRetreatDecline is not null && (combatBarrage is null
+            || combatSelection is null
+            || combatRetreatDecline.PriorStateVersion != combatBarrage.StateVersion
+            || combatRetreatDecline.DecisionActionId != combatSelection.Decision.ActionId))
+            throw new ArgumentException("RBA decline must bind the selected Barrage.",
+                nameof(combatRetreatDecline));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
+        CurrentCombatRetreatDecline = combatRetreatDecline;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -39,5 +47,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatDecisionStateV12? CurrentCombatDecision { get; }
     internal CampaignNativeCombatNoAttackCompletionV13? CurrentNoAttackCompletion { get; }
     internal CampaignNativeCombatBarrageV14? CurrentCombatBarrage { get; }
+    internal CampaignNativeCombatRetreatDeclineV15? CurrentCombatRetreatDecline { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

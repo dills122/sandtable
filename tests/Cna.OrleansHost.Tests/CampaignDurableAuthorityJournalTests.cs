@@ -46,6 +46,31 @@ public sealed class CampaignDurableAuthorityJournalTests
             CampaignExercises.QueryCheckpoint(verified).StateVersion);
         Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(verified).ContractVersion);
+        var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(verified,
+            CampaignActionAudience.Commonwealth);
+        var defenderCredential = reopened.RedeemSeatGrant(reopened.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        var defenderOpening = reopened.QueryRbaOwnerOpening(defenderCredential,
+            defenderId);
+        Assert.Contains("decline-retreat-before-assault",
+            System.Text.Encoding.UTF8.GetString(defenderOpening.VisibleBytes),
+            StringComparison.Ordinal);
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            _ = reopened.QueryRbaOwnerOpening(credential, defenderId);
+        });
+        var declineRef = defenderOpening.PublicActionRefs[^1];
+        var acceptedDecline = reopened.SubmitOwnerRbaDecline(defenderCredential,
+            defenderId, defenderOpening.Revision, declineRef);
+        Assert.True(acceptedDecline.IsAccepted);
+        var coldDecline = fixture.Open();
+        var declineRetry = coldDecline.SubmitOwnerRbaDecline(defenderCredential,
+            defenderId, defenderOpening.Revision, declineRef);
+        Assert.True(declineRetry.IsAccepted);
+        Assert.Equal(acceptedDecline.CanonicalReceipt, declineRetry.CanonicalReceipt);
+        var afterDecline = coldDecline.ReadVerified(request.CampaignId);
+        Assert.Equal(15, CampaignExercises.QueryCheckpoint(afterDecline).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterDecline).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
         using var query = connection.CreateCommand();
