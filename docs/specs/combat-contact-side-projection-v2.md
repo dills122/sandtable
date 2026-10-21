@@ -153,7 +153,8 @@ and the next versioned campaign position remain before admission.
 An internal V26 successor event now binds accepted V25 custody to a derived
 same-slot Reserve Release position, settled World, retained Core RNG, and
 custody state. V11 snapshot admission remains at its historical Combat-entry
-boundary. V26 has no outward opening or Exercise/Host next-turn replay yet.
+boundary. Exercise and normal Host retain and cold-replay the V26 checkpoint;
+the following ordinary action and outward opening remain unwired.
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

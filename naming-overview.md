@@ -145,7 +145,8 @@ replacement assets and independent replay, while normal Host cold-replays the
 System no-captive case;
 internal V26 successor state derives Reserve Release, settled World, RNG,
 and custody from accepted V25 without widening the historical V11 snapshot;
-Exercise/Host next-turn replay remains pending;
+Exercise and normal Host cold-replay the V26 checkpoint, while the following
+ordinary action remains pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

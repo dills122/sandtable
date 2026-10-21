@@ -93,6 +93,8 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatSuccessor is { } successor)
+            return new ExerciseCheckpoint(successor, session.CurrentCombatDecision!);
         if (session.CurrentCombatCustodyDisposition is { } custody)
             return new ExerciseCheckpoint(custody, session.CurrentCombatDecision!);
         if (session.CurrentCombatSettlement is { } settlement)
@@ -958,6 +960,66 @@ public static class CampaignExercises
             receipt, bytes, disposition.SerializeStateCanonical(priorState)));
     }
 
+    internal static ExerciseStepResult CompleteNativeCombatSuccessor(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatAssaultResult is not { } result
+            || session.CurrentCombatSettlement is not { } settlement
+            || session.CurrentCombatCustodyDisposition is not { } custody
+            || session.CurrentCombatCustodyWorld is not { } world
+            || session.CurrentCombatSuccessor is not null
+            || session.CurrentContacts.AuthorityVersion != custody.StateVersion)
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var successorEvent = CampaignNativeCombatSuccessorV26.Create(
+                selected, result, settlement, custody, world,
+                session.CurrentCombatCustodyState, session.Context);
+            var projected = CampaignNativeCombatSuccessorV26.Project(
+                selected, result, settlement, custody, world,
+                session.CurrentCombatCustodyState, session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatSuccessor(
+                successorEvent);
+            var next = new ExerciseSession(session.CurrentSnapshot, session.Context,
+                session.CurrentHistory.Add(successorEvent), contacts, selected,
+                combatBarrage: session.CurrentCombatBarrage,
+                combatRetreatDecline: session.CurrentCombatRetreatDecline,
+                combatRetreatMove: session.CurrentCombatRetreatMove,
+                combatRetreatWorld: session.CurrentCombatRetreatWorld,
+                combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                combatForceSeals: session.CurrentCombatForceSeals,
+                combatForceCompletion: session.CurrentCombatForceCompletion,
+                combatAntiArmor: session.CurrentCombatAntiArmor,
+                combatAssaultResult: result,
+                combatPaidWorld: session.CurrentCombatPaidWorld,
+                combatPostResultRetreat: session.CurrentCombatPostResultRetreat,
+                combatSettlement: settlement,
+                combatSettledWorld: session.CurrentCombatSettledWorld,
+                combatCustodyDisposition: custody,
+                combatCustodyWorld: world,
+                combatCustodyState: session.CurrentCombatCustodyState,
+                combatSuccessor: successorEvent);
+            var bytes = successorEvent.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(
+                successorEvent.CampaignId, successorEvent.PriorStateVersion,
+                successorEvent.StateVersion, custody.PositionId,
+                CampaignActionAudience.System, Hash(bytes));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
+                receipt, bytes, projected.SerializeCanonical()));
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(
+                CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     private static byte[] SerializeNativeCombatResultState(ExerciseSession session)
     {
         var state = SerializeRetreatDeclineState(session);
@@ -1146,6 +1208,15 @@ public static class CampaignExercises
             if (completedSession.CurrentCombatCustodyDisposition is { } custody)
                 expectedBytes = custody.SerializeStateCanonical(expectedBytes);
         }
+        if (completedSession.CurrentCombatSuccessor is not null)
+            expectedBytes = CampaignNativeCombatSuccessorV26.Project(
+                completedSession.CurrentCombatDecision!,
+                completedSession.CurrentCombatAssaultResult!,
+                completedSession.CurrentCombatSettlement!,
+                completedSession.CurrentCombatCustodyDisposition!,
+                completedSession.CurrentCombatCustodyWorld!,
+                completedSession.CurrentCombatCustodyState,
+                completedSession.Context).SerializeCanonical();
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
 
@@ -1171,6 +1242,7 @@ public static class CampaignExercises
                         + (completedSession.CurrentCombatPostResultRetreat is null ? 0 : 1)
                         + (completedSession.CurrentCombatSettlement is null ? 0 : 1)
                         + (completedSession.CurrentCombatCustodyDisposition is null ? 0 : 1)
+                        + (completedSession.CurrentCombatSuccessor is null ? 0 : 1)
                 : completedSession.CurrentNoAttackCompletion is not null ? 2 : 1;
             if (combatTailCount > 0 && replayEvents.Length < combatTailCount + 1)
                 throw new InvalidCampaignHistoryException("Native Combat selection requires prior authority history.");
@@ -1433,6 +1505,28 @@ public static class CampaignExercises
                                             replayedBytes);
                                         replayedContacts = replayedContacts.AdvanceNativeCombatCustodyDisposition(
                                             verifiedCustody);
+                                        if (completedSession.CurrentCombatSuccessor is not null)
+                                        {
+                                            if (replayEvents.ElementAtOrDefault(resultIndex + 4)
+                                                is not CampaignNativeCombatSuccessorV26 successorEvent)
+                                                throw new InvalidCampaignHistoryException(
+                                                    "Native Combat successor is missing.");
+                                            var verifiedSuccessor = CampaignNativeCombatSuccessorV26.Replay(
+                                                verified, verifiedResult,
+                                                verifiedSettlement, verifiedCustody,
+                                                custodyProjection.World,
+                                                custodyProjection.Custody,
+                                                completedSession.Context,
+                                                successorEvent.SerializeCanonical());
+                                            replayedBytes = CampaignNativeCombatSuccessorV26.Project(
+                                                verified, verifiedResult,
+                                                verifiedSettlement, verifiedCustody,
+                                                custodyProjection.World,
+                                                custodyProjection.Custody,
+                                                completedSession.Context).SerializeCanonical();
+                                            replayedContacts = replayedContacts.AdvanceNativeCombatSuccessor(
+                                                verifiedSuccessor);
+                                        }
                                     }
                                 }
                             }
@@ -1450,7 +1544,8 @@ public static class CampaignExercises
             var replayedHash = Hash(replayedBytes);
             var contactRecords = completedSession.CurrentContacts.Records;
             var contactsMatch = completedSession.CurrentContacts.AuthorityVersion
-                == (completedSession.CurrentCombatCustodyDisposition?.StateVersion
+                == (completedSession.CurrentCombatSuccessor?.StateVersion
+                    ?? completedSession.CurrentCombatCustodyDisposition?.StateVersion
                     ?? completedSession.CurrentCombatSettlement?.StateVersion
                     ?? completedSession.CurrentCombatPostResultRetreat?.StateVersion
                     ?? completedSession.CurrentCombatAssaultResult?.StateVersion

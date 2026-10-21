@@ -243,7 +243,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(journal.SubmitOwnerForceSeal(defender, defenderId,
             defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(25, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        Assert.Equal(26, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
@@ -260,6 +260,9 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Equal(1L, query.ExecuteScalar());
         query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
             + "AND action_kind='native-combat-no-custody'";
+        Assert.Equal(1L, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id "
+            + "AND action_kind='native-combat-successor'";
         Assert.Equal(1L, query.ExecuteScalar());
     }
 
@@ -295,7 +298,7 @@ public sealed class CampaignDurableAuthorityJournalTests
             opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(first.IsAccepted);
         var cold = fixture.Open(clock);
-        Assert.Equal(25, CampaignExercises.QueryCheckpoint(
+        Assert.Equal(26, CampaignExercises.QueryCheckpoint(
             cold.ReadVerified(request.CampaignId)).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(
             cold.ReadVerified(request.CampaignId)).IsVerified);
@@ -369,7 +372,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.True(accepted.IsAccepted);
         var cold = fixture.Open(clock);
         var retained = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(25, CampaignExercises.QueryCheckpoint(retained).ContractVersion);
+        Assert.Equal(26, CampaignExercises.QueryCheckpoint(retained).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(retained).IsVerified);
         var retry = cold.SubmitOwnerCustody(captor, captorId,
             opening.Revision, opening.PublicActionRefs[0]);

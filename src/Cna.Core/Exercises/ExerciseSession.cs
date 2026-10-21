@@ -28,7 +28,8 @@ public sealed class ExerciseSession
         CampaignWorldSnapshotV6? combatSettledWorld = null,
         CampaignNativeCombatCustodyDispositionV25? combatCustodyDisposition = null,
         CampaignWorldSnapshotV6? combatCustodyWorld = null,
-        CampaignNativeCombatCustodyStateV25? combatCustodyState = null)
+        CampaignNativeCombatCustodyStateV25? combatCustodyState = null,
+        CampaignNativeCombatSuccessorV26? combatSuccessor = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -168,6 +169,15 @@ public sealed class ExerciseSession
             && (combatCustodyWorld is not null || combatCustodyState is not null))
             throw new ArgumentException("Custody assets require an accepted disposition.",
                 nameof(combatCustodyWorld));
+        if (combatSuccessor is not null && (combatSelection is null
+            || combatAssaultResult is null || combatSettlement is null
+            || combatCustodyDisposition is null || combatCustodyWorld is null
+            || !combatSuccessor.SerializeCanonical().AsSpan().SequenceEqual(
+                CampaignNativeCombatSuccessorV26.Create(combatSelection,
+                    combatAssaultResult, combatSettlement, combatCustodyDisposition,
+                    combatCustodyWorld, combatCustodyState, context).SerializeCanonical())))
+            throw new ArgumentException("Combat successor must bind accepted custody and World.",
+                nameof(combatSuccessor));
         CurrentCombatDecision = combatSelection;
         CurrentNoAttackCompletion = noAttackCompletion;
         CurrentCombatBarrage = combatBarrage;
@@ -189,6 +199,7 @@ public sealed class ExerciseSession
         CurrentCombatCustodyDisposition = combatCustodyDisposition;
         CurrentCombatCustodyWorld = combatCustodyWorld;
         CurrentCombatCustodyState = combatCustodyState;
+        CurrentCombatSuccessor = combatSuccessor;
     }
     internal CampaignSnapshotV11 CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
@@ -215,5 +226,6 @@ public sealed class ExerciseSession
     internal CampaignNativeCombatCustodyDispositionV25? CurrentCombatCustodyDisposition { get; }
     internal CampaignWorldSnapshotV6? CurrentCombatCustodyWorld { get; }
     internal CampaignNativeCombatCustodyStateV25? CurrentCombatCustodyState { get; }
+    internal CampaignNativeCombatSuccessorV26? CurrentCombatSuccessor { get; }
     public override string ToString() => nameof(ExerciseSession);
 }

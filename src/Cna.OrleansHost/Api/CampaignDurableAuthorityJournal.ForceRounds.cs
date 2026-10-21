@@ -170,7 +170,24 @@ internal sealed partial class CampaignDurableAuthorityJournal
             PersistAccepted(connection, transaction, campaignId, custodyHead,
                 CampaignHostAcceptedStep.NativeCombatNoCustodyKind,
                 null, null, null, null, custodyCommand, completed);
+            AppendNativeCombatSuccessor(connection, transaction, campaignId);
         }
+    }
+
+    private void AppendNativeCombatSuccessor(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        var head = Load(connection, transaction, campaignId);
+        var completed = CampaignHostAdapter.CompleteNativeCombatSuccessor(
+            head.Session);
+        if (!completed.IsAccepted)
+            throw new InvalidOperationException(
+                "Accepted Combat custody cannot resume the normal sequence.");
+        var command = CampaignHostAdapter.NativeCombatSuccessorCommand(
+            head.Session, completed);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.NativeCombatSuccessorKind,
+            null, null, null, null, command, completed);
     }
 
     internal bool TickForceRound(string campaignId)

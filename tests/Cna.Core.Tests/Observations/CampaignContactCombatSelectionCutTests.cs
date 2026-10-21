@@ -512,6 +512,16 @@ public sealed class CampaignContactCombatSelectionCutTests
                 },
                 custodySession.CurrentCombatCustodyWorld!,
                 custodySession.CurrentCombatCustodyState, context));
+        var completedCombat = CampaignExercises.CompleteNativeCombatSuccessor(
+            custodySession);
+        Assert.True(completedCombat.IsAccepted,
+            completedCombat.RejectionReason.ToString());
+        Assert.Equal(26, CampaignExercises.QueryCheckpoint(
+            completedCombat.SuccessorSession!).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(
+            completedCombat.SuccessorSession!).IsVerified);
+        Assert.False(CampaignExercises.CompleteNativeCombatSuccessor(
+            completedCombat.SuccessorSession!).IsAccepted);
         Assert.Equal(custodyStep.Evidence!.EventRecords[0],
             CampaignCurrentEventSerializer.Serialize(
                 CampaignCurrentEventSerializer.Deserialize(

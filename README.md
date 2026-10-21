@@ -152,11 +152,12 @@ lot. Replacement maturation, the next normal campaign position, and the public
 route remain before public issuance.
 An internal V26 successor event now binds the accepted custody event to a
 derived same-slot Reserve Release position, settled World, Core RNG, and custody
-state. It is not yet an Exercise/Host next-turn checkpoint or public opening.
+state. Exercise and normal Host retain and cold-replay its V26 checkpoint after
+custody. The following ordinary action and public opening remain unwired.
 The normal Host appends the source-backed V22 result after both owner Force seals
 and Anti Armor, and a fresh journal read replays the exact result and ammunition
 spend. Earlier 5-TOE infantry campaigns remain at their prior unissued boundary.
-Next-position Exercise/Host replay, custody carry, non-infantry disposition,
+Next-position ordinary action, custody carry, non-infantry disposition,
 and public route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 

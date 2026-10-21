@@ -843,7 +843,8 @@ idempotent receipt with cold replay of V25. An internal V26 event now binds
 that accepted custody event to a derived Reserve Release position, settled
 World, Core RNG, and custody state. V11 snapshot admission deliberately stops
 at Combat entry; V26 does not widen that historical contract. Exercise and
-Host still need a versioned next-turn checkpoint and cold replay.
+normal Host retain and cold-replay the V26 checkpoint. The following ordinary
+action still needs a versioned path from that checkpoint.
 The next internal Core cut derives guard and unguarded route candidates only
 from the settled World, a current captor contact, and published map/terrain.
 It keeps private target identity and authority in Core. Public routing,

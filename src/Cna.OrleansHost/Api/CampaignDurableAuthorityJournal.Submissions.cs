@@ -262,6 +262,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
+        if (kind == CampaignOwnerOpeningKind.Custody)
+            AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
             AppendWorldSettlement(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.CombatSelection
