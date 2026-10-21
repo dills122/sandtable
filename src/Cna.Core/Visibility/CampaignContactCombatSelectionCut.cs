@@ -25,7 +25,7 @@ internal sealed record CampaignContactCombatSelectionCut(
             || position.SegmentId != LandSegmentIds.Combat
             || position.StepId != LandStepIds.PositionDetermination
             || position.ActorRole != LandActorRole.FirstActingSide
-            || position.ActiveSide != side
+            || snapshot.InitiativeHolder != side
             || snapshot.ReactionWindow is not null
             || snapshot.BreakdownFlow is not CampaignBreakdownFlow.Idle)
             throw new InvalidOperationException("Combat selection requires the acting side's position-determination cut.");

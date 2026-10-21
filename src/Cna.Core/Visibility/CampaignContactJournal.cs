@@ -195,6 +195,9 @@ internal sealed class CampaignContactJournal
     public IReadOnlyList<CampaignContactTargetCandidate> CurrentTargetsFor(
         LandSide side, string actingFormationId) => Knowledge(side).CurrentTargetsFor(actingFormationId);
 
+    internal string ResolvePrivateTarget(LandSide side, string actingFormationId,
+        string contactHandle) => Knowledge(side).ResolvePrivateTarget(actingFormationId, contactHandle);
+
     private CampaignContactKnowledge Knowledge(LandSide side) => side switch
     {
         LandSide.Axis => axis,
