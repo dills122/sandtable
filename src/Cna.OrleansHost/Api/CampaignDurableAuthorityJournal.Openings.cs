@@ -37,6 +37,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var seat = AuthenticateSeat(connection, transaction, credential)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
         var authority = Load(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.ForceAssignment && authority.Timing is null)
+            throw new InvalidOperationException("Force Assignment needs a pinned campaign timing configuration.");
         byte[] visible;
         long authorityVersion;
         string[] actionIds;

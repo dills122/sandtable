@@ -104,9 +104,12 @@ allocation candidate from that owner's facts. Core now accepts two
 owner-only full-TOE seals at that cut and records V17 events. After both,
 a separate V18 System completion advances to Anti Armor. Normal Host binds
 each seal to its own seat, opaque reference, atomic evidence and restart-safe
-receipt, then retains System completion in the same transaction. The shared deadline, cancellation,
-non-infantry disposition and public route remain unfinished. Reserve Release, assault
-adjudication and a public opening route remain unfinished; historical
+receipt, then retains System completion in the same transaction.
+Normal campaign creation can now pin a canonical seven-window timing configuration to
+the durable journal head; campaigns without one cannot issue Force Assignment seals.
+The configuration supplies no implicit budget, and live deadline enforcement is still open.
+The shared deadline, cancellation, non-infantry disposition, Reserve Release,
+assault adjudication and public route remain unfinished; historical
 observation readers remain readable while the complete successor path is built.
 
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)

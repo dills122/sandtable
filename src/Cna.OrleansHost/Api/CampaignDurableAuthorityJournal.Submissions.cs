@@ -48,6 +48,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var seat = AuthenticateSeat(connection, transaction, credential)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
         var head = Load(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.ForceAssignment && head.Timing is null)
+            return CampaignOwnerSubmissionResult.Rejected();
         if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
             || !IsPublicReference(publicActionRef)
             || openingRevision < 1)

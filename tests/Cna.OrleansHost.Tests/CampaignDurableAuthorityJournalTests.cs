@@ -13,6 +13,105 @@ public sealed class CampaignDurableAuthorityJournalTests
     private const string OperatorSecret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
 
     [Fact]
+    public void ExplicitCampaignTimingIsCanonicalBoundAndColdVerified()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = Request();
+        var timing = new CampaignDecisionTimingConfigurationV1(
+            "rules-lab.campaign-timing.1", request.RulesetHash, request.ContentHash,
+            [new("custody", 30_000, "leave-unguarded"),
+                new("cycle-control", 30_000, "finish-phase"),
+                new("force-assignment", 30_000, "cancel-incomplete-voluntary-round"),
+                new("rba", 30_000, "cancel-without-decline"),
+                new("reserve-release", 30_000, "convert-unresolved-i-retain-ii"),
+                new("retreat", 30_000, "refuse-retreat"),
+                new("selection", 30_000, "no-selection")]);
+        var canonical = timing.SerializeCanonical();
+        Assert.Equal(timing.Hash, "sha256:" + Convert.ToHexStringLower(
+            System.Security.Cryptography.SHA256.HashData(canonical)));
+        Assert.Equal(canonical, CampaignDecisionTimingConfigurationV1
+            .DeserializeCanonical(canonical).SerializeCanonical());
+        Assert.Throws<ArgumentException>(() => journal.CreateCampaign(request,
+            new CampaignDecisionTimingConfigurationV1(timing.ConfigId, request.RulesetHash,
+                "sha256:" + new string('0', 64), timing.Windows)));
+        journal.CreateCampaign(request, timing);
+        Assert.NotNull(journal.ReadVerified(request.CampaignId));
+        var reopened = CampaignDurableAuthorityJournal.OpenExisting(fixture.Path);
+        Assert.NotNull(reopened.ReadVerified(request.CampaignId));
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "UPDATE campaigns SET timing_configuration=$bytes WHERE campaign_id=$id";
+            command.Parameters.AddWithValue("$bytes", new CampaignDecisionTimingConfigurationV1(
+                timing.ConfigId, timing.RulesetHash, timing.ContentHash,
+                timing.Windows.Select(value => value.Kind == "force-assignment"
+                    ? value with { DecisionBudgetMilliseconds = 29_999 } : value))
+                .SerializeCanonical());
+            command.Parameters.AddWithValue("$id", request.CampaignId);
+            Assert.Equal(1, command.ExecuteNonQuery());
+        }
+        Assert.Throws<InvalidOperationException>(() => reopened.ReadVerified(request.CampaignId));
+    }
+
+    [Fact]
+    public void SchemaFiveCampaignRemainsReadableButCannotAcquireImplicitTiming()
+    {
+        using var fixture = new JournalFixture();
+        var request = Request();
+        fixture.Create().CreateCampaign(request);
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            byte[][] evidence;
+            using (var query = connection.CreateCommand())
+            {
+                query.CommandText = "SELECT creation_event,initial_snapshot,initial_contacts "
+                    + "FROM campaigns WHERE campaign_id=$id";
+                query.Parameters.AddWithValue("$id", request.CampaignId);
+                using var reader = query.ExecuteReader();
+                Assert.True(reader.Read());
+                evidence = [reader.GetFieldValue<byte[]>(0), reader.GetFieldValue<byte[]>(1),
+                    reader.GetFieldValue<byte[]>(2)];
+            }
+            using var stream = new MemoryStream();
+            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
+            {
+                writer.Write("campaign-durable-authority-v2:creation");
+                writer.Write(request.ContractVersion);
+                writer.Write(request.CampaignId);
+                writer.Write(request.RulesetHash);
+                writer.Write(request.Seed);
+                writer.Write(request.SetupId);
+                writer.Write(request.SetupHash);
+                writer.Write(request.ContentPackId);
+                writer.Write(request.ContentHash);
+                writer.Write(request.ScenarioId);
+                foreach (var bytes in evidence)
+                {
+                    writer.Write(bytes.Length);
+                    writer.Write(bytes);
+                }
+            }
+            using (var update = connection.CreateCommand())
+            {
+                update.CommandText = "UPDATE campaigns SET head_hash=$hash WHERE campaign_id=$id";
+                update.Parameters.AddWithValue("$hash", "sha256:" + Convert.ToHexStringLower(
+                    System.Security.Cryptography.SHA256.HashData(stream.ToArray())));
+                update.Parameters.AddWithValue("$id", request.CampaignId);
+                Assert.Equal(1, update.ExecuteNonQuery());
+            }
+            using var change = connection.CreateCommand();
+            change.CommandText = "ALTER TABLE campaigns DROP COLUMN timing_configuration; PRAGMA user_version=5";
+            change.ExecuteNonQuery();
+        }
+        var legacy = fixture.Open();
+        Assert.NotNull(legacy.ReadVerified(request.CampaignId));
+        Assert.Throws<InvalidOperationException>(() => legacy.CreateCampaign(request));
+    }
+
+    [Fact]
     public void ContactCombatOpeningCommitsOnceAndColdReplaysSelectedAuthority()
     {
         using var fixture = new JournalFixture();
@@ -71,6 +170,10 @@ public sealed class CampaignDurableAuthorityJournalTests
         var afterDecline = coldDecline.ReadVerified(request.CampaignId);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(afterDecline).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(afterDecline).IsVerified);
+        Assert.Throws<InvalidOperationException>(() =>
+            coldDecline.QueryForceOwnerOpening(credential, "axis-infantry"));
+        Assert.False(coldDecline.SubmitOwnerForceSeal(credential, "axis-infantry", 1,
+            "act." + new string('0', 64)).IsAccepted);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
         using var query = connection.CreateCommand();

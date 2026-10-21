@@ -101,8 +101,12 @@ unit. Core V17 retains the two owner-only seals as separate canonical events.
 Both keep the Force Assignment position and the other owner's visible cut
 unchanged. A separate V18 System completion advances to Anti Armor after both
 seals. Normal Host retains each under its seat, opaque ref and cold-replay
-receipt and appends V18 atomically with the second. Shared deadline and
-System cancellation remain to be implemented before outward issuance. A
+receipt and appends V18 atomically with the second.
+Normal campaign creation can pin canonical seven-window timing bytes to its
+durable journal head, bound to its ruleset and content hashes. Absent timing
+configuration blocks Force Assignment opening and seals; the pinned budget
+is not yet live-gated. Shared deadline and System cancellation remain before
+outward issuance. A
 contact bound to a unit with no combat component
 has no Force Assignment candidate; normal contact selection must gain a
 source-backed non-infantry disposition before outward Combat issuance.

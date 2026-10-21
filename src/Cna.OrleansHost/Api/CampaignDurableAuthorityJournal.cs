@@ -15,15 +15,19 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 5;
+    private const int SchemaVersion = 6;
+    private const int LegacySchemaVersion = 5;
     private const int MaxEvidenceBytes = 2_097_152;
     private readonly string path;
     private readonly TimeProvider clock;
+    private readonly int schemaVersion;
 
-    private CampaignDurableAuthorityJournal(string path, TimeProvider clock)
+    private CampaignDurableAuthorityJournal(string path, TimeProvider clock,
+        int schemaVersion = SchemaVersion)
     {
         this.path = path;
         this.clock = clock;
+        this.schemaVersion = schemaVersion;
     }
 
     internal static CampaignDurableAuthorityJournal CreateNew(string absolutePath,
@@ -52,7 +56,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               setup_hash TEXT NOT NULL, content_pack_id TEXT NOT NULL,
               content_hash TEXT NOT NULL, scenario_id TEXT NOT NULL,
               creation_event BLOB NOT NULL, initial_snapshot BLOB NOT NULL,
-              initial_contacts BLOB NOT NULL,
+              initial_contacts BLOB NOT NULL, timing_configuration BLOB NOT NULL,
               head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL
             )
             """);
@@ -142,17 +146,31 @@ internal sealed partial class CampaignDurableAuthorityJournal
             & (UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead
                | UnixFileMode.OtherWrite)) != 0)
             throw new InvalidOperationException("Journal permissions are not private.");
-        var journal = new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System);
-        using var connection = journal.Connect(create: false);
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = absolutePath,
+            Mode = SqliteOpenMode.ReadOnly,
+        }.ToString());
+        connection.Open();
+        var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || ScalarInt(connection, "PRAGMA user_version") != SchemaVersion)
+            || version is not (SchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
-        return journal;
+        return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
+            version);
     }
 
-    internal ExerciseSession CreateCampaign(CampaignCreationRequest request)
+    internal ExerciseSession CreateCampaign(CampaignCreationRequest request,
+        CampaignDecisionTimingConfigurationV1? timing = null)
     {
         ArgumentNullException.ThrowIfNull(request);
+        if (schemaVersion != SchemaVersion)
+            throw new InvalidOperationException("Create new campaigns in a current journal.");
+        if (timing is not null && (timing.RulesetHash != request.RulesetHash
+            || timing.ContentHash != request.ContentHash))
+            throw new ArgumentException("Decision timing must bind the campaign rules and content.",
+                nameof(timing));
+        var timingBytes = timing?.SerializeCanonical() ?? [];
         var created = CampaignHostAdapter.Create(request);
         if (!created.IsStarted) throw new InvalidOperationException("Core rejected campaign creation.");
         var creation = created.CreationEventBytes!;
@@ -167,7 +185,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         command.Transaction = transaction;
         command.CommandText = """
             INSERT INTO campaigns VALUES ($id,$version,$rules,$seed,$setup,$setupHash,
-              $pack,$content,$scenario,$creation,$snapshot,$contacts,0,$head)
+              $pack,$content,$scenario,$creation,$snapshot,$contacts,$timing,0,$head)
             """;
         command.Parameters.AddWithValue("$id", request.CampaignId);
         command.Parameters.AddWithValue("$version", request.ContractVersion);
@@ -181,7 +199,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         command.Parameters.AddWithValue("$creation", creation);
         command.Parameters.AddWithValue("$snapshot", snapshot);
         command.Parameters.AddWithValue("$contacts", contacts);
-        command.Parameters.AddWithValue("$head", InitialHash(request, creation, snapshot, contacts));
+        command.Parameters.AddWithValue("$timing", timingBytes);
+        command.Parameters.AddWithValue("$head", InitialHash(request, creation, snapshot, contacts,
+            timingBytes));
         command.ExecuteNonQuery();
         transaction.Commit();
         return created.Session!;
@@ -268,7 +288,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
     }
 
-    private static Loaded Load(SqliteConnection connection, SqliteTransaction transaction,
+    private Loaded Load(SqliteConnection connection, SqliteTransaction transaction,
         string campaignId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(campaignId);
@@ -276,15 +296,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         byte[] creation;
         byte[] initial;
         byte[] initialContactBytes;
+        byte[] timingBytes;
         long headSequence;
         string headHash;
         using (var command = connection.CreateCommand())
         {
             command.Transaction = transaction;
-            command.CommandText = """
+            command.CommandText = schemaVersion == LegacySchemaVersion ? """
                 SELECT contract_version,ruleset_hash,seed,setup_id,setup_hash,content_pack_id,
                   content_hash,scenario_id,creation_event,initial_snapshot,initial_contacts,
                   head_sequence,head_hash
+                FROM campaigns WHERE campaign_id=$id
+                """ : """
+                SELECT contract_version,ruleset_hash,seed,setup_id,setup_hash,content_pack_id,
+                  content_hash,scenario_id,creation_event,initial_snapshot,initial_contacts,
+                  timing_configuration,head_sequence,head_hash
                 FROM campaigns WHERE campaign_id=$id
                 """;
             command.Parameters.AddWithValue("$id", campaignId);
@@ -297,11 +323,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
             creation = ReadBounded(reader, 8);
             initial = ReadBounded(reader, 9);
             initialContactBytes = ReadBounded(reader, 10);
-            headSequence = reader.GetInt64(11);
-            headHash = reader.GetString(12);
+            timingBytes = schemaVersion == LegacySchemaVersion ? []
+                : reader.GetFieldValue<byte[]>(11);
+            if (timingBytes.Length > 4096)
+                throw new InvalidOperationException("Campaign timing evidence is oversized.");
+            headSequence = reader.GetInt64(schemaVersion == LegacySchemaVersion ? 11 : 12);
+            headHash = reader.GetString(schemaVersion == LegacySchemaVersion ? 12 : 13);
         }
+        var timing = timingBytes.Length == 0 ? null
+            : CampaignDecisionTimingConfigurationV1.DeserializeCanonical(timingBytes);
+        if (timing is not null && (timing.RulesetHash != request.RulesetHash
+            || timing.ContentHash != request.ContentHash))
+            throw new InvalidOperationException("Retained timing has a foreign campaign binding.");
         var sequence = 0L;
-        var hash = InitialHash(request, creation, initial, initialContactBytes);
+        var hash = InitialHash(request, creation, initial, initialContactBytes, timingBytes,
+            schemaVersion == LegacySchemaVersion);
         var steps = new List<CampaignHostAcceptedStep>();
         var stepContacts = new List<IReadOnlyList<byte[]>>();
         using (var command = connection.CreateCommand())
@@ -347,7 +383,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             DecodeContactRecords(initialContactBytes), stepContacts);
         if (!imported.IsVerified)
             throw new InvalidOperationException("Core rejected retained campaign authority.");
-        return new Loaded(imported.Session!, sequence, hash);
+        return new Loaded(imported.Session!, sequence, hash, timing);
     }
 
     private SqliteConnection Connect(bool create)
@@ -383,9 +419,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     private static string InitialHash(CampaignCreationRequest request, byte[] creation,
-        byte[] initial, byte[] contacts) => Hash(writer =>
+        byte[] initial, byte[] contacts, byte[] timing, bool legacy = false) => Hash(writer =>
     {
-        writer.Write("campaign-durable-authority-v2:creation");
+        writer.Write(legacy ? "campaign-durable-authority-v2:creation"
+            : "campaign-durable-authority-v3:creation");
         writer.Write(request.ContractVersion);
         writer.Write(request.CampaignId);
         writer.Write(request.RulesetHash);
@@ -398,6 +435,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         WriteBytes(writer, creation);
         WriteBytes(writer, initial);
         WriteBytes(writer, contacts);
+        if (!legacy) WriteBytes(writer, timing);
     });
 
     private static string StepHash(string prior, long sequence, string kind,
@@ -462,5 +500,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return (long)command.ExecuteScalar()!;
     }
 
-    private sealed record Loaded(ExerciseSession Session, long Sequence, string Hash);
+    private sealed record Loaded(ExerciseSession Session, long Sequence, string Hash,
+        CampaignDecisionTimingConfigurationV1? Timing);
 }
