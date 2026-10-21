@@ -22,8 +22,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var seat = AuthenticateSeat(connection, transaction, credential)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
         var head = Load(connection, transaction, seat.CampaignId);
-        if (string.IsNullOrWhiteSpace(actingElementId)
-            || string.IsNullOrWhiteSpace(publicActionRef) || openingRevision < 1)
+        if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
+            || !IsPublicReference(publicActionRef)
+            || openingRevision < 1)
             return CampaignOwnerSubmissionResult.Rejected();
 
         using (var retry = connection.CreateCommand())
@@ -130,6 +131,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
         transaction.Commit();
         return CampaignOwnerSubmissionResult.Accepted(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Evidence!.Receipt));
+    }
+
+    private static bool IsPublicReference(string? value)
+    {
+        if (value is null || value.Length != 68
+            || !value.StartsWith("act.", StringComparison.Ordinal)) return false;
+        for (var index = 4; index < value.Length; index++)
+        {
+            if (value[index] is not (>= '0' and <= '9')
+                and not (>= 'a' and <= 'f')) return false;
+        }
+        return true;
     }
 }
 

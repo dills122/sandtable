@@ -130,6 +130,8 @@ public sealed class CampaignDurableAuthorityJournalTests
         var reference = opening.PublicActionRefs[0];
         Assert.False(journal.SubmitOwnerMovement(credential, "axis-infantry",
             opening.Revision, "act.forged").IsAccepted);
+        Assert.False(journal.SubmitOwnerMovement(credential, "axis-infantry",
+            opening.Revision, "act." + new string('a', 1_000_000)).IsAccepted);
 
         var acceptedOwner = journal.SubmitOwnerMovement(credential, "axis-infantry",
             opening.Revision, reference);
