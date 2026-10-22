@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Cna.Core.Campaigns;
 using Cna.Core.Rules;
 
@@ -5,21 +6,46 @@ namespace Cna.Core.Observations;
 
 internal static class CampaignObservationWeatherSelector
 {
+    // history grows by one entry per operation stage as a campaign progresses, and this
+    // selector is called once per observer per observation (the per-decision-point hot
+    // path). Indexing it once per distinct history-list instance instead of linearly
+    // rescanning it on every call avoids the resulting O(turns^2) cost across a replay.
+    private static readonly ConditionalWeakTable<
+        IReadOnlyList<CampaignOperationStageWeather>,
+        Dictionary<(int GameTurn, int OperationStage), CampaignOperationStageWeather>> IndexCache = new();
+
     public static CampaignObservationWeather? Select(int gameTurn, int operationStage,
         IReadOnlyList<CampaignOperationStageWeather> history)
     {
         ArgumentNullException.ThrowIfNull(history);
-        var matches = history.Where(value => value.GameTurn == gameTurn
-            && value.OperationStage == operationStage).ToArray();
-        if (matches.Length > 1)
-            throw new ArgumentException("Weather history contains a duplicate pair.", nameof(history));
-        if (matches.Length == 0) return null;
-        var value = matches[0];
+        var index = IndexCache.GetValue(history, BuildIndex);
+        if (!index.TryGetValue((gameTurn, operationStage), out var value))
+        {
+            return null;
+        }
+
         return new CampaignObservationWeather(1, value.GameTurn, value.OperationStage,
             FormatSeason(value.Season),
             FormatKind(value.Kind),
             FormatScope(value.Scope),
             value.AffectedAreas.Select(FormatArea).ToArray());
+    }
+
+    private static Dictionary<(int GameTurn, int OperationStage), CampaignOperationStageWeather>
+        BuildIndex(IReadOnlyList<CampaignOperationStageWeather> history)
+    {
+        var index = new Dictionary<(int GameTurn, int OperationStage), CampaignOperationStageWeather>(
+            history.Count);
+        foreach (var value in history)
+        {
+            if (!index.TryAdd((value.GameTurn, value.OperationStage), value))
+            {
+                throw new ArgumentException(
+                    "Weather history contains a duplicate pair.", nameof(history));
+            }
+        }
+
+        return index;
     }
 
     private static CampaignObservationWeatherSeason FormatSeason(WeatherSeason season) => season switch

@@ -194,6 +194,10 @@ internal static class CampaignCurrentActionExecution
             case CompleteBreakdownSegmentAction complete:
                 return CampaignBreakdownLifecycleFactory.CreateBreakdownCompletion(snapshot, artifact, scenario, complete.ActionId);
             case MoveReactingElementAction move:
+                // Both authority facts are [] for the same reason
+                // CampaignElementMovedV3Factory.DeriveControlledLocationIds is: see the
+                // guard and comment on that method. This projection is only used below to
+                // resolve the opportunity alias, not to compute anything persisted.
                 var projection = Cna.Core.Observations.CampaignObservationV7Projector.ProjectWithAuthority(
                     snapshot, artifact, scenario, side!.Value,
                     new Cna.Core.Observations.CampaignObservationV6AuthorityFacts([], []));

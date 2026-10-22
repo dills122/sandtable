@@ -107,6 +107,25 @@ public static class Cna1979ContentCompatibilityValidator
                     $"/elements/{element.ElementId}/mobilityId",
                     $"Unknown Movement mobility ID '{element.MobilityId}'.");
             }
+            else
+            {
+                // Mirrors ContentPackV6Validator's terrain/mobility cross-check: a pack can
+                // otherwise pass with a terrain ID that has no Movement rule for one of its
+                // elements' mobility classes, surfacing later as an unhandled movement
+                // failure instead of a validation error.
+                foreach (var location in pack.Locations)
+                {
+                    if (!Cna1979Movement.LookupTerrain(location.TerrainId, element.MobilityId)
+                        .IsSupported)
+                    {
+                        issues.Add(new ContentValidationIssue(
+                            "content.terrain-mobility-unsupported",
+                            $"/locations/{location.LocationId}",
+                            $"Terrain '{location.TerrainId}' has no Movement rule for " +
+                            $"element '{element.ElementId}' mobility '{element.MobilityId}'."));
+                    }
+                }
+            }
 
             if (element.BreakdownVehicleCohort is { } cohort)
             {
