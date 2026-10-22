@@ -22,15 +22,21 @@ SELECTORS = (
     'Cna.Core.Tests.Campaigns.CombatSettledControlTests.FullSourceScopeOrdinalPrefixProgressAndOriginalDescriptorRejectTampering',
     'Cna.Core.Tests.Campaigns.CombatStepsHistoryReplayTests.SyntheticC3aAndReactionForksCannotSupplyActualSelectionProvenance',
 )
+# Static complete-class balance measured in CI01 (see docs/work/ci-runtime-optimization-2026-10-15.md).
 CORE_C_CLASSES = (
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests',
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests',
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests',
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests',
+    'Cna.Core.Tests.Campaigns.CombatActualMovedContinuationContractTests',
+    'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementContractTests',
+    'Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests',
 )
 CORE_D_CLASSES = (
     'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlTests',
     'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlContractTests',
+    'Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests',
+    'Cna.Core.Tests.Campaigns.CombatActualPostAssaultContinuationRetryTests',
 )
 CORE_SHARDS = ('core-a', 'core-b', 'core-c', 'core-d')
 MODULES = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'core-c': 'Cna.Core.Tests', 'core-d': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
