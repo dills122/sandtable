@@ -47,8 +47,8 @@ internal static class CampaignObservationV6Projector
         }
 
         var definition = artifact.Definition.LegacyDefinition;
-        var locations = definition.Locations.Select(value =>
-            new CampaignObservationLocation(value.LocationId, value.TerrainId)).ToArray();
+        var cachedProjection = CampaignObservationContentProjectionCache.Get(definition);
+        var locations = cachedProjection.Locations;
         var knownLocations = locations.Select(value => value.LocationId)
             .ToHashSet(StringComparer.Ordinal);
         if (authorityFacts.ApparentEnemyControlledLocationIds.Any(value =>
@@ -59,16 +59,9 @@ internal static class CampaignObservationV6Projector
                 nameof(authorityFacts));
         }
 
-        var edges = definition.Edges.Select(value => new CampaignObservationEdge(
-            value.FirstLocationId,
-            value.SecondLocationId,
-            value.Features.Select(feature => new CampaignObservationEdgeFeature(
-                feature.FeatureId,
-                feature.DirectionFromLocationId)).ToArray())).ToArray();
+        var edges = cachedProjection.Edges;
         var sideId = FormatSideId(observer);
-        var elementsById = definition.Elements.ToDictionary(
-            value => value.ElementId,
-            StringComparer.Ordinal);
+        var elementsById = cachedProjection.ElementsById;
         var worldByElement = snapshot.World.Elements.ToDictionary(
             value => value.ElementId,
             StringComparer.Ordinal);

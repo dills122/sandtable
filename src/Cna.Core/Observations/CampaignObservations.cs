@@ -28,6 +28,8 @@ public static class CampaignObservations
         var controlledLocations = CampaignElementMovedV3Factory.DeriveControlledLocationIds(
             snapshot.World, handle.Context.ArtifactV6, handle.Context.Scenario,
             observer == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis);
+        // apparentZocRepresentationIds is [] for the same reason DeriveControlledLocationIds
+        // above is: see the guard and comment on that method.
         return CampaignObservationV7ProjectionResult.Projected(
             CampaignObservationV7Projector.Project(
                 snapshot,

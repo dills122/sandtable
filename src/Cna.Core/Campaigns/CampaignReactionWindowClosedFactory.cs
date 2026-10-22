@@ -85,7 +85,7 @@ internal static class CampaignReactionWindowClosedFactory
             throw Unsupported("Reaction close authority is not admitted.");
         }
 
-        var controlled = CampaignElementMovedV2Factory.DeriveControlledLocationIds(
+        var zocAuthority = CampaignElementMovedV2Factory.DeriveZocAuthority(
             prior.World,
             artifact,
             scenario,
@@ -95,7 +95,9 @@ internal static class CampaignReactionWindowClosedFactory
             artifact,
             scenario,
             window.ReactingSide,
-            new CampaignObservationV6AuthorityFacts(controlled, []));
+            new CampaignObservationV6AuthorityFacts(
+                zocAuthority.ControlledLocationIds,
+                zocAuthority.SourceRepresentationIds));
         var publicWindowId = CampaignObservationV6DisclosureIdentity.CreateWindow(
             prior.CampaignId,
             prior.RulesetHash,

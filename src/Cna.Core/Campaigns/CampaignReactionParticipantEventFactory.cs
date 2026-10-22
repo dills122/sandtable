@@ -359,7 +359,7 @@ internal static class CampaignReactionParticipantEventFactory
             throw Unsupported("Reaction participant authority is not admitted.");
         }
 
-        var controlled = CampaignElementMovedV2Factory.DeriveControlledLocationIds(
+        var zocAuthority = CampaignElementMovedV2Factory.DeriveZocAuthority(
             prior.World,
             artifact,
             scenario,
@@ -369,7 +369,9 @@ internal static class CampaignReactionParticipantEventFactory
             artifact,
             scenario,
             actingSide,
-            new CampaignObservationV6AuthorityFacts(controlled, []));
+            new CampaignObservationV6AuthorityFacts(
+                zocAuthority.ControlledLocationIds,
+                zocAuthority.SourceRepresentationIds));
     }
 
     private static AuthorityBinding ResolveBinding(

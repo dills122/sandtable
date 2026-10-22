@@ -304,9 +304,28 @@ internal static class CampaignElementMovedV3Factory
     {
         if (!Enum.IsDefined(side) || !CampaignWorldV6Validator.IsValid(world, artifact, scenario))
             throw Unsupported("ZOC authority requires the certified Breakdown profile.");
-        // This profile admits at most one combat/HQ battalion at each own location.
-        // A positive ZOC source requires aggregate stacking greater than one (10.11).
-        // Broader dormant worlds must receive their own versioned certification path.
+        // This profile admits at most one combat/HQ battalion at each own location, and
+        // Cna1979Movement's stacking authority currently defines exactly one organization
+        // ("land.organization.battalion") at StackingValue 1. A positive ZOC source
+        // requires aggregate stacking greater than one (10.11), so under this profile no
+        // location can ever produce a qualifying ZOC source or ZOC-exerting representation
+        // (the same holds for CampaignObservations.cs's apparentZocRepresentationIds: []
+        // and its sibling call sites) - returning [] here is mathematically equivalent to
+        // running the full Rules evaluation, not a shortcut that drops real ZOC coverage.
+        // The guard below fails loudly instead of silently if that ever stops being true.
+        // CampaignElementMovedV2Factory.DeriveZocAuthority has the real per-representation
+        // computation (ControlledLocationIds + SourceRepresentationIds) to port onto the V6
+        // world model when a broader, multi-unit-stacking content profile is certified.
+        if (Cna1979Movement.Definition.Stacking.Any(value => value.StackingValue > 1)
+            || Cna1979Movement.Definition.Stacking.Count > 1)
+        {
+            throw Unsupported(
+                "The stacking authority has changed since this ZOC stub was written " +
+                "(it now admits multi-unit stacking) - port " +
+                "CampaignElementMovedV2Factory.DeriveZocAuthority's real ZOC computation " +
+                "to the V6 world model instead of returning an empty set.");
+        }
+
         return [];
     }
 
