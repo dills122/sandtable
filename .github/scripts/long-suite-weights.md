@@ -298,3 +298,20 @@ Report: `artifacts/rc-rba-core/dsteele_Dylans-MacBook-Pro_2026-10-24_21_36_49.20
 | `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.StrictReplayRejectsChangedBarrageBindingAndUnknownFields` | `190724b637c8` | 986 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.AcceptedRetreatRemainsAppliedAndDeadlineDoesNotRestart` | `d0f67f95834e` | 1342 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RejectionAndClockBoundariesDoNotMutateRba` | `a5b2104d951a` | 386 |
+
+## Native cycle-control timeout (October 24, 2026)
+
+Seven new Core rows measured in passing Release focused run. Existing weights
+and baseline metadata unchanged; local scheduling hints, not hosted performance
+or admission evidence.
+Report: `artifacts/rc-cycle-core-final/dsteele_Dylans-MacBook-Pro_2026-10-24_22_43_57.721650.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.ClockAndBudgetRejectionsLeavePendingDecisionUnchanged` | `cb8142df884a` | 1225 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.UnavailableOpeningHasNoInventedClock` | `26a6e1e107cb` | 2051 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.DeadlineFinishesAsSystemAndReconstructsWithoutOwnerChoice` | `4dedc3f28676` | 1606 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.OwnerFinishRemainsVersion28AndTimeoutBytesStayDistinct` | `14ae1048256e` | 463 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.RepeatedRuntimeRetainsExplicitTimeoutAtActualOrdinal(ordinal: 2)` | `0d9b107b1551` | 359 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.RepeatedRuntimeRetainsExplicitTimeoutAtActualOrdinal(ordinal: 3)` | `79ed01ea0c1c` | 408 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.StrictReplayRejectsChangedReleaseWorldOrdinalAndUnknownFields` | `1d06f88e601b` | 246 |

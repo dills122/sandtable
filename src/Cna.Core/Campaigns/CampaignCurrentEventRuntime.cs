@@ -56,6 +56,8 @@ internal static class CampaignCurrentEventSerializer
                 CampaignNativeRepeatBreakdownV30.Deserialize(canonicalJson),
             "cycle-repeat-element-moved" =>
                 CampaignNativeRepeatMovementV29.Deserialize(canonicalJson),
+            "movement-combat-cycle-timeout" =>
+                CampaignNativeCycleControlTimeoutV34.Deserialize(canonicalJson),
             "movement-combat-cycle-control" =>
                 CampaignNativeCycleControlV28.Deserialize(canonicalJson),
             "reserve-release-member-choice" or "reserve-release-completed" =>

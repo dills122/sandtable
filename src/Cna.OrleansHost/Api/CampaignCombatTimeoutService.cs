@@ -14,6 +14,7 @@ internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJourn
             "Durable Combat deadline failed for campaign {CampaignId}.");
     private string rbaCursor = "";
     private string forceCursor = "";
+    private string cycleCursor = "";
     internal const int BatchSize = 16;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,6 +31,7 @@ internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJourn
     {
         SweepLane(ref rbaCursor, journal.CollectingRbaCampaigns, journal.TickRbaRound, cancellationToken);
         SweepLane(ref forceCursor, journal.CollectingForceCampaigns, journal.TickForceRound, cancellationToken);
+        SweepLane(ref cycleCursor, journal.CollectingCycleCampaigns, journal.TickCycleRound, cancellationToken);
     }
 
     private void SweepLane(ref string cursor, Func<string, int, IReadOnlyList<string>> enumerate,

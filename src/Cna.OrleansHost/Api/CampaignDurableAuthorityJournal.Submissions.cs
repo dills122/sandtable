@@ -342,6 +342,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             }
         }
+        CycleRound? cycleRound = null;
+        if (kind == CampaignOwnerOpeningKind.CycleControl)
+        {
+            cycleRound = ReadActiveCycleRound(connection, transaction, head, seat.CampaignId);
+            var gate = GateCycleRound(connection, transaction, cycleRound);
+            cycleRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutCycleRound(connection, transaction, head, cycleRound, reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
         var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
@@ -351,6 +364,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             InitializeForceRound(connection, transaction, acceptedHead, seat.CampaignId,
                 rbaRound.HighWaterMs);
         }
+        if (kind == CampaignOwnerOpeningKind.CycleControl)
+            UpdateCycleRound(connection, transaction, cycleRound! with { Status = "completed" });
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.Custody)

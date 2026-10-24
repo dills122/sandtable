@@ -307,6 +307,12 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(forceEntry ? 2L : 1L, query.ExecuteScalar());
         query.CommandText = "SELECT COUNT(*) FROM rba_rounds WHERE status='cancelled'";
         Assert.Equal(forceEntry ? 0L : 1L, query.ExecuteScalar());
+        clock.Advance(TimeSpan.FromSeconds(30));
+        Assert.True(fixture.Open(clock).TickCycleRound(request.CampaignId));
+        Assert.False(fixture.Open(clock).TickCycleRound(request.CampaignId));
+        var cycleFinished = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(34, CampaignExercises.QueryCheckpoint(cycleFinished).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(cycleFinished).IsVerified);
     }
 
     [Fact]
@@ -432,6 +438,12 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.True(CampaignExercises.Reconstruct(fixture.Open(clock).ReadVerified(request.CampaignId)).IsVerified);
         Assert.Equal(forceEntry ? 0 : 1, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-rba-cancellation"));
         Assert.Equal(forceEntry ? 3 : 2, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-rba-decline"));
+        clock.Advance(TimeSpan.FromSeconds(30));
+        Assert.True(fixture.Open(clock).TickCycleRound(request.CampaignId));
+        Assert.False(fixture.Open(clock).TickCycleRound(request.CampaignId));
+        var cycleFinished = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(34, CampaignExercises.QueryCheckpoint(cycleFinished).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(cycleFinished).IsVerified);
     }
 
     private static void AssertRbaCancellationOnly(string path)

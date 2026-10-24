@@ -223,9 +223,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     "Empty Reserve Release cannot finish after Combat.");
             var releaseCommand = CampaignHostAdapter.NativeReserveReleaseCompletionCommand(
                 reserveHead.Session, released);
-            PersistAccepted(connection, transaction, campaignId, reserveHead,
+            var completedHead = PersistAccepted(connection, transaction, campaignId, reserveHead,
                 CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind,
                 null, null, null, null, releaseCommand, released);
+            InitializeCycleRound(connection, transaction, completedHead, campaignId);
         }
     }
 
@@ -401,7 +402,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var declineHash = "sha256:" + Convert.ToHexStringLower(
                     SHA256.HashData(step.EventRecords[0]));
                 declines.Add(declineHash, decision);
-                if (schemaVersion == SchemaVersion)
+                if (schemaVersion >= ForceEntrySchemaVersion)
                     barrageByDecline.Add(declineHash, barrageByDecision[decision]);
                 activeByDecision[decision] = declineHash;
             }
@@ -447,7 +448,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
         }
         var entryTimes = new Dictionary<string, long>(StringComparer.Ordinal);
-        if (schemaVersion == SchemaVersion)
+        if (schemaVersion >= ForceEntrySchemaVersion)
         {
             using var entryQuery = connection.CreateCommand();
             entryQuery.Transaction = transaction;
@@ -480,7 +481,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 || !declines.TryGetValue(round.DeclineEventHash, out var expectedDecision))
                 throw new InvalidOperationException("Retained Force round changed.");
             RequireForceRoundBinding(round, expectedDecision, round.DeclineEventHash, timing);
-            if (schemaVersion == SchemaVersion
+            if (schemaVersion >= ForceEntrySchemaVersion
                 && (!entryTimes.TryGetValue(barrageByDecline[round.DeclineEventHash], out var entered)
                     || round.OpenedMs != entered))
                 throw new InvalidOperationException("Force opening differs from accepted RBA decline time.");
@@ -493,7 +494,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     || cancelled.HighWaterMs != round.HighWaterMs))
                 throw new InvalidOperationException("Force cancellation differs from retained round.");
         }
-        if (schemaVersion == SchemaVersion
+        if (schemaVersion >= ForceEntrySchemaVersion
             && declines.Keys.Any(hash => !foundRounds.Contains(hash)
                 && !noRoundCancellations.Contains(hash)))
             throw new InvalidOperationException("Accepted Force entry has no retained round.");

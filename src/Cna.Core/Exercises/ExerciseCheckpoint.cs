@@ -426,7 +426,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCycleControlV28 control,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeCycleControlV28.CurrentContractVersion;
+        ContractVersion = control.ContractVersion;
         CampaignId = control.CampaignId;
         StateVersion = control.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -439,7 +439,7 @@ public sealed class ExerciseCheckpoint
         if (control.CampaignId != initial.CampaignId)
             throw new ArgumentException(
                 "Repeated cycle control must bind accepted campaign.");
-        ContractVersion = CampaignNativeCycleControlV28.CurrentContractVersion;
+        ContractVersion = control.ContractVersion;
         CampaignId = control.CampaignId;
         StateVersion = control.StateVersion;
         RulesetHash = initial.RulesetHash;

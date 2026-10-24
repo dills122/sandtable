@@ -1966,6 +1966,60 @@ public static class CampaignExercises
         }
     }
 
+    internal static CampaignNativeReserveReleaseStateV27 QueryPendingNativeCycleControl(ExerciseSession session)
+    {
+        var release = QueryNativeReserveReleaseState(session);
+        if ((session.CurrentRepeatAssault?.Release is not null
+                ? session.CurrentRepeatAssault.Control
+                : session.CurrentPostRepeat is not null
+                    ? session.CurrentPostRepeat.Control
+                    : session.CurrentCycleControl) is not null
+            || !release.Completed || release.StateVersion != session.CurrentContacts.AuthorityVersion)
+            throw new InvalidOperationException("No pending cycle-control decision is available.");
+        return release;
+    }
+
+    internal static ExerciseStepResult TimeoutNativeCycleControl(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryPendingNativeCycleControl(session);
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "cycle-control-unavailable")
+                || (reason != "cycle-control-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds)
+                        != configuration.Budget("cycle-control"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var control = CampaignNativeCycleControlTimeoutV34.Create(release,
+                session.Context, session.CurrentContacts,
+                configuration?.Hash ?? CampaignNativeCycleControlTimeoutV34.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(control, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(control, contacts)
+                    : session.WithCycleControlEvent(control, contacts);
+            var bytes = control.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                release.StateVersion, control.StateVersion, control.NextPositionId,
+                CampaignActionAudience.System, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     internal static ExerciseStepResult SubmitNativeCycleControl(
         ExerciseSession session, CampaignActionAudience audience,
         CampaignNativeCycleControlChoiceV28 choice, string actionId)

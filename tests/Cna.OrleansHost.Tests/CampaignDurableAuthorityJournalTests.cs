@@ -1082,7 +1082,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.False(journal.TickForceRound(request.CampaignId));
         var cold = fixture.Open(clock);
         var after = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(27, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(34, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId, "native-cycle-control-timeout"));
         Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();

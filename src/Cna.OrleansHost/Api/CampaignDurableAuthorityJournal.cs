@@ -15,7 +15,9 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 9;
+    private const int SchemaVersion = 10;
+    private const int CycleSchemaVersion = 10;
+    private const int ForceEntrySchemaVersion = 9;
     private const int RbaSchemaVersion = 8;
     private const int ForceSchemaVersion = 7;
     private const int TimingSchemaVersion = 6;
@@ -144,6 +146,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE cycle_rounds (
+              campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
+              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+              high_water_ms INTEGER NOT NULL,
+              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+              record_hash TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,release_event_hash),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
@@ -181,7 +195,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || version is not (SchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
+            || version is not (SchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version);
@@ -434,6 +448,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             throw new InvalidOperationException("Core rejected retained campaign authority.");
         VerifyForceRounds(connection, transaction, campaignId, steps, timing);
         VerifyRbaRounds(connection, transaction, campaignId, steps, timing);
+        VerifyCycleRounds(connection, transaction, campaignId, steps, timing);
         return new Loaded(imported.Session!, sequence, hash, timing, request, timingBytes);
     }
 
