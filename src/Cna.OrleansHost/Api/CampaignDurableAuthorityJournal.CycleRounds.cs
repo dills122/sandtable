@@ -200,11 +200,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
         foreach (var step in steps)
         {
             if (step.Kind is not (CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
+                or CampaignHostAcceptedStep.NativeReserveReleaseTimeoutKind
                 or CampaignHostAcceptedStep.ContactCycleControlKind
                 or CampaignHostAcceptedStep.NativeCycleControlTimeoutKind)) continue;
             using var document = JsonDocument.Parse(step.EventRecords[0]);
             var root = document.RootElement;
-            if (step.Kind == CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind)
+            if (step.Kind is CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
+                or CampaignHostAcceptedStep.NativeReserveReleaseTimeoutKind)
             {
                 var hash = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(step.EventRecords[0]));
                 releases.Add(hash, checked(root.GetProperty("priorStateVersion").GetInt64() + 1));

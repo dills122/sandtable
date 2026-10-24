@@ -198,6 +198,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 throw new InvalidOperationException("Cycle control round is closed.");
             }
         }
+        if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+        {
+            var round = ReadActiveReserveRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateReserveRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutReserveRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Reserve Release round is closed.");
+            }
+        }
         RequireBounded(visible);
         var digest = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visible));
         var side = Side(seat.Audience);

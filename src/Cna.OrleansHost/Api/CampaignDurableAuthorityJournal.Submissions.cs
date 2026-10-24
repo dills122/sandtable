@@ -355,6 +355,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             }
         }
+        ReserveRound? reserveRound = null;
+        if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+        {
+            reserveRound = ReadActiveReserveRound(connection, transaction, head, seat.CampaignId);
+            var gate = GateReserveRound(connection, transaction, reserveRound);
+            reserveRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutReserveRound(connection, transaction, head, reserveRound, reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
         var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
@@ -364,6 +377,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
             InitializeForceRound(connection, transaction, acceptedHead, seat.CampaignId,
                 rbaRound.HighWaterMs);
         }
+        if (kind == CampaignOwnerOpeningKind.ReserveRelease
+            && CampaignHostAdapter.IsNativeReserveReleaseEmpty(acceptedHead.Session))
+            UpdateReserveRound(connection, transaction, reserveRound! with { Status = "completed" });
         if (kind == CampaignOwnerOpeningKind.CycleControl)
             UpdateCycleRound(connection, transaction, cycleRound! with { Status = "completed" });
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
@@ -371,7 +387,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (kind == CampaignOwnerOpeningKind.Custody)
             AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.ReserveRelease)
-            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, acceptedHead);
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
             AppendWorldSettlement(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.CombatSelection
@@ -383,10 +399,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var systemHead = Load(connection, transaction, seat.CampaignId);
             var systemCommand = CampaignHostAdapter.NativeCombatNoAttackCommand(
                 systemHead.Session, noAttack);
-            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+            var reserveHead = PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind, null,
                 null, null, null, systemCommand, noAttack);
-            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, reserveHead);
         }
         else if (kind == CampaignOwnerOpeningKind.CombatSelection
             && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
@@ -414,10 +430,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var systemHead = Load(connection, transaction, seat.CampaignId);
             var systemCommand = CampaignHostAdapter.NativeRepeatCombatNoAttackCommand(
                 systemHead.Session, completion);
-            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+            var reserveHead = PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
                 CampaignHostAcceptedStep.NativeRepeatCombatNoAttackKind, null,
                 null, null, null, systemCommand, completion);
-            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId);
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, reserveHead);
         }
         else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection
             && CampaignHostAdapter.IsNativeRepeatCombatSelectedAssault(

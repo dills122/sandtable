@@ -5,7 +5,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-internal sealed record CampaignNativeReserveReleaseEventV27(
+internal record CampaignNativeReserveReleaseEventV27(
     int ContractVersion, string CampaignId, long PriorStateVersion,
     string PriorEventHash, string Kind, string? ElementId,
     CampaignReserveReleaseChoice? Choice, string ResultWorldHash,
@@ -14,7 +14,7 @@ internal sealed record CampaignNativeReserveReleaseEventV27(
     internal const int CurrentContractVersion = 27;
     internal long StateVersion => checked(PriorStateVersion + 1);
 
-    internal byte[] SerializeCanonical()
+    internal virtual byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
             || !IsHash(PriorEventHash) || !IsHash(ResultWorldHash)
@@ -49,10 +49,14 @@ internal sealed record CampaignNativeReserveReleaseEventV27(
     {
         try
         {
-            if (canonicalEvent.Length is < 1 or > 8192)
+            if (canonicalEvent.Length is < 1 or > 1048576)
                 throw new JsonException("Reserve Release event exceeds its byte bound.");
             using var document = JsonDocument.Parse(canonicalEvent);
             var root = document.RootElement;
+            if (root.GetProperty("contractVersion").GetInt32() == 35)
+                return CampaignNativeReserveReleaseTimeoutV35.Deserialize(canonicalEvent);
+            if (canonicalEvent.Length > 8192)
+                throw new JsonException("Reserve Release owner event exceeds its byte bound.");
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion",
                 "eventType", "campaignId", "priorStateVersion", "priorEventHash",
                 "elementId", "choice", "resultWorldHash", "nextPositionId");
@@ -103,13 +107,16 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
     IReadOnlyList<string> ResolvedElementIds, bool Completed,
     bool HasRetainedCombatRandomCursor)
 {
+    internal string ReleaseEventHash { get; init; } = HeadEventHash;
+    internal int EventContractVersion { get; init; } = 27;
+
     internal byte[] SerializeCanonical()
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", CampaignNativeReserveReleaseEventV27.CurrentContractVersion);
+            writer.WriteNumber("contractVersion", EventContractVersion);
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WriteString("headEventHash", HeadEventHash);
@@ -461,6 +468,44 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
         return (next, emitted);
     }
 
+    internal (CampaignNativeReserveReleaseStateV27 State,
+        CampaignNativeReserveReleaseEventV27 Event) Timeout(CampaignContentContext context,
+        string configurationHash, long opened, long deadline, long highWater,
+        long? cancelledAt, string reason)
+    {
+        var pending = Pending(context);
+        if (Completed || pending.Count == 0)
+            throw new InvalidOperationException("No unresolved Reserve Release members.");
+        var world = World;
+        var resolved = ResolvedElementIds.ToHashSet(StringComparer.Ordinal);
+        foreach (var member in pending)
+        {
+            var disposition = CampaignReserveReleaseRules.Apply(world, context, ActingSide,
+                CycleOrdinal, member.ElementId, member.Status == CampaignElementReserveStatus.ReserveI
+                    ? CampaignReserveReleaseChoice.ConvertToII : CampaignReserveReleaseChoice.RetainII, resolved);
+            world = disposition.World;
+            resolved.Add(member.ElementId);
+        }
+        var emitted = new CampaignNativeReserveReleaseTimeoutV35(CampaignId, StateVersion,
+            HeadEventHash, CampaignNativeCombatPaidWorldV22.Hash(world), Position.PositionId,
+            ReleaseEventHash, CycleOrdinal,
+            pending.Where(member => member.Status == CampaignElementReserveStatus.ReserveI)
+                .Select(member => member.ElementId).ToArray(),
+            pending.Where(member => member.Status == CampaignElementReserveStatus.ReserveII)
+                .Select(member => member.ElementId).ToArray(),
+            configurationHash, opened, deadline, highWater, cancelledAt, reason);
+        var bytes = emitted.SerializeCanonical();
+        return (this with
+        {
+            StateVersion = emitted.StateVersion,
+            HeadEventHash = CampaignNativeReserveReleaseEventV27.Hash(bytes),
+            World = world,
+            ResolvedElementIds = [.. ResolvedElementIds, .. pending.Select(member => member.ElementId)],
+            Completed = true,
+            EventContractVersion = 35
+        }, emitted);
+    }
+
     internal static CampaignNativeReserveReleaseStateV27 Replay(
         CampaignNativeReserveReleaseStateV27 initial,
         CampaignContentContext context,
@@ -486,7 +531,11 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
                 CampaignNativeReserveReleaseEventV27 Event) next;
             try
             {
-                next = parsed.Kind == "member-choice"
+                next = parsed is CampaignNativeReserveReleaseTimeoutV35 timeout
+                    ? state.Timeout(context, timeout.ConfigurationHash, timeout.OpenedAtUnixMilliseconds,
+                        timeout.DeadlineUnixMilliseconds, timeout.HighWaterUnixMilliseconds,
+                        timeout.CancelledAtUnixMilliseconds, timeout.Reason)
+                    : parsed.Kind == "member-choice"
                     ? state.Choose(context, parsed.ElementId!, parsed.Choice!.Value)
                     : state.Complete(context);
             }

@@ -780,7 +780,7 @@ contacts, published map and movement costs. Hidden opposing occupancy cannot rem
 offer; an unseen encounter needs an accepted event rather than a hidden rejection.
 The trusted defender draft keeps canonical visible bytes separate from private action IDs
 and authority version. An explicit defender decline is a V15 owner event through the
-normal durable Host seat/opening/receipt path. Schema 10 persists an RBA deadline at
+normal durable Host seat/opening/receipt path. Schema 11 persists an RBA deadline at
 Barrage entry; a background tick cancels unanswered decisions through native V33. Actual retreat
 movement now uses a V16 retained Core event: the first accepted move updates World and
 both contact audiences, returns to a defender RBA cut, and cold replays through the
@@ -799,13 +799,13 @@ Core V17 records two owner-only seals at Force Assignment. Core V18 System
 completion then reaches Anti Armor. Normal Host retains each accepted seal
 under its own seat, opaque ref and cold-replay receipt, appending V18 with the
 second seal atomically. Normal campaign creation now accepts an explicit seven-window
-timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 10, and binds them in
-the initial journal hash. Existing schema-5/6/7/8/9 journals remain read-only; mutation
-requires schema 10. No configuration means no Force Assignment opening or seal.
+timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 11, and binds them in
+the initial journal hash. Existing schema-5/6/7/8/9/10 journals remain read-only; mutation
+requires schema 11. No configuration means no Force Assignment opening or seal.
 The normal Host stores a shared Force Assignment round for both seats with trusted opened,
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
 deadline or clock failure, and verifies round status and evidence on cold replay.
-Schema 10 creates the Force round atomically with accepted RBA decline, using the
+Schema 11 creates the Force round atomically with accepted RBA decline, using the
 trusted timestamp from its RBA gate and the pinned Force budget. The hosted combat
 timeout service sweeps collecting rounds even when neither owner queries an opening.
 Queries and restarts cannot renew the entry deadline; a missing round rejects.
@@ -824,6 +824,13 @@ round, with no fabricated clock or seal. Replay rechecks World, source and
 ammunition eligibility. Both initial V13 voluntary finish and V21 cancellation
 continue through V27 Reserve Release; V28 closes Repeat when no Combat result
 cursor exists.
+Reserve Release with unresolved members starts an immutable deadline at entry.
+Native V35 records explicit System `convert-unresolved-i-retain-ii`: unresolved
+Reserve I converts to Reserve II; unresolved Reserve II stays in reserve. Accepted
+owner dispositions and movement allowances remain intact. Partial choices do not
+renew the deadline, and background expiry works after cold restart without an
+owner query. Empty queues complete directly. See the
+[native Reserve Release timeout contract](docs/specs/native-reserve-release-timeout-v1.md).
 Completed Reserve Release also starts a durable cycle-control deadline. Native
 V34 `movement-combat-cycle-timeout` records an explicit System `finish-phase`
 fallback into same-slot Truck Convoy Movement, preserving World, RNG and cycle

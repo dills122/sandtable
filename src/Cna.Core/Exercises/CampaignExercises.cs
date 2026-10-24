@@ -1979,6 +1979,55 @@ public static class CampaignExercises
         return release;
     }
 
+    internal static CampaignNativeReserveReleaseStateV27 QueryPendingNativeReserveRelease(ExerciseSession session)
+    {
+        var release = QueryNativeReserveReleaseState(session);
+        if (release.Completed || release.Pending(session.Context).Count == 0
+            || release.StateVersion != session.CurrentContacts.AuthorityVersion)
+            throw new InvalidOperationException("No pending Reserve Release decision is available.");
+        return release;
+    }
+
+    internal static ExerciseStepResult TimeoutNativeReserveRelease(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryPendingNativeReserveRelease(session);
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "reserve-release-unavailable")
+                || (reason != "reserve-release-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds)
+                        != configuration.Budget("reserve-release"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var (nextState, control) = release.Timeout(session.Context,
+                configuration?.Hash ?? CampaignNativeReserveReleaseTimeoutV35.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(control);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(control, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(control, contacts)
+                    : session.WithReserveReleaseEvent(control, contacts);
+            var bytes = control.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                release.StateVersion, control.StateVersion, control.NextPositionId,
+                CampaignActionAudience.System, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, nextState.SerializeCanonical()));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     internal static ExerciseStepResult TimeoutNativeCycleControl(ExerciseSession session,
         CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
         long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,

@@ -19,9 +19,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var binding = CampaignHostAdapter.QueryNativeCombatRbaRoundBinding(authority.Session);
         if (authority.Timing is null || !TryTrustedNow(out var opened))
         {
-            PersistRbaCancellation(connection, transaction, authority, campaignId,
+            var reserveHead = PersistRbaCancellation(connection, transaction, authority, campaignId,
                 -1, -1, -1, null, "rba-unavailable");
-            AppendEmptyReserveRelease(connection, transaction, campaignId);
+            AppendEmptyReserveRelease(connection, transaction, campaignId, reserveHead);
             return;
         }
         var round = new RbaRound(campaignId, binding.DecisionActionId, binding.BarrageEventHash,
@@ -63,7 +63,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return round;
     }
 
-    private static void PersistRbaCancellation(SqliteConnection connection, SqliteTransaction transaction,
+    private static Loaded PersistRbaCancellation(SqliteConnection connection, SqliteTransaction transaction,
         Loaded authority, string campaignId, long opened, long deadline, long highWater,
         long? cancelledAt, string reason)
     {
@@ -71,7 +71,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             authority.Timing, opened, deadline, highWater, cancelledAt, reason);
         if (!accepted.IsAccepted) throw new InvalidOperationException("Core rejected trusted RBA cancellation.");
         var command = CampaignHostAdapter.NativeCombatRbaCancellationCommand(authority.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, authority,
+        return PersistAccepted(connection, transaction, campaignId, authority,
             CampaignHostAcceptedStep.NativeCombatRbaCancellationKind,
             null, null, null, null, command, accepted);
     }
@@ -79,10 +79,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void CancelRbaRound(SqliteConnection connection, SqliteTransaction transaction,
         Loaded authority, RbaRound round, string reason, long? cancelledAt)
     {
-        PersistRbaCancellation(connection, transaction, authority, round.CampaignId,
+        var reserveHead = PersistRbaCancellation(connection, transaction, authority, round.CampaignId,
             round.OpenedMs, round.DeadlineMs, round.HighWaterMs, cancelledAt, reason);
         UpdateRbaRound(connection, transaction, round with { Status = "cancelled" });
-        AppendEmptyReserveRelease(connection, transaction, round.CampaignId);
+        AppendEmptyReserveRelease(connection, transaction, round.CampaignId, reserveHead);
     }
 
     internal bool TickRbaRound(string campaignId)

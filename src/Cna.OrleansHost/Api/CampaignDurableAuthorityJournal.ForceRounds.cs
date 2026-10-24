@@ -132,10 +132,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             var cancelledCommand = CampaignHostAdapter.NativeCombatCancelledAssaultCommand(
                 closeAssaultHead.Session, cancelled);
-            PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
+            var reserveHead = PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
                 CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind,
                 null, null, null, null, cancelledCommand, cancelled);
-            AppendEmptyReserveRelease(connection, transaction, campaignId);
+            AppendEmptyReserveRelease(connection, transaction, campaignId, reserveHead);
             return;
         }
         var result = CampaignHostAdapter.ResolveNativeCombatAssault(closeAssaultHead.Session);
@@ -204,16 +204,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 "Accepted Combat custody cannot resume the normal sequence.");
         var command = CampaignHostAdapter.NativeCombatSuccessorCommand(
             head.Session, completed);
-        PersistAccepted(connection, transaction, campaignId, head,
+        var reserveHead = PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.NativeCombatSuccessorKind,
             null, null, null, null, command, completed);
-        AppendEmptyReserveRelease(connection, transaction, campaignId);
+        AppendEmptyReserveRelease(connection, transaction, campaignId, reserveHead);
     }
 
     private void AppendEmptyReserveRelease(SqliteConnection connection,
-        SqliteTransaction transaction, string campaignId)
+        SqliteTransaction transaction, string campaignId, Loaded reserveHead)
     {
-        var reserveHead = Load(connection, transaction, campaignId);
         if (CampaignHostAdapter.IsNativeReserveReleaseEmpty(reserveHead.Session))
         {
             var released = CampaignHostAdapter.CompleteNativeReserveRelease(
@@ -228,6 +227,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 null, null, null, null, releaseCommand, released);
             InitializeCycleRound(connection, transaction, completedHead, campaignId);
         }
+        else InitializeReserveRoundIfMissing(connection, transaction, reserveHead, campaignId);
     }
 
     internal IReadOnlyList<string> CollectingForceCampaigns(string after, int limit)

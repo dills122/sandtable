@@ -403,7 +403,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeReserveReleaseStateV27 reserveRelease,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeReserveReleaseEventV27.CurrentContractVersion;
+        ContractVersion = reserveRelease.EventContractVersion;
         CampaignId = reserveRelease.CampaignId;
         StateVersion = reserveRelease.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -416,7 +416,7 @@ public sealed class ExerciseCheckpoint
         if (reserveRelease.CampaignId != initial.CampaignId)
             throw new ArgumentException(
                 "Repeated Reserve Release must bind accepted campaign.");
-        ContractVersion = CampaignNativeReserveReleaseEventV27.CurrentContractVersion;
+        ContractVersion = reserveRelease.EventContractVersion;
         CampaignId = reserveRelease.CampaignId;
         StateVersion = reserveRelease.StateVersion;
         RulesetHash = initial.RulesetHash;

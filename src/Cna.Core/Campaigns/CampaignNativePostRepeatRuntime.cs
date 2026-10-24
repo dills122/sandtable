@@ -130,15 +130,8 @@ internal sealed class CampaignNativePostRepeatRuntime
             if (item is not CampaignNativeReserveReleaseEventV27 reserveEvent)
                 throw new InvalidCampaignHistoryException(
                     "Later cycle must finish Reserve Release before cycle control.");
-            var expected = reserveEvent.Kind == "member-choice"
-                ? Release.Choose(Context, reserveEvent.ElementId!,
-                    reserveEvent.Choice!.Value)
-                : Release.Complete(Context);
-            if (!reserveEvent.SerializeCanonical().AsSpan().SequenceEqual(
-                expected.Event.SerializeCanonical()))
-                throw new InvalidCampaignHistoryException(
-                    "Later Reserve Release differs from its World.");
-            Release = expected.State;
+            Release = CampaignNativeReserveReleaseStateV27.Replay(Release, Context,
+                [reserveEvent.SerializeCanonical()]);
             World = Release.World;
             Contacts = Contacts.AdvanceNativeReserveRelease(reserveEvent);
             return;

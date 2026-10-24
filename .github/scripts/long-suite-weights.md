@@ -315,3 +315,21 @@ Report: `artifacts/rc-cycle-core-final/dsteele_Dylans-MacBook-Pro_2026-10-24_22_
 | `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.RepeatedRuntimeRetainsExplicitTimeoutAtActualOrdinal(ordinal: 2)` | `0d9b107b1551` | 359 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.RepeatedRuntimeRetainsExplicitTimeoutAtActualOrdinal(ordinal: 3)` | `79ed01ea0c1c` | 408 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.StrictReplayRejectsChangedReleaseWorldOrdinalAndUnknownFields` | `1d06f88e601b` | 246 |
+
+## Native Reserve Release timeout (October 24, 2026)
+
+Nine new rows measured in local Release focused test run. Existing weights and
+baseline metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-reserve-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-24_23_04_49.899164.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LaterCycleRetainsIIAndResolvesEveryRemainingMemberOnce(ordinal: 3)` | `405779577887` | 159 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LaterCycleRetainsIIAndResolvesEveryRemainingMemberOnce(ordinal: 2)` | `adfcb31d07a5` | 46 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.ReplayRejectsChangedMembersAnchorWorldAndUnknownFields` | `7428d18cb285` | 52 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.SessionTimeoutValidatesTimingAndReconstructsSystemCheckpoint` | `c6170c5b92f6` | 905 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.TimeoutConvertsUnresolvedIWithoutMovementAllowanceOrOwnerEvent` | `848b17945a63` | 60 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.UnavailableOpeningHasNoInventedClockAndLegacyChoiceBytesStayVersion27` | `62310510c061` | 60 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LargeBatchCodecDispatchesBeforeLegacyByteLimit` | `b5caea3cfd60` | 58 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.AcceptedOwnerReleaseSurvivesTimeoutAndEntryAnchorDoesNotMove(ordinal: 2)` | `5fbd7868a35b` | 53 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.AcceptedOwnerReleaseSurvivesTimeoutAndEntryAnchorDoesNotMove(ordinal: 1)` | `9c6ce4516e19` | 52 |

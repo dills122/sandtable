@@ -128,11 +128,11 @@ retain each owner's separate seal and cold-replay receipt. A distinct V18
 System completion advances after both seals.
 Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
-Force Assignment opening and seals. Schema-5/6/7/8/9 journals stay read-only. Schema 10 retains one shared Force round for both seats at accepted RBA decline;
+Force Assignment opening and seals. Schema-5/6/7/8/9/10 journals stay read-only. Schema 11 retains one shared Force round for both seats at accepted RBA decline;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
 inventing an owner seal. The combat timeout service ticks these persisted Force
 rounds even when neither owner queries an opening. The entry deadline never resets
-on query or restart. Schema 10 also retains an RBA round at Barrage entry.
+on query or restart. Schema 11 also retains an RBA round at Barrage entry.
 Background expiry records native V33 `combat-rba-cancelled`, preserving retreat
 movement and reaching Reserve Release without a fabricated decline or combat result.
 Core V20/normal Host complete the infantry-only empty
@@ -143,7 +143,11 @@ has no payable pinned role pair or timing envelope; it does not alter visible of
 V34 names the explicit System cycle timeout: completed Reserve Release starts
 a durable deadline, and expiry finishes the phase without fabricating an owner
 choice or changing World/RNG. The combat timeout service keeps cycle-control
-pagination separate from RBA and Force.
+pagination separate from RBA, Force and Reserve Release.
+V35 names the explicit System Reserve Release timeout. It converts unresolved
+Reserve I to Reserve II and retains unresolved Reserve II, preserving accepted
+owner dispositions. Its entry deadline survives partial choices and restart;
+completion enters the existing cycle-control lifecycle.
 Initial V13/V21 completion enters V27 Reserve Release, and V28 offers Finish
 alone when no Combat result cursor is retained;
 normal Content 6 can resolve an exact-pack Combat source supplement for Basic Morale,
