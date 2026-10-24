@@ -351,3 +351,21 @@ Report: `artifacts/rc-custody-timeout/core-results/dsteele_Dylans-MacBook-Pro_20
 | `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.UnavailableEntryHasNoInventedClock` | `9893b8c1de4c` | 560 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.InvalidTimingDoesNotMutatePendingCustody` | `7a1aba970e55` | 226 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.DeadlineLeavesCaptivesUnguardedWithSystemEvidenceAndColdReplay` | `9b492a919108` | 534 |
+
+## Native Retreat timeout (October 24, 2026)
+
+Nine new rows measured in local Release focused run. Prior weights and baseline
+metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-retreat-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-24_23_39_49.870403.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.DeadlineRefusesWithSourceLossesSystemEvidenceAndColdReplay` | `330003decb9c` | 1300 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.TamperedResultWorldAndTimingEvidenceRejectReplay` | `70fc7507bbaa` | 271 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-regression", observed: 999)` | `a8b6fba6dd06` | 456 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-unavailable", observed: null)` | `0a42334f1ad3` | 466 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "controller-unavailable", observed: null)` | `b7d457cb891b` | 443 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.UnavailableEntryHasNoInventedClock` | `6505b24d65b3` | 448 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.InvalidTimingDoesNotMutatePendingRetreat` | `95587ecc917f` | 235 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.RepeatedRuntimeRetainsActualOrdinalAndRefusalEvidence(ordinal: 3)` | `92fef5576bc3` | 229 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.RepeatedRuntimeRetainsActualOrdinalAndRefusalEvidence(ordinal: 2)` | `2d9ab141866f` | 202 |

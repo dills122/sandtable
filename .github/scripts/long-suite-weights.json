@@ -646,6 +646,9 @@
     },
     "Cna.Core.Tests.Setups.CampaignStageEntryPolicyTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -3954,7 +3957,16 @@
     "ffb6c494273fb7eeebb60a34a5c469da81e53491c266183a766cfa3820152cde": 2,
     "ffe07adf13e00e5ff1bfd1e184dbe3ad2a5f96f1e65f0f02c2d04095279cda84": 14881,
     "ffe165a7f93044738ca56a3e61ace74dac9257a8e67f944df29ee6a102ee64e4": 7257,
-    "ffef624925d566ac14e5ae57e0ad2813ba02f005c4ff24e72fd1ee6fc06f33f7": 1
+    "ffef624925d566ac14e5ae57e0ad2813ba02f005c4ff24e72fd1ee6fc06f33f7": 1,
+    "0a42334f1ad319da6d5347c60f53dab46a256b08e11fdae1570b0a2a20b5c4d4": 466,
+    "2d9ab141866fafa6e6609276a767b0ec2b1d8663f505f0fd604c8dc04a812876": 202,
+    "330003decb9c72929c91a7bd18233147969d5e8aa1cc52afc7b482151bf92ab5": 1300,
+    "6505b24d65b31fd022fcdf07e54ea2dd108363acce614d59c64ca7322abc75f3": 448,
+    "70fc7507bbaab79e7757a110846f16310d295462037d3ff505b488b6ac324f59": 271,
+    "92fef5576bc3a74a4affffec6a59e9718112cc914b5a42a9f9ef2f6acae45e58": 229,
+    "95587ecc917f68e7bf18b82326c33cf9cbc8d223342097290e68f14ad33c5bc3": 235,
+    "a8b6fba6dd061e53b30c7aa74fee42e0f9ce943ea9cfcd1567d3cb5ae9a1fd8b": 456,
+    "b7d457cb891bc59e5643540b6833af144378b6c20404b8af1c7c218413599643": 443
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4020,7 +4032,16 @@
     "ecef322572999390263f7ca9e6dee52a5ed6933ff043b6a46f1de0b751da3994": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
     "efa5b3b9285820f832a63a3b88e4bb73652a9fc759a19e60de3722c6633ebfef": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "f1743f6f3f65a4141560b67f39d65e487fc8c47da424a4002a7c9c6537f51d32": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; exact local source, pending hosted calibration",
-    "fa28d0993dcbb3f3c316b9eac84005cde5a267381d4fc7680240701d15a784cc": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration"
+    "fa28d0993dcbb3f3c316b9eac84005cde5a267381d4fc7680240701d15a784cc": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
+    "0a42334f1ad319da6d5347c60f53dab46a256b08e11fdae1570b0a2a20b5c4d4": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "2d9ab141866fafa6e6609276a767b0ec2b1d8663f505f0fd604c8dc04a812876": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "330003decb9c72929c91a7bd18233147969d5e8aa1cc52afc7b482151bf92ab5": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "6505b24d65b31fd022fcdf07e54ea2dd108363acce614d59c64ca7322abc75f3": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "70fc7507bbaab79e7757a110846f16310d295462037d3ff505b488b6ac324f59": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "92fef5576bc3a74a4affffec6a59e9718112cc914b5a42a9f9ef2f6acae45e58": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "95587ecc917f68e7bf18b82326c33cf9cbc8d223342097290e68f14ad33c5bc3": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "a8b6fba6dd061e53b30c7aa74fee42e0f9ce943ea9cfcd1567d3cb5ae9a1fd8b": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "b7d457cb891bc59e5643540b6833af144378b6c20404b8af1c7c218413599643": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",

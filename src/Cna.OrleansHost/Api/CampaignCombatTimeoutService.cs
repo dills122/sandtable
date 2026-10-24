@@ -16,6 +16,7 @@ internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJourn
     private string forceCursor = "";
     private string cycleCursor = "";
     private string reserveCursor = "";
+    private string retreatCursor = "";
     private string custodyCursor = "";
     internal const int BatchSize = 16;
 
@@ -33,6 +34,7 @@ internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJourn
     {
         SweepLane(ref rbaCursor, journal.CollectingRbaCampaigns, journal.TickRbaRound, cancellationToken);
         SweepLane(ref forceCursor, journal.CollectingForceCampaigns, journal.TickForceRound, cancellationToken);
+        SweepLane(ref retreatCursor, journal.CollectingRetreatCampaigns, journal.TickRetreatRound, cancellationToken);
         SweepLane(ref custodyCursor, journal.CollectingCustodyCampaigns, journal.TickCustodyRound, cancellationToken);
         SweepLane(ref reserveCursor, journal.CollectingReserveCampaigns, journal.TickReserveRound, cancellationToken);
         SweepLane(ref cycleCursor, journal.CollectingCycleCampaigns, journal.TickCycleRound, cancellationToken);

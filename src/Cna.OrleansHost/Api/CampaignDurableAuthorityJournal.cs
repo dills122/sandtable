@@ -15,7 +15,8 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 12;
+    private const int SchemaVersion = 13;
+    private const int RetreatSchemaVersion = 13;
     private const int CustodySchemaVersion = 12;
     private const int ReserveSchemaVersion = 11;
     private const int CycleSchemaVersion = 10;
@@ -184,6 +185,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE retreat_rounds (
+              campaign_id TEXT NOT NULL, result_hash TEXT NOT NULL,
+              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+              high_water_ms INTEGER NOT NULL,
+              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+              record_hash TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,result_hash),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
@@ -221,7 +234,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || version is not (SchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
+            || version is not (SchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version);
@@ -477,6 +490,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         VerifyCycleRounds(connection, transaction, campaignId, steps, timing);
         VerifyReserveRounds(connection, transaction, campaignId, steps, timing);
         VerifyCustodyRounds(connection, transaction, campaignId, steps, timing);
+        VerifyRetreatRounds(connection, transaction, campaignId, steps, timing);
         return new Loaded(imported.Session!, sequence, hash, timing, request, timingBytes);
     }
 

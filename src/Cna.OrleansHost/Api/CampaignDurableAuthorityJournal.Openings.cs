@@ -198,6 +198,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 throw new InvalidOperationException("Cycle control round is closed.");
             }
         }
+        if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
+        {
+            var round = ReadActiveRetreatRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateRetreatRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutRetreatRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Retreat round is closed.");
+            }
+        }
         if (kind == CampaignOwnerOpeningKind.Custody)
         {
             var round = ReadActiveCustodyRound(connection, transaction, authority, seat.CampaignId);

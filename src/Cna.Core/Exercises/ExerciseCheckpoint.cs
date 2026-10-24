@@ -301,7 +301,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCombatRetreatAfterAssaultV23 retreat,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeCombatRetreatAfterAssaultV23.CurrentContractVersion;
+        ContractVersion = retreat.ContractVersion;
         CampaignId = retreat.CampaignId;
         StateVersion = retreat.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -317,7 +317,7 @@ public sealed class ExerciseCheckpoint
             || initial.CampaignId != decision.CampaignId)
             throw new ArgumentException(
                 "Repeated retreat decision must bind accepted later-cycle selection.");
-        ContractVersion = CampaignNativeCombatRetreatAfterAssaultV23.CurrentContractVersion;
+        ContractVersion = retreat.ContractVersion;
         CampaignId = retreat.CampaignId;
         StateVersion = retreat.StateVersion;
         RulesetHash = initial.RulesetHash;

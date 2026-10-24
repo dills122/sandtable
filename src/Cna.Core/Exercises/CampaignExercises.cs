@@ -1284,6 +1284,40 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult TimeoutNativeCombatRetreat(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            _ = QueryContactPostResultRetreatCut(session);
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "retreat-unavailable")
+                || (reason != "retreat-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("retreat"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var runtime = session.CurrentRepeatAssault;
+            var repeated = runtime is { Result: not null, PostResultRetreat: null };
+            var timeout = CampaignNativeCombatRetreatTimeoutV37.CreateTimeout(
+                repeated ? runtime!.Selection : session.CurrentCombatDecision!,
+                repeated ? runtime!.Result! : session.CurrentCombatAssaultResult!,
+                repeated ? runtime!.PaidWorld! : session.CurrentCombatPaidWorld!, session.Context,
+                session.CurrentContacts, configuration?.Hash ?? CampaignNativeCombatRetreatTimeoutV37.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            return repeated
+                ? AcceptRepeatedPostResultRetreat(session, null, CampaignActionAudience.System, timeout)
+                : AcceptPostResultRetreat(session, null, CampaignActionAudience.System, timeout);
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     internal static ExerciseStepResult CompleteNoPostResultRetreat(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -1343,13 +1377,14 @@ public static class CampaignExercises
     }
 
     private static ExerciseStepResult AcceptRepeatedPostResultRetreat(
-        ExerciseSession session, string? actionId, CampaignActionAudience audience)
+        ExerciseSession session, string? actionId, CampaignActionAudience audience,
+        CampaignNativeCombatRetreatTimeoutV37? timeout = null)
     {
         try
         {
             var runtime = session.CurrentRepeatAssault!;
             var result = runtime.Result!;
-            var retreat = CampaignNativeCombatRetreatAfterAssaultV23.Create(
+            var retreat = timeout ?? CampaignNativeCombatRetreatAfterAssaultV23.Create(
                 runtime.Selection, result, runtime.PaidWorld!, session.Context,
                 session.CurrentContacts, actionId);
             var contacts = session.CurrentContacts.AdvanceNativeCombatRetreatAfterAssault(retreat);
@@ -1376,11 +1411,12 @@ public static class CampaignExercises
     }
 
     private static ExerciseStepResult AcceptPostResultRetreat(
-        ExerciseSession session, string? actionId, CampaignActionAudience audience)
+        ExerciseSession session, string? actionId, CampaignActionAudience audience,
+        CampaignNativeCombatRetreatTimeoutV37? timeout = null)
     {
         var selected = session.CurrentCombatDecision!;
         var result = session.CurrentCombatAssaultResult!;
-        var retreat = CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
+        var retreat = timeout ?? CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
             result, session.CurrentCombatPaidWorld!, session.Context,
             session.CurrentContacts, actionId);
         var contacts = session.CurrentContacts

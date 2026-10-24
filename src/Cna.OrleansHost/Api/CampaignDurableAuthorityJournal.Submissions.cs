@@ -355,6 +355,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             }
         }
+        RetreatRound? retreatRound = null;
+        if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
+        {
+            retreatRound = ReadActiveRetreatRound(connection, transaction, head, seat.CampaignId);
+            var gate = GateRetreatRound(connection, transaction, retreatRound);
+            retreatRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutRetreatRound(connection, transaction, head, retreatRound, reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
         CustodyRound? custodyRound = null;
         if (kind == CampaignOwnerOpeningKind.Custody)
         {
@@ -405,7 +418,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (kind == CampaignOwnerOpeningKind.ReserveRelease)
             AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, acceptedHead);
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
-            AppendWorldSettlement(connection, transaction, seat.CampaignId);
+        {
+            UpdateRetreatRound(connection, transaction, retreatRound! with { Status = "completed" });
+            AppendWorldSettlement(connection, transaction, seat.CampaignId, acceptedHead);
+        }
         if (kind == CampaignOwnerOpeningKind.CombatSelection
             && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
         {

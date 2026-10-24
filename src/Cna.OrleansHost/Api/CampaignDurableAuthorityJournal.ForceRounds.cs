@@ -142,12 +142,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!result.IsAccepted) return;
         var resultCommand = CampaignHostAdapter.NativeCombatAssaultResultCommand(
             closeAssaultHead.Session, result);
-        PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
+        var postResultHead = PersistAccepted(connection, transaction, campaignId, closeAssaultHead,
             CampaignHostAcceptedStep.NativeCombatAssaultResultKind,
             null, null, null, null, resultCommand, result);
         if (CampaignHostAdapter.IsNativeCombatNoPostResultRetreat(result.SuccessorSession!))
         {
-            var postResultHead = Load(connection, transaction, campaignId);
             var noRetreat = CampaignHostAdapter.CompleteNoPostAssaultRetreat(
                 postResultHead.Session);
             if (!noRetreat.IsAccepted)
@@ -156,17 +155,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var noRetreatCommand = CampaignHostAdapter
                 .NativeCombatNoPostAssaultRetreatCommand(
                     postResultHead.Session, noRetreat);
-            PersistAccepted(connection, transaction, campaignId, postResultHead,
+            var noRetreatHead = PersistAccepted(connection, transaction, campaignId, postResultHead,
                 CampaignHostAcceptedStep.NativeCombatNoPostAssaultRetreatKind,
                 null, null, null, null, noRetreatCommand, noRetreat);
-            AppendWorldSettlement(connection, transaction, campaignId);
+            AppendWorldSettlement(connection, transaction, campaignId, noRetreatHead);
         }
+        else InitializeRetreatRound(connection, transaction, postResultHead, campaignId);
     }
 
     private void AppendWorldSettlement(SqliteConnection connection,
-        SqliteTransaction transaction, string campaignId)
+        SqliteTransaction transaction, string campaignId, Loaded head)
     {
-        var head = Load(connection, transaction, campaignId);
         var settled = CampaignHostAdapter.SettleNativeCombatWorld(head.Session);
         if (!settled.IsAccepted)
             throw new InvalidOperationException(

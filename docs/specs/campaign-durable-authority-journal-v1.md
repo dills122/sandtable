@@ -5,7 +5,7 @@ Normal campaign Host storage retains the canonical Core creation evidence and ev
 ## Schema and transition
 
 - `campaigns` binds the versioned creation request fields, canonical creation event, initial snapshot, initial contact records, head sequence, and head hash. Campaign IDs are unique. Creation takes an immediate transaction before lookup or fresh Core admission. An exact retry compares every creation-request field and canonical timing bytes, fully verifies retained evidence through Core, and returns the current retained head without writes, even after accepted steps. A differing request or timing conflicts without overwriting authority; concurrent creators serialize under the same transaction. Null timing remains distinct from explicit timing.
-- `accepted_steps` has one row per accepted Core transition: contiguous sequence, action kind, optional acting element and owner reference/seat epoch/opening revision, canonical command, canonical event, canonical receipt, checkpoint, contact records appended by that transition, prior hash, and record hash. The hash binds every field and length-prefixed evidence bytes; the initial hash binds the request and creation artifacts including contact records. Current schema v12 retains canonical `timing_configuration`, `force_rounds`, `rba_rounds`, `cycle_rounds`, `reserve_rounds`, and `custody_rounds`. Legacy v5 (without timing), v6 (timing without Force rounds), v7 (Force rounds without RBA deadlines), v8 (lazy Force opening), v9 (no cycle-control deadline), v10 (no Reserve Release deadline), and v11 (no Custody deadline) remain readable with their historical hash rules; all mutations require v12. No implicit timing or schema upgrade occurs.
+- `accepted_steps` has one row per accepted Core transition: contiguous sequence, action kind, optional acting element and owner reference/seat epoch/opening revision, canonical command, canonical event, canonical receipt, checkpoint, contact records appended by that transition, prior hash, and record hash. The hash binds every field and length-prefixed evidence bytes; the initial hash binds the request and creation artifacts including contact records. Current schema v13 retains canonical `timing_configuration`, `force_rounds`, `rba_rounds`, `cycle_rounds`, `reserve_rounds`, `custody_rounds`, and `retreat_rounds`. Legacy v5 (without timing), v6 (timing without Force rounds), v7 (Force rounds without RBA deadlines), v8 (lazy Force opening), v9 (no cycle-control deadline), v10 (no Reserve Release deadline), v11 (no Custody deadline), and v12 (no post-assault Retreat deadline) remain readable with their historical hash rules; all mutations require v13. No implicit timing or schema upgrade occurs.
 - `operator_capability` holds only a domain-separated digest of a 32-byte operator secret. `seats` holds two possible sides per campaign, an increasing epoch, and at most one outstanding grant or credential digest per side. Grants live ten minutes and are single use. Redeemed credentials live two hours. A replacement grant increments epoch and invalidates the prior credential, including after process restart.
 - `reference_key` holds a private 256-bit HMAC key. `owner_openings` binds the authenticated seat epoch, acting element, visible bytes and digest, audience revision, and current private authority version. `owner_actions` holds the reference-to-Core-action map separately. Query checks the seat and replays Core inside one immediate transaction, then replaces the private map at the current cut. Equal visible bytes under an unseen authority change retain the opening revision and outward references; a changed view or seat epoch advances the revision.
 - Append takes a SQLite immediate transaction, replays the retained prefix through Core, checks the submitted command against that exact head, then commits evidence and head in the same transaction. Rejected commands write nothing. A concurrent or stale command cannot advance the head.
@@ -142,3 +142,24 @@ System evidence, verifies exact predecessor/configuration/timing/status, and rej
 altered or foreign rows. Schema5–11 stays read-only; older Reserve11/Cycle10/Force9/RBA8 checks
 retain their historical thresholds. Background sweeping adds an independent bounded Custody
 cursor, preventing other decision windows from starving it. No public admission is implied.
+
+## Native post-assault Retreat deadlines (schema 13)
+
+`retreat_rounds` binds campaign plus accepted assault-result hash, entry state version,
+configuration hash, opening/deadline/high-water UTC milliseconds, status and record hash.
+A required retreat starts its immutable `retreat` budget in the assault-result transaction,
+before owner queries. Results requiring no retreat retain immediate System completion.
+Missing trusted entry time/configuration emits explicit unavailable fallback without a row.
+
+An independent bounded scheduler lane expires retained rounds after restart. Deadline equality,
+clock loss or regression appends native V37 `combat-retreat-timeout`: System refusal retains
+position and applies source-defined refusal losses through normal settlement. No owner proposal,
+move, RNG draw or voluntary refusal is fabricated. Round closure, timeout and downstream
+settlement/Custody/Reserve/successor writes share one transaction. Owner receipts remain replayable;
+invalid proposals reject before clock gates. Queries never reset entry times.
+
+Verification checks every required result against its round or unavailable event, exact config,
+clock evidence, status and completion hash. Missing, altered and foreign rows fail closed.
+Schemas5–12 remain read-only, retaining Custody12/Reserve11/Cycle10/Force9/RBA8 verification
+thresholds. Selection deadlines remain outside this packet: initial legacy Breakdown and native
+repeat Breakdown32 still require a separately versioned no-selection fallback.
