@@ -83,16 +83,18 @@ outside any UI.
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands and events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | A runner executes Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and the continual turn cycle | In review | Native Combat, including assault, settlement, custody, and Reserve Release repeat cycles, is implemented and under review. It is not yet publicly reachable. |
+| Combat and the continual turn cycle | Bounded native implementation | Contact-based Core and normal durable Host cover an initial assault plus two selected repeated assaults, settlement, custody, and Reserve Release. Development loopback access is not public Combat certification; broader support and evidence gates remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and evidence bundles, all from the CLI. |
 | User interface (Maproom) | Angular foundation, local read-only preview | A synthetic fixture study and a local, URL-backed campaign read mode. No live multiplayer actions yet. |
 | Published scenario | Not started | First target is the six-turn Graziani's Offensive, once the Combat loop is complete. |
-| Durable save and resume | Not started | The replay and checkpoint contracts exist. User-facing campaign persistence is a later milestone. |
+| Durable save and resume | Local durable Host implemented; product gate open | SQLite journal and cold replay support bounded local campaigns. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
 | Model-backed commanders | Scaffold only | The gateway and worker processes exist. No model provider is configured, and AI will not hold authority over the rules. |
 
 In plain terms: you can build the engine, run the full test suite, launch the Aspire service stack,
 and simulate the currently checked Movement, Reaction, and Breakdown paths. Native Combat is
-implemented but gated behind review. You cannot yet play a public campaign end to end.
+implemented for bounded local paths; public certification remains open. You cannot yet play a public campaign end to end.
+The [October 24 baseline evidence matrix](docs/work/reviews/2026-10-24-rc-baseline-evidence.md)
+separates these paths from original P01 certification and remaining release gates.
 
 For full detail on every contract, every merged slice, and every open gate, see the
 [current roadmap](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates), the

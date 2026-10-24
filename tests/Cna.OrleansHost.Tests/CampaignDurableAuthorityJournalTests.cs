@@ -212,6 +212,71 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public void BarrageInsertFailureRollsBackOwnerSelectionAndColdRetryCommitsOnce()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = Request();
+        var session = AdvanceToContactCombat(journal, request);
+        var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var opening = journal.QueryCombatOwnerOpening(credential, "axis-infantry");
+        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.Parameters.AddWithValue("$id", request.CampaignId);
+        query.Parameters.AddWithValue("$ref", opening.PublicActionRefs[0]);
+        query.CommandText = "SELECT head_sequence || ':' || head_hash FROM campaigns WHERE campaign_id=$id";
+        var originalHead = query.ExecuteScalar();
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id";
+        var originalCount = (long)query.ExecuteScalar()!;
+        var originalCheckpoint = CampaignExercises.Reconstruct(session).ReconstructedSnapshotBytes;
+        query.CommandText = """
+            CREATE TRIGGER fail_barrage BEFORE INSERT ON accepted_steps
+            WHEN NEW.action_kind='native-combat-barrage'
+            BEGIN SELECT RAISE(ABORT, 'injected barrage insertion failure'); END
+            """;
+        query.ExecuteNonQuery();
+        var failure = Assert.Throws<SqliteException>(() =>
+            journal.SubmitOwnerCombatSelection(credential, "axis-infantry",
+                opening.Revision, opening.PublicActionRefs[0]));
+        Assert.Equal(19, failure.SqliteErrorCode);
+        Assert.Equal(1811, failure.SqliteExtendedErrorCode);
+        Assert.Contains("injected barrage insertion failure", failure.Message,
+            StringComparison.Ordinal);
+        query.CommandText = "SELECT head_sequence || ':' || head_hash FROM campaigns WHERE campaign_id=$id";
+        Assert.Equal(originalHead, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id";
+        Assert.Equal(originalCount, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id AND owner_public_ref=$ref";
+        Assert.Equal(0L, query.ExecuteScalar());
+        Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion,
+            CampaignExercises.QueryCheckpoint(fixture.Open().ReadVerified(request.CampaignId)).StateVersion);
+        Assert.Equal(originalCheckpoint, CampaignExercises.Reconstruct(
+            fixture.Open().ReadVerified(request.CampaignId)).ReconstructedSnapshotBytes);
+        query.CommandText = "DROP TRIGGER fail_barrage";
+        query.ExecuteNonQuery();
+        var accepted = fixture.Open().SubmitOwnerCombatSelection(credential, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(accepted.IsAccepted);
+        query.CommandText = "SELECT head_sequence || ':' || head_hash FROM campaigns WHERE campaign_id=$id";
+        var acceptedHead = query.ExecuteScalar();
+        var duplicate = fixture.Open().SubmitOwnerCombatSelection(credential, "axis-infantry",
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(duplicate.IsAccepted);
+        Assert.Equal(accepted.CanonicalReceipt, duplicate.CanonicalReceipt);
+        Assert.Equal(acceptedHead, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id AND owner_public_ref=$ref";
+        Assert.Equal(1L, query.ExecuteScalar());
+        query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE campaign_id=$id";
+        Assert.Equal(originalCount + 2, (long)query.ExecuteScalar()!);
+        Assert.Equal(1L, CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-combat-barrage"));
+        Assert.True(CampaignExercises.Reconstruct(
+            fixture.Open().ReadVerified(request.CampaignId)).IsVerified);
+    }
+
+    [Fact]
     public void CompletedInfantryForceRoundAdvancesAntiArmorAndColdReplays()
     {
         using var fixture = new JournalFixture();
@@ -532,10 +597,12 @@ public sealed class CampaignDurableAuthorityJournalTests
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
+    [InlineData(true, -1)]
+    [InlineData(false, -1)]
+    [InlineData(true, 0)]
+    [InlineData(true, 1)]
     public async Task SecondAssaultCanRepeatIntoThirdContactCombatAfterColdRestart(
-        bool thirdAssault)
+        bool thirdAssault, int sealsBeforeTimeout)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
@@ -636,14 +703,61 @@ public sealed class CampaignDurableAuthorityJournalTests
                 "axis-infantry-third");
             var thirdDefenderForce = journal.QueryForceOwnerOpening(defender,
                 thirdDefender);
-            clock.Advance(TimeSpan.FromSeconds(1));
-            Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry-third",
-                thirdAttackerForce.Revision,
-                thirdAttackerForce.PublicActionRefs[0]).IsAccepted);
-            clock.Advance(TimeSpan.FromSeconds(1));
-            Assert.True(journal.SubmitOwnerForceSeal(defender, thirdDefender,
-                thirdDefenderForce.Revision,
-                thirdDefenderForce.PublicActionRefs[0]).IsAccepted);
+            var resultCount = CountAcceptedStep(fixture.Path, request.CampaignId,
+                "native-combat-assault-result");
+            if (sealsBeforeTimeout != 0)
+            {
+                clock.Advance(TimeSpan.FromSeconds(1));
+                Assert.True(journal.SubmitOwnerForceSeal(attacker, "axis-infantry-third",
+                    thirdAttackerForce.Revision,
+                    thirdAttackerForce.PublicActionRefs[0]).IsAccepted);
+            }
+            if (sealsBeforeTimeout < 0)
+            {
+                clock.Advance(TimeSpan.FromSeconds(1));
+                Assert.True(journal.SubmitOwnerForceSeal(defender, thirdDefender,
+                    thirdDefenderForce.Revision,
+                    thirdDefenderForce.PublicActionRefs[0]).IsAccepted);
+            }
+            else
+            {
+                clock.Advance(TimeSpan.FromSeconds(30));
+                Assert.True(fixture.Open(clock).TickForceRound(request.CampaignId));
+                var cancelled = CampaignExercises.Reconstruct(
+                    fixture.Open(clock).ReadVerified(request.CampaignId)).ReconstructedSnapshotBytes;
+                var lateSeal = Assert.Throws<InvalidOperationException>(() =>
+                    fixture.Open(clock).SubmitOwnerForceSeal(defender,
+                        thirdDefender, thirdDefenderForce.Revision,
+                        thirdDefenderForce.PublicActionRefs[0]));
+                Assert.Equal("Force round is closed.", lateSeal.Message);
+                if (sealsBeforeTimeout == 0)
+                    Assert.Throws<InvalidOperationException>(() =>
+                        fixture.Open(clock).SubmitOwnerForceSeal(attacker,
+                            "axis-infantry-third", thirdAttackerForce.Revision,
+                            thirdAttackerForce.PublicActionRefs[0]));
+                Assert.Equal(cancelled, CampaignExercises.Reconstruct(
+                    fixture.Open(clock).ReadVerified(request.CampaignId)).ReconstructedSnapshotBytes);
+                Assert.Equal(resultCount, CountAcceptedStep(fixture.Path, request.CampaignId,
+                    "native-combat-assault-result"));
+                Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId,
+                    "native-combat-cancelled-assault"));
+                using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+                connection.Open();
+                using var query = connection.CreateCommand();
+                query.CommandText = "SELECT canonical_event FROM accepted_steps "
+                    + "WHERE campaign_id=$id AND action_kind='native-repeat-breakdown' "
+                    + "ORDER BY sequence DESC LIMIT 1";
+                query.Parameters.AddWithValue("$id", request.CampaignId);
+                using var before = JsonDocument.Parse((byte[])query.ExecuteScalar()!);
+                query.CommandText = "SELECT snapshot_checkpoint FROM accepted_steps "
+                    + "WHERE campaign_id=$id ORDER BY sequence DESC LIMIT 1";
+                using var after = JsonDocument.Parse((byte[])query.ExecuteScalar()!);
+                // World includes ammunition: cancellation must retain the pre-assault World.
+                Assert.Equal(before.RootElement.GetProperty("worldHash").GetString(),
+                    after.RootElement.GetProperty("worldHash").GetString());
+                Assert.True(after.RootElement.GetProperty("hasRetainedCombatRandomCursor")
+                    .GetBoolean());
+            }
             cold = fixture.Open(clock).ReadVerified(request.CampaignId);
             Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         }

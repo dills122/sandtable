@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cna.OrleansHost.Tests;
@@ -84,6 +85,19 @@ public sealed class CampaignDurableOutwardApiTests
             }
             var created = await Send(client, "/api/v2/campaigns/", creation, OperatorSecret);
             Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+            var creationAck = await created.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            var beforeRetry = RetainedAuthority(Path.Combine(directory, "campaign.sqlite"));
+            var createdAgain = await Send(client, "/api/v2/campaigns/", creation, OperatorSecret);
+            Assert.Equal(HttpStatusCode.Created, createdAgain.StatusCode);
+            Assert.Equal(creationAck, await createdAgain.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            var creationConflict = await Send(client, "/api/v2/campaigns/",
+                creation.Replace("12345", "12346", StringComparison.Ordinal), OperatorSecret);
+            Assert.Equal(HttpStatusCode.Conflict, creationConflict.StatusCode);
+            var unauthorizedRetry = await client.PostAsync("/api/v2/campaigns/", Body(creation),
+                TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.Unauthorized, unauthorizedRetry.StatusCode);
+            Assert.Equal(beforeRetry, RetainedAuthority(Path.Combine(directory, "campaign.sqlite")));
             var session = journal.ReadVerified(request.CampaignId);
             for (var index = 0; index < 20; index++)
             {
@@ -101,6 +115,12 @@ public sealed class CampaignDurableOutwardApiTests
                 Assert.True(progressed.IsAccepted);
                 session = progressed.SuccessorSession!;
             }
+            var advancedAuthority = RetainedAuthority(Path.Combine(directory, "campaign.sqlite"));
+            var advancedRetry = await Send(client, "/api/v2/campaigns/", creation, OperatorSecret);
+            Assert.Equal(HttpStatusCode.Created, advancedRetry.StatusCode);
+            Assert.Equal(creationAck, await advancedRetry.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            Assert.Equal(advancedAuthority, RetainedAuthority(Path.Combine(directory, "campaign.sqlite")));
             var element = CampaignHostAdapter.QueryPrivateSideCut(session,
                 CampaignActionAudience.Axis)!.OwnElements[0].ElementId;
 
@@ -175,6 +195,20 @@ public sealed class CampaignDurableOutwardApiTests
             await app.StopAsync(TestContext.Current.CancellationToken);
             Directory.Delete(directory, recursive: true);
         }
+    }
+
+    private static string[] RetainedAuthority(string path)
+    {
+        using var connection = new SqliteConnection($"Data Source={path}");
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT head_sequence,head_hash,hex(creation_event),hex(initial_snapshot),"
+            + "hex(initial_contacts),hex(timing_configuration),"
+            + "(SELECT COUNT(*) FROM accepted_steps) FROM campaigns";
+        using var reader = command.ExecuteReader();
+        Assert.True(reader.Read());
+        return Enumerable.Range(0, reader.FieldCount).Select(index =>
+            Convert.ToString(reader.GetValue(index), System.Globalization.CultureInfo.InvariantCulture)!).ToArray();
     }
 
     private static StringContent Body(string json) => new(json, Encoding.UTF8, "application/json");

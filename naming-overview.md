@@ -173,8 +173,9 @@ same-slot Reserve Release. A second V28 Repeat can enter ordinal three when
 a released-unit movement witness and retained Combat cursor exist. V28 has no
 fixed ordinal cutoff; the tested third-cycle cut offers Finish only because
 no legal witness remains;
-Core rejects an unoffered Repeat event on replay. Further selected cycles, vehicle
-accounting, and public routing remain pending;
+Core rejects an unoffered Repeat event on replay. The bounded contact path covers an initial
+assault plus two selected repeated assaults; further cycle shapes, vehicle accounting, and
+certified public admission remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

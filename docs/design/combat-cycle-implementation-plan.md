@@ -1,6 +1,6 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status (2026-10-21):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and two selected repeated assaults, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. V28 has no fixed cycle cutoff; Repeat requires a source-legal released-unit movement witness and retained Combat cursor. The tested third Reserve Release exposes Finish only because its witness set is empty. Further cycle shapes remain an evidence gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
+**Status (reconciled 2026-10-24):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and two selected repeated assaults, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. V28 has no fixed cycle cutoff; Repeat requires a source-legal released-unit movement witness and retained Combat cursor. The tested third Reserve Release exposes Finish only because its witness set is empty. Further cycle shapes remain an evidence gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
 
 The initial voluntary finish and initial cancelled assault now pass through V27
 Reserve Release and V28 cycle control. A selected assault with no payable pinned
@@ -44,8 +44,8 @@ and separately projected side evidence. The terminal is same-slot Truck Convoy *
 prisoner upkeep/replacement obligations prohibit calling this a complete playable campaign.
 
 The [policy register](combat-cycle-policy-reconciliation.md) owns POL-001–008 and approvals. Existing
-design ACs remain requirements; this plan does not weaken them. This branch supports two bounded
-runtime assaults, defender RBA, and released-Reserve infantry offensive Combat. General later-cycle
+design ACs remain requirements; this plan does not weaken them. The current bounded contact path covers an initial assault plus two selected repeated
+assaults, defender RBA, and released-Reserve infantry offensive Combat. General later-cycle
 assault continuation, resupply, motorized retreat, gun/armor combat, mandatory attacks, new
 phase-slot execution and hosted intelligence remain open. Sprint5's full repeating-skeleton acceptance remains open
 where those dependencies are required; this package supplies bounded evidence toward it.

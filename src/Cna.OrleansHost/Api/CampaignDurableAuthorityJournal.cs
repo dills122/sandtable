@@ -179,11 +179,27 @@ internal sealed partial class CampaignDurableAuthorityJournal
         ArgumentNullException.ThrowIfNull(request);
         if (schemaVersion != SchemaVersion)
             throw new InvalidOperationException("Create new campaigns in a current journal.");
+        var timingBytes = timing?.SerializeCanonical() ?? [];
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        using (var lookup = connection.CreateCommand())
+        {
+            lookup.Transaction = transaction;
+            lookup.CommandText = "SELECT 1 FROM campaigns WHERE campaign_id=$id";
+            lookup.Parameters.AddWithValue("$id", request.CampaignId);
+            if (lookup.ExecuteScalar() is not null)
+            {
+                var retained = Load(connection, transaction, request.CampaignId);
+                if (retained.Request != request
+                    || !retained.TimingBytes.AsSpan().SequenceEqual(timingBytes))
+                    throw new InvalidOperationException("Campaign creation conflicts with retained authority.");
+                return retained.Session;
+            }
+        }
         if (timing is not null && (timing.RulesetHash != request.RulesetHash
             || timing.ContentHash != request.ContentHash))
             throw new ArgumentException("Decision timing must bind the campaign rules and content.",
                 nameof(timing));
-        var timingBytes = timing?.SerializeCanonical() ?? [];
         var created = CampaignHostAdapter.Create(request);
         if (!created.IsStarted) throw new InvalidOperationException("Core rejected campaign creation.");
         var creation = created.CreationEventBytes!;
@@ -192,8 +208,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAdapter.QueryContactRecords(created.Session!));
         RequireBounded(creation);
         RequireBounded(snapshot);
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
         command.CommandText = """
@@ -397,7 +411,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!imported.IsVerified)
             throw new InvalidOperationException("Core rejected retained campaign authority.");
         VerifyForceRounds(connection, transaction, campaignId, steps, timing);
-        return new Loaded(imported.Session!, sequence, hash, timing);
+        return new Loaded(imported.Session!, sequence, hash, timing, request, timingBytes);
     }
 
     private SqliteConnection Connect(bool create)
@@ -515,5 +529,5 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     private sealed record Loaded(ExerciseSession Session, long Sequence, string Hash,
-        CampaignDecisionTimingConfigurationV1? Timing);
+        CampaignDecisionTimingConfigurationV1? Timing, CampaignCreationRequest Request, byte[] TimingBytes);
 }

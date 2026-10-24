@@ -902,10 +902,9 @@ It keeps private target identity and authority in Core. Public routing,
 broader equal-visible history coverage, and custody assets in the next
 versioned campaign position remain before admission.
 Source-backed disposition for
-contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
-opening route remain unfinished.
-Encounter adjudication and authenticated Host owner lifecycle must precede
-issuance of those offers. Complete detection policy,
+contacts lacking combat components remain before issuance. Bounded native Reserve Release,
+assault adjudication and authenticated local Host owner lifecycle are implemented as described
+above; broader profile certification and public admission remain unfinished. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.
 
 Task019F0's private actual-selection executable contract merged in PR #161; Task019F1's
