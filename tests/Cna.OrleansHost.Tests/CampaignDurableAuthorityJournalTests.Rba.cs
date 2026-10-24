@@ -87,8 +87,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
         var (request, _, _) = PrepareRbaRound(journal);
-        var scheduler = new CampaignRbaTimeoutService(journal, clock,
-            NullLogger<CampaignRbaTimeoutService>.Instance);
+        var scheduler = new CampaignCombatTimeoutService(journal, clock,
+            NullLogger<CampaignCombatTimeoutService>.Instance);
         scheduler.SweepOnce(CancellationToken.None);
         clock.Advance(TimeSpan.FromSeconds(30));
         scheduler.SweepOnce(CancellationToken.None);
@@ -123,7 +123,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
         var (request, _, _) = PrepareRbaRound(journal);
-        for (var i = 0; i < CampaignRbaTimeoutService.BatchSize; i++)
+        for (var i = 0; i < CampaignCombatTimeoutService.BatchSize; i++)
         {
             var template = Request();
             var corrupt = new CampaignCreationRequest(template.ContractVersion, $"a-corrupt-{i:D2}",
@@ -140,8 +140,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             insert.Parameters.AddWithValue("$seed", invalidSeed);
             insert.ExecuteNonQuery();
         }
-        var scheduler = new CampaignRbaTimeoutService(journal, clock,
-            NullLogger<CampaignRbaTimeoutService>.Instance);
+        var scheduler = new CampaignCombatTimeoutService(journal, clock,
+            NullLogger<CampaignCombatTimeoutService>.Instance);
         clock.Advance(TimeSpan.FromSeconds(30));
         scheduler.SweepOnce(CancellationToken.None);
         Assert.Contains(request.CampaignId, journal.CollectingRbaCampaigns("", 100));

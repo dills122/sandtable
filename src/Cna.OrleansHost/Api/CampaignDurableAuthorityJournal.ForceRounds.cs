@@ -237,6 +237,24 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
     }
 
+    internal IReadOnlyList<string> CollectingForceCampaigns(string after, int limit)
+    {
+        if (schemaVersion != SchemaVersion) return [];
+        using var connection = Connect(create: false);
+        using var query = connection.CreateCommand();
+        query.CommandText = """
+            SELECT DISTINCT campaign_id FROM force_rounds
+            WHERE status='collecting' AND campaign_id > $after COLLATE BINARY
+            ORDER BY campaign_id COLLATE BINARY LIMIT $limit
+            """;
+        query.Parameters.AddWithValue("$after", after);
+        query.Parameters.AddWithValue("$limit", limit);
+        using var reader = query.ExecuteReader();
+        var result = new List<string>();
+        while (reader.Read()) result.Add(reader.GetString(0));
+        return result;
+    }
+
     internal bool TickForceRound(string campaignId)
     {
         using var connection = Connect(create: false);

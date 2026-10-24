@@ -22,7 +22,7 @@ if (!string.IsNullOrWhiteSpace(campaignJournalPath))
             services.GetRequiredService<TimeProvider>())
         : CampaignDurableAuthorityJournal.CreateNew(campaignJournalPath,
             operatorSecret, services.GetRequiredService<TimeProvider>()));
-    builder.Services.AddHostedService<CampaignRbaTimeoutService>();
+    builder.Services.AddHostedService<CampaignCombatTimeoutService>();
 }
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration
 builder.Host.UseOrleans(siloBuilder =>

@@ -42,9 +42,13 @@ missing, extra, tampered or incompatible evidence rejects.
 
 A Host background service uses the same injected `TimeProvider` as the journal,
 ticks every second when a journal is configured, and remains active independently
-of outward route enablement. Each sweep visits at most sixteen distinct collecting
-campaigns using a rotating lexicographic cursor, preventing a persistent corrupt
-or non-expired first page from starving later campaigns. Each campaign has its
+of outward route enablement. Each sweep visits at most sixteen collecting RBA
+campaigns and sixteen collecting Force campaigns, with independent rotating
+lexicographic cursors. A persistent corrupt or non-expired first page cannot starve
+later campaigns or the other decision window. Already-persisted Force rounds use
+existing V19 cancellation and V20/V21 continuation; no seal or result is fabricated.
+Force opening remains lazy: the sweep never invents a deadline for an unopened
+Force decision. Each campaign has its
 own immediate transaction. Corruption/storage errors are logged and isolated,
 never counted as successful cancellation; shutdown cancellation interrupts the
 scan between campaigns. Legacy journals have no RBA sweep or mutation. This is

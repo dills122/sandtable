@@ -804,7 +804,11 @@ the initial journal hash. Existing schema-5/6/7 journals remain read-only; mutat
 requires schema 8. No configuration means no Force Assignment opening or seal.
 The normal Host stores a shared Force Assignment round for both seats with trusted opened,
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
-deadline or clock failure, and verifies round status and evidence on cold replay. V19
+deadline or clock failure, and verifies round status and evidence on cold replay.
+The hosted combat timeout service sweeps already-persisted collecting Force rounds
+without requiring another owner request. Force deadlines still begin at the first
+Force opening; unopened decisions are outside this recovery path. Independent
+RBA and Force cursors prevent one decision window from starving the other. V19
 preserves zero or one seal and advances to Anti Armor. Core V20 then records an
 explicit no-effect Anti Armor outcome for infantry-only content, bound to that Force
 event; normal Host appends it in the same transaction and verifies cold replay.

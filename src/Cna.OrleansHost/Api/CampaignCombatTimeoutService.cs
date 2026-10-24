@@ -3,16 +3,17 @@ using Microsoft.Data.Sqlite;
 namespace Cna.OrleansHost.Api;
 
 /// <summary>Schedules durable clock checks; Core remains sole adjudication authority.</summary>
-internal sealed class CampaignRbaTimeoutService(CampaignDurableAuthorityJournal journal,
-    TimeProvider clock, ILogger<CampaignRbaTimeoutService> logger) : BackgroundService
+internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJournal journal,
+    TimeProvider clock, ILogger<CampaignCombatTimeoutService> logger) : BackgroundService
 {
     private static readonly Action<ILogger, Exception?> LogEnumerationFailure =
-        LoggerMessage.Define(LogLevel.Error, new EventId(1, "RbaEnumerationFailed"),
-            "Unable to enumerate durable RBA deadlines.");
+        LoggerMessage.Define(LogLevel.Error, new EventId(1, "CombatEnumerationFailed"),
+            "Unable to enumerate durable Combat deadlines.");
     private static readonly Action<ILogger, string, Exception?> LogCampaignFailure =
-        LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, "RbaCampaignFailed"),
-            "Durable RBA deadline failed for campaign {CampaignId}.");
-    private string cursor = "";
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, "CombatCampaignFailed"),
+            "Durable Combat deadline failed for campaign {CampaignId}.");
+    private string rbaCursor = "";
+    private string forceCursor = "";
     internal const int BatchSize = 16;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,15 +28,22 @@ internal sealed class CampaignRbaTimeoutService(CampaignDurableAuthorityJournal 
 
     internal void SweepOnce(CancellationToken cancellationToken)
     {
+        SweepLane(ref rbaCursor, journal.CollectingRbaCampaigns, journal.TickRbaRound, cancellationToken);
+        SweepLane(ref forceCursor, journal.CollectingForceCampaigns, journal.TickForceRound, cancellationToken);
+    }
+
+    private void SweepLane(ref string cursor, Func<string, int, IReadOnlyList<string>> enumerate,
+        Func<string, bool> tick, CancellationToken cancellationToken)
+    {
         cancellationToken.ThrowIfCancellationRequested();
         IReadOnlyList<string> campaigns;
         try
         {
-            campaigns = journal.CollectingRbaCampaigns(cursor, BatchSize);
+            campaigns = enumerate(cursor, BatchSize);
             if (campaigns.Count == 0 && cursor.Length > 0)
             {
                 cursor = "";
-                campaigns = journal.CollectingRbaCampaigns(cursor, BatchSize);
+                campaigns = enumerate(cursor, BatchSize);
             }
         }
         catch (SqliteException exception)
@@ -48,7 +56,7 @@ internal sealed class CampaignRbaTimeoutService(CampaignDurableAuthorityJournal 
             cancellationToken.ThrowIfCancellationRequested();
             // Advance even after corruption so one campaign cannot starve later deadlines.
             cursor = campaign;
-            try { journal.TickRbaRound(campaign); }
+            try { _ = tick(campaign); }
             catch (Exception exception) when (exception is InvalidOperationException
                 or ArgumentException or SqliteException or System.Text.Json.JsonException
                 or FormatException or OverflowException or InvalidCastException
