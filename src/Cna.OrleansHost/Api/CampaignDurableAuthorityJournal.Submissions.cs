@@ -355,6 +355,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             }
         }
+        CustodyRound? custodyRound = null;
+        if (kind == CampaignOwnerOpeningKind.Custody)
+        {
+            custodyRound = ReadActiveCustodyRound(connection, transaction, head, seat.CampaignId);
+            var gate = GateCustodyRound(connection, transaction, custodyRound);
+            custodyRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutCustodyRound(connection, transaction, head, custodyRound, reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
         ReserveRound? reserveRound = null;
         if (kind == CampaignOwnerOpeningKind.ReserveRelease)
         {
@@ -385,7 +398,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.Custody)
-            AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId);
+        {
+            UpdateCustodyRound(connection, transaction, custodyRound! with { Status = "completed" });
+            AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId, acceptedHead);
+        }
         if (kind == CampaignOwnerOpeningKind.ReserveRelease)
             AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, acceptedHead);
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)

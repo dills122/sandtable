@@ -173,12 +173,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 "Accepted Combat choice cannot settle normal World.");
         var command = CampaignHostAdapter.NativeCombatSettlementCommand(
             head.Session, settled);
-        PersistAccepted(connection, transaction, campaignId, head,
+        var custodyHead = PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.NativeCombatSettlementKind,
             null, null, null, null, command, settled);
         if (CampaignHostAdapter.IsNativeCombatNoCustody(settled.SuccessorSession!))
         {
-            var custodyHead = Load(connection, transaction, campaignId);
             var completed = CampaignHostAdapter.CompleteNoNativeCombatCustody(
                 custodyHead.Session);
             if (!completed.IsAccepted)
@@ -186,17 +185,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     "No-captive settlement cannot complete its System disposition.");
             var custodyCommand = CampaignHostAdapter.NativeCombatNoCustodyCommand(
                 custodyHead.Session, completed);
-            PersistAccepted(connection, transaction, campaignId, custodyHead,
+            var completedHead = PersistAccepted(connection, transaction, campaignId, custodyHead,
                 CampaignHostAcceptedStep.NativeCombatNoCustodyKind,
                 null, null, null, null, custodyCommand, completed);
-            AppendNativeCombatSuccessor(connection, transaction, campaignId);
+            AppendNativeCombatSuccessor(connection, transaction, campaignId, completedHead);
         }
+        else InitializeCustodyRound(connection, transaction, custodyHead, campaignId);
     }
 
     private void AppendNativeCombatSuccessor(SqliteConnection connection,
-        SqliteTransaction transaction, string campaignId)
+        SqliteTransaction transaction, string campaignId, Loaded head)
     {
-        var head = Load(connection, transaction, campaignId);
         var completed = CampaignHostAdapter.CompleteNativeCombatSuccessor(
             head.Session);
         if (!completed.IsAccepted)

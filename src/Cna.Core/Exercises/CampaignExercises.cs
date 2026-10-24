@@ -1597,6 +1597,40 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult TimeoutNativeCombatCustody(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var cut = QueryNativeCombatCustodyCut(session)
+                ?? throw new InvalidOperationException("No pending captive lot.");
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "custody-unavailable")
+                || (reason != "custody-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("custody"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var repeated = session.CurrentRepeatAssault is { Settlement: not null, Custody: null };
+            var settlement = repeated ? session.CurrentRepeatAssault!.Settlement! : session.CurrentCombatSettlement!;
+            var world = repeated ? session.CurrentRepeatAssault!.SettledWorld! : session.CurrentCombatSettledWorld!;
+            var timeout = CampaignNativeCombatCustodyTimeoutV36.CreateTimeout(session.CurrentSnapshot,
+                settlement, world, cut, session.Context,
+                configuration?.Hash ?? CampaignNativeCombatCustodyTimeoutV36.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            return repeated
+                ? AcceptRepeatedCombatCustody(session, cut, "leave-unguarded", CampaignActionAudience.System, null, timeout)
+                : AcceptNativeCombatCustody(session, cut, "leave-unguarded", CampaignActionAudience.System, null, timeout);
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     internal static ExerciseStepResult CompleteNoNativeCombatCustody(
         ExerciseSession session)
     {
@@ -1669,7 +1703,8 @@ public static class CampaignExercises
 
     private static ExerciseStepResult AcceptRepeatedCombatCustody(
         ExerciseSession session, CampaignNativeCombatCustodyCutV25? cut,
-        string choiceKind, CampaignActionAudience audience, string? actionId)
+        string choiceKind, CampaignActionAudience audience, string? actionId,
+        CampaignNativeCombatCustodyDispositionV25? systemDisposition = null)
     {
         try
         {
@@ -1678,7 +1713,7 @@ public static class CampaignExercises
             var world = runtime.SettledWorld!;
             if (session.CurrentContacts.AuthorityVersion != settlement.StateVersion)
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
-            var disposition = CampaignNativeCombatCustodyDispositionV25.Create(
+            var disposition = systemDisposition ?? CampaignNativeCombatCustodyDispositionV25.Create(
                 session.CurrentSnapshot, settlement, world, cut, choiceKind,
                 session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatCustodyDisposition(
@@ -1709,13 +1744,14 @@ public static class CampaignExercises
 
     private static ExerciseStepResult AcceptNativeCombatCustody(
         ExerciseSession session, CampaignNativeCombatCustodyCutV25? cut,
-        string choiceKind, CampaignActionAudience audience, string? actionId)
+        string choiceKind, CampaignActionAudience audience, string? actionId,
+        CampaignNativeCombatCustodyDispositionV25? systemDisposition = null)
     {
         var settlement = session.CurrentCombatSettlement!;
         var settledWorld = session.CurrentCombatSettledWorld!;
         if (session.CurrentContacts.AuthorityVersion != settlement.StateVersion)
             throw new InvalidOperationException("Custody requires the accepted contact cut.");
-        var disposition = CampaignNativeCombatCustodyDispositionV25.Create(
+        var disposition = systemDisposition ?? CampaignNativeCombatCustodyDispositionV25.Create(
             session.CurrentSnapshot, settlement, settledWorld, cut,
             choiceKind, session.Context);
         var projection = CampaignNativeCombatCustodyProjectionV25.Project(

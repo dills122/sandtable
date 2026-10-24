@@ -64,6 +64,7 @@ internal static class CampaignCurrentEventSerializer
             "reserve-release-member-choice" or "reserve-release-completed" =>
                 CampaignNativeReserveReleaseEventV27.Deserialize(canonicalJson),
             "combat-sequence-resumed" => CampaignNativeCombatSuccessorV26.Deserialize(canonicalJson),
+            "combat-custody-timeout" => CampaignNativeCombatCustodyTimeoutV36.Deserialize(canonicalJson),
             "combat-custody-disposed" => CampaignNativeCombatCustodyDispositionV25.Deserialize(canonicalJson),
             "combat-world-settled" => CampaignNativeCombatSettlementV24.Deserialize(canonicalJson),
             "combat-post-result-retreat-decided" => CampaignNativeCombatRetreatAfterAssaultV23.Deserialize(canonicalJson),

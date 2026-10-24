@@ -353,7 +353,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCombatCustodyDispositionV25 custody,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeCombatCustodyDispositionV25.CurrentContractVersion;
+        ContractVersion = custody.ContractVersion;
         CampaignId = custody.CampaignId;
         StateVersion = custody.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -368,7 +368,7 @@ public sealed class ExerciseCheckpoint
             || initial.CampaignId != decision.CampaignId)
             throw new ArgumentException(
                 "Repeated custody must bind accepted later-cycle campaign.");
-        ContractVersion = CampaignNativeCombatCustodyDispositionV25.CurrentContractVersion;
+        ContractVersion = custody.ContractVersion;
         CampaignId = custody.CampaignId;
         StateVersion = custody.StateVersion;
         RulesetHash = initial.RulesetHash;

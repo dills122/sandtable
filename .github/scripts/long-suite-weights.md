@@ -333,3 +333,21 @@ Report: `artifacts/rc-reserve-timeout/core-results/dsteele_Dylans-MacBook-Pro_20
 | `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LargeBatchCodecDispatchesBeforeLegacyByteLimit` | `b5caea3cfd60` | 58 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.AcceptedOwnerReleaseSurvivesTimeoutAndEntryAnchorDoesNotMove(ordinal: 2)` | `5fbd7868a35b` | 53 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.AcceptedOwnerReleaseSurvivesTimeoutAndEntryAnchorDoesNotMove(ordinal: 1)` | `9c6ce4516e19` | 52 |
+
+## Native Custody timeout (October 24, 2026)
+
+Nine new rows measured in local Release focused test run. Existing weights and
+baseline metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-custody-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-24_23_21_07.475443.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.AcceptedOwnerDispositionCannotBeOverriddenAndUnsupportedFallbackRejects` | `5e262a9daf4b` | 672 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.TamperedLotRouteAndTimingEvidenceRejectReplay` | `b8eaa3f30ed6` | 505 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-unavailable", observed: null)` | `1d1ea0ebabd6` | 1179 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-regression", observed: 999)` | `6a83120d2967` | 1323 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "controller-unavailable", observed: null)` | `9e28832f5784` | 899 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.NativeSingleLotEscapeUsesAtMostOneClearEdgeWithinSourceBudget` | `9723abeb0908` | 371 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.UnavailableEntryHasNoInventedClock` | `9893b8c1de4c` | 560 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.InvalidTimingDoesNotMutatePendingCustody` | `7a1aba970e55` | 226 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.DeadlineLeavesCaptivesUnguardedWithSystemEvidenceAndColdReplay` | `9b492a919108` | 534 |
