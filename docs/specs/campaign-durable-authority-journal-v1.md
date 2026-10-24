@@ -5,7 +5,7 @@ Normal campaign Host storage retains the canonical Core creation evidence and ev
 ## Schema and transition
 
 - `campaigns` binds the versioned creation request fields, canonical creation event, initial snapshot, initial contact records, head sequence, and head hash. Campaign IDs are unique. Creation takes an immediate transaction before lookup or fresh Core admission. An exact retry compares every creation-request field and canonical timing bytes, fully verifies retained evidence through Core, and returns the current retained head without writes, even after accepted steps. A differing request or timing conflicts without overwriting authority; concurrent creators serialize under the same transaction. Null timing remains distinct from explicit timing.
-- `accepted_steps` has one row per accepted Core transition: contiguous sequence, action kind, optional acting element and owner reference/seat epoch/opening revision, canonical command, canonical event, canonical receipt, checkpoint, contact records appended by that transition, prior hash, and record hash. The hash binds every field and length-prefixed evidence bytes; the initial hash binds the request and creation artifacts including contact records. Current schema v8 retains canonical `timing_configuration`, `force_rounds`, and `rba_rounds`. Legacy v5 (without timing), v6 (timing without Force rounds), and v7 (Force rounds without RBA deadlines) remain readable with their historical hash rules; all mutations require v8. No implicit timing or schema upgrade occurs.
+- `accepted_steps` has one row per accepted Core transition: contiguous sequence, action kind, optional acting element and owner reference/seat epoch/opening revision, canonical command, canonical event, canonical receipt, checkpoint, contact records appended by that transition, prior hash, and record hash. The hash binds every field and length-prefixed evidence bytes; the initial hash binds the request and creation artifacts including contact records. Current schema v9 retains canonical `timing_configuration`, `force_rounds`, and `rba_rounds`. Legacy v5 (without timing), v6 (timing without Force rounds), v7 (Force rounds without RBA deadlines), and v8 (lazy Force opening) remain readable with their historical hash rules; all mutations require v9. No implicit timing or schema upgrade occurs.
 - `operator_capability` holds only a domain-separated digest of a 32-byte operator secret. `seats` holds two possible sides per campaign, an increasing epoch, and at most one outstanding grant or credential digest per side. Grants live ten minutes and are single use. Redeemed credentials live two hours. A replacement grant increments epoch and invalidates the prior credential, including after process restart.
 - `reference_key` holds a private 256-bit HMAC key. `owner_openings` binds the authenticated seat epoch, acting element, visible bytes and digest, audience revision, and current private authority version. `owner_actions` holds the reference-to-Core-action map separately. Query checks the seat and replays Core inside one immediate transaction, then replaces the private map at the current cut. Equal visible bytes under an unseen authority change retain the opening revision and outward references; a changed view or seat epoch advances the revision.
 - Append takes a SQLite immediate transaction, replays the retained prefix through Core, checks the submitted command against that exact head, then commits evidence and head in the same transaction. Rejected commands write nothing. A concurrent or stale command cannot advance the head.
@@ -47,9 +47,30 @@ campaigns and sixteen collecting Force campaigns, with independent rotating
 lexicographic cursors. A persistent corrupt or non-expired first page cannot starve
 later campaigns or the other decision window. Already-persisted Force rounds use
 existing V19 cancellation and V20/V21 continuation; no seal or result is fabricated.
-Force opening remains lazy: the sweep never invents a deadline for an unopened
-Force decision. Each campaign has its
+Schema v9 creates the Force round atomically with an accepted RBA decline, using
+the trusted time already validated by the RBA clock gate and the pinned Force
+budget. Queries only read this round; no owner request starts or renews its clock. Each campaign has its
 own immediate transaction. Corruption/storage errors are logged and isolated,
 never counted as successful cancellation; shutdown cancellation interrupts the
 scan between campaigns. Legacy journals have no RBA sweep or mutation. This is
 local durable lifecycle recovery, not public-host certification.
+
+
+## Force decision entry (schema v9)
+
+An accepted RBA decline, its RBA completed status, and the initial collecting
+Force round commit in one immediate transaction. The opening timestamp is the
+same trusted reading accepted by the preceding RBA gate; the Force budget starts
+there, even when neither owner requests a Force opening. No second clock read
+can move or restart entry time. Existing pre-opening `force-unavailable` evidence
+remains the only no-round exception for an unavailable initial Force decision.
+
+Replay maps each decline to its preceding authentic Barrage in the accepted
+transcript. The Force opening must equal that completed RBA round's retained
+high-water timestamp; even a consistently rehashed shifted Force clock rejects.
+
+Every v9 decline must have exactly its authentic decline-bound round or explicit
+no-round cancellation. Deleted/missing rounds reject cold reads and owner queries;
+queries never repair evidence. Schema 8 keeps its original lazy-round verifier and
+RBA integrity checks, but all mutations are rejected. No migration invents a
+historical opening timestamp. Schema 5/6/7 also remain read-only.

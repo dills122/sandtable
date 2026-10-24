@@ -239,8 +239,10 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(2L, query.ExecuteScalar());
     }
 
-    [Fact]
-    public void RbaRepeatedAssaultTimeoutColdReplaysRealHistory()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RbaRepeatedAssaultOrForceEntryTimeoutColdReplaysRealHistory(bool forceEntry)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
@@ -288,17 +290,23 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var westDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
             session, CampaignActionAudience.Commonwealth);
         Assert.Equal("commonwealth-infantry-west", westDefender);
+        if (forceEntry)
+        {
+            var defenderOpening = cold.QueryRbaOwnerOpening(defender, westDefender);
+            Assert.True(cold.SubmitOwnerRbaDecline(defender, westDefender,
+                defenderOpening.Revision, defenderOpening.PublicActionRefs[^1]).IsAccepted);
+        }
         clock.Advance(TimeSpan.FromSeconds(30));
-        Assert.True(cold.TickRbaRound(request.CampaignId));
-        Assert.False(cold.TickRbaRound(request.CampaignId));
+        Assert.True(forceEntry ? cold.TickForceRound(request.CampaignId) : cold.TickRbaRound(request.CampaignId));
+        Assert.False(forceEntry ? cold.TickForceRound(request.CampaignId) : cold.TickRbaRound(request.CampaignId));
         Assert.True(CampaignExercises.Reconstruct(fixture.Open(clock).ReadVerified(request.CampaignId)).IsVerified);
         using var connection = new SqliteConnection($"Data Source={fixture.Path}");
         connection.Open();
         using var query = connection.CreateCommand();
         query.CommandText = "SELECT COUNT(*) FROM rba_rounds WHERE status='completed'";
-        Assert.Equal(1L, query.ExecuteScalar());
+        Assert.Equal(forceEntry ? 2L : 1L, query.ExecuteScalar());
         query.CommandText = "SELECT COUNT(*) FROM rba_rounds WHERE status='cancelled'";
-        Assert.Equal(1L, query.ExecuteScalar());
+        Assert.Equal(forceEntry ? 0L : 1L, query.ExecuteScalar());
     }
 
     [Fact]
@@ -322,8 +330,10 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Empty(journal.CollectingRbaCampaigns("", 16));
     }
 
-    [Fact]
-    public void RbaThirdAssaultTimeoutColdReplaysRealHistory()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RbaThirdAssaultOrForceEntryTimeoutColdReplaysRealHistory(bool forceEntry)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
@@ -406,12 +416,22 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 .GetProperty("apparentLocationId").GetString() == "far-north-west");
         Assert.True(journal.SubmitOwnerRepeatCombat(attacker, "axis-infantry-third",
             thirdCombat.Revision, thirdCombat.PublicActionRefs[farNorthWest]).IsAccepted);
+        if (forceEntry)
+        {
+            var thirdDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
+                journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
+            var thirdRba = journal.QueryRbaOwnerOpening(defender, thirdDefender);
+            Assert.True(journal.SubmitOwnerRbaDecline(defender, thirdDefender,
+                thirdRba.Revision, thirdRba.PublicActionRefs[^1]).IsAccepted);
+        }
         clock.Advance(TimeSpan.FromSeconds(30));
-        Assert.True(fixture.Open(clock).TickRbaRound(request.CampaignId));
-        Assert.False(fixture.Open(clock).TickRbaRound(request.CampaignId));
+        Assert.True(forceEntry ? fixture.Open(clock).TickForceRound(request.CampaignId)
+            : fixture.Open(clock).TickRbaRound(request.CampaignId));
+        Assert.False(forceEntry ? fixture.Open(clock).TickForceRound(request.CampaignId)
+            : fixture.Open(clock).TickRbaRound(request.CampaignId));
         Assert.True(CampaignExercises.Reconstruct(fixture.Open(clock).ReadVerified(request.CampaignId)).IsVerified);
-        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-rba-cancellation"));
-        Assert.Equal(2, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-rba-decline"));
+        Assert.Equal(forceEntry ? 0 : 1, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-rba-cancellation"));
+        Assert.Equal(forceEntry ? 3 : 2, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-rba-decline"));
     }
 
     private static void AssertRbaCancellationOnly(string path)

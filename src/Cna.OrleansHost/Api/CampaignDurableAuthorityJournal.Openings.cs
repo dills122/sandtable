@@ -177,7 +177,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         if (kind == CampaignOwnerOpeningKind.ForceAssignment)
         {
-            var round = GetOrOpenForceRound(connection, transaction, authority, seat.CampaignId);
+            var round = ReadActiveForceRound(connection, transaction, authority, seat.CampaignId);
             var gate = GateForceRound(connection, transaction, round);
             if (gate.CancellationReason is { } reason)
             {

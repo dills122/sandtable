@@ -725,16 +725,13 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 Assert.True(fixture.Open(clock).TickForceRound(request.CampaignId));
                 var cancelled = CampaignExercises.Reconstruct(
                     fixture.Open(clock).ReadVerified(request.CampaignId)).ReconstructedSnapshotBytes;
-                var lateSeal = Assert.Throws<InvalidOperationException>(() =>
-                    fixture.Open(clock).SubmitOwnerForceSeal(defender,
-                        thirdDefender, thirdDefenderForce.Revision,
-                        thirdDefenderForce.PublicActionRefs[0]));
-                Assert.Equal("Force round is closed.", lateSeal.Message);
+                Assert.False(fixture.Open(clock).SubmitOwnerForceSeal(defender,
+                    thirdDefender, thirdDefenderForce.Revision,
+                    thirdDefenderForce.PublicActionRefs[0]).IsAccepted);
                 if (sealsBeforeTimeout == 0)
-                    Assert.Throws<InvalidOperationException>(() =>
-                        fixture.Open(clock).SubmitOwnerForceSeal(attacker,
-                            "axis-infantry-third", thirdAttackerForce.Revision,
-                            thirdAttackerForce.PublicActionRefs[0]));
+                    Assert.False(fixture.Open(clock).SubmitOwnerForceSeal(attacker,
+                        "axis-infantry-third", thirdAttackerForce.Revision,
+                        thirdAttackerForce.PublicActionRefs[0]).IsAccepted);
                 Assert.Equal(cancelled, CampaignExercises.Reconstruct(
                     fixture.Open(clock).ReadVerified(request.CampaignId)).ReconstructedSnapshotBytes);
                 Assert.Equal(resultCount, CountAcceptedStep(fixture.Path, request.CampaignId,

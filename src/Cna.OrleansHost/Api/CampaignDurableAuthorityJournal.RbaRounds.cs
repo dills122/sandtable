@@ -199,7 +199,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string campaignId, IReadOnlyList<CampaignHostAcceptedStep> steps,
         CampaignDecisionTimingConfigurationV1? timing)
     {
-        if (schemaVersion != SchemaVersion) return;
+        if (schemaVersion < RbaSchemaVersion) return;
         var barrages = new Dictionary<string, string>(StringComparer.Ordinal);
         var active = new Dictionary<string, string>(StringComparer.Ordinal);
         var endings = new Dictionary<string, string>(StringComparer.Ordinal);

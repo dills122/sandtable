@@ -128,11 +128,11 @@ retain each owner's separate seal and cold-replay receipt. A distinct V18
 System completion advances after both seals.
 Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
-Force Assignment opening and seals. Schema-5/6/7 journals stay read-only. Schema 8 retains one shared Force round for both seats;
+Force Assignment opening and seals. Schema-5/6/7/8 journals stay read-only. Schema 9 retains one shared Force round for both seats at accepted RBA decline;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
-inventing an owner seal. The combat timeout service also ticks already-opened
-Force rounds when owners disconnect; it does not create an unopened Force deadline.
-Schema 8 also retains an RBA round at Barrage entry.
+inventing an owner seal. The combat timeout service ticks these persisted Force
+rounds even when neither owner queries an opening. The entry deadline never resets
+on query or restart. Schema 9 also retains an RBA round at Barrage entry.
 Background expiry records native V33 `combat-rba-cancelled`, preserving retreat
 movement and reaching Reserve Release without a fabricated decline or combat result.
 Core V20/normal Host complete the infantry-only empty

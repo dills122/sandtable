@@ -15,7 +15,8 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 8;
+    private const int SchemaVersion = 9;
+    private const int RbaSchemaVersion = 8;
     private const int ForceSchemaVersion = 7;
     private const int TimingSchemaVersion = 6;
     private const int LegacySchemaVersion = 5;
@@ -180,7 +181,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || version is not (SchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
+            || version is not (SchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version);

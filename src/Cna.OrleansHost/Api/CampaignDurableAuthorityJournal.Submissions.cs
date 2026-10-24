@@ -131,8 +131,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (!ForceRoundExists(connection, transaction, seat.CampaignId,
                 binding.DeclineEventHash))
                 return CampaignOwnerSubmissionResult.Rejected();
-            forceRound = GetOrOpenForceRound(connection, transaction, head,
-                seat.CampaignId, requireExisting: true);
+            forceRound = ReadActiveForceRound(connection, transaction, head,
+                seat.CampaignId);
         }
 
         long authorityVersion;
@@ -342,13 +342,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             }
         }
-        PersistAccepted(connection, transaction, seat.CampaignId, head,
+        var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
         {
             UpdateRbaRound(connection, transaction, rbaRound! with { Status = "completed" });
-            AppendUnavailableForceCancellation(connection, transaction, seat.CampaignId);
+            InitializeForceRound(connection, transaction, acceptedHead, seat.CampaignId,
+                rbaRound.HighWaterMs);
         }
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);

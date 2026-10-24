@@ -389,13 +389,15 @@ public static class CampaignHostAdapter
         if (session.CurrentRepeatAssault is
             {
                 Decline: { } repeatedDecline,
-                ForceCompletion: null
+                ForceCompletion: null,
+                ForceCancellation: null
             } repeated)
             return (repeated.Selection.Decision.ActionId,
                 "sha256:" + Convert.ToHexStringLower(
                     System.Security.Cryptography.SHA256.HashData(
                         repeatedDecline.SerializeCanonical())));
-        if (session.CurrentCombatDecision is not { } selected
+        if (session.CurrentRepeatAssault is not null
+            || session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
             || session.CurrentCombatForceCompletion is not null
             || session.CurrentCombatForceCancellation is not null)

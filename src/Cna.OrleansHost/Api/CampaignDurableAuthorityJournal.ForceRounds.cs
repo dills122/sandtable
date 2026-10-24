@@ -13,9 +13,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string DeclineEventHash, string ConfigurationHash, long OpenedMs,
         long DeadlineMs, long HighWaterMs, string Status);
 
-    private ForceRound GetOrOpenForceRound(SqliteConnection connection,
-        SqliteTransaction transaction, Loaded authority, string campaignId,
-        bool requireExisting = false)
+    private ForceRound ReadActiveForceRound(SqliteConnection connection,
+        SqliteTransaction transaction, Loaded authority, string campaignId)
     {
         if (schemaVersion != SchemaVersion || authority.Timing is null)
             throw new InvalidOperationException("Force round requires current durable timing authority.");
@@ -42,24 +41,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
         }
         if (round is null)
-        {
-            if (requireExisting)
-                throw new InvalidOperationException("Force round has not been opened.");
-            if (!TryTrustedNow(out var opened))
-                throw new InvalidOperationException("Trusted clock unavailable before Force opening.");
-            var deadline = checked(opened + authority.Timing.Budget("force-assignment"));
-            round = new ForceRound(campaignId, binding.DecisionActionId,
-                binding.DeclineEventHash, authority.Timing.Hash, opened, deadline,
-                opened, "collecting");
-            using var insert = connection.CreateCommand();
-            insert.Transaction = transaction;
-            insert.CommandText = """
-                INSERT INTO force_rounds VALUES ($id,$decision,$decline,$config,$opened,
-                  $deadline,$highWater,$status,$hash)
-                """;
-            BindForceRound(insert, round);
-            insert.ExecuteNonQuery();
-        }
+            throw new InvalidOperationException("Force round is missing at decision entry.");
         RequireForceRoundBinding(round, binding.DecisionActionId,
             binding.DeclineEventHash, authority.Timing);
         if (round.Status != "collecting")
@@ -97,30 +79,40 @@ internal sealed partial class CampaignDurableAuthorityJournal
         AppendEmptyAntiArmor(connection, transaction, round.CampaignId);
     }
 
-    private void AppendUnavailableForceCancellation(SqliteConnection connection,
-        SqliteTransaction transaction, string campaignId)
+    private void InitializeForceRound(SqliteConnection connection,
+        SqliteTransaction transaction, Loaded authority, string campaignId, long opened)
     {
-        var authority = Load(connection, transaction, campaignId);
-        if (!CampaignHostAdapter.IsInitialNativeCombatForceRound(
-                authority.Session)
-            || authority.Timing is not null
-                && CampaignHostAdapter.CanCompleteNativeCombatForceAssignment(
-                    authority.Session))
+        if (CampaignHostAdapter.IsInitialNativeCombatForceRound(authority.Session)
+            && (authority.Timing is null
+                || !CampaignHostAdapter.CanCompleteNativeCombatForceAssignment(authority.Session)))
+        {
+            // Unavailable before opening: retain absent clock evidence, not a fabricated deadline.
+            var cancelled = CampaignHostAdapter.CancelNativeCombatForceAssignment(
+                authority.Session, authority.Timing, -1, -1, -1, null, "force-unavailable");
+            if (!cancelled.IsAccepted)
+                throw new InvalidOperationException("Core rejected the unavailable Force continuation.");
+            var command = CampaignHostAdapter.NativeCombatForceCancellationCommand(authority.Session, cancelled);
+            PersistAccepted(connection, transaction, campaignId, authority,
+                CampaignHostAcceptedStep.NativeCombatForceCancellationKind,
+                null, null, null, null, command, cancelled);
+            AppendEmptyAntiArmor(connection, transaction, campaignId);
             return;
-        // No round was opened: -1 records absence of clock evidence rather than
-        // manufacturing a deadline or claiming an owner failed to respond.
-        var cancelled = CampaignHostAdapter.CancelNativeCombatForceAssignment(
-            authority.Session, authority.Timing, -1, -1, -1, null,
-            "force-unavailable");
-        if (!cancelled.IsAccepted)
-            throw new InvalidOperationException(
-                "Core rejected the unavailable Force continuation.");
-        var command = CampaignHostAdapter.NativeCombatForceCancellationCommand(
-            authority.Session, cancelled);
-        PersistAccepted(connection, transaction, campaignId, authority,
-            CampaignHostAcceptedStep.NativeCombatForceCancellationKind,
-            null, null, null, null, command, cancelled);
-        AppendEmptyAntiArmor(connection, transaction, campaignId);
+        }
+        if (authority.Timing is null || opened < 0)
+            throw new InvalidOperationException("Force entry requires trusted timing authority.");
+        var binding = CampaignHostAdapter.QueryNativeCombatForceRoundBinding(authority.Session);
+        var round = new ForceRound(campaignId, binding.DecisionActionId,
+            binding.DeclineEventHash, authority.Timing.Hash, opened,
+            checked(opened + authority.Timing.Budget("force-assignment")), opened, "collecting");
+        using var insert = connection.CreateCommand();
+        insert.Transaction = transaction;
+        insert.CommandText = """
+            INSERT INTO force_rounds VALUES ($id,$decision,$decline,$config,$opened,
+              $deadline,$highWater,$status,$hash)
+            """;
+        BindForceRound(insert, round);
+        insert.ExecuteNonQuery();
+        _ = Load(connection, transaction, campaignId);
     }
 
     private void AppendEmptyAntiArmor(SqliteConnection connection,
@@ -273,8 +265,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         if (!ForceRoundExists(connection, transaction, campaignId, binding.DeclineEventHash))
             return false;
-        var round = GetOrOpenForceRound(connection, transaction, authority, campaignId,
-            requireExisting: true);
+        var round = ReadActiveForceRound(connection, transaction, authority, campaignId);
         var gate = GateForceRound(connection, transaction, round);
         if (gate.CancellationReason is { } reason)
         {
@@ -382,6 +373,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
     {
         if (schemaVersion < ForceSchemaVersion) return;
         var declines = new Dictionary<string, string>(StringComparer.Ordinal);
+        var barrageByDecision = new Dictionary<string, string>(StringComparer.Ordinal);
+        var barrageByDecline = new Dictionary<string, string>(StringComparer.Ordinal);
         var activeByDecision = new Dictionary<string, string>(StringComparer.Ordinal);
         var endings = new Dictionary<string, string>(StringComparer.Ordinal);
         var requiredRounds = new HashSet<string>(StringComparer.Ordinal);
@@ -390,17 +383,26 @@ internal sealed partial class CampaignDurableAuthorityJournal
             long OpenedMs, long DeadlineMs, long HighWaterMs)>(StringComparer.Ordinal);
         foreach (var step in steps)
         {
-            if (step.Kind is not (CampaignHostAcceptedStep.ContactRbaDeclineKind
+            if (step.Kind is not (CampaignHostAcceptedStep.NativeCombatBarrageKind
+                or CampaignHostAcceptedStep.ContactRbaDeclineKind
                 or CampaignHostAcceptedStep.ContactForceSealKind
                 or CampaignHostAcceptedStep.NativeCombatForceCompletionKind
                 or CampaignHostAcceptedStep.NativeCombatForceCancellationKind)) continue;
             using var document = JsonDocument.Parse(step.EventRecords[0]);
             var decision = document.RootElement.GetProperty("decisionActionId").GetString()!;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatBarrageKind)
+            {
+                barrageByDecision[decision] = "sha256:" + Convert.ToHexStringLower(
+                    SHA256.HashData(step.EventRecords[0]));
+                continue;
+            }
             if (step.Kind == CampaignHostAcceptedStep.ContactRbaDeclineKind)
             {
                 var declineHash = "sha256:" + Convert.ToHexStringLower(
                     SHA256.HashData(step.EventRecords[0]));
                 declines.Add(declineHash, decision);
+                if (schemaVersion == SchemaVersion)
+                    barrageByDecline.Add(declineHash, barrageByDecision[decision]);
                 activeByDecision[decision] = declineHash;
             }
             else
@@ -444,6 +446,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 }
             }
         }
+        var entryTimes = new Dictionary<string, long>(StringComparer.Ordinal);
+        if (schemaVersion == SchemaVersion)
+        {
+            using var entryQuery = connection.CreateCommand();
+            entryQuery.Transaction = transaction;
+            entryQuery.CommandText = """
+                SELECT barrage_event_hash,high_water_ms FROM rba_rounds
+                WHERE campaign_id=$id AND status='completed'
+                """;
+            entryQuery.Parameters.AddWithValue("$id", campaignId);
+            using var entries = entryQuery.ExecuteReader();
+            while (entries.Read()) entryTimes.Add(entries.GetString(0), entries.GetInt64(1));
+        }
         using var query = connection.CreateCommand();
         query.Transaction = transaction;
         query.CommandText = """
@@ -465,6 +480,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 || !declines.TryGetValue(round.DeclineEventHash, out var expectedDecision))
                 throw new InvalidOperationException("Retained Force round changed.");
             RequireForceRoundBinding(round, expectedDecision, round.DeclineEventHash, timing);
+            if (schemaVersion == SchemaVersion
+                && (!entryTimes.TryGetValue(barrageByDecline[round.DeclineEventHash], out var entered)
+                    || round.OpenedMs != entered))
+                throw new InvalidOperationException("Force opening differs from accepted RBA decline time.");
             if (round.Status != (endings.GetValueOrDefault(round.DeclineEventHash) ?? "collecting"))
                 throw new InvalidOperationException("Force round status differs from accepted events.");
             if (cancellations.TryGetValue(round.DeclineEventHash, out var cancelled)
@@ -474,6 +493,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     || cancelled.HighWaterMs != round.HighWaterMs))
                 throw new InvalidOperationException("Force cancellation differs from retained round.");
         }
+        if (schemaVersion == SchemaVersion
+            && declines.Keys.Any(hash => !foundRounds.Contains(hash)
+                && !noRoundCancellations.Contains(hash)))
+            throw new InvalidOperationException("Accepted Force entry has no retained round.");
         if (!requiredRounds.IsSubsetOf(foundRounds))
             throw new InvalidOperationException("Accepted Force decision has no retained round.");
         if (noRoundCancellations.Overlaps(foundRounds))

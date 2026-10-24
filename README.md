@@ -87,7 +87,7 @@ outside any UI.
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and evidence bundles, all from the CLI. |
 | User interface (Maproom) | Angular foundation, local read-only preview | A synthetic fixture study and a local, URL-backed campaign read mode. No live multiplayer actions yet. |
 | Published scenario | Not started | First target is the six-turn Graziani's Offensive, once the Combat loop is complete. |
-| Durable save and resume | Local durable Host implemented; product gate open | SQLite journal and cold replay support bounded local campaigns; schema 8 adds persisted RBA deadlines; background cancellation covers RBA and opened Force rounds. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
+| Durable save and resume | Local durable Host implemented; product gate open | SQLite journal and cold replay support bounded local campaigns; schema 9 persists RBA and Force deadlines at decision entry; background cancellation needs no owner query. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
 | Model-backed commanders | Scaffold only | The gateway and worker processes exist. No model provider is configured, and AI will not hold authority over the rules. |
 
 In plain terms: you can build the engine, run the full test suite, launch the Aspire service stack,
