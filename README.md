@@ -75,6 +75,9 @@ outside any UI.
 
 ## Where things stand
 
+See the [RC checklist](docs/work/plans/2026-10-24-rc-checklist.md) for current
+implementation evidence, open release gates and explicit pass criteria.
+
 > [!IMPORTANT]
 > Sandtable is a tested pre-alpha simulation engine, not yet a playable adaptation of the published
 > game. Current scenarios are synthetic rules-laboratory fixtures, not released campaign content.

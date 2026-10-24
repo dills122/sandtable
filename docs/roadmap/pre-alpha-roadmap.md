@@ -1,5 +1,9 @@
 # Sandtable Pre-Alpha Roadmap
 
+Current execution checkpoint: [RC checklist](../work/plans/2026-10-24-rc-checklist.md).
+It records bounded implementation evidence and pass criteria without replacing
+the canonical Combat and MVP gates below.
+
 **Status:** Active
 
 **Rules target:** `cna-1979.1`
