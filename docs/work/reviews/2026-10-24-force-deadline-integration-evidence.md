@@ -31,7 +31,13 @@ worktree, with logs under `artifacts/rc-overnight/` and actual exit codes observ
 | `dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --no-build --filter-method '*InvalidForceProposalAtDeadlineCannotCancelCurrentRound*'` | Exit 0; 4/4, zero failed/skipped; 11.536s | `force-deadline-main-regression.log` |
 | `dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --no-build --filter-method '*ForceRound*'` | Exit 0; 8/8, zero failed/skipped; 19.799s | `force-deadline-main-compatibility.log` |
 
-Final-tree integrated gate, exact-head CI before merge, original source-pin
-failures, public certification and playable RC obligations remain open. The two
+Final-tree `just check` passed on `fb79b785e780534f0b0ee0b9620895082e50a1a1`:
+exit 0; 4,216 solution tests and 81 boundary checks; zero failures/skips.
+Solution duration 1h 00m 16.617s. Receipt
+`artifacts/rc-overnight/integrated-check-final-receipt.json` records completion
+at 20:37:11 UTC on October 24; log is `integrated-check-final.log` in that folder.
+
+Exact-head CI before merge, original source-pin failures, public certification
+and playable RC obligations remain open. The two
 original Python verifiers still report source-pin drift; no hashes were changed.
 Source review approves bounded integration, not broader certificate completion.
