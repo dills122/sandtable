@@ -132,15 +132,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             forceRound = GetOrOpenForceRound(connection, transaction, head,
                 seat.CampaignId, requireExisting: true);
-            var gate = GateForceRound(connection, transaction, forceRound);
-            forceRound = gate.Round;
-            if (gate.CancellationReason is { } reason)
-            {
-                CancelForceRound(connection, transaction, head, forceRound,
-                    reason, gate.CancelledAt);
-                transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
-            }
         }
 
         long authorityVersion;
@@ -284,6 +275,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expectedRef),
                 Encoding.UTF8.GetBytes(publicActionRef)))
             return CampaignOwnerSubmissionResult.Rejected();
+
+        // Only a current, authenticated owner offer may trigger clock cancellation.
+        // Retained accepted retries have already returned their original receipt above.
+        if (forceRound is not null)
+        {
+            var gate = GateForceRound(connection, transaction, forceRound);
+            forceRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelForceRound(connection, transaction, head, forceRound,
+                    reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
 
         var checkpoint = CampaignExercises.QueryCheckpoint(head.Session);
         var submission = new CampaignActionSubmission(1, seat.CampaignId,

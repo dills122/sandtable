@@ -993,6 +993,86 @@ public sealed class CampaignDurableAuthorityJournalTests
         Assert.Throws<InvalidOperationException>(() => cold.ReadVerified(request.CampaignId));
     }
 
+    [Theory]
+    [InlineData("forged-reference")]
+    [InlineData("stale-revision")]
+    [InlineData("foreign-element")]
+    [InlineData("foreign-reference")]
+    public void InvalidForceProposalAtDeadlineCannotCancelCurrentRound(string invalidKind)
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, attacker, defender, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        var first = journal.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]);
+        Assert.True(first.IsAccepted);
+        var before = StoredAuthority();
+        clock.Advance(TimeSpan.FromSeconds(29));
+        var cold = fixture.Open(clock);
+        var rejected = cold.SubmitOwnerForceSeal(defender,
+            invalidKind == "foreign-element" ? "axis-infantry" : defenderId,
+            invalidKind == "stale-revision" ? defenderForce.Revision + 1 : defenderForce.Revision,
+            invalidKind switch
+            {
+                "forged-reference" => "act." + new string('0', 64),
+                "foreign-reference" => attackerForce.PublicActionRefs[0],
+                _ => defenderForce.PublicActionRefs[0],
+            });
+        Assert.False(rejected.IsAccepted);
+        Assert.Equal(before, StoredAuthority());
+        Assert.True(CampaignExercises.Reconstruct(
+            fixture.Open(clock).ReadVerified(request.CampaignId)).IsVerified);
+
+        var retry = cold.SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(first.CanonicalReceipt, retry.CanonicalReceipt);
+        Assert.Equal(before, StoredAuthority());
+
+        // The genuine current offer still triggers the existing System deadline fallback.
+        Assert.False(cold.SubmitOwnerForceSeal(defender, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        var after = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(27, CampaignExercises.QueryCheckpoint(after).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(after).IsVerified);
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId,
+            "contact-force-seal"));
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-combat-cancelled-assault"));
+        var cancelled = StoredAuthority();
+        var retained = fixture.Open(clock).SubmitOwnerForceSeal(attacker, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]);
+        Assert.True(retained.IsAccepted);
+        Assert.Equal(first.CanonicalReceipt, retained.CanonicalReceipt);
+        Assert.Equal(cancelled, StoredAuthority());
+
+        string StoredAuthority()
+        {
+            using var connection = new SqliteConnection($"Data Source={fixture.Path}");
+            connection.Open();
+            var tables = new List<List<string[]>>();
+            foreach (var table in new[] { "campaigns", "accepted_steps", "force_rounds",
+                "owner_openings", "owner_actions", "seats" })
+            {
+                using var query = connection.CreateCommand();
+                query.CommandText = $"SELECT * FROM {table} WHERE campaign_id=$id ORDER BY rowid";
+                query.Parameters.AddWithValue("$id", request.CampaignId);
+                using var reader = query.ExecuteReader();
+                var rows = new List<string[]>();
+                while (reader.Read())
+                    rows.Add(Enumerable.Range(0, reader.FieldCount).Select(index =>
+                        reader.GetValue(index) is byte[] bytes ? Convert.ToHexString(bytes)
+                            : Convert.ToString(reader.GetValue(index),
+                                global::System.Globalization.CultureInfo.InvariantCulture)!).ToArray());
+                tables.Add(rows);
+            }
+            return JsonSerializer.Serialize(tables);
+        }
+    }
+
     [Fact]
     public void ForceRoundTickCancelsWithoutFabricatingASealWhenClockUnavailable()
     {
