@@ -199,8 +199,9 @@ The full workflow is in the [contributor guide](CONTRIBUTING.md). The short vers
 3. Update contracts before their consumers. Add a focused, deterministic test before changing
    behavior.
 4. Keep remote and model I/O out of the authoritative turn path. The Umpire stays deterministic.
-5. Run `just check` before opening a PR. It runs formatting, build, the boundary-disclosure suite,
-   and the full test suite.
+5. Run focused tests while iterating, then affected project suites and formatting before review.
+   Use the [local testing guide](docs/runbooks/local-testing.md) to choose coverage. CI checks
+   exhaustive coverage before merge; `just check` remains the full local release checkpoint.
 
 | Command | What it does |
 | --- | --- |
@@ -208,6 +209,11 @@ The full workflow is in the [contributor guide](CONTRIBUTING.md). The short vers
 | `just setup` | Check the SDK version and restore dependencies |
 | `just build` | Restore and build the solution |
 | `just test` | Build and run all tests |
+| `just test-suites` | List focused suites and CI-compatible chunks |
+| `just test-suite host` | Build and test only Host and its dependencies |
+| `just test-class core '*CampaignContact*'` | Run matching Core test classes |
+| `just test-method host '*ForceRound*'` | Run matching Host test methods |
+| `just test-shard fast-01` | Run one CI-compatible Core chunk locally |
 | `just boundary-check` | Run the user-space disclosure boundary suite |
 | `just format-check` | Verify formatting without changing anything |
 | `just check` | The full local gate: format, build, boundary tests, all tests |

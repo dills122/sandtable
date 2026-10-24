@@ -14,6 +14,7 @@ Research and reviews record their dated checkpoints; they are not competing stat
 - [MAP-05 trusted host protocol](specs/maproom-trusted-host-protocol-v1.md): private accepted-step evidence, publication fencing, restore and bounded System progression
 - [Field Atlas design system v0](design/maproom-design-system-v0.md) and [operations workspace preview](design/maproom-style-study/index.html): linked synthetic map, order workflow, formation ledger and War Diary
 - [Contributor workflow](../CONTRIBUTING.md) and [security policy](../SECURITY.md)
+- [Focused local testing](runbooks/local-testing.md): project/class/method selection and CI-compatible Core chunks
 - [Exercise Runner runbook](runbooks/exercise-runner.md)
 - [Proving Ground runbook](runbooks/proving-ground.md): Docker Development preview, service matrix and seed/playtest gates
 - [Optional OCR scrutiny runbook](runbooks/optional-code-review.md): cost-gated PR-review workflow and scope rules

@@ -75,6 +75,7 @@ jobs:
           python3 .github/scripts/r02_partition_test.py
           python3 .github/scripts/ci_group_runner_test.py
           python3 .github/scripts/long_suite_partition_test.py
+          python3 .github/scripts/local_tests_test.py
       - name: Build Release row discovery helper
         run: dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release '/bl:artifacts/ci/row-helper-{}.binlog'
       - name: Discover actual Release rows and prove complementary filters

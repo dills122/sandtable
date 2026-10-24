@@ -18,6 +18,10 @@ outside both planes. Its trusted, label-triggered workflow and tracked rules sel
 for additional scrutiny after a repository secret is configured. It has no gameplay integration
 or merge authority.
 
+Local test selection is also developer tooling: project/class/method filters and CI-compatible
+Core chunks reuse existing tests and CI allocation without changing runtime boundaries. See
+[local testing](docs/runbooks/local-testing.md). Selected local runs are not exhaustive CI proof.
+
 ## Project website
 
 The repository root contains a dependency-free static project website under `site/`, with design

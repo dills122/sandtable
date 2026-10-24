@@ -29,6 +29,23 @@ format-check: restore
 
 check: format-check build boundary-check test
 
+# Focused local iteration (Release, build selected projects before testing).
+test-suites:
+    python3 .github/scripts/local_tests.py list
+
+test-suite suite:
+    python3 .github/scripts/local_tests.py {{quote(suite)}}
+
+test-class suite pattern:
+    python3 .github/scripts/local_tests.py {{quote(suite)}} --class {{quote(pattern)}}
+
+test-method suite pattern:
+    python3 .github/scripts/local_tests.py {{quote(suite)}} --method {{quote(pattern)}}
+
+# Same row allocation as CI, one shard at a time on this machine.
+test-shard shard:
+    python3 .github/scripts/local_tests.py {{quote(shard)}}
+
 # Install the pinned Lychee release described in the CIH-IMP-004 baseline packet.
 docs-links:
     #!/usr/bin/env bash

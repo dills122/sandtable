@@ -72,6 +72,15 @@ Do not introduce a microservice where a domain module is sufficient.
 - Format check: `dotnet format Sandtable.slnx --verify-no-changes --no-restore`
 - Run locally: `dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj`
 - Full local gate: `just check`
+- Focused local suites: `just test-suite host` (also `core`, `runner`, `contracts`, `boundary`)
+- Class/method scope: `just test-class core '*CampaignContact*'`, `just test-method host '*ForceRound*'`
+- CI-compatible local chunk: `just test-shard fast-01`; list choices with `just test-suites`
+
+During iteration, run focused tests and affected project suites instead of repeating the full
+solution gate after every edit. Add boundary tests for authority/privacy changes and affected
+consumers for Core/contracts changes. Use full local validation for release checkpoints or
+uncertain impact; exact-head CI remains required before merge. Report selected and unrun coverage
+honestly. See `docs/runbooks/local-testing.md`. These local commands build Release by default.
 
 The repository uses .NET 10 native Microsoft.Testing.Platform mode. Always pass a solution through
 `--solution` and a test project through `--project`; do not use a bare positional test path.
