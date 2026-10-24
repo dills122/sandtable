@@ -289,6 +289,40 @@ public static class CampaignHostAdapter
     public static string NoTimingForceCancellationHash =>
         CampaignNativeCombatForceCancellationV19.NoTimingConfigurationHash;
 
+    public static ExerciseStepResult CancelNativeCombatRba(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.CancelNativeCombatRba(session, configuration,
+            openedAtUnixMilliseconds, deadlineUnixMilliseconds,
+            highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
+    public static string NoTimingRbaCancellationHash =>
+        CampaignNativeCombatRbaCancellationV33.NoTimingConfigurationHash;
+
+    public static (string DecisionActionId, string BarrageEventHash)
+        QueryNativeCombatRbaRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (session.CurrentRepeatAssault is
+            { Barrage: { } repeatedBarrage, Decline: null, RbaCancellation: null } repeated
+            && checkpoint.StateVersion == ((repeated.RetreatMoves.Count > 0 ? repeated.RetreatMoves[^1].StateVersion : (long?)null) ?? repeatedBarrage.StateVersion))
+            return (repeated.Selection.Decision.ActionId,
+                "sha256:" + Convert.ToHexStringLower(
+                    System.Security.Cryptography.SHA256.HashData(repeatedBarrage.SerializeCanonical())));
+        if (session.CurrentRepeatAssault is not null
+            || session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatBarrage is not { } barrage
+            || session.CurrentCombatRetreatDecline is not null
+            || session.CurrentCombatRbaCancellation is not null
+            || checkpoint.StateVersion != (session.CurrentCombatRetreatMove?.StateVersion ?? barrage.StateVersion))
+            throw new InvalidOperationException("No collecting RBA round is available.");
+        return (selected.Decision.ActionId,
+            "sha256:" + Convert.ToHexStringLower(
+                System.Security.Cryptography.SHA256.HashData(barrage.SerializeCanonical())));
+    }
+
     public static bool CanCompleteNativeCombatForceAssignment(ExerciseSession session) =>
         CampaignExercises.CanCompleteNativeCombatForceAssignment(session);
 
@@ -453,6 +487,29 @@ public static class CampaignHostAdapter
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
             checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
             CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission NativeCombatRbaCancellationCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence
+            || (predecessor.CurrentRepeatAssault is not null
+                ? accepted.SuccessorSession?.CurrentRepeatAssault?.RbaCancellation is null
+                : accepted.SuccessorSession?.CurrentCombatRbaCancellation is null))
+            throw new ArgumentException("Accepted RBA cancellation required.", nameof(accepted));
+        var cancellation = CampaignNativeCombatRbaCancellationV33.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeCombatRbaRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (cancellation.CampaignId != checkpoint.CampaignId
+            || cancellation.PriorStateVersion != checkpoint.StateVersion
+            || cancellation.PositionId != checkpoint.PositionId
+            || cancellation.DecisionActionId != binding.DecisionActionId
+            || cancellation.BarrageEventHash != binding.BarrageEventHash)
+            throw new ArgumentException("RBA cancellation differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
     }
 
     public static CampaignActionSubmission NativeCombatAntiArmorCommand(
@@ -969,6 +1026,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactForceSealKind
                 or CampaignHostAcceptedStep.NativeCombatForceCompletionKind
                 or CampaignHostAcceptedStep.NativeCombatForceCancellationKind
+                or CampaignHostAcceptedStep.NativeCombatRbaCancellationKind
                 or CampaignHostAcceptedStep.NativeCombatAntiArmorKind
                 or CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind
                 or CampaignHostAcceptedStep.NativeCombatAssaultResultKind
@@ -1006,6 +1064,23 @@ public static class CampaignHostAdapter
                     return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
                 }
             }
+            CampaignNativeCombatRbaCancellationV33? rbaCancellation = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatRbaCancellationKind)
+            {
+                if (step.EventRecords.Count != 1)
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try
+                {
+                    rbaCancellation = CampaignNativeCombatRbaCancellationV33.Deserialize(step.EventRecords[0]);
+                    if (timing is null && (rbaCancellation.Reason != "rba-unavailable"
+                        || rbaCancellation.ConfigurationHash != NoTimingRbaCancellationHash))
+                        return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+            }
             var accepted = step.Kind switch
             {
                 CampaignHostAcceptedStep.LegacyKind => Submit(session, submission),
@@ -1022,6 +1097,13 @@ public static class CampaignHostAdapter
                         forceCancellation.HighWaterUnixMilliseconds,
                         forceCancellation.CancelledAtUnixMilliseconds,
                         forceCancellation.Reason),
+                CampaignHostAcceptedStep.NativeCombatRbaCancellationKind =>
+                    CancelNativeCombatRba(session, timing,
+                        rbaCancellation!.OpenedAtUnixMilliseconds,
+                        rbaCancellation.DeadlineUnixMilliseconds,
+                        rbaCancellation.HighWaterUnixMilliseconds,
+                        rbaCancellation.CancelledAtUnixMilliseconds,
+                        rbaCancellation.Reason),
                 CampaignHostAcceptedStep.NativeCombatAntiArmorKind =>
                     CompleteNativeCombatAntiArmor(session),
                 CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind =>
@@ -1091,6 +1173,11 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         NativeCombatForceCancellationCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatRbaCancellationKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeCombatRbaCancellationCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (step.Kind == CampaignHostAcceptedStep.NativeCombatAntiArmorKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
@@ -1432,6 +1519,7 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeRepeatBreakdownContractVersion = 24;
     public const int ContactRepeatCombatSelectionContractVersion = 25;
     public const int NativeRepeatCombatNoAttackContractVersion = 26;
+    public const int NativeCombatRbaCancellationContractVersion = 27;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -1458,6 +1546,7 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeRepeatBreakdownKind = "native-repeat-breakdown";
     public const string ContactRepeatCombatSelectionKind = "contact-repeat-combat-selection";
     public const string NativeRepeatCombatNoAttackKind = "native-repeat-combat-no-attack";
+    public const string NativeCombatRbaCancellationKind = "native-combat-rba-cancellation";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -1479,7 +1568,8 @@ public sealed class CampaignHostAcceptedStep
                 or NativeReserveReleaseCompletionKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind
                 or ContactRepeatMovementKind or NativeRepeatBreakdownKind
-                or ContactRepeatCombatSelectionKind or NativeRepeatCombatNoAttackKind)
+                or ContactRepeatCombatSelectionKind or NativeRepeatCombatNoAttackKind
+                or NativeCombatRbaCancellationKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
@@ -1492,7 +1582,7 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or NativeCombatSuccessorKind or NativeReserveReleaseCompletionKind
-                or NativeRepeatBreakdownKind or NativeRepeatCombatNoAttackKind
+                or NativeRepeatBreakdownKind or NativeRepeatCombatNoAttackKind or NativeCombatRbaCancellationKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
@@ -1521,6 +1611,7 @@ public sealed class CampaignHostAcceptedStep
             NativeRepeatBreakdownKind => NativeRepeatBreakdownContractVersion,
             ContactRepeatCombatSelectionKind => ContactRepeatCombatSelectionContractVersion,
             NativeRepeatCombatNoAttackKind => NativeRepeatCombatNoAttackContractVersion,
+            NativeCombatRbaCancellationKind => NativeCombatRbaCancellationContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

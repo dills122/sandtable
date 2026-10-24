@@ -15,7 +15,8 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 7;
+    private const int SchemaVersion = 8;
+    private const int ForceSchemaVersion = 7;
     private const int TimingSchemaVersion = 6;
     private const int LegacySchemaVersion = 5;
     private const int MaxEvidenceBytes = 2_097_152;
@@ -130,6 +131,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE rba_rounds (
+              campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
+              barrage_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
+              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+              high_water_ms INTEGER NOT NULL,
+              status TEXT NOT NULL CHECK(status IN ('collecting','completed','cancelled')),
+              record_hash TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,barrage_event_hash),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
@@ -167,7 +180,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || version is not (SchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
+            || version is not (SchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version);
@@ -243,6 +256,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     internal ExerciseStepResult Append(string campaignId, CampaignActionSubmission submission)
     {
+        RequireWritable();
         ArgumentNullException.ThrowIfNull(submission);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
@@ -255,7 +269,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return result;
     }
 
-    private static void PersistAccepted(SqliteConnection connection,
+    private static Loaded PersistAccepted(SqliteConnection connection,
         SqliteTransaction transaction, string campaignId, Loaded head, string kind,
         string? actingElementId, string? ownerPublicRef, long? seatEpoch,
         long? ownerRevision,
@@ -313,6 +327,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (update.ExecuteNonQuery() != 1)
                 throw new InvalidOperationException("Campaign head changed before commit.");
         }
+        return head with { Session = result.SuccessorSession!, Sequence = nextSequence, Hash = nextHash };
+    }
+
+    private void RequireWritable()
+    {
+        if (schemaVersion != SchemaVersion)
+            throw new InvalidOperationException("Legacy journal is read-only; explicit migration is required.");
     }
 
     private Loaded Load(SqliteConnection connection, SqliteTransaction transaction,
@@ -411,6 +432,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!imported.IsVerified)
             throw new InvalidOperationException("Core rejected retained campaign authority.");
         VerifyForceRounds(connection, transaction, campaignId, steps, timing);
+        VerifyRbaRounds(connection, transaction, campaignId, steps, timing);
         return new Loaded(imported.Session!, sequence, hash, timing, request, timingBytes);
     }
 

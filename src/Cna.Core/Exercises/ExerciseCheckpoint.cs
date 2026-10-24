@@ -168,6 +168,32 @@ public sealed class ExerciseCheckpoint
         PositionId = completion.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatRbaCancellationV33 cancellation,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeCombatRbaCancellationV33.CurrentContractVersion;
+        CampaignId = cancellation.CampaignId;
+        StateVersion = cancellation.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = cancellation.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatRbaCancellationV33 cancellation,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (cancellation.CampaignId != decision.CampaignId
+            || cancellation.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated RBA cancellation must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatRbaCancellationV33.CurrentContractVersion;
+        CampaignId = cancellation.CampaignId;
+        StateVersion = cancellation.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = cancellation.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatForceCancellationV19 cancellation,
         CampaignNativeCombatDecisionStateV12 decision)
     {

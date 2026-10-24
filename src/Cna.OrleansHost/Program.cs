@@ -17,10 +17,12 @@ if (!string.IsNullOrWhiteSpace(campaignJournalPath))
     if (string.IsNullOrWhiteSpace(operatorSecret))
         throw new InvalidOperationException(
             "CampaignJournal:OperatorSecret is required when the durable journal is configured.");
-    builder.Services.AddSingleton(_ => File.Exists(campaignJournalPath)
-        ? CampaignDurableAuthorityJournal.OpenExisting(campaignJournalPath)
+    builder.Services.AddSingleton(services => File.Exists(campaignJournalPath)
+        ? CampaignDurableAuthorityJournal.OpenExisting(campaignJournalPath,
+            services.GetRequiredService<TimeProvider>())
         : CampaignDurableAuthorityJournal.CreateNew(campaignJournalPath,
-            operatorSecret));
+            operatorSecret, services.GetRequiredService<TimeProvider>()));
+    builder.Services.AddHostedService<CampaignRbaTimeoutService>();
 }
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration
 builder.Host.UseOrleans(siloBuilder =>

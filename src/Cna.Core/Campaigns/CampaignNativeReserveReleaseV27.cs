@@ -189,6 +189,28 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             world, context);
     }
 
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterInitialRbaCancellation(
+        CampaignCombatSelectionFrame selected,
+        CampaignNativeCombatRbaCancellationV33 completion,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(context);
+        if (completion.CampaignId != selected.CampaignId
+            || completion.DecisionActionId != selected.Decision.ActionId
+            || context.ArtifactV6 is not { } artifact
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new InvalidOperationException(
+                "Initial cancelled assault lacks retained World authority.");
+        return InitializeAfterInitialCompletion(selected, completion.StateVersion,
+            completion.NextPositionId,
+            CampaignNativeReserveReleaseEventV27.Hash(completion.SerializeCanonical()),
+            world, context);
+    }
+
     internal static CampaignNativeReserveReleaseStateV27 InitializeAfterInitialCancellation(
         CampaignCombatSelectionFrame selected,
         CampaignNativeCombatCancelledAssaultV21 completion,
@@ -305,6 +327,42 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             CampaignNativeReserveReleaseEventV27.Hash(successor.SerializeCanonical()),
             selection.Side, selection.CycleOrdinal, projection.NextPosition,
             projection.World, [], [], false, true);
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatRbaCancellation(
+        CampaignCombatSelectionFrame selected,
+        CampaignNativeCombatRbaCancellationV33 completion,
+        CampaignWorldSnapshotV6 world,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(context);
+        var repeat = CampaignNativeRepeatCombatDecisionV31.Deserialize(
+            selected.CanonicalSelection);
+        if (completion.CampaignId != selected.CampaignId
+            || completion.DecisionActionId != selected.Decision.ActionId
+            || repeat.CycleOrdinal < 2
+            || repeat.Side != selected.Decision.Side
+            || context.ArtifactV6 is not { } artifact
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new InvalidOperationException(
+                "Cancelled repeated assault lacks retained World authority.");
+        var position = Cna1979LandSequenceV4.CreateTurn(
+            selected.PriorSnapshot.CurrentPosition.SequenceContext.GameTurn)
+            .Single(value => value.PositionId == completion.NextPositionId);
+        if (position.SegmentId != LandSegmentIds.ReserveRelease
+            || position.ActorRole != LandActorRole.FirstActingSide
+            || position.OperationStage != selected.PriorSnapshot.CurrentPosition
+                .SequenceContext.OperationStage)
+            throw new InvalidOperationException(
+                "Cancelled repeated assault must reach same-slot Reserve Release.");
+        _ = CampaignReserveReleaseRules.Pending(world, context,
+            repeat.Side, repeat.CycleOrdinal);
+        return new(completion.CampaignId, completion.StateVersion,
+            CampaignNativeReserveReleaseEventV27.Hash(completion.SerializeCanonical()),
+            repeat.Side, repeat.CycleOrdinal, position, world, [], [], false, true);
     }
 
     internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatCancelledAssault(

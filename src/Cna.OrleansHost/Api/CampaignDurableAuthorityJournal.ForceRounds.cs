@@ -362,7 +362,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string campaignId, IReadOnlyList<CampaignHostAcceptedStep> steps,
         CampaignDecisionTimingConfigurationV1? timing)
     {
-        if (schemaVersion != SchemaVersion) return;
+        if (schemaVersion < ForceSchemaVersion) return;
         var declines = new Dictionary<string, string>(StringComparer.Ordinal);
         var activeByDecision = new Dictionary<string, string>(StringComparer.Ordinal);
         var endings = new Dictionary<string, string>(StringComparer.Ordinal);

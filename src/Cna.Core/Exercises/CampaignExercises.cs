@@ -65,7 +65,8 @@ public static class CampaignExercises
         if (session.CurrentRepeatAssault is
             {
                 Barrage: { } repeatedBarrage,
-                Decline: null
+                Decline: null,
+                RbaCancellation: null
             } repeated)
             return repeated.RetreatMoves.Count > 0
                 ? CampaignContactRetreatBeforeAssaultCut.ProjectAfterMove(
@@ -77,7 +78,8 @@ public static class CampaignExercises
                     session.CurrentContacts);
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatBarrage is not { } barrage
-            || session.CurrentCombatRetreatDecline is not null)
+            || session.CurrentCombatRetreatDecline is not null
+            || session.CurrentCombatRbaCancellation is not null)
             throw new InvalidOperationException("Defender retreat requires completed Barrage authority.");
         if (session.CurrentCombatRetreatMove is { } move)
             return CampaignContactRetreatBeforeAssaultCut.ProjectAfterMove(
@@ -148,6 +150,9 @@ public static class CampaignExercises
                 session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Control is { } repeatedControl)
             return new ExerciseCheckpoint(repeatedControl, session.CurrentSnapshot);
+        if (session.CurrentRepeatAssault?.RbaCancellation is { } repeatedRbaCancellation)
+            return new ExerciseCheckpoint(repeatedRbaCancellation,
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.CancelledAssault is { } repeatedCancelled)
             return new ExerciseCheckpoint(repeatedCancelled,
                 (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
@@ -222,6 +227,8 @@ public static class CampaignExercises
         if (session.CurrentCombatForceSeals.Count > 0)
             return new ExerciseCheckpoint(session.CurrentCombatForceSeals[^1],
                 session.CurrentCombatDecision!);
+        if (session.CurrentCombatRbaCancellation is { } rbaCancellation)
+            return new ExerciseCheckpoint(rbaCancellation, session.CurrentCombatDecision!);
         if (session.CurrentCombatRetreatDecline is { } decline)
             return new ExerciseCheckpoint(decline, session.CurrentCombatDecision!);
         if (session.CurrentCombatRetreatMove is { } retreatMove)
@@ -393,7 +400,8 @@ public static class CampaignExercises
         if (session.CurrentRepeatAssault is
             {
                 Barrage: not null,
-                Decline: null
+                Decline: null,
+                RbaCancellation: null
             })
             return SubmitRepeatedDefenderRbaDecline(session, submission,
                 defenderElementId);
@@ -707,6 +715,61 @@ public static class CampaignExercises
         catch (Exception exception) when (exception is ArgumentException
             or ArithmeticException or InvalidCampaignHistoryException
             or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static ExerciseStepResult CancelNativeCombatRba(
+        ExerciseSession session, CampaignDecisionTimingConfigurationV1? configuration,
+        long openedAtUnixMilliseconds, long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var repeated = session.CurrentRepeatAssault;
+        CampaignCombatSelectionFrame? selected = repeated?.Selection
+            ?? (session.CurrentCombatDecision is { } initial ? (CampaignCombatSelectionFrame)initial : null);
+        var barrage = repeated?.Barrage ?? session.CurrentCombatBarrage;
+        var move = repeated is not null ? (repeated.RetreatMoves.Count > 0 ? repeated.RetreatMoves[^1] : null) : session.CurrentCombatRetreatMove;
+        if (selected is null || barrage is null
+            || (repeated is not null ? repeated.Decline is not null || repeated.RbaCancellation is not null
+                : session.CurrentCombatRetreatDecline is not null || session.CurrentCombatRbaCancellation is not null)
+            || QueryCheckpoint(session).StateVersion != (move?.StateVersion ?? barrage.StateVersion)
+            || (configuration is not null && (configuration.RulesetHash != selected.PriorSnapshot.RulesetHash
+                || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+            || (configuration is null && reason != "rba-unavailable"))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            if (reason != "rba-unavailable" && (configuration is null
+                || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("rba")))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var cancellation = CampaignNativeCombatRbaCancellationV33.Create(selected, barrage, move,
+                configuration?.Hash ?? CampaignNativeCombatRbaCancellationV33.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatRbaCancellation(cancellation);
+            var successor = repeated is not null
+                ? session.WithRepeatAssaultEvent(cancellation, contacts)
+                : new ExerciseSession(session.CurrentSnapshot, session.Context,
+                    session.CurrentHistory.Add(cancellation), contacts, session.CurrentCombatDecision,
+                    combatBarrage: barrage, combatRetreatMove: move,
+                    combatRetreatWorld: session.CurrentCombatRetreatWorld,
+                    combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                    combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                    combatRbaCancellation: cancellation);
+            var priorState = repeated is not null
+                ? move is null ? barrage.SerializeStateCanonical(selected) : repeated.SerializeRetreatMoveState()
+                : move is null ? barrage.SerializeStateCanonical(selected) : SerializeRetreatMoveState(session);
+            var bytes = cancellation.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                cancellation.PriorStateVersion, cancellation.StateVersion, cancellation.NextPositionId,
+                CampaignActionAudience.System, Hash(bytes));
+            return ExerciseStepResult.Accepted(successor,
+                new ExerciseStepEvidence(receipt, bytes, cancellation.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -1805,6 +1868,11 @@ public static class CampaignExercises
                     ?? CampaignNativeReserveReleaseStateV27
                         .InitializeAfterInitialNoAttack(initial, noAttack,
                             session.Context);
+            if (session.CurrentCombatRbaCancellation is { } cancelledRba)
+                return session.CurrentReserveRelease
+                    ?? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialRbaCancellation(
+                        initial, cancelledRba, session.CurrentCombatRetreatWorld ?? initial.PriorSnapshot.World,
+                        session.Context);
             if (session.CurrentCombatCancelledAssault is { } cancelled)
                 return session.CurrentReserveRelease
                     ?? CampaignNativeReserveReleaseStateV27
@@ -2190,7 +2258,8 @@ public static class CampaignExercises
         if (session.CurrentRepeatAssault is
             {
                 Barrage: not null,
-                Decline: null
+                Decline: null,
+                RbaCancellation: null
             })
             return SubmitRepeatedDefenderRbaMove(session, submission,
                 defenderElementId);
@@ -2410,6 +2479,8 @@ public static class CampaignExercises
             : completedSession.CurrentCombatDecision is { } combat
                 ? combat.SerializeCanonical()
                 : CampaignCurrentSnapshotSerializer.Serialize(completedSession.CurrentSnapshot);
+        if (completedSession.CurrentCombatRbaCancellation is { } rbaCancellation)
+            expectedBytes = rbaCancellation.SerializeStateCanonical(expectedBytes);
         if (completedSession.CurrentCombatForceSeals.Count > 0
             || completedSession.CurrentCombatForceCancellation is not null)
         {
@@ -2479,6 +2550,7 @@ public static class CampaignExercises
                         + completedSession.CurrentCombatForceSeals.Count
                         + (completedSession.CurrentCombatForceCompletion is null ? 0 : 1)
                         + (completedSession.CurrentCombatForceCancellation is null ? 0 : 1)
+                        + (completedSession.CurrentCombatRbaCancellation is null ? 0 : 1)
                         + (completedSession.CurrentCombatAntiArmor is null ? 0 : 1)
                         + (completedSession.CurrentCombatCancelledAssault is null ? 0 : 1)
                         + (completedSession.CurrentCombatAssaultResult is null ? 0 : 1)
@@ -2577,7 +2649,18 @@ public static class CampaignExercises
                     }
                     if (previousMove is not null)
                         worldMatch = world.Equals(completedSession.CurrentCombatRetreatWorld);
-                    if (completedSession.CurrentCombatRetreatDecline is not null)
+                    if (completedSession.CurrentCombatRbaCancellation is not null)
+                    {
+                        if (replayEvents[decisionIndex + 2 + completedSession.CurrentCombatRetreatMoves.Count]
+                            is not CampaignNativeCombatRbaCancellationV33 rbaEvent)
+                            throw new InvalidCampaignHistoryException("Native RBA cancellation is missing.");
+                        var verifiedRba = CampaignNativeCombatRbaCancellationV33.Replay(
+                            verified, verifiedBarrage, previousMove, rbaEvent.SerializeCanonical());
+                        replayedBytes = verifiedRba.SerializeStateCanonical(previousMove is null
+                            ? verifiedBarrage.SerializeStateCanonical(verified) : moveState);
+                        replayedContacts = replayedContacts.AdvanceNativeCombatRbaCancellation(verifiedRba);
+                    }
+                    else if (completedSession.CurrentCombatRetreatDecline is not null)
                     {
                         if (replayEvents[decisionIndex + 2 + completedSession.CurrentCombatRetreatMoves.Count]
                             is not CampaignNativeCombatRetreatDeclineV15 declineEvent)
@@ -2977,12 +3060,17 @@ public static class CampaignExercises
                 else replayedBytes = verified.SerializeCanonical();
                 if (completedSession.CurrentReserveReleaseEvents.Count > 0
                     && (completedSession.CurrentNoAttackCompletion is not null
-                        || completedSession.CurrentCombatCancelledAssault is not null))
+                        || completedSession.CurrentCombatCancelledAssault is not null
+                        || completedSession.CurrentCombatRbaCancellation is not null))
                 {
                     var initialRelease = completedSession.CurrentNoAttackCompletion
                         is { } noAttack
                         ? CampaignNativeReserveReleaseStateV27
                             .InitializeAfterInitialNoAttack(verified, noAttack,
+                                completedSession.Context)
+                        : completedSession.CurrentCombatRbaCancellation is { } initialRba
+                            ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialRbaCancellation(
+                                verified, initialRba, completedSession.CurrentCombatRetreatWorld ?? verified.PriorSnapshot.World,
                                 completedSession.Context)
                         : CampaignNativeReserveReleaseStateV27
                             .InitializeAfterInitialCancellation(verified,
@@ -3051,6 +3139,7 @@ public static class CampaignExercises
                     ?? (completedSession.CurrentCombatForceSeals.Count > 0
                     ? completedSession.CurrentCombatForceSeals[^1].StateVersion
                     : completedSession.CurrentNoAttackCompletion?.StateVersion
+                    ?? completedSession.CurrentCombatRbaCancellation?.StateVersion
                     ?? completedSession.CurrentCombatRetreatDecline?.StateVersion
                     ?? completedSession.CurrentCombatRetreatMove?.StateVersion
                     ?? completedSession.CurrentCombatBarrage?.StateVersion

@@ -282,3 +282,19 @@ refreshed manifest allocates all 3,275 ordinary rows once across 61 groups
 and the same 12 Core jobs. The 28 long-suite supervisor and 33 R02 partition
 tests passed locally. These are scheduling hints measured concurrently with
 the full Debug Core suite, not hosted timing or Combat admission evidence.
+
+## Native persisted RBA cancellation (October 24, 2026)
+
+Six new Core rows measured in passing Release focused run (17 total tests).
+Existing row weights and baseline metadata remain unchanged. Local scheduling
+hints only; hosted CI still requires complete exact-head coverage.
+Report: `artifacts/rc-rba-core/dsteele_Dylans-MacBook-Pro_2026-10-24_21_36_49.205213.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RepeatedRuntimeCancelsAtItsActualOrdinalWithoutRandomDraw(ordinal: 2)` | `45335cbcb195` | 480 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RepeatedRuntimeCancelsAtItsActualOrdinalWithoutRandomDraw(ordinal: 3)` | `a73e548c3343` | 335 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.DeadlineCancelsWithoutDeclineAndReconstructsUnchangedWorld` | `4fffba6abaca` | 995 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.StrictReplayRejectsChangedBarrageBindingAndUnknownFields` | `190724b637c8` | 986 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.AcceptedRetreatRemainsAppliedAndDeadlineDoesNotRestart` | `d0f67f95834e` | 1342 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RejectionAndClockBoundariesDoNotMutateRba` | `a5b2104d951a` | 386 |

@@ -45,6 +45,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
     internal byte[] SerializeDeclineState() => retreatMoves.Count > 0
         ? Decline!.SerializeAfterMoveStateCanonical(SerializeRetreatMoveState())
         : Decline!.SerializeStateCanonical(Selection, Barrage!);
+    internal CampaignNativeCombatRbaCancellationV33? RbaCancellation { get; private set; }
     internal CampaignNativeCombatRetreatDeclineV15? Decline { get; private set; }
     private readonly List<CampaignNativeCombatForceSealV17> seals = [];
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> Seals => seals;
@@ -104,6 +105,20 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             Barrage = CampaignNativeCombatBarrageV14.Replay(Selection,
                 Context, barrage.SerializeCanonical());
             Contacts = Contacts.AdvanceNativeCombatBarrage(Barrage);
+            return;
+        }
+        if (RbaCancellation is not null)
+        {
+            ApplyReleaseOrControl(item);
+            return;
+        }
+        if (Decline is null && item is CampaignNativeCombatRbaCancellationV33 rbaCancellation)
+        {
+            RbaCancellation = CampaignNativeCombatRbaCancellationV33.Replay(
+                Selection, Barrage, retreatMoves.LastOrDefault(), rbaCancellation.SerializeCanonical());
+            Contacts = Contacts.AdvanceNativeCombatRbaCancellation(RbaCancellation);
+            Release = CampaignNativeReserveReleaseStateV27.InitializeAfterRepeatRbaCancellation(
+                Selection, RbaCancellation, RetreatWorld ?? Selection.World, Context);
             return;
         }
         if (Decline is null)

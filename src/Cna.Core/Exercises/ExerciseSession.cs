@@ -40,7 +40,8 @@ public sealed class ExerciseSession
         CampaignContactJournal? repeatAssaultBaseContacts = null,
         IEnumerable<object>? repeatAssaultEvents = null,
         CampaignContactJournal? postRepeatBaseContacts = null,
-        IEnumerable<object>? postRepeatEvents = null)
+        IEnumerable<object>? postRepeatEvents = null,
+        CampaignNativeCombatRbaCancellationV33? combatRbaCancellation = null)
     {
         CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -70,6 +71,12 @@ public sealed class ExerciseSession
             || noAttackCompletion.PriorStateVersion != combatSelection.StateVersion
             || noAttackCompletion.DecisionActionId != combatSelection.Decision.ActionId))
             throw new ArgumentException("No-attack completion must bind the owner decision.", nameof(noAttackCompletion));
+        if (combatRbaCancellation is not null && (combatSelection is null || combatBarrage is null
+            || combatRetreatDecline is not null || combatForceCancellation is not null
+            || combatRbaCancellation.PriorStateVersion != (combatRetreatMove?.StateVersion ?? combatBarrage.StateVersion)
+            || combatRbaCancellation.DecisionActionId != combatSelection.Decision.ActionId))
+            throw new ArgumentException("RBA cancellation must bind unanswered RBA.", nameof(combatRbaCancellation));
+        CurrentCombatRbaCancellation = combatRbaCancellation;
         if (combatBarrage is not null && (combatSelection is null
             || noAttackCompletion is not null
             || combatBarrage.PriorStateVersion != combatSelection.StateVersion
@@ -220,7 +227,7 @@ public sealed class ExerciseSession
         {
             if (combatSelection is null
                 || (combatSuccessor is null && noAttackCompletion is null
-                    && combatCancelledAssault is null)
+                    && combatCancelledAssault is null && combatRbaCancellation is null)
                 || prePostHistory.Length < reserveEvents.Length + cycleTail.Length
                 || !prePostHistory.TakeLast(reserveEvents.Length
                         + cycleTail.Length).Take(reserveEvents.Length)
@@ -230,6 +237,9 @@ public sealed class ExerciseSession
             var initial = noAttackCompletion is not null
                 ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialNoAttack(
                     combatSelection, noAttackCompletion, context)
+                : combatRbaCancellation is not null
+                    ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialRbaCancellation(
+                        combatSelection, combatRbaCancellation, combatRetreatWorld ?? combatSelection.PriorSnapshot.World, context)
                 : combatCancelledAssault is not null
                     ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialCancellation(
                         combatSelection, combatCancelledAssault,
@@ -441,6 +451,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -468,6 +479,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -497,6 +509,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -527,6 +540,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -558,6 +572,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -592,6 +607,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -625,6 +641,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -663,6 +680,7 @@ public sealed class ExerciseSession
             combatForceSeals: CurrentCombatForceSeals,
             combatForceCompletion: CurrentCombatForceCompletion,
             combatForceCancellation: CurrentCombatForceCancellation,
+            combatRbaCancellation: CurrentCombatRbaCancellation,
             combatAntiArmor: CurrentCombatAntiArmor,
             combatCancelledAssault: CurrentCombatCancelledAssault,
             combatAssaultResult: CurrentCombatAssaultResult,
@@ -696,6 +714,7 @@ public sealed class ExerciseSession
     internal IReadOnlyList<CampaignNativeCombatRetreatMoveV16> CurrentCombatRetreatMoves { get; }
     internal IReadOnlyList<CampaignNativeCombatForceSealV17> CurrentCombatForceSeals { get; }
     internal CampaignNativeCombatForceCompletionV18? CurrentCombatForceCompletion { get; }
+    internal CampaignNativeCombatRbaCancellationV33? CurrentCombatRbaCancellation { get; }
     internal CampaignNativeCombatForceCancellationV19? CurrentCombatForceCancellation { get; }
     internal CampaignNativeCombatAntiArmorV20? CurrentCombatAntiArmor { get; }
     internal CampaignNativeCombatCancelledAssaultV21? CurrentCombatCancelledAssault { get; }

@@ -79,6 +79,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string actingElementId, long openingRevision, string publicActionRef,
         CampaignOwnerOpeningKind kind, bool retreatMove = false)
     {
+        RequireWritable();
         ArgumentNullException.ThrowIfNull(credential);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
@@ -328,12 +329,27 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 submission, actingElementId),
         };
         if (!result.IsAccepted) return CampaignOwnerSubmissionResult.Rejected();
+        RbaRound? rbaRound = null;
+        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
+        {
+            rbaRound = ReadActiveRbaRound(connection, transaction, head, seat.CampaignId);
+            var gate = GateRbaRound(connection, transaction, rbaRound);
+            rbaRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelRbaRound(connection, transaction, head, rbaRound, reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
         PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
-            AppendUnavailableForceCancellation(connection, transaction,
-                seat.CampaignId);
+        {
+            UpdateRbaRound(connection, transaction, rbaRound! with { Status = "completed" });
+            AppendUnavailableForceCancellation(connection, transaction, seat.CampaignId);
+        }
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.Custody)
@@ -365,9 +381,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var systemHead = Load(connection, transaction, seat.CampaignId);
             var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
                 systemHead.Session, barrage);
-            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+            var barrageHead = PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
                 CampaignHostAcceptedStep.NativeCombatBarrageKind, null,
                 null, null, null, systemCommand, barrage);
+            InitializeRbaRound(connection, transaction, barrageHead, seat.CampaignId);
         }
         else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection
             && CampaignHostAdapter.IsNativeRepeatCombatVoluntaryFinish(
@@ -398,9 +415,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var systemHead = Load(connection, transaction, seat.CampaignId);
             var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
                 systemHead.Session, barrage);
-            PersistAccepted(connection, transaction, seat.CampaignId,
+            var barrageHead = PersistAccepted(connection, transaction, seat.CampaignId,
                 systemHead, CampaignHostAcceptedStep.NativeCombatBarrageKind,
                 null, null, null, null, systemCommand, barrage);
+            InitializeRbaRound(connection, transaction, barrageHead, seat.CampaignId);
         }
         else if (kind == CampaignOwnerOpeningKind.ForceAssignment
             && CampaignHostAdapter.IsNativeCombatForcePrepared(result.SuccessorSession!))

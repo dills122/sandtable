@@ -128,10 +128,12 @@ retain each owner's separate seal and cold-replay receipt. A distinct V18
 System completion advances after both seals.
 Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
-Force Assignment opening and seals. Schema-5/6 journals stay readable but cannot
-create new campaigns. Schema 7 retains one shared Force round for both seats;
+Force Assignment opening and seals. Schema-5/6/7 journals stay read-only. Schema 8 retains one shared Force round for both seats;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
-inventing an owner seal. Core V20/normal Host complete the infantry-only empty
+inventing an owner seal. Schema 8 also retains an RBA round at Barrage entry.
+Background expiry records native V33 `combat-rba-cancelled`, preserving retreat
+movement and reaching Reserve Release without a fabricated decline or combat result.
+Core V20/normal Host complete the infantry-only empty
 Anti Armor step from either Force outcome. Core V21 retains cancelled Close Assault
 closure and same-slot Reserve Release. `force-unavailable` names a Core-verified
 V19 System cancellation before a Force round exists when the selected contact

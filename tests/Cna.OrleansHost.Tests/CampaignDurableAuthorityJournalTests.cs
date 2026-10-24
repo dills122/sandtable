@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Cna.OrleansHost.Tests;
 
-public sealed class CampaignDurableAuthorityJournalTests
+public sealed partial class CampaignDurableAuthorityJournalTests
 {
     private const string OperatorSecret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
 
@@ -144,7 +144,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         using var fixture = new JournalFixture();
         var journal = fixture.Create();
         var request = Request();
-        var session = AdvanceToContactCombat(journal, request);
+        var session = AdvanceToContactCombat(journal, request, Timing(request));
         Assert.NotEmpty(CampaignHostAdapter.QueryContactCombatOwnerDraft(session,
             CampaignActionAudience.Axis, "axis-infantry").PrivateCombatActionIds);
         var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(
@@ -217,7 +217,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         using var fixture = new JournalFixture();
         var journal = fixture.Create();
         var request = Request();
-        var session = AdvanceToContactCombat(journal, request);
+        var session = AdvanceToContactCombat(journal, request, Timing(request));
         var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
         var opening = journal.QueryCombatOwnerOpening(credential, "axis-infantry");
@@ -1121,7 +1121,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         using var fixture = new JournalFixture();
         var journal = fixture.Create();
         var request = Request();
-        AdvanceToContactCombat(journal, request);
+        AdvanceToContactCombat(journal, request, Timing(request));
         var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
         var combatOpening = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
@@ -1188,7 +1188,7 @@ public sealed class CampaignDurableAuthorityJournalTests
         using var fixture = new JournalFixture();
         var journal = fixture.Create();
         var request = Request();
-        AdvanceToContactCombat(journal, request);
+        AdvanceToContactCombat(journal, request, Timing(request));
         var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
         var opening = journal.QueryCombatOwnerOpening(credential, "axis-infantry");
@@ -1243,6 +1243,13 @@ public sealed class CampaignDurableAuthorityJournalTests
         var chosen = journal.SubmitOwnerCombatSelection(attacker, "axis-infantry",
             opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(chosen.IsAccepted);
+        if (!withTiming)
+        {
+            AssertRbaCancellationOnly(fixture.Path);
+            Assert.True(CampaignExercises.Reconstruct(
+                fixture.Open(new ManualClock()).ReadVerified(request.CampaignId)).IsVerified);
+            return;
+        }
         var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
         var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(

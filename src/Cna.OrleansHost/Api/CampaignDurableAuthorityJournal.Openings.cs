@@ -63,6 +63,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
         string actingElementId, CampaignOwnerOpeningKind kind)
     {
+        RequireWritable();
         ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
@@ -162,6 +163,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             throw new InvalidOperationException("No owner opening is available at this cut.");
+        }
+        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
+        {
+            var round = ReadActiveRbaRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateRbaRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelRbaRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("RBA round is closed.");
+            }
         }
         if (kind == CampaignOwnerOpeningKind.ForceAssignment)
         {

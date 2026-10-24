@@ -780,21 +780,28 @@ contacts, published map and movement costs. Hidden opposing occupancy cannot rem
 offer; an unseen encounter needs an accepted event rather than a hidden rejection.
 The trusted defender draft keeps canonical visible bytes separate from private action IDs
 and authority version. An explicit defender decline is a V15 owner event through the
-normal durable Host seat/opening/receipt path; silence remains pending. Actual retreat
+normal durable Host seat/opening/receipt path. Schema 8 persists an RBA deadline at
+Barrage entry; a background tick cancels unanswered decisions through native V33. Actual retreat
 movement now uses a V16 retained Core event: the first accepted move updates World and
 both contact audiences, returns to a defender RBA cut, and cold replays through the
 normal durable Host seat/receipt path. Further offered moves append ordered events
 through the same path; checkpoints bind their predecessor by hash without nesting each
 prior World. An explicit stop from the updated cut reaches Force Assignment.
+The [native RBA cancellation contract](docs/specs/native-rba-cancellation-v1.md)
+binds the Barrage and latest retained retreat to an immutable deadline. Cancellation
+preserves World and RNG and reaches same-slot Reserve Release without fabricating
+a decline, seal, ammunition debit, or combat result. Missing timing or clock at
+Barrage entry records explicit `rba-unavailable` without an invented timestamp.
+The same path covers repeated assaults; accepted retreat moves retain the original deadline.
 The first Force Assignment Core cut derives each owner's own full-current-TOE
 infantry allocation without exposing the opposing allocation or private version.
 Core V17 records two owner-only seals at Force Assignment. Core V18 System
 completion then reaches Anti Armor. Normal Host retains each accepted seal
 under its own seat, opaque ref and cold-replay receipt, appending V18 with the
 second seal atomically. Normal campaign creation now accepts an explicit seven-window
-timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 7, and binds them in
-the initial journal hash. Existing schema-5/6 journals remain readable; new campaign
-creation in them is closed. No configuration means no Force Assignment opening or seal.
+timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 8, and binds them in
+the initial journal hash. Existing schema-5/6/7 journals remain read-only; mutation
+requires schema 8. No configuration means no Force Assignment opening or seal.
 The normal Host stores a shared Force Assignment round for both seats with trusted opened,
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
 deadline or clock failure, and verifies round status and evidence on cold replay. V19
