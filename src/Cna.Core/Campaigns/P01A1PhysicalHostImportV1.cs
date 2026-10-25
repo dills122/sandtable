@@ -137,8 +137,10 @@ public static class P01A1PhysicalHostImportV1
             var file = Path.Combine(trustedRepositoryDirectory, path);
             return File.ReadAllBytes(file);
         }
-        var checkpoint = P01R03ValidationCheckpointV1.Validate(import, context, Dependency);
-        var attestation = P01R03SameCutSourceAttestationCodecV1.Attest(import, terminalControl, context, Dependency);
+        // This adapter is permanently bound to the original r012-c01 evidence bytes.
+        using var legacy = new CombatLegacyDependencyArchive(Dependency);
+        var checkpoint = P01R03ValidationCheckpointV1.Validate(import, context, legacy.Read);
+        var attestation = P01R03SameCutSourceAttestationCodecV1.Attest(import, terminalControl, context, legacy.Read);
         using var checkpointDocument = JsonDocument.Parse(checkpoint.CanonicalBytes);
         var campaignId = checkpointDocument.RootElement.GetProperty("campaignId").GetString()!;
         using var originalImport = JsonDocument.Parse(import.ToArray());

@@ -35,7 +35,7 @@
   "sourcePins": [
     {"path": "docs/specs/combat-inherited-cycle-control-v1.schema.json", "sha256": "sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679"},
     {"path": "docs/specs/verify-combat-inherited-cycle-control-v1.py", "sha256": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0"},
-    {"path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json", "sha256": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236"},
+    {"path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json", "sha256": "sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e"},
     {"path": "docs/specs/combat-ordinary-movement-v1.schema.json", "sha256": "sha256:039d5f3cdb908dc761540b4809bfb9c6e77c9ab6efd8c965e69955fbbcf0728a"},
     {"path": "docs/specs/verify-combat-ordinary-movement-v1.py", "sha256": "sha256:cc75e52a6d160d4b0c6c880dc43bc65742068f83ef85cc7fb4babbf8756e0dff"},
     {"path": "docs/specs/fixtures/combat-ordinary-movement-v1.json", "sha256": "sha256:fa4cb6e76992e5e1133e5b8b2c7e7547e7e5d4faec743fe5bc6e975f5ba6937e"}

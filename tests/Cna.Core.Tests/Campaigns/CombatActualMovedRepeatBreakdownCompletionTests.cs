@@ -160,7 +160,8 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
 
 public sealed class CombatActualMovedRepeatBreakdownParityTests
 {
-    private const string Catalogue = "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-native-hashes-v1.json";
+    // Current-revision parity is distinct from the immutable original P01 catalogue.
+    private const string Catalogue = "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-refreshed-native-hashes-v1.json";
     public static IEnumerable<object[]> Rows()
     {
         using var fixture = JsonDocument.Parse(CombatActualMovedCycleControlTests.Dependency(Catalogue));

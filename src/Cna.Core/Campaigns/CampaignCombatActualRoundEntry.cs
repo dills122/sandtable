@@ -146,7 +146,7 @@ internal static class CampaignCombatActualRoundEntry
         IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, ReadOnlySpan<byte> currentInput,
         Func<string, byte[]> dependencyBytes, bool admissionEnabled, ReplayMemo memo)
     {
-        VerifyDependencies(dependencyBytes);
+        dependencyBytes = VerifyDependencies(dependencyBytes);
         var input = Object(currentInput, "RoundInput");
         var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes, memo);
         var (state, accepted, receipt, duplicate) = Transition(frame.Facts, frame.Control, input, dependencyBytes, admissionEnabled);
@@ -188,7 +188,7 @@ internal static class CampaignCombatActualRoundEntry
         out CombatActualRoundEntryResult? retained)
     {
         retained = null;
-        VerifyDependencies(dependencyBytes);
+        dependencyBytes = VerifyDependencies(dependencyBytes);
         var ownedSource = source.Length <= 1_048_576 ? source.ToArray() : null;
         ReadOnlySpan<byte> retainedSource = ownedSource is null ? source : ownedSource;
         var packet = Object(retainedSource, "ActualRoundSource"); Require(Number(packet, "contractVersion") == 1, 3);
@@ -478,11 +478,17 @@ internal static class CampaignCombatActualRoundEntry
     private static string Domain(string kind, byte[] bytes) => CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.actual-round-entry." + kind + ".v1", bytes);
     private static byte[] PinnedBytes(string path, Func<string, byte[]> dependencyBytes)
     {
-        try { var data = dependencyBytes(path).ToArray(); Require(Hash(data) == "sha256:" + Dependencies[path], 9); return data; }
+        try
+        {
+            var data = dependencyBytes.Target is CombatDependencySnapshot snapshot
+                ? snapshot.ReadRevalidated(path) : dependencyBytes(path).ToArray();
+            Require(Hash(data) == "sha256:" + CombatEvidenceRevisions.Expected(dependencyBytes, path, Dependencies[path]), 9);
+            return data;
+        }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or KeyNotFoundException or NullReferenceException) { throw new JsonException("CMB-ARE-009", e); }
     }
-    internal static void VerifyDependencies(Func<string, byte[]> dependencyBytes)
-    { ArgumentNullException.ThrowIfNull(dependencyBytes); foreach (var path in Dependencies.Keys) _ = PinnedBytes(path, dependencyBytes); }
+    internal static Func<string, byte[]> VerifyDependencies(Func<string, byte[]> dependencyBytes)
+        => CombatEvidenceRevisions.Capture(dependencyBytes, Dependencies, new Dictionary<string, string>(), int.MaxValue, "CMB-ARE-009", revalidateExisting: true);
     private static readonly Dictionary<string, string> Dependencies = new(StringComparer.Ordinal)
     {
         ["docs/specs/combat-positive-entry-v1.schema.json"] = "73724384ba3cf61b462ef7b47ae70e5108281a6bbaf0b80878c55247e4e6fa36",

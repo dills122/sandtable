@@ -148,6 +148,6 @@
     {"path": "src/Cna.Core/Campaigns/CampaignV11BreakdownProjector.cs", "sha256": "sha256:a1ed1aefd2ceb6fe3641d82b13ab0d04eb26505bdf98ccf3745cd974cee49826"},
     {"path": "src/Cna.Core/Actions/BreakdownActionCandidates.cs", "sha256": "sha256:22aa8459a4a34e67815e83009f0dc0efca67bf171c803ccb60b75944cc435801"},
     {"path": "src/Cna.Core/Actions/CampaignActionCandidate.cs", "sha256": "sha256:c0e1c240a51dfeb140e370cac71cd204d92954eacc6d47a08c44006850cbc590"},
-    {"path": "src/Cna.Core/Rules/Cna1979LandSequence.cs", "sha256": "sha256:c5426245a156367eac85fc5e61792ece1ae124651a0416793fde00213641b938"}
+    {"path": "src/Cna.Core/Rules/Cna1979LandSequence.cs", "sha256": "sha256:d019a3bc2941ad788b69550f5d7fc01e33fa586a0bad6a374c08550b3cb6a79a"}
   ]
 }

@@ -86,9 +86,9 @@
     "docs/research/fixtures/combat-selected-source-v1.json": "e225bc650c4bb942e41245a33da20c21c576ab117807a06805e2558a2c6468df",
     "docs/research/verify-combat-rng.py": "f3c7c468f2be0efa583e44c4d04b8fe6d20eef51aae01554bfa535b0ecc0ea30",
     "docs/research/verify-combat-source-freeze.py": "f21a97150e344337f6ee4c2c1a1752ac7d41b8b8c8bf6a61a06a1fe5a0483e7e",
-    "docs/specs/combat-actual-assault-v1.schema.json": "a16d852d5a4463a295e315c824e5298f4ff22b979a7c307187c2a8d926136f0d",
-    "docs/specs/combat-actual-paid-assault-v1.schema.json": "be1c5fcc36641ae1ee9f58b4b1c73baca098e7a8cde43d8dc568197f59399324",
-    "docs/specs/combat-actual-round-entry-v1.schema.json": "677b1c671bebe5f23cf4b80f03078c55000c60e45416701757e2552cbd05edb8",
+    "docs/specs/combat-actual-assault-v1.schema.json": "a6d24f1ff562b34bb8013d187c3da38783725f062efe9ccc9bf7195493bf0cc2",
+    "docs/specs/combat-actual-paid-assault-v1.schema.json": "af7bca1870a3243421129ba1986d24b82d5863bbccbcb83b9e9e832cab728ba4",
+    "docs/specs/combat-actual-round-entry-v1.schema.json": "31e5b53db04cf9b96e9285cfc4e3ca51b152a5995d71b76048c3e239aadf3b6d",
     "docs/specs/combat-actual-selection-v1.schema.json": "da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1",
     "docs/specs/combat-authority-envelope-v1.schema.json": "91f90ba47cdfff088b3d8e5dba55c6c283d41c96381e56c7bba115bfb5390550",
     "docs/specs/combat-cycle-control-v1.schema.json": "8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da",
@@ -114,7 +114,7 @@
     "docs/specs/fixtures/combat-authority-envelope-v1.json": "adf7b05e15f863b08f366809adf91c97b39480e404ce2efff15e838fa4043eaa",
     "docs/specs/fixtures/combat-content-v7.canonical.json": "ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
     "docs/specs/fixtures/combat-creation-ledger-v1.json": "4b7f87f73a5882800e4e4befb4c06c20bf19c419f92edba5028b355e37442684",
-    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
+    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "805dc0453bf678957ea92ce0c609a7bf67af1c1b8898bc5f99df2b0777810005",
     "docs/specs/fixtures/combat-positive-entry-v1.json": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
     "docs/specs/fixtures/combat-reserve-designation-v1.json": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
     "docs/specs/fixtures/combat-rules-inputs-v1.json": "5401cd9a690be8b81f19795f1f66c0c6fe24f5055a06cda5facd6193b3e0a29a",
@@ -169,7 +169,7 @@
     "ContinuationLedger": 4101
   },
   "testArtifactHashes": {
-    "docs/specs/fixtures/combat-actual-paid-assault-v1.json": "80dfa0157542d70660f78d0e2326564fcb9095a71f84ecab2deaf061c5e7b203",
-    "docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json": "9cd49e98ea011228bc63a296aede917b8b517926b3d50df244df139e7d9f2679"
+    "docs/specs/fixtures/combat-actual-paid-assault-v1.json": "cae6d9f4eb7ee5f86fbfb2e3877ca02a4d735871507d3bc7ba24d9435087e7e0",
+    "docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json": "5b194d6a6d9131079e9d6cd1693c565d3d992fad920882d86a049447d48eca20"
   }
 }

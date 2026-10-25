@@ -67,7 +67,7 @@ internal static class CampaignCombatActualRepeatedBreakdownCompletion
         var (packet, frame, state, inputs) = Replay(source, context, selection, rounds, paid, continuation, movement, lifecycle, breakdown, dependencies);
         var owned = newInput.ToArray(); var (after, accepted, receipt) = Transition(frame, state, Object(owned, "Input"));
         if (accepted is not null) { packet["breakdownEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(accepted)); inputs.Add(owned); }
-        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 2048, 1); CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies);
+        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 2048, 1); dependencies = CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies);
         return Result(packet, frame, after, inputs, accepted, receipt, accepted is null);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
@@ -96,7 +96,7 @@ internal static class CampaignCombatActualRepeatedBreakdownCompletion
         IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> continuation, IReadOnlyList<byte[]> movement,
         IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, Func<string, byte[]> dependencies)
     {
-        CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies); var packet = Object(source, "Source");
+        dependencies = CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies); var packet = Object(source, "Source");
         var frame = Derive(Encoding.ASCII.GetBytes(T(packet, "repeatedMovementCompletionSourceCanonicalUtf8")), context, selection, rounds, paid, continuation, movement, lifecycle, dependencies);
         Require(breakdown is not null && breakdown.Count <= 1 && breakdown.All(x => x is not null), 1);
         var inputs = breakdown.Select(x => { var copy = x.ToArray(); _ = Parse(copy, "Input"); return copy; }).ToList(); Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 2048, 1);
@@ -106,7 +106,7 @@ internal static class CampaignCombatActualRepeatedBreakdownCompletion
             var actual = Encoding.ASCII.GetBytes(events[i]!.GetValue<string>()); _ = Parse(actual, "Event"); var (after, expected, _) = Transition(frame, state, Object(inputs[i], "Input"));
             Require(expected is not null && actual.AsSpan().SequenceEqual(expected), 6); state = after;
         }
-        CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies); return (packet, frame, state, inputs);
+        dependencies = CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies); return (packet, frame, state, inputs);
     }
     private static CombatActualRepeatedBreakdownCompletionResult Result(JsonObject packet, Frame frame, JsonObject state,
         IReadOnlyList<byte[]> inputs, byte[]? accepted = null, string? receipt = null, bool duplicate = false)
@@ -119,6 +119,7 @@ internal static class CampaignCombatActualRepeatedBreakdownCompletion
         IReadOnlyList<byte[]> rounds, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> continuation,
         IReadOnlyList<byte[]> movement, IReadOnlyList<byte[]> lifecycle, Func<string, byte[]> dependencies)
     {
+        dependencies = CampaignCombatActualRepeatedBreakdownCompletionCodec.VerifyDependencies(dependencies);
         CombatActualRepeatedMovementCompletionResult ancestor;
         try { ancestor = CampaignCombatActualRepeatedMovementCompletion.ReplayTrustedSource(source, context, selection, rounds, paid, continuation, movement, lifecycle, dependencies); }
         catch (JsonException error)
@@ -134,7 +135,7 @@ internal static class CampaignCombatActualRepeatedBreakdownCompletion
         Require(ancestor.LifecycleInputs.Count == (prior["tracks"]!.AsArray().Count == 0 ? 1 : 3), 4);
         var content = JsonNode.Parse(CampaignCombatActualRepeatedBreakdownCompletionCodec.Consume("docs/specs/fixtures/combat-content-v7.canonical.json", dependencies))!;
         Require(prior["members"]!.AsArray().All(m => content["elements"]!.AsArray().Single(e => T(e!, "elementId") == T(m!["unit"]!, "elementId"))!["breakdownVehicleCohort"] is null), 3);
-        var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest()), ("repeatedMovementCompletionProof", JsonNode.Parse(ancestor.ProofBytes))); _ = Canonical(basis, "Base"); Require(N(prior, "stateVersion") < long.MaxValue, 7);
+        var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest(dependencies)), ("repeatedMovementCompletionProof", JsonNode.Parse(ancestor.ProofBytes))); _ = Canonical(basis, "Base"); Require(N(prior, "stateVersion") < long.MaxValue, 7);
         return new(basis, "sha256:" + Digest("base", Canonical(basis, "Base")), prior, cycle.DeepClone().AsObject(), boundary, terminal);
     }
     internal static JsonObject Initial(Frame frame)

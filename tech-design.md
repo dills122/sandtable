@@ -745,6 +745,15 @@ Exercises own fresh local capabilities and retained evidence. Raw authority and 
 player mutation seams. A public campaign handle is opaque; opposing state is disclosed only through
 versioned allowlists, never by serializing full snapshots.
 
+Private Combat reference readers bind replay to a complete frozen
+[evidence dependency revision](docs/specs/combat-evidence-revisions-v1.md). Legacy bytes retain
+legacy manifest identities; refreshed bytes use their own identities. Dependency acquisition
+remains outside authoritative turns, owns caller buffers, and rejects mixed or unknown revisions
+before replay/cache access. RoundEntry still rechecks physical Content at consumption,
+including warm replay; owned snapshots do not waive that contract. Original P01 proof consumers and the fixed physical-import
+adapter explicitly retain the original dependency archive; current R03 parity uses a
+separate refreshed catalogue. This compatibility mechanism does not widen public admission.
+
 The permanent Combat fog path now begins with Core-owned
 [contact knowledge](docs/specs/combat-contact-knowledge-v1.md). Authority
 transitions retain private target bindings and replay into observer-scoped current

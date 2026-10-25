@@ -65,7 +65,7 @@ internal static class CampaignCombatActualRepeatedMovementCompletion
         var (packet, frame, state, inputs) = Replay(source, context, selection, rounds, paid, continuation, movement, lifecycle, dependencies);
         var owned = newInput.ToArray(); var (after, accepted, receipt) = Transition(frame, state, Object(owned, "Input"));
         if (accepted is not null) { packet["lifecycleEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(accepted)); inputs.Add(owned); }
-        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 8192, 1); CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies);
+        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 8192, 1); dependencies = CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies);
         return Result(packet, frame, after, inputs, accepted, receipt, accepted is null);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
@@ -93,7 +93,7 @@ internal static class CampaignCombatActualRepeatedMovementCompletion
         IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> continuation, IReadOnlyList<byte[]> movement,
         IReadOnlyList<byte[]> lifecycle, Func<string, byte[]> dependencies)
     {
-        CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies); var packet = Object(source, "Source");
+        dependencies = CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies); var packet = Object(source, "Source");
         var frame = Derive(Encoding.ASCII.GetBytes(T(packet, "movementSourceCanonicalUtf8")), context, selection, rounds, paid, continuation, movement, dependencies);
         Require(lifecycle is not null && lifecycle.Count <= frame.EventCap && lifecycle.All(x => x is not null), 1);
         var inputs = lifecycle.Select(x => { var copy = x.ToArray(); _ = Parse(copy, "Input"); return copy; }).ToList();
@@ -105,7 +105,7 @@ internal static class CampaignCombatActualRepeatedMovementCompletion
             var (after, expected, _) = Transition(frame, state, Object(inputs[i], "Input"));
             Require(expected is not null && actual.AsSpan().SequenceEqual(expected), 6); state = after;
         }
-        CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies); return (packet, frame, state, inputs);
+        dependencies = CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies); return (packet, frame, state, inputs);
     }
     private static CombatActualRepeatedMovementCompletionResult Result(JsonObject packet, Frame frame, JsonObject state,
         IReadOnlyList<byte[]> inputs, byte[]? accepted = null, string? receipt = null, bool duplicate = false)
@@ -118,6 +118,7 @@ internal static class CampaignCombatActualRepeatedMovementCompletion
         IReadOnlyList<byte[]> rounds, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> continuation,
         IReadOnlyList<byte[]> movement, Func<string, byte[]> dependencies)
     {
+        dependencies = CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(dependencies);
         CombatActualRepeatedMovementResult ancestor;
         try { ancestor = CampaignCombatActualRepeatedMovement.ReplayTrustedSource(source, context, selection, rounds, paid, continuation, movement, dependencies); }
         catch (JsonException error)
@@ -140,7 +141,7 @@ internal static class CampaignCombatActualRepeatedMovementCompletion
             Require(JsonNode.DeepEquals(track["unit"], members[0]!["unit"]) && route.Count == count + 1 && route[^1]!.GetValue<string>() == T(element, "currentLocationId"), 4);
             flow = O(("kind", "moving"), ("track", track), ("lastMoveReceiptId", prior["receipts"]!.AsArray()[^1]!["receiptId"]));
         }
-        var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest()), ("movementProof", JsonNode.Parse(ancestor.ProofBytes))); _ = Canonical(basis, "Base");
+        var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest(dependencies)), ("movementProof", JsonNode.Parse(ancestor.ProofBytes))); _ = Canonical(basis, "Base");
         Require(N(prior, "stateVersion") <= long.MaxValue - (count > 0 ? 3 : 1), 7);
         return new(basis, "sha256:" + Digest("base", Canonical(basis, "Base")), prior, cycle.DeepClone().AsObject(), flow, content, count > 0 ? 3 : 1);
     }

@@ -10,7 +10,7 @@ internal sealed class CombatActualMovedRepeatMovementResult
     private readonly byte[] source, control, proof;
     private readonly byte[]? accepted;
     private readonly byte[][][] inputs;
-    internal CombatActualMovedRepeatMovementResult(JsonObject packet, JsonObject state, byte[][][] ledgers, byte[]? ev = null, bool duplicate = false)
+    internal CombatActualMovedRepeatMovementResult(JsonObject packet, JsonObject state, byte[][][] ledgers, string manifestHash, byte[]? ev = null, bool duplicate = false)
     {
         source = Canonical(packet, "Source"); control = Canonical(state, "Control"); accepted = ev?.ToArray(); Duplicate = duplicate;
         inputs = ledgers.Select(l => l.Select(b => b.ToArray()).ToArray()).ToArray(); var hash = Hash(source);
@@ -21,7 +21,7 @@ internal sealed class CombatActualMovedRepeatMovementResult
             ["sourceId"] = "mrms." + hash[7..],
             ["sourceHash"] = hash,
             ["parentSourceHash"] = state["parentSourceHash"]!.DeepClone(),
-            ["dependencyManifestHash"] = ManifestHash,
+            ["dependencyManifestHash"] = manifestHash,
             ["control"] = state.DeepClone(),
             ["lastEventHash"] = events.Count == 0 ? null : Hash(Encoding.ASCII.GetBytes(events[^1]!.GetValue<string>())),
             ["publicationReceiptId"] = state["publicationReceiptId"]?.DeepClone()
@@ -53,7 +53,7 @@ internal static class CampaignCombatActualMovedRepeatMovement
     private const string SchemaPath = "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json";
     public static CombatActualMovedRepeatMovementResult ReplayTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release, IReadOnlyList<byte[]> control, IReadOnlyList<byte[]> movement, Func<string, byte[]> dependencies)
-    { var (f, s) = Replay(source, request, prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, dependencies); return new(f.Packet, s, f.Ledgers); }
+    { var (f, s) = Replay(source, request, prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, dependencies); return new(f.Packet, s, f.Ledgers, ManifestHashFor(f.Dependencies)); }
     public static CombatActualMovedRepeatMovementResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release, IReadOnlyList<byte[]> control, IReadOnlyList<byte[]> movement, ReadOnlySpan<byte> currentInput, Func<string, byte[]> dependencies, bool admissionEnabled = true)
     {
@@ -63,12 +63,12 @@ internal static class CampaignCombatActualMovedRepeatMovement
         if (ev is null)
         {
             var old = rid is null ? null : f.Packet["movementEventCanonicalUtf8"]!.AsArray().Select(e => Encoding.ASCII.GetBytes(e!.GetValue<string>())).Single(e => T(JsonNode.Parse(e)!, "receiptId") == rid);
-            return new(f.Packet, s, f.Ledgers, old, rid is not null);
+            return new(f.Packet, s, f.Ledgers, ManifestHashFor(f.Dependencies), old, rid is not null);
         }
         var packet = f.Packet.DeepClone().AsObject(); packet["movementEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(ev));
         var ledgers = f.Ledgers.Select(l => l.Select(b => b.ToArray()).ToArray()).ToArray(); ledgers[8] = [.. ledgers[8], current];
         var (after, state) = Replay(Canonical(packet, "Source"), request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4], ledgers[5], ledgers[6], ledgers[7], ledgers[8], f.Dependencies);
-        Require(JsonNode.DeepEquals(afterState, state), 6); return new(after.Packet, state, after.Ledgers, ev);
+        Require(JsonNode.DeepEquals(afterState, state), 6); return new(after.Packet, state, after.Ledgers, ManifestHashFor(after.Dependencies), ev);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release, IReadOnlyList<byte[]> control, IReadOnlyList<byte[]> movement, Func<string, byte[]> dependencies)
@@ -96,7 +96,7 @@ internal static class CampaignCombatActualMovedRepeatMovement
         Require(T(a, "worldHash") == Hash(Canonical(p["world"]!, "World")) && T(a, "sourceOccurrence") == T(p, "cycleId") && a["witnesses"]!.AsArray().Count > 0 && !B(a, "executionAvailable"), 4);
         var expectedIntent = O(("contractVersion", 1), ("kind", "pending-repeat-intent"), ("sourceOccurrence", p["cycleId"]), ("sourceOrdinal", 1), ("expectedNextOrdinal", 2), ("parentSourceHash", p["parentSourceHash"]), ("worldHash", a["worldHash"]), ("assessmentHash", Hash(Canonical(a, "Assessment"))), ("configurationHash", p["cycle"]!["admittedPolicyBundleDigest"]), ("decisionId", p["decisionId"]), ("witnessesHash", Hash(Encode(a["witnesses"]!))), ("executionAvailable", false));
         Require(JsonNode.DeepEquals(intent, expectedIntent), 4);
-        var basis = O(("contractVersion", 1), ("parentSourceHash", Hash(parentBytes)), ("sourceOccurrence", p["cycleId"]), ("intentReceiptId", p["pendingIntentReceiptId"]), ("worldHash", a["worldHash"]), ("assessmentHash", intent["assessmentHash"]), ("configurationHash", intent["configurationHash"]), ("decisionId", intent["decisionId"]), ("witnessesHash", intent["witnessesHash"]), ("dependencyManifestHash", ManifestHash));
+        var basis = O(("contractVersion", 1), ("parentSourceHash", Hash(parentBytes)), ("sourceOccurrence", p["cycleId"]), ("intentReceiptId", p["pendingIntentReceiptId"]), ("worldHash", a["worldHash"]), ("assessmentHash", intent["assessmentHash"]), ("configurationHash", intent["configurationHash"]), ("decisionId", intent["decisionId"]), ("witnessesHash", intent["witnessesHash"]), ("dependencyManifestHash", ManifestHashFor(retained)));
         var f = new Frame(packet, p, basis, "sha256:" + Domain("base", Canonical(basis, "Base")), request, ledgers, retained, JsonNode.Parse(retained("docs/specs/fixtures/combat-content-v7.canonical.json"))!.AsObject());
         var state = Initial(f);
         for (var i = 0; i < ledgers[8].Length; i++)

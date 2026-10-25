@@ -1,21 +1,41 @@
 # RC checklist — October 24, 2026
 
-Working branch: `codex/rc-fresh-process-third-reserve`. Status describes retained
+Working branch: `codex/rc-reserve-crash-recovery`. Status describes retained
 local evidence, not a public support certificate or a playable RC declaration.
 The [roadmap](../../roadmap/pre-alpha-roadmap.md) and canonical acceptance
 contracts remain authoritative. Every closure needs tested commit, exact profile,
 command/exit/counts, retained artifacts and reviewer disposition. A historical
 pass does not prove a later head.
 
-Latest packet: fresh-process genuine repeated required-Retreat recovery,
-stacked after Reserve `17050b13` and Custody `99478cd9` proofs.
-[Retreat recovery handoff](../reviews/2026-10-24-fresh-process-repeated-retreat-handoff.md)
-records actual seed4 two-paid history, three child launches before/due/retry,
-exact journal/replay parity, legal owner-refusal World parity and retained RNG18.
-Prior [Custody](../reviews/2026-10-24-fresh-process-repeated-custody-handoff.md) and
-[Reserve](../reviews/2026-10-24-fresh-process-third-reserve-handoff.md) proofs retain
-their bounded scopes. Other native process cuts, abrupt crashes, public certificates
-and playable-product gates remain open. No broader profile admission inferred.
+Latest packet: abrupt-process Reserve fallback recovery on merged PR333
+(`4017d78c`). [Crash handoff](../reviews/2026-10-25-reserve-crash-recovery-handoff.md)
+records two deterministic kill points: after Reserve transactional writes before
+Cycle entry/commit, and after commit before response. Fresh-process recovery and
+retry must match untouched or fully committed control, preserving owner choices
+and paid history. This is process termination evidence, not machine power loss.
+PR333 merged the earlier three fresh-process proofs; remaining lanes/crash cuts,
+public certification and playable-product gates remain open.
+
+Current evidence-maintenance packet: versioned private Combat dependencies. Legacy/archive
+replay, refreshed native parity, rejection of mixed revisions and original oracle results
+must all be retained before closure. [Revision contract](../../specs/combat-evidence-revisions-v1.md)
+and [preflight](../reviews/2026-10-25-combat-source-pin-preflight.md) record scope. Review5's
+docs-only repair was rejected; user approved native compatibility work and final review6.
+Original Cycle/Breakdown root oracles now pass. Native focused batches659 cases and format/build pass; independent review6/6 Ready with non-blocking follow-ups. Unrelated Snapshot pins, Outward anchors/pins and full final-head oracle coverage remain open. [Exact validation](../reviews/2026-10-25-evidence-revisions-validation.md) separates passing, failing and unrun checks.
+
+PR334 CI exposed missed original-P01 consumer coverage and 16 missing measured
+Core timing rows. Correction retains original P01 pins, separates refreshed R03
+parity, and adds actual measured rows without relaxing coverage checks.
+[CI correction evidence](../reviews/2026-10-25-pr334-ci-correction.md) records
+selected validation and remaining exact-head CI/review requirements. Prior review6
+does not cover this corrective patch.
+
+RoundEntry consumption recheck correction: original five regressions now pass
+unchanged; full RoundEntry177 and refreshed native R03 parity300 pass in focused
+chunks. Owned snapshots explicitly recheck Content through original provider at
+use, including warm replay. Six affected schemas and refreshed fixtures regenerated;
+legacy registrations/archives and original P01 goldens preserved. Final review8/8 returned **Ready**, no actionable findings, at91b313c3.
+Strict local inventory passed; exact-head hosted CI remains required before merge. [Correction evidence](../reviews/2026-10-25-roundentry-consumption-recheck.md).
 
 ## Native Combat reliability
 
@@ -33,11 +53,19 @@ head; they do not admit original P01 roots or close product gates.
 | Selection deadline | Implemented `ee1d7645`; initial and genuine repeated paths | Deadline retained at actual initial or repeated Breakdown entry; System `no-selection` distinct from owner Finish, unchanged World/RNG, no-query cold expiry, owner race/retry, invalid proposal non-mutation, generic-Append gating, atomic no-attack/Reserve continuation and strict replay pass. Preserve readonly historical schemas and fail closed for unsupported fallback scope. |
 | Integrated durable Combat flow | Saved-copy/fresh-process cuts, genuine third-cycle Reserve, repeated captured-lot Custody and required-Retreat expiry/rollback pass; broader gate open | One retained genuine accepted history exercises initial and repeated combat, unpaid decisions and background fallbacks, restart at nonterminal cuts, Reserve I/II effects, cycle repeat/finish, and identical replay. Fresh-process initial Retreat and repeated Selection/RBA/one-seal Force now pass before/due/retry boundaries; remaining native decision cuts and abrupt crash/power-loss recovery are not established by this packet. Genuine third-cycle Host Reserve timeout now passes after two paid assaults and two accepted repeats; initial conversion and later retention respect ordered owner choices. Fresh-process third-cycle Reserve now passes using three native child launches; other Reserve process cuts remain separate. Genuine repeated captured-lot Custody expiry and fresh-process before/due/retry recovery now pass with actual two-paid history and fixed seed50; this does not admit other profiles. Exact initial/repeated Custody entry-clock faults now pass using persisted-round calibration. Genuine repeated Host required-Retreat timeout and fresh-process before/due/retry recovery now pass on actual seed4 two-paid history with legal owner-refusal World parity. Exact initial/repeated Retreat entry-clock faults now pass using persisted-round calibration; prior Force succeeds, unavailable fallback invents neither timestamps nor target rounds. No fabricated P01 ancestry. |
 
+### Abrupt-process persistence gate
+
+Third-cycle Reserve precommit and postcommit/lost-response kill cases pass in
+bounded fixture. Parent uses OS termination while child is paused, then new
+processes recover/retry; full logical journal/replay parity excludes partial state
+and duplicate fallback. Other lanes, arbitrary write/fsync cuts and power loss
+remain unproved. No production crash hook or changed persistence contract.
+
 ## Release evidence and publication
 
 | Gate / owner lane | Current status | Explicit pass criteria |
 | --- | --- | --- |
-| Source-oracle reconciliation / Core evidence | Original Breakdown and cycle-sequence source-pin failures retained | Identify semantic source changes; document contract/source implications; update pins only with reviewed justification; applicable original oracles exit0 on release head. Never regenerate solely to silence failure. |
+| Source-oracle reconciliation / Core evidence | Cycle/Breakdown roots pass; Snapshot2 source pins and Outward anchors/pins open; full final-head owning-oracle coverage pending | Identify semantic source changes; document contract/source implications; update pins only with reviewed justification; applicable original oracles exit0 on release head. Never regenerate solely to silence failure. |
 | Original P01 certificate / evidence | 300 ancestry rows checked historically:44 provisional positive,256 absent,0 admitted | Close canonical AC-001–009 with original-root ancestry, action/obligation completeness, source conditions, authentic owner privacy, matching nonterminal recovery/fault/cap evidence and support review. Absent rows remain unsupported; terminal ancestry alone cannot close certificate. |
 | Public Combat / Core+Host | 020–021 and HOST-PUB-001 open | Admit only certified profile; equal-authorized hidden variants yield safe outward actions/results; unsupported profiles reject before decision. Prove atomic actual persistence, retries, lost responses and fresh-process recovery; disabling admission preserves recovery. |
 | Runner/studies / evidence | 022–025 open | Runner consumes same admitted public authority; strict reconstruction/readjudication produces retained repeat/finish trace; independent clean empty/settled-assault/repeated-Movement studies pass; all72 Combat ACs reconciled against actual accepted loop. |
@@ -83,9 +111,8 @@ blockers in #330, not waived successes. New PR regressions must be fixed before 
 1. Preserve merged [PR329](https://github.com/dills122/sandtable/pull/329) evidence
    and validate subsequent bounded packets on their own heads. All seven decision
    windows exist; prior review/CI does not automatically cover new changes.
-2. Close remaining integrated durable-flow proofs: remaining fresh-process cuts
-   (including other unproved native decision cuts) and abrupt crash
-   recovery, alongside source-pin
+2. Close remaining integrated durable-flow proofs: unproved native process cuts
+   and other-lane crash/lost-response boundaries, alongside source-pin
    reconciliation and dependency remediation in
    separate owned packets.
 3. Close original/public certificate and Runner evidence gates; freeze exact RC

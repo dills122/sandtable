@@ -36,24 +36,16 @@ internal static class CampaignCombatActualPaidAssaultSupport
     internal static byte[] Consume(string path, Func<string, byte[]> bytes)
     {
         Require(Pins.TryGetValue(path, out var expected), 9);
-        try { var acquired = bytes(path); Require(acquired is not null, 9); var data = acquired!.ToArray(); Require(Hash(data) == "sha256:" + expected, 9); return data; }
+        try { var acquired = bytes(path); Require(acquired is not null, 9); var data = acquired!.ToArray(); Require(Hash(data) == "sha256:" + CombatEvidenceRevisions.Expected(bytes, path, expected!), 9); return data; }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or KeyNotFoundException or ArgumentException)
         { throw new JsonException("CMB-APA-009", e); }
     }
-    internal static void VerifyDependencies(Func<string, byte[]> bytes)
-    {
-        foreach (var path in Pins.Keys) _ = Consume(path, bytes);
-        foreach (var (path, expected) in Delivery)
-        {
-            try { Require(Hash(bytes(path)) == "sha256:" + expected, 9); }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException or KeyNotFoundException or ArgumentException)
-            { throw new JsonException("CMB-APA-009", e); }
-        }
-    }
-    internal static string Manifest(bool admission)
+    internal static Func<string, byte[]> VerifyDependencies(Func<string, byte[]> bytes)
+        => CombatEvidenceRevisions.Capture(bytes, Pins, Delivery, int.MaxValue, "CMB-APA-009", revalidateExisting: true);
+    internal static string Manifest(bool admission, Func<string, byte[]> dependencies)
     {
         var value = new JsonObject();
-        foreach (var path in (admission ? AdmissionPaths.AsEnumerable() : Pins.Keys).Order(StringComparer.Ordinal)) value[path] = Pins[path];
+        foreach (var path in (admission ? AdmissionPaths.AsEnumerable() : Pins.Keys).Order(StringComparer.Ordinal)) value[path] = CombatEvidenceRevisions.Expected(dependencies, path, Pins[path]);
         var data = Encode(value);
         return admission ? Hash(data) : "sha256:" + Domain("sandtable.combat.actual-paid-assault.dependency-manifest.v1", data);
     }

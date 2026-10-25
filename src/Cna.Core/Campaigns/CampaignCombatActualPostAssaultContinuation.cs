@@ -66,7 +66,7 @@ internal static class CampaignCombatActualPostAssaultContinuation
         var (packet, frame, state, inputs) = Replay(source, context, selection, rounds, paid, continuation, dependencies);
         var owned = newInput.ToArray(); var (after, accepted, receipt) = Transition(frame, state, Object(owned, "Input"));
         if (accepted is not null) { packet["continuationEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(accepted)); inputs.Add(owned); }
-        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 8192, 1); CheckDependencies(dependencies);
+        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 8192, 1); dependencies = CheckDependencies(dependencies);
         return Result(packet, frame, after, inputs, accepted, receipt, accepted is null && receipt is not null);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
@@ -91,7 +91,7 @@ internal static class CampaignCombatActualPostAssaultContinuation
         CampaignCombatCreationContext context, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds,
         IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> continuation, Func<string, byte[]> dependencies)
     {
-        CheckDependencies(dependencies); var packet = Object(source, "Source");
+        dependencies = CheckDependencies(dependencies); var packet = Object(source, "Source");
         Require(context is not null && selection is not null && rounds is not null && paid is not null && continuation is not null, 1);
         var frame = Derive(Encoding.ASCII.GetBytes(T(packet, "paidSourceCanonicalUtf8")), context, selection!, rounds!, paid!, dependencies);
         Require(continuation!.Count <= 4 && continuation.All(x => x is not null), 1);
@@ -105,7 +105,7 @@ internal static class CampaignCombatActualPostAssaultContinuation
             var (after, expected, _) = Transition(frame, state, Object(inputs[i], "Input"));
             Require(expected is not null && actual.AsSpan().SequenceEqual(expected), 6); state = after;
         }
-        CheckDependencies(dependencies); return (packet, frame, state, inputs);
+        dependencies = CheckDependencies(dependencies); return (packet, frame, state, inputs);
     }
     private static CombatActualPostAssaultContinuationResult Result(JsonObject source, Frame frame, JsonObject state,
         IReadOnlyList<byte[]> inputs, byte[]? accepted = null, string? receipt = null, bool duplicate = false)
@@ -117,7 +117,7 @@ internal static class CampaignCombatActualPostAssaultContinuation
     internal static Frame Derive(byte[] source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds, IReadOnlyList<byte[]> paid, Func<string, byte[]> dependencies)
     {
-        CheckDependencies(dependencies);
+        dependencies = CheckDependencies(dependencies);
         CombatActualPaidAssaultResult replay;
         try { replay = CampaignCombatActualPaidAssault.ReplayTrustedSource(source, context, selection, rounds, paid, dependencies); }
         catch (JsonException e)
@@ -156,7 +156,7 @@ internal static class CampaignCombatActualPostAssaultContinuation
         Require(state["receipts"]!.AsArray().Any(r => T(r!, "receiptId") == T(committed, "receiptId") && T(r!, "eventHash") == Hash(commitmentEvents[0])), 4);
         var last = JsonNode.Parse(events[^1])!; var prior = proof["base"]!["admissionProof"]!["actualRoundProof"]!["control"]!;
         Require(T(last, "receiptId") == T(state, "caCompletionReceiptId") && T(last["effect"]!, "kind") == "ca-completed" && T(last["effect"]!, "roundClosureReceiptId") == T(state, "roundClosureReceiptId") && T(last["effect"]!, "previousStepReceiptId") == prior["stepReceipts"]!.AsArray()[^1]!.GetValue<string>() && T(last["effect"]!, "toPositionId") == Position("release"), 4);
-        var basis = O(("contractVersion", 1), ("dependencyManifestHash", CampaignCombatActualPostAssaultContinuationCodec.Manifest()), ("paidProof", proof), ("controlClockPolicyId", "sandtable.combat.cycle-control-clock.v1"));
+        var basis = O(("contractVersion", 1), ("dependencyManifestHash", CampaignCombatActualPostAssaultContinuationCodec.Manifest(dependencies)), ("paidProof", proof), ("controlClockPolicyId", "sandtable.combat.cycle-control-clock.v1"));
         var progress = new JsonArray(O(("eventType", T(committed, "eventType")), ("receiptId", T(committed, "receiptId")), ("eventHash", Hash(commitmentEvents[0]))));
         return new(basis, "sha256:" + Digest("base", Canonical(basis, "Base")), cycle.DeepClone().AsObject(), boundary.DeepClone().AsObject(), state, members, end, progress, context.Configuration, content);
     }
@@ -286,5 +286,5 @@ internal static class CampaignCombatActualPostAssaultContinuation
     }
     private static string CycleId(JsonNode c) => CampaignCombatReserveCompletionCodec.CycleId(new((int)N(c, "contractVersion"), T(c, "campaignId"), T(c, "rulesetHash"), T(c, "setupId"), T(c, "setupHash"), T(c, "contentPackId"), T(c, "contentHash"), T(c, "scenarioId"), (int)N(c, "gameTurn"), (int)N(c, "operationStage"), T(c, "playerPhaseSlot"), T(c, "actingSide") == "axis" ? LandSide.Axis : LandSide.Commonwealth, (int)N(c, "ordinal"), N(c, "openedAuthorityVersion"), T(c, "openingPrefix"), T(c, "admittedPolicyBundleDigest")));
     private static string Digest(string kind, byte[] value) => Domain("sandtable.combat.actual-post-assault-continuation." + kind + ".v1", value);
-    private static void CheckDependencies(Func<string, byte[]> dependencies) => CampaignCombatActualPostAssaultContinuationCodec.VerifyDependencies(dependencies);
+    private static Func<string, byte[]> CheckDependencies(Func<string, byte[]> dependencies) => CampaignCombatActualPostAssaultContinuationCodec.VerifyDependencies(dependencies);
 }

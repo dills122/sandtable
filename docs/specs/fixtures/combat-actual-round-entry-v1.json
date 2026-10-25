@@ -42,7 +42,7 @@
     "docs/specs/fixtures/combat-authority-envelope-v1.json": "adf7b05e15f863b08f366809adf91c97b39480e404ce2efff15e838fa4043eaa",
     "docs/specs/fixtures/combat-content-v7.canonical.json": "ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
     "docs/specs/fixtures/combat-creation-ledger-v1.json": "4b7f87f73a5882800e4e4befb4c06c20bf19c419f92edba5028b355e37442684",
-    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
+    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "805dc0453bf678957ea92ce0c609a7bf67af1c1b8898bc5f99df2b0777810005",
     "docs/specs/fixtures/combat-rules-inputs-v1.json": "5401cd9a690be8b81f19795f1f66c0c6fe24f5055a06cda5facd6193b3e0a29a",
     "docs/specs/verify-combat-actual-selection-v1.py": "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
     "docs/specs/verify-combat-authority-envelope-v1.py": "a12d8ce1ab142b9a7f1c58e07e5b0d7928c4693d869423aa24ade81cb21e6231",

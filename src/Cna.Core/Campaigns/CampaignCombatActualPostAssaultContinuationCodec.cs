@@ -330,20 +330,16 @@ internal static class CampaignCombatActualPostAssaultContinuationCodec
         try
         {
             var acquired = dependencyBytes(path); Require(acquired is not null, 9);
-            var owned = acquired!.ToArray(); Require(CampaignCombatActualPaidAssaultSupport.Hash(owned) == "sha256:" + expected, 9); return owned;
+            var owned = acquired!.ToArray(); Require(CampaignCombatActualPaidAssaultSupport.Hash(owned) == "sha256:" + CombatEvidenceRevisions.Expected(dependencyBytes, path, expected), 9); return owned;
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or KeyNotFoundException or ArgumentException)
         { throw new JsonException("CMB-PAC-009", e); }
     }
-    internal static void VerifyDependencies(Func<string, byte[]> dependencyBytes)
+    internal static Func<string, byte[]> VerifyDependencies(Func<string, byte[]> dependencyBytes)
+        => CombatEvidenceRevisions.Capture(dependencyBytes, Pins, Delivery, int.MaxValue, "CMB-PAC-009", revalidateExisting: true);
+    internal static string Manifest(Func<string, byte[]> dependencies)
     {
-        Require(dependencyBytes is not null, 9);
-        foreach (var (path, expected) in Pins) _ = Acquire(path, expected, dependencyBytes);
-        foreach (var (path, expected) in Delivery) _ = Acquire(path, expected, dependencyBytes);
-    }
-    internal static string Manifest()
-    {
-        var value = new JsonObject(); foreach (var path in Pins.Keys.Order(StringComparer.Ordinal)) value[path] = Pins[path];
+        var value = CombatEvidenceRevisions.Manifest(Pins, dependencies);
         return "sha256:" + CampaignCombatActualPaidAssaultSupport.Domain("sandtable.combat.actual-post-assault-continuation.dependency-manifest.v1", Encode(value));
     }
 }

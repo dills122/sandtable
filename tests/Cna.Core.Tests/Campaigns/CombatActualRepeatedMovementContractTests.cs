@@ -81,7 +81,7 @@ public sealed class CombatActualRepeatedMovementContractTests
             var hits = 0; byte[] Drift(string p) => p == path && ++hits > 1 ? [0] : Dependency(p); Reject(9, () => CampaignCombatActualRepeatedMovement.ReadSource(source, Context(), args.Selection, args.Rounds, args.Paid, args.Continuation, [], Drift));
         }
         using var schema = JsonDocument.Parse(Dependency("docs/specs/combat-actual-repeated-movement-v1.schema.json")); var manifest = new JsonObject(); foreach (var p in schema.RootElement.GetProperty("runtimeSourceHashes").EnumerateObject().OrderBy(p => p.Name, StringComparer.Ordinal)) manifest[p.Name] = p.Value.GetString(); Assert.Equal(66, manifest.Count);
-        Assert.Equal("sha256:" + CampaignCombatActualPaidAssaultSupport.Domain("sandtable.combat.actual-repeated-movement.dependency-manifest.v1", Encode(manifest)), Manifest());
+        Assert.Equal("sha256:" + CampaignCombatActualPaidAssaultSupport.Domain("sandtable.combat.actual-repeated-movement.dependency-manifest.v1", Encode(manifest)), Manifest(CampaignCombatActualRepeatedMovementCodec.VerifyDependencies(Dependency)));
     }
     [Fact]
     public void AuthenticRoundClockVariantRegeneratesAncestryAndAdmitsActualMove()

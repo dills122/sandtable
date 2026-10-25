@@ -40,20 +40,20 @@ internal static class CampaignCombatActualRoundEntryCodec
     public static byte[] ReadSource(ReadOnlySpan<byte> bytes, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> selectionInputs, IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes)
     {
-        CampaignCombatActualRoundEntry.VerifyDependencies(dependencyBytes);
+        dependencyBytes = CampaignCombatActualRoundEntry.VerifyDependencies(dependencyBytes);
         var owned = bytes.ToArray(); _ = CampaignCombatActualRoundEntry.ReplayTrustedSource(owned, context, selectionInputs, roundInputs, dependencyBytes); return owned;
     }
     public static CombatActualRoundEntryResult ReadControl(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> selectionInputs, IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes)
     {
-        CampaignCombatActualRoundEntry.VerifyDependencies(dependencyBytes); _ = Parse(bytes, "RoundControl");
+        dependencyBytes = CampaignCombatActualRoundEntry.VerifyDependencies(dependencyBytes); _ = Parse(bytes, "RoundControl");
         var result = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, selectionInputs, roundInputs, dependencyBytes);
         Require(bytes.SequenceEqual(result.ControlBytes), 6); return result;
     }
     public static CombatActualRoundEntryResult ReadProof(ReadOnlySpan<byte> bytes, ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> selectionInputs, IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes)
     {
-        CampaignCombatActualRoundEntry.VerifyDependencies(dependencyBytes); _ = Parse(bytes, "ActualRoundProof");
+        dependencyBytes = CampaignCombatActualRoundEntry.VerifyDependencies(dependencyBytes); _ = Parse(bytes, "ActualRoundProof");
         var result = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, selectionInputs, roundInputs, dependencyBytes);
         Require(bytes.SequenceEqual(result.ProofBytes), 6); return result;
     }

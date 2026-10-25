@@ -56,15 +56,15 @@
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json",
-      "sha256": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f"
+      "sha256": "sha256:4d948616fcc1c17443552d42cc7d5561977715fb0092e2359b9f5eb913d1bd30"
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json",
-      "sha256": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236"
+      "sha256": "sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e"
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-no-attack-v1.json",
-      "sha256": "sha256:4e8f8a9fa0d1e973d6a5d7046b3e013f4270bd31c53afa24ed7595f732be6bc1"
+      "sha256": "sha256:60723234e081524d9ef89168a3fde6cc78aa550310625d80fc278198ae2e02a9"
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json",
@@ -84,7 +84,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json",
-      "sha256": "sha256:e336d9b5afe498b3886318509958cb2e50ae860676ee1c4603c55540a41847d3"
+      "sha256": "sha256:8ef35d7bfdc0da5b8a3fa0b11174253e8cb7a77b251e5517ab718598253dc162"
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-reserve-release-v1.json",

@@ -106,6 +106,12 @@ it never owns campaign state or rules.
 contract lives in `Cna.Intelligence.Contracts`; preserving message versions and wire compatibility
 is a transport responsibility, while order legality stays in Core.
 
+`CombatDependencySnapshot` and `CombatEvidenceRevisions` are internal Umpire helpers for
+[private evidence revisions](docs/specs/combat-evidence-revisions-v1.md). They authenticate one
+frozen dependency set and retain its manifest identity; they are not admission certificates.
+`CombatLegacyDependencyArchive` binds the fixed original P01 import adapter to its
+authenticated original dependencies.
+
 **Chronicle** is authoritative event history and replay. **War Diary** is its derived human-readable
 account. **Archives** is campaign storage, snapshots and saves. The normal Host's internal
 durable authority journal retains Core evidence and verifies it by replay, with private side

@@ -117,7 +117,7 @@ public sealed class CombatActualRepeatedMovementCompletionContractTests
             foreach (var bytes in new Func<string, byte[]>[] { Changed, Missing, Unreadable, Null }) Reject(9, () => CampaignCombatActualRepeatedMovementCompletion.ReadSource(source, Context(), a.Selection, a.Rounds, a.Paid, a.Continuation, a.Movement, [], bytes));
             var hits = 0; byte[] Drift(string p) => p == path && ++hits > 1 ? [0] : Dependency(p); Reject(9, () => CampaignCombatActualRepeatedMovementCompletion.ReadSource(source, Context(), a.Selection, a.Rounds, a.Paid, a.Continuation, a.Movement, [], Drift));
         }
-        using var schema = JsonDocument.Parse(Dependency("docs/specs/combat-actual-repeated-movement-completion-v1.schema.json")); var manifest = new JsonObject(); foreach (var item in schema.RootElement.GetProperty("runtimeSourceHashes").EnumerateObject().OrderBy(x => x.Name, StringComparer.Ordinal)) manifest[item.Name] = item.Value.GetString(); Assert.Equal(68, manifest.Count); Assert.Equal("sha256:" + Domain("sandtable.combat.actual-repeated-movement-completion.dependency-manifest.v1", Encode(manifest)), Manifest());
+        using var schema = JsonDocument.Parse(Dependency("docs/specs/combat-actual-repeated-movement-completion-v1.schema.json")); var manifest = new JsonObject(); foreach (var item in schema.RootElement.GetProperty("runtimeSourceHashes").EnumerateObject().OrderBy(x => x.Name, StringComparer.Ordinal)) manifest[item.Name] = item.Value.GetString(); Assert.Equal(68, manifest.Count); Assert.Equal("sha256:" + Domain("sandtable.combat.actual-repeated-movement-completion.dependency-manifest.v1", Encode(manifest)), Manifest(CampaignCombatActualRepeatedMovementCompletionCodec.VerifyDependencies(Dependency)));
     }
 
     [Fact]
