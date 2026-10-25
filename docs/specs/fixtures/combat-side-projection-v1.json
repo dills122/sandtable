@@ -32,7 +32,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-authority-composition-v1.json",
-      "sha256": "sha256:a90f88de9c05b4b1bd7081e7828abb7553e3e0537a6efa8cad042c87a6df50b1"
+      "sha256": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3"
     },
     {
       "path": "docs/specs/verify-combat-authority-composition-v1.py",
@@ -44,7 +44,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-cycle-sequence-v1.json",
-      "sha256": "sha256:de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f"
+      "sha256": "sha256:805dc0453bf678957ea92ce0c609a7bf67af1c1b8898bc5f99df2b0777810005"
     },
     {
       "path": "docs/specs/verify-combat-cycle-sequence-v1.py",
@@ -68,7 +68,7 @@
     },
     {
       "path": "docs/design/combat-opportunity-identity-v1.md",
-      "sha256": "sha256:2976a278e51235ff11e74699bf84ed23ed9140c1da6d638de81d8f862c32d762"
+      "sha256": "sha256:887ecb8a5b695d20c5974932bdcefc9944159f2c5fcee6f3382974f5ac39d7e7"
     },
     {
       "path": "docs/design/combat-sealed-decision-protocol-v1.md",
@@ -84,7 +84,7 @@
     },
     {
       "path": "docs/design/combat-settlement-disclosure-v1.md",
-      "sha256": "sha256:84d85139ed0c7111b70c464bde47837963ed7f19571adbc5279e2f8cb1572616"
+      "sha256": "sha256:fe0aaae77c880971ed5737b6156aa22f941d757c660d625df0090a50b55b6c27"
     },
     {
       "path": "docs/design/continual-cycle-reserve-composition-v1.md",
@@ -24481,7 +24481,7 @@
       "fixtures/combat-inherited-reserve-release-v1.json": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0",
       "combat-inherited-cycle-control-v1.schema.json": "sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679",
       "verify-combat-inherited-cycle-control-v1.py": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0",
-      "fixtures/combat-inherited-cycle-control-v1.json": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236",
+      "fixtures/combat-inherited-cycle-control-v1.json": "sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e",
       "combat-reserve-release-v1.schema.json": "sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32",
       "verify-combat-reserve-release-v1.py": "sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b",
       "fixtures/combat-reserve-release-v1.json": "sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9",
@@ -31283,7 +31283,7 @@
       "fixtures/combat-result-cycle-finish-v1.json": "sha256:a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2",
       "combat-authority-composition-v1.schema.json": "sha256:47210ccd00d3eba301c97d2190c16354626265707a4f6109754150e30406bd42",
       "verify-combat-authority-composition-v1.py": "sha256:97f9500f5b0566c9f8b295a1a7d524fdf53387038655872ea0d8005abe8702b7",
-      "fixtures/combat-authority-composition-v1.json": "sha256:a90f88de9c05b4b1bd7081e7828abb7553e3e0537a6efa8cad042c87a6df50b1"
+      "fixtures/combat-authority-composition-v1.json": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3"
     },
     "task003Handoff": {
       "owner": "CMB-TASK-003",

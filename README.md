@@ -263,6 +263,8 @@ not replace either.
 
 ## Further reading
 
+- [Private Combat evidence revisions](docs/specs/combat-evidence-revisions-v1.md): frozen dependency sets and legacy replay compatibility.
+
 - [Documentation index](docs/README.md): every spec, design doc, and research note
 - [Technical design](tech-design.md): architecture, authority boundaries, integration rationale
 - [Naming and vocabulary](naming-overview.md): what things are called and why

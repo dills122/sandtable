@@ -15,6 +15,7 @@ internal static class CampaignCombatActualAssaultAdmission
         IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds, Func<string, byte[]> dependencies)
     {
         (selection, rounds) = OwnLedgers(selection, rounds);
+        dependencies = VerifyDependencies(dependencies);
         var source = Object(data, "AdmissionSource");
         var original = Encoding.ASCII.GetBytes(T(source, "actualRoundSourceCanonicalUtf8")); CombatActualRoundEntryResult result;
         try { result = CampaignCombatActualRoundEntry.ReplayTrustedSource(original, context, selection, rounds, dependencies); }
@@ -28,11 +29,11 @@ internal static class CampaignCombatActualAssaultAdmission
         var nativeRules = CombatRulesInputArtifactCodec.SerializeCanonical(Cna1979CombatAdjudication.Definition);
         _ = CombatRulesInputArtifactCodec.Deserialize(nativeRules, Cna1979CombatAdjudication.ContentHash); Require(Hash(nativeRules) == context.Configuration.RulesInputHash, 6);
         var assessment = O(("contractVersion", 1), ("scopeKind", "pure-selected-arithmetic-v1"), ("actualRoundSourceHash", prior["sourceHash"]),
-            ("dependencyManifestHash", Manifest(true)), ("rulesInputHash", Hash(nativeRules)), ("moralePairs", 1296), ("assaultPairs", 6480),
-            ("captureRefusalVariants", 8840), ("arithmeticCatalogueHash", CatalogueHash()), ("paidAdmissionEnabled", false), ("nativeSettlementCertified", false), ("authenticSettlementCertified", false));
+            ("dependencyManifestHash", Manifest(true, dependencies)), ("rulesInputHash", Hash(nativeRules)), ("moralePairs", 1296), ("assaultPairs", 6480),
+            ("captureRefusalVariants", 8840), ("arithmeticCatalogueHash", CatalogueHash(dependencies)), ("paidAdmissionEnabled", false), ("nativeSettlementCertified", false), ("authenticSettlementCertified", false));
         var digest = Domain("sandtable.combat.actual-assault.admission-source.v1", Canonical(source, "AdmissionSource"));
         var proof = O(("contractVersion", 1), ("sourceId", "aaadm." + digest), ("sourceHash", "sha256:" + digest), ("actualRoundProof", prior), ("arithmeticAssessment", assessment));
-        _ = Canonical(proof, "AdmissionProof"); var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest(false)), ("admissionProof", proof), ("resultClockPolicyId", ClockPolicy));
+        _ = Canonical(proof, "AdmissionProof"); var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest(false, dependencies)), ("admissionProof", proof), ("resultClockPolicyId", ClockPolicy));
         var actualSelection = prior["base"]!["actualSelectionProof"]!;
         return new(basis, control, actualSelection["control"]!["selection"]!.AsObject(), actualSelection["boundary"]!.AsObject(), actualSelection["boundary"]!["cycle"]!.AsObject(),
             context.Configuration, JsonNode.Parse(Consume("docs/specs/fixtures/combat-content-v7.canonical.json", dependencies))!.AsObject());
@@ -53,10 +54,10 @@ internal static class CampaignCombatActualAssaultAdmission
         }
         return (Own(selection, "Input"), Own(rounds, "RoundInput"));
     }
-    internal static string CatalogueHash()
+    internal static string CatalogueHash(Func<string, byte[]> dependencies)
     {
         var header = O(("kind", "pure-selected-arithmetic-catalogue-v1"), ("catalogueVersion", 1), ("rulesInputHash", Cna1979CombatAdjudication.ContentHash),
-            ("dependencyManifestHash", Manifest(true)), ("moralePairs", 1296), ("assaultPairs", 6480), ("captureRefusalVariants", 8840), ("totalRecords", 16616));
+            ("dependencyManifestHash", Manifest(true, dependencies)), ("moralePairs", 1296), ("assaultPairs", 6480), ("captureRefusalVariants", 8840), ("totalRecords", 16616));
         using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256); hash.AppendData(Encoding.ASCII.GetBytes("sandtable.combat.actual-assault.catalogue.v1\0"));
         hash.AppendData(Canonical(header, "header")); hash.AppendData("\n"u8);
         var counts = new Dictionary<string, int>(StringComparer.Ordinal) { ["morale"] = 0, ["assault-cell"] = 0, ["capture-refusal"] = 0 }; var ordinal = 0;

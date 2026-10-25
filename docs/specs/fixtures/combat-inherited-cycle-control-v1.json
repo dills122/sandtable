@@ -96,7 +96,7 @@
     {"path": "docs/specs/fixtures/combat-inherited-reserve-release-v1.json", "sha256": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0"},
     {"path": "docs/specs/combat-inherited-armed-continuation-v1.schema.json", "sha256": "sha256:996cfd224ee8c0fa5fd0faa54e74c28099782b898ada22c32717a89c90422852"},
     {"path": "docs/specs/verify-combat-inherited-armed-continuation-v1.py", "sha256": "sha256:91f7004b1c9e197d2d587b9cc4ff2ccfdb571bd1d5506117cc22a9165e3e4466"},
-    {"path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json", "sha256": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f"},
+    {"path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json", "sha256": "sha256:4d948616fcc1c17443552d42cc7d5561977715fb0092e2359b9f5eb913d1bd30"},
     {"path": "docs/specs/combat-cycle-control-v1.schema.json", "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"},
     {"path": "docs/specs/verify-combat-cycle-control-v1.py", "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f"},
     {"path": "docs/specs/fixtures/combat-cycle-control-v1.json", "sha256": "sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6"}

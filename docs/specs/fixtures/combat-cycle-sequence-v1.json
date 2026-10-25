@@ -1,7 +1,7 @@
 {
   "contract": "combat-cycle-sequence-v1",
   "sourceHashes": {
-    "src/Cna.Core/Rules/Cna1979LandSequence.cs": "sha256:c5426245a156367eac85fc5e61792ece1ae124651a0416793fde00213641b938",
+    "src/Cna.Core/Rules/Cna1979LandSequence.cs": "sha256:d019a3bc2941ad788b69550f5d7fc01e33fa586a0bad6a374c08550b3cb6a79a",
     "src/Cna.Core/Rules/Cna1979LandSequenceV4.cs": "sha256:a6bd192bce5c7c94b78c5b4fbe3404f2bbf53200bf1425a329b18940b32db9e0",
     "src/Cna.Core/Rules/LandSequencePosition.cs": "sha256:d5d1d5cba03e35144e1850cf6deb9ca32c5790eaa07db92fbeaa0de906bb7f64",
     "src/Cna.Core/Rules/LandSequenceIdentifiers.cs": "sha256:0a5547ebd91749d858ed524b4da2d2f5915b868dbfc01af8c955ea6ce8f708f7",

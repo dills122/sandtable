@@ -11,7 +11,7 @@ internal sealed class CombatActualMovedAssaultResult
     private readonly byte[] source, control, proof;
     private readonly byte[]? accepted;
     private readonly byte[][][] inputs;
-    internal CombatActualMovedAssaultResult(JsonObject packet, JsonObject state, string parentHash, byte[][][] ledgers, byte[]? ev = null, bool duplicate = false)
+    internal CombatActualMovedAssaultResult(JsonObject packet, JsonObject state, string parentHash, byte[][][] ledgers, string manifestHash, byte[]? ev = null, bool duplicate = false)
     {
         source = Canonical(packet, "Source"); control = Canonical(state, "FamilyControl");
         accepted = ev?.ToArray(); Duplicate = duplicate;
@@ -26,7 +26,7 @@ internal sealed class CombatActualMovedAssaultResult
             ["sourceId"] = "mvas." + sourceHash[7..],
             ["sourceHash"] = sourceHash,
             ["parentSourceHash"] = parentHash,
-            ["dependencyManifestHash"] = ManifestHash,
+            ["dependencyManifestHash"] = manifestHash,
             ["control"] = JsonNode.Parse(control),
             ["lastEventHash"] = lastEventHash,
             ["terminalReceiptId"] = state["closed"]!.GetValue<bool>() ? state["receipts"]!.AsArray()[^1]!["receiptId"]!.DeepClone() : null,
@@ -203,7 +203,7 @@ internal static class CampaignCombatActualMovedAssault
     private static string PrefixSource(JsonObject packet, string phase)
     { var value = packet.DeepClone().AsObject(); value["paidEventCanonicalUtf8"] = new JsonArray(); if (phase == "selection") value["roundEventCanonicalUtf8"] = new JsonArray(); return Hash(Canonical(value, "Source")); }
     private static CombatActualMovedAssaultResult Result(Frame frame, byte[]? ev = null, bool duplicate = false)
-        => new(frame.Packet, Control(frame), T(frame.Parent.Proof.GetProperty("sourceHash")), frame.Ledgers, ev, duplicate);
+        => new(frame.Packet, Control(frame), T(frame.Parent.Proof.GetProperty("sourceHash")), frame.Ledgers, ManifestHashFor(frame.Dependencies), ev, duplicate);
     private static JsonObject Control(Frame frame)
     {
         var entry = JsonNode.Parse(frame.Parent.ControlBytes)!; var state = frame.PaidState ?? frame.RoundState ?? frame.SelectionState;

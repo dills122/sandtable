@@ -200,18 +200,12 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletionCodec
     }
     internal static Func<string, byte[]> SnapshotDependencies(Func<string, byte[]> callback)
     {
-        ArgumentNullException.ThrowIfNull(callback); var acquired = new Dictionary<string, byte[]>(StringComparer.Ordinal);
-        foreach (var (path, hash) in Pins.Concat(Delivery))
-        {
-            byte[]? data;
-            try { data = callback(path); }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException or KeyNotFoundException or ArgumentException) { throw new JsonException("CMB-MRC-009", e); }
-            Require(data is not null && data.LongLength <= 8_388_608, 9); var owned = data.ToArray(); Require(Hash(owned) == "sha256:" + hash, 9); acquired[path] = owned;
-        }
-        return path => { Require(acquired.ContainsKey(path), 9); var bytes = acquired[path].ToArray(); Require(Hash(bytes) == "sha256:" + (Pins.TryGetValue(path, out var hash) ? hash : Delivery[path]), 9); return bytes; };
+        return CombatEvidenceRevisions.Capture(callback, Pins, Delivery, 8_388_608, "CMB-MRC-009");
     }
     internal static string ManifestHash => HashWithDomain("sandtable.combat.actual-moved-repeat-movement-completion.dependency-manifest.v1",
         Encode(new JsonObject(Pins.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => KeyValuePair.Create(p.Key, (JsonNode?)JsonValue.Create(p.Value))))));
+    internal static string ManifestHashFor(Func<string, byte[]> dependencies) => HashWithDomain("sandtable.combat.actual-moved-repeat-movement-completion.dependency-manifest.v1",
+        Encode(CombatEvidenceRevisions.Manifest(Pins, dependencies)));
     internal static T Inherited<T>(Func<T> action)
     {
         try { return action(); }

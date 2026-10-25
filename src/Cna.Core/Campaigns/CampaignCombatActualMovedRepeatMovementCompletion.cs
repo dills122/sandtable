@@ -81,7 +81,7 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletion
             Require(JsonNode.DeepEquals(track["unit"], p["members"]![0]!["unit"]) && track["route"]!.AsArray().Count == count + 1 && JsonNode.DeepEquals(track["route"]!.AsArray()[^1], location), 4);
             flow = O(("kind", "moving"), ("track", track), ("lastMoveReceiptId", p["movementReceipts"]!.AsArray()[^1]!["receiptId"]));
         }
-        var basis = O(("contractVersion", 1), ("movementSourceHash", Hash(parentBytes)), ("movementControlHash", Hash(parent.ControlBytes)), ("movementProofHash", Hash(parent.ProofBytes)), ("dependencyManifestHash", ManifestHash), ("publicationReceiptId", p["publicationReceiptId"]), ("cycleId", p["cycleId"]), ("configurationHash", c["admittedPolicyBundleDigest"]));
+        var basis = O(("contractVersion", 1), ("movementSourceHash", Hash(parentBytes)), ("movementControlHash", Hash(parent.ControlBytes)), ("movementProofHash", Hash(parent.ProofBytes)), ("dependencyManifestHash", ManifestHashFor(retained)), ("publicationReceiptId", p["publicationReceiptId"]), ("cycleId", p["cycleId"]), ("configurationHash", c["admittedPolicyBundleDigest"]));
         var catalog = JsonNode.Parse(JsonNode.Parse(retained("docs/specs/fixtures/combat-cycle-sequence-v1.json"))!["predecessor"]!["canonicalUtf8"]!.GetValue<string>())!.AsObject();
         foreach (var position in catalog["positions"]!.AsArray().Concat(catalog["interruptPositions"]!.AsArray())) position!["contractVersion"] = 5;
         var f = new Frame(packet, p, basis, "sha256:" + Domain("base", Canonical(basis, "Base")), request, ledgers, retained, content, catalog, flow, eventCap);

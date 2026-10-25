@@ -108,7 +108,7 @@ public sealed class CombatActualPostAssaultContinuationContractTests
             var hits = 0; byte[] Drift(string p) => p == path && ++hits > 1 ? [0] : Dependency(p); Reject(9, () => CampaignCombatActualPostAssaultContinuation.ReadSource(source, Context(), args.Selection, args.Rounds, args.Paid, [], Drift));
         }
         using var schema = JsonDocument.Parse(Dependency("docs/specs/combat-actual-post-assault-continuation-v1.schema.json")); var manifest = new JsonObject(); foreach (var p in schema.RootElement.GetProperty("runtimeSourceHashes").EnumerateObject().OrderBy(p => p.Name, StringComparer.Ordinal)) manifest[p.Name] = p.Value.GetString();
-        Assert.Equal("sha256:" + CampaignCombatActualPaidAssaultSupport.Domain("sandtable.combat.actual-post-assault-continuation.dependency-manifest.v1", Encode(manifest)), Manifest());
+        Assert.Equal("sha256:" + CampaignCombatActualPaidAssaultSupport.Domain("sandtable.combat.actual-post-assault-continuation.dependency-manifest.v1", Encode(manifest)), Manifest(CampaignCombatActualPostAssaultContinuationCodec.VerifyDependencies(Dependency)));
     }
     [Fact]
     public void IsolatedPolicyPreservesFutureWorkAndRejectsForgedContextAndOverflow()

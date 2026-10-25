@@ -97,7 +97,7 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         var index = positions.Select((p, i) => (p, i)).Where(x => JsonNode.DeepEquals(x.p, boundary)).Select(x => x.i).DefaultIfEmpty(-1).Single();
         Require(index >= 0 && index + 1 < positions.Count, 4); var successor = positions[index + 1]!.DeepClone().AsObject();
         Require(T(successor, "positionId").EndsWith(".combat.position-determination", StringComparison.Ordinal), 4);
-        var basis = O(("contractVersion", 1), ("dependencyManifestHash", ManifestHash), ("movedRepeatMovementCompletionProof", JsonNode.Parse(parent.ProofBytes)));
+        var basis = O(("contractVersion", 1), ("dependencyManifestHash", ManifestHashFor(retained)), ("movedRepeatMovementCompletionProof", JsonNode.Parse(parent.ProofBytes)));
         var baseHash = HashWithDomain("sandtable.combat.actual-moved-repeat-breakdown-completion.base.v1", Canonical(basis, "Base"));
         Require(N(state, "stateVersion") < long.MaxValue, 7);
         var frame = new Frame(packet, basis, baseHash, state, boundary, successor, cycle, T(state, "cycleId"), request, ledgers, retained);

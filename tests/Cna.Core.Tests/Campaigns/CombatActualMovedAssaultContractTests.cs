@@ -37,6 +37,113 @@ public sealed class CombatActualMovedAssaultContractTests
             context.Prefix, context.Lifecycle, context.Breakdown, context.Selection, context.Round, context.Paid, Dependency);
         Assert.Equal(current.ProofBytes, read.ProofBytes);
     }
+    [Theory]
+    [InlineData("axis-player-decline-attacker-selected")]
+    [InlineData("commonwealth-player-decline-attacker-selected")]
+    public void LegacyRevisionReplaysEveryRetainedCutWithoutIdentityMigration(string name)
+    {
+        using var legacy = new LegacyBundle();
+        var context = new Context(name, legacy.Read);
+        var current = context.Replay();
+        for (var index = 0; index <= context.Inputs.Length; index++)
+        {
+            var cut = context.Item.GetProperty("cuts")[index];
+            Check(cut, "source", current.SourceBytes); Check(cut, "control", current.ControlBytes); Check(cut, "proof", current.ProofBytes);
+            if (index == context.Inputs.Length) break;
+            current = context.Step(index);
+            Assert.Equal(Encoding.UTF8.GetBytes(context.Item.GetProperty("eventCanonicalUtf8")[index].GetString()!), current.EventBytes);
+        }
+        Assert.True(current.Control.GetProperty("closed").GetBoolean());
+        Assert.Equal(current.ProofBytes, context.Replay().ProofBytes);
+        var refreshed = context.Replay(Dependency);
+        Assert.Equal(current.ControlBytes, refreshed.ControlBytes);
+        Assert.NotEqual(current.ProofBytes, refreshed.ProofBytes);
+        var mismatch = Assert.Throws<JsonException>(() => CampaignCombatActualMovedAssault.ReadProof(current.ProofBytes,
+            context.Source, context.Request, context.Prefix, context.Lifecycle, context.Breakdown, context.Selection, context.Round, context.Paid, Dependency));
+        Assert.Equal("CMB-MAS-006", mismatch.Message);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public void LegacyRepeatedBreakdownPreservesCommandEventProofAndRetryIdentity(int index)
+    {
+        using var legacy = new LegacyBundle();
+        using var compressed = new MemoryStream(Dependency("docs/specs/fixtures/combat-evidence-legacy-r03-v1.json.gz"));
+        using var gzip = new System.IO.Compression.GZipStream(compressed, System.IO.Compression.CompressionMode.Decompress);
+        using var fixture = JsonDocument.Parse(gzip);
+        var row = fixture.RootElement[index]; var vectors = row.GetProperty("vectors");
+        using var retained = JsonDocument.Parse(legacy.Read("docs/specs/fixtures/combat-actual-moved-repeat-breakdown-completion-v1.json"));
+        var original = retained.RootElement.GetProperty("cases").EnumerateArray().Single(c => c.GetProperty("rowKey").GetString() == row.GetProperty("rowKey").GetString());
+        var summary = JsonNode.Parse(row.GetRawText())!.AsObject(); summary.Remove("vectors");
+        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(original.GetRawText()), summary));
+        var parents = vectors.GetProperty("parentInputLedgersCanonicalUtf8").EnumerateArray().Skip(1).Select(Bytes).ToArray();
+        var request = new Context("axis-player-decline-attacker-selected", legacy.Read).Request;
+        byte[] Vector(string field) => Encoding.ASCII.GetBytes(vectors.GetProperty(field).GetString()!);
+        var packet = JsonNode.Parse(Vector("sourceCanonicalUtf8"))!.AsObject();
+        packet["breakdownEventCanonicalUtf8"] = new JsonArray();
+        var beforeSource = CampaignCombatActualMovedRepeatBreakdownCompletionCodec.Canonical(packet, "Source");
+        CombatActualMovedRepeatBreakdownCompletionResult Replay(byte[] source, byte[][] own) =>
+            CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(source, request,
+                parents[0], parents[1], parents[2], parents[3], parents[4], parents[5], parents[6], parents[7], parents[8], parents[9], own, legacy.Read);
+        CombatActualMovedRepeatBreakdownCompletionResult Apply(byte[] source, byte[][] own) =>
+            CampaignCombatActualMovedRepeatBreakdownCompletion.ApplyTrustedSource(source, request,
+                parents[0], parents[1], parents[2], parents[3], parents[4], parents[5], parents[6], parents[7], parents[8], parents[9], own, Vector("inputCanonicalUtf8"), legacy.Read);
+        var before = Replay(beforeSource, []);
+        Assert.Equal(Vector("beforeControlCanonicalUtf8"), before.ControlBytes);
+        Assert.Equal(Vector("beforeProofCanonicalUtf8"), before.ProofBytes);
+        var after = Apply(beforeSource, []);
+        Assert.Equal(Vector("sourceCanonicalUtf8"), after.SourceBytes);
+        Assert.Equal(Vector("eventCanonicalUtf8"), after.EventBytes);
+        Assert.Equal(Vector("afterControlCanonicalUtf8"), after.ControlBytes);
+        Assert.Equal(Vector("afterProofCanonicalUtf8"), after.ProofBytes);
+        Assert.Equal(row.GetProperty("receiptId").GetString(), after.ReceiptId);
+        var retry = Apply(after.SourceBytes, [Vector("inputCanonicalUtf8")]);
+        Assert.True(retry.Duplicate); Assert.Null(retry.EventBytes);
+        Assert.Equal(after.ReceiptId, retry.ReceiptId); Assert.Equal(after.ProofBytes, retry.ProofBytes);
+        Assert.Equal(after.ProofBytes, Replay(after.SourceBytes, [Vector("inputCanonicalUtf8")]).ProofBytes);
+        var incompatible = Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(
+            after.SourceBytes, request, parents[0], parents[1], parents[2], parents[3], parents[4], parents[5], parents[6], parents[7], parents[8], parents[9],
+            [Vector("inputCanonicalUtf8")], Dependency));
+        Assert.DoesNotContain("-009", incompatible.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void LegacyAndRefreshedFilesCannotBeMixedAfterSuccessfulReplay()
+    {
+        using var legacy = new LegacyBundle();
+        const string path = "docs/specs/fixtures/combat-cycle-sequence-v1.json";
+        Assert.NotEqual(legacy.Read(path), Dependency(path));
+        var context = new Context("axis-player-decline-attacker-selected", legacy.Read);
+        var expected = context.Replay().ProofBytes;
+        byte[] Mixed(string name) => name == path ? Dependency(name) : legacy.Read(name);
+        var error = Assert.Throws<JsonException>(() => context.Replay(Mixed));
+        Assert.Equal("CMB-MAS-009", error.Message);
+        Assert.Equal(expected, context.Replay().ProofBytes);
+    }
+
+    private sealed class LegacyBundle : IDisposable
+    {
+        private readonly System.IO.Compression.ZipArchive archive = new(new MemoryStream(Dependency("docs/specs/fixtures/combat-evidence-legacy-v1.zip")));
+        private readonly Dictionary<string, byte[]> cache = new(StringComparer.Ordinal);
+        public byte[] Read(string path)
+        {
+            if (!cache.TryGetValue(path, out var bytes))
+            {
+                var entry = archive.GetEntry(path);
+                if (entry is null) bytes = Dependency(path);
+                else
+                {
+                    using var input = entry.Open(); using var output = new MemoryStream();
+                    input.CopyTo(output); bytes = output.ToArray();
+                }
+                cache.Add(path, bytes);
+            }
+            return bytes.ToArray();
+        }
+        public void Dispose() => archive.Dispose();
+    }
+
     private static void Check(JsonElement cut, string kind, byte[] actual)
     {
         Assert.Equal(cut.GetProperty(kind).GetProperty("bytes").GetInt32(), actual.Length);
@@ -334,9 +441,12 @@ public sealed class CombatActualMovedAssaultContractTests
         public byte[] Source { get; private set; }
         public byte[][] Inputs { get; }
 
-        public Context(string name)
+        private readonly Func<string, byte[]> read;
+
+        public Context(string name, Func<string, byte[]>? dependencies = null)
         {
-            using var fixture = JsonDocument.Parse(Dependency("docs/specs/fixtures/combat-actual-moved-assault-v1.json"));
+            read = dependencies ?? Dependency;
+            using var fixture = JsonDocument.Parse(read("docs/specs/fixtures/combat-actual-moved-assault-v1.json"));
             Item = fixture.RootElement.GetProperty("cases").EnumerateArray().Single(c => c.GetProperty("name").GetString() == name).Clone();
             using var authority = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Rules", "Fixtures", "combat-authority-envelope-v1.json")));
             using var created = JsonDocument.Parse(authority.RootElement.GetProperty("goldens").GetProperty("created").GetProperty("canonicalUtf8").GetString()!);
@@ -354,10 +464,10 @@ public sealed class CombatActualMovedAssaultContractTests
         }
 
         public CombatActualMovedAssaultResult Replay(Func<string, byte[]>? dependency = null) =>
-            CampaignCombatActualMovedAssault.ReplayTrustedSource(Source, Request, Prefix, Lifecycle, Breakdown, Selection, Round, Paid, dependency ?? Dependency);
+            CampaignCombatActualMovedAssault.ReplayTrustedSource(Source, Request, Prefix, Lifecycle, Breakdown, Selection, Round, Paid, dependency ?? read);
 
         public CombatActualMovedAssaultResult Apply(byte[] input) =>
-            CampaignCombatActualMovedAssault.ApplyTrustedSource(Source, Request, Prefix, Lifecycle, Breakdown, Selection, Round, Paid, input, Dependency);
+            CampaignCombatActualMovedAssault.ApplyTrustedSource(Source, Request, Prefix, Lifecycle, Breakdown, Selection, Round, Paid, input, read);
 
         public CombatActualMovedAssaultResult Step(int index)
         {

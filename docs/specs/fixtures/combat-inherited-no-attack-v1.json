@@ -121,7 +121,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-selection-v1.json",
-      "sha256": "sha256:76240f2409f341757deea0f6ab5d346699de5a4a33690f95ccb7e74e160c1f4f"
+      "sha256": "sha256:10b11204746629698fec14124ba128b3a2f36412a56a8681b1b7a9c4cdffe9df"
     },
     {
       "path": "docs/specs/combat-selection-steps-v1.schema.json",

@@ -63,7 +63,7 @@ internal static class CampaignCombatActualPaidAssault
         var owned = newInput.ToArray(); var input = Object(owned, "PaidInput");
         var (after, accepted, receipt) = Transition(frame, state, input, admissionEnabled);
         if (accepted is not null) { packet["paidEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(accepted)); inputs.Add(owned); }
-        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 16_384, 1); VerifyDependencies(dependencyBytes);
+        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 16_384, 1); dependencyBytes = VerifyDependencies(dependencyBytes);
         return Result(packet, frame, after, inputs, accepted, receipt, accepted is null && receipt is not null);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context, IReadOnlyList<byte[]> selection,
@@ -84,7 +84,7 @@ internal static class CampaignCombatActualPaidAssault
     private static (JsonObject Packet, PaidAssaultFrame Frame, JsonObject State, List<byte[]> Inputs) Replay(ReadOnlySpan<byte> source,
         CampaignCombatCreationContext context, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds, IReadOnlyList<byte[]> paid, Func<string, byte[]> dependencies)
     {
-        VerifyDependencies(dependencies);
+        dependencies = VerifyDependencies(dependencies);
         Require(context is not null && selection is not null && rounds is not null && paid is not null, 1);
         Require(selection!.All(x => x is not null) && rounds!.All(x => x is not null) && paid!.All(x => x is not null), 1);
         var packet = Object(source, "PaidSource"); Require(paid!.Count <= 11, 1);
@@ -101,7 +101,7 @@ internal static class CampaignCombatActualPaidAssault
             var (after, expected, _) = Transition(frame, state, Object(inputs[i], "PaidInput"), false, replay: true);
             Require(expected is not null && actual.AsSpan().SequenceEqual(expected), 6); state = after;
         }
-        VerifyDependencies(dependencies); return (packet, frame, state, inputs);
+        dependencies = VerifyDependencies(dependencies); return (packet, frame, state, inputs);
     }
     private static CombatActualPaidAssaultResult Result(JsonObject source, PaidAssaultFrame frame, JsonObject state, IReadOnlyList<byte[]> inputs,
         byte[]? accepted = null, string? receipt = null, bool duplicate = false)

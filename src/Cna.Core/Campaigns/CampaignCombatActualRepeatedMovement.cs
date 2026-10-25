@@ -66,7 +66,7 @@ internal static class CampaignCombatActualRepeatedMovement
         var (packet, frame, state, inputs) = Replay(source, context, selection, rounds, paid, continuation, movement, dependencies);
         var owned = newInput.ToArray(); var (after, accepted, receipt) = Transition(frame, state, Object(owned, "Input"));
         if (accepted is not null) { packet["movementEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(accepted)); inputs.Add(owned); }
-        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 8192, 1); CheckDependencies(dependencies);
+        Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 8192, 1); dependencies = CheckDependencies(dependencies);
         return Result(packet, frame, after, inputs, accepted, receipt, accepted is null);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
@@ -91,7 +91,7 @@ internal static class CampaignCombatActualRepeatedMovement
         CampaignCombatCreationContext context, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds,
         IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> continuation, IReadOnlyList<byte[]> movement, Func<string, byte[]> dependencies)
     {
-        CheckDependencies(dependencies); var packet = Object(source, "Source");
+        dependencies = CheckDependencies(dependencies); var packet = Object(source, "Source");
         var frame = Derive(Encoding.ASCII.GetBytes(T(packet, "continuationSourceCanonicalUtf8")), context, selection, rounds, paid, continuation, dependencies);
         Require(movement is not null && movement.Count <= 4 && movement.All(x => x is not null), 1);
         var inputs = movement.Select(x => { var copy = x.ToArray(); _ = Parse(copy, "Input"); return copy; }).ToList();
@@ -103,7 +103,7 @@ internal static class CampaignCombatActualRepeatedMovement
             var (after, expected, _) = Transition(frame, state, Object(inputs[i], "Input"));
             Require(expected is not null && actual.AsSpan().SequenceEqual(expected), 6); state = after;
         }
-        CheckDependencies(dependencies); return (packet, frame, state, inputs);
+        dependencies = CheckDependencies(dependencies); return (packet, frame, state, inputs);
     }
     private static CombatActualRepeatedMovementResult Result(JsonObject packet, Frame frame, JsonObject state,
         IReadOnlyList<byte[]> inputs, byte[]? accepted = null, string? receipt = null, bool duplicate = false)
@@ -116,7 +116,7 @@ internal static class CampaignCombatActualRepeatedMovement
         IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds, IReadOnlyList<byte[]> paid,
         IReadOnlyList<byte[]> continuation, Func<string, byte[]> dependencies)
     {
-        CheckDependencies(dependencies); CombatActualPostAssaultContinuationResult ancestor;
+        dependencies = CheckDependencies(dependencies); CombatActualPostAssaultContinuationResult ancestor;
         try { ancestor = CampaignCombatActualPostAssaultContinuation.ReplayTrustedSource(source, context, selection, rounds, paid, continuation, dependencies); }
         catch (JsonException error)
         {
@@ -136,7 +136,7 @@ internal static class CampaignCombatActualRepeatedMovement
         Require(T(unit, "originalSide") == T(cycle, "actingSide") && T(m, "status") == "none" && T(e, "reserveStatus") == "none" && N(m, "baseCpa") == 10 && JsonNode.DeepEquals(m["spentCp"], Cp(5)) && JsonNode.DeepEquals(m["spentCp"], op["capabilityPointsExpended"]), 3);
         Require(m["history"]!.AsObject().All(k => k.Key == "scope" || k.Value is null) && JsonNode.DeepEquals(m["history"]!["scope"], Scope(cycle)), 3);
         Require(N(op, "cohesionLevel") == 0 && op["vehicleBreakdownState"] is null && op["movementEnded"] is null && N(e["ammunition"]!, "points") == 0 && N(e["components"]![0]!, "currentToe") == 10, 3);
-        var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest()), ("continuationProof", JsonNode.Parse(ancestor.ProofBytes))); _ = Canonical(basis, "Base");
+        var basis = O(("contractVersion", 1), ("dependencyManifestHash", Manifest(dependencies)), ("continuationProof", JsonNode.Parse(ancestor.ProofBytes))); _ = Canonical(basis, "Base");
         return new(basis, "sha256:" + Digest("base", Canonical(basis, "Base")), prior, cycle.DeepClone().AsObject(), content);
     }
     internal static JsonObject Initial(Frame frame)
@@ -208,5 +208,5 @@ internal static class CampaignCombatActualRepeatedMovement
     private static JsonObject Scope(JsonNode c) => O(("gameTurn", c["gameTurn"]), ("operationStage", c["operationStage"]), ("playerPhaseSlot", c["playerPhaseSlot"]), ("actingSide", c["actingSide"]));
     private static string CycleId(JsonNode c) => CampaignCombatReserveCompletionCodec.CycleId(new((int)N(c, "contractVersion"), T(c, "campaignId"), T(c, "rulesetHash"), T(c, "setupId"), T(c, "setupHash"), T(c, "contentPackId"), T(c, "contentHash"), T(c, "scenarioId"), (int)N(c, "gameTurn"), (int)N(c, "operationStage"), T(c, "playerPhaseSlot"), T(c, "actingSide") == "axis" ? LandSide.Axis : LandSide.Commonwealth, (int)N(c, "ordinal"), N(c, "openedAuthorityVersion"), T(c, "openingPrefix"), T(c, "admittedPolicyBundleDigest")));
     private static string Digest(string kind, byte[] bytes) => Domain("sandtable.combat.actual-repeated-movement." + kind + ".v1", bytes);
-    private static void CheckDependencies(Func<string, byte[]> dependencies) => CampaignCombatActualRepeatedMovementCodec.VerifyDependencies(dependencies);
+    private static Func<string, byte[]> CheckDependencies(Func<string, byte[]> dependencies) => CampaignCombatActualRepeatedMovementCodec.VerifyDependencies(dependencies);
 }

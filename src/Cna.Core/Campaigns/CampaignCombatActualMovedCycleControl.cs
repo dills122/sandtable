@@ -9,7 +9,7 @@ internal sealed class CombatActualMovedCycleControlResult
     private readonly byte[] source, control, proof;
     private readonly byte[]? accepted;
     private readonly byte[][][] inputs;
-    internal CombatActualMovedCycleControlResult(JsonObject packet, JsonObject state, byte[][][] ledgers, byte[]? ev = null, bool duplicate = false)
+    internal CombatActualMovedCycleControlResult(JsonObject packet, JsonObject state, byte[][][] ledgers, string manifestHash, byte[]? ev = null, bool duplicate = false)
     {
         source = Canonical(packet, "Source"); control = Canonical(state, "Control"); accepted = ev?.ToArray(); Duplicate = duplicate;
         inputs = ledgers.Select(l => l.Select(b => b.ToArray()).ToArray()).ToArray(); var hash = Hash(source);
@@ -20,7 +20,7 @@ internal sealed class CombatActualMovedCycleControlResult
             ["sourceId"] = "mccs." + hash[7..],
             ["sourceHash"] = hash,
             ["parentSourceHash"] = state["parentSourceHash"]!.DeepClone(),
-            ["dependencyManifestHash"] = ManifestHash,
+            ["dependencyManifestHash"] = manifestHash,
             ["control"] = state.DeepClone(),
             ["lastEventHash"] = events.Count == 0 ? null : Hash(Encoding.ASCII.GetBytes(events[^1]!.GetValue<string>())),
             ["terminalReceiptId"] = (state["closure"]?["receiptId"] ?? state["pendingIntentReceiptId"])?.DeepClone()
@@ -52,7 +52,7 @@ internal static class CampaignCombatActualMovedCycleControl
     private static readonly string[] Handlers = ["strict-n2-eight-ledger-replay", "both-paid-and-armed", "authentic-current-occurrence", "full-parent-support-certificate", "safe-vs-reaction-witness", "active-control-open", "window-local-high-water", "owner-finish", "non-executable-repeat-intent", "system-clock-fallback-finish", "same-slot-truck-convoy-entry", "complete-state-retention", "claims-replay", "fresh-admission-only", "owned-callback-bytes", "capacity-closure"];
     public static CombatActualMovedCycleControlResult ReplayTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release, IReadOnlyList<byte[]> control, Func<string, byte[]> dependencies)
-    { var (f, s) = Replay(source, request, prefix, lifecycle, breakdown, selection, round, paid, release, control, dependencies); return new(f.Packet, s, f.Ledgers); }
+    { var (f, s) = Replay(source, request, prefix, lifecycle, breakdown, selection, round, paid, release, control, dependencies); return new(f.Packet, s, f.Ledgers, ManifestHashFor(f.Dependencies)); }
     public static CombatActualMovedCycleControlResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release, IReadOnlyList<byte[]> control, ReadOnlySpan<byte> currentInput, Func<string, byte[]> dependencies, bool admissionEnabled = true)
     {
@@ -62,12 +62,12 @@ internal static class CampaignCombatActualMovedCycleControl
         if (ev is null)
         {
             var old = rid is null ? null : f.Packet["controlEventCanonicalUtf8"]!.AsArray().Select(e => Encoding.ASCII.GetBytes(e!.GetValue<string>())).Single(e => T(JsonNode.Parse(e)!, "receiptId") == rid);
-            return new(f.Packet, s, f.Ledgers, old, rid is not null);
+            return new(f.Packet, s, f.Ledgers, ManifestHashFor(f.Dependencies), old, rid is not null);
         }
         var packet = f.Packet.DeepClone().AsObject(); packet["controlEventCanonicalUtf8"]!.AsArray().Add(Encoding.ASCII.GetString(ev));
         var ledgers = f.Ledgers.Select(l => l.Select(b => b.ToArray()).ToArray()).ToArray(); ledgers[7] = [.. ledgers[7], current];
         var (after, state) = Replay(Canonical(packet, "Source"), request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4], ledgers[5], ledgers[6], ledgers[7], f.Dependencies);
-        return new(after.Packet, state, after.Ledgers, ev);
+        return new(after.Packet, state, after.Ledgers, ManifestHashFor(after.Dependencies), ev);
     }
     public static byte[] ReadSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown, IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release, IReadOnlyList<byte[]> control, Func<string, byte[]> dependencies)
@@ -90,7 +90,7 @@ internal static class CampaignCombatActualMovedCycleControl
         var parent = JsonNode.Parse(parentResult.ControlBytes)!.AsObject(); var a = parent["assessment"]!;
         Require(B(parent, "closed") && T(parent, "phase") == "assessed" && T(a, "witnessOutcome") == "supported" && !B(a, "executionAvailable") && a["witnesses"]!.AsArray().Count > 0, 4);
         Require(T(parent["cycle"]!, "admittedPolicyBundleDigest") == request.Context.Configuration.Hash, 4);
-        var basis = O(("contractVersion", 1), ("parentSourceHash", Hash(parentBytes)), ("cycleId", parent["cycleId"]), ("assessmentHash", Hash(CampaignCombatActualMovedContinuationCodec.Canonical(a, "Assessment"))), ("configurationHash", parent["cycle"]!["admittedPolicyBundleDigest"]), ("dependencyManifestHash", ManifestHash));
+        var basis = O(("contractVersion", 1), ("parentSourceHash", Hash(parentBytes)), ("cycleId", parent["cycleId"]), ("assessmentHash", Hash(CampaignCombatActualMovedContinuationCodec.Canonical(a, "Assessment"))), ("configurationHash", parent["cycle"]!["admittedPolicyBundleDigest"]), ("dependencyManifestHash", ManifestHashFor(retained)));
         var f = new Frame(packet, parent, basis, "sha256:" + Domain("base", Canonical(basis, "Base")), request, ledgers, retained); var state = Initial(f);
         for (var i = 0; i < ledgers[7].Length; i++)
         { var (after, ev, _) = Transition(f, state, Object(ledgers[7][i], "Input"), true, true); Require(ev is not null && ev.AsSpan().SequenceEqual(Encoding.ASCII.GetBytes(packet["controlEventCanonicalUtf8"]![i]!.GetValue<string>())), 6); state = after; }
