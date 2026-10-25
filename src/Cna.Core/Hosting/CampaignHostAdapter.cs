@@ -289,6 +289,40 @@ public static class CampaignHostAdapter
     public static string NoTimingForceCancellationHash =>
         CampaignNativeCombatForceCancellationV19.NoTimingConfigurationHash;
 
+    public static ExerciseStepResult CancelNativeCombatRba(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.CancelNativeCombatRba(session, configuration,
+            openedAtUnixMilliseconds, deadlineUnixMilliseconds,
+            highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
+    public static string NoTimingRbaCancellationHash =>
+        CampaignNativeCombatRbaCancellationV33.NoTimingConfigurationHash;
+
+    public static (string DecisionActionId, string BarrageEventHash)
+        QueryNativeCombatRbaRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (session.CurrentRepeatAssault is
+            { Barrage: { } repeatedBarrage, Decline: null, RbaCancellation: null } repeated
+            && checkpoint.StateVersion == ((repeated.RetreatMoves.Count > 0 ? repeated.RetreatMoves[^1].StateVersion : (long?)null) ?? repeatedBarrage.StateVersion))
+            return (repeated.Selection.Decision.ActionId,
+                "sha256:" + Convert.ToHexStringLower(
+                    System.Security.Cryptography.SHA256.HashData(repeatedBarrage.SerializeCanonical())));
+        if (session.CurrentRepeatAssault is not null
+            || session.CurrentCombatDecision is not { } selected
+            || session.CurrentCombatBarrage is not { } barrage
+            || session.CurrentCombatRetreatDecline is not null
+            || session.CurrentCombatRbaCancellation is not null
+            || checkpoint.StateVersion != (session.CurrentCombatRetreatMove?.StateVersion ?? barrage.StateVersion))
+            throw new InvalidOperationException("No collecting RBA round is available.");
+        return (selected.Decision.ActionId,
+            "sha256:" + Convert.ToHexStringLower(
+                System.Security.Cryptography.SHA256.HashData(barrage.SerializeCanonical())));
+    }
+
     public static bool CanCompleteNativeCombatForceAssignment(ExerciseSession session) =>
         CampaignExercises.CanCompleteNativeCombatForceAssignment(session);
 
@@ -355,13 +389,15 @@ public static class CampaignHostAdapter
         if (session.CurrentRepeatAssault is
             {
                 Decline: { } repeatedDecline,
-                ForceCompletion: null
+                ForceCompletion: null,
+                ForceCancellation: null
             } repeated)
             return (repeated.Selection.Decision.ActionId,
                 "sha256:" + Convert.ToHexStringLower(
                     System.Security.Cryptography.SHA256.HashData(
                         repeatedDecline.SerializeCanonical())));
-        if (session.CurrentCombatDecision is not { } selected
+        if (session.CurrentRepeatAssault is not null
+            || session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
             || session.CurrentCombatForceCompletion is not null
             || session.CurrentCombatForceCancellation is not null)
@@ -453,6 +489,29 @@ public static class CampaignHostAdapter
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
             checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
             CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission NativeCombatRbaCancellationCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence
+            || (predecessor.CurrentRepeatAssault is not null
+                ? accepted.SuccessorSession?.CurrentRepeatAssault?.RbaCancellation is null
+                : accepted.SuccessorSession?.CurrentCombatRbaCancellation is null))
+            throw new ArgumentException("Accepted RBA cancellation required.", nameof(accepted));
+        var cancellation = CampaignNativeCombatRbaCancellationV33.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeCombatRbaRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (cancellation.CampaignId != checkpoint.CampaignId
+            || cancellation.PriorStateVersion != checkpoint.StateVersion
+            || cancellation.PositionId != checkpoint.PositionId
+            || cancellation.DecisionActionId != binding.DecisionActionId
+            || cancellation.BarrageEventHash != binding.BarrageEventHash)
+            throw new ArgumentException("RBA cancellation differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
     }
 
     public static CampaignActionSubmission NativeCombatAntiArmorCommand(
@@ -604,8 +663,215 @@ public static class CampaignHostAdapter
             submission.ActionId);
     }
 
+    public static (string EntryHash, long StateVersion) QueryNativeCombatSelectionRoundBinding(ExerciseSession session)
+    {
+        return CampaignExercises.QueryNativeCombatSelectionRoundBinding(session);
+    }
+
+    public static (string EntryHash, long StateVersion)? QueryNativeCombatSelectionEntryBinding(CampaignHostAcceptedStep step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        if (step.Kind == CampaignHostAcceptedStep.NativeRepeatBreakdownKind && step.EventRecords.Count == 1)
+        {
+            var breakdown = CampaignNativeRepeatBreakdownV30.Deserialize(step.EventRecords[0]);
+            return (CampaignSelectionTimeoutEvidenceV38.Digest(breakdown.SerializeCanonical()), breakdown.StateVersion);
+        }
+        if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind or CampaignHostAcceptedStep.ContactMovementKind)) return null;
+        using var document = System.Text.Json.JsonDocument.Parse(step.SnapshotCheckpoint);
+        if (document.RootElement.GetProperty("contractVersion").GetInt32() != 11) return null;
+        var snapshot = CampaignSnapshotV11Serializer.Deserialize(step.SnapshotCheckpoint);
+        try
+        {
+            CampaignNativeCombatSelectionTimeoutV38.ValidateInitialScope(snapshot,
+                CampaignCurrentSnapshotSerializer.ResolveContext(snapshot.Setup));
+        }
+        catch (InvalidOperationException) { return null; }
+        return (CampaignSelectionTimeoutEvidenceV38.Digest(step.SnapshotCheckpoint), snapshot.StateVersion);
+    }
+
+    public static string NoTimingSelectionTimeoutHash => CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash;
+
+    public static ExerciseStepResult TimeoutNativeCombatSelection(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.TimeoutNativeCombatSelection(session, configuration, openedAtUnixMilliseconds,
+            deadlineUnixMilliseconds, highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
+    public static CampaignActionSubmission NativeCombatSelectionTimeoutCommand(ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentNullException.ThrowIfNull(accepted);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence)
+            throw new ArgumentException("Accepted selection timeout is required.", nameof(accepted));
+        var timeout = CampaignSelectionTimeoutEvidenceV38.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeCombatSelectionRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (timeout.CampaignId != checkpoint.CampaignId || timeout.PriorStateVersion != binding.StateVersion
+            || timeout.EntryHash != binding.EntryHash || timeout.PositionId != checkpoint.PositionId
+            || evidence.Receipt.Audience != CampaignActionAudience.System)
+            throw new ArgumentException("Selection timeout differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
+    }
+
+    public static (string ResultHash, long StateVersion) QueryNativeCombatRetreatRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var cut = CampaignExercises.QueryContactPostResultRetreatCut(session);
+        var result = session.CurrentRepeatAssault is { Result: not null, PostResultRetreat: null } repeat
+            ? repeat.Result : session.CurrentCombatAssaultResult!;
+        return ($"sha256:{Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(result.SerializeCanonical()))}", result.StateVersion);
+    }
+
+    public static string NoTimingRetreatTimeoutHash => CampaignNativeCombatRetreatTimeoutV37.NoTimingConfigurationHash;
+
+    public static ExerciseStepResult TimeoutNativeCombatRetreat(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.TimeoutNativeCombatRetreat(session, configuration, openedAtUnixMilliseconds,
+            deadlineUnixMilliseconds, highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
+    public static CampaignActionSubmission NativeCombatRetreatTimeoutCommand(ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentNullException.ThrowIfNull(accepted);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence)
+            throw new ArgumentException("Accepted retreat timeout is required.", nameof(accepted));
+        var timeout = CampaignNativeCombatRetreatTimeoutV37.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeCombatRetreatRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (timeout.CampaignId != checkpoint.CampaignId || timeout.PriorStateVersion != binding.StateVersion
+            || timeout.ResultHash != binding.ResultHash || timeout.PositionId != checkpoint.PositionId
+            || evidence.Receipt.Audience != CampaignActionAudience.System)
+            throw new ArgumentException("Retreat timeout differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
+    }
+
+    public static (string SettlementHash, long StateVersion) QueryNativeCombatCustodyRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var cut = CampaignExercises.QueryNativeCombatCustodyCut(session)
+            ?? throw new InvalidOperationException("No pending custody decision.");
+        if (!cut.Choices.Any(value => value.Kind == "leave-unguarded"))
+            throw new InvalidOperationException("Custody fallback is outside supported source scope.");
+        return (cut.SettlementHash, cut.AuthorityVersion);
+    }
+
+    public static string NoTimingCustodyTimeoutHash => CampaignNativeCombatCustodyTimeoutV36.NoTimingConfigurationHash;
+
+    public static ExerciseStepResult TimeoutNativeCombatCustody(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.TimeoutNativeCombatCustody(session, configuration, openedAtUnixMilliseconds,
+            deadlineUnixMilliseconds, highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+
+    public static CampaignActionSubmission NativeCombatCustodyTimeoutCommand(ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentNullException.ThrowIfNull(accepted);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence)
+            throw new ArgumentException("Accepted custody timeout is required.", nameof(accepted));
+        var timeout = CampaignNativeCombatCustodyTimeoutV36.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeCombatCustodyRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (timeout.CampaignId != checkpoint.CampaignId || timeout.PriorStateVersion != binding.StateVersion
+            || timeout.SettlementHash != binding.SettlementHash || timeout.PositionId != checkpoint.PositionId
+            || evidence.Receipt.Audience != CampaignActionAudience.System)
+            throw new ArgumentException("Custody timeout differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
+    }
+
     public static ExerciseStepResult CompleteNativeReserveRelease(ExerciseSession session) =>
         CampaignExercises.CompleteNativeReserveRelease(session);
+
+    public static (string ReleaseEventHash, long StateVersion, int CycleOrdinal)
+        QueryNativeReserveReleaseRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var release = CampaignExercises.QueryPendingNativeReserveRelease(session);
+        return (release.ReleaseEventHash, release.StateVersion, release.CycleOrdinal);
+    }
+
+    public static string NoTimingReserveReleaseTimeoutHash =>
+        CampaignNativeReserveReleaseTimeoutV35.NoTimingConfigurationHash;
+
+    public static ExerciseStepResult TimeoutNativeReserveRelease(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.TimeoutNativeReserveRelease(session, configuration,
+            openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+            cancelledAtUnixMilliseconds, reason);
+
+    public static CampaignActionSubmission NativeReserveReleaseTimeoutCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentNullException.ThrowIfNull(accepted);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence)
+            throw new ArgumentException("Accepted Reserve Release timeout is required.", nameof(accepted));
+        var timeout = CampaignNativeReserveReleaseTimeoutV35.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeReserveReleaseRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (timeout.CampaignId != checkpoint.CampaignId
+            || timeout.PriorStateVersion != binding.StateVersion
+            || timeout.ReleaseEventHash != binding.ReleaseEventHash
+            || timeout.PriorEventHash != CampaignExercises.QueryPendingNativeReserveRelease(predecessor).HeadEventHash
+            || timeout.CycleOrdinal != binding.CycleOrdinal
+            || evidence.Receipt.Audience != CampaignActionAudience.System)
+            throw new ArgumentException("Reserve Release timeout differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
+    }
+
+    public static (string ReleaseEventHash, long StateVersion, int CycleOrdinal)
+        QueryNativeCycleControlRoundBinding(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var release = CampaignExercises.QueryPendingNativeCycleControl(session);
+        return (release.HeadEventHash, release.StateVersion, release.CycleOrdinal);
+    }
+
+    public static string NoTimingCycleControlTimeoutHash =>
+        CampaignNativeCycleControlTimeoutV34.NoTimingConfigurationHash;
+
+    public static ExerciseStepResult TimeoutNativeCycleControl(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason) =>
+        CampaignExercises.TimeoutNativeCycleControl(session, configuration,
+            openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+            cancelledAtUnixMilliseconds, reason);
+
+    public static CampaignActionSubmission NativeCycleControlTimeoutCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentNullException.ThrowIfNull(accepted);
+        if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence)
+            throw new ArgumentException("Accepted cycle timeout is required.", nameof(accepted));
+        var timeout = CampaignNativeCycleControlTimeoutV34.Deserialize(evidence.EventRecords[0]);
+        var binding = QueryNativeCycleControlRoundBinding(predecessor);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (timeout.CampaignId != checkpoint.CampaignId
+            || timeout.PriorStateVersion != binding.StateVersion
+            || timeout.PriorEventHash != binding.ReleaseEventHash
+            || timeout.PriorCycleOrdinal != binding.CycleOrdinal
+            || evidence.Receipt.Audience != CampaignActionAudience.System)
+            throw new ArgumentException("Cycle timeout differs from predecessor.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, evidence.Receipt.ActionId);
+    }
 
     public static CampaignHostCycleControlOwnerDraft QueryNativeCycleControlOwnerDraft(
         ExerciseSession session, CampaignActionAudience audience)
@@ -969,6 +1235,12 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactForceSealKind
                 or CampaignHostAcceptedStep.NativeCombatForceCompletionKind
                 or CampaignHostAcceptedStep.NativeCombatForceCancellationKind
+                or CampaignHostAcceptedStep.NativeCombatRbaCancellationKind
+                or CampaignHostAcceptedStep.NativeCombatCustodyTimeoutKind
+                or CampaignHostAcceptedStep.NativeCombatRetreatTimeoutKind
+                or CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind
+                or CampaignHostAcceptedStep.NativeCycleControlTimeoutKind
+                or CampaignHostAcceptedStep.NativeReserveReleaseTimeoutKind
                 or CampaignHostAcceptedStep.NativeCombatAntiArmorKind
                 or CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind
                 or CampaignHostAcceptedStep.NativeCombatAssaultResultKind
@@ -1006,8 +1278,89 @@ public static class CampaignHostAdapter
                     return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
                 }
             }
+            CampaignNativeCombatRbaCancellationV33? rbaCancellation = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatRbaCancellationKind)
+            {
+                if (step.EventRecords.Count != 1)
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try
+                {
+                    rbaCancellation = CampaignNativeCombatRbaCancellationV33.Deserialize(step.EventRecords[0]);
+                    if (timing is null && (rbaCancellation.Reason != "rba-unavailable"
+                        || rbaCancellation.ConfigurationHash != NoTimingRbaCancellationHash))
+                        return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+            }
+            CampaignSelectionTimeoutEvidenceV38? selectionTimeout = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind)
+            {
+                if (step.EventRecords.Count != 1) return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try { selectionTimeout = CampaignSelectionTimeoutEvidenceV38.Deserialize(step.EventRecords[0]); }
+                catch (System.Text.Json.JsonException) { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep); }
+                if (selectionTimeout.ConfigurationHash != (timing?.Hash ?? NoTimingSelectionTimeoutHash))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
+            CampaignNativeCombatRetreatTimeoutV37? retreatTimeout = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatRetreatTimeoutKind)
+            {
+                if (step.EventRecords.Count != 1) return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try { retreatTimeout = CampaignNativeCombatRetreatTimeoutV37.Deserialize(step.EventRecords[0]); }
+                catch (System.Text.Json.JsonException) { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep); }
+                if (retreatTimeout.ConfigurationHash != (timing?.Hash ?? NoTimingRetreatTimeoutHash))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
+            CampaignNativeCombatCustodyTimeoutV36? custodyTimeout = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatCustodyTimeoutKind)
+            {
+                if (step.EventRecords.Count != 1) return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try { custodyTimeout = CampaignNativeCombatCustodyTimeoutV36.Deserialize(step.EventRecords[0]); }
+                catch (System.Text.Json.JsonException) { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep); }
+                if (custodyTimeout.ConfigurationHash != (timing?.Hash ?? NoTimingCustodyTimeoutHash))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
+            CampaignNativeReserveReleaseTimeoutV35? reserveTimeout = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeReserveReleaseTimeoutKind)
+            {
+                if (step.EventRecords.Count != 1)
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try { reserveTimeout = CampaignNativeReserveReleaseTimeoutV35.Deserialize(step.EventRecords[0]); }
+                catch (System.Text.Json.JsonException)
+                { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep); }
+                if (reserveTimeout.ConfigurationHash != (timing?.Hash ?? NoTimingReserveReleaseTimeoutHash))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
+            CampaignNativeCycleControlTimeoutV34? cycleTimeout = null;
+            if (step.Kind == CampaignHostAcceptedStep.NativeCycleControlTimeoutKind)
+            {
+                if (step.EventRecords.Count != 1)
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try { cycleTimeout = CampaignNativeCycleControlTimeoutV34.Deserialize(step.EventRecords[0]); }
+                catch (System.Text.Json.JsonException)
+                { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep); }
+                if (cycleTimeout.ConfigurationHash != (timing?.Hash ?? NoTimingCycleControlTimeoutHash))
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            }
             var accepted = step.Kind switch
             {
+                CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind => TimeoutNativeCombatSelection(session,
+                    timing, selectionTimeout!.OpenedAtUnixMilliseconds, selectionTimeout.DeadlineUnixMilliseconds,
+                    selectionTimeout.HighWaterUnixMilliseconds, selectionTimeout.CancelledAtUnixMilliseconds, selectionTimeout.Reason),
+                CampaignHostAcceptedStep.NativeCombatRetreatTimeoutKind => TimeoutNativeCombatRetreat(session,
+                    timing, retreatTimeout!.OpenedAtUnixMilliseconds, retreatTimeout.DeadlineUnixMilliseconds,
+                    retreatTimeout.HighWaterUnixMilliseconds, retreatTimeout.CancelledAtUnixMilliseconds, retreatTimeout.Reason),
+                CampaignHostAcceptedStep.NativeCombatCustodyTimeoutKind => TimeoutNativeCombatCustody(session,
+                    timing, custodyTimeout!.OpenedAtUnixMilliseconds, custodyTimeout.DeadlineUnixMilliseconds,
+                    custodyTimeout.HighWaterUnixMilliseconds, custodyTimeout.CancelledAtUnixMilliseconds, custodyTimeout.Reason),
+                CampaignHostAcceptedStep.NativeReserveReleaseTimeoutKind => TimeoutNativeReserveRelease(session,
+                    timing, reserveTimeout!.OpenedAtUnixMilliseconds, reserveTimeout.DeadlineUnixMilliseconds,
+                    reserveTimeout.HighWaterUnixMilliseconds, reserveTimeout.CancelledAtUnixMilliseconds, reserveTimeout.Reason),
+                CampaignHostAcceptedStep.NativeCycleControlTimeoutKind => TimeoutNativeCycleControl(session,
+                    timing, cycleTimeout!.OpenedAtUnixMilliseconds, cycleTimeout.DeadlineUnixMilliseconds,
+                    cycleTimeout.HighWaterUnixMilliseconds, cycleTimeout.CancelledAtUnixMilliseconds, cycleTimeout.Reason),
                 CampaignHostAcceptedStep.LegacyKind => Submit(session, submission),
                 CampaignHostAcceptedStep.ContactMovementKind => SubmitContactOwnerMovement(
                     session, submission, step.ActingElementId!),
@@ -1022,6 +1375,13 @@ public static class CampaignHostAdapter
                         forceCancellation.HighWaterUnixMilliseconds,
                         forceCancellation.CancelledAtUnixMilliseconds,
                         forceCancellation.Reason),
+                CampaignHostAcceptedStep.NativeCombatRbaCancellationKind =>
+                    CancelNativeCombatRba(session, timing,
+                        rbaCancellation!.OpenedAtUnixMilliseconds,
+                        rbaCancellation.DeadlineUnixMilliseconds,
+                        rbaCancellation.HighWaterUnixMilliseconds,
+                        rbaCancellation.CancelledAtUnixMilliseconds,
+                        rbaCancellation.Reason),
                 CampaignHostAcceptedStep.NativeCombatAntiArmorKind =>
                     CompleteNativeCombatAntiArmor(session),
                 CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind =>
@@ -1091,6 +1451,33 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         NativeCombatForceCancellationCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatRbaCancellationKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeCombatRbaCancellationCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(NativeCombatSelectionTimeoutCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatRetreatTimeoutKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(NativeCombatRetreatTimeoutCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCombatCustodyTimeoutKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(NativeCombatCustodyTimeoutCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeReserveReleaseTimeoutKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeReserveReleaseTimeoutCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeCycleControlTimeoutKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        NativeCycleControlTimeoutCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (step.Kind == CampaignHostAcceptedStep.NativeCombatAntiArmorKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
@@ -1432,6 +1819,12 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeRepeatBreakdownContractVersion = 24;
     public const int ContactRepeatCombatSelectionContractVersion = 25;
     public const int NativeRepeatCombatNoAttackContractVersion = 26;
+    public const int NativeCombatRbaCancellationContractVersion = 27;
+    public const int NativeCycleControlTimeoutContractVersion = 28;
+    public const int NativeReserveReleaseTimeoutContractVersion = 29;
+    public const int NativeCombatCustodyTimeoutContractVersion = 30;
+    public const int NativeCombatRetreatTimeoutContractVersion = 31;
+    public const int NativeCombatSelectionTimeoutContractVersion = 32;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -1458,6 +1851,12 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeRepeatBreakdownKind = "native-repeat-breakdown";
     public const string ContactRepeatCombatSelectionKind = "contact-repeat-combat-selection";
     public const string NativeRepeatCombatNoAttackKind = "native-repeat-combat-no-attack";
+    public const string NativeCombatRbaCancellationKind = "native-combat-rba-cancellation";
+    public const string NativeCycleControlTimeoutKind = "native-cycle-control-timeout";
+    public const string NativeReserveReleaseTimeoutKind = "native-reserve-release-timeout";
+    public const string NativeCombatCustodyTimeoutKind = "native-combat-custody-timeout";
+    public const string NativeCombatRetreatTimeoutKind = "native-combat-retreat-timeout";
+    public const string NativeCombatSelectionTimeoutKind = "native-combat-selection-timeout";
 
     private readonly byte[] canonicalCommand;
     private readonly byte[][] eventRecords;
@@ -1479,7 +1878,8 @@ public sealed class CampaignHostAcceptedStep
                 or NativeReserveReleaseCompletionKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind
                 or ContactRepeatMovementKind or NativeRepeatBreakdownKind
-                or ContactRepeatCombatSelectionKind or NativeRepeatCombatNoAttackKind)
+                or ContactRepeatCombatSelectionKind or NativeRepeatCombatNoAttackKind
+                or NativeCombatRbaCancellationKind or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind)
             || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
@@ -1492,7 +1892,8 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or NativeCombatSuccessorKind or NativeReserveReleaseCompletionKind
-                or NativeRepeatBreakdownKind or NativeRepeatCombatNoAttackKind
+                or NativeRepeatBreakdownKind or NativeRepeatCombatNoAttackKind or NativeCombatRbaCancellationKind
+                or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
@@ -1521,6 +1922,12 @@ public sealed class CampaignHostAcceptedStep
             NativeRepeatBreakdownKind => NativeRepeatBreakdownContractVersion,
             ContactRepeatCombatSelectionKind => ContactRepeatCombatSelectionContractVersion,
             NativeRepeatCombatNoAttackKind => NativeRepeatCombatNoAttackContractVersion,
+            NativeCombatRbaCancellationKind => NativeCombatRbaCancellationContractVersion,
+            NativeCycleControlTimeoutKind => NativeCycleControlTimeoutContractVersion,
+            NativeReserveReleaseTimeoutKind => NativeReserveReleaseTimeoutContractVersion,
+            NativeCombatCustodyTimeoutKind => NativeCombatCustodyTimeoutContractVersion,
+            NativeCombatRetreatTimeoutKind => NativeCombatRetreatTimeoutContractVersion,
+            NativeCombatSelectionTimeoutKind => NativeCombatSelectionTimeoutContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };

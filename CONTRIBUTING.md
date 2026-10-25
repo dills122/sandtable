@@ -14,14 +14,16 @@ Install the .NET SDK selected by `global.json`, then run:
 ```sh
 dotnet restore Sandtable.slnx
 dotnet build Sandtable.slnx --no-restore
-dotnet test --solution Sandtable.slnx --no-build
+just test-suite contracts
 ```
 
 [Project setup](README.md#start-run-and-develop) and the
 [Exercise Runner runbook](docs/runbooks/exercise-runner.md) cover local commands.
 
-`just setup` performs the version check and restore. `just check` runs the normal local quality
-gates. Native Microsoft.Testing.Platform requires `--solution` for solution tests and `--project`
+`just setup` performs the version check and restore. Use focused suites during iteration;
+`just check` runs the full local quality gates (roughly an hour). See
+[local testing](docs/runbooks/local-testing.md) for project/class/method selection and CI chunks.
+Native Microsoft.Testing.Platform requires `--solution` for solution tests and `--project`
 for individual test projects; a bare positional path is not supported.
 
 `just check` does not run the retained Python Combat contract oracles. Their known source-pin and
@@ -46,9 +48,12 @@ Before requesting review:
 
 ```sh
 dotnet format Sandtable.slnx --verify-no-changes --no-restore
-dotnet build Sandtable.slnx --configuration Release --no-restore
-dotnet test --solution Sandtable.slnx --configuration Release --no-build
+just test-suite host # Example: choose suites affected by your change.
 ```
+
+Add boundary checks when authority/privacy changes; include affected consumers for Core/contract
+changes. CI must pass exhaustive coverage on the exact head before merge. Use `just check` for
+full local checkpoints or uncertain impact, rather than every edit.
 
 Include the motivation, affected boundaries, contract or persistence impact, test evidence, and any
 remaining risk. Generated protobuf output belongs under `artifacts/obj` and must not be committed.

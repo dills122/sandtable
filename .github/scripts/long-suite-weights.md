@@ -282,3 +282,108 @@ refreshed manifest allocates all 3,275 ordinary rows once across 61 groups
 and the same 12 Core jobs. The 28 long-suite supervisor and 33 R02 partition
 tests passed locally. These are scheduling hints measured concurrently with
 the full Debug Core suite, not hosted timing or Combat admission evidence.
+
+## Native persisted RBA cancellation (October 24, 2026)
+
+Six new Core rows measured in passing Release focused run (17 total tests).
+Existing row weights and baseline metadata remain unchanged. Local scheduling
+hints only; hosted CI still requires complete exact-head coverage.
+Report: `artifacts/rc-rba-core/dsteele_Dylans-MacBook-Pro_2026-10-24_21_36_49.205213.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RepeatedRuntimeCancelsAtItsActualOrdinalWithoutRandomDraw(ordinal: 2)` | `45335cbcb195` | 480 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RepeatedRuntimeCancelsAtItsActualOrdinalWithoutRandomDraw(ordinal: 3)` | `a73e548c3343` | 335 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.DeadlineCancelsWithoutDeclineAndReconstructsUnchangedWorld` | `4fffba6abaca` | 995 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.StrictReplayRejectsChangedBarrageBindingAndUnknownFields` | `190724b637c8` | 986 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.AcceptedRetreatRemainsAppliedAndDeadlineDoesNotRestart` | `d0f67f95834e` | 1342 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRbaCancellationTests.RejectionAndClockBoundariesDoNotMutateRba` | `a5b2104d951a` | 386 |
+
+## Native cycle-control timeout (October 24, 2026)
+
+Seven new Core rows measured in passing Release focused run. Existing weights
+and baseline metadata unchanged; local scheduling hints, not hosted performance
+or admission evidence.
+Report: `artifacts/rc-cycle-core-final/dsteele_Dylans-MacBook-Pro_2026-10-24_22_43_57.721650.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.ClockAndBudgetRejectionsLeavePendingDecisionUnchanged` | `cb8142df884a` | 1225 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.UnavailableOpeningHasNoInventedClock` | `26a6e1e107cb` | 2051 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.DeadlineFinishesAsSystemAndReconstructsWithoutOwnerChoice` | `4dedc3f28676` | 1606 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.OwnerFinishRemainsVersion28AndTimeoutBytesStayDistinct` | `14ae1048256e` | 463 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.RepeatedRuntimeRetainsExplicitTimeoutAtActualOrdinal(ordinal: 2)` | `0d9b107b1551` | 359 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.RepeatedRuntimeRetainsExplicitTimeoutAtActualOrdinal(ordinal: 3)` | `79ed01ea0c1c` | 408 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCycleControlTimeoutTests.StrictReplayRejectsChangedReleaseWorldOrdinalAndUnknownFields` | `1d06f88e601b` | 246 |
+
+## Native Reserve Release timeout (October 24, 2026)
+
+Nine new rows measured in local Release focused test run. Existing weights and
+baseline metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-reserve-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-24_23_04_49.899164.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LaterCycleRetainsIIAndResolvesEveryRemainingMemberOnce(ordinal: 3)` | `405779577887` | 159 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LaterCycleRetainsIIAndResolvesEveryRemainingMemberOnce(ordinal: 2)` | `adfcb31d07a5` | 46 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.ReplayRejectsChangedMembersAnchorWorldAndUnknownFields` | `7428d18cb285` | 52 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.SessionTimeoutValidatesTimingAndReconstructsSystemCheckpoint` | `c6170c5b92f6` | 905 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.TimeoutConvertsUnresolvedIWithoutMovementAllowanceOrOwnerEvent` | `848b17945a63` | 60 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.UnavailableOpeningHasNoInventedClockAndLegacyChoiceBytesStayVersion27` | `62310510c061` | 60 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.LargeBatchCodecDispatchesBeforeLegacyByteLimit` | `b5caea3cfd60` | 58 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.AcceptedOwnerReleaseSurvivesTimeoutAndEntryAnchorDoesNotMove(ordinal: 2)` | `5fbd7868a35b` | 53 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeReserveReleaseTimeoutTests.AcceptedOwnerReleaseSurvivesTimeoutAndEntryAnchorDoesNotMove(ordinal: 1)` | `9c6ce4516e19` | 52 |
+
+## Native Custody timeout (October 24, 2026)
+
+Nine new rows measured in local Release focused test run. Existing weights and
+baseline metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-custody-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-24_23_21_07.475443.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.AcceptedOwnerDispositionCannotBeOverriddenAndUnsupportedFallbackRejects` | `5e262a9daf4b` | 672 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.TamperedLotRouteAndTimingEvidenceRejectReplay` | `b8eaa3f30ed6` | 505 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-unavailable", observed: null)` | `1d1ea0ebabd6` | 1179 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-regression", observed: 999)` | `6a83120d2967` | 1323 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "controller-unavailable", observed: null)` | `9e28832f5784` | 899 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.NativeSingleLotEscapeUsesAtMostOneClearEdgeWithinSourceBudget` | `9723abeb0908` | 371 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.UnavailableEntryHasNoInventedClock` | `9893b8c1de4c` | 560 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.InvalidTimingDoesNotMutatePendingCustody` | `7a1aba970e55` | 226 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeCustodyTimeoutTests.DeadlineLeavesCaptivesUnguardedWithSystemEvidenceAndColdReplay` | `9b492a919108` | 534 |
+
+## Native Retreat timeout (October 24, 2026)
+
+Nine new rows measured in local Release focused run. Prior weights and baseline
+metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-retreat-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-24_23_39_49.870403.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.DeadlineRefusesWithSourceLossesSystemEvidenceAndColdReplay` | `330003decb9c` | 1300 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.TamperedResultWorldAndTimingEvidenceRejectReplay` | `70fc7507bbaa` | 271 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-regression", observed: 999)` | `a8b6fba6dd06` | 456 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "clock-unavailable", observed: null)` | `0a42334f1ad3` | 466 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.ClockFailuresKeepExplicitSystemReason(reason: "controller-unavailable", observed: null)` | `b7d457cb891b` | 443 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.UnavailableEntryHasNoInventedClock` | `6505b24d65b3` | 448 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.InvalidTimingDoesNotMutatePendingRetreat` | `95587ecc917f` | 235 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.RepeatedRuntimeRetainsActualOrdinalAndRefusalEvidence(ordinal: 3)` | `92fef5576bc3` | 229 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.RepeatedRuntimeRetainsActualOrdinalAndRefusalEvidence(ordinal: 2)` | `2d9ab141866f` | 202 |
+
+## Native Selection timeout (October 24, 2026 America/Toronto)
+
+Nine new rows measured in local Release focused run. Prior weights and baseline
+metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-selection-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-25_00_04_28.000262.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.BindingRejectsOutsidePendingSelectionWithoutMutatingAuthority` | `8463d4267e17` | 568 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.DeadlineClosesActualSelectionWithoutOwnerChoiceOrNewDraw(repeated: False)` | `5f32fb110bce` | 1435 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.DeadlineClosesActualSelectionWithoutOwnerChoiceOrNewDraw(repeated: True)` | `f0e72c774675` | 1801 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.UnavailableEntryHasNoInventedClockAndTamperingRejectsReplay` | `a04d8d0a6fc1` | 564 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.EarlyForeignConfigurationAndAlreadySelectedRejectWithoutMutation(repeated: True)` | `0a7e3ee9d7b9` | 531 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.EarlyForeignConfigurationAndAlreadySelectedRejectWithoutMutation(repeated: False)` | `6fdc6541be3f` | 210 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "clock-unavailable", observed: null)` | `fba4410da237` | 1190 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "clock-regression", observed: 999)` | `6c100195ec54` | 500 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "controller-unavailable", observed: null)` | `13212da9e28e` | 596 |

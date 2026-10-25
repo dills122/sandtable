@@ -7,8 +7,9 @@ using Cna.Core.Visibility;
 namespace Cna.Core.Campaigns;
 
 // A retained defender choice is required when the sealed result calls for one
-// hex of retreat. Silence cannot become refusal or a chosen route.
-internal sealed record CampaignNativeCombatRetreatAfterAssaultV23(
+// hex of retreat. Silence alone cannot become an owner choice; explicit V37
+// System timeout evidence projects source-legal refusal without an owner action.
+internal record CampaignNativeCombatRetreatAfterAssaultV23(
     int ContractVersion, string CampaignId, long PriorStateVersion,
     string DecisionActionId, string PositionId, string ResultHash,
     string PaidWorldHash, string RetreatSourceHash, LandSide DefenderSide,
@@ -78,15 +79,18 @@ internal sealed record CampaignNativeCombatRetreatAfterAssaultV23(
         CampaignContactJournal contacts, ReadOnlyMemory<byte> canonicalEvent)
     {
         var parsed = Deserialize(canonicalEvent);
-        var expected = Create(selected, result, paidWorld, context,
-            contacts, parsed.ActionId);
+        var expected = parsed is CampaignNativeCombatRetreatTimeoutV37 timeout
+            ? CampaignNativeCombatRetreatTimeoutV37.CreateTimeout(selected, result, paidWorld, context, contacts,
+                timeout.ConfigurationHash, timeout.OpenedAtUnixMilliseconds, timeout.DeadlineUnixMilliseconds,
+                timeout.HighWaterUnixMilliseconds, timeout.CancelledAtUnixMilliseconds, timeout.Reason)
+            : Create(selected, result, paidWorld, context, contacts, parsed.ActionId);
         if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
             throw new InvalidCampaignHistoryException(
                 "Post-result retreat differs from retained defender authority.");
         return expected;
     }
 
-    internal byte[] SerializeCanonical()
+    internal virtual byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
             || !Enum.IsDefined(DefenderSide)
@@ -140,7 +144,7 @@ internal sealed record CampaignNativeCombatRetreatAfterAssaultV23(
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", CurrentContractVersion);
+            writer.WriteNumber("contractVersion", ContractVersion);
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WriteString("positionId", NextPositionId);
@@ -159,6 +163,8 @@ internal sealed record CampaignNativeCombatRetreatAfterAssaultV23(
         {
             using var document = JsonDocument.Parse(bytes);
             var root = document.RootElement;
+            if (root.GetProperty("eventType").GetString() == "combat-retreat-timeout")
+                return CampaignNativeCombatRetreatTimeoutV37.Deserialize(bytes);
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion",
                 "eventType", "campaignId", "priorStateVersion", "decisionActionId",
                 "positionId", "resultHash", "paidWorldHash", "retreatSourceHash",

@@ -28,6 +28,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     internal CampaignSeatGrant IssueSeatGrant(string campaignId, CampaignActionAudience audience,
         string operatorSecret)
     {
+        RequireWritable();
         var side = Side(audience);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
@@ -70,6 +71,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     internal CampaignSeatCredential? RedeemSeatGrant(CampaignSeatGrant grant)
     {
+        RequireWritable();
         ArgumentNullException.ThrowIfNull(grant);
         var digest = TryCredentialDigest("seat-grant", grant.Secret);
         if (digest is null) return null;

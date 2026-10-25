@@ -18,6 +18,10 @@ outside both planes. Its trusted, label-triggered workflow and tracked rules sel
 for additional scrutiny after a repository secret is configured. It has no gameplay integration
 or merge authority.
 
+Local test selection is also developer tooling: project/class/method filters and CI-compatible
+Core chunks reuse existing tests and CI allocation without changing runtime boundaries. See
+[local testing](docs/runbooks/local-testing.md). Selected local runs are not exhaustive CI proof.
+
 ## Project website
 
 The repository root contains a dependency-free static project website under `site/`, with design
@@ -776,24 +780,40 @@ contacts, published map and movement costs. Hidden opposing occupancy cannot rem
 offer; an unseen encounter needs an accepted event rather than a hidden rejection.
 The trusted defender draft keeps canonical visible bytes separate from private action IDs
 and authority version. An explicit defender decline is a V15 owner event through the
-normal durable Host seat/opening/receipt path; silence remains pending. Actual retreat
+normal durable Host seat/opening/receipt path. Schema 12 persists an RBA deadline at
+Barrage entry; a background tick cancels unanswered decisions through native V33. Actual retreat
 movement now uses a V16 retained Core event: the first accepted move updates World and
 both contact audiences, returns to a defender RBA cut, and cold replays through the
 normal durable Host seat/receipt path. Further offered moves append ordered events
 through the same path; checkpoints bind their predecessor by hash without nesting each
 prior World. An explicit stop from the updated cut reaches Force Assignment.
+The [native RBA cancellation contract](docs/specs/native-rba-cancellation-v1.md)
+binds the Barrage and latest retained retreat to an immutable deadline. Cancellation
+preserves World and RNG and reaches same-slot Reserve Release without fabricating
+a decline, seal, ammunition debit, or combat result. Missing timing or clock at
+Barrage entry records explicit `rba-unavailable` without an invented timestamp.
+The same path covers repeated assaults; accepted retreat moves retain the original deadline.
 The first Force Assignment Core cut derives each owner's own full-current-TOE
 infantry allocation without exposing the opposing allocation or private version.
 Core V17 records two owner-only seals at Force Assignment. Core V18 System
 completion then reaches Anti Armor. Normal Host retains each accepted seal
 under its own seat, opaque ref and cold-replay receipt, appending V18 with the
 second seal atomically. Normal campaign creation now accepts an explicit seven-window
-timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 7, and binds them in
-the initial journal hash. Existing schema-5/6 journals remain readable; new campaign
-creation in them is closed. No configuration means no Force Assignment opening or seal.
+timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 14, and binds them in
+the initial journal hash. Existing schema-5/6/7/8/9/10/11/12/13 journals remain read-only; mutation
+requires schema 14. Missing configuration triggers Selection no-selection at entry;
+no later Force Assignment opening or seal is offered.
 The normal Host stores a shared Force Assignment round for both seats with trusted opened,
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
-deadline or clock failure, and verifies round status and evidence on cold replay. V19
+deadline or clock failure, and verifies round status and evidence on cold replay.
+Schema 14 creates the Force round atomically with accepted RBA decline, using the
+trusted timestamp from its RBA gate and the pinned Force budget. The hosted combat
+timeout service sweeps collecting rounds even when neither owner queries an opening.
+Queries and restarts cannot renew the entry deadline; a missing round rejects.
+Cold verification binds Force opening time to the completed RBA round’s retained
+trusted high-water timestamp.
+Legacy journals retain their old verification rules without invented timestamps.
+Independent RBA and Force cursors prevent one decision window from starving the other. V19
 preserves zero or one seal and advances to Anti Armor. Core V20 then records an
 explicit no-effect Anti Armor outcome for infantry-only content, bound to that Force
 event; normal Host appends it in the same transaction and verifies cold replay.
@@ -804,7 +824,42 @@ role pair or a timing envelope, Core and normal Host record V19 `force-unavailab
 round, with no fabricated clock or seal. Replay rechecks World, source and
 ammunition eligibility. Both initial V13 voluntary finish and V21 cancellation
 continue through V27 Reserve Release; V28 closes Repeat when no Combat result
-cursor exists. Positive Close Assault uses the registered source and retained
+cursor exists.
+Required post-assault Retreat starts a durable deadline at accepted result entry.
+Native V37 records System `refuse-retreat` using the existing refusal projection,
+including its settlement losses; no defender choice is fabricated. Background
+expiry and settlement share one transaction. Selection starts a persisted round at initial or repeated Combat entry.
+Native V38 records explicit System `no-selection` and native Position
+Determination progression; existing no-work continuation reaches Reserve Release
+without a fabricated owner Finish, target use, resource debit or RNG draw.
+The deadline begins before any owner query, survives cold restart, and gates
+both owner and generic submission paths. This native combined transition is
+distinct from the isolated C3a closure/structural-step contract; it does not
+assert original-root certification.
+Pending source-supported Custody starts a durable deadline at settlement entry.
+Native V36 records explicit System `leave-unguarded`, marking the captive lot
+escaped and retaining existing deferred replacement eligibility without a guard
+TOE debit or fabricated owner choice. Background expiry survives restart and
+continues atomically through Combat successor into Reserve Release. Native
+scope remains one lot with a legal leave-unguarded route; unsupported routes or
+multi-lot profiles are not admitted by this fallback. See the
+[native Custody timeout contract](docs/specs/native-custody-timeout-v1.md).
+Reserve Release with unresolved members starts an immutable deadline at entry.
+Native V35 records explicit System `convert-unresolved-i-retain-ii`: unresolved
+Reserve I converts to Reserve II; unresolved Reserve II stays in reserve. Accepted
+owner dispositions and movement allowances remain intact. Partial choices do not
+renew the deadline, and background expiry works after cold restart without an
+owner query. Empty queues complete directly. See the
+[native Reserve Release timeout contract](docs/specs/native-reserve-release-timeout-v1.md).
+Completed Reserve Release also starts a durable cycle-control deadline. Native
+V34 `movement-combat-cycle-timeout` records an explicit System `finish-phase`
+fallback into same-slot Truck Convoy Movement, preserving World, RNG and cycle
+ordinal. It reuses the V28 finish projection while retaining distinct canonical
+timeout evidence; owner Finish/Repeat bytes remain unchanged. Missing timing or
+entry clock uses explicit unavailable evidence, without an invented timestamp.
+Owner choice and timeout race through the same immediate journal transaction;
+queries and restarts never renew the deadline. See the
+[native cycle timeout contract](docs/specs/native-cycle-control-timeout-v1.md). Positive Close Assault uses the registered source and retained
 random cursor described below.
 Normal Content 6 resolves a canonical, source-indexed Combat supplement for formation
 Basic Morale, offensive component ratings, and per-element initial ammunition. It is keyed to exact Content 6 bytes;
@@ -902,10 +957,9 @@ It keeps private target identity and authority in Core. Public routing,
 broader equal-visible history coverage, and custody assets in the next
 versioned campaign position remain before admission.
 Source-backed disposition for
-contacts lacking combat components remain before issuance. Reserve Release, assault adjudication and the public
-opening route remain unfinished.
-Encounter adjudication and authenticated Host owner lifecycle must precede
-issuance of those offers. Complete detection policy,
+contacts lacking combat components remain before issuance. Bounded native Reserve Release,
+assault adjudication and authenticated local Host owner lifecycle are implemented as described
+above; broader profile certification and public admission remain unfinished. Complete detection policy,
 coherent owner actions and public readers must join this path before activation.
 
 Task019F0's private actual-selection executable contract merged in PR #161; Task019F1's

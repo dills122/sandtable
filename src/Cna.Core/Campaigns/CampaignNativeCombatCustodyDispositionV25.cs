@@ -6,7 +6,7 @@ namespace Cna.Core.Campaigns;
 
 // Accepted owner or System disposition after the V24 settlement. Cold replay
 // reprojects the World and custody assets before accepting these bytes.
-internal sealed record CampaignNativeCombatCustodyDispositionV25(
+internal record CampaignNativeCombatCustodyDispositionV25(
     int ContractVersion, string CampaignId, long PriorStateVersion,
     string PositionId, string SettlementHash, string ChoiceKind,
     string? LotId, IReadOnlyList<string> Route,
@@ -44,15 +44,18 @@ internal sealed record CampaignNativeCombatCustodyDispositionV25(
         CampaignContentContext context, ReadOnlyMemory<byte> canonicalEvent)
     {
         var parsed = Deserialize(canonicalEvent);
-        var expected = Create(priorSnapshot, settlement, settledWorld, cut,
-            parsed.ChoiceKind, context);
+        var expected = parsed is CampaignNativeCombatCustodyTimeoutV36 timeout
+            ? CampaignNativeCombatCustodyTimeoutV36.CreateTimeout(priorSnapshot, settlement, settledWorld, cut, context,
+                timeout.ConfigurationHash, timeout.OpenedAtUnixMilliseconds, timeout.DeadlineUnixMilliseconds,
+                timeout.HighWaterUnixMilliseconds, timeout.CancelledAtUnixMilliseconds, timeout.Reason)
+            : Create(priorSnapshot, settlement, settledWorld, cut, parsed.ChoiceKind, context);
         if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
             throw new InvalidCampaignHistoryException(
                 "Custody disposition differs from accepted World and contact authority.");
         return expected;
     }
 
-    internal byte[] SerializeCanonical()
+    internal virtual byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
             || !IsHash(SettlementHash) || !IsHash(WorldHash)
@@ -97,7 +100,7 @@ internal sealed record CampaignNativeCombatCustodyDispositionV25(
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", CurrentContractVersion);
+            writer.WriteNumber("contractVersion", ContractVersion);
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WriteString("positionId", PositionId);
@@ -116,6 +119,8 @@ internal sealed record CampaignNativeCombatCustodyDispositionV25(
         {
             using var document = JsonDocument.Parse(bytes);
             var root = document.RootElement;
+            if (root.GetProperty("contractVersion").GetInt32() == 36)
+                return CampaignNativeCombatCustodyTimeoutV36.Deserialize(bytes);
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion",
                 "eventType", "campaignId", "priorStateVersion", "positionId",
                 "settlementHash", "choiceKind", "lotId", "route",

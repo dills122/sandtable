@@ -8,6 +8,10 @@ responsibility; it does not imply a deployed service or implemented mechanic.
 Intelligence provider or authoritative game component. Its proposed
 [pilot](docs/runbooks/optional-code-review.md) is opt-in and has no merge authority.
 
+Local test **suites** select test projects; **shards** select CI-allocated Core groups
+(`fast-*`, `long-*`, `r02-*`). These are developer-tooling terms, not game domains.
+See [local testing](docs/runbooks/local-testing.md).
+
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.
 
@@ -124,14 +128,36 @@ retain each owner's separate seal and cold-replay receipt. A distinct V18
 System completion advances after both seals.
 Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
-Force Assignment opening and seals. Schema-5/6 journals stay readable but cannot
-create new campaigns. Schema 7 retains one shared Force round for both seats;
+Force Assignment opening and seals. Schema-5/6/7/8/9/10/11/12/13 journals stay read-only. Schema 14 retains one shared Force round for both seats at accepted RBA decline;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
-inventing an owner seal. Core V20/normal Host complete the infantry-only empty
+inventing an owner seal. The combat timeout service ticks these persisted Force
+rounds even when neither owner queries an opening. The entry deadline never resets
+on query or restart. Schema 14 also retains an RBA round at Barrage entry.
+Background expiry records native V33 `combat-rba-cancelled`, preserving retreat
+movement and reaching Reserve Release without a fabricated decline or combat result.
+Core V20/normal Host complete the infantry-only empty
 Anti Armor step from either Force outcome. Core V21 retains cancelled Close Assault
 closure and same-slot Reserve Release. `force-unavailable` names a Core-verified
 V19 System cancellation before a Force round exists when the selected contact
 has no payable pinned role pair or timing envelope; it does not alter visible offer presence.
+V34 names the explicit System cycle timeout: completed Reserve Release starts
+a durable deadline, and expiry finishes the phase without fabricating an owner
+choice or changing World/RNG. The combat timeout service keeps cycle-control
+pagination separate from Selection, RBA, Force, Retreat, Custody and Reserve Release.
+V38 names explicit System Selection timeout: `no-selection` binds initial or
+repeated decision entry, then uses native no-work continuation without an owner
+choice. Its System identity is distinct from V12/V31 owner selection bytes.
+V37 names explicit System post-assault Retreat timeout: `refuse-retreat` applies
+source refusal effects through settlement after the persisted result-entry deadline.
+It is distinct from V33 RBA cancellation and from a defender-authored retreat.
+V36 names the explicit System Custody timeout: the source-legal leave-unguarded
+disposition records escape and deferred replacement eligibility, without an owner
+choice or guard debit. A settlement-entry deadline drives background expiry and
+atomic continuation into Reserve Release. Native support remains a single lot.
+V35 names the explicit System Reserve Release timeout. It converts unresolved
+Reserve I to Reserve II and retains unresolved Reserve II, preserving accepted
+owner dispositions. Its entry deadline survives partial choices and restart;
+completion enters the existing cycle-control lifecycle.
 Initial V13/V21 completion enters V27 Reserve Release, and V28 offers Finish
 alone when no Combat result cursor is retained;
 normal Content 6 can resolve an exact-pack Combat source supplement for Basic Morale,
@@ -173,8 +199,9 @@ same-slot Reserve Release. A second V28 Repeat can enter ordinal three when
 a released-unit movement witness and retained Combat cursor exist. V28 has no
 fixed ordinal cutoff; the tested third-cycle cut offers Finish only because
 no legal witness remains;
-Core rejects an unoffered Repeat event on replay. Further selected cycles, vehicle
-accounting, and public routing remain pending;
+Core rejects an unoffered Repeat event on replay. The bounded contact path covers an initial
+assault plus two selected repeated assaults; further cycle shapes, vehicle accounting, and
+certified public admission remain pending;
 the internal Core custody cut derives captor choices from accepted V24 World,
 current captor contact, and published route/terrain; normal Host now retains a
 captor-only side-safe opening, submission and restart receipt, while the public

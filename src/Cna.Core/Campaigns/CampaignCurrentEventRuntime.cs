@@ -7,6 +7,7 @@ internal static class CampaignCurrentEventSerializer
 {
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeCombatRbaCancellationV33 rbaCancellation => rbaCancellation.SerializeCanonical(),
         CampaignNativeRepeatCombatNoAttackV32 noAttack => noAttack.SerializeCanonical(),
         CampaignNativeRepeatCombatDecisionV31 selection => selection.SerializeCanonical(),
         CampaignNativeRepeatBreakdownV30 breakdown => breakdown.SerializeCanonical(),
@@ -55,17 +56,23 @@ internal static class CampaignCurrentEventSerializer
                 CampaignNativeRepeatBreakdownV30.Deserialize(canonicalJson),
             "cycle-repeat-element-moved" =>
                 CampaignNativeRepeatMovementV29.Deserialize(canonicalJson),
+            "movement-combat-cycle-timeout" =>
+                CampaignNativeCycleControlTimeoutV34.Deserialize(canonicalJson),
             "movement-combat-cycle-control" =>
                 CampaignNativeCycleControlV28.Deserialize(canonicalJson),
+            "reserve-release-timeout" => CampaignNativeReserveReleaseTimeoutV35.Deserialize(canonicalJson),
             "reserve-release-member-choice" or "reserve-release-completed" =>
                 CampaignNativeReserveReleaseEventV27.Deserialize(canonicalJson),
             "combat-sequence-resumed" => CampaignNativeCombatSuccessorV26.Deserialize(canonicalJson),
+            "combat-retreat-timeout" => CampaignNativeCombatRetreatTimeoutV37.Deserialize(canonicalJson),
+            "combat-custody-timeout" => CampaignNativeCombatCustodyTimeoutV36.Deserialize(canonicalJson),
             "combat-custody-disposed" => CampaignNativeCombatCustodyDispositionV25.Deserialize(canonicalJson),
             "combat-world-settled" => CampaignNativeCombatSettlementV24.Deserialize(canonicalJson),
             "combat-post-result-retreat-decided" => CampaignNativeCombatRetreatAfterAssaultV23.Deserialize(canonicalJson),
             "combat-assault-resolved" => CampaignNativeCombatAssaultResultV22.Deserialize(canonicalJson),
             "combat-cancelled-assault-completed" => CampaignNativeCombatCancelledAssaultV21.Deserialize(canonicalJson),
             "combat-anti-armor-completed" => CampaignNativeCombatAntiArmorV20.Deserialize(canonicalJson),
+            "combat-rba-cancelled" => CampaignNativeCombatRbaCancellationV33.Deserialize(canonicalJson),
             "combat-force-cancelled" => CampaignNativeCombatForceCancellationV19.Deserialize(canonicalJson),
             "combat-force-completed" => CampaignNativeCombatForceCompletionV18.Deserialize(canonicalJson),
             "combat-force-sealed" => CampaignNativeCombatForceSealV17.Deserialize(canonicalJson),
@@ -73,6 +80,9 @@ internal static class CampaignCurrentEventSerializer
             "combat-rba-declined" => CampaignNativeCombatRetreatDeclineV15.Deserialize(canonicalJson),
             "combat-barrage-no-effect" => CampaignNativeCombatBarrageV14.Deserialize(canonicalJson),
             "combat-no-attack-completed" => CampaignNativeCombatNoAttackCompletionV13.Deserialize(canonicalJson),
+            "combat-selection-timeout" => document.RootElement.GetProperty("cycleOrdinal").GetInt32() == 1
+                ? (object)CampaignNativeCombatDecisionV12.Deserialize(canonicalJson)
+                : CampaignNativeRepeatCombatDecisionV31.Deserialize(canonicalJson),
             "combat-selection-decided" => CampaignNativeCombatDecisionV12.Deserialize(canonicalJson),
             "element-moved" or "reacting-element-moved" or "reaction-participant-completed" or "reaction-window-closed"
                 or "movement-segment-completed" or "element-movement-stopped" or "breakdown-stop-resolved"

@@ -65,7 +65,8 @@ public static class CampaignExercises
         if (session.CurrentRepeatAssault is
             {
                 Barrage: { } repeatedBarrage,
-                Decline: null
+                Decline: null,
+                RbaCancellation: null
             } repeated)
             return repeated.RetreatMoves.Count > 0
                 ? CampaignContactRetreatBeforeAssaultCut.ProjectAfterMove(
@@ -77,7 +78,8 @@ public static class CampaignExercises
                     session.CurrentContacts);
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatBarrage is not { } barrage
-            || session.CurrentCombatRetreatDecline is not null)
+            || session.CurrentCombatRetreatDecline is not null
+            || session.CurrentCombatRbaCancellation is not null)
             throw new InvalidOperationException("Defender retreat requires completed Barrage authority.");
         if (session.CurrentCombatRetreatMove is { } move)
             return CampaignContactRetreatBeforeAssaultCut.ProjectAfterMove(
@@ -148,6 +150,9 @@ public static class CampaignExercises
                 session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.Control is { } repeatedControl)
             return new ExerciseCheckpoint(repeatedControl, session.CurrentSnapshot);
+        if (session.CurrentRepeatAssault?.RbaCancellation is { } repeatedRbaCancellation)
+            return new ExerciseCheckpoint(repeatedRbaCancellation,
+                (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
         if (session.CurrentRepeatAssault?.CancelledAssault is { } repeatedCancelled)
             return new ExerciseCheckpoint(repeatedCancelled,
                 (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection!), session.CurrentSnapshot);
@@ -222,6 +227,8 @@ public static class CampaignExercises
         if (session.CurrentCombatForceSeals.Count > 0)
             return new ExerciseCheckpoint(session.CurrentCombatForceSeals[^1],
                 session.CurrentCombatDecision!);
+        if (session.CurrentCombatRbaCancellation is { } rbaCancellation)
+            return new ExerciseCheckpoint(rbaCancellation, session.CurrentCombatDecision!);
         if (session.CurrentCombatRetreatDecline is { } decline)
             return new ExerciseCheckpoint(decline, session.CurrentCombatDecision!);
         if (session.CurrentCombatRetreatMove is { } retreatMove)
@@ -324,6 +331,79 @@ public static class CampaignExercises
         }
     }
 
+    internal static (string EntryHash, long StateVersion) QueryNativeCombatSelectionRoundBinding(ExerciseSession session)
+    {
+        var timeout = CreateSelectionTimeout(session, CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
+            -1, -1, -1, null, "selection-unavailable");
+        var evidence = timeout is CampaignNativeCombatSelectionTimeoutV38 initial
+            ? initial.Evidence : ((CampaignNativeRepeatCombatSelectionTimeoutV38)timeout).Evidence;
+        return (evidence.EntryHash, evidence.PriorStateVersion);
+    }
+
+    private static object CreateSelectionTimeout(ExerciseSession session, string configurationHash,
+        long opened, long deadline, long highWater, long? observed, string reason)
+    {
+        if (session.CurrentCombatDecision is null)
+            return CampaignNativeCombatSelectionTimeoutV38.Create(session.CurrentSnapshot, session.Context,
+                session.CurrentContacts, configurationHash, opened, deadline, highWater, observed, reason);
+        var release = QueryNativeReserveReleaseState(session);
+        var later = session.CurrentPostRepeat;
+        if ((later is null ? session.CurrentRepeatCombatSelection : later.Selection) is not null
+            || (later is null ? session.CurrentCycleControl : later.Control) is not { } control
+            || (later is null ? session.CurrentRepeatMove : later.Movement) is not { } movement
+            || (later is null ? session.CurrentRepeatBreakdown : later.Breakdown) is not { } breakdown
+            || (later is null ? session.CurrentRepeatMoveWorld : later.MovedWorld) is not { } world)
+            throw new InvalidOperationException("No pending repeated Combat selection.");
+        return CampaignNativeRepeatCombatSelectionTimeoutV38.Create(release, control, movement, breakdown,
+            world, session.Context, session.CurrentContacts, configurationHash, opened, deadline, highWater, observed, reason);
+    }
+
+    internal static ExerciseStepResult TimeoutNativeCombatSelection(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds, long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            if ((configuration is not null && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                    || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "selection-unavailable")
+                || (reason != "selection-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("selection"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var timeout = CreateSelectionTimeout(session, configuration?.Hash ?? CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+            ExerciseSession next;
+            byte[] bytes;
+            byte[] state;
+            CampaignSelectionTimeoutEvidenceV38 evidence;
+            if (timeout is CampaignNativeCombatSelectionTimeoutV38 initial)
+            {
+                var selected = new CampaignNativeCombatDecisionStateV12(session.CurrentSnapshot, initial);
+                var contacts = session.CurrentContacts.AdvanceNativeCombatSelection(selected);
+                next = new ExerciseSession(session.CurrentSnapshot, session.Context, session.CurrentHistory.Add(initial), contacts, selected);
+                bytes = initial.SerializeCanonical();
+                state = selected.SerializeCanonical();
+                evidence = initial.Evidence;
+            }
+            else
+            {
+                var repeated = (CampaignNativeRepeatCombatSelectionTimeoutV38)timeout;
+                var contacts = session.CurrentContacts.AdvanceNativeRepeatCombatSelection(repeated);
+                next = session.CurrentPostRepeat is null ? session.WithRepeatCombatSelectionEvent(repeated, contacts)
+                    : session.WithPostRepeatEvent(repeated, contacts);
+                bytes = state = repeated.SerializeCanonical();
+                evidence = repeated.Evidence;
+            }
+            var receipt = new CampaignActionAcceptanceReceipt(evidence.CampaignId, evidence.PriorStateVersion,
+                checked(evidence.PriorStateVersion + 1), evidence.NextPositionId, CampaignActionAudience.System, evidence.Hash);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, state));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     internal static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -393,7 +473,8 @@ public static class CampaignExercises
         if (session.CurrentRepeatAssault is
             {
                 Barrage: not null,
-                Decline: null
+                Decline: null,
+                RbaCancellation: null
             })
             return SubmitRepeatedDefenderRbaDecline(session, submission,
                 defenderElementId);
@@ -707,6 +788,61 @@ public static class CampaignExercises
         catch (Exception exception) when (exception is ArgumentException
             or ArithmeticException or InvalidCampaignHistoryException
             or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static ExerciseStepResult CancelNativeCombatRba(
+        ExerciseSession session, CampaignDecisionTimingConfigurationV1? configuration,
+        long openedAtUnixMilliseconds, long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var repeated = session.CurrentRepeatAssault;
+        CampaignCombatSelectionFrame? selected = repeated?.Selection
+            ?? (session.CurrentCombatDecision is { } initial ? (CampaignCombatSelectionFrame)initial : null);
+        var barrage = repeated?.Barrage ?? session.CurrentCombatBarrage;
+        var move = repeated is not null ? (repeated.RetreatMoves.Count > 0 ? repeated.RetreatMoves[^1] : null) : session.CurrentCombatRetreatMove;
+        if (selected is null || barrage is null
+            || (repeated is not null ? repeated.Decline is not null || repeated.RbaCancellation is not null
+                : session.CurrentCombatRetreatDecline is not null || session.CurrentCombatRbaCancellation is not null)
+            || QueryCheckpoint(session).StateVersion != (move?.StateVersion ?? barrage.StateVersion)
+            || (configuration is not null && (configuration.RulesetHash != selected.PriorSnapshot.RulesetHash
+                || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+            || (configuration is null && reason != "rba-unavailable"))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            if (reason != "rba-unavailable" && (configuration is null
+                || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("rba")))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var cancellation = CampaignNativeCombatRbaCancellationV33.Create(selected, barrage, move,
+                configuration?.Hash ?? CampaignNativeCombatRbaCancellationV33.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatRbaCancellation(cancellation);
+            var successor = repeated is not null
+                ? session.WithRepeatAssaultEvent(cancellation, contacts)
+                : new ExerciseSession(session.CurrentSnapshot, session.Context,
+                    session.CurrentHistory.Add(cancellation), contacts, session.CurrentCombatDecision,
+                    combatBarrage: barrage, combatRetreatMove: move,
+                    combatRetreatWorld: session.CurrentCombatRetreatWorld,
+                    combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
+                    combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                    combatRbaCancellation: cancellation);
+            var priorState = repeated is not null
+                ? move is null ? barrage.SerializeStateCanonical(selected) : repeated.SerializeRetreatMoveState()
+                : move is null ? barrage.SerializeStateCanonical(selected) : SerializeRetreatMoveState(session);
+            var bytes = cancellation.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                cancellation.PriorStateVersion, cancellation.StateVersion, cancellation.NextPositionId,
+                CampaignActionAudience.System, Hash(bytes));
+            return ExerciseStepResult.Accepted(successor,
+                new ExerciseStepEvidence(receipt, bytes, cancellation.SerializeStateCanonical(priorState)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -1221,6 +1357,40 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult TimeoutNativeCombatRetreat(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            _ = QueryContactPostResultRetreatCut(session);
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "retreat-unavailable")
+                || (reason != "retreat-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("retreat"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var runtime = session.CurrentRepeatAssault;
+            var repeated = runtime is { Result: not null, PostResultRetreat: null };
+            var timeout = CampaignNativeCombatRetreatTimeoutV37.CreateTimeout(
+                repeated ? runtime!.Selection : session.CurrentCombatDecision!,
+                repeated ? runtime!.Result! : session.CurrentCombatAssaultResult!,
+                repeated ? runtime!.PaidWorld! : session.CurrentCombatPaidWorld!, session.Context,
+                session.CurrentContacts, configuration?.Hash ?? CampaignNativeCombatRetreatTimeoutV37.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            return repeated
+                ? AcceptRepeatedPostResultRetreat(session, null, CampaignActionAudience.System, timeout)
+                : AcceptPostResultRetreat(session, null, CampaignActionAudience.System, timeout);
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     internal static ExerciseStepResult CompleteNoPostResultRetreat(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -1280,13 +1450,14 @@ public static class CampaignExercises
     }
 
     private static ExerciseStepResult AcceptRepeatedPostResultRetreat(
-        ExerciseSession session, string? actionId, CampaignActionAudience audience)
+        ExerciseSession session, string? actionId, CampaignActionAudience audience,
+        CampaignNativeCombatRetreatTimeoutV37? timeout = null)
     {
         try
         {
             var runtime = session.CurrentRepeatAssault!;
             var result = runtime.Result!;
-            var retreat = CampaignNativeCombatRetreatAfterAssaultV23.Create(
+            var retreat = timeout ?? CampaignNativeCombatRetreatAfterAssaultV23.Create(
                 runtime.Selection, result, runtime.PaidWorld!, session.Context,
                 session.CurrentContacts, actionId);
             var contacts = session.CurrentContacts.AdvanceNativeCombatRetreatAfterAssault(retreat);
@@ -1313,11 +1484,12 @@ public static class CampaignExercises
     }
 
     private static ExerciseStepResult AcceptPostResultRetreat(
-        ExerciseSession session, string? actionId, CampaignActionAudience audience)
+        ExerciseSession session, string? actionId, CampaignActionAudience audience,
+        CampaignNativeCombatRetreatTimeoutV37? timeout = null)
     {
         var selected = session.CurrentCombatDecision!;
         var result = session.CurrentCombatAssaultResult!;
-        var retreat = CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
+        var retreat = timeout ?? CampaignNativeCombatRetreatAfterAssaultV23.Create(selected,
             result, session.CurrentCombatPaidWorld!, session.Context,
             session.CurrentContacts, actionId);
         var contacts = session.CurrentContacts
@@ -1534,6 +1706,40 @@ public static class CampaignExercises
         }
     }
 
+    internal static ExerciseStepResult TimeoutNativeCombatCustody(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var cut = QueryNativeCombatCustodyCut(session)
+                ?? throw new InvalidOperationException("No pending captive lot.");
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "custody-unavailable")
+                || (reason != "custody-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("custody"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var repeated = session.CurrentRepeatAssault is { Settlement: not null, Custody: null };
+            var settlement = repeated ? session.CurrentRepeatAssault!.Settlement! : session.CurrentCombatSettlement!;
+            var world = repeated ? session.CurrentRepeatAssault!.SettledWorld! : session.CurrentCombatSettledWorld!;
+            var timeout = CampaignNativeCombatCustodyTimeoutV36.CreateTimeout(session.CurrentSnapshot,
+                settlement, world, cut, session.Context,
+                configuration?.Hash ?? CampaignNativeCombatCustodyTimeoutV36.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            return repeated
+                ? AcceptRepeatedCombatCustody(session, cut, "leave-unguarded", CampaignActionAudience.System, null, timeout)
+                : AcceptNativeCombatCustody(session, cut, "leave-unguarded", CampaignActionAudience.System, null, timeout);
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     internal static ExerciseStepResult CompleteNoNativeCombatCustody(
         ExerciseSession session)
     {
@@ -1606,7 +1812,8 @@ public static class CampaignExercises
 
     private static ExerciseStepResult AcceptRepeatedCombatCustody(
         ExerciseSession session, CampaignNativeCombatCustodyCutV25? cut,
-        string choiceKind, CampaignActionAudience audience, string? actionId)
+        string choiceKind, CampaignActionAudience audience, string? actionId,
+        CampaignNativeCombatCustodyDispositionV25? systemDisposition = null)
     {
         try
         {
@@ -1615,7 +1822,7 @@ public static class CampaignExercises
             var world = runtime.SettledWorld!;
             if (session.CurrentContacts.AuthorityVersion != settlement.StateVersion)
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
-            var disposition = CampaignNativeCombatCustodyDispositionV25.Create(
+            var disposition = systemDisposition ?? CampaignNativeCombatCustodyDispositionV25.Create(
                 session.CurrentSnapshot, settlement, world, cut, choiceKind,
                 session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatCustodyDisposition(
@@ -1646,13 +1853,14 @@ public static class CampaignExercises
 
     private static ExerciseStepResult AcceptNativeCombatCustody(
         ExerciseSession session, CampaignNativeCombatCustodyCutV25? cut,
-        string choiceKind, CampaignActionAudience audience, string? actionId)
+        string choiceKind, CampaignActionAudience audience, string? actionId,
+        CampaignNativeCombatCustodyDispositionV25? systemDisposition = null)
     {
         var settlement = session.CurrentCombatSettlement!;
         var settledWorld = session.CurrentCombatSettledWorld!;
         if (session.CurrentContacts.AuthorityVersion != settlement.StateVersion)
             throw new InvalidOperationException("Custody requires the accepted contact cut.");
-        var disposition = CampaignNativeCombatCustodyDispositionV25.Create(
+        var disposition = systemDisposition ?? CampaignNativeCombatCustodyDispositionV25.Create(
             session.CurrentSnapshot, settlement, settledWorld, cut,
             choiceKind, session.Context);
         var projection = CampaignNativeCombatCustodyProjectionV25.Project(
@@ -1805,6 +2013,11 @@ public static class CampaignExercises
                     ?? CampaignNativeReserveReleaseStateV27
                         .InitializeAfterInitialNoAttack(initial, noAttack,
                             session.Context);
+            if (session.CurrentCombatRbaCancellation is { } cancelledRba)
+                return session.CurrentReserveRelease
+                    ?? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialRbaCancellation(
+                        initial, cancelledRba, session.CurrentCombatRetreatWorld ?? initial.PriorSnapshot.World,
+                        session.Context);
             if (session.CurrentCombatCancelledAssault is { } cancelled)
                 return session.CurrentReserveRelease
                     ?? CampaignNativeReserveReleaseStateV27
@@ -1895,6 +2108,109 @@ public static class CampaignExercises
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 QueryPendingNativeCycleControl(ExerciseSession session)
+    {
+        var release = QueryNativeReserveReleaseState(session);
+        if ((session.CurrentRepeatAssault?.Release is not null
+                ? session.CurrentRepeatAssault.Control
+                : session.CurrentPostRepeat is not null
+                    ? session.CurrentPostRepeat.Control
+                    : session.CurrentCycleControl) is not null
+            || !release.Completed || release.StateVersion != session.CurrentContacts.AuthorityVersion)
+            throw new InvalidOperationException("No pending cycle-control decision is available.");
+        return release;
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 QueryPendingNativeReserveRelease(ExerciseSession session)
+    {
+        var release = QueryNativeReserveReleaseState(session);
+        if (release.Completed || release.Pending(session.Context).Count == 0
+            || release.StateVersion != session.CurrentContacts.AuthorityVersion)
+            throw new InvalidOperationException("No pending Reserve Release decision is available.");
+        return release;
+    }
+
+    internal static ExerciseStepResult TimeoutNativeReserveRelease(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryPendingNativeReserveRelease(session);
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "reserve-release-unavailable")
+                || (reason != "reserve-release-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds)
+                        != configuration.Budget("reserve-release"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var (nextState, control) = release.Timeout(session.Context,
+                configuration?.Hash ?? CampaignNativeReserveReleaseTimeoutV35.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(control);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(control, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(control, contacts)
+                    : session.WithReserveReleaseEvent(control, contacts);
+            var bytes = control.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                release.StateVersion, control.StateVersion, control.NextPositionId,
+                CampaignActionAudience.System, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, nextState.SerializeCanonical()));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static ExerciseStepResult TimeoutNativeCycleControl(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds,
+        long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var release = QueryPendingNativeCycleControl(session);
+            if ((configuration is not null
+                    && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                        || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "cycle-control-unavailable")
+                || (reason != "cycle-control-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds)
+                        != configuration.Budget("cycle-control"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var control = CampaignNativeCycleControlTimeoutV34.Create(release,
+                session.Context, session.CurrentContacts,
+                configuration?.Hash ?? CampaignNativeCycleControlTimeoutV34.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                cancelledAtUnixMilliseconds, reason);
+            var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
+            var next = session.CurrentPostRepeat is not null
+                ? session.WithPostRepeatEvent(control, contacts)
+                : session.CurrentRepeatAssault?.Release is not null
+                    ? session.WithRepeatAssaultEvent(control, contacts)
+                    : session.WithCycleControlEvent(control, contacts);
+            var bytes = control.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(release.CampaignId,
+                release.StateVersion, control.StateVersion, control.NextPositionId,
+                CampaignActionAudience.System, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
     }
 
@@ -2190,7 +2506,8 @@ public static class CampaignExercises
         if (session.CurrentRepeatAssault is
             {
                 Barrage: not null,
-                Decline: null
+                Decline: null,
+                RbaCancellation: null
             })
             return SubmitRepeatedDefenderRbaMove(session, submission,
                 defenderElementId);
@@ -2410,6 +2727,8 @@ public static class CampaignExercises
             : completedSession.CurrentCombatDecision is { } combat
                 ? combat.SerializeCanonical()
                 : CampaignCurrentSnapshotSerializer.Serialize(completedSession.CurrentSnapshot);
+        if (completedSession.CurrentCombatRbaCancellation is { } rbaCancellation)
+            expectedBytes = rbaCancellation.SerializeStateCanonical(expectedBytes);
         if (completedSession.CurrentCombatForceSeals.Count > 0
             || completedSession.CurrentCombatForceCancellation is not null)
         {
@@ -2479,6 +2798,7 @@ public static class CampaignExercises
                         + completedSession.CurrentCombatForceSeals.Count
                         + (completedSession.CurrentCombatForceCompletion is null ? 0 : 1)
                         + (completedSession.CurrentCombatForceCancellation is null ? 0 : 1)
+                        + (completedSession.CurrentCombatRbaCancellation is null ? 0 : 1)
                         + (completedSession.CurrentCombatAntiArmor is null ? 0 : 1)
                         + (completedSession.CurrentCombatCancelledAssault is null ? 0 : 1)
                         + (completedSession.CurrentCombatAssaultResult is null ? 0 : 1)
@@ -2577,7 +2897,18 @@ public static class CampaignExercises
                     }
                     if (previousMove is not null)
                         worldMatch = world.Equals(completedSession.CurrentCombatRetreatWorld);
-                    if (completedSession.CurrentCombatRetreatDecline is not null)
+                    if (completedSession.CurrentCombatRbaCancellation is not null)
+                    {
+                        if (replayEvents[decisionIndex + 2 + completedSession.CurrentCombatRetreatMoves.Count]
+                            is not CampaignNativeCombatRbaCancellationV33 rbaEvent)
+                            throw new InvalidCampaignHistoryException("Native RBA cancellation is missing.");
+                        var verifiedRba = CampaignNativeCombatRbaCancellationV33.Replay(
+                            verified, verifiedBarrage, previousMove, rbaEvent.SerializeCanonical());
+                        replayedBytes = verifiedRba.SerializeStateCanonical(previousMove is null
+                            ? verifiedBarrage.SerializeStateCanonical(verified) : moveState);
+                        replayedContacts = replayedContacts.AdvanceNativeCombatRbaCancellation(verifiedRba);
+                    }
+                    else if (completedSession.CurrentCombatRetreatDecline is not null)
                     {
                         if (replayEvents[decisionIndex + 2 + completedSession.CurrentCombatRetreatMoves.Count]
                             is not CampaignNativeCombatRetreatDeclineV15 declineEvent)
@@ -2977,12 +3308,17 @@ public static class CampaignExercises
                 else replayedBytes = verified.SerializeCanonical();
                 if (completedSession.CurrentReserveReleaseEvents.Count > 0
                     && (completedSession.CurrentNoAttackCompletion is not null
-                        || completedSession.CurrentCombatCancelledAssault is not null))
+                        || completedSession.CurrentCombatCancelledAssault is not null
+                        || completedSession.CurrentCombatRbaCancellation is not null))
                 {
                     var initialRelease = completedSession.CurrentNoAttackCompletion
                         is { } noAttack
                         ? CampaignNativeReserveReleaseStateV27
                             .InitializeAfterInitialNoAttack(verified, noAttack,
+                                completedSession.Context)
+                        : completedSession.CurrentCombatRbaCancellation is { } initialRba
+                            ? CampaignNativeReserveReleaseStateV27.InitializeAfterInitialRbaCancellation(
+                                verified, initialRba, completedSession.CurrentCombatRetreatWorld ?? verified.PriorSnapshot.World,
                                 completedSession.Context)
                         : CampaignNativeReserveReleaseStateV27
                             .InitializeAfterInitialCancellation(verified,
@@ -3051,6 +3387,7 @@ public static class CampaignExercises
                     ?? (completedSession.CurrentCombatForceSeals.Count > 0
                     ? completedSession.CurrentCombatForceSeals[^1].StateVersion
                     : completedSession.CurrentNoAttackCompletion?.StateVersion
+                    ?? completedSession.CurrentCombatRbaCancellation?.StateVersion
                     ?? completedSession.CurrentCombatRetreatDecline?.StateVersion
                     ?? completedSession.CurrentCombatRetreatMove?.StateVersion
                     ?? completedSession.CurrentCombatBarrage?.StateVersion

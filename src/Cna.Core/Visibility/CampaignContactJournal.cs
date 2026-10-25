@@ -176,6 +176,17 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(completion.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceNativeCombatRbaCancellation(
+        CampaignNativeCombatRbaCancellationV33 cancellation)
+    {
+        ArgumentNullException.ThrowIfNull(cancellation);
+        if (cancellation.CampaignId != CampaignId
+            || cancellation.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("RBA cancellation does not bind contact authority.",
+                nameof(cancellation));
+        return AtAuthorityVersion(cancellation.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeCombatForceCancellation(
         CampaignNativeCombatForceCancellationV19 cancellation)
     {

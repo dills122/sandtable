@@ -63,6 +63,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private CampaignOwnerOpening QueryOwnerOpeningCore(CampaignSeatCredential credential,
         string actingElementId, CampaignOwnerOpeningKind kind)
     {
+        RequireWritable();
         ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
@@ -163,9 +164,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             throw new InvalidOperationException("No owner opening is available at this cut.");
         }
+        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
+        {
+            var round = ReadActiveRbaRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateRbaRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                CancelRbaRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("RBA round is closed.");
+            }
+        }
         if (kind == CampaignOwnerOpeningKind.ForceAssignment)
         {
-            var round = GetOrOpenForceRound(connection, transaction, authority, seat.CampaignId);
+            var round = ReadActiveForceRound(connection, transaction, authority, seat.CampaignId);
             var gate = GateForceRound(connection, transaction, round);
             if (gate.CancellationReason is { } reason)
             {
@@ -173,6 +185,62 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     reason, gate.CancelledAt);
                 transaction.Commit();
                 throw new InvalidOperationException("Force Assignment round is closed.");
+            }
+        }
+        if (kind == CampaignOwnerOpeningKind.CycleControl)
+        {
+            var round = ReadActiveCycleRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateCycleRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutCycleRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Cycle control round is closed.");
+            }
+        }
+        if (kind == CampaignOwnerOpeningKind.CombatSelection
+            || kind == CampaignOwnerOpeningKind.RepeatCombatSelection)
+        {
+            var round = ReadActiveSelectionRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateSelectionRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutSelectionRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Selection round is closed.");
+            }
+        }
+        if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
+        {
+            var round = ReadActiveRetreatRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateRetreatRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutRetreatRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Retreat round is closed.");
+            }
+        }
+        if (kind == CampaignOwnerOpeningKind.Custody)
+        {
+            var round = ReadActiveCustodyRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateCustodyRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutCustodyRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Custody round is closed.");
+            }
+        }
+        if (kind == CampaignOwnerOpeningKind.ReserveRelease)
+        {
+            var round = ReadActiveReserveRound(connection, transaction, authority, seat.CampaignId);
+            var gate = GateReserveRound(connection, transaction, round);
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutReserveRound(connection, transaction, authority, gate.Round, reason, gate.CancelledAt);
+                transaction.Commit();
+                throw new InvalidOperationException("Reserve Release round is closed.");
             }
         }
         RequireBounded(visible);

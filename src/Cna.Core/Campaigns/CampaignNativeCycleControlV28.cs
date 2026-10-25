@@ -14,7 +14,7 @@ internal enum CampaignNativeCycleControlChoiceV28
 // Reserve Release closes its own segment. This separate event chooses one of
 // the two source-backed cycle edges without treating a linear catalog edge as
 // an implicit player decision.
-internal sealed record CampaignNativeCycleControlV28(
+internal record CampaignNativeCycleControlV28(
     int ContractVersion, string CampaignId, long PriorStateVersion,
     string PriorEventHash, CampaignNativeCycleControlChoiceV28 Choice,
     int PriorCycleOrdinal, string ResultWorldHash,
@@ -91,14 +91,19 @@ internal sealed record CampaignNativeCycleControlV28(
         ReadOnlyMemory<byte> canonicalEvent)
     {
         var parsed = Deserialize(canonicalEvent);
-        var expected = Create(release, context, contacts, parsed.Choice);
+        CampaignNativeCycleControlV28 expected = parsed is CampaignNativeCycleControlTimeoutV34 timeout
+            ? CampaignNativeCycleControlTimeoutV34.Create(release, context, contacts,
+                timeout.ConfigurationHash, timeout.OpenedAtUnixMilliseconds,
+                timeout.DeadlineUnixMilliseconds, timeout.HighWaterUnixMilliseconds,
+                timeout.CancelledAtUnixMilliseconds, timeout.Reason)
+            : Create(release, context, contacts, parsed.Choice);
         if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
             throw new InvalidCampaignHistoryException(
                 "Cycle control differs from completed Reserve Release authority.");
         return expected;
     }
 
-    internal byte[] SerializeCanonical()
+    internal virtual byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
             || PriorCycleOrdinal < 1 || !Enum.IsDefined(Choice)
@@ -137,6 +142,8 @@ internal sealed record CampaignNativeCycleControlV28(
                 throw new JsonException("Cycle control event exceeds its byte bound.");
             using var document = JsonDocument.Parse(canonicalEvent);
             var root = document.RootElement;
+            if (root.GetProperty("eventType").GetString() == "movement-combat-cycle-timeout")
+                return CampaignNativeCycleControlTimeoutV34.Deserialize(canonicalEvent);
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion",
                 "eventType", "campaignId", "priorStateVersion", "priorEventHash",
                 "choice", "priorCycleOrdinal", "resultWorldHash", "nextPositionId",

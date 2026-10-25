@@ -75,6 +75,9 @@ outside any UI.
 
 ## Where things stand
 
+See the [RC checklist](docs/work/plans/2026-10-24-rc-checklist.md) for current
+implementation evidence, open release gates and explicit pass criteria.
+
 > [!IMPORTANT]
 > Sandtable is a tested pre-alpha simulation engine, not yet a playable adaptation of the published
 > game. Current scenarios are synthetic rules-laboratory fixtures, not released campaign content.
@@ -83,16 +86,18 @@ outside any UI.
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands and events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | A runner executes Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and the continual turn cycle | In review | Native Combat, including assault, settlement, custody, and Reserve Release repeat cycles, is implemented and under review. It is not yet publicly reachable. |
+| Combat and the continual turn cycle | Bounded native implementation | Contact-based Core and normal durable Host cover an initial assault plus two selected repeated assaults, settlement, custody, and Reserve Release. Development loopback access is not public Combat certification; broader support and evidence gates remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and evidence bundles, all from the CLI. |
 | User interface (Maproom) | Angular foundation, local read-only preview | A synthetic fixture study and a local, URL-backed campaign read mode. No live multiplayer actions yet. |
 | Published scenario | Not started | First target is the six-turn Graziani's Offensive, once the Combat loop is complete. |
-| Durable save and resume | Not started | The replay and checkpoint contracts exist. User-facing campaign persistence is a later milestone. |
+| Durable save and resume | Local durable Host implemented; product gate open | SQLite journal and cold replay support bounded local campaigns; schema 14 persists Selection, RBA, Force, Retreat, Custody, Reserve Release and cycle-control deadlines at decision entry; background fallback needs no owner query. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
 | Model-backed commanders | Scaffold only | The gateway and worker processes exist. No model provider is configured, and AI will not hold authority over the rules. |
 
 In plain terms: you can build the engine, run the full test suite, launch the Aspire service stack,
 and simulate the currently checked Movement, Reaction, and Breakdown paths. Native Combat is
-implemented but gated behind review. You cannot yet play a public campaign end to end.
+implemented for bounded local paths; public certification remains open. You cannot yet play a public campaign end to end.
+The [October 24 baseline evidence matrix](docs/work/reviews/2026-10-24-rc-baseline-evidence.md)
+separates these paths from original P01 certification and remaining release gates.
 
 For full detail on every contract, every merged slice, and every open gate, see the
 [current roadmap](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates), the
@@ -197,8 +202,9 @@ The full workflow is in the [contributor guide](CONTRIBUTING.md). The short vers
 3. Update contracts before their consumers. Add a focused, deterministic test before changing
    behavior.
 4. Keep remote and model I/O out of the authoritative turn path. The Umpire stays deterministic.
-5. Run `just check` before opening a PR. It runs formatting, build, the boundary-disclosure suite,
-   and the full test suite.
+5. Run focused tests while iterating, then affected project suites and formatting before review.
+   Use the [local testing guide](docs/runbooks/local-testing.md) to choose coverage. CI checks
+   exhaustive coverage before merge; `just check` remains the full local release checkpoint.
 
 | Command | What it does |
 | --- | --- |
@@ -206,6 +212,11 @@ The full workflow is in the [contributor guide](CONTRIBUTING.md). The short vers
 | `just setup` | Check the SDK version and restore dependencies |
 | `just build` | Restore and build the solution |
 | `just test` | Build and run all tests |
+| `just test-suites` | List focused suites and CI-compatible chunks |
+| `just test-suite host` | Build and test only Host and its dependencies |
+| `just test-class core '*CampaignContact*'` | Run matching Core test classes |
+| `just test-method host '*ForceRound*'` | Run matching Host test methods |
+| `just test-shard fast-01` | Run one CI-compatible Core chunk locally |
 | `just boundary-check` | Run the user-space disclosure boundary suite |
 | `just format-check` | Verify formatting without changing anything |
 | `just check` | The full local gate: format, build, boundary tests, all tests |

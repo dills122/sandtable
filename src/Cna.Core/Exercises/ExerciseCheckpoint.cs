@@ -20,7 +20,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCombatDecisionStateV12 decision)
     {
         ArgumentNullException.ThrowIfNull(decision);
-        ContractVersion = CampaignNativeCombatDecisionStateV12.CurrentContractVersion;
+        ContractVersion = decision.Decision.ContractVersion;
         CampaignId = decision.CampaignId;
         StateVersion = decision.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -168,6 +168,32 @@ public sealed class ExerciseCheckpoint
         PositionId = completion.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeCombatRbaCancellationV33 cancellation,
+        CampaignNativeCombatDecisionStateV12 decision)
+    {
+        ContractVersion = CampaignNativeCombatRbaCancellationV33.CurrentContractVersion;
+        CampaignId = cancellation.CampaignId;
+        StateVersion = cancellation.StateVersion;
+        RulesetHash = decision.PriorSnapshot.RulesetHash;
+        PositionId = cancellation.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatRbaCancellationV33 cancellation,
+        CampaignNativeRepeatCombatDecisionV31 decision,
+        CampaignSnapshotV11 initial)
+    {
+        if (cancellation.CampaignId != decision.CampaignId
+            || cancellation.DecisionActionId != decision.ActionId
+            || initial.CampaignId != decision.CampaignId)
+            throw new ArgumentException(
+                "Repeated RBA cancellation must bind accepted later-cycle selection.");
+        ContractVersion = CampaignNativeCombatRbaCancellationV33.CurrentContractVersion;
+        CampaignId = cancellation.CampaignId;
+        StateVersion = cancellation.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = cancellation.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatForceCancellationV19 cancellation,
         CampaignNativeCombatDecisionStateV12 decision)
     {
@@ -275,7 +301,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCombatRetreatAfterAssaultV23 retreat,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeCombatRetreatAfterAssaultV23.CurrentContractVersion;
+        ContractVersion = retreat.ContractVersion;
         CampaignId = retreat.CampaignId;
         StateVersion = retreat.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -291,7 +317,7 @@ public sealed class ExerciseCheckpoint
             || initial.CampaignId != decision.CampaignId)
             throw new ArgumentException(
                 "Repeated retreat decision must bind accepted later-cycle selection.");
-        ContractVersion = CampaignNativeCombatRetreatAfterAssaultV23.CurrentContractVersion;
+        ContractVersion = retreat.ContractVersion;
         CampaignId = retreat.CampaignId;
         StateVersion = retreat.StateVersion;
         RulesetHash = initial.RulesetHash;
@@ -327,7 +353,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCombatCustodyDispositionV25 custody,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeCombatCustodyDispositionV25.CurrentContractVersion;
+        ContractVersion = custody.ContractVersion;
         CampaignId = custody.CampaignId;
         StateVersion = custody.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -342,7 +368,7 @@ public sealed class ExerciseCheckpoint
             || initial.CampaignId != decision.CampaignId)
             throw new ArgumentException(
                 "Repeated custody must bind accepted later-cycle campaign.");
-        ContractVersion = CampaignNativeCombatCustodyDispositionV25.CurrentContractVersion;
+        ContractVersion = custody.ContractVersion;
         CampaignId = custody.CampaignId;
         StateVersion = custody.StateVersion;
         RulesetHash = initial.RulesetHash;
@@ -377,7 +403,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeReserveReleaseStateV27 reserveRelease,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeReserveReleaseEventV27.CurrentContractVersion;
+        ContractVersion = reserveRelease.EventContractVersion;
         CampaignId = reserveRelease.CampaignId;
         StateVersion = reserveRelease.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -390,7 +416,7 @@ public sealed class ExerciseCheckpoint
         if (reserveRelease.CampaignId != initial.CampaignId)
             throw new ArgumentException(
                 "Repeated Reserve Release must bind accepted campaign.");
-        ContractVersion = CampaignNativeReserveReleaseEventV27.CurrentContractVersion;
+        ContractVersion = reserveRelease.EventContractVersion;
         CampaignId = reserveRelease.CampaignId;
         StateVersion = reserveRelease.StateVersion;
         RulesetHash = initial.RulesetHash;
@@ -400,7 +426,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCycleControlV28 control,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeCycleControlV28.CurrentContractVersion;
+        ContractVersion = control.ContractVersion;
         CampaignId = control.CampaignId;
         StateVersion = control.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -413,7 +439,7 @@ public sealed class ExerciseCheckpoint
         if (control.CampaignId != initial.CampaignId)
             throw new ArgumentException(
                 "Repeated cycle control must bind accepted campaign.");
-        ContractVersion = CampaignNativeCycleControlV28.CurrentContractVersion;
+        ContractVersion = control.ContractVersion;
         CampaignId = control.CampaignId;
         StateVersion = control.StateVersion;
         RulesetHash = initial.RulesetHash;
@@ -443,7 +469,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeRepeatCombatDecisionV31 selection,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeRepeatCombatDecisionV31.CurrentContractVersion;
+        ContractVersion = selection.ContractVersion;
         CampaignId = selection.CampaignId;
         StateVersion = selection.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
