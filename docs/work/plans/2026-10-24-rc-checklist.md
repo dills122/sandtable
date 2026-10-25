@@ -7,13 +7,13 @@ contracts remain authoritative. Every closure needs tested commit, exact profile
 command/exit/counts, retained artifacts and reviewer disposition. A historical
 pass does not prove a later head.
 
-Latest implementation packet: initial/repeated Selection `no-selection` timeout,
-following `38c17170`. Final evidence is recorded in the
-[Selection handoff](../reviews/2026-10-24-selection-timeout-handoff.md).
-Current checks passed:Core24,Host213,Runner470,boundary81,contracts18,
-three relevant Python oracles,Release build and format. Discovery3649 reconciled.
-Previous Retreat checkpoint remains historical evidence. Full Core and exact-head
-hosted CI remain PR/release gates; focused checks do not replace them.
+Latest packet: integrated saved-copy campaign proof following `ee1d7645`.
+[Integrated handoff](../reviews/2026-10-24-integrated-campaign-handoff.md) records
+actual flow, commands/results and remaining limits. Four twin-history branches
+passed: actual second paid assault or repeated Selection/RBA/Force fallback,
+each with at least six saved-copy resumptions and terminal Cycle fallback.
+This is same-process saved-copy recovery, not a fresh-process proof. Prior Selection validation
+remains historical evidence. Full Core and exact-head CI remain release gates.
 
 ## Native Combat reliability
 
@@ -28,8 +28,8 @@ head; they do not admit original P01 roots or close product gates.
 | Reserve Release deadline | Implemented `ac1cab54` | Due I converts to II, due II retained; accepted owner releases/allowances unchanged; immutable deadline, exact System batch, atomic Cycle entry, cold replay and invalid/tampered cases pass. Genuine cycle2 Host evidence retained; genuine cycle3 Reserve fallback remains part of integration gate below. |
 | Custody deadline | Implemented `73e3af6f`, bounded single-lot scope | Source-legal leave-unguarded effects recorded as System; settlement-bound immutable entry deadline; no invented guard debit/owner receipt; owner race, no-query restart, duplicate expiry, cold replay, row tampering and rollback pass. Every admitted cut has a legal fallback; unsupported routes/lots remain explicitly excluded. |
 | Required post-assault Retreat deadline | Implemented `38c17170`; bounded initial Host and repeated native runtime proof | Result-entry immutable deadline; System `refuse-retreat` applies actual refusal settlement losses; no-query cold expiry, exact boundary, rejected late proposal non-mutation, owner retry, clock faults, tamper and rollback checks pass. Genuine repeated Host required-retreat expiry remains integration proof below. |
-| Selection deadline | Implemented in current packet; initial and genuine repeated paths | Deadline retained at actual initial or repeated Breakdown entry; System `no-selection` distinct from owner Finish, unchanged World/RNG, no-query cold expiry, owner race/retry, invalid proposal non-mutation, generic-Append gating, atomic no-attack/Reserve continuation and strict replay pass. Preserve readonly historical schemas and fail closed for unsupported fallback scope. |
-| Integrated durable Combat flow | Open | One retained genuine accepted history exercises initial and repeated combat, unpaid decisions and background fallbacks, restart at nonterminal cuts, Reserve I/II effects, cycle repeat/finish, and identical replay. Add genuine third-cycle Host Reserve timeout or prove that cut unreachable in the declared profile. Inject Host clock failure exactly at Custody entry and retain a genuine repeated captured-lot Custody expiry proof; the current fixed-seed second assault has no captive lot. Add genuine repeated Host required-Retreat timeout and exact Retreat-entry clock-failure injection; synthetic ordinal2/3 native replay and a real second assault with no required retreat are insufficient. No fabricated P01 ancestry. |
+| Selection deadline | Implemented `ee1d7645`; initial and genuine repeated paths | Deadline retained at actual initial or repeated Breakdown entry; System `no-selection` distinct from owner Finish, unchanged World/RNG, no-query cold expiry, owner race/retry, invalid proposal non-mutation, generic-Append gating, atomic no-attack/Reserve continuation and strict replay pass. Preserve readonly historical schemas and fail closed for unsupported fallback scope. |
+| Integrated durable Combat flow | Four saved-copy twin branches pass; broader gate open | One retained genuine accepted history exercises initial and repeated combat, unpaid decisions and background fallbacks, restart at nonterminal cuts, Reserve I/II effects, cycle repeat/finish, and identical replay. Add native fresh-process recovery at nonterminal cuts. Add genuine third-cycle Host Reserve timeout or prove that cut unreachable in the declared profile. Inject Host clock failure exactly at Custody entry and retain a genuine repeated captured-lot Custody expiry proof; the current fixed-seed second assault has no captive lot. Add genuine repeated Host required-Retreat timeout and exact Retreat-entry clock-failure injection; synthetic ordinal2/3 native replay and a real second assault with no required retreat are insufficient. No fabricated P01 ancestry. |
 
 ## Release evidence and publication
 
