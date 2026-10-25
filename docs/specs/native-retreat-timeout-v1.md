@@ -24,7 +24,8 @@ hash sentinel. Duplicate, already resolved and non-required retreats reject.
 Host owns durable deadline entry at accepted assault result, monotonic clock
 observations, terminal evidence and atomic downstream settlement.
 An owner query must never establish or renew window. Selection's separate
-`no-selection` deadline gap remains open; this contract does not cover it.
+`no-selection` deadline is defined in [native Selection timeout](native-selection-timeout-v1.md)
+for its bounded native scope; this Retreat contract does not cover it.
 
 Core repeated tests construct native runtime fixtures at ordinals 2 and 3; they
 prove replay dispatch, not complete accepted Host history through multiple cycles.

@@ -47,8 +47,10 @@ head; they do not admit original P01 roots or close product gates.
 See [certificate matrix](../reviews/2026-10-24-rc-certificate-status.md),
 [dependency triage](../reviews/2026-10-24-maproom-dependency-triage.md), and
 [oracle pin policy](../../research/combat-verification-pin-maintenance.md).
-Prior packet review allowance was exhausted3/3; latest timeout packets carry
-coordinator review, not a newly claimed independent acceptance.
+Earlier packet review allowance exhausted3/3. User subsequently requested full
+PR review, explicitly extending to instance4of4: [full review](../reviews/2026-10-24-pr329-full-review.md)
+returned Ready with non-blocking follow-ups for bounded merge scope, conditional
+on documentation correction and final-head CI. No public release approval.
 
 ## Playable RC gates
 
@@ -64,6 +66,16 @@ existing roadmap gates; no scope reduction is inferred from finishing Combat.
 | MVP-GATE-05 Maproom/hot-seat | Foundation/read preview; acceptance open | Two seats can inspect, choose, confirm, submit and hand off privately without model; stale-action, DOM/storage/log privacy and accessibility end-to-end checks pass. |
 | MVP-GATE-06 full playthrough | Not demonstrated | Two independently checked complete six-turn games, including save/resume and correct victory, reproduce from seeds/events; no reachable unsupported mechanics; retain build/content/test hashes. |
 | MVP-GATE-07 delivery | Open | Approved distribution/rights/notices; CI-built versioned package with hashes and supported-platform matrix; fresh-machine launch/create/play/save/quit/resume smoke; backup/save location/compatibility instructions. |
+
+## Merge checkpoint and follow-ups
+
+[RC follow-up tracker #330](https://github.com/dills122/sandtable/issues/330) carries
+remaining work with owner lanes and explicit pass criteria. PR329 can land as a
+bounded reliability checkpoint after exact-head CI and full independent review;
+that does not close release, certification or playable-product gates. Known
+Breakdown/cycle source-pin failures predate this PR: verifier files and pinned
+`Cna1979LandSequence.cs` are unchanged from base `16d76448`. They remain release
+blockers in #330, not waived successes. New PR regressions must be fixed before merge.
 
 ## Next execution order
 
