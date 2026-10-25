@@ -34,8 +34,8 @@ RoundEntry consumption recheck correction: original five regressions now pass
 unchanged; full RoundEntry177 and refreshed native R03 parity300 pass in focused
 chunks. Owned snapshots explicitly recheck Content through original provider at
 use, including warm replay. Six affected schemas and refreshed fixtures regenerated;
-legacy registrations/archives and original P01 goldens preserved. Final review8/8
-and exact-head CI remain required before merge. [Correction evidence](../reviews/2026-10-25-roundentry-consumption-recheck.md).
+legacy registrations/archives and original P01 goldens preserved. Final review8/8 returned **Ready**, no actionable findings, at91b313c3.
+Strict local inventory passed; exact-head hosted CI remains required before merge. [Correction evidence](../reviews/2026-10-25-roundentry-consumption-recheck.md).
 
 ## Native Combat reliability
 
