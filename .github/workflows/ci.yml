@@ -527,7 +527,8 @@ jobs:
   orleans:
     needs: prepare
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # Full Host suite includes real child-process recovery; reserve time for evidence upload.
+    timeout-minutes: 25
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -543,8 +544,11 @@ jobs:
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
       - name: Run and verify Orleans host rows
+        timeout-minutes: 20
+        shell: bash
         run: |
-          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results
+          mkdir -p artifacts/orleans-results
+          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results 2>&1 | tee artifacts/orleans-results/console.log
           python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
       - name: Retain Orleans test results
         if: ${{ always() }}
