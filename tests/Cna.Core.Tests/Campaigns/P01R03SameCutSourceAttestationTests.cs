@@ -7,8 +7,11 @@ using static Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests;
 
 namespace Cna.Core.Tests.Campaigns;
 
-public sealed class P01R03SameCutSourceAttestationTests
+public sealed class P01R03SameCutSourceAttestationTests : IDisposable
 {
+    private readonly CombatLegacyDependencyArchive legacy = new(Dependency);
+    public void Dispose() => legacy.Dispose();
+
     private const string ImportPath = "docs/specs/fixtures/p01-r03-a1-r012-c01-import-v1.json.gz";
     private const string ControlPath = "docs/specs/fixtures/p01-r03-a1-r012-c01-after-control-v1.json.gz";
     private const string ImportFileHash = "5019978589938979d7010416f6e3424e07615532475f5633a60db66414db14aa";
@@ -19,12 +22,12 @@ public sealed class P01R03SameCutSourceAttestationTests
     {
         var import = ReadFixture(ImportPath, ImportFileHash);
         var control = ReadFixture(ControlPath, ControlFileHash);
-        var first = P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(), Dependency);
-        var second = P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(), Dependency);
+        var first = P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(), legacy.Read);
+        var second = P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(), legacy.Read);
         Assert.False(first.Admitted);
         Assert.Equal(first.CanonicalBytes, second.CanonicalBytes);
         Assert.Equal(first.CanonicalBytes, P01R03SameCutSourceAttestationCodecV1.ReadAttestation(
-            first.CanonicalBytes, import, control, Context(), Dependency).CanonicalBytes);
+            first.CanonicalBytes, import, control, Context(), legacy.Read).CanonicalBytes);
         using var document = JsonDocument.Parse(first.CanonicalBytes);
         var root = document.RootElement;
         Assert.Equal(1, root.GetProperty("contractVersion").GetInt32());
@@ -55,18 +58,18 @@ public sealed class P01R03SameCutSourceAttestationTests
         var control = ReadFixture(ControlPath, ControlFileHash);
         var alteredControl = control.ToArray(); alteredControl[100] ^= 1;
         Assert.Equal("P01-A1S-002", Assert.Throws<JsonException>(() =>
-            P01R03SameCutSourceAttestationCodecV1.Attest(import, alteredControl, Context(), Dependency)).Message);
+            P01R03SameCutSourceAttestationCodecV1.Attest(import, alteredControl, Context(), legacy.Read)).Message);
         Assert.Equal("P01-A1S-001", Assert.Throws<JsonException>(() =>
-            P01R03SameCutSourceAttestationCodecV1.Attest(import, new byte[P01R03SameCutSourceAttestationCodecV1.MaximumControlBytes + 1], Context(), Dependency)).Message);
+            P01R03SameCutSourceAttestationCodecV1.Attest(import, new byte[P01R03SameCutSourceAttestationCodecV1.MaximumControlBytes + 1], Context(), legacy.Read)).Message);
         Assert.Throws<JsonException>(() => P01R03SameCutSourceAttestationCodecV1.Attest(
-            [.. import, (byte)' '], control, Context(), Dependency));
+            [.. import, (byte)' '], control, Context(), legacy.Read));
         Assert.Throws<JsonException>(() => P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(),
-            path => path == "docs/specs/verify-combat-actual-moved-repeat-breakdown-completion-v1.py" ? [0] : Dependency(path)));
+            path => path == "docs/specs/verify-combat-actual-moved-repeat-breakdown-completion-v1.py" ? [0] : legacy.Read(path)));
 
-        var original = P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(), Dependency).CanonicalBytes;
+        var original = P01R03SameCutSourceAttestationCodecV1.Attest(import, control, Context(), legacy.Read).CanonicalBytes;
         var forged = original.ToArray(); forged[^2] = (byte)'1';
         Assert.Equal("P01-A1S-004", Assert.Throws<JsonException>(() =>
-            P01R03SameCutSourceAttestationCodecV1.ReadAttestation(forged, import, control, Context(), Dependency)).Message);
+            P01R03SameCutSourceAttestationCodecV1.ReadAttestation(forged, import, control, Context(), legacy.Read)).Message);
     }
 
     private static (string?, string?, string?, string?) Facts(JsonElement element) => (

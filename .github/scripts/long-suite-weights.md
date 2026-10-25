@@ -387,3 +387,26 @@ Report: `artifacts/rc-selection-timeout/core-results/dsteele_Dylans-MacBook-Pro_
 | `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "clock-unavailable", observed: null)` | `fba4410da237` | 1190 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "clock-regression", observed: 999)` | `6c100195ec54` | 500 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "controller-unavailable", observed: null)` | `13212da9e28e` | 596 |
+
+## Evidence revision compatibility (October 25, 2026 America/Toronto)
+
+Sixteen new Core rows measured from passing local Release MTP XML. Prior weights and baseline metadata retained; snapshot class uses one ordinary suite part. These are scheduling hints, not hosted performance claims. Commands: `dotnet exec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-method '*Legacy*' --report-xunit-xml --results-directory <output>` and equivalent `--filter-class '*CombatDependencySnapshotTests'`. XML retained under `artifacts/pr334-ci/timings`. Only newly discovered rows added; no coverage guard relaxed.
+
+| Row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.IndividuallyRegisteredBytesFromDifferentRevisionsAreRejected` | `7775778eb492` | 11 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.CompleteRevisionOwnsBytesAndReturnsIndependentCopies(revision: "refreshed")` | `6daed8308087` | 2 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.CompleteRevisionOwnsBytesAndReturnsIndependentCopies(revision: "legacy")` | `2a559df78733` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.NestedAcquisitionPreservesRootRevisionForIdenticalSubset` | `9c688173e2c6` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.ConcurrentRevisionsNeverShareSelectionState` | `8aab92e64a0f` | 14 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.ExplicitRevisionCannotFallBackToAnotherRegisteredRevision` | `3c037cc492a7` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.CallerCannotChangeRegistrationDuringAcquisition` | `ae24f2801b98` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.InvalidAcquisitionRejectsBeforeExposingSnapshot(fault: "null")` | `32672044482a` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.InvalidAcquisitionRejectsBeforeExposingSnapshot(fault: "oversized")` | `9ed7ce1d3208` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.InvalidAcquisitionRejectsBeforeExposingSnapshot(fault: "missing")` | `a1d81891f712` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.InvalidAcquisitionRejectsBeforeExposingSnapshot(fault: "unknown")` | `fc884e0fc64d` | 1 |
+| `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyRepeatedBreakdownPreservesCommandEventProofAndRetryIdentity(index: 1)` | `bb472bbe434d` | 2523 |
+| `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyRepeatedBreakdownPreservesCommandEventProofAndRetryIdentity(index: 0)` | `fb2370b255f6` | 2213 |
+| `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyAndRefreshedFilesCannotBeMixedAfterSuccessfulReplay` | `fa6bb576c453` | 158 |
+| `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyRevisionReplaysEveryRetainedCutWithoutIdentityMigration(name: "axis-player-decline-attacker-selected")` | `6faa8f47da8b` | 3326 |
+| `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyRevisionReplaysEveryRetainedCutWithoutIdentityMigration(name: "commonwealth-player-decline-attacker-selected")` | `3ef243b8d707` | 2878 |

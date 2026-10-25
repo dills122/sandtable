@@ -18,8 +18,8 @@ def load(name, file):
     return module
 
 
-r03 = load("p01_r03", "verify-combat-actual-moved-repeat-breakdown-completion-v1.py")
 p01 = load("p01_reference", "verify-combat-actual-moved-repeat-position-v1.py")
+r03 = p01.r03
 FIXTURE = json.loads((ROOT / "fixtures/combat-actual-moved-repeat-position-v1.json").read_text())
 
 

@@ -3,16 +3,21 @@
 import hashlib
 import importlib.util
 import json
+import sys
 from collections import deque
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 REPOSITORY = ROOT.parent.parent
 SCHEMA = json.loads((ROOT / "combat-actual-moved-repeat-position-v1.schema.json").read_bytes())
-spec = importlib.util.spec_from_file_location(
-    "p01_frozen_r03", ROOT / "verify-combat-actual-moved-repeat-breakdown-completion-v1.py")
-r03 = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(r03)
+# P01 is bound to the original 300 roots, not the refreshed R03 revision.
+helper_name = "sandtable_combat_evidence_legacy"
+if helper_name not in sys.modules:
+    spec = importlib.util.spec_from_file_location(helper_name, ROOT / "combat_evidence_legacy.py")
+    helper = importlib.util.module_from_spec(spec)
+    sys.modules[helper_name] = helper
+    spec.loader.exec_module(helper)
+r03 = sys.modules[helper_name].load_r03("p01_frozen_r03")
 
 
 def require(value):

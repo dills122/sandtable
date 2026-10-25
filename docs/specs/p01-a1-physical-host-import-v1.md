@@ -58,3 +58,8 @@ gate sets `SANDTABLE_P01_PHYSICAL_ARCHIVE` to the pinned archive and runs the
 focused OrleansHost test class; it covers physical selection, atomic commit,
 cold reopen and unissuable behavior. The full P01 certificate, authentic owner
 observations and submissions, and public/native admission remain open.
+
+The fixed original r012-c01 adapter selects the authenticated original evidence
+dependency archive during retained validation and cold readback. Current working-tree
+dependency revisions cannot silently replace that original root's manifest identity.
+See [evidence revisions](combat-evidence-revisions-v1.md#original-p01-proof-consumers).

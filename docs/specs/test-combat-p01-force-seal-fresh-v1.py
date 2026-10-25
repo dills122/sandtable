@@ -5,6 +5,8 @@ import copy
 import importlib.util
 import json
 import unittest
+import sys
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -19,6 +21,16 @@ def altered_input(raw, **changes):
     value = json.loads(base64.b64decode(raw))
     value.update(changes)
     return proof.b64(proof.ref.encode(value))
+
+
+class LegacyDependencyArchiveTests(unittest.TestCase):
+    def test_changed_original_archive_rejects_before_loading_oracle(self):
+        helper = sys.modules["sandtable_combat_evidence_legacy"]
+        for name in helper._ARCHIVES:
+            with self.subTest(archive=name), mock.patch.object(helper, "_directory", None), \
+                    mock.patch.dict(helper._ARCHIVES, {name: "0" * 64}):
+                with self.assertRaisesRegex(ValueError, "archive hash mismatch"):
+                    helper.legacy_root()
 
 
 class ForceSealFreshTests(unittest.TestCase):

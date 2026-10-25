@@ -749,7 +749,9 @@ Private Combat reference readers bind replay to a complete frozen
 [evidence dependency revision](docs/specs/combat-evidence-revisions-v1.md). Legacy bytes retain
 legacy manifest identities; refreshed bytes use their own identities. Dependency acquisition
 remains outside authoritative turns, owns caller buffers, and rejects mixed or unknown revisions
-before replay/cache access. This compatibility mechanism does not widen public admission.
+before replay/cache access. Original P01 proof consumers and the fixed physical-import
+adapter explicitly retain the original dependency archive; current R03 parity uses a
+separate refreshed catalogue. This compatibility mechanism does not widen public admission.
 
 The permanent Combat fog path now begins with Core-owned
 [contact knowledge](docs/specs/combat-contact-knowledge-v1.md). Authority

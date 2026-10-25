@@ -23,6 +23,13 @@ and [preflight](../reviews/2026-10-25-combat-source-pin-preflight.md) record sco
 docs-only repair was rejected; user approved native compatibility work and final review6.
 Original Cycle/Breakdown root oracles now pass. Native focused batches659 cases and format/build pass; independent review6/6 Ready with non-blocking follow-ups. Unrelated Snapshot pins, Outward anchors/pins and full final-head oracle coverage remain open. [Exact validation](../reviews/2026-10-25-evidence-revisions-validation.md) separates passing, failing and unrun checks.
 
+PR334 CI exposed missed original-P01 consumer coverage and 16 missing measured
+Core timing rows. Correction retains original P01 pins, separates refreshed R03
+parity, and adds actual measured rows without relaxing coverage checks.
+[CI correction evidence](../reviews/2026-10-25-pr334-ci-correction.md) records
+selected validation and remaining exact-head CI/review requirements. Prior review6
+does not cover this corrective patch.
+
 ## Native Combat reliability
 
 These are bounded implementation gates. Recheck them together on the release
