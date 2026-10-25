@@ -134,7 +134,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         return result;
     }
 
-    private static async Task<NativeChildResult> FreshProcessRunDeadlineChild(string path, string campaignId, long now)
+    private static async Task<NativeChildResult> FreshProcessRunDeadlineChild(string path, string campaignId, long now,
+        string mode = "--native-campaign-deadline")
     {
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Name;
         var child = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..",
@@ -148,7 +149,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             UseShellExecute = false
         };
         start.ArgumentList.Add(child);
-        start.ArgumentList.Add("--native-campaign-deadline");
+        start.ArgumentList.Add(mode);
         using var process = Process.Start(start) ?? throw new InvalidOperationException("Cannot start native recovery child.");
         var stdout = process.StandardOutput.ReadToEndAsync();
         var stderr = process.StandardError.ReadToEndAsync();

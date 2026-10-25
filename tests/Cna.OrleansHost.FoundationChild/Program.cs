@@ -3,6 +3,34 @@ using Cna.Core.Exercises;
 using Cna.OrleansHost.Api;
 using Microsoft.Extensions.Logging.Abstractions;
 
+if (args is ["--native-reserve-crash-probe"])
+{
+    var crashInput = JsonSerializer.Deserialize<ReserveCrashInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing Reserve crash input.");
+    var clock = new ReserveCrashClock(crashInput.NowUnixMilliseconds, crashInput.StopAtRead);
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(crashInput.Path, clock);
+    var before = journal.ReadVerified(crashInput.CampaignId);
+    if (!CampaignExercises.Reconstruct(before).IsVerified)
+        throw new InvalidOperationException("Initial Reserve replay failed.");
+    clock.Arm();
+    _ = journal.TickReserveRound(crashInput.CampaignId);
+    if (crashInput.StopAfterCommit) ReserveCrashClock.Pause("after-commit", clock.ReadIndex, clock.LastObserved);
+    var after = journal.ReadVerified(crashInput.CampaignId);
+    var replay = CampaignExercises.Reconstruct(after);
+    if (!replay.IsVerified) throw new InvalidOperationException("Final Reserve replay failed.");
+    Console.WriteLine(JsonSerializer.Serialize(new
+    {
+        ProcessId = Environment.ProcessId,
+        BeforeStateVersion = CampaignExercises.QueryCheckpoint(before).StateVersion,
+        AfterStateVersion = CampaignExercises.QueryCheckpoint(after).StateVersion,
+        ContractVersion = CampaignExercises.QueryCheckpoint(after).ContractVersion,
+        replay.IsVerified,
+        replay.EventStreamHash,
+        replay.ReconstructedSnapshotHash
+    }));
+    return;
+}
+
 if (args is ["--native-campaign-deadline"])
 {
     var native = JsonSerializer.Deserialize<NativeDeadlineInput>(Console.ReadLine() ?? "")
@@ -48,6 +76,34 @@ internal sealed record ProbeReadbackInput(string Path, string CampaignId, string
     string ExactBytesHex);
 
 internal sealed record NativeDeadlineInput(string Path, string CampaignId, long NowUnixMilliseconds);
+
+internal sealed record ReserveCrashInput(string Path, string CampaignId, long NowUnixMilliseconds,
+    int StopAtRead = 0, bool StopAfterCommit = false);
+
+internal sealed class ReserveCrashClock(long now, int stopAtRead) : TimeProvider
+{
+    private bool armed;
+    public int ReadIndex { get; private set; }
+    public long LastObserved { get; private set; }
+    public void Arm() { ReadIndex = 0; armed = true; }
+    public override DateTimeOffset GetUtcNow()
+    {
+        if (!armed) return DateTimeOffset.FromUnixTimeMilliseconds(now);
+        if (++ReadIndex > 32) throw new InvalidOperationException("Reserve crash clock exceeded bound.");
+        LastObserved = checked(now + ReadIndex - 1);
+        if (ReadIndex == stopAtRead) Pause("clock-read", ReadIndex, LastObserved);
+        return DateTimeOffset.FromUnixTimeMilliseconds(LastObserved);
+    }
+    public static void Pause(string phase, int readIndex, long observed)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(new { Phase = phase, ReadIndex = readIndex, Observed = observed }));
+        Console.Out.Flush();
+        // Parent kills this process while stdin remains open. Never release the
+        // transaction via managed exception/disposal as a substitute for a crash.
+        _ = Console.ReadLine();
+        throw new InvalidOperationException("Crash probe must be terminated by parent.");
+    }
+}
 
 internal sealed class NativeFixedClock(long nowUnixMilliseconds) : TimeProvider
 {
