@@ -241,7 +241,7 @@
     "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssaultSupport.cs": "90c9ac00e1451fd84ba653cced39294da4bbb6e2f5c57486ba0de196ec3a040d",
     "src/Cna.Core/Campaigns/CampaignCombatActualReactionCombatEntry.cs": "d803ef06c1ebb993444f20b6b93123bd56991c714a32de24f602a257842c8d81",
     "src/Cna.Core/Campaigns/CampaignCombatActualReactionCombatEntryCodec.cs": "4d31a43d90d85b5a8196e16be3aed899af055bb301241ab26430149ded886ab4",
-    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073",
     "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntryCodec.cs": "3dfea67974770a571d08e848ba594006b14c58c8d21b98b1841034d73885659b",
     "src/Cna.Core/Campaigns/CampaignCombatActualSelection.cs": "8a94b2d5f9ecd688a0eb5670bbed4408add89f488ccd070ed53361210b7f3721",
     "src/Cna.Core/Campaigns/CampaignCombatBreakdownCompletion.cs": "fe24d5a524383c1e5137b3d9e8a0050fc21fd381c4dc7e59812d68dc3a24dc42",

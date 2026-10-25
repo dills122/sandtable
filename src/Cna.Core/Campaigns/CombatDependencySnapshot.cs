@@ -46,6 +46,24 @@ internal sealed class CombatDependencySnapshot
         return value.ToArray();
     }
 
+    internal byte[] ReadRevalidated(string path)
+    {
+        if (!bytes.TryGetValue(path, out var expected)) throw new JsonException(error);
+        try
+        {
+            var returned = source.Target is CombatDependencySnapshot parent
+                ? parent.ReadRevalidated(path) : source(path);
+            if (returned is null || returned.Length != expected.Length) throw new JsonException(error);
+            var current = returned.ToArray();
+            if (!expected.AsSpan().SequenceEqual(current)) throw new JsonException(error);
+            return current;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or KeyNotFoundException or ArgumentException or JsonException)
+        {
+            throw new JsonException(error, exception);
+        }
+    }
+
     internal string HashFor(string path)
     {
         if (!pins.TryGetValue(path, out var value)) throw new JsonException(error);

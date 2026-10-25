@@ -410,3 +410,10 @@ Sixteen new Core rows measured from passing local Release MTP XML. Prior weights
 | `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyAndRefreshedFilesCannotBeMixedAfterSuccessfulReplay` | `fa6bb576c453` | 158 |
 | `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyRevisionReplaysEveryRetainedCutWithoutIdentityMigration(name: "axis-player-decline-attacker-selected")` | `6faa8f47da8b` | 3326 |
 | `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.LegacyRevisionReplaysEveryRetainedCutWithoutIdentityMigration(name: "commonwealth-player-decline-attacker-selected")` | `3ef243b8d707` | 2878 |
+
+RoundEntry consumption recheck correction adds two measured nested-snapshot rows (legacy/refreshed), from Release MTP XML; previous rows unchanged.
+
+| Row | SHA256 | ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.ConsumptionRevalidationTraversesParentsAndOwnsCurrentBytes(revision: "refreshed")` | `2aa4edf314ed8d636578b2e5492867086c8fd6121a39c25cb7657c597ca002b5` | 5 |
+| `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.ConsumptionRevalidationTraversesParentsAndOwnsCurrentBytes(revision: "legacy")` | `ba85c38a95545606a6e2a2363b3dabe40794758a4092e82cd2676226a32c131a` | 1 |

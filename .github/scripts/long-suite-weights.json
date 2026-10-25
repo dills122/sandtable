@@ -3997,7 +3997,9 @@
     "bb472bbe434dd4c57537f7fa0915ef1038d22e1afe6b993f97df59584d63b9d7": 2523,
     "fa6bb576c4534e65946447aaae58609c4190048e837f9ddb8a480b99ab7249f6": 158,
     "fb2370b255f664bf3877589638ddc2080d7a69f9c67f4a98d4bcb669a163cfd6": 2213,
-    "fc884e0fc64dd6c7921c85f83a154574a4f3a8650897a1264289de1ab7d63145": 1
+    "fc884e0fc64dd6c7921c85f83a154574a4f3a8650897a1264289de1ab7d63145": 1,
+    "2aa4edf314ed8d636578b2e5492867086c8fd6121a39c25cb7657c597ca002b5": 5,
+    "ba85c38a95545606a6e2a2363b3dabe40794758a4092e82cd2676226a32c131a": 1
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4097,7 +4099,9 @@
     "bb472bbe434dd4c57537f7fa0915ef1038d22e1afe6b993f97df59584d63b9d7": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "fa6bb576c4534e65946447aaae58609c4190048e837f9ddb8a480b99ab7249f6": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "fb2370b255f664bf3877589638ddc2080d7a69f9c67f4a98d4bcb669a163cfd6": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
-    "fc884e0fc64dd6c7921c85f83a154574a4f3a8650897a1264289de1ab7d63145": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration"
+    "fc884e0fc64dd6c7921c85f83a154574a4f3a8650897a1264289de1ab7d63145": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "2aa4edf314ed8d636578b2e5492867086c8fd6121a39c25cb7657c597ca002b5": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
+    "ba85c38a95545606a6e2a2363b3dabe40794758a4092e82cd2676226a32c131a": "2026-10-25 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",

@@ -478,7 +478,13 @@ internal static class CampaignCombatActualRoundEntry
     private static string Domain(string kind, byte[] bytes) => CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.actual-round-entry." + kind + ".v1", bytes);
     private static byte[] PinnedBytes(string path, Func<string, byte[]> dependencyBytes)
     {
-        try { var data = dependencyBytes(path).ToArray(); Require(Hash(data) == "sha256:" + CombatEvidenceRevisions.Expected(dependencyBytes, path, Dependencies[path]), 9); return data; }
+        try
+        {
+            var data = dependencyBytes.Target is CombatDependencySnapshot snapshot
+                ? snapshot.ReadRevalidated(path) : dependencyBytes(path).ToArray();
+            Require(Hash(data) == "sha256:" + CombatEvidenceRevisions.Expected(dependencyBytes, path, Dependencies[path]), 9);
+            return data;
+        }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or KeyNotFoundException or NullReferenceException) { throw new JsonException("CMB-ARE-009", e); }
     }
     internal static Func<string, byte[]> VerifyDependencies(Func<string, byte[]> dependencyBytes)

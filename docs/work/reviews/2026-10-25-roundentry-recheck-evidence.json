@@ -1,0 +1,826 @@
+{
+  "base": "3bab87b1460e078116dac327443780ff1936a5c0",
+  "pinChanges": [
+    {
+      "file": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/src~1Cna.Core~1Campaigns~1CampaignCombatActualRoundEntry.cs",
+      "target": "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+      "before": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+      "after": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-assault-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "before": "797c3150c952439035fa8f972a9539fd63e7ea0f5a5a5bdb2d916901bbc7110a",
+      "after": "fc28dcd402de585123c9f5212678ba3e436d7416a3e12483d2862d1d95b3c7f2"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/src~1Cna.Core~1Campaigns~1CampaignCombatActualRoundEntry.cs",
+      "target": "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+      "before": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+      "after": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-assault-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "before": "797c3150c952439035fa8f972a9539fd63e7ea0f5a5a5bdb2d916901bbc7110a",
+      "after": "fc28dcd402de585123c9f5212678ba3e436d7416a3e12483d2862d1d95b3c7f2"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-continuation-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "before": "a8454d5bab561c5d00e74201d52624223389a62e34c9de5e1964290c84059810",
+      "after": "58e11bd1e781b93a2914f04ceeb73f0cb83391991e601af530ba4be2f1920ec1"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/src~1Cna.Core~1Campaigns~1CampaignCombatActualRoundEntry.cs",
+      "target": "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+      "before": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+      "after": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-assault-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "before": "797c3150c952439035fa8f972a9539fd63e7ea0f5a5a5bdb2d916901bbc7110a",
+      "after": "fc28dcd402de585123c9f5212678ba3e436d7416a3e12483d2862d1d95b3c7f2"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-continuation-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "before": "a8454d5bab561c5d00e74201d52624223389a62e34c9de5e1964290c84059810",
+      "after": "58e11bd1e781b93a2914f04ceeb73f0cb83391991e601af530ba4be2f1920ec1"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-cycle-control-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "before": "8e87f6df8defb79fca2232cde88310d2c3e3ae8ab5496093d9532bd398021837",
+      "after": "ad45b4c515c918f62d0463d1e15602335c651e607b3450ae89dc04980bd55b99"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/src~1Cna.Core~1Campaigns~1CampaignCombatActualRoundEntry.cs",
+      "target": "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+      "before": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+      "after": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-assault-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "before": "797c3150c952439035fa8f972a9539fd63e7ea0f5a5a5bdb2d916901bbc7110a",
+      "after": "fc28dcd402de585123c9f5212678ba3e436d7416a3e12483d2862d1d95b3c7f2"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-continuation-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "before": "a8454d5bab561c5d00e74201d52624223389a62e34c9de5e1964290c84059810",
+      "after": "58e11bd1e781b93a2914f04ceeb73f0cb83391991e601af530ba4be2f1920ec1"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-cycle-control-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "before": "8e87f6df8defb79fca2232cde88310d2c3e3ae8ab5496093d9532bd398021837",
+      "after": "ad45b4c515c918f62d0463d1e15602335c651e607b3450ae89dc04980bd55b99"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/src~1Cna.Core~1Campaigns~1CampaignCombatActualRoundEntry.cs",
+      "target": "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+      "before": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+      "after": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-assault-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "before": "797c3150c952439035fa8f972a9539fd63e7ea0f5a5a5bdb2d916901bbc7110a",
+      "after": "fc28dcd402de585123c9f5212678ba3e436d7416a3e12483d2862d1d95b3c7f2"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-continuation-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "before": "a8454d5bab561c5d00e74201d52624223389a62e34c9de5e1964290c84059810",
+      "after": "58e11bd1e781b93a2914f04ceeb73f0cb83391991e601af530ba4be2f1920ec1"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-cycle-control-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "before": "8e87f6df8defb79fca2232cde88310d2c3e3ae8ab5496093d9532bd398021837",
+      "after": "ad45b4c515c918f62d0463d1e15602335c651e607b3450ae89dc04980bd55b99"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/src~1Cna.Core~1Campaigns~1CampaignCombatActualRoundEntry.cs",
+      "target": "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+      "before": "b238372882560a799c08c6b54a177411f7a13bc97ff86c0577fd5063474d75b2",
+      "after": "b0fa2d27a380e6a743c21a9fd291ecd5151e88622594683e588a8364f2e15073"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "before": "e03057b520cf703c9e1df3cf663a7b1384eecd6a5afe0d1c5c4eb3faf026db2d",
+      "after": "5ea9457a38f0c116585e25f4df30a31f23e00127e6692d0a7bb593d234249086"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-repeat-movement-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "before": "e0997e204cf8c9be2dec6a7589985766f1387298e4e9ee04973e4f1a6f4e76d7",
+      "after": "5f09b224d65f89dffcdb4e2c4851061ffae211b459c892f75ccb198d23fd9418"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-repeat-movement-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "before": "e0997e204cf8c9be2dec6a7589985766f1387298e4e9ee04973e4f1a6f4e76d7",
+      "after": "5f09b224d65f89dffcdb4e2c4851061ffae211b459c892f75ccb198d23fd9418"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "target": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "before": "5ea9457a38f0c116585e25f4df30a31f23e00127e6692d0a7bb593d234249086",
+      "after": "1ba0e2eb56b47928495d1edd0903500125d613a272fb96b01f436efdee8a0f7a"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1fixtures~1combat-actual-moved-repeat-movement-v1.json",
+      "target": "docs/specs/fixtures/combat-actual-moved-repeat-movement-v1.json",
+      "before": "0dcb996022f722da780a3c47217a54f34a090802674fa7e7546a9725b7b6f4f6",
+      "after": "b6216cfdbed869e029a8bc1c71eb92d73fca98fcd87534a95eebd16aac432965"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/runtimeSourceHashes/docs~1specs~1fixtures~1combat-actual-moved-repeat-movement-completion-v1.json",
+      "target": "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json",
+      "before": "1abed1a300f69750b4d0ca1f1d83d67eaa25342a682e3a87b1d248c4ab1115a8",
+      "after": "c687f59ad2f06f97ff05d73ba4bdfb5c4e3e2ea7634408ed040fce9d4740b6fb"
+    },
+    {
+      "file": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "pointer": "/testArtifactHashes/docs~1specs~1fixtures~1combat-actual-moved-repeat-movement-completion-v1.json",
+      "target": "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json",
+      "before": "1abed1a300f69750b4d0ca1f1d83d67eaa25342a682e3a87b1d248c4ab1115a8",
+      "after": "c687f59ad2f06f97ff05d73ba4bdfb5c4e3e2ea7634408ed040fce9d4740b6fb"
+    }
+  ],
+  "preservation": {
+    "protected": [
+      {
+        "path": "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-native-hashes-v1.json",
+        "sha256": "cf3f8ecfe9e4040d5678a6e0e9cc2441525e1e8fe3a3f35cf316207a9f45ec4e"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-evidence-legacy-oracle-support-v1.zip",
+        "sha256": "848d084745f0582f5f4ca39013f202774213df947b711069aa2476dbe0c3cf8c"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-evidence-legacy-v1.zip",
+        "sha256": "3d7614b580ad5c82727170e4ff193e03f4931afbc7e7ed7b14d5eb49c45a6a98"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-a2-private-owner-contract-v1.json",
+        "sha256": "9dc15e6236dc2ae6f64fa1a4adb293e0cb2ea4aa4f70490f4590ef9e735377cd"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-absent-matrix-v1.json",
+        "sha256": "50d3349580b16bf64c4a453460e10d5ab5f2bd75863ff12c5c2fc7729bdccdfa"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-absent-retained-roots-v1.json",
+        "sha256": "cb4cea3d34a3f9c36ca59b4e23412ce7b611d43ab2210026ae53c8fce8a10ed6"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-all-prefix-reject-v1.json",
+        "sha256": "76beab667bad5fc604eb148f89125f96f38789a6e9f291cbeb15d27a9d3c029a"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-all44-rba-cancel-fresh-v1.json",
+        "sha256": "31ec89f61430b18bc8656d699edb09205af59b7dbd140aa7e3a383c3bef9bc45"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-all44-rba-decline-fresh-v1.json",
+        "sha256": "24ee251ccc00e792daa8efdbeb4098d0e837274246c1e7f2ab772514ed487e1a"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-explicit-rba-v1.json",
+        "sha256": "2a7a47b40922858e7bff9a4407eb5ea20a655b8281369389db6a638782b8a5cf"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-force-assignment-v1.json",
+        "sha256": "17f01806eec8d6eafef72b1e1591b1ad5e1ed2364cce2751a13e070313f55a2f"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-force-seal-fresh-v1.json",
+        "sha256": "012b888d022190035847074a392c0e748a52084e830ecbd7ae23646909a166b8"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-owner-decision-proposal-v1.json",
+        "sha256": "a35c96f73dcd65fe4d95428b3f1f4cfd17ccda7a775aba27eb64d72c6383293b"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-paid-all44-cuts-v2.json",
+        "sha256": "501c1e7454f43d52919656a961f626c9b06a0d8685f332caf947669f39c134fd"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-paid-all44-fresh-v1.json",
+        "sha256": "d6d7227859549fd67edbd6683a0e1fb3a7038945af0ef3fea2348e6389b6b08f"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-paid-commit-v1.json",
+        "sha256": "24da0c7de1f219e690dd615ec6cf7b98b8bc89c8a72ab295cc067ccbbc469a3e"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-paid-fresh-readback-v1.json",
+        "sha256": "3031638f1f38f6c2b5f14b3af29bfca9f1b9b1e3fd9c8ed23a0d223dfde23d59"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-replay-gates-v1.json",
+        "sha256": "9564554e879cd01a1d0176d3a0e3c211a22c9ccea3dd7347917e9dc295dc0e3b"
+      },
+      {
+        "path": "docs/specs/fixtures/combat-p01-selected-assault-v1.json",
+        "sha256": "e4c9300184a034a5ae4f7f70c41149b1d1d2a4eab966435b3874045334716b97"
+      },
+      {
+        "path": "docs/specs/fixtures/p01-r03-a1-r012-c01-after-control-v1.json.gz",
+        "sha256": "3c4eb5a37af03f5e07c03e38403fed371d802af51bdd0099552e5fc3f3037cf4"
+      },
+      {
+        "path": "docs/specs/fixtures/p01-r03-a1-r012-c01-import-v1.json.gz",
+        "sha256": "5019978589938979d7010416f6e3424e07615532475f5633a60db66414db14aa"
+      },
+      {
+        "path": "tests/Cna.Core.Tests/Campaigns/CombatActualRoundEntryTests.cs",
+        "sha256": "8f8ea810f34fd1d5390a0a73d1b078d3a85c8a59cd932a4a538318c42ad8160a"
+      }
+    ],
+    "legacyRegistrationsUnchanged": 27,
+    "refreshedRegistrationsUpdated": [
+      "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json",
+      "docs/specs/fixtures/combat-actual-moved-repeat-movement-v1.json",
+      "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs"
+    ]
+  },
+  "generation": [
+    {
+      "name": "combat-actual-moved-assault",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-actual-moved-assault"
+      ],
+      "exit_code": 0,
+      "seconds": 157.574
+    },
+    {
+      "name": "combat-actual-moved-continuation",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-actual-moved-continuation"
+      ],
+      "exit_code": 0,
+      "seconds": 92.962
+    },
+    {
+      "name": "combat-actual-moved-cycle-control",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-actual-moved-cycle-control"
+      ],
+      "exit_code": 0,
+      "seconds": 145.854
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-actual-moved-repeat-movement"
+      ],
+      "exit_code": 0,
+      "seconds": 156.242
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement-completion",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-actual-moved-repeat-movement-completion"
+      ],
+      "exit_code": 0,
+      "seconds": 226.856
+    },
+    {
+      "name": "combat-actual-moved-repeat-breakdown-completion",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-actual-moved-repeat-breakdown-completion"
+      ],
+      "exit_code": 0,
+      "seconds": 18.615
+    },
+    {
+      "name": "combat-exercise-child-evidence",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-exercise-child-evidence"
+      ],
+      "exit_code": 0,
+      "seconds": 338.556
+    },
+    {
+      "name": "combat-exercise-parent-evidence",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "artifacts/pr334-roundentry/regenerate_selected.py",
+        "combat-exercise-parent-evidence"
+      ],
+      "exit_code": 0,
+      "seconds": 389.516
+    }
+  ],
+  "semanticComparison": [
+    {
+      "name": "combat-actual-moved-assault",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 798
+      },
+      "examples": {
+        "sha256": {
+          "path": "/cases/*/cuts/*/proof/sha256",
+          "before": "sha256:a89ed05c2b3386a4f9737c41df60c824701980029e5efd4b1b28e76e5c9393ab",
+          "after": "sha256:d518d0c2f3c65bd6a9e40005ea759d780b9aeb1296f703d9e1f6bdab6e3491c0"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-continuation",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 168
+      },
+      "examples": {
+        "sha256": {
+          "path": "/cases/*/cuts/*/proof/sha256",
+          "before": "sha256:e5d8ca35913238a93887753f93480c40447752c28d5fa1d4835b065fef7d7918",
+          "after": "sha256:eef076a7d9bdb9bcdbd23005a31220f93aa50c5b296c4ffc6e90ca5861a2a28b"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-cycle-control",
+      "shapeChanges": [],
+      "changedFields": {
+        "controlId": 672,
+        "decisionId": 504,
+        "baseHash": 224,
+        "receiptId": 224,
+        "priorPrefix": 112,
+        "sha256": 896
+      },
+      "examples": {
+        "controlId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/controlId",
+          "before": "mcc.7845fb8888b499c6eca8dca8edf4e17d6d11a26987dbb120c480e267cb004045",
+          "after": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b"
+        },
+        "decisionId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/decisionId",
+          "before": "mcc.7845fb8888b499c6eca8dca8edf4e17d6d11a26987dbb120c480e267cb004045.decision",
+          "after": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b.decision"
+        },
+        "baseHash": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:00eaa4b854bd6ff76a5e3559a3f6f7ef82bbf529b180fc74809bd7aac5a2f68e",
+          "after": "sha256:a30a64d9d9a30736836178b2e98dae72c0ab33a29f24a4edb80137df6652b1d1"
+        },
+        "receiptId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/receiptId",
+          "before": "mcce.6c34db6e132c7f7e5228267dd712a37d8e6aa17c3098858f2bf2e2568a02aace",
+          "after": "mcce.dcf0673ab5aab8bdeaa36d8e14adca448fb27a0b3182df6a45866863d994f849"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:4f0a5f2bb337f2c58897b1998e51276dd81091adcbee0fba3113769cfc479053",
+          "after": "sha256:31a1c32d13a57a59e84f94ec015dfa956cb65b764148b296e809698c98b809f2"
+        },
+        "sha256": {
+          "path": "/cases/*/cuts/*/control/sha256",
+          "before": "sha256:09a7450c47fdd2f00444c17ec5cedd824405ea111c2c3825cd23dcd034220413",
+          "after": "sha256:a6def95134527129dbffaf869e9c4359e9e6969a76373f20ab1f8c083933cb97"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement",
+      "shapeChanges": [],
+      "changedFields": {
+        "baseHash": 1012,
+        "controlId": 224,
+        "decisionId": 824,
+        "receiptId": 412,
+        "priorPrefix": 356,
+        "parentSourceHash": 900,
+        "intentReceiptId": 656,
+        "cycleId": 732,
+        "nextCycleId": 56,
+        "openingPrefix": 56,
+        "sha256": 1068
+      },
+      "examples": {
+        "baseHash": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:00eaa4b854bd6ff76a5e3559a3f6f7ef82bbf529b180fc74809bd7aac5a2f68e",
+          "after": "sha256:a30a64d9d9a30736836178b2e98dae72c0ab33a29f24a4edb80137df6652b1d1"
+        },
+        "controlId": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/controlId",
+          "before": "mcc.7845fb8888b499c6eca8dca8edf4e17d6d11a26987dbb120c480e267cb004045",
+          "after": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b"
+        },
+        "decisionId": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/effect/decisionId",
+          "before": "mcc.7845fb8888b499c6eca8dca8edf4e17d6d11a26987dbb120c480e267cb004045.decision",
+          "after": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b.decision"
+        },
+        "receiptId": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/receiptId",
+          "before": "mcce.6c34db6e132c7f7e5228267dd712a37d8e6aa17c3098858f2bf2e2568a02aace",
+          "after": "mcce.dcf0673ab5aab8bdeaa36d8e14adca448fb27a0b3182df6a45866863d994f849"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:4f0a5f2bb337f2c58897b1998e51276dd81091adcbee0fba3113769cfc479053",
+          "after": "sha256:31a1c32d13a57a59e84f94ec015dfa956cb65b764148b296e809698c98b809f2"
+        },
+        "parentSourceHash": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/parentSourceHash",
+          "before": "sha256:8a99493d495aa7022b40a8c1a5600a73ed7b62d45a648f1ad26a26eb668be11d",
+          "after": "sha256:8718502cd1f806239906759c2e29d48c1bb29d32bf80a7c1a7f3be71d260aa7e"
+        },
+        "intentReceiptId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/intentReceiptId",
+          "before": "mcce.9d4e4e01358c125fad9e2dbb633aaf9bf27fc690ce699a7fb77f498bc277b8ea",
+          "after": "mcce.6c84f0782a45ba4f062aa95c9fa297e8e518ee8b3c30e82416502ff2fac0d43c"
+        },
+        "cycleId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/cycleId",
+          "before": "sha256:f5bbabddcc17ffaf253daa6c3a3ba9a85780f82fa61378a488b07b7aed550029",
+          "after": "sha256:cfe43c24d3192fd48a12d9305c6069ff23c6b33b7ab938cac609b3b8c1984246"
+        },
+        "nextCycleId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/nextCycleId",
+          "before": "sha256:f5bbabddcc17ffaf253daa6c3a3ba9a85780f82fa61378a488b07b7aed550029",
+          "after": "sha256:cfe43c24d3192fd48a12d9305c6069ff23c6b33b7ab938cac609b3b8c1984246"
+        },
+        "openingPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/nextCycle/openingPrefix",
+          "before": "sha256:c732ecc8f71fe5d07a2d4b6ba6a1715dd1458fec389b1d809b7336b396792cf3",
+          "after": "sha256:08548e6924a0096b27ff01a50ddc85baf022a5812efa88e1d2a1ba704a9be1d6"
+        },
+        "sha256": {
+          "path": "/cases/*/cuts/*/source/sha256",
+          "before": "sha256:87ae4a155d13de54ff32806e95bb5d627455740c5d33e7cc0d3b70c03284bd6d",
+          "after": "sha256:443df962a82eacb91a36f4c56bfd60fec4cdf1e847e46989a2c2b95dc0a15950"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 1,
+        "baseHash": 2364,
+        "cycleId": 2608,
+        "capabilityId": 1576,
+        "movementSourceHash": 788,
+        "priorPrefix": 788,
+        "receiptId": 1484,
+        "sha256": 3264,
+        "stopId": 488,
+        "lastMoveReceiptId": 244,
+        "openingPrefix": 244,
+        "eventHash": 696
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:c0e6b95b8d5ad22de4bc07ddea8da2b0b606adceacf2c410c7d6b33ba00967be",
+          "after": "sha256:263ef9a9e17804ecde9c5636dfdeacd4fa4bb7d7a651f152d94691b6a912f854"
+        },
+        "baseHash": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/baseHash",
+          "before": "sha256:96e95b4c3a56a538485f18cbe54c22806daf9ac79e72ecf9e505758fddaea6ec",
+          "after": "sha256:164d5e555a03c062b23cbdc0a5861f0dd8810de2e961975f8900aeebf5b59507"
+        },
+        "cycleId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/cycleId",
+          "before": "sha256:f5bbabddcc17ffaf253daa6c3a3ba9a85780f82fa61378a488b07b7aed550029",
+          "after": "sha256:cfe43c24d3192fd48a12d9305c6069ff23c6b33b7ab938cac609b3b8c1984246"
+        },
+        "capabilityId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/capabilityId",
+          "before": "sha256:3b4923f21c7761a473d92e69c5b3d2ea338e3c230ba38e6f351affbe33161403",
+          "after": "sha256:0d9077402a152d71628b3d19a389bf2447f1cb8c8fdea3e39a482f2546be3f68"
+        },
+        "movementSourceHash": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/movementSourceHash",
+          "before": "sha256:d2c49687c9502dd0f82ecc5a23f87545bf4dd0b7ff1146df4048bafd48375003",
+          "after": "sha256:4469bd6f7d6d7efc22d444ecefce440930889ee1743c03a061773b9fb78e069f"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:86ebdbda42397606c87582379bbc6aa81348dedeeeca805b13bf20c8ddb32fb2",
+          "after": "sha256:6aac92fcc74dd7ed2ad097ae66717794df2ef24b7905acdf01e90bcf904d68a7"
+        },
+        "receiptId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/receiptId",
+          "before": "mrmc.219d0c4ccb1d5fde77e8cbbec61bba2bf512f157da334ee21e20b02793ef53ef",
+          "after": "mrmc.3bf6ea3be564eec3a661ffc09392c87795a8089255d5edc8d8aebf7ef3567637"
+        },
+        "sha256": {
+          "path": "/cases/*/cuts/*/source/sha256",
+          "before": "sha256:0c819cfaf8ae81ea1de6b682db64d22f5bbb7acab9db5c6a4d9372ea2037cc23",
+          "after": "sha256:e6f601597d5bf36f667c9f63092f0d96c688fe18583511ed5bc3be3654f38832"
+        },
+        "stopId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/stop/stopId",
+          "before": "mrmstop.40c87fdedb443bbab564d4dcded3ede304c199efdaf7918532106c59e6c7421b",
+          "after": "mrmstop.6ec422650dd268826ec2341054eb3a358e1c867cd431fef474006e2ee67feb5e"
+        },
+        "lastMoveReceiptId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/stop/lastMoveReceiptId",
+          "before": "mrm.432c8578761471a5734c68af0d4c1ab8e5191f71539f5dee81d05c1ae4c64b73",
+          "after": "mrm.8d8252ba0c71c33bbece312971725f82c648f0136452df72c5519d90fcf81583"
+        },
+        "openingPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/interruptContext/cycle/openingPrefix",
+          "before": "sha256:c732ecc8f71fe5d07a2d4b6ba6a1715dd1458fec389b1d809b7336b396792cf3",
+          "after": "sha256:08548e6924a0096b27ff01a50ddc85baf022a5812efa88e1d2a1ba704a9be1d6"
+        },
+        "eventHash": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/progress/*/eventHash",
+          "before": "sha256:2f10213f7760ea6f71ae2a2fa868937950244a9977105c1f1cb8c43217e081a8",
+          "after": "sha256:347a0a64dd87fdf35fe34b9037b5b9d1cf5bdbc37a3ca3c93e0ccbc707bbc2fb"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-breakdown-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "parentSourceHash": 4,
+        "sourceHash": 4,
+        "eventHash": 4,
+        "beforeControlHash": 4,
+        "afterControlHash": 4,
+        "beforeProofHash": 4,
+        "afterProofHash": 4,
+        "receiptId": 4
+      },
+      "examples": {
+        "parentSourceHash": {
+          "path": "/cases/*/parentSourceHash",
+          "before": "sha256:3ef9992a049fd3ccd82135d0130660e6943d303c31f1a5f853e6b79bec3d28eb",
+          "after": "sha256:84c65fa867602c336bf0918f285026ac31856272ece4e1fc9e196f9a63de91bc"
+        },
+        "sourceHash": {
+          "path": "/cases/*/sourceHash",
+          "before": "sha256:9311c8faa8dd80f5085992298e03afa38d292fac848afa305a2712204ccda826",
+          "after": "sha256:f938a7986806db90ddbebaf3fff3577ca895904c69f09c397bf815fb29cf1b55"
+        },
+        "eventHash": {
+          "path": "/cases/*/eventHash",
+          "before": "sha256:18985c3ba3fa9e824dac8be7b69d9ca45eec33ae62417bc06e40e635d4468ef1",
+          "after": "sha256:5f22ea27c56cca36feb5523b7daf4a5924c717a126d388a2b26402522a85e86b"
+        },
+        "beforeControlHash": {
+          "path": "/cases/*/beforeControlHash",
+          "before": "sha256:06bc6efa24a8e6929fd866f03afb1f9bd1c314cef564f7e803432242782e124b",
+          "after": "sha256:5be39237982c58a2ee3de9850a38589935f44e43e8063fbf98deb70afc5eefa0"
+        },
+        "afterControlHash": {
+          "path": "/cases/*/afterControlHash",
+          "before": "sha256:0cfba4b433d13e19b415bb8b3e428e79a687e6c940a80d1d2e6b7d4e549c681c",
+          "after": "sha256:b38882db3cb5a1507219e30e633198a684f83f63d6201962f43e66cf89dcac57"
+        },
+        "beforeProofHash": {
+          "path": "/cases/*/beforeProofHash",
+          "before": "sha256:bcd896a44fe567e07d088fd5a0bc4e96fc7518412223ea7fdf7baec08c74a99c",
+          "after": "sha256:eea683baddcef076d66aa2bcdee252b575ac771a9ff8a57790b80ae9740aad55"
+        },
+        "afterProofHash": {
+          "path": "/cases/*/afterProofHash",
+          "before": "sha256:678d6be1403cddbf8881304d08d742374cbe866fb79c61a76bdc588e41dd1426",
+          "after": "sha256:f0ea8ee6921889db148edd0ed13504e6466c473e7df03974c0daf6369e58b92b"
+        },
+        "receiptId": {
+          "path": "/cases/*/receiptId",
+          "before": "mrbc.e7dbc80f62d4553e4243fea4e08365da1ed9c7e48c828bb70245a69f52d987f5",
+          "after": "mrbc.5e48106732d003013764a2c5dad83a70c4acb0968e02fba44da781a5e9fe7331"
+        }
+      }
+    },
+    {
+      "name": "combat-exercise-child-evidence",
+      "shapeChanges": [],
+      "changedFields": {},
+      "examples": {}
+    },
+    {
+      "name": "combat-exercise-parent-evidence",
+      "shapeChanges": [],
+      "changedFields": {},
+      "examples": {}
+    }
+  ],
+  "nativeChecks": [
+    {
+      "name": "solution-build",
+      "command": [
+        "dotnet",
+        "build",
+        "Sandtable.slnx",
+        "-c",
+        "Release",
+        "--no-restore"
+      ],
+      "exit_code": 0,
+      "seconds": 19.775
+    },
+    {
+      "name": "format",
+      "command": [
+        "dotnet",
+        "format",
+        "Sandtable.slnx",
+        "--verify-no-changes",
+        "--no-restore",
+        "--include",
+        "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs",
+        "src/Cna.Core/Campaigns/CombatDependencySnapshot.cs",
+        "src/Cna.Core/Campaigns/CombatEvidenceRevisions.cs",
+        "tests/Cna.Core.Tests/Campaigns/CombatDependencySnapshotTests.cs"
+      ],
+      "exit_code": 0,
+      "seconds": 26.736
+    },
+    {
+      "name": "original-regressions",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-method",
+        "*ContentIsRecheckedAtConsumptionAfterTwoPassingPreflights",
+        "*WarmReplayOwnsBytesAndCannotBorrowEitherLedgerOrTrustedContext",
+        "*WarmPreparedReplayRechecksContentAfterItsPassingPreflight"
+      ],
+      "exit_code": 0,
+      "seconds": 1.936
+    },
+    {
+      "name": "snapshot",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-class",
+        "*CombatDependencySnapshotTests"
+      ],
+      "exit_code": 0,
+      "seconds": 1.237
+    },
+    {
+      "name": "legacy",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-method",
+        "*Legacy*"
+      ],
+      "exit_code": 0,
+      "seconds": 12.853
+    },
+    {
+      "name": "core-p01",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-class",
+        "*P01*"
+      ],
+      "exit_code": 0,
+      "seconds": 7.364
+    },
+    {
+      "name": "host-p01",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.OrleansHost.Tests/release/Cna.OrleansHost.Tests.dll",
+        "--filter-class",
+        "*P01*"
+      ],
+      "exit_code": 0,
+      "seconds": 2.693
+    },
+    {
+      "name": "boundary",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-trait",
+        "Boundary=UserSpace"
+      ],
+      "exit_code": 0,
+      "seconds": 7.173
+    }
+  ],
+  "roundEntry": {
+    "passed": 177,
+    "chunks": [
+      {
+        "exit_code": 0,
+        "selected": 45,
+        "seconds": 196.03
+      },
+      {
+        "exit_code": 0,
+        "selected": 44,
+        "seconds": 187.354
+      },
+      {
+        "exit_code": 0,
+        "selected": 44,
+        "seconds": 223.061
+      },
+      {
+        "exit_code": 0,
+        "selected": 44,
+        "seconds": 226.735
+      }
+    ]
+  },
+  "refreshedR03": {
+    "passed": 300,
+    "chunks": [
+      {
+        "exit_code": 0,
+        "selected": 75,
+        "seconds": 127.571
+      },
+      {
+        "exit_code": 0,
+        "selected": 75,
+        "seconds": 127.826
+      },
+      {
+        "exit_code": 0,
+        "selected": 75,
+        "seconds": 126.843
+      },
+      {
+        "exit_code": 0,
+        "selected": 75,
+        "seconds": 128.064
+      }
+    ]
+  }
+}

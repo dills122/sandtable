@@ -40,6 +40,41 @@ public sealed class CombatDependencySnapshotTests
     }
 
     [Theory]
+    [InlineData("legacy")]
+    [InlineData("refreshed")]
+    public void ConsumptionRevalidationTraversesParentsAndOwnsCurrentBytes(string revision)
+    {
+        var data = Paths.ToDictionary(p => p, p => Data(revision, p));
+        var calls = new List<string>();
+        var missing = false;
+        byte[] Read(string path)
+        {
+            calls.Add(path);
+            if (missing) throw new FileNotFoundException(path);
+            return data[path];
+        }
+        var parent = CombatDependencySnapshot.Capture(Read, Revisions(), 1024, "parent");
+        var child = CombatDependencySnapshot.Capture(parent.Read, Revisions(), 1024, "child");
+        var grandchild = CombatDependencySnapshot.Capture(child.Read, Revisions(), 1024, "consumer");
+        calls.Clear();
+        var owned = grandchild.ReadRevalidated("first");
+        Assert.Equal("first", Assert.Single(calls));
+        Assert.Equal(Data(revision, "first"), owned);
+        Assert.NotSame(data["first"], owned);
+        owned[0] ^= 1;
+        Assert.Equal(Data(revision, "first"), grandchild.ReadRevalidated("first"));
+        data["first"][0] ^= 1;
+        Assert.Equal("consumer", Assert.Throws<JsonException>(() => grandchild.ReadRevalidated("first")).Message);
+        Assert.Equal(Data(revision, "first"), grandchild.Read("first"));
+        data["first"] = Data(revision, "first");
+        missing = true;
+        Assert.Equal("consumer", Assert.Throws<JsonException>(() => grandchild.ReadRevalidated("first")).Message);
+        calls.Clear();
+        Assert.Throws<JsonException>(() => grandchild.ReadRevalidated("unknown"));
+        Assert.Empty(calls);
+    }
+
+    [Theory]
     [InlineData("unknown")]
     [InlineData("missing")]
     [InlineData("oversized")]
