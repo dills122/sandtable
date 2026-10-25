@@ -80,6 +80,9 @@ internal static class CampaignCurrentEventSerializer
             "combat-rba-declined" => CampaignNativeCombatRetreatDeclineV15.Deserialize(canonicalJson),
             "combat-barrage-no-effect" => CampaignNativeCombatBarrageV14.Deserialize(canonicalJson),
             "combat-no-attack-completed" => CampaignNativeCombatNoAttackCompletionV13.Deserialize(canonicalJson),
+            "combat-selection-timeout" => document.RootElement.GetProperty("cycleOrdinal").GetInt32() == 1
+                ? (object)CampaignNativeCombatDecisionV12.Deserialize(canonicalJson)
+                : CampaignNativeRepeatCombatDecisionV31.Deserialize(canonicalJson),
             "combat-selection-decided" => CampaignNativeCombatDecisionV12.Deserialize(canonicalJson),
             "element-moved" or "reacting-element-moved" or "reaction-participant-completed" or "reaction-window-closed"
                 or "movement-segment-completed" or "element-movement-stopped" or "breakdown-stop-resolved"

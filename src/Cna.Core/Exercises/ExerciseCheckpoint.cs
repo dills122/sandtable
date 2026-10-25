@@ -20,7 +20,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeCombatDecisionStateV12 decision)
     {
         ArgumentNullException.ThrowIfNull(decision);
-        ContractVersion = CampaignNativeCombatDecisionStateV12.CurrentContractVersion;
+        ContractVersion = decision.Decision.ContractVersion;
         CampaignId = decision.CampaignId;
         StateVersion = decision.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;
@@ -469,7 +469,7 @@ public sealed class ExerciseCheckpoint
     internal ExerciseCheckpoint(CampaignNativeRepeatCombatDecisionV31 selection,
         CampaignNativeCombatDecisionStateV12 decision)
     {
-        ContractVersion = CampaignNativeRepeatCombatDecisionV31.CurrentContractVersion;
+        ContractVersion = selection.ContractVersion;
         CampaignId = selection.CampaignId;
         StateVersion = selection.StateVersion;
         RulesetHash = decision.PriorSnapshot.RulesetHash;

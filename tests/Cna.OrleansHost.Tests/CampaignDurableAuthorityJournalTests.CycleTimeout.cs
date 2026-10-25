@@ -15,6 +15,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         AdvanceToContactCombat(journal, request, withTiming ? Timing(request) : null);
         var owner = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        if (!withTiming) return (request, owner);
         var opening = journal.QueryCombatOwnerOpening(owner, "axis-infantry");
         beforeFinish?.Invoke();
         Assert.True(journal.SubmitOwnerCombatSelection(owner, "axis-infantry",

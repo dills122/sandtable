@@ -1235,19 +1235,20 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             preserveAdjacentInfantry: true);
         var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        if (!withTiming)
+        {
+            Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-selection-timeout"));
+            Assert.Equal(0, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-combat-selection"));
+            Assert.True(CampaignExercises.Reconstruct(fixture.Open(new ManualClock()).ReadVerified(request.CampaignId)).IsVerified);
+            return;
+        }
         var opening = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
         Assert.Contains("assaultOffers", System.Text.Encoding.UTF8.GetString(
             opening.VisibleBytes), StringComparison.Ordinal);
         var chosen = journal.SubmitOwnerCombatSelection(attacker, "axis-infantry",
             opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(chosen.IsAccepted);
-        if (!withTiming)
-        {
-            AssertRbaCancellationOnly(fixture.Path);
-            Assert.True(CampaignExercises.Reconstruct(
-                fixture.Open(new ManualClock()).ReadVerified(request.CampaignId)).IsVerified);
-            return;
-        }
+
         var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
         var defenderId = CampaignHostAdapter.QueryContactRbaDefenderId(
@@ -1813,7 +1814,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,
         CampaignDecisionTimingConfigurationV1? timing = null,
         string movementDestination = "north", bool preserveAdjacentInfantry = false,
-        string? reserveElementId = null, string? secondReserveElementId = null)
+        string? reserveElementId = null, string? secondReserveElementId = null,
+        Action? beforeSelectionEntry = null)
     {
         var session = journal.CreateCampaign(request, timing);
         var pendingReserves = new Queue<string>(new[] { reserveElementId,
@@ -1851,8 +1853,24 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                     value.ElementId == "axis-infantry"
                     && value.DestinationLocationId == movementDestination)
                     ?? set.Candidates[0];
-            var accepted = journal.Append(request.CampaignId, new CampaignActionSubmission(1,
-                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId));
+            var submission = new CampaignActionSubmission(1,
+                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId);
+            if (beforeSelectionEntry is not null)
+            {
+                var preview = CampaignHostAdapter.Submit(session, submission);
+                var entersSelection = false;
+                if (preview.IsAccepted)
+                {
+                    try
+                    {
+                        _ = CampaignHostAdapter.QueryNativeCombatSelectionRoundBinding(preview.SuccessorSession!);
+                        entersSelection = true;
+                    }
+                    catch (InvalidOperationException) { }
+                }
+                if (entersSelection) beforeSelectionEntry();
+            }
+            var accepted = journal.Append(request.CampaignId, submission);
             Assert.True(accepted.IsAccepted);
             if (reserveDesignation is not null)
                 _ = pendingReserves.Dequeue();
@@ -1862,9 +1880,10 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     private static ExerciseSession AdvanceToContactMovement(
-        CampaignDurableAuthorityJournal journal, CampaignCreationRequest request)
+        CampaignDurableAuthorityJournal journal, CampaignCreationRequest request,
+        CampaignDecisionTimingConfigurationV1? timing = null)
     {
-        var session = journal.CreateCampaign(request);
+        var session = journal.CreateCampaign(request, timing);
         for (var index = 0; index < 20; index++)
         {
             var set = Enum.GetValues<CampaignActionAudience>()

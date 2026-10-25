@@ -369,3 +369,21 @@ Report: `artifacts/rc-retreat-timeout/core-results/dsteele_Dylans-MacBook-Pro_20
 | `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.InvalidTimingDoesNotMutatePendingRetreat` | `95587ecc917f` | 235 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.RepeatedRuntimeRetainsActualOrdinalAndRefusalEvidence(ordinal: 3)` | `92fef5576bc3` | 229 |
 | `Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests.RepeatedRuntimeRetainsActualOrdinalAndRefusalEvidence(ordinal: 2)` | `2d9ab141866f` | 202 |
+
+## Native Selection timeout (October 24, 2026 America/Toronto)
+
+Nine new rows measured in local Release focused run. Prior weights and baseline
+metadata unchanged. Local scheduling hints; hosted calibration pending.
+Report: `artifacts/rc-selection-timeout/core-results/dsteele_Dylans-MacBook-Pro_2026-10-25_00_04_28.000262.xunit.xml`.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.BindingRejectsOutsidePendingSelectionWithoutMutatingAuthority` | `8463d4267e17` | 568 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.DeadlineClosesActualSelectionWithoutOwnerChoiceOrNewDraw(repeated: False)` | `5f32fb110bce` | 1435 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.DeadlineClosesActualSelectionWithoutOwnerChoiceOrNewDraw(repeated: True)` | `f0e72c774675` | 1801 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.UnavailableEntryHasNoInventedClockAndTamperingRejectsReplay` | `a04d8d0a6fc1` | 564 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.EarlyForeignConfigurationAndAlreadySelectedRejectWithoutMutation(repeated: True)` | `0a7e3ee9d7b9` | 531 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.EarlyForeignConfigurationAndAlreadySelectedRejectWithoutMutation(repeated: False)` | `6fdc6541be3f` | 210 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "clock-unavailable", observed: null)` | `fba4410da237` | 1190 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "clock-regression", observed: 999)` | `6c100195ec54` | 500 |
+| `Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests.FailureReasonsHaveExplicitReplayableEvidence(reason: "controller-unavailable", observed: null)` | `13212da9e28e` | 596 |

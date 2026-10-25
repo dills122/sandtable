@@ -12,6 +12,7 @@ internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJourn
     private static readonly Action<ILogger, string, Exception?> LogCampaignFailure =
         LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, "CombatCampaignFailed"),
             "Durable Combat deadline failed for campaign {CampaignId}.");
+    private string selectionCursor = "";
     private string rbaCursor = "";
     private string forceCursor = "";
     private string cycleCursor = "";
@@ -32,6 +33,7 @@ internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJourn
 
     internal void SweepOnce(CancellationToken cancellationToken)
     {
+        SweepLane(ref selectionCursor, journal.CollectingSelectionCampaigns, journal.TickSelectionRound, cancellationToken);
         SweepLane(ref rbaCursor, journal.CollectingRbaCampaigns, journal.TickRbaRound, cancellationToken);
         SweepLane(ref forceCursor, journal.CollectingForceCampaigns, journal.TickForceRound, cancellationToken);
         SweepLane(ref retreatCursor, journal.CollectingRetreatCampaigns, journal.TickRetreatRound, cancellationToken);

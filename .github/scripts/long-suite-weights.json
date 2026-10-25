@@ -649,6 +649,9 @@
     },
     "Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -3966,7 +3969,16 @@
     "92fef5576bc3a74a4affffec6a59e9718112cc914b5a42a9f9ef2f6acae45e58": 229,
     "95587ecc917f68e7bf18b82326c33cf9cbc8d223342097290e68f14ad33c5bc3": 235,
     "a8b6fba6dd061e53b30c7aa74fee42e0f9ce943ea9cfcd1567d3cb5ae9a1fd8b": 456,
-    "b7d457cb891bc59e5643540b6833af144378b6c20404b8af1c7c218413599643": 443
+    "b7d457cb891bc59e5643540b6833af144378b6c20404b8af1c7c218413599643": 443,
+    "8463d4267e17ddb69fef96c4a6c109ac8553c5b211db9f4795e963d5c2ca22f5": 568,
+    "5f32fb110bcecb8f2455e9ba6e7ebf35f338d4cf9b97381ab82bc99e1713f675": 1435,
+    "f0e72c774675cf752a7a9fca310a7c60cafdfffdd74aa5f85e117c88a4c4776b": 1801,
+    "a04d8d0a6fc1eff10733c9fdab5811eefbbda6281ab4bf32195521526ad1df51": 564,
+    "0a7e3ee9d7b9ab596f4d65bcc7fe1305c3ab431574d79c8e94db8aba410c04d8": 531,
+    "6fdc6541be3fc958b778273ba327f6ed83b9291841f4e8b47768c218c8ed608f": 210,
+    "fba4410da237a79e74c13589f6d132ce6e4075e57d23f8c517cca424e6e7058f": 1190,
+    "6c100195ec542cf9db57da1f09999aabcf17778a3a8eed41509f86025b5efe02": 500,
+    "13212da9e28e20d3190a12c0baf9370e08155087cc9df6ab948b94ca85bf32f7": 596
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4041,7 +4053,16 @@
     "92fef5576bc3a74a4affffec6a59e9718112cc914b5a42a9f9ef2f6acae45e58": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
     "95587ecc917f68e7bf18b82326c33cf9cbc8d223342097290e68f14ad33c5bc3": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
     "a8b6fba6dd061e53b30c7aa74fee42e0f9ce943ea9cfcd1567d3cb5ae9a1fd8b": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
-    "b7d457cb891bc59e5643540b6833af144378b6c20404b8af1c7c218413599643": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration"
+    "b7d457cb891bc59e5643540b6833af144378b6c20404b8af1c7c218413599643": "2026-10-24 macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "8463d4267e17ddb69fef96c4a6c109ac8553c5b211db9f4795e963d5c2ca22f5": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "5f32fb110bcecb8f2455e9ba6e7ebf35f338d4cf9b97381ab82bc99e1713f675": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "f0e72c774675cf752a7a9fca310a7c60cafdfffdd74aa5f85e117c88a4c4776b": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "a04d8d0a6fc1eff10733c9fdab5811eefbbda6281ab4bf32195521526ad1df51": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "0a7e3ee9d7b9ab596f4d65bcc7fe1305c3ab431574d79c8e94db8aba410c04d8": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "6fdc6541be3fc958b778273ba327f6ed83b9291841f4e8b47768c218c8ed608f": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "fba4410da237a79e74c13589f6d132ce6e4075e57d23f8c517cca424e6e7058f": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "6c100195ec542cf9db57da1f09999aabcf17778a3a8eed41509f86025b5efe02": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration",
+    "13212da9e28e20d3190a12c0baf9370e08155087cc9df6ab948b94ca85bf32f7": "2026-10-24 America/Toronto macOS arm64 .NET 10 Release focused MTP XML; pending hosted CI calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",

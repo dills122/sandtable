@@ -128,11 +128,11 @@ retain each owner's separate seal and cold-replay receipt. A distinct V18
 System completion advances after both seals.
 Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
-Force Assignment opening and seals. Schema-5/6/7/8/9/10/11 journals stay read-only. Schema 13 retains one shared Force round for both seats at accepted RBA decline;
+Force Assignment opening and seals. Schema-5/6/7/8/9/10/11/12/13 journals stay read-only. Schema 14 retains one shared Force round for both seats at accepted RBA decline;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
 inventing an owner seal. The combat timeout service ticks these persisted Force
 rounds even when neither owner queries an opening. The entry deadline never resets
-on query or restart. Schema 13 also retains an RBA round at Barrage entry.
+on query or restart. Schema 14 also retains an RBA round at Barrage entry.
 Background expiry records native V33 `combat-rba-cancelled`, preserving retreat
 movement and reaching Reserve Release without a fabricated decline or combat result.
 Core V20/normal Host complete the infantry-only empty
@@ -143,7 +143,10 @@ has no payable pinned role pair or timing envelope; it does not alter visible of
 V34 names the explicit System cycle timeout: completed Reserve Release starts
 a durable deadline, and expiry finishes the phase without fabricating an owner
 choice or changing World/RNG. The combat timeout service keeps cycle-control
-pagination separate from RBA, Force, Retreat, Custody and Reserve Release.
+pagination separate from Selection, RBA, Force, Retreat, Custody and Reserve Release.
+V38 names explicit System Selection timeout: `no-selection` binds initial or
+repeated decision entry, then uses native no-work continuation without an owner
+choice. Its System identity is distinct from V12/V31 owner selection bytes.
 V37 names explicit System post-assault Retreat timeout: `refuse-retreat` applies
 source refusal effects through settlement after the persisted result-entry deadline.
 It is distinct from V33 RBA cancellation and from a defender-authored retreat.

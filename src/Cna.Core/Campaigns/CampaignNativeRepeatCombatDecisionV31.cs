@@ -8,7 +8,7 @@ namespace Cna.Core.Campaigns;
 
 // Subsequent-cycle selection is a new authority event. It does not reinterpret
 // the accepted later-cycle World as an initial V11 snapshot.
-internal sealed record CampaignNativeRepeatCombatDecisionV31(
+internal record CampaignNativeRepeatCombatDecisionV31(
     int ContractVersion, string CampaignId, long PriorStateVersion,
     string PriorEventHash, int CycleOrdinal, string PositionId,
     string NextPositionId, string Choice, LandSide Side,
@@ -75,16 +75,18 @@ internal sealed record CampaignNativeRepeatCombatDecisionV31(
         ReadOnlyMemory<byte> canonicalEvent)
     {
         var parsed = Deserialize(canonicalEvent);
-        var expected = Select(release, control, movement, breakdown,
-            movedWorld, context, contacts, parsed.ActingElementId,
-            parsed.ActionId);
+        var expected = parsed is CampaignNativeRepeatCombatSelectionTimeoutV38 timeout
+            ? CampaignNativeRepeatCombatSelectionTimeoutV38.Create(release, control, movement, breakdown, movedWorld, context, contacts,
+                timeout.Evidence.ConfigurationHash, timeout.Evidence.OpenedAtUnixMilliseconds, timeout.Evidence.DeadlineUnixMilliseconds,
+                timeout.Evidence.HighWaterUnixMilliseconds, timeout.Evidence.CancelledAtUnixMilliseconds, timeout.Evidence.Reason)
+            : Select(release, control, movement, breakdown, movedWorld, context, contacts, parsed.ActingElementId, parsed.ActionId);
         if (!canonicalEvent.Span.SequenceEqual(expected.SerializeCanonical()))
             throw new InvalidCampaignHistoryException(
                 "Repeated Combat selection differs from retained authority.");
         return expected;
     }
 
-    internal byte[] SerializeCanonical()
+    internal virtual byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion
             || PriorStateVersion < 1 || CycleOrdinal < 2
@@ -136,6 +138,8 @@ internal sealed record CampaignNativeRepeatCombatDecisionV31(
                 throw new JsonException("Repeated Combat selection exceeds byte bound.");
             using var document = JsonDocument.Parse(canonicalEvent);
             var root = document.RootElement;
+            if (root.GetProperty("eventType").GetString() == "combat-selection-timeout")
+                return new CampaignNativeRepeatCombatSelectionTimeoutV38(CampaignSelectionTimeoutEvidenceV38.Deserialize(canonicalEvent));
             CampaignSnapshotSerializer.RequireProperties(root,
                 "contractVersion", "eventType", "campaignId",
                 "priorStateVersion", "priorEventHash", "cycleOrdinal",

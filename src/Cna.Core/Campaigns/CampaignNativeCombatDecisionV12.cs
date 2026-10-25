@@ -9,7 +9,7 @@ namespace Cna.Core.Campaigns;
 // This is the first native Combat authority transition. Selected assault binds a
 // defender privately; voluntary finish carries no target. Public action identity
 // contains only owner-visible data.
-internal sealed record CampaignNativeCombatDecisionV12(
+internal record CampaignNativeCombatDecisionV12(
     int ContractVersion,
     string CampaignId,
     long PriorStateVersion,
@@ -25,7 +25,7 @@ internal sealed record CampaignNativeCombatDecisionV12(
 {
     public const int CurrentContractVersion = 12;
 
-    public byte[] SerializeCanonical()
+    public virtual byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
             || !Enum.IsDefined(Side))
@@ -73,6 +73,8 @@ internal sealed record CampaignNativeCombatDecisionV12(
         {
             using var document = JsonDocument.Parse(canonicalJson);
             var root = document.RootElement;
+            if (root.GetProperty("eventType").GetString() == "combat-selection-timeout")
+                return new CampaignNativeCombatSelectionTimeoutV38(CampaignSelectionTimeoutEvidenceV38.Deserialize(canonicalJson));
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
                 "campaignId", "priorStateVersion", "positionId", "nextPositionId", "choice", "side", "actingElementId",
                 "contactHandle", "apparentLocationId", "boundRepresentationId", "actionId");
@@ -145,8 +147,11 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
         ReadOnlyMemory<byte> canonicalEvent)
     {
         var selected = CampaignNativeCombatDecisionV12.Deserialize(canonicalEvent);
-        var expected = Select(prior, context, contacts, selected.Side,
-            selected.ActingElementId, selected.ActionId);
+        var expected = selected is CampaignNativeCombatSelectionTimeoutV38 timeout
+            ? new CampaignNativeCombatDecisionStateV12(prior, CampaignNativeCombatSelectionTimeoutV38.Create(prior, context, contacts,
+                timeout.Evidence.ConfigurationHash, timeout.Evidence.OpenedAtUnixMilliseconds, timeout.Evidence.DeadlineUnixMilliseconds,
+                timeout.Evidence.HighWaterUnixMilliseconds, timeout.Evidence.CancelledAtUnixMilliseconds, timeout.Evidence.Reason))
+            : Select(prior, context, contacts, selected.Side, selected.ActingElementId, selected.ActionId);
         if (!canonicalEvent.Span.SequenceEqual(expected.Decision.SerializeCanonical()))
             throw new InvalidCampaignHistoryException("Native Combat selection differs from the authority cut.");
         return expected;
@@ -158,7 +163,7 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", CurrentContractVersion);
+            writer.WriteNumber("contractVersion", Decision.ContractVersion);
             writer.WriteString("campaignId", CampaignId);
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WritePropertyName("priorSnapshot");
@@ -180,7 +185,7 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
             var root = document.RootElement;
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "campaignId",
                 "stateVersion", "priorSnapshot", "decision");
-            if (root.GetProperty("contractVersion").GetInt32() != CurrentContractVersion)
+            if (root.GetProperty("contractVersion").GetInt32() is not (CurrentContractVersion or 38))
                 throw new JsonException("Unsupported native Combat snapshot contract.");
             var priorBytes = JsonSerializer.SerializeToUtf8Bytes(root.GetProperty("priorSnapshot"));
             var prior = CampaignSnapshotV11Serializer.Deserialize(priorBytes);

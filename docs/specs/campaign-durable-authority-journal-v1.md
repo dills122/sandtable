@@ -5,7 +5,7 @@ Normal campaign Host storage retains the canonical Core creation evidence and ev
 ## Schema and transition
 
 - `campaigns` binds the versioned creation request fields, canonical creation event, initial snapshot, initial contact records, head sequence, and head hash. Campaign IDs are unique. Creation takes an immediate transaction before lookup or fresh Core admission. An exact retry compares every creation-request field and canonical timing bytes, fully verifies retained evidence through Core, and returns the current retained head without writes, even after accepted steps. A differing request or timing conflicts without overwriting authority; concurrent creators serialize under the same transaction. Null timing remains distinct from explicit timing.
-- `accepted_steps` has one row per accepted Core transition: contiguous sequence, action kind, optional acting element and owner reference/seat epoch/opening revision, canonical command, canonical event, canonical receipt, checkpoint, contact records appended by that transition, prior hash, and record hash. The hash binds every field and length-prefixed evidence bytes; the initial hash binds the request and creation artifacts including contact records. Current schema v13 retains canonical `timing_configuration`, `force_rounds`, `rba_rounds`, `cycle_rounds`, `reserve_rounds`, `custody_rounds`, and `retreat_rounds`. Legacy v5 (without timing), v6 (timing without Force rounds), v7 (Force rounds without RBA deadlines), v8 (lazy Force opening), v9 (no cycle-control deadline), v10 (no Reserve Release deadline), v11 (no Custody deadline), and v12 (no post-assault Retreat deadline) remain readable with their historical hash rules; all mutations require v13. No implicit timing or schema upgrade occurs.
+- `accepted_steps` has one row per accepted Core transition: contiguous sequence, action kind, optional acting element and owner reference/seat epoch/opening revision, canonical command, canonical event, canonical receipt, checkpoint, contact records appended by that transition, prior hash, and record hash. The hash binds every field and length-prefixed evidence bytes; the initial hash binds the request and creation artifacts including contact records. Current schema v14 retains canonical `timing_configuration`, `force_rounds`, `rba_rounds`, `cycle_rounds`, `reserve_rounds`, `custody_rounds`, `retreat_rounds`, and `selection_rounds`. Legacy v5 (without timing), v6 (timing without Force rounds), v7 (Force rounds without RBA deadlines), v8 (lazy Force opening), v9 (no cycle-control deadline), v10 (no Reserve Release deadline), v11 (no Custody deadline), v12 (no post-assault Retreat deadline), and v13 (no Selection deadline) remain readable with their historical hash rules; all mutations require v14. No implicit timing or schema upgrade occurs.
 - `operator_capability` holds only a domain-separated digest of a 32-byte operator secret. `seats` holds two possible sides per campaign, an increasing epoch, and at most one outstanding grant or credential digest per side. Grants live ten minutes and are single use. Redeemed credentials live two hours. A replacement grant increments epoch and invalidates the prior credential, including after process restart.
 - `reference_key` holds a private 256-bit HMAC key. `owner_openings` binds the authenticated seat epoch, acting element, visible bytes and digest, audience revision, and current private authority version. `owner_actions` holds the reference-to-Core-action map separately. Query checks the seat and replays Core inside one immediate transaction, then replaces the private map at the current cut. Equal visible bytes under an unseen authority change retain the opening revision and outward references; a changed view or seat epoch advances the revision.
 - Append takes a SQLite immediate transaction, replays the retained prefix through Core, checks the submitted command against that exact head, then commits evidence and head in the same transaction. Rejected commands write nothing. A concurrent or stale command cannot advance the head.
@@ -161,5 +161,27 @@ invalid proposals reject before clock gates. Queries never reset entry times.
 Verification checks every required result against its round or unavailable event, exact config,
 clock evidence, status and completion hash. Missing, altered and foreign rows fail closed.
 Schemas5–12 remain read-only, retaining Custody12/Reserve11/Cycle10/Force9/RBA8 verification
-thresholds. Selection deadlines remain outside this packet: initial legacy Breakdown and native
-repeat Breakdown32 still require a separately versioned no-selection fallback.
+thresholds. Selection deadlines were outside schema13; schema14 below adds separately versioned
+no-selection fallback for initial legacy Breakdown and native repeated Breakdown entry.
+
+## Initial and repeated Selection deadlines (schema 14)
+
+`selection_rounds` binds campaign, initial V11 entry checkpoint hash or repeated Breakdown
+entry event hash, entry state version, pinned timing hash and immutable clock evidence.
+Core entry eligibility and retained-entry verification share supported source scope; unrelated
+profiles are not promoted. Initial generic/owner-movement entry and repeated Breakdown completion initialize within
+accepted transition's transaction, before owner queries. Schema5–13 remains read-only;
+all earlier lane verification thresholds remain unchanged.
+
+The seventh independently paginated scheduler lane closes an unresolved Selection with
+System V38 `combat-selection-timeout`, then a distinct normal native no-attack completion
+and Reserve Release. No owner finish, target, acting element, RNG draw or debit is fabricated.
+Initial and repeated owner selection and generic Append validate proposals before checking
+clock. Current native owner Selection has no generic legal-action route, so generic submissions
+reject without consuming its deadline; the generic gate also guards any admitted route. Invalid proposals cannot consume expired state; accepted receipts remain retryable.
+No trusted clock/configuration produces explicit unavailable fallback without invented round.
+
+Strict replay binds each entry to its round/closure and checks hashes, config, immutable
+budget, clock evidence and statuses. Entry/timeout/downstream failures roll back atomically.
+An Append return describes its accepted input transition; `ReadVerified` supplies current
+durable authority including any immediately chained System fallback.

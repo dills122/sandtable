@@ -331,6 +331,79 @@ public static class CampaignExercises
         }
     }
 
+    internal static (string EntryHash, long StateVersion) QueryNativeCombatSelectionRoundBinding(ExerciseSession session)
+    {
+        var timeout = CreateSelectionTimeout(session, CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
+            -1, -1, -1, null, "selection-unavailable");
+        var evidence = timeout is CampaignNativeCombatSelectionTimeoutV38 initial
+            ? initial.Evidence : ((CampaignNativeRepeatCombatSelectionTimeoutV38)timeout).Evidence;
+        return (evidence.EntryHash, evidence.PriorStateVersion);
+    }
+
+    private static object CreateSelectionTimeout(ExerciseSession session, string configurationHash,
+        long opened, long deadline, long highWater, long? observed, string reason)
+    {
+        if (session.CurrentCombatDecision is null)
+            return CampaignNativeCombatSelectionTimeoutV38.Create(session.CurrentSnapshot, session.Context,
+                session.CurrentContacts, configurationHash, opened, deadline, highWater, observed, reason);
+        var release = QueryNativeReserveReleaseState(session);
+        var later = session.CurrentPostRepeat;
+        if ((later is null ? session.CurrentRepeatCombatSelection : later.Selection) is not null
+            || (later is null ? session.CurrentCycleControl : later.Control) is not { } control
+            || (later is null ? session.CurrentRepeatMove : later.Movement) is not { } movement
+            || (later is null ? session.CurrentRepeatBreakdown : later.Breakdown) is not { } breakdown
+            || (later is null ? session.CurrentRepeatMoveWorld : later.MovedWorld) is not { } world)
+            throw new InvalidOperationException("No pending repeated Combat selection.");
+        return CampaignNativeRepeatCombatSelectionTimeoutV38.Create(release, control, movement, breakdown,
+            world, session.Context, session.CurrentContacts, configurationHash, opened, deadline, highWater, observed, reason);
+    }
+
+    internal static ExerciseStepResult TimeoutNativeCombatSelection(ExerciseSession session,
+        CampaignDecisionTimingConfigurationV1? configuration, long openedAtUnixMilliseconds,
+        long deadlineUnixMilliseconds, long highWaterUnixMilliseconds, long? cancelledAtUnixMilliseconds, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            if ((configuration is not null && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
+                    || configuration.ContentHash != session.Context.ArtifactV6!.Identity.Hash))
+                || (configuration is null && reason != "selection-unavailable")
+                || (reason != "selection-unavailable" && (configuration is null
+                    || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("selection"))))
+                return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            var timeout = CreateSelectionTimeout(session, configuration?.Hash ?? CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
+            ExerciseSession next;
+            byte[] bytes;
+            byte[] state;
+            CampaignSelectionTimeoutEvidenceV38 evidence;
+            if (timeout is CampaignNativeCombatSelectionTimeoutV38 initial)
+            {
+                var selected = new CampaignNativeCombatDecisionStateV12(session.CurrentSnapshot, initial);
+                var contacts = session.CurrentContacts.AdvanceNativeCombatSelection(selected);
+                next = new ExerciseSession(session.CurrentSnapshot, session.Context, session.CurrentHistory.Add(initial), contacts, selected);
+                bytes = initial.SerializeCanonical();
+                state = selected.SerializeCanonical();
+                evidence = initial.Evidence;
+            }
+            else
+            {
+                var repeated = (CampaignNativeRepeatCombatSelectionTimeoutV38)timeout;
+                var contacts = session.CurrentContacts.AdvanceNativeRepeatCombatSelection(repeated);
+                next = session.CurrentPostRepeat is null ? session.WithRepeatCombatSelectionEvent(repeated, contacts)
+                    : session.WithPostRepeatEvent(repeated, contacts);
+                bytes = state = repeated.SerializeCanonical();
+                evidence = repeated.Evidence;
+            }
+            var receipt = new CampaignActionAcceptanceReceipt(evidence.CampaignId, evidence.PriorStateVersion,
+                checked(evidence.PriorStateVersion + 1), evidence.NextPositionId, CampaignActionAudience.System, evidence.Hash);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, state));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     internal static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);

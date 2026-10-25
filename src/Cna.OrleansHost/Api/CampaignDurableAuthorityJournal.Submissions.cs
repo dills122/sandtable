@@ -355,6 +355,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Rejected();
             }
         }
+        SelectionRound? selectionRound = null;
+        if (kind == CampaignOwnerOpeningKind.CombatSelection
+            || kind == CampaignOwnerOpeningKind.RepeatCombatSelection)
+        {
+            selectionRound = ReadActiveSelectionRound(connection, transaction, head, seat.CampaignId);
+            var gate = GateSelectionRound(connection, transaction, selectionRound);
+            selectionRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutSelectionRound(connection, transaction, head, selectionRound, reason, gate.CancelledAt);
+                transaction.Commit();
+                return CampaignOwnerSubmissionResult.Rejected();
+            }
+        }
         RetreatRound? retreatRound = null;
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
         {
@@ -397,6 +411,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
+        if (selectionRound is not null)
+            UpdateSelectionRound(connection, transaction, selectionRound with { Status = "completed" });
+        if (kind == CampaignOwnerOpeningKind.Movement)
+            TryInitializeSelectionRound(connection, transaction, acceptedHead, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
         {
             UpdateRbaRound(connection, transaction, rbaRound! with { Status = "completed" });
@@ -516,9 +534,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 "Accepted repeated Movement cannot complete Breakdown.");
         var command = CampaignHostAdapter.NativeRepeatBreakdownCommand(
             head.Session, completed);
-        PersistAccepted(connection, transaction, campaignId, head,
+        var completedHead = PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.NativeRepeatBreakdownKind,
             null, null, null, null, command, completed);
+        InitializeSelectionRound(connection, transaction, completedHead, campaignId);
     }
 
     private static string AcceptedKind(CampaignOwnerOpeningKind kind,

@@ -799,13 +799,14 @@ Core V17 records two owner-only seals at Force Assignment. Core V18 System
 completion then reaches Anti Armor. Normal Host retains each accepted seal
 under its own seat, opaque ref and cold-replay receipt, appending V18 with the
 second seal atomically. Normal campaign creation now accepts an explicit seven-window
-timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 13, and binds them in
-the initial journal hash. Existing schema-5/6/7/8/9/10/11/12 journals remain read-only; mutation
-requires schema 13. No configuration means no Force Assignment opening or seal.
+timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 14, and binds them in
+the initial journal hash. Existing schema-5/6/7/8/9/10/11/12/13 journals remain read-only; mutation
+requires schema 14. Missing configuration triggers Selection no-selection at entry;
+no later Force Assignment opening or seal is offered.
 The normal Host stores a shared Force Assignment round for both seats with trusted opened,
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
 deadline or clock failure, and verifies round status and evidence on cold replay.
-Schema 13 creates the Force round atomically with accepted RBA decline, using the
+Schema 14 creates the Force round atomically with accepted RBA decline, using the
 trusted timestamp from its RBA gate and the pinned Force budget. The hosted combat
 timeout service sweeps collecting rounds even when neither owner queries an opening.
 Queries and restarts cannot renew the entry deadline; a missing round rejects.
@@ -827,8 +828,14 @@ cursor exists.
 Required post-assault Retreat starts a durable deadline at accepted result entry.
 Native V37 records System `refuse-retreat` using the existing refusal projection,
 including its settlement losses; no defender choice is fabricated. Background
-expiry and settlement share one transaction. Selection remains a separate open
-deadline gap for initial and repeated Combat entry.
+expiry and settlement share one transaction. Selection starts a persisted round at initial or repeated Combat entry.
+Native V38 records explicit System `no-selection` and native Position
+Determination progression; existing no-work continuation reaches Reserve Release
+without a fabricated owner Finish, target use, resource debit or RNG draw.
+The deadline begins before any owner query, survives cold restart, and gates
+both owner and generic submission paths. This native combined transition is
+distinct from the isolated C3a closure/structural-step contract; it does not
+assert original-root certification.
 Pending source-supported Custody starts a durable deadline at settlement entry.
 Native V36 records explicit System `leave-unguarded`, marking the captive lot
 escaped and retaining existing deferred replacement eligibility without a guard

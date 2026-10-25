@@ -7,13 +7,13 @@ contracts remain authoritative. Every closure needs tested commit, exact profile
 command/exit/counts, retained artifacts and reviewer disposition. A historical
 pass does not prove a later head.
 
-Latest implementation packet: persisted required post-assault Retreat timeout,
-following `22c03209`. Final focused evidence is recorded in the
-[Retreat handoff](../reviews/2026-10-24-retreat-timeout-handoff.md). Previous
-Custody checkpoint `73e3af6f` remains historical evidence; no earlier pass is
-substituted for this head. Focused Core24, Host198, Runner470, boundary81, contracts18 and Python helpers220
-passed; Release build/format passed. Discovery3640 rows reconciled. Full Core
-and hosted CI remain release/PR gates.
+Latest implementation packet: initial/repeated Selection `no-selection` timeout,
+following `38c17170`. Final evidence is recorded in the
+[Selection handoff](../reviews/2026-10-24-selection-timeout-handoff.md).
+Current checks passed:Core24,Host213,Runner470,boundary81,contracts18,
+three relevant Python oracles,Release build and format. Discovery3649 reconciled.
+Previous Retreat checkpoint remains historical evidence. Full Core and exact-head
+hosted CI remain PR/release gates; focused checks do not replace them.
 
 ## Native Combat reliability
 
@@ -27,8 +27,8 @@ head; they do not admit original P01 roots or close product gates.
 | Cycle-control deadline | Implemented `d7993d77` | Completed Release starts deadline; System finish enters same-slot Truck Convoy Movement with unchanged World/RNG; owner race, cold replay and repeated ordinals pass. |
 | Reserve Release deadline | Implemented `ac1cab54` | Due I converts to II, due II retained; accepted owner releases/allowances unchanged; immutable deadline, exact System batch, atomic Cycle entry, cold replay and invalid/tampered cases pass. Genuine cycle2 Host evidence retained; genuine cycle3 Reserve fallback remains part of integration gate below. |
 | Custody deadline | Implemented `73e3af6f`, bounded single-lot scope | Source-legal leave-unguarded effects recorded as System; settlement-bound immutable entry deadline; no invented guard debit/owner receipt; owner race, no-query restart, duplicate expiry, cold replay, row tampering and rollback pass. Every admitted cut has a legal fallback; unsupported routes/lots remain explicitly excluded. |
-| Required post-assault Retreat deadline | Implemented in current packet; bounded initial Host and repeated native runtime proof | Result-entry immutable deadline; System `refuse-retreat` applies actual refusal settlement losses; no-query cold expiry, exact boundary, rejected late proposal non-mutation, owner retry, clock faults, tamper and rollback checks pass. Genuine repeated Host required-retreat expiry remains integration proof below. |
-| Selection deadline | Audited missing at initial/repeated entry | Persist deadline at actual accepted Selection entry (initial legacy Breakdown and repeated native Breakdown); explicit System `no-selection` semantics, no invented owner Finish; cold/background expiry, owner race, invalid proposal non-mutation, atomic successor and replay pass for both initial and repeated paths. |
+| Required post-assault Retreat deadline | Implemented `38c17170`; bounded initial Host and repeated native runtime proof | Result-entry immutable deadline; System `refuse-retreat` applies actual refusal settlement losses; no-query cold expiry, exact boundary, rejected late proposal non-mutation, owner retry, clock faults, tamper and rollback checks pass. Genuine repeated Host required-retreat expiry remains integration proof below. |
+| Selection deadline | Implemented in current packet; initial and genuine repeated paths | Deadline retained at actual initial or repeated Breakdown entry; System `no-selection` distinct from owner Finish, unchanged World/RNG, no-query cold expiry, owner race/retry, invalid proposal non-mutation, generic-Append gating, atomic no-attack/Reserve continuation and strict replay pass. Preserve readonly historical schemas and fail closed for unsupported fallback scope. |
 | Integrated durable Combat flow | Open | One retained genuine accepted history exercises initial and repeated combat, unpaid decisions and background fallbacks, restart at nonterminal cuts, Reserve I/II effects, cycle repeat/finish, and identical replay. Add genuine third-cycle Host Reserve timeout or prove that cut unreachable in the declared profile. Inject Host clock failure exactly at Custody entry and retain a genuine repeated captured-lot Custody expiry proof; the current fixed-seed second assault has no captive lot. Add genuine repeated Host required-Retreat timeout and exact Retreat-entry clock-failure injection; synthetic ordinal2/3 native replay and a real second assault with no required retreat are insufficient. No fabricated P01 ancestry. |
 
 ## Release evidence and publication
@@ -65,8 +65,9 @@ existing roadmap gates; no scope reduction is inferred from finishing Combat.
 
 ## Next execution order
 
-1. Implement audited Selection deadline gap with explicit `no-selection` contract;
-   see [Retreat/Selection audit](2026-10-24-retreat-selection-deadline-audit.md).
+1. Validate accumulated [PR329](https://github.com/dills122/sandtable/pull/329)
+   on its exact head and obtain independent release review. All seven decision
+   window implementations exist in bounded scope; this is not full RC closure.
 2. Close integrated durable-flow proof, including the two explicit Custody proof
    gaps above, alongside source-pin reconciliation and dependency remediation in
    separate owned packets.

@@ -15,7 +15,8 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
-    private const int SchemaVersion = 13;
+    private const int SchemaVersion = 14;
+    private const int SelectionSchemaVersion = 14;
     private const int RetreatSchemaVersion = 13;
     private const int CustodySchemaVersion = 12;
     private const int ReserveSchemaVersion = 11;
@@ -197,6 +198,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        Execute(connection, """
+            CREATE TABLE selection_rounds (
+              campaign_id TEXT NOT NULL, entry_hash TEXT NOT NULL,
+              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+              high_water_ms INTEGER NOT NULL,
+              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+              record_hash TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,entry_hash),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
@@ -234,7 +247,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         var version = (int)ScalarInt(connection, "PRAGMA user_version");
         if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
-            || version is not (SchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
+            || version is not (SchemaVersion or RetreatSchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version);
@@ -317,8 +330,30 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var head = Load(connection, transaction, campaignId);
         var result = CampaignHostAdapter.Submit(head.Session, submission);
         if (!result.IsAccepted) return result;
-        PersistAccepted(connection, transaction, campaignId, head,
+        var selectionPending = true;
+        try { _ = CampaignHostAdapter.QueryNativeCombatSelectionRoundBinding(head.Session); }
+        catch (InvalidOperationException) { selectionPending = false; }
+        SelectionRound? selectionRound = selectionPending
+            ? ReadActiveSelectionRound(connection, transaction, head, campaignId) : null;
+        if (selectionRound is not null)
+        {
+            var gate = GateSelectionRound(connection, transaction, selectionRound);
+            selectionRound = gate.Round;
+            if (gate.CancellationReason is { } reason)
+            {
+                TimeoutSelectionRound(connection, transaction, head, selectionRound, reason, gate.CancelledAt);
+                var closed = Load(connection, transaction, campaignId);
+                var rejected = CampaignHostAdapter.Submit(closed.Session, submission);
+                if (rejected.IsAccepted) throw new InvalidOperationException("Expired Selection proposal remained valid.");
+                transaction.Commit();
+                return rejected;
+            }
+        }
+        var acceptedHead = PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
+        if (selectionRound is not null)
+            UpdateSelectionRound(connection, transaction, selectionRound with { Status = "completed" });
+        TryInitializeSelectionRound(connection, transaction, acceptedHead, campaignId);
         transaction.Commit();
         return result;
     }
@@ -491,6 +526,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         VerifyReserveRounds(connection, transaction, campaignId, steps, timing);
         VerifyCustodyRounds(connection, transaction, campaignId, steps, timing);
         VerifyRetreatRounds(connection, transaction, campaignId, steps, timing);
+        VerifySelectionRounds(connection, transaction, campaignId, steps, timing);
         return new Loaded(imported.Session!, sequence, hash, timing, request, timingBytes);
     }
 
