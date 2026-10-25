@@ -1718,7 +1718,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         PrepareInfantryForceRound(CampaignDurableAuthorityJournal journal,
             bool positive = false, ulong? seed = null,
             string? reserveElementId = null, bool doubleContact = false,
-            bool tripleContact = false, string? secondReserveElementId = null)
+            bool tripleContact = false, string? secondReserveElementId = null,
+            string? thirdReserveElementId = null)
     {
         var request = tripleContact ? PositiveTripleContactRequest(seed ?? 12345)
             : doubleContact ? PositiveDoubleContactRequest(seed ?? 12345)
@@ -1726,7 +1727,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         AdvanceToContactCombat(journal, request, Timing(request),
             preserveAdjacentInfantry: true,
             reserveElementId: reserveElementId,
-            secondReserveElementId: secondReserveElementId);
+            secondReserveElementId: secondReserveElementId,
+            thirdReserveElementId: thirdReserveElementId);
         var attacker = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
         var selected = journal.QueryCombatOwnerOpening(attacker, "axis-infantry");
@@ -1815,11 +1817,11 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         CampaignDecisionTimingConfigurationV1? timing = null,
         string movementDestination = "north", bool preserveAdjacentInfantry = false,
         string? reserveElementId = null, string? secondReserveElementId = null,
-        Action? beforeSelectionEntry = null)
+        Action? beforeSelectionEntry = null, string? thirdReserveElementId = null)
     {
         var session = journal.CreateCampaign(request, timing);
         var pendingReserves = new Queue<string>(new[] { reserveElementId,
-            secondReserveElementId }.OfType<string>());
+            secondReserveElementId, thirdReserveElementId }.OfType<string>());
         for (var index = 0; index < 80; index++)
         {
             try
