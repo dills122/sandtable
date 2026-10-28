@@ -1,6 +1,6 @@
 # RC checklist — October 24, 2026
 
-Working branch: `codex/rc-custody-crash-recovery`. Status describes retained
+Working branch: `codex/rc-retreat-crash-recovery` (retains local Custody `611a4be2`). Status describes retained
 local evidence, not a public support certificate or a playable RC declaration.
 The [roadmap](../../roadmap/pre-alpha-roadmap.md) and canonical acceptance
 contracts remain authoritative. Every closure needs tested commit, exact profile,
@@ -56,11 +56,13 @@ head; they do not admit original P01 roots or close product gates.
 ### Abrupt-process persistence gate
 
 Third-cycle Reserve precommit and postcommit/lost-response kill cases pass in
-bounded fixture. Current repeated captured-lot Custody packet adds both boundaries;
+bounded fixture. Retained repeated captured-lot Custody packet adds both boundaries;
 all14 focused tests and build/format passed. Parent uses OS termination while child is paused, then new
 processes recover/retry; full logical journal/replay parity excludes partial state
 and duplicate fallback. Other lanes, arbitrary write/fsync cuts and power loss
-remain unproved. No production crash hook or changed persistence contract.
+remain unproved. Repeated required-Retreat now also passes both process-kill boundaries with actual
+seed4 history and legal owner-refusal World parity. No production crash hook or
+changed persistence contract.
 
 ## Release evidence and publication
 
@@ -152,7 +154,7 @@ No public certificate, Outward runtime acceptance or release-readiness claim fol
 
 ## Repeated Custody abrupt-process recovery
 
-Current bounded #330 Host packet: actual two-paid, repeated captured-lot Custody.
+Retained bounded #330 Host packet: actual two-paid, repeated captured-lot Custody.
 [Boundary and evidence](../reviews/2026-10-27-custody-crash-recovery.md).
 All14 selected tests, Host Release build and changed-file format passed.
 Coordinator review only; independent review and hosted CI not claimed for this head.
@@ -165,5 +167,23 @@ Coordinator review only; independent review and hosted CI not claimed for this h
   owner records and paid RNG preserved.
 - [x] Focused crash, existing fresh-process and Custody regressions; build/format pass.
 
-No public admission or power-loss claim. Next bounded Host proof: genuine repeated
-required-Retreat precommit and lost-response crash recovery.
+No public admission or power-loss claim. Required-Retreat packet follows below.
+
+## Repeated required-Retreat abrupt-process recovery
+
+Current #330 Host packet uses genuine seed4 two-paid history requiring Retreat;
+[proof and scope](../reviews/2026-10-27-retreat-crash-recovery.md).
+
+- [x] Calibrated precommit OS kill preserves original journal; new process applies
+  System refusal exactly once.
+- [x] Postcommit/lost-response kill preserves complete settlement; fresh retry
+  produces no additional event or version.
+- [x] All14 tables/replay bytes/hashes match healthy control; settled World matches
+  separate legal owner-refusal branch, with paid RNG and owner records unchanged.
+- [x] New crash tests and existing Reserve/Custody/fresh-process/Retreat/default-child
+  regressions pass; focused Host build and format pass.
+
+All16 selected tests, Host build and changed-file format passed.
+Independent review and hosted CI are not claimed. Package local Custody+Retreat
+commits for review and exact-head CI before merge; broader crash/certification
+obligations remain open.

@@ -3,7 +3,7 @@ using Cna.Core.Exercises;
 using Cna.OrleansHost.Api;
 using Microsoft.Extensions.Logging.Abstractions;
 
-if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"])
+if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"] or ["--native-retreat-crash-probe"])
 {
     var crashInput = JsonSerializer.Deserialize<NativeCrashInput>(Console.ReadLine() ?? "")
         ?? throw new InvalidOperationException("Missing native crash input.");
@@ -15,6 +15,8 @@ if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"]
     clock.Arm();
     if (args[0] == "--native-custody-crash-probe")
         _ = journal.TickCustodyRound(crashInput.CampaignId);
+    else if (args[0] == "--native-retreat-crash-probe")
+        _ = journal.TickRetreatRound(crashInput.CampaignId);
     else
         _ = journal.TickReserveRound(crashInput.CampaignId);
     if (crashInput.StopAfterCommit) NativeCrashClock.Pause("after-commit", clock.ReadIndex, clock.LastObserved);
