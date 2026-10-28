@@ -40,7 +40,7 @@
       "requirement": "Move or change representation: same unit key, new binding; old uncommitted choice fails without events/RNG. Elimination preserves history.",
       "decisions": "001-002; DES-002/005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 221,
+      "line": 226,
       "plannedTasks": [
         "CMB-TASK-009",
         "CMB-TASK-020"
@@ -58,7 +58,7 @@
       "requirement": "Same component name on another unit/campaign does not alias. Duplicate bindings and foreign provenance reject.",
       "decisions": "001-002/005; DES-002",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 222,
+      "line": 227,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009"
@@ -76,7 +76,7 @@
       "requirement": "Adjacent singleton infantry with empty ZOC can have a voluntary opportunity and no initial Contact. Positive-ZOC admission remains gated.",
       "decisions": "004/008; DES-003",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 223,
+      "line": 228,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009"
@@ -94,7 +94,7 @@
       "requirement": "Later arrival in a marked hex inherits no relation; ending one of two independent counterpart relations leaves the other intact. No transitive grouping.",
       "decisions": "004; DES-005 extension vector",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 224,
+      "line": 229,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -111,7 +111,7 @@
       "requirement": "Zero-loss Engaged still binds original participants; Retreat priority prevents that Engaged outcome. Adjacent prior assault survivors require the 15.81 Contact evaluation.",
       "decisions": "004; DES-005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 225,
+      "line": 230,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -128,7 +128,7 @@
       "requirement": "Same campaign ID/version but divergent authority prefix changes internal opportunity; equal visible histories leave outward IDs unchanged.",
       "decisions": "005/007; DES-002/005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 226,
+      "line": 231,
       "plannedTasks": [
         "CMB-TASK-009",
         "CMB-TASK-020"
@@ -146,7 +146,7 @@
       "requirement": "Two private envelopes share one base; envelope persistence adds no attacked entry. Combat-fact mutation invalidates the old opportunity.",
       "decisions": "005-006; DES-002",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 227,
+      "line": 232,
       "plannedTasks": [
         "CMB-TASK-011"
       ],
@@ -163,7 +163,7 @@
       "requirement": "Commit singleton `A -> B` once before RNG; duplicate replay fails. Same target hex cannot be assaulted again that segment, even with a new attacker.",
       "decisions": "003/006; DES-002/004",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 228,
+      "line": 233,
       "plannedTasks": [
         "CMB-TASK-012"
       ],
@@ -180,7 +180,7 @@
       "requirement": "Later cycle allows a new pair occurrence only with current resources; stage history persists and target-use resets. Reserve limits remain independent.",
       "decisions": "006; CYCLE-DES-001",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 229,
+      "line": 234,
       "plannedTasks": [
         "CMB-TASK-018",
         "CMB-TASK-019"
@@ -198,7 +198,7 @@
       "requirement": "Multi-unit, partial assignment, attachment, Probe, Barrage and Anti-Armor remain closed; empty structural steps produce no attacks.",
       "decisions": "008; DES-003/004",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 230,
+      "line": 235,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009"
@@ -216,7 +216,7 @@
       "requirement": "Hidden identity/TOE/count permutations do not alter equal visible artifacts. A profile permitting indistinguishable hidden bindings fails trusted certification before any active decision; no opportunity/action is offered and no hidden count/reason reaches side-visible errors. Suppressing extra bindings or ordering by authority ID does not satisfy this gate.",
       "decisions": "007; DES-005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 231,
+      "line": 236,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009",
@@ -235,7 +235,7 @@
       "requirement": "Restart before either envelope, after commitment and after relation settlement reproduces IDs, mappings, history and target-use without duplicate RNG.",
       "decisions": "001-007; DES-002/005, CYCLE-DES-001",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 232,
+      "line": 237,
       "plannedTasks": [
         "CMB-TASK-008",
         "CMB-TASK-010",
@@ -922,7 +922,7 @@
       "requirement": "Admission covers every role/result/retreat/custody branch, certified route/reunion geometry and integer settlement CP. Hidden-blocker or unsupported variants fail profile certification before choice; no seed narrows results.",
       "decisions": "001/007",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 223,
+      "line": 226,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009",
@@ -942,7 +942,7 @@
       "requirement": "Refusal adds percentage before rounding; seed208 yields3 defender loss/3DP, while fulfilled retreat changes that result. Capture subset plus other losses conserve original10 TOE.",
       "decisions": "002",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 224,
+      "line": 227,
       "plannedTasks": [
         "CMB-TASK-005",
         "CMB-TASK-014"
@@ -960,7 +960,7 @@
       "requirement": "Guard transfer never counts toward30% loss DP. Loss3 plus captured2 deducts3, not5; subsequent one-TOE guard transfer preserves a separate asset balance.",
       "decisions": "002/004",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 225,
+      "line": 228,
       "plannedTasks": [
         "CMB-TASK-014",
         "CMB-TASK-015"
@@ -978,7 +978,7 @@
       "requirement": "Actual one-hex retreat spends1 CP; E=10->11 adds1DP after result. Refusal spends none. Frozen Morale/RNG do not change; DP then proved victory RP retain both causes.",
       "decisions": "002-003",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 226,
+      "line": 229,
       "plannedTasks": [
         "CMB-TASK-014",
         "CMB-TASK-016"
@@ -996,7 +996,7 @@
       "requirement": "Zero-distance produces no decision; real retreat/refusal takes exactly one disposition/loss/movement path. Lost replies, duplicates and stale timers cannot choose twice or move twice.",
       "decisions": "001/003/006",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 227,
+      "line": 230,
       "plannedTasks": [
         "CMB-TASK-014"
       ],
@@ -1013,7 +1013,7 @@
       "requirement": "Captures on either side settle with valid initial route and co-located one-TOE guard transfer, or immediate unguarded escape. No off-map guard, extra prisoner debit or unguarded transient action is possible.",
       "decisions": "004",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 228,
+      "line": 231,
       "plannedTasks": [
         "CMB-TASK-015"
       ],
@@ -1030,7 +1030,7 @@
       "requirement": "Escape reunites with certified friendly recipient, removes current custody and creates delayed replacement entitlement without restoring TOE. Guarded branch retains priority feeding and guard obligations across closure.",
       "decisions": "004/008",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 229,
+      "line": 232,
       "plannedTasks": [
         "CMB-TASK-015"
       ],
@@ -1047,7 +1047,7 @@
       "requirement": "Deadline equality, controller loss and clock regression produce refusal/unguarded fallback once. Accepted choices defeat later timers; committed attack cannot cancel or renew deadlines.",
       "decisions": "006",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 230,
+      "line": 233,
       "plannedTasks": [
         "CMB-TASK-014",
         "CMB-TASK-015"
@@ -1065,7 +1065,7 @@
       "requirement": "Raw Retreat suppresses Engaged even on refusal; adjacent survivors become Contact. Zero-loss Engaged remains when no Retreat; guard/new arrivals never inherit original relation.",
       "decisions": "005",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 231,
+      "line": 234,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -1082,7 +1082,7 @@
       "requirement": "Cuts before/after every event restore the same pending owner/capability, balances, entitlements, receipts and RNG. Wrong order, forged absence proof or altered before/after quantities fails readback.",
       "decisions": "001/008",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 232,
+      "line": 235,
       "plannedTasks": [
         "CMB-TASK-008",
         "CMB-TASK-014",
@@ -1102,7 +1102,7 @@
       "requirement": "Own-only changes advance only own projection; approved shared facts advance affected audiences. Hidden-equivalent variants preserve candidates, success/errors and side bytes, with no raw authority receipt in Runner/Dispatch/War Diary.",
       "decisions": "007",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 233,
+      "line": 236,
       "plannedTasks": [
         "CMB-TASK-020",
         "CMB-TASK-021",
@@ -1122,7 +1122,7 @@
       "requirement": "No immediate pending loss/retreat/custody/relation allows round closure; later upkeep/replacement records survive. Reserve entry does not prove supported repeat or production readiness.",
       "decisions": "001/008",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 234,
+      "line": 237,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -1483,26 +1483,26 @@
   ],
   "sourcePins": {
     "docs/design/combat-cost-resolution-order-v1.md": "sha256:ffea13f61eecdf5baae9e6777d85386fe4971875a8c75274ab2df7bd6e36c2b0",
-    "docs/design/combat-opportunity-identity-v1.md": "sha256:2976a278e51235ff11e74699bf84ed23ed9140c1da6d638de81d8f862c32d762",
+    "docs/design/combat-opportunity-identity-v1.md": "sha256:887ecb8a5b695d20c5974932bdcefc9944159f2c5fcee6f3382974f5ac39d7e7",
     "docs/design/combat-sealed-decision-protocol-v1.md": "sha256:6c6f805db450877bfa922e75134288cace0f5dae5115794e064b78c2ae764c2e",
-    "docs/design/combat-settlement-disclosure-v1.md": "sha256:84d85139ed0c7111b70c464bde47837963ed7f19571adbc5279e2f8cb1572616",
+    "docs/design/combat-settlement-disclosure-v1.md": "sha256:fe0aaae77c880971ed5737b6156aa22f941d757c660d625df0090a50b55b6c27",
     "docs/design/combat-step-transitions-v1.md": "sha256:90b2264ef506c335203e0143adc000b98c59f0f29b4319ba07d9008a1d322f7a",
     "docs/design/continual-cycle-reserve-composition-v1.md": "sha256:cce5b7b8ebee261f7fbed080bdf4ea27b864d8291e4dbfd7aaa377056badb88b",
     "docs/research/verify-combat-rng.py": "sha256:f3c7c468f2be0efa583e44c4d04b8fe6d20eef51aae01554bfa535b0ecc0ea30",
     "docs/research/verify-combat-source-freeze.py": "sha256:f21a97150e344337f6ee4c2c1a1752ac7d41b8b8c8bf6a61a06a1fe5a0483e7e",
     "docs/specs/combat-authority-composition-v1.md": "sha256:e2df8e53a37055fe514feae1748d59fde6b17fb6faa6ff01ed2a8b3a967f8582",
     "docs/specs/combat-authority-composition-v1.schema.json": "sha256:47210ccd00d3eba301c97d2190c16354626265707a4f6109754150e30406bd42",
-    "docs/specs/combat-content-v7.md": "sha256:9ebe2882b2d8b41fde015b06fa3d5ff0eaad2283150d06bcf5301280ef391b78",
+    "docs/specs/combat-content-v7.md": "sha256:79dbefd44a55ca66976e1299e1f74acbe495bbc4289af9fe9ea9befc29e16e4a",
     "docs/specs/combat-cycle-control-v1.md": "sha256:2d183ed4e891eda31c73eaa7d9479a3175f7ecc2842b6c405d0f47d768620639",
     "docs/specs/combat-cycle-control-v1.schema.json": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da",
     "docs/specs/combat-cycle-sequence-v1.md": "sha256:5c5691e8b4d7e0c2e46a0ac94dd544e21b065d7036929102eb0b782b9062ea6a",
     "docs/specs/combat-cycle-sequence-v1.schema.json": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5",
     "docs/specs/combat-exercise-child-evidence-v1.md": "sha256:a6688d84555b48efff90bf578f5d00708b4e10aa3246c1c7b9587c2b12afe3d5",
-    "docs/specs/combat-exercise-child-evidence-v1.schema.json": "sha256:cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+    "docs/specs/combat-exercise-child-evidence-v1.schema.json": "sha256:7861713af044ccd2ac3273354a3cece63b046e8ef467ffd0ba60db683cab2feb",
     "docs/specs/combat-exercise-occurrence-v1.md": "sha256:66074c9c78ba8fa24e6572a91cf1b6f54f57a5acbd6f17f7a078b95f33fe045b",
     "docs/specs/combat-exercise-occurrence-v1.schema.json": "sha256:dc4095e6dc7896c98d2110be50eaf703f84286dc0bb5f0e7941c60f61936b301",
     "docs/specs/combat-exercise-parent-evidence-v1.md": "sha256:8b146b00a08e084cd4dd7e899ddfe68f846adc4a71632937c2dae2fb1be8e953",
-    "docs/specs/combat-exercise-parent-evidence-v1.schema.json": "sha256:00d1fcd2cb7d06b6f25d9224ff0839308f23fd2052b42dab24c98ea378b30820",
+    "docs/specs/combat-exercise-parent-evidence-v1.schema.json": "sha256:df83b14d796b7cda32c9a06cde1ef5d5c714927d2ef789bf95466997f2e2d328",
     "docs/specs/combat-inherited-armed-continuation-v1.md": "sha256:4b14f59a43130dab8501056432ff1f78068934db2997aeca221ebb3d4a0b708c",
     "docs/specs/combat-inherited-armed-continuation-v1.schema.json": "sha256:996cfd224ee8c0fa5fd0faa54e74c28099782b898ada22c32717a89c90422852",
     "docs/specs/combat-inherited-cycle-control-v1.md": "sha256:36c0af62d713ef266946f72a9501f727ec185984161809ca2a44942b3ae7a8ac",
@@ -1535,18 +1535,18 @@
     "docs/specs/combat-snapshot-composition-v1.schema.json": "sha256:e9e8f45751cad5fcab1be9e735359d50f34ec4e6bf5bdf41d9011ba9d176a586",
     "docs/specs/combat-world-settlement-v1.md": "sha256:1e6b0e5f02e0c90211a3a9436ae3f849f0828f4f6f7ec4452bb80ebc382fb87f",
     "docs/specs/combat-world-settlement-v1.schema.json": "sha256:f892545f5dac693c55d1180ad771d95ffeec508176a0d6139b82752ed46bcf0e",
-    "docs/specs/fixtures/combat-authority-composition-v1.json": "sha256:a90f88de9c05b4b1bd7081e7828abb7553e3e0537a6efa8cad042c87a6df50b1",
+    "docs/specs/fixtures/combat-authority-composition-v1.json": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7",
     "docs/specs/fixtures/combat-content-v7.vectors.json": "sha256:37957166b82d756a9c7f43aa8544ed688624122c8b234ba098aca563b14a890e",
     "docs/specs/fixtures/combat-cycle-control-v1.json": "sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6",
-    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "sha256:de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
-    "docs/specs/fixtures/combat-exercise-child-evidence-v1.json": "sha256:5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6",
-    "docs/specs/fixtures/combat-exercise-occurrence-v1.json": "sha256:aabc20a39229ac121703a6cda077c0ebeffbfdd7bc3142a3d0c1d0805af7a38e",
-    "docs/specs/fixtures/combat-exercise-parent-evidence-v1.json": "sha256:08316dae3d4f12298c35bfe05f640dcd2559ae41cbf4144430cd52b121847a9f",
-    "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f",
-    "docs/specs/fixtures/combat-inherited-cycle-control-v1.json": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236",
-    "docs/specs/fixtures/combat-inherited-no-attack-v1.json": "sha256:4e8f8a9fa0d1e973d6a5d7046b3e013f4270bd31c53afa24ed7595f732be6bc1",
-    "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json": "sha256:e336d9b5afe498b3886318509958cb2e50ae860676ee1c4603c55540a41847d3",
-    "docs/specs/fixtures/combat-inherited-selection-v1.json": "sha256:76240f2409f341757deea0f6ab5d346699de5a4a33690f95ccb7e74e160c1f4f",
+    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "sha256:805dc0453bf678957ea92ce0c609a7bf67af1c1b8898bc5f99df2b0777810005",
+    "docs/specs/fixtures/combat-exercise-child-evidence-v1.json": "sha256:c8dce8c2451d609f3021f30a6bf39029cc129ae172c04f9176f671c546360bd8",
+    "docs/specs/fixtures/combat-exercise-occurrence-v1.json": "sha256:d391f2cd23deea514c6947db9e4451a68d76536d684ef027d2322f9392167392",
+    "docs/specs/fixtures/combat-exercise-parent-evidence-v1.json": "sha256:bb398b31e89981c32edcbcfcd44c9f91644d00d8348fae9fcae3ab85c539db2e",
+    "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json": "sha256:ee07bd4bb8d93981f1ec618143e5891cb86be620523e9329c776bceb1d0067b8",
+    "docs/specs/fixtures/combat-inherited-cycle-control-v1.json": "sha256:b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e",
+    "docs/specs/fixtures/combat-inherited-no-attack-v1.json": "sha256:f6e59162bfbd38d55251a46c966ea195dd06daacc90828c057b67fa7f351e9e6",
+    "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json": "sha256:b103915310b25950a32d5526b2e24d2218d2aa31d0c2b5e4332f5ea1ae6833ea",
+    "docs/specs/fixtures/combat-inherited-selection-v1.json": "sha256:e4c7ff4950a0585566881798a974234383ae7e7fb6f6a379510d917a46262f30",
     "docs/specs/fixtures/combat-reserve-release-v1.json": "sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9",
     "docs/specs/fixtures/combat-result-cycle-finish-v1.json": "sha256:a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2",
     "docs/specs/fixtures/combat-result-settlement-v1.json": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
@@ -1555,7 +1555,7 @@
     "docs/specs/fixtures/combat-sealed-round-v1.json": "sha256:8832568d97d3bd7cfe0d8f5dcd875bed58ea401250c38a178afeb7b1662cef6e",
     "docs/specs/fixtures/combat-sealed-round-v2.json": "sha256:8200354f49bef2fd4a976dd9c24e4e485f8c06ad903d8c3deb06d5a9db509a95",
     "docs/specs/fixtures/combat-selection-steps-v1.json": "sha256:151c8da5037dfd5fa921abf1f675ef1a10211f8b84a4e1fb385d6beb62b1d0de",
-    "docs/specs/fixtures/combat-side-projection-v1.json": "sha256:07139da2ff125345c3007aa6bd9a5760eec44e4d4f25d0ec85c7e06fed4da44f",
+    "docs/specs/fixtures/combat-side-projection-v1.json": "sha256:4682587f161f16a36ec06c87e3196db76366502055d26349d4538753253c1f62",
     "docs/specs/fixtures/combat-snapshot-composition-v1.json": "sha256:392e805f3ee244d9dc988a64b85090d9f992335721fbbc91e8b5b6e2260f834a",
     "docs/specs/fixtures/combat-world-settlement-v1.json": "sha256:f3d2de110a901058635b789e78c31dd7ccbbfb0fac8bc1a423d2d7756a0a6037",
     "docs/specs/verify-combat-authority-composition-v1.py": "sha256:97f9500f5b0566c9f8b295a1a7d524fdf53387038655872ea0d8005abe8702b7",
@@ -1563,7 +1563,7 @@
     "docs/specs/verify-combat-cycle-control-v1.py": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f",
     "docs/specs/verify-combat-cycle-sequence-v1.py": "sha256:d43ae974e1f6e2c30067efe4635df655c6d2e4791968ece00dfd473145c3cc8a",
     "docs/specs/verify-combat-exercise-child-evidence-v1.py": "sha256:a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92",
-    "docs/specs/verify-combat-exercise-occurrence-v1.py": "sha256:9e46db1943514629754cdc227fdc1a415c53c8b5e573b8fb0afd89c870f1fb53",
+    "docs/specs/verify-combat-exercise-occurrence-v1.py": "sha256:c3a29356a38d35c8fd2a61bb909078fe00cf51a56afc714feab77db66e76df70",
     "docs/specs/verify-combat-exercise-parent-evidence-v1.py": "sha256:bb0134c42293a18c8453513c9b23b13d4c365cb2734f8e93c2989d47773e7345",
     "docs/specs/verify-combat-inherited-armed-continuation-v1.py": "sha256:91f7004b1c9e197d2d587b9cc4ff2ccfdb571bd1d5506117cc22a9165e3e4466",
     "docs/specs/verify-combat-inherited-cycle-control-v1.py": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0",
@@ -1578,7 +1578,7 @@
     "docs/specs/verify-combat-sealed-round-v1.py": "sha256:497e295e71c4b4da43539ee9b6c30de6d33f409a2f14b6cc24d9030390525ae0",
     "docs/specs/verify-combat-sealed-round-v2.py": "sha256:d1091b5d1d6fb1d9ac88da45313c88fcbc922f763e62d01af44311abc8656bf9",
     "docs/specs/verify-combat-selection-steps-v1.py": "sha256:dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86",
-    "docs/specs/verify-combat-side-projection-v1.py": "sha256:964f4b6a6901e446e5d0e0a6c49e79e778677ae458947681034a4ddd5d848a0d",
+    "docs/specs/verify-combat-side-projection-v1.py": "sha256:acb8529d6dcb959c8b3693841bdf64078d047c04e80a3885223f69c88c265710",
     "docs/specs/verify-combat-snapshot-composition-v1.py": "sha256:4abaefa7460774a550ef4579689129b4174dc837b01050893bda52d324e00b8b",
     "docs/specs/verify-combat-world-settlement-v1.py": "sha256:d5f49e5a4165ec568f0a8896ea491341a639da256bcfd573998f529e80ef9f25"
   }

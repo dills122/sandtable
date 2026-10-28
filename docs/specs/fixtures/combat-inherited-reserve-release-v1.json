@@ -53,7 +53,7 @@
   "sourcePins": [
     {"path": "docs/specs/combat-inherited-reserve-cycle-v1.schema.json", "sha256": "sha256:1d311e48923614180ee0ca6600b6ec3d030126637dab4cb77412c37ae5cd6c17"},
     {"path": "docs/specs/verify-combat-inherited-reserve-cycle-v1.py", "sha256": "sha256:4ee62f545d2c093d4dde93d075aa2119d8dd77fbb1ebb24a6144d2bb964e0ac9"},
-    {"path": "docs/specs/fixtures/combat-inherited-reserve-cycle-v1.json", "sha256": "sha256:22d349c63acd9f567c9691f71bc5ea007334e596b5bf9f4789e1a6c229f7e10e"},
+    {"path": "docs/specs/fixtures/combat-inherited-reserve-cycle-v1.json", "sha256": "sha256:0564489a8bd6dd6ee69ad0c23b7b1badbaffe87113aaaa5e7bcb792c83f0e1e1"},
     {"path": "docs/specs/combat-reserve-release-v1.schema.json", "sha256": "sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32"},
     {"path": "docs/specs/verify-combat-reserve-release-v1.py", "sha256": "sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b"},
     {"path": "docs/specs/combat-cycle-control-v1.schema.json", "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"},

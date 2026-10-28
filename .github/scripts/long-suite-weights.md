@@ -417,3 +417,9 @@ RoundEntry consumption recheck correction adds two measured nested-snapshot rows
 | --- | --- | ---: |
 | `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.ConsumptionRevalidationTraversesParentsAndOwnsCurrentBytes(revision: "refreshed")` | `2aa4edf314ed8d636578b2e5492867086c8fd6121a39c25cb7657c597ca002b5` | 5 |
 | `Cna.Core.Tests.Campaigns.CombatDependencySnapshotTests.ConsumptionRevalidationTraversesParentsAndOwnsCurrentBytes(revision: "legacy")` | `ba85c38a95545606a6e2a2363b3dabe40794758a4092e82cd2676226a32c131a` | 1 |
+
+Snapshot reconciliation adds one measured row; existing weights unchanged.
+
+| Test | Key prefix | Observed ms |
+| --- | --- | ---: |
+| `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.MergedPr334RevisionRetainsExactReplayAndRejectsMixedSnapshotDependencies` | `6e8267a4bbcb` | 5007 |

@@ -108,7 +108,7 @@ is a transport responsibility, while order legality stays in Core.
 
 `CombatDependencySnapshot` and `CombatEvidenceRevisions` are internal Umpire helpers for
 [private evidence revisions](docs/specs/combat-evidence-revisions-v1.md). They authenticate one
-frozen dependency set and retain its manifest identity; they are not admission certificates.
+frozen legacy, PR334 or Snapshot-reconciled dependency set and retain its manifest identity; they are not admission certificates.
 `CombatLegacyDependencyArchive` binds the fixed original P01 import adapter to its
 authenticated original dependencies.
 

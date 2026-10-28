@@ -1,8 +1,8 @@
 # Combat evidence dependency revisions v1
 
-Status: implemented with bounded local validation and independent review; private evidence only. Full release gates remain open. No public admission or RC certification.
+Status: Snapshot reconciliation focused validation passed; private evidence only. Full release gates remain open. No public admission or RC certification.
 
-A dependency revision is an immutable, complete path-to-SHA256 set. `legacy` retains the pre-reconciliation bytes and their existing manifest identities. `refreshed` denotes one reviewed replacement set; it must not be inferred from arbitrary caller-supplied schemas or manifest fields.
+A dependency revision is an immutable, complete path-to-SHA256 set. `legacy` retains the pre-reconciliation bytes and their existing manifest identities. `refreshed` retains the replacement set merged in PR334. `snapshot` adds the Snapshot source-reconciliation set without replacing either earlier registration; the revision must not be inferred from arbitrary caller-supplied schemas or manifest fields.
 
 Acquisition must copy caller-owned bytes before use, enforce each family's existing size bounds, authenticate every required path (including delivery artifacts), and select exactly one complete registered revision. Mixing individually valid files from different revisions is rejected. Unknown hashes, missing files, malformed bytes, and unsupported revisions fail before replay or cache access. Returned byte arrays are independent copies.
 
@@ -12,7 +12,7 @@ Old evidence remains readable with its exact legacy dependencies and must reprod
 
 Acceptance: legacy replay parity; refreshed oracle/native parity; mixed-revision, unknown-byte, missing-path and post-acquisition mutation rejection; cold/warm cache checks; concurrent revisions without cross-talk; owned input/output buffers; explicit classification of every changed authoritative/provenance field; focused tests for affected consumers. Independent final review and exact-head CI remain required before merge.
 
-Outward and unrelated Snapshot source drift (`CampaignCurrentEventRuntime.cs` and `CampaignElementMovedV3Factory.cs`) remain separate gates. Historical migration manifests and dated review evidence retain original bytes.
+Snapshot source reconciliation refreshes current dependency provenance for `CampaignCurrentEventRuntime.cs` and `CampaignElementMovedV3Factory.cs`. Historical migration manifests, original P01 evidence and dated review evidence retain original bytes. Applicable release-head validation and public certification remain separate gates.
 
 ## Original P01 proof consumers
 
@@ -42,3 +42,20 @@ original dependency provider, copy current bytes, compare them with each acquire
 snapshot, and return an owned buffer. Missing or changed Content rejects with the
 RoundEntry error even after successful preflight or warm replay. Ordinary snapshot
 reads remain immutable; no implicit family policy is added to generic acquisition.
+
+## Retained PR334 dependency revision
+
+`combat-evidence-pr334-v1.zip` preserves dependency bytes from merged commit
+`38bf158d` for the `refreshed` revision. It is separate from both original archives;
+no legacy archive or original P01 catalogue is replaced. The current `snapshot`
+revision uses explicit code-owned overrides against original dependency keys.
+The prior27 `legacy`/`refreshed` registrations remain immutable. Every nested
+reader retains the root revision, and mixed complete-set membership rejects.
+Actual Selection now uses the same whole-revision acquisition as its consumers;
+it derives no new gameplay authority or selection identities from this change.
+
+Focused acceptance includes exact retained PR334 moved-assault cut/proof/event
+replay, rejection of mixed PR334/current dependencies, original legacy replay,
+current oracle/native parity and source-pin tamper rejection. Historical readers
+must supply matching retained bytes explicitly; this archive is not automatic
+storage migration or public profile admission.

@@ -85,7 +85,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json",
-      "sha256": "sha256:1c96440106610b13e21b9cee4457ad07ab37da175e8cba035e536918986fa104"
+      "sha256": "sha256:a41e95450055107f6441d0306f79260365a93c585078cb17dcfc1e633c392bd1"
     },
     {
       "path": "docs/specs/combat-selection-steps-v1.schema.json",

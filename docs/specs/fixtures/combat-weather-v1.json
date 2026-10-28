@@ -7,7 +7,7 @@
     "src/Cna.Core/Randomness/SandtableRandom.cs": "sha256:1d8f34a947f591190f543c1e1b3f3fef73a6530c3e762dbb6aedc52e1ad69541",
     "src/Cna.Core/Campaigns/CampaignV11Preamble.cs": "sha256:54103730ae29d0a7ea0392c462e2ebc3153389277c9e4d028ff5ca0dc9c559d4",
     "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
-    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062",
     "src/Cna.Core/Campaigns/WeatherEventFactory.cs": "sha256:927aca20bbd276dc9b1663089b072cf57b4d4618ecfd61b2aa7e2b693b5c5dec",
     "src/Cna.Core/Campaigns/WeatherDetermined.cs": "sha256:d7b23516aa359efa05352ff06c90f3770ff78abadd2b502d35de01e5564e7c97",
     "src/Cna.Core/Campaigns/CampaignOperationStageWeather.cs": "sha256:2dd130e07f84927c7ff470b3734f3f12c70ee4a1b7cb92bb1e6bf2f744abf70c",

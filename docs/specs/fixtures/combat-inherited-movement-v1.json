@@ -6,7 +6,7 @@
     "docs/specs/combat-reserve-designation-v1.md": "sha256:a9ccf1dafc2e0947582151e5d0649e1771f471e1d0d0bc14d9914766ad9dd826",
     "docs/specs/combat-reserve-designation-v1.schema.json": "sha256:f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9",
     "docs/specs/verify-combat-reserve-designation-v1.py": "sha256:fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465",
-    "docs/specs/fixtures/combat-reserve-designation-v1.json": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+    "docs/specs/fixtures/combat-reserve-designation-v1.json": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a",
     "docs/specs/combat-ordinary-movement-v1.md": "sha256:e28cb696892d58c6671dd35de4850644985fb44bf6c217aee4ecfb37d4e484cc",
     "docs/specs/verify-combat-ordinary-movement-v1.py": "sha256:cc75e52a6d160d4b0c6c880dc43bc65742068f83ef85cc7fb4babbf8756e0dff",
     "docs/specs/fixtures/combat-content-v7.canonical.json": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
@@ -19,7 +19,7 @@
     "src/Cna.Core/Campaigns/CampaignMovementEventFactory.cs": "sha256:80885a60310c6fa6ed095a2c8dfc1a0d559bc5459f1c0e6331378f5ff42e131f",
     "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2Factory.cs": "sha256:58ff4225ed286edd53c8c1bedd870cb64ac4b9c58af437a976eca51b815e9282",
     "src/Cna.Core/Campaigns/CampaignElementMovedV2Factory.cs": "sha256:4aa1723324434a7f9cf1ae52adc38039eca221e1dafcedf8a332544f6c1e6dca",
-    "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": "sha256:85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1"
+    "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": "sha256:158c45673fed68bc2e2fd761a53be589f8663b35dca7ed7a98c6b5b447397246"
   },
   "cases": [
     {

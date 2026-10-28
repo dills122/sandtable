@@ -47,10 +47,10 @@
   },
   "sourceHashes": {
     "docs/specs/combat-positive-entry-v1.schema.json": "73724384ba3cf61b462ef7b47ae70e5108281a6bbaf0b80878c55247e4e6fa36",
-    "docs/specs/fixtures/combat-positive-entry-v1.json": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+    "docs/specs/fixtures/combat-positive-entry-v1.json": "1096a7fd8a14693b33c8acf466dffb5e86415dcd4353aef18ff768131869e70a",
     "docs/specs/verify-combat-positive-entry-v1.py": "b461a8bc6a194def5f03767783b49b5797a5630b6a7c26a986f7bfe2ee97c172",
     "docs/specs/combat-reserve-designation-v1.schema.json": "f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9",
-    "docs/specs/fixtures/combat-reserve-designation-v1.json": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+    "docs/specs/fixtures/combat-reserve-designation-v1.json": "dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a",
     "docs/specs/verify-combat-reserve-designation-v1.py": "fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465",
     "docs/specs/verify-combat-stage-entry-v1.py": "85cd2b32f9ad104ec29034180775e1ac1905e5aa7f78caa3c1a26e6675901435",
     "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py": "f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920",

@@ -73,7 +73,7 @@
   "sourcePins": [
     {"path": "docs/specs/combat-reserve-designation-v1.schema.json", "sha256": "sha256:f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9"},
     {"path": "docs/specs/verify-combat-reserve-designation-v1.py", "sha256": "sha256:fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465"},
-    {"path": "docs/specs/fixtures/combat-reserve-designation-v1.json", "sha256": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2"},
+    {"path": "docs/specs/fixtures/combat-reserve-designation-v1.json", "sha256": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"},
     {"path": "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json", "sha256": "sha256:aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072"},
     {"path": "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py", "sha256": "sha256:f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920"},
     {"path": "docs/specs/combat-inherited-breakdown-completion-v1.schema.json", "sha256": "sha256:1ff841c704e1aa46e71513ead562a0ca1c54c05b35bdf97018d6854d8773fec3"},

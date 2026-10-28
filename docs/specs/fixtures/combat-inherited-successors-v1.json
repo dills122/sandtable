@@ -1,7 +1,7 @@
 {
   "contractVersion": 1,
   "sourceHashes": {
-    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062",
     "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
     "src/Cna.Core/Campaigns/CampaignEventSerializer.cs": "sha256:d97923522ef8812ec5a59aebeb3d62bbae5648dfd3f4959e3d2ea0de6c3b133d",
     "src/Cna.Core/Campaigns/CampaignBreakdownEventSerializer.cs": "sha256:33bc246d9422a378418f9a8678a849640e81de6226aed26aabc3eb7e88c82175",

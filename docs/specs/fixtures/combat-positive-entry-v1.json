@@ -4,7 +4,7 @@
   "trust": "actual-creation-rooted-entry-before-selection",
   "sourceHashes": {
     "docs/specs/combat-reserve-designation-v1.schema.json": "sha256:f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9",
-    "docs/specs/fixtures/combat-reserve-designation-v1.json": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+    "docs/specs/fixtures/combat-reserve-designation-v1.json": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a",
     "docs/specs/verify-combat-reserve-designation-v1.py": "sha256:fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465",
     "docs/specs/verify-combat-stage-entry-v1.py": "sha256:85cd2b32f9ad104ec29034180775e1ac1905e5aa7f78caa3c1a26e6675901435",
     "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py": "sha256:f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920",
