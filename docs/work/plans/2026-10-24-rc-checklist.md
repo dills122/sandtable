@@ -157,7 +157,8 @@ No public certificate, Outward runtime acceptance or release-readiness claim fol
 Retained bounded #330 Host packet: actual two-paid, repeated captured-lot Custody.
 [Boundary and evidence](../reviews/2026-10-27-custody-crash-recovery.md).
 All14 selected tests, Host Release build and changed-file format passed.
-Coordinator review only; independent review and hosted CI not claimed for this head.
+Initial coordinator review retained; combined independent review10 is Ready.
+Hosted exact-head CI remains required.
 
 - [x] Precommit process kill preserves original committed journal; fresh recovery
   applies leave-unguarded once.
@@ -184,6 +185,8 @@ Current #330 Host packet uses genuine seed4 two-paid history requiring Retreat;
   regressions pass; focused Host build and format pass.
 
 All16 selected tests, Host build and changed-file format passed.
-Independent review and hosted CI are not claimed. Package local Custody+Retreat
+Combined fresh-context review10: Ready, no actionable findings.
+[Review report](../reviews/2026-10-27-crash-recovery-independent-review.md).
+Hosted exact-head CI remains required. Package local Custody+Retreat
 commits for review and exact-head CI before merge; broader crash/certification
 obligations remain open.
