@@ -1,6 +1,6 @@
 # RC checklist — October 24, 2026
 
-Working branch: `codex/rc-reserve-crash-recovery`. Status describes retained
+Working branch: `codex/rc-snapshot-evidence`. Status describes retained
 local evidence, not a public support certificate or a playable RC declaration.
 The [roadmap](../../roadmap/pre-alpha-roadmap.md) and canonical acceptance
 contracts remain authoritative. Every closure needs tested commit, exact profile,
@@ -35,7 +35,7 @@ unchanged; full RoundEntry177 and refreshed native R03 parity300 pass in focused
 chunks. Owned snapshots explicitly recheck Content through original provider at
 use, including warm replay. Six affected schemas and refreshed fixtures regenerated;
 legacy registrations/archives and original P01 goldens preserved. Final review8/8 returned **Ready**, no actionable findings, at91b313c3.
-Strict local inventory passed; exact-head hosted CI remains required before merge. [Correction evidence](../reviews/2026-10-25-roundentry-consumption-recheck.md).
+Strict local inventory and all reported final-head hosted checks passed; PR334 merged as `38bf158d`. [Correction evidence](../reviews/2026-10-25-roundentry-consumption-recheck.md).
 
 ## Native Combat reliability
 
@@ -124,3 +124,27 @@ Use Ruflo namespace `sandtable-rc-20261023` for assignments and receipts. During
 iteration run focused classes/methods and affected consumers; full Core belongs
 to integration/release checkpoints. Do not merge, promote unsupported rows, or
 claim RC readiness while applicable gates above remain open.
+
+## October27 Snapshot reconciliation
+
+PR334 merged; bounded evidence and Reserve crash corrections retained. User
+approved dependent evidence refresh, native revision compatibility and review9/9.
+Snapshot's two runtime pins now match reviewed source changes; owning Snapshot
+oracle passes368 cuts,6992 mutations,6992 omissions and2576 raw negatives.
+
+Pass criteria and evidence:
+
+- [x] Explain source changes; preserve Snapshot serializer/projector behavior.
+- [x] Preserve22 legacy/P01 files and all27 prior native hash registrations.
+- [x] Archive161 exact PR334 dependency files as a separate immutable revision.
+- [x] Reject altered source pins and mixed revisions; replay retained PR334 cuts.
+- [x] Pass focused native consumers: Selection60, Snapshot24, PR3341, legacy33,
+  Core P0110, Host P0146, boundary81, RoundEntry177, current R03 parity300.
+- [x] Pass Release solution build, changed-C# format,21 inherited owning oracles.
+- [x] Finish dependent B1/B3/Outward oracle checks and final semantic comparison.
+- [x] Final independent review9/9: Ready, no actionable findings.
+- [ ] Required exact-head hosted CI before merge; local discovery is a preparation check.
+
+[Evidence and validation scope](../reviews/2026-10-27-snapshot-evidence-reconciliation.md)
+records source rationale, preservation and exact selected/unrun checks.
+No public certificate, Outward runtime acceptance or release-readiness claim follows.

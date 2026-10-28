@@ -172,6 +172,42 @@ def apply(b, events, inp):
     after, data = generate(b, inp)
     return after, data, False
 
+# Later native Combat arms extend the router, not the twenty inherited event rows.
+# Exact allowlist: unknown arms and missing historical/native arms still reject.
+NATIVE_COMBAT_DISPATCH = frozenset({
+    'combat-anti-armor-completed', 'combat-assault-resolved', 'combat-barrage-no-effect',
+    'combat-cancelled-assault-completed', 'combat-custody-disposed', 'combat-custody-timeout',
+    'combat-force-cancelled', 'combat-force-completed', 'combat-force-sealed',
+    'combat-no-attack-completed', 'combat-post-result-retreat-decided',
+    'combat-rba-cancelled', 'combat-rba-declined', 'combat-rba-moved', 'combat-retreat-timeout',
+    'combat-selection-decided', 'combat-selection-timeout', 'combat-sequence-resumed',
+    'combat-world-settled', 'cycle-repeat-breakdown-none', 'cycle-repeat-combat-no-attack-completed',
+    'cycle-repeat-combat-selection-decided', 'cycle-repeat-element-moved',
+    'movement-combat-cycle-control', 'movement-combat-cycle-timeout',
+    'reserve-release-completed', 'reserve-release-member-choice', 'reserve-release-timeout',
+})
+
+
+def verify_current_dispatch(text, inherited):
+    historical = inherited | {'campaign-created', 'invalid-breakdown-authority'}
+    require(not historical & NATIVE_COMBAT_DISPATCH, 9)
+    dispatch = set(re.findall(r'"([a-z]+-[a-z-]+)"', text))
+    require(dispatch == historical | NATIVE_COMBAT_DISPATCH, 9)
+
+
+def test_dispatch_inventory():
+    inherited = {row['eventType'] for row in INVENTORY['inheritedEvents']
+        if row['family'] in ('movement', 'reaction', 'breakdown')}
+    names = inherited | {'campaign-created', 'invalid-breakdown-authority'} | NATIVE_COMBAT_DISPATCH
+    text = ' '.join('"' + name + '"' for name in sorted(names))
+    verify_current_dispatch(text, inherited)
+    for name in names:
+        rejected(lambda: verify_current_dispatch(text.replace('"' + name + '"', ''), inherited))
+    rejected(lambda: verify_current_dispatch(text + ' "unknown-native-event"', inherited))
+    rejected(lambda: verify_current_dispatch(text, inherited | {'combat-selection-decided'}))
+    return dict(requiredArms=len(names), missingRejected=len(names), unknownRejected=1, overlapRejected=1)
+
+
 def verify_inventory(f):
     repo = ROOT.parent.parent
     for path, digest in f['sourceHashes'].items():
@@ -189,8 +225,7 @@ def verify_inventory(f):
     successors = [x for x in rows if x['family'] in ('movement','reaction','breakdown')]
     require({(x['eventType'],x['currentVersion']) for x in successors} ==
         {(name,int(v)) for name,v in re.findall(r'\("([a-z-]+)", (\d+)\)',source('CampaignBreakdownEventSerializer.cs'))}, 9)
-    dispatch = set(re.findall(r'"([a-z]+-[a-z-]+)"',source('CampaignCurrentEventRuntime.cs')))
-    require(dispatch == {x['eventType'] for x in successors}|{'campaign-created','invalid-breakdown-authority'}, 9)
+    verify_current_dispatch(source('CampaignCurrentEventRuntime.cs'), {x['eventType'] for x in successors})
     for name, version in [('InitiativeDetermined.cs',2),('OpeningPreambleEvents.cs',1),
             ('WeatherDetermined.cs',1),('StageEntryEvents.cs',1),('CampaignReserveEvents.cs',1)]:
         require(f': base({version}, campaignId, stateVersion)' in source(name), 9)
@@ -241,6 +276,7 @@ def trace(case):
 
 def main():
     f=json.loads(FIXTURE.read_text()); verify_inventory(f)
+    print('Dispatch inventory', test_dispatch_inventory())
     assert {(c['side'],c['reserve']) for c in f['cases']} == {(s,r) for s in ('axis','commonwealth') for r in ('none','I')}
     assert len(f['cases'])==4
     mutations=raw_rejects=boundaries=0

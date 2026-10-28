@@ -1,0 +1,3495 @@
+{
+  "base": "38bf158dde122af8d54eeefba2d6c845e6da80a0",
+  "branch": "codex/rc-snapshot-evidence",
+  "rufloTask": "task-1793144652408-bzjsxa",
+  "sourceComparison": {
+    "base": "38bf158dde122af8d54eeefba2d6c845e6da80a0",
+    "sources": [
+      {
+        "path": "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs",
+        "pinnedCommit": "5c16fdb6",
+        "oldSha256": "283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+        "currentSha256": "5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062"
+      },
+      {
+        "path": "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs",
+        "pinnedCommit": "5c16fdb6",
+        "oldSha256": "85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1",
+        "currentSha256": "158c45673fed68bc2e2fd761a53be589f8663b35dca7ed7a98c6b5b447397246"
+      }
+    ],
+    "preserved": {
+      "docs/specs/fixtures/combat-evidence-legacy-oracle-support-v1.zip": "848d084745f0582f5f4ca39013f202774213df947b711069aa2476dbe0c3cf8c",
+      "docs/specs/fixtures/combat-evidence-legacy-v1.zip": "3d7614b580ad5c82727170e4ff193e03f4931afbc7e7ed7b14d5eb49c45a6a98"
+    },
+    "unchangedCurrentSnapshotSerializerAndProjector": true
+  },
+  "preserved": [
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-native-hashes-v1.json",
+      "sha256": "cf3f8ecfe9e4040d5678a6e0e9cc2441525e1e8fe3a3f35cf316207a9f45ec4e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-evidence-legacy-oracle-support-v1.zip",
+      "sha256": "848d084745f0582f5f4ca39013f202774213df947b711069aa2476dbe0c3cf8c"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-evidence-legacy-r03-v1.json.gz",
+      "sha256": "40b79e8d230baa1f866f6aa973b19f7ec3c7c8919ad956534316531179270519"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-evidence-legacy-v1.zip",
+      "sha256": "3d7614b580ad5c82727170e4ff193e03f4931afbc7e7ed7b14d5eb49c45a6a98"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-a2-private-owner-contract-v1.json",
+      "sha256": "9dc15e6236dc2ae6f64fa1a4adb293e0cb2ea4aa4f70490f4590ef9e735377cd"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-absent-matrix-v1.json",
+      "sha256": "50d3349580b16bf64c4a453460e10d5ab5f2bd75863ff12c5c2fc7729bdccdfa"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-absent-retained-roots-v1.json",
+      "sha256": "cb4cea3d34a3f9c36ca59b4e23412ce7b611d43ab2210026ae53c8fce8a10ed6"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-all-prefix-reject-v1.json",
+      "sha256": "76beab667bad5fc604eb148f89125f96f38789a6e9f291cbeb15d27a9d3c029a"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-all44-rba-cancel-fresh-v1.json",
+      "sha256": "31ec89f61430b18bc8656d699edb09205af59b7dbd140aa7e3a383c3bef9bc45"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-all44-rba-decline-fresh-v1.json",
+      "sha256": "24ee251ccc00e792daa8efdbeb4098d0e837274246c1e7f2ab772514ed487e1a"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-explicit-rba-v1.json",
+      "sha256": "2a7a47b40922858e7bff9a4407eb5ea20a655b8281369389db6a638782b8a5cf"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-force-assignment-v1.json",
+      "sha256": "17f01806eec8d6eafef72b1e1591b1ad5e1ed2364cce2751a13e070313f55a2f"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-force-seal-fresh-v1.json",
+      "sha256": "012b888d022190035847074a392c0e748a52084e830ecbd7ae23646909a166b8"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-owner-decision-proposal-v1.json",
+      "sha256": "a35c96f73dcd65fe4d95428b3f1f4cfd17ccda7a775aba27eb64d72c6383293b"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-paid-all44-cuts-v2.json",
+      "sha256": "501c1e7454f43d52919656a961f626c9b06a0d8685f332caf947669f39c134fd"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-paid-all44-fresh-v1.json",
+      "sha256": "d6d7227859549fd67edbd6683a0e1fb3a7038945af0ef3fea2348e6389b6b08f"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-paid-commit-v1.json",
+      "sha256": "24da0c7de1f219e690dd615ec6cf7b98b8bc89c8a72ab295cc067ccbbc469a3e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-paid-fresh-readback-v1.json",
+      "sha256": "3031638f1f38f6c2b5f14b3af29bfca9f1b9b1e3fd9c8ed23a0d223dfde23d59"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-replay-gates-v1.json",
+      "sha256": "9564554e879cd01a1d0176d3a0e3c211a22c9ccea3dd7347917e9dc295dc0e3b"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-p01-selected-assault-v1.json",
+      "sha256": "e4c9300184a034a5ae4f7f70c41149b1d1d2a4eab966435b3874045334716b97"
+    },
+    {
+      "path": "docs/specs/fixtures/p01-r03-a1-r012-c01-after-control-v1.json.gz",
+      "sha256": "3c4eb5a37af03f5e07c03e38403fed371d802af51bdd0099552e5fc3f3037cf4"
+    },
+    {
+      "path": "docs/specs/fixtures/p01-r03-a1-r012-c01-import-v1.json.gz",
+      "sha256": "5019978589938979d7010416f6e3424e07615532475f5633a60db66414db14aa"
+    }
+  ],
+  "retainedArchive": {
+    "path": "docs/specs/fixtures/combat-evidence-pr334-v1.zip",
+    "sha256": "d96e0fc8d0afc59a6a9849a88bb37ac49cc25bd0ddccd119e99b7bbe47408040",
+    "files": 161
+  },
+  "nativeRegistration": {
+    "docs/specs/fixtures/combat-positive-entry-v1.json": [
+      "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+      "1096a7fd8a14693b33c8acf466dffb5e86415dcd4353aef18ff768131869e70a"
+    ],
+    "docs/specs/fixtures/combat-reserve-designation-v1.json": [
+      "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+      "dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+    ],
+    "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json": [
+      "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+      "1a2ce0930522cf5aada3ec41b64b1d1f0abab90aff53c190a0557f8e31d3dfbf"
+    ],
+    "docs/specs/combat-actual-assault-v1.schema.json": [
+      "a16d852d5a4463a295e315c824e5298f4ff22b979a7c307187c2a8d926136f0d",
+      "459c43393e98932be66e2b47d85acd4acbe40544357df90bbff8305198d92836"
+    ],
+    "docs/specs/combat-actual-moved-assault-v1.schema.json": [
+      "21097270c395bd1a3937d6787db2a992b8c145e42e06aec080652800b9e19e4b",
+      "768bdf686e7aed9db968d465949502247f9d36eb4d74c3fb71033397060ee8dc"
+    ],
+    "docs/specs/combat-actual-moved-continuation-v1.schema.json": [
+      "0a2a0d8089398246b38c84d043ea343a0e3d72d84378b90f0d6da155c2fe3986",
+      "728f036d9966945bb2e5b9ab9dbd2f7aa9c2859352642b490cd3a39663504698"
+    ],
+    "docs/specs/combat-actual-moved-cycle-control-v1.schema.json": [
+      "91f235388faa66ef397a9f466f503075da8443148489aef1e7ac27f2dd1751e8",
+      "928bda23f519471cd15d56878d5a6ee06411d1398fe8f6420fee7519aaa54a4f"
+    ],
+    "docs/specs/combat-actual-post-assault-continuation-v1.schema.json": [
+      "e948daf499acbb365d9be52b083a10d1692ccbb89fd4bf94e0b4a13601f41c36",
+      "4fc49d43bd44a6318e152e769462f81c9d81873ad46398be9666a063484265a3"
+    ],
+    "docs/specs/combat-actual-round-entry-v1.schema.json": [
+      "677b1c671bebe5f23cf4b80f03078c55000c60e45416701757e2552cbd05edb8",
+      "0cdc3e70a6a275570d1d3206ae6c2adca4d54d17e0d86238598d1313d2f65364"
+    ],
+    "docs/specs/combat-actual-selection-v1.schema.json": [
+      "da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1",
+      "cd7bd01e5592412ba97fb8ce1b6708a713a32049cd8f529293e688d09c8fe746"
+    ],
+    "docs/specs/fixtures/combat-actual-assault-v1.json": [
+      "9a486f77d0463c071c55af9196511ec2f1214763ed2278ba89962b30746aba09",
+      "fcb7887c8d4d519f7849fd0d7a57755337e891ebb24689e6e881f5c24c3db814"
+    ],
+    "docs/specs/fixtures/combat-actual-selection-v1.json": [
+      "019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604",
+      "c5d0773e85cf0a10d70d001572a69b39e61a73e064007bca3258e0bce7818de8"
+    ],
+    "docs/specs/verify-combat-actual-selection-v1.py": [
+      "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
+      "8232227faf2ea4e6b1b5720c59fe46870cbc41cbda653fc04dbd7a8dd163e166"
+    ],
+    "docs/specs/verify-combat-inherited-successors-v1.py": [
+      "f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+      "9ff5dceb7180748e262ba876b9f2ea3b666e0837108000bdfc58d2a7f5408fc0"
+    ],
+    "src/Cna.Core/Campaigns/CampaignCombatActualSelection.cs": [
+      "8a94b2d5f9ecd688a0eb5670bbed4408add89f488ccd070ed53361210b7f3721",
+      "74ecf84244d98d848e0be3efa48df1402a63a0ca69857aa8109548cc13e85d7c"
+    ],
+    "docs/specs/combat-actual-paid-assault-v1.schema.json": [
+      "be1c5fcc36641ae1ee9f58b4b1c73baca098e7a8cde43d8dc568197f59399324",
+      "e59d271d4603210f5b319470a002bed6294a1a6e0f5e4dd45710ab0e50d1975b"
+    ],
+    "docs/specs/combat-actual-repeated-movement-completion-v1.schema.json": [
+      "77ef1573e24e131fdddbe4daf733a4472a6dd79b15c6eb227be545ae7c687a2c",
+      "4e2ff2b7661bda47231c1e40bf9d38c00ef600519dc4dd15227cda29ad718b83"
+    ],
+    "docs/specs/combat-actual-repeated-movement-v1.schema.json": [
+      "a3ebd21e0fd1b1d85b7335ceb2afd304511a2efd5e84bf59710a786526dfd900",
+      "5ed66662c30280d7821de1435d5ffb5e7802a31e7825c11e22db93bafd0ef4c4"
+    ],
+    "docs/specs/combat-actual-repeated-breakdown-completion-v1.schema.json": [
+      "df4ad5e51e683ebddd0d185cb3042042132d8312447c08faf1f237ecb2274680",
+      "6df74866ad55980fad2c4d6e8165edadff58d5d20d2a189ed4d55acfbf7edd8a"
+    ],
+    "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json": [
+      "3a80a1cd94b41e8a88590d8eadddcc4c821bfefa7b0021489ad4e7cfe50af8ef",
+      "0efc00035ec214a5df616f3a31218a82ca171ea8c6fd2d062015737ced85a895"
+    ],
+    "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json": [
+      "26909e67501f59a0d0892181b9c9499099552c721585369983c3dbde5784c955",
+      "3d5368846aeeef2ff196c8c26836b35490f88922cdf7e1626672d3806b7da1df"
+    ],
+    "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json": [
+      "7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258",
+      "798f9cd63088737e633dc6dc665e98e0b828fe593186454a5e5778e17e5c76c6"
+    ],
+    "docs/specs/fixtures/combat-actual-moved-repeat-movement-v1.json": [
+      "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d",
+      "21494ba4772f9f94714dd88a572214d65da3aaa6345582652a2fb63a3f3bf038"
+    ]
+  },
+  "changedFiles": [
+    {
+      "path": ".github/scripts/long-suite-weights.json",
+      "beforeSha256": "9bd635fc919b6d450adbeb0c52023f547e0b0e5424252564859f317f82113dc7",
+      "afterSha256": "898de16389894da399aa7a085061837c7a49565c289ab7c8e30bc8938bd60d1c"
+    },
+    {
+      "path": ".github/scripts/long-suite-weights.md",
+      "beforeSha256": "7643f895de1e4dcb6d460c8b49bfbcaf6de90ff6e6f04cb7d6051023bc4cb136",
+      "afterSha256": "abd8eb2a0e032cefb8fe6ec38195ebb340a3f1f4d5025675326ab60c65541fbb"
+    },
+    {
+      "path": "docs/specs/combat-actual-assault-v1.schema.json",
+      "beforeSha256": "a6d24f1ff562b34bb8013d187c3da38783725f062efe9ccc9bf7195493bf0cc2",
+      "afterSha256": "459c43393e98932be66e2b47d85acd4acbe40544357df90bbff8305198d92836"
+    },
+    {
+      "path": "docs/specs/combat-actual-moved-assault-v1.schema.json",
+      "beforeSha256": "fc28dcd402de585123c9f5212678ba3e436d7416a3e12483d2862d1d95b3c7f2",
+      "afterSha256": "768bdf686e7aed9db968d465949502247f9d36eb4d74c3fb71033397060ee8dc"
+    },
+    {
+      "path": "docs/specs/combat-actual-moved-continuation-v1.schema.json",
+      "beforeSha256": "58e11bd1e781b93a2914f04ceeb73f0cb83391991e601af530ba4be2f1920ec1",
+      "afterSha256": "728f036d9966945bb2e5b9ab9dbd2f7aa9c2859352642b490cd3a39663504698"
+    },
+    {
+      "path": "docs/specs/combat-actual-moved-cycle-control-v1.schema.json",
+      "beforeSha256": "ad45b4c515c918f62d0463d1e15602335c651e607b3450ae89dc04980bd55b99",
+      "afterSha256": "928bda23f519471cd15d56878d5a6ee06411d1398fe8f6420fee7519aaa54a4f"
+    },
+    {
+      "path": "docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.schema.json",
+      "beforeSha256": "84decfebf61df7acfd3a616a799ba3d522f8e740b4be40e53707a354ab572b8a",
+      "afterSha256": "3d5368846aeeef2ff196c8c26836b35490f88922cdf7e1626672d3806b7da1df"
+    },
+    {
+      "path": "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json",
+      "beforeSha256": "1ba0e2eb56b47928495d1edd0903500125d613a272fb96b01f436efdee8a0f7a",
+      "afterSha256": "0efc00035ec214a5df616f3a31218a82ca171ea8c6fd2d062015737ced85a895"
+    },
+    {
+      "path": "docs/specs/combat-actual-moved-repeat-movement-v1.schema.json",
+      "beforeSha256": "5f09b224d65f89dffcdb4e2c4851061ffae211b459c892f75ccb198d23fd9418",
+      "afterSha256": "1a2ce0930522cf5aada3ec41b64b1d1f0abab90aff53c190a0557f8e31d3dfbf"
+    },
+    {
+      "path": "docs/specs/combat-actual-paid-assault-v1.schema.json",
+      "beforeSha256": "af7bca1870a3243421129ba1986d24b82d5863bbccbcb83b9e9e832cab728ba4",
+      "afterSha256": "e59d271d4603210f5b319470a002bed6294a1a6e0f5e4dd45710ab0e50d1975b"
+    },
+    {
+      "path": "docs/specs/combat-actual-post-assault-continuation-v1.schema.json",
+      "beforeSha256": "951cf5bf35a16a3954ad5db4734d2d47b93f45e9a31a9067c0f5ada1f76a0783",
+      "afterSha256": "4fc49d43bd44a6318e152e769462f81c9d81873ad46398be9666a063484265a3"
+    },
+    {
+      "path": "docs/specs/combat-actual-repeated-breakdown-completion-v1.schema.json",
+      "beforeSha256": "fdd3fc791568cae58af116617fc145504d43a007e507589423f9671aa3116ec7",
+      "afterSha256": "6df74866ad55980fad2c4d6e8165edadff58d5d20d2a189ed4d55acfbf7edd8a"
+    },
+    {
+      "path": "docs/specs/combat-actual-repeated-movement-completion-v1.schema.json",
+      "beforeSha256": "97a8eabda9b7482c315fdecdddf5033b735c3bbdabd176d37ee3f841a7d78946",
+      "afterSha256": "4e2ff2b7661bda47231c1e40bf9d38c00ef600519dc4dd15227cda29ad718b83"
+    },
+    {
+      "path": "docs/specs/combat-actual-repeated-movement-v1.schema.json",
+      "beforeSha256": "0a9ca20e1dd08b10225e0549789bbd9588ca80d911db0f358f2783ff27b0165d",
+      "afterSha256": "5ed66662c30280d7821de1435d5ffb5e7802a31e7825c11e22db93bafd0ef4c4"
+    },
+    {
+      "path": "docs/specs/combat-actual-round-entry-v1.schema.json",
+      "beforeSha256": "31e5b53db04cf9b96e9285cfc4e3ca51b152a5995d71b76048c3e239aadf3b6d",
+      "afterSha256": "0cdc3e70a6a275570d1d3206ae6c2adca4d54d17e0d86238598d1313d2f65364"
+    },
+    {
+      "path": "docs/specs/combat-actual-selection-v1.schema.json",
+      "beforeSha256": "da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1",
+      "afterSha256": "cd7bd01e5592412ba97fb8ce1b6708a713a32049cd8f529293e688d09c8fe746"
+    },
+    {
+      "path": "docs/specs/combat-evidence-revisions-v1.md",
+      "beforeSha256": "4bb026dcfaffa23ae2773dd09a11a2ee5fdb142e0bec13a2f2d516ca59eb8407",
+      "afterSha256": "8a297e08f3a8d05beef5e34777929544df37185455da07f6c7026ce26437a7a9"
+    },
+    {
+      "path": "docs/specs/combat-exercise-child-evidence-v1.schema.json",
+      "beforeSha256": "c02ccc798b1c4aa26f362f98eb756e385cb6280cdd3038185ba237b8dd8ea7b4",
+      "afterSha256": "7861713af044ccd2ac3273354a3cece63b046e8ef467ffd0ba60db683cab2feb"
+    },
+    {
+      "path": "docs/specs/combat-exercise-parent-evidence-v1.schema.json",
+      "beforeSha256": "085391a3f19dc689b4ef9f265bef16a203aae8cfb4d92fa9613ec225f15958d9",
+      "afterSha256": "df83b14d796b7cda32c9a06cde1ef5d5c714927d2ef789bf95466997f2e2d328"
+    },
+    {
+      "path": "docs/specs/combat-outward-composition-v1.schema.json",
+      "beforeSha256": "6e8ec1103315238c0c5520c6cff9b31b20d6de2386e197944265a48168021344",
+      "afterSha256": "32494000bbad444a79c6a84d1901e59a795e815a9f7bc8a5929d0fbcb43c7331"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-assault-v1.json",
+      "beforeSha256": "e851e76fcf7cf1f584b82d83674e13a86ef6391a86443f5ec9a41ed72a418f01",
+      "afterSha256": "fcb7887c8d4d519f7849fd0d7a57755337e891ebb24689e6e881f5c24c3db814"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-assault-v1.json",
+      "beforeSha256": "d294309d95233d8595555b208e101001d06df1024f06fd0f1923d08f7b6ab480",
+      "afterSha256": "497508ce2c7c5ab64204c69637e8eb8fde05791981c5fd40e76ea6c41b24684c"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-continuation-v1.json",
+      "beforeSha256": "15f8d0aa0b9bf4d9fad116c8719f1c505674ade99d9054e500e7b593398cb633",
+      "afterSha256": "c377d32eb069c378c86037bc9fa72c3864f61c7b0d1b8349fc36c75ef1aa2e94"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-cycle-control-v1.json",
+      "beforeSha256": "fb114294a925ff03ac530a87d103e106964be7e87f219a2042cdbead81cba5bc",
+      "afterSha256": "1817d8809dc0828a6135546b6657d18fb04b14408673cccae8d3751f642cc6ab"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-completion-v1.json",
+      "beforeSha256": "ba5e2a62431adfba9111977bb6a7c9a900adf9d6e4fb3d6476249b8118ef5569",
+      "afterSha256": "ed7a37b6036722e66a2b4ef64f19df28a5725d47debc6634a04c353754b68f9e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-refreshed-native-hashes-v1.json",
+      "beforeSha256": "60a1b1827017dbd46c09715f84cbabac5b62ecbbd6cea8b399eb1effe647b2af",
+      "afterSha256": "e1a07d2eeb96745d4d6e3d5dc59cc005ca07430e0697d23db8e78129b2473df2"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json",
+      "beforeSha256": "c687f59ad2f06f97ff05d73ba4bdfb5c4e3e2ea7634408ed040fce9d4740b6fb",
+      "afterSha256": "798f9cd63088737e633dc6dc665e98e0b828fe593186454a5e5778e17e5c76c6"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-moved-repeat-movement-v1.json",
+      "beforeSha256": "b6216cfdbed869e029a8bc1c71eb92d73fca98fcd87534a95eebd16aac432965",
+      "afterSha256": "21494ba4772f9f94714dd88a572214d65da3aaa6345582652a2fb63a3f3bf038"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-paid-assault-v1.json",
+      "beforeSha256": "cae6d9f4eb7ee5f86fbfb2e3877ca02a4d735871507d3bc7ba24d9435087e7e0",
+      "afterSha256": "0a25016e4147d468373219ad2b9a05eaebb0b8227f7f271ffc7e6f7240bf4496"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json",
+      "beforeSha256": "5b194d6a6d9131079e9d6cd1693c565d3d992fad920882d86a049447d48eca20",
+      "afterSha256": "d55ddb7bc27103726d83f34dda314ed61c9a40feae4bf2048dca315733dc310c"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-repeated-breakdown-completion-v1.json",
+      "beforeSha256": "3341af32e1e9c8882c57674ed4ee705bc5e0f62205bd93ffe254c776dab8e09c",
+      "afterSha256": "d94446965c179c9e7caa66a599035f3e9b1a43c79aee70a09aa408169b83a53b"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-repeated-movement-completion-v1.json",
+      "beforeSha256": "2610ff6cf38e7dcf5dacf7d801b99bc895da6b44c2c8b0fca0ffc5841d12aa33",
+      "afterSha256": "29eb201fd8650998ef0c036e6319df47d29143efee4acc1d444001bc3fe44bd2"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-repeated-movement-v1.json",
+      "beforeSha256": "f2045987ddd5e767bd5c602669ec54bd0ced5a3c6ca90f5e9575c10bd2678fb2",
+      "afterSha256": "f8c382300925da949ead199a324cb0996a4df6bbc764b40128da64288db3d5f4"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-round-entry-v1.json",
+      "beforeSha256": "9e6625b891faefacf3d0a6776bf92bdfc0ccd898ae182d37f342aa154621f60e",
+      "afterSha256": "1eb02349ed0124b7e3495da68807a959c70a70da8564b0b0d2086457ee6c5155"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-actual-selection-v1.json",
+      "beforeSha256": "019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604",
+      "afterSha256": "c5d0773e85cf0a10d70d001572a69b39e61a73e064007bca3258e0bce7818de8"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-authority-composition-v1.json",
+      "beforeSha256": "e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3",
+      "afterSha256": "2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-exercise-child-evidence-v1.json",
+      "beforeSha256": "b0ba9b540cc7121b35dd59eddd69fdc44e70cd1067511a4a85d6f81b8c47effb",
+      "afterSha256": "c8dce8c2451d609f3021f30a6bf39029cc129ae172c04f9176f671c546360bd8"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-exercise-occurrence-v1.json",
+      "beforeSha256": "0732373bb73f3a7c931b198f75ab9e89a06013550a5b2d6421d7d5b56480a656",
+      "afterSha256": "d391f2cd23deea514c6947db9e4451a68d76536d684ef027d2322f9392167392"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-exercise-parent-evidence-v1.json",
+      "beforeSha256": "7e85572285798b8c434a2184a2935c26406424a3be2772f91578d4da87668cc0",
+      "afterSha256": "bb398b31e89981c32edcbcfcd44c9f91644d00d8348fae9fcae3ab85c539db2e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json",
+      "beforeSha256": "4d948616fcc1c17443552d42cc7d5561977715fb0092e2359b9f5eb913d1bd30",
+      "afterSha256": "ee07bd4bb8d93981f1ec618143e5891cb86be620523e9329c776bceb1d0067b8"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json",
+      "beforeSha256": "1c96440106610b13e21b9cee4457ad07ab37da175e8cba035e536918986fa104",
+      "afterSha256": "a41e95450055107f6441d0306f79260365a93c585078cb17dcfc1e633c392bd1"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json",
+      "beforeSha256": "43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e",
+      "afterSha256": "b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json",
+      "beforeSha256": "027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2",
+      "afterSha256": "b0d7319d0983fdbf6e9f41a246476e9b7c9b0b4d22a7c2b6c6dd69bf218e32e1"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-movement-v1.json",
+      "beforeSha256": "fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc",
+      "afterSha256": "c95ffc66f0454418f0391af97be649d85d808a8e8e80f610dcaf62a3b9cebb89"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-no-attack-v1.json",
+      "beforeSha256": "60723234e081524d9ef89168a3fde6cc78aa550310625d80fc278198ae2e02a9",
+      "afterSha256": "f6e59162bfbd38d55251a46c966ea195dd06daacc90828c057b67fa7f351e9e6"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json",
+      "beforeSha256": "9dabfec0459b12c44d048636fa5e1f15267ffe41ae323a30871195cc08e081af",
+      "afterSha256": "0535af4f7edb6ee80a0a76b80bc06514800c89949d9b51e26b40653ee9c5854b"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-closure-v1.json",
+      "beforeSha256": "5653f154f841b6afb64fd149175676e8dd0d12fe5f7246e2b14dae557c1d8945",
+      "afterSha256": "df539ba7ccb05d4c11d2d19f699c14e3c8ce05bd4d09b977fefafbe5bd36b49d"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json",
+      "beforeSha256": "ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+      "afterSha256": "d6eb84f2945e80c0a4365633b6ab2f8e1f284049e3ed48c76bd82aa895f365d6"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json",
+      "beforeSha256": "fe7b7be0a8aaf65f54f01d33aacc2c396d9b2d156d7b3e0b726592c942e15149",
+      "afterSha256": "7607f776244188b68e2dcd80906e38d0eb19acc5e0c8a50b3d136556652573ad"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json",
+      "beforeSha256": "97d2d5d42f5c279718c6f5cc797bc1963ff735c9ee0a2bbefe7d66376e7a8103",
+      "afterSha256": "6b80deac810d0a838897e4165e65b50086fd70ba7856735bedbab69811f940e8"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json",
+      "beforeSha256": "cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+      "afterSha256": "0f9b61299970397fe0c386f2607b07c28d1ae182ad4f7c51d54e3d65551376a8"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-cycle-v1.json",
+      "beforeSha256": "22d349c63acd9f567c9691f71bc5ea007334e596b5bf9f4789e1a6c229f7e10e",
+      "afterSha256": "0564489a8bd6dd6ee69ad0c23b7b1badbaffe87113aaaa5e7bcb792c83f0e1e1"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json",
+      "beforeSha256": "8ef35d7bfdc0da5b8a3fa0b11174253e8cb7a77b251e5517ab718598253dc162",
+      "afterSha256": "b103915310b25950a32d5526b2e24d2218d2aa31d0c2b5e4332f5ea1ae6833ea"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-movement-v1.json",
+      "beforeSha256": "1024c7931be06a52ee92b30c950707b1a4b7a6d4c5965c4de4c937c72ad9d894",
+      "afterSha256": "7a50fd25f60564dbbd9d635fc33c2dd074e9e263a20a4c98b234f0369f9e4164"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-release-v1.json",
+      "beforeSha256": "56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0",
+      "afterSha256": "cfe27c85506f7ad3c2a825d37ade06522be9fa869a5cfb0b411c47b68565e08e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-selection-v1.json",
+      "beforeSha256": "10b11204746629698fec14124ba128b3a2f36412a56a8681b1b7a9c4cdffe9df",
+      "afterSha256": "e4c7ff4950a0585566881798a974234383ae7e7fb6f6a379510d917a46262f30"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-snapshot-v1.json",
+      "beforeSha256": "1ba8bd5ceb4e2a5f2ded02fe85f46d1bcfdef61ecfe13b311d791a95859a88c3",
+      "afterSha256": "c26fab0d4085a8fa209cfb89aa4f1c2ecbea57b3a317ec19855dbb806efcfa64"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-successors-v1.json",
+      "beforeSha256": "1de03913aa0026f986edd4bc474fe0579573a2fb3a18458dd889fc2f2c1a3192",
+      "afterSha256": "1e5d42836ac75308b4d0dc155b5cd11bec70d2a035c51a9310ce4af55f993385"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-opening-preamble-v1.json",
+      "beforeSha256": "f83a2b4e57eaf79921b3a70e468fd606a9dcdc8a8d8f5b32c19dc07ec81774c3",
+      "afterSha256": "14ba899e9590cc39fe47d3116854509628efacbbb37902273999a53312e1420e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-outward-composition-v1.json",
+      "beforeSha256": "28e37f48c80ed6ca6b7f7fabb4fb72b5d3433305ad662e091e2625a017bc1c24",
+      "afterSha256": "69c3a59916972acb0db86c2a426022eb3dd63fe99df62b5c3cfd53a8cc1a8505"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-positive-entry-v1.json",
+      "beforeSha256": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+      "afterSha256": "1096a7fd8a14693b33c8acf466dffb5e86415dcd4353aef18ff768131869e70a"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-reserve-designation-v1.json",
+      "beforeSha256": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+      "afterSha256": "dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-side-projection-v1.json",
+      "beforeSha256": "3b0c8069a1a5f8bc88a8e5a4ba34e1b87ac0d457a5656065bea1ec6fede54ce4",
+      "afterSha256": "4682587f161f16a36ec06c87e3196db76366502055d26349d4538753253c1f62"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-weather-v1.json",
+      "beforeSha256": "a2dfb27232a3bf9c8817bc08919e64317b9c50f28adb263d0c7a34d0efe69420",
+      "afterSha256": "8909a05b398d1fad98701e75d9b7c41f1d0d91ed63369ada4d540dadc4a3bf60"
+    },
+    {
+      "path": "docs/specs/verify-combat-actual-selection-v1.py",
+      "beforeSha256": "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
+      "afterSha256": "8232227faf2ea4e6b1b5720c59fe46870cbc41cbda653fc04dbd7a8dd163e166"
+    },
+    {
+      "path": "docs/specs/verify-combat-exercise-occurrence-v1.py",
+      "beforeSha256": "576d2edfdbdf6ef36071cccf59ddee7aecd1282c6d9865fd6e6d0de25fcf8866",
+      "afterSha256": "c3a29356a38d35c8fd2a61bb909078fe00cf51a56afc714feab77db66e76df70"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-successors-v1.py",
+      "beforeSha256": "f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+      "afterSha256": "9ff5dceb7180748e262ba876b9f2ea3b666e0837108000bdfc58d2a7f5408fc0"
+    },
+    {
+      "path": "docs/specs/verify-combat-side-projection-v1.py",
+      "beforeSha256": "84b4cc7d0c2456dbe2a087093140ddefb1465313abcd3d8bdc56853c9202e806",
+      "afterSha256": "acb8529d6dcb959c8b3693841bdf64078d047c04e80a3885223f69c88c265710"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CampaignCombatActualSelection.cs",
+      "beforeSha256": "8a94b2d5f9ecd688a0eb5670bbed4408add89f488ccd070ed53361210b7f3721",
+      "afterSha256": "74ecf84244d98d848e0be3efa48df1402a63a0ca69857aa8109548cc13e85d7c"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CombatEvidenceRevisions.cs",
+      "beforeSha256": "894d9492441241513f0bf8c2b480ba62c234c911c0b0d05b08d1a48ad1834a56",
+      "afterSha256": "2f9ed888c2372df057f0c069cd90a95051902e1174b5d5347562a70837ef8e68"
+    },
+    {
+      "path": "tests/Cna.Core.Tests/Campaigns/CombatActualMovedAssaultContractTests.cs",
+      "beforeSha256": "c1603168cbe1ee76e43cc566c43398c74a50271afab8cc0d7249923dd33ebd44",
+      "afterSha256": "c12309a3072c64263cc3fdad64978565b7b21547e88ca0347d01997d95601804"
+    }
+  ],
+  "outwardAnchors": [
+    {
+      "id": "CMB-ID-AC-001",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 221,
+      "newLine": 226,
+      "text": "| `CMB-ID-AC-001` | Move or change representation: same unit key, new binding; old uncommitted choice fails without events/RNG. Elimination preserves history. | 001-002; DES-002/005 |"
+    },
+    {
+      "id": "CMB-ID-AC-002",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 222,
+      "newLine": 227,
+      "text": "| `CMB-ID-AC-002` | Same component name on another unit/campaign does not alias. Duplicate bindings and foreign provenance reject. | 001-002/005; DES-002 |"
+    },
+    {
+      "id": "CMB-ID-AC-003",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 223,
+      "newLine": 228,
+      "text": "| `CMB-ID-AC-003` | Adjacent singleton infantry with empty ZOC can have a voluntary opportunity and no initial Contact. Positive-ZOC admission remains gated. | 004/008; DES-003 |"
+    },
+    {
+      "id": "CMB-ID-AC-004",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 224,
+      "newLine": 229,
+      "text": "| `CMB-ID-AC-004` | Later arrival in a marked hex inherits no relation; ending one of two independent counterpart relations leaves the other intact. No transitive grouping. | 004; DES-005 extension vector |"
+    },
+    {
+      "id": "CMB-ID-AC-005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 225,
+      "newLine": 230,
+      "text": "| `CMB-ID-AC-005` | Zero-loss Engaged still binds original participants; Retreat priority prevents that Engaged outcome. Adjacent prior assault survivors require the 15.81 Contact evaluation. | 004; DES-005 |"
+    },
+    {
+      "id": "CMB-ID-AC-006",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 226,
+      "newLine": 231,
+      "text": "| `CMB-ID-AC-006` | Same campaign ID/version but divergent authority prefix changes internal opportunity; equal visible histories leave outward IDs unchanged. | 005/007; DES-002/005 |"
+    },
+    {
+      "id": "CMB-ID-AC-007",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 227,
+      "newLine": 232,
+      "text": "| `CMB-ID-AC-007` | Two private envelopes share one base; envelope persistence adds no attacked entry. Combat-fact mutation invalidates the old opportunity. | 005-006; DES-002 |"
+    },
+    {
+      "id": "CMB-ID-AC-008",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 228,
+      "newLine": 233,
+      "text": "| `CMB-ID-AC-008` | Commit singleton `A -> B` once before RNG; duplicate replay fails. Same target hex cannot be assaulted again that segment, even with a new attacker. | 003/006; DES-002/004 |"
+    },
+    {
+      "id": "CMB-ID-AC-009",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 229,
+      "newLine": 234,
+      "text": "| `CMB-ID-AC-009` | Later cycle allows a new pair occurrence only with current resources; stage history persists and target-use resets. Reserve limits remain independent. | 006; CYCLE-DES-001 |"
+    },
+    {
+      "id": "CMB-ID-AC-010",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 230,
+      "newLine": 235,
+      "text": "| `CMB-ID-AC-010` | Multi-unit, partial assignment, attachment, Probe, Barrage and Anti-Armor remain closed; empty structural steps produce no attacks. | 008; DES-003/004 |"
+    },
+    {
+      "id": "CMB-ID-AC-011",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 231,
+      "newLine": 236,
+      "text": "| `CMB-ID-AC-011` | Hidden identity/TOE/count permutations do not alter equal visible artifacts. A profile permitting indistinguishable hidden bindings fails trusted certification before any active decision; no opportunity/action is offered and no hidden count/reason reaches side-visible errors. Suppressing extra bindings or ordering by authority ID does not satisfy this gate. | 007; DES-005 |"
+    },
+    {
+      "id": "CMB-ID-AC-012",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldLine": 232,
+      "newLine": 237,
+      "text": "| `CMB-ID-AC-012` | Restart before either envelope, after commitment and after relation settlement reproduces IDs, mappings, history and target-use without duplicate RNG. | 001-007; DES-002/005, CYCLE-DES-001 |"
+    },
+    {
+      "id": "CMB-SET-AC-001",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 223,
+      "newLine": 226,
+      "text": "| `CMB-SET-AC-001` | Admission covers every role/result/retreat/custody branch, certified route/reunion geometry and integer settlement CP. Hidden-blocker or unsupported variants fail profile certification before choice; no seed narrows results. | 001/007 |"
+    },
+    {
+      "id": "CMB-SET-AC-002",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 224,
+      "newLine": 227,
+      "text": "| `CMB-SET-AC-002` | Refusal adds percentage before rounding; seed208 yields3 defender loss/3DP, while fulfilled retreat changes that result. Capture subset plus other losses conserve original10 TOE. | 002 |"
+    },
+    {
+      "id": "CMB-SET-AC-003",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 225,
+      "newLine": 228,
+      "text": "| `CMB-SET-AC-003` | Guard transfer never counts toward30% loss DP. Loss3 plus captured2 deducts3, not5; subsequent one-TOE guard transfer preserves a separate asset balance. | 002/004 |"
+    },
+    {
+      "id": "CMB-SET-AC-004",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 226,
+      "newLine": 229,
+      "text": "| `CMB-SET-AC-004` | Actual one-hex retreat spends1 CP; E=10->11 adds1DP after result. Refusal spends none. Frozen Morale/RNG do not change; DP then proved victory RP retain both causes. | 002-003 |"
+    },
+    {
+      "id": "CMB-SET-AC-005",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 227,
+      "newLine": 230,
+      "text": "| `CMB-SET-AC-005` | Zero-distance produces no decision; real retreat/refusal takes exactly one disposition/loss/movement path. Lost replies, duplicates and stale timers cannot choose twice or move twice. | 001/003/006 |"
+    },
+    {
+      "id": "CMB-SET-AC-006",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 228,
+      "newLine": 231,
+      "text": "| `CMB-SET-AC-006` | Captures on either side settle with valid initial route and co-located one-TOE guard transfer, or immediate unguarded escape. No off-map guard, extra prisoner debit or unguarded transient action is possible. | 004 |"
+    },
+    {
+      "id": "CMB-SET-AC-007",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 229,
+      "newLine": 232,
+      "text": "| `CMB-SET-AC-007` | Escape reunites with certified friendly recipient, removes current custody and creates delayed replacement entitlement without restoring TOE. Guarded branch retains priority feeding and guard obligations across closure. | 004/008 |"
+    },
+    {
+      "id": "CMB-SET-AC-008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 230,
+      "newLine": 233,
+      "text": "| `CMB-SET-AC-008` | Deadline equality, controller loss and clock regression produce refusal/unguarded fallback once. Accepted choices defeat later timers; committed attack cannot cancel or renew deadlines. | 006 |"
+    },
+    {
+      "id": "CMB-SET-AC-009",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 231,
+      "newLine": 234,
+      "text": "| `CMB-SET-AC-009` | Raw Retreat suppresses Engaged even on refusal; adjacent survivors become Contact. Zero-loss Engaged remains when no Retreat; guard/new arrivals never inherit original relation. | 005 |"
+    },
+    {
+      "id": "CMB-SET-AC-010",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 232,
+      "newLine": 235,
+      "text": "| `CMB-SET-AC-010` | Cuts before/after every event restore the same pending owner/capability, balances, entitlements, receipts and RNG. Wrong order, forged absence proof or altered before/after quantities fails readback. | 001/008 |"
+    },
+    {
+      "id": "CMB-SET-AC-011",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 233,
+      "newLine": 236,
+      "text": "| `CMB-SET-AC-011` | Own-only changes advance only own projection; approved shared facts advance affected audiences. Hidden-equivalent variants preserve candidates, success/errors and side bytes, with no raw authority receipt in Runner/Dispatch/War Diary. | 007 |"
+    },
+    {
+      "id": "CMB-SET-AC-012",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldLine": 234,
+      "newLine": 237,
+      "text": "| `CMB-SET-AC-012` | No immediate pending loss/retreat/custody/relation allows round closure; later upkeep/replacement records survive. Reserve entry does not prove supported repeat or production readiness. | 001/008 |"
+    },
+    {
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "oldHash": "sha256:2976a278e51235ff11e74699bf84ed23ed9140c1da6d638de81d8f862c32d762",
+      "newHash": "sha256:887ecb8a5b695d20c5974932bdcefc9944159f2c5fcee6f3382974f5ac39d7e7"
+    },
+    {
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "oldHash": "sha256:84d85139ed0c7111b70c464bde47837963ed7f19571adbc5279e2f8cb1572616",
+      "newHash": "sha256:fe0aaae77c880971ed5737b6156aa22f941d757c660d625df0090a50b55b6c27"
+    }
+  ],
+  "nativeValidation": [
+    {
+      "name": "build",
+      "command": [
+        "dotnet",
+        "build",
+        "Sandtable.slnx",
+        "-c",
+        "Release",
+        "--no-restore"
+      ],
+      "exit_code": 0,
+      "seconds": 26.288
+    },
+    {
+      "name": "format",
+      "command": [
+        "dotnet",
+        "format",
+        "Sandtable.slnx",
+        "--verify-no-changes",
+        "--no-restore",
+        "--include",
+        "src/Cna.Core/Campaigns/CampaignCombatActualSelection.cs",
+        "src/Cna.Core/Campaigns/CombatEvidenceRevisions.cs",
+        "tests/Cna.Core.Tests/Campaigns/CombatActualMovedAssaultContractTests.cs"
+      ],
+      "exit_code": 0,
+      "seconds": 28.224
+    },
+    {
+      "name": "selection",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-class",
+        "*CombatActualSelectionTests"
+      ],
+      "exit_code": 0,
+      "seconds": 287.05
+    },
+    {
+      "name": "retained-pr334",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-method",
+        "*MergedPr334RevisionRetainsExactReplayAndRejectsMixedSnapshotDependencies",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-snapshot/pr334-results"
+      ],
+      "exit_code": 0,
+      "seconds": 7.12
+    },
+    {
+      "name": "snapshots",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-class",
+        "*CombatInheritedSnapshotTests",
+        "*CombatDependencySnapshotTests"
+      ],
+      "exit_code": 0,
+      "seconds": 8.869
+    },
+    {
+      "name": "legacy",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-method",
+        "*Legacy*"
+      ],
+      "exit_code": 0,
+      "seconds": 12.194
+    },
+    {
+      "name": "core-p01",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-class",
+        "*P01*"
+      ],
+      "exit_code": 0,
+      "seconds": 7.699
+    },
+    {
+      "name": "host-p01",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.OrleansHost.Tests/release/Cna.OrleansHost.Tests.dll",
+        "--filter-class",
+        "*P01*"
+      ],
+      "exit_code": 0,
+      "seconds": 3.44
+    },
+    {
+      "name": "boundary",
+      "command": [
+        "dotnet",
+        "exec",
+        "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll",
+        "--filter-trait",
+        "Boundary=UserSpace"
+      ],
+      "exit_code": 0,
+      "seconds": 8.886
+    }
+  ],
+  "inheritedOracles": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-armed-continuation-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 8.822
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-breakdown-completion-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 58.12
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-cycle-control-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 10.954
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 95.083
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-movement-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 41.06
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-no-attack-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 105.054
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reaction-active-fallback-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 54.276
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reaction-closure-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 37.241
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reaction-lifecycle-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 52.707
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reaction-movement-completion-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 7.327
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reaction-second-move-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 22.379
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reaction-trigger-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 20.05
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reserve-cycle-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 59.425
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reserve-movement-completion-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 21.397
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reserve-movement-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 13.441
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-reserve-release-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 7.815
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-selection-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 73.961
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-inherited-successors-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 6.471
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-opening-preamble-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 27.388
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-reserve-designation-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 128.248
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/specs/verify-combat-weather-v1.py"
+      ],
+      "exit_code": 0,
+      "seconds": 135.116
+    }
+  ],
+  "generation": [
+    {
+      "name": "combat-actual-round-entry",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-round-entry"
+      ],
+      "exit_code": 0,
+      "seconds": 24.42
+    },
+    {
+      "name": "combat-actual-assault",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-assault"
+      ],
+      "exit_code": 0,
+      "seconds": 3.49
+    },
+    {
+      "name": "combat-actual-paid-assault",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-paid-assault"
+      ],
+      "exit_code": 0,
+      "seconds": 17.415
+    },
+    {
+      "name": "combat-actual-post-assault-continuation",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-post-assault-continuation"
+      ],
+      "exit_code": 0,
+      "seconds": 58.957
+    },
+    {
+      "name": "combat-actual-repeated-movement",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-repeated-movement"
+      ],
+      "exit_code": 0,
+      "seconds": 37.558
+    },
+    {
+      "name": "combat-actual-repeated-movement-completion",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-repeated-movement-completion"
+      ],
+      "exit_code": 0,
+      "seconds": 118.441
+    },
+    {
+      "name": "combat-actual-repeated-breakdown-completion",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-repeated-breakdown-completion"
+      ],
+      "exit_code": 0,
+      "seconds": 77.29
+    },
+    {
+      "name": "combat-actual-moved-assault",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-moved-assault"
+      ],
+      "exit_code": 0,
+      "seconds": 142.211
+    },
+    {
+      "name": "combat-actual-moved-continuation",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-moved-continuation"
+      ],
+      "exit_code": 0,
+      "seconds": 72.316
+    },
+    {
+      "name": "combat-actual-moved-cycle-control",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-moved-cycle-control"
+      ],
+      "exit_code": 0,
+      "seconds": 150.396
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-moved-repeat-movement"
+      ],
+      "exit_code": 0,
+      "seconds": 156.21
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement-completion",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-moved-repeat-movement-completion"
+      ],
+      "exit_code": 0,
+      "seconds": 222.083
+    },
+    {
+      "name": "combat-actual-moved-repeat-breakdown-completion",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-actual-moved-repeat-breakdown-completion"
+      ],
+      "exit_code": 0,
+      "seconds": 18.755
+    },
+    {
+      "name": "combat-exercise-child-evidence",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-exercise-child-evidence"
+      ],
+      "exit_code": 0,
+      "seconds": 436.106
+    },
+    {
+      "name": "combat-exercise-parent-evidence",
+      "command": [
+        "python3",
+        "-B",
+        "artifacts/rc-snapshot/regenerate_selected.py",
+        "combat-exercise-parent-evidence"
+      ],
+      "exit_code": 1,
+      "seconds": 395.889
+    }
+  ],
+  "semanticComparisons": [
+    {
+      "name": "combat-actual-assault",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/combat-actual-round-entry-v1.schema.json": 1,
+        "docs/specs/combat-actual-selection-v1.schema.json": 1,
+        "docs/specs/fixtures/combat-actual-selection-v1.json": 1,
+        "docs/specs/fixtures/combat-positive-entry-v1.json": 1,
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": 1,
+        "docs/specs/verify-combat-actual-selection-v1.py": 1,
+        "docs/specs/verify-combat-inherited-successors-v1.py": 1,
+        "docs/specs/fixtures/combat-actual-round-entry-v1.json": 1,
+        "dependencyManifestHash": 4,
+        "arithmeticCatalogueHash": 4,
+        "sha256": 4
+      },
+      "examples": {
+        "docs/specs/combat-actual-round-entry-v1.schema.json": {
+          "path": "/runtimeSourceHashes/docs/specs/combat-actual-round-entry-v1.schema.json",
+          "before": "31e5b53db04cf9b96e9285cfc4e3ca51b152a5995d71b76048c3e239aadf3b6d",
+          "after": "0cdc3e70a6a275570d1d3206ae6c2adca4d54d17e0d86238598d1313d2f65364"
+        },
+        "docs/specs/combat-actual-selection-v1.schema.json": {
+          "path": "/runtimeSourceHashes/docs/specs/combat-actual-selection-v1.schema.json",
+          "before": "da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1",
+          "after": "cd7bd01e5592412ba97fb8ce1b6708a713a32049cd8f529293e688d09c8fe746"
+        },
+        "docs/specs/fixtures/combat-actual-selection-v1.json": {
+          "path": "/runtimeSourceHashes/docs/specs/fixtures/combat-actual-selection-v1.json",
+          "before": "019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604",
+          "after": "c5d0773e85cf0a10d70d001572a69b39e61a73e064007bca3258e0bce7818de8"
+        },
+        "docs/specs/fixtures/combat-positive-entry-v1.json": {
+          "path": "/runtimeSourceHashes/docs/specs/fixtures/combat-positive-entry-v1.json",
+          "before": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+          "after": "1096a7fd8a14693b33c8acf466dffb5e86415dcd4353aef18ff768131869e70a"
+        },
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": {
+          "path": "/runtimeSourceHashes/docs/specs/fixtures/combat-reserve-designation-v1.json",
+          "before": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        },
+        "docs/specs/verify-combat-actual-selection-v1.py": {
+          "path": "/runtimeSourceHashes/docs/specs/verify-combat-actual-selection-v1.py",
+          "before": "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
+          "after": "8232227faf2ea4e6b1b5720c59fe46870cbc41cbda653fc04dbd7a8dd163e166"
+        },
+        "docs/specs/verify-combat-inherited-successors-v1.py": {
+          "path": "/runtimeSourceHashes/docs/specs/verify-combat-inherited-successors-v1.py",
+          "before": "f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+          "after": "9ff5dceb7180748e262ba876b9f2ea3b666e0837108000bdfc58d2a7f5408fc0"
+        },
+        "docs/specs/fixtures/combat-actual-round-entry-v1.json": {
+          "path": "/testSourceHashes/docs/specs/fixtures/combat-actual-round-entry-v1.json",
+          "before": "9e6625b891faefacf3d0a6776bf92bdfc0ccd898ae182d37f342aa154621f60e",
+          "after": "1eb02349ed0124b7e3495da68807a959c70a70da8564b0b0d2086457ee6c5155"
+        },
+        "dependencyManifestHash": {
+          "path": "/cases/*/proof/canonicalUtf8/$json/arithmeticAssessment/dependencyManifestHash",
+          "before": "sha256:d2e9cc0af4a8cdf30627a446368b8bffdd2424d16e4575193a9edba75053b2c8",
+          "after": "sha256:42cd991ed732ad184ad69f86d0c2fdce28a07a134a5123aeb380f84a37a47e11"
+        },
+        "arithmeticCatalogueHash": {
+          "path": "/cases/*/proof/canonicalUtf8/$json/arithmeticAssessment/arithmeticCatalogueHash",
+          "before": "sha256:bcef510a595ee6a1ef6d127c3640ff3abe7a5b4e239452b17a3eba00a1176af1",
+          "after": "sha256:417a973236b8a6b0808d47eddf73b2ec42620431850fda73602fcaeab22aec56"
+        },
+        "sha256": {
+          "path": "/cases/*/proof/sha256",
+          "before": "sha256:6f3751567b3a61d482b5407d4fd98ce674f7a8262a1f9d7ace868dd7379539aa",
+          "after": "sha256:38010e1b907b71324f02134bce76794a85430b37600d83f206771e3e8b2d8b13"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-assault",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 798
+      },
+      "examples": {
+        "sha256": {
+          "path": "/cases/*/cuts/*/proof/sha256",
+          "before": "sha256:d518d0c2f3c65bd6a9e40005ea759d780b9aeb1296f703d9e1f6bdab6e3491c0",
+          "after": "sha256:a832b7fc70311946b9f196645521524fadb0ee718803f810b39bcb5bf39760a6"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-continuation",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 168
+      },
+      "examples": {
+        "sha256": {
+          "path": "/cases/*/cuts/*/proof/sha256",
+          "before": "sha256:eef076a7d9bdb9bcdbd23005a31220f93aa50c5b296c4ffc6e90ca5861a2a28b",
+          "after": "sha256:85b102396cae238f9094ef59775a33e89fbd751b6de0a5690da3b0ffdb26a69e"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-cycle-control",
+      "shapeChanges": [],
+      "changedFields": {
+        "controlId": 672,
+        "decisionId": 504,
+        "baseHash": 224,
+        "receiptId": 224,
+        "priorPrefix": 112,
+        "sha256": 896
+      },
+      "examples": {
+        "controlId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/controlId",
+          "before": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b",
+          "after": "mcc.b4397a5abbfd065401cc2b22a123f0f87064c53b034934596bb08dd1def7a38b"
+        },
+        "decisionId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/decisionId",
+          "before": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b.decision",
+          "after": "mcc.b4397a5abbfd065401cc2b22a123f0f87064c53b034934596bb08dd1def7a38b.decision"
+        },
+        "baseHash": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:a30a64d9d9a30736836178b2e98dae72c0ab33a29f24a4edb80137df6652b1d1",
+          "after": "sha256:e9908fc56fb619b070bffd4995e184f85be61fb49c0c502cd48afd7d08337e9b"
+        },
+        "receiptId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/receiptId",
+          "before": "mcce.dcf0673ab5aab8bdeaa36d8e14adca448fb27a0b3182df6a45866863d994f849",
+          "after": "mcce.9a81fc8409f74469e14332e4ed4c0cacddd061a55c02715d3474d6e0125644a2"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:31a1c32d13a57a59e84f94ec015dfa956cb65b764148b296e809698c98b809f2",
+          "after": "sha256:d9c1a64799c3607dab5e7ad0a97ed42ed4a2225a14c03685998cf61629271252"
+        },
+        "sha256": {
+          "path": "/cases/*/cuts/*/control/sha256",
+          "before": "sha256:a6def95134527129dbffaf869e9c4359e9e6969a76373f20ab1f8c083933cb97",
+          "after": "sha256:fcefdb769bc32b4f054f17b8b19aded8df865685bf49568a5b4180a665658d22"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-breakdown-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "parentSourceHash": 4,
+        "sourceHash": 4,
+        "eventHash": 4,
+        "beforeControlHash": 4,
+        "afterControlHash": 4,
+        "beforeProofHash": 4,
+        "afterProofHash": 4,
+        "receiptId": 4
+      },
+      "examples": {
+        "parentSourceHash": {
+          "path": "/cases/*/parentSourceHash",
+          "before": "sha256:84c65fa867602c336bf0918f285026ac31856272ece4e1fc9e196f9a63de91bc",
+          "after": "sha256:0432437bbe972f432dc79a609e6af4b3b3434e3b0907a9a9bee59acf69c7c1fc"
+        },
+        "sourceHash": {
+          "path": "/cases/*/sourceHash",
+          "before": "sha256:f938a7986806db90ddbebaf3fff3577ca895904c69f09c397bf815fb29cf1b55",
+          "after": "sha256:52daa62c2ac3e806578f430d68b19960fb3cee52e02bd4d8c20d9fd073b8461d"
+        },
+        "eventHash": {
+          "path": "/cases/*/eventHash",
+          "before": "sha256:5f22ea27c56cca36feb5523b7daf4a5924c717a126d388a2b26402522a85e86b",
+          "after": "sha256:605352ccb6f32319377c8a6bafaa3a9a66b40da2b013f95cf3459660e057b55e"
+        },
+        "beforeControlHash": {
+          "path": "/cases/*/beforeControlHash",
+          "before": "sha256:5be39237982c58a2ee3de9850a38589935f44e43e8063fbf98deb70afc5eefa0",
+          "after": "sha256:c8cd1d5f70050e51d65de92134100fc765714d76b5d9b10b50d5ee51475f9e5c"
+        },
+        "afterControlHash": {
+          "path": "/cases/*/afterControlHash",
+          "before": "sha256:b38882db3cb5a1507219e30e633198a684f83f63d6201962f43e66cf89dcac57",
+          "after": "sha256:418011b692df207aa12a12f9d2e0dc3b83af601982f123f02e031e6036558639"
+        },
+        "beforeProofHash": {
+          "path": "/cases/*/beforeProofHash",
+          "before": "sha256:eea683baddcef076d66aa2bcdee252b575ac771a9ff8a57790b80ae9740aad55",
+          "after": "sha256:1bbc5e9563e4afc1350b3a56b95d7f220d73e4611c167c18bee8c915e29e900d"
+        },
+        "afterProofHash": {
+          "path": "/cases/*/afterProofHash",
+          "before": "sha256:f0ea8ee6921889db148edd0ed13504e6466c473e7df03974c0daf6369e58b92b",
+          "after": "sha256:ec5cb9dbb4f8b46a8b6294a9ffbdec2909349c0070184f520da7878e0241bd95"
+        },
+        "receiptId": {
+          "path": "/cases/*/receiptId",
+          "before": "mrbc.5e48106732d003013764a2c5dad83a70c4acb0968e02fba44da781a5e9fe7331",
+          "after": "mrbc.2bf1fc98f7721f38440f493c527388a72a69293ce5ed713bffe240d1c725fc64"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-breakdown-refreshed-native-hashes",
+      "shapeChanges": [],
+      "changedFields": {
+        "parentSourceHash": 300,
+        "sourceHash": 300,
+        "eventHash": 300,
+        "beforeControlHash": 300,
+        "afterControlHash": 300,
+        "beforeProofHash": 300,
+        "afterProofHash": 300,
+        "receiptId": 300
+      },
+      "examples": {
+        "parentSourceHash": {
+          "path": "/rows/*/parentSourceHash",
+          "before": "sha256:84c65fa867602c336bf0918f285026ac31856272ece4e1fc9e196f9a63de91bc",
+          "after": "sha256:0432437bbe972f432dc79a609e6af4b3b3434e3b0907a9a9bee59acf69c7c1fc"
+        },
+        "sourceHash": {
+          "path": "/rows/*/sourceHash",
+          "before": "sha256:f938a7986806db90ddbebaf3fff3577ca895904c69f09c397bf815fb29cf1b55",
+          "after": "sha256:52daa62c2ac3e806578f430d68b19960fb3cee52e02bd4d8c20d9fd073b8461d"
+        },
+        "eventHash": {
+          "path": "/rows/*/eventHash",
+          "before": "sha256:5f22ea27c56cca36feb5523b7daf4a5924c717a126d388a2b26402522a85e86b",
+          "after": "sha256:605352ccb6f32319377c8a6bafaa3a9a66b40da2b013f95cf3459660e057b55e"
+        },
+        "beforeControlHash": {
+          "path": "/rows/*/beforeControlHash",
+          "before": "sha256:5be39237982c58a2ee3de9850a38589935f44e43e8063fbf98deb70afc5eefa0",
+          "after": "sha256:c8cd1d5f70050e51d65de92134100fc765714d76b5d9b10b50d5ee51475f9e5c"
+        },
+        "afterControlHash": {
+          "path": "/rows/*/afterControlHash",
+          "before": "sha256:b38882db3cb5a1507219e30e633198a684f83f63d6201962f43e66cf89dcac57",
+          "after": "sha256:418011b692df207aa12a12f9d2e0dc3b83af601982f123f02e031e6036558639"
+        },
+        "beforeProofHash": {
+          "path": "/rows/*/beforeProofHash",
+          "before": "sha256:eea683baddcef076d66aa2bcdee252b575ac771a9ff8a57790b80ae9740aad55",
+          "after": "sha256:1bbc5e9563e4afc1350b3a56b95d7f220d73e4611c167c18bee8c915e29e900d"
+        },
+        "afterProofHash": {
+          "path": "/rows/*/afterProofHash",
+          "before": "sha256:f0ea8ee6921889db148edd0ed13504e6466c473e7df03974c0daf6369e58b92b",
+          "after": "sha256:ec5cb9dbb4f8b46a8b6294a9ffbdec2909349c0070184f520da7878e0241bd95"
+        },
+        "receiptId": {
+          "path": "/rows/*/receiptId",
+          "before": "mrbc.5e48106732d003013764a2c5dad83a70c4acb0968e02fba44da781a5e9fe7331",
+          "after": "mrbc.2bf1fc98f7721f38440f493c527388a72a69293ce5ed713bffe240d1c725fc64"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 1,
+        "baseHash": 2364,
+        "cycleId": 2608,
+        "capabilityId": 1576,
+        "movementSourceHash": 788,
+        "priorPrefix": 788,
+        "receiptId": 1484,
+        "sha256": 3264,
+        "stopId": 488,
+        "lastMoveReceiptId": 244,
+        "openingPrefix": 244,
+        "eventHash": 696
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:263ef9a9e17804ecde9c5636dfdeacd4fa4bb7d7a651f152d94691b6a912f854",
+          "after": "sha256:fcec9a26dec511c39e812732f79b59fc7205a2ac39f87efb92774366dd2c9130"
+        },
+        "baseHash": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/baseHash",
+          "before": "sha256:164d5e555a03c062b23cbdc0a5861f0dd8810de2e961975f8900aeebf5b59507",
+          "after": "sha256:c0e5e8910954ba1841a3b660963e688fe7ff61a60de6a4997a07bbfc6ea3e025"
+        },
+        "cycleId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/cycleId",
+          "before": "sha256:cfe43c24d3192fd48a12d9305c6069ff23c6b33b7ab938cac609b3b8c1984246",
+          "after": "sha256:441f07f684599d8e1d951f0bb5200274caa6222707771d65fd52e4223f56d0e8"
+        },
+        "capabilityId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/capabilityId",
+          "before": "sha256:0d9077402a152d71628b3d19a389bf2447f1cb8c8fdea3e39a482f2546be3f68",
+          "after": "sha256:ac17305a4008f5f65420b031b6b36796ec282acb0042cc43d8fb64fcb2ef0bed"
+        },
+        "movementSourceHash": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/movementSourceHash",
+          "before": "sha256:4469bd6f7d6d7efc22d444ecefce440930889ee1743c03a061773b9fb78e069f",
+          "after": "sha256:e0d894c4ebffbf4b7d8535993749e2559d1621339a35ae21eb7899457fc0d369"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:6aac92fcc74dd7ed2ad097ae66717794df2ef24b7905acdf01e90bcf904d68a7",
+          "after": "sha256:057bedfbab1824b6b40288372addb9766e42aa40edf281d24c21cd8db9ef0610"
+        },
+        "receiptId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/receiptId",
+          "before": "mrmc.3bf6ea3be564eec3a661ffc09392c87795a8089255d5edc8d8aebf7ef3567637",
+          "after": "mrmc.c737198a66645a030b7d44329b74358473074c066ef041b0955be1c75206858e"
+        },
+        "sha256": {
+          "path": "/cases/*/cuts/*/source/sha256",
+          "before": "sha256:e6f601597d5bf36f667c9f63092f0d96c688fe18583511ed5bc3be3654f38832",
+          "after": "sha256:a448218c73823c4e5184b4006705245bc4da1ee2db3466e731ece0dccfd8430b"
+        },
+        "stopId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/stop/stopId",
+          "before": "mrmstop.6ec422650dd268826ec2341054eb3a358e1c867cd431fef474006e2ee67feb5e",
+          "after": "mrmstop.8bfa444fa85067ddf18774a8c742ef9f0148285c523847929a54c2a35661c52b"
+        },
+        "lastMoveReceiptId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/stop/lastMoveReceiptId",
+          "before": "mrm.8d8252ba0c71c33bbece312971725f82c648f0136452df72c5519d90fcf81583",
+          "after": "mrm.be55df8989279b2b1d7544a3f43e2ea9fc2b63e243ae5694cd8766387665ac12"
+        },
+        "openingPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/interruptContext/cycle/openingPrefix",
+          "before": "sha256:08548e6924a0096b27ff01a50ddc85baf022a5812efa88e1d2a1ba704a9be1d6",
+          "after": "sha256:a7e85cab4ada53227d02e888df7e58edb13bc77eef63a5805eb81692995b101b"
+        },
+        "eventHash": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/progress/*/eventHash",
+          "before": "sha256:347a0a64dd87fdf35fe34b9037b5b9d1cf5bdbc37a3ca3c93e0ccbc707bbc2fb",
+          "after": "sha256:76922145dc084f0a7ba003921d5506ab747701b0e65d5a9902f623b4ba49f045"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-moved-repeat-movement",
+      "shapeChanges": [],
+      "changedFields": {
+        "baseHash": 1012,
+        "controlId": 224,
+        "decisionId": 824,
+        "receiptId": 412,
+        "priorPrefix": 356,
+        "parentSourceHash": 900,
+        "intentReceiptId": 656,
+        "cycleId": 732,
+        "nextCycleId": 56,
+        "openingPrefix": 56,
+        "sha256": 1068
+      },
+      "examples": {
+        "baseHash": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:a30a64d9d9a30736836178b2e98dae72c0ab33a29f24a4edb80137df6652b1d1",
+          "after": "sha256:e9908fc56fb619b070bffd4995e184f85be61fb49c0c502cd48afd7d08337e9b"
+        },
+        "controlId": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/controlId",
+          "before": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b",
+          "after": "mcc.b4397a5abbfd065401cc2b22a123f0f87064c53b034934596bb08dd1def7a38b"
+        },
+        "decisionId": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/effect/decisionId",
+          "before": "mcc.a77e6be78356e06bf21dd31505c62fcbee70029efab657e67178744cca79d11b.decision",
+          "after": "mcc.b4397a5abbfd065401cc2b22a123f0f87064c53b034934596bb08dd1def7a38b.decision"
+        },
+        "receiptId": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/receiptId",
+          "before": "mcce.dcf0673ab5aab8bdeaa36d8e14adca448fb27a0b3182df6a45866863d994f849",
+          "after": "mcce.9a81fc8409f74469e14332e4ed4c0cacddd061a55c02715d3474d6e0125644a2"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/initialSourceCanonicalUtf8/$json/controlSourceCanonicalUtf8/$json/controlEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:31a1c32d13a57a59e84f94ec015dfa956cb65b764148b296e809698c98b809f2",
+          "after": "sha256:d9c1a64799c3607dab5e7ad0a97ed42ed4a2225a14c03685998cf61629271252"
+        },
+        "parentSourceHash": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/parentSourceHash",
+          "before": "sha256:8718502cd1f806239906759c2e29d48c1bb29d32bf80a7c1a7f3be71d260aa7e",
+          "after": "sha256:54ec709e27cac10ca86e875ce6340ce7fb8b729522dd5fc4c7cb08936a310fbf"
+        },
+        "intentReceiptId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/intentReceiptId",
+          "before": "mcce.6c84f0782a45ba4f062aa95c9fa297e8e518ee8b3c30e82416502ff2fac0d43c",
+          "after": "mcce.bde696184673099d2fc908033db80a32bb58e5e68b836d77ac3bd1f5f53b6d52"
+        },
+        "cycleId": {
+          "path": "/cases/*/inputCanonicalUtf8/*/$json/command/cycleId",
+          "before": "sha256:cfe43c24d3192fd48a12d9305c6069ff23c6b33b7ab938cac609b3b8c1984246",
+          "after": "sha256:441f07f684599d8e1d951f0bb5200274caa6222707771d65fd52e4223f56d0e8"
+        },
+        "nextCycleId": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/nextCycleId",
+          "before": "sha256:cfe43c24d3192fd48a12d9305c6069ff23c6b33b7ab938cac609b3b8c1984246",
+          "after": "sha256:441f07f684599d8e1d951f0bb5200274caa6222707771d65fd52e4223f56d0e8"
+        },
+        "openingPrefix": {
+          "path": "/cases/*/eventCanonicalUtf8/*/$json/effect/nextCycle/openingPrefix",
+          "before": "sha256:08548e6924a0096b27ff01a50ddc85baf022a5812efa88e1d2a1ba704a9be1d6",
+          "after": "sha256:a7e85cab4ada53227d02e888df7e58edb13bc77eef63a5805eb81692995b101b"
+        },
+        "sha256": {
+          "path": "/cases/*/cuts/*/source/sha256",
+          "before": "sha256:443df962a82eacb91a36f4c56bfd60fec4cdf1e847e46989a2c2b95dc0a15950",
+          "after": "sha256:565b253ca1a10ca4501e45a3c7f81871cb4eb672f60d2cd8fd612bda856dece8"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-paid-assault",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 9,
+        "baseHash": 100,
+        "commitmentId": 84,
+        "receiptId": 96,
+        "priorPrefix": 28,
+        "resultId": 12,
+        "settlementId": 16,
+        "predecessorReceiptId": 32,
+        "relationshipId": 8,
+        "proofReceipts": 16,
+        "roundClosureReceiptId": 8,
+        "sourceId": 4,
+        "sourceHash": 4,
+        "arithmeticCatalogueHash": 4,
+        "prefix": 4,
+        "relationId": 4,
+        "creationReceiptId": 4,
+        "caCompletionReceiptId": 4,
+        "commandHash": 32,
+        "eventHash": 32
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:16bb52d82a108b2368147a074f02b14d396745caf829d5ed93f81f05e75eb76a",
+          "after": "sha256:7d328a822e1ae346f5d4e3ff904377e134a655d8f08878a9b6d496ca0db4c6ec"
+        },
+        "baseHash": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:ab24cdcfbf7e0006fcd07d2fa6f0b5fcf8c94cab6dd6df240dc816507708ca31",
+          "after": "sha256:aa8d414864769a59422ab96708e7066651f5b1805d24532af9bf932cfec1a16b"
+        },
+        "commitmentId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/commitmentId",
+          "before": "cmt.7d7468bf6ef44aa20fa48851b8e692b48c2482c970ed2e5283fd59be8026bbee",
+          "after": "cmt.d7aea61632cae4b1ba0f43a9e908e7560ce0d130a5b84e065d0b6ed4e6ca44da"
+        },
+        "receiptId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/receiptId",
+          "before": "cmb.b5aa1fc1e9954d38ed93a78c70401202134fa9047f7e1ec326e92e139563fbe5",
+          "after": "cmb.2f047e9eabd512299e66efcfced50ff847f7cd1d703a800e8afd4f076ede460c"
+        },
+        "priorPrefix": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:c80786aa57715def45763866ad3a9776f9ff27a2e575855f928eff1c5307fbbb",
+          "after": "sha256:b92c49ae324b8ddf9cdfad93a7e6a01b0912cb32e65b413f2b946f7f925e6563"
+        },
+        "resultId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/result/resultId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "settlementId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/settlementId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753"
+        },
+        "predecessorReceiptId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/predecessorReceiptId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "relationshipId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/relationshipId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "proofReceipts": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/proofReceipts/*",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.disposition",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.disposition"
+        },
+        "roundClosureReceiptId": {
+          "path": "/cases/*/sourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/roundClosureReceiptId",
+          "before": "cmb.35e98aebbcd3de6edeb40dcc5924af5881697aa183ae309a50b23591eaaee1e1",
+          "after": "cmb.ec76e65170947386ceb9524336eb3bc5d865dd3ba48767e649510208e9722e1e"
+        },
+        "sourceId": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/sourceId",
+          "before": "apass.c462ed82882ea8bae09ca26a0538c1f5c22064e56910aa5cfffc0bdccbf82b7a",
+          "after": "apass.4e1fc51f07f8228e775a0d3de14fc6dc482882b771ef12605b0cb598eaf96908"
+        },
+        "sourceHash": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/sourceHash",
+          "before": "sha256:c462ed82882ea8bae09ca26a0538c1f5c22064e56910aa5cfffc0bdccbf82b7a",
+          "after": "sha256:4e1fc51f07f8228e775a0d3de14fc6dc482882b771ef12605b0cb598eaf96908"
+        },
+        "arithmeticCatalogueHash": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/base/admissionProof/arithmeticAssessment/arithmeticCatalogueHash",
+          "before": "sha256:bcef510a595ee6a1ef6d127c3640ff3abe7a5b4e239452b17a3eba00a1176af1",
+          "after": "sha256:417a973236b8a6b0808d47eddf73b2ec42620431850fda73602fcaeab22aec56"
+        },
+        "prefix": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/control/prefix",
+          "before": "sha256:9ffa8739f34b06192af81c858f808f1f58ab99daf8adb252be866f7204774bb2",
+          "after": "sha256:f7fb5358032637d9c48e169ae0c82634303352d8cd85106d11eaec2ed8f6798a"
+        },
+        "relationId": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/control/world/relationships/*/relationId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "creationReceiptId": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/control/world/relationships/*/creationReceiptId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relationships",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relationships"
+        },
+        "caCompletionReceiptId": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/control/caCompletionReceiptId",
+          "before": "cmb.cd2d640ac32801eb0a655f18c0eb514716d2f7759c6fe1794d91a8e753e956b8",
+          "after": "cmb.08966769aeeb901c34188715c015716c1b2d22fce4064055aaa77afd284e695c"
+        },
+        "commandHash": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/control/receipts/*/commandHash",
+          "before": "sha256:3585c6f9dca726df2707bddab9e72fd0ca407f00a040ccf0b63e2d7132e44b4d",
+          "after": "sha256:95bf4d282d08eadaa92130adb827f9655392ec6c4daeae64a30e286ebaf31a9d"
+        },
+        "eventHash": {
+          "path": "/cases/*/proofCanonicalUtf8/$json/control/receipts/*/eventHash",
+          "before": "sha256:f99a87014ee394fe13d76f1080b6cb6ea5e21ace814c10f806fbd29101c439d1",
+          "after": "sha256:6051cb7af9b6449bee84ff8c7d402050e12539365e9e8e064261ac02154a4634"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-post-assault-continuation",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 25,
+        "baseHash": 280,
+        "commitmentId": 248,
+        "receiptId": 624,
+        "priorPrefix": 88,
+        "resultId": 72,
+        "settlementId": 80,
+        "predecessorReceiptId": 256,
+        "relationshipId": 64,
+        "proofReceipts": 32,
+        "roundClosureReceiptId": 16,
+        "paidSourceHash": 80,
+        "releaseId": 64,
+        "openingReceiptId": 8,
+        "releaseCompletionReceiptId": 72,
+        "eventHash": 256,
+        "decisionId": 40,
+        "openingPrefix": 12,
+        "controlId": 48,
+        "prefix": 56,
+        "relationId": 56,
+        "creationReceiptId": 56,
+        "releaseOpeningReceiptId": 40,
+        "commandHash": 176,
+        "sourceId": 16,
+        "sourceHash": 24,
+        "arithmeticCatalogueHash": 8,
+        "caCompletionReceiptId": 8,
+        "proofHash": 8,
+        "eventHashes": 32
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:0b620504df00d7a3c3854bdc6236f31884a5803d6145418e6da57d0087ffefef",
+          "after": "sha256:99d35d0f91d23d1c3e363799f8a7c409a74afad15b0aba9e27e63e9548f84f4e"
+        },
+        "baseHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:ab24cdcfbf7e0006fcd07d2fa6f0b5fcf8c94cab6dd6df240dc816507708ca31",
+          "after": "sha256:aa8d414864769a59422ab96708e7066651f5b1805d24532af9bf932cfec1a16b"
+        },
+        "commitmentId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/commitmentId",
+          "before": "cmt.7d7468bf6ef44aa20fa48851b8e692b48c2482c970ed2e5283fd59be8026bbee",
+          "after": "cmt.d7aea61632cae4b1ba0f43a9e908e7560ce0d130a5b84e065d0b6ed4e6ca44da"
+        },
+        "receiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/receiptId",
+          "before": "cmb.b5aa1fc1e9954d38ed93a78c70401202134fa9047f7e1ec326e92e139563fbe5",
+          "after": "cmb.2f047e9eabd512299e66efcfced50ff847f7cd1d703a800e8afd4f076ede460c"
+        },
+        "priorPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:c80786aa57715def45763866ad3a9776f9ff27a2e575855f928eff1c5307fbbb",
+          "after": "sha256:b92c49ae324b8ddf9cdfad93a7e6a01b0912cb32e65b413f2b946f7f925e6563"
+        },
+        "resultId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/result/resultId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "settlementId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/settlementId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753"
+        },
+        "predecessorReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/predecessorReceiptId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "relationshipId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/relationshipId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "proofReceipts": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/proofReceipts/*",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.disposition",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.disposition"
+        },
+        "roundClosureReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/roundClosureReceiptId",
+          "before": "cmb.35e98aebbcd3de6edeb40dcc5924af5881697aa183ae309a50b23591eaaee1e1",
+          "after": "cmb.ec76e65170947386ceb9524336eb3bc5d865dd3ba48767e649510208e9722e1e"
+        },
+        "paidSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/paidSourceHash",
+          "before": "sha256:c462ed82882ea8bae09ca26a0538c1f5c22064e56910aa5cfffc0bdccbf82b7a",
+          "after": "sha256:4e1fc51f07f8228e775a0d3de14fc6dc482882b771ef12605b0cb598eaf96908"
+        },
+        "releaseId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/releaseId",
+          "before": "aprel.61c9511ec4f6bbcb6197189b3bfd1ff82c2e497c34b6345014c0482134498fac",
+          "after": "aprel.2e3d056b925081117ecd82938346e397b1801c4651cd97f20b11d725a41cdd1c"
+        },
+        "openingReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/openingReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "releaseCompletionReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/releaseCompletionReceiptId",
+          "before": "apc.ae47ece5a7426da96d2d5f4158cad9ef13556b515f670ded47c4766e81ccf490",
+          "after": "apc.c236358ffea1a5818a2249c805dba09d79592e106c48efa174745a7cbd11771a"
+        },
+        "eventHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/progress/*/eventHash",
+          "before": "sha256:f99a87014ee394fe13d76f1080b6cb6ea5e21ace814c10f806fbd29101c439d1",
+          "after": "sha256:6051cb7af9b6449bee84ff8c7d402050e12539365e9e8e064261ac02154a4634"
+        },
+        "decisionId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/input/command/decisionId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd.decision",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf.decision"
+        },
+        "openingPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/nextCycle/openingPrefix",
+          "before": "sha256:f1bc7ebc845ee3cd6fbb5550fba8edc3222da80f393c890f4ac1f9321cb9b58f",
+          "after": "sha256:c790ee17faa2a3c1bb908a5328d5815f4e629d5017c37e156aee4e1a36be4135"
+        },
+        "controlId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/controlId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf"
+        },
+        "prefix": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/prefix",
+          "before": "sha256:9ffa8739f34b06192af81c858f808f1f58ab99daf8adb252be866f7204774bb2",
+          "after": "sha256:f7fb5358032637d9c48e169ae0c82634303352d8cd85106d11eaec2ed8f6798a"
+        },
+        "relationId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/relationId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "creationReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/creationReceiptId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relationships",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relationships"
+        },
+        "releaseOpeningReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/releaseOpeningReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "commandHash": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/receipts/*/commandHash",
+          "before": "sha256:48bd55eba234065adb59b235c3a1a5e2d80f57017bbc9c9943cdb2d8b459fbe9",
+          "after": "sha256:896dd097fb772d256b3199f0b05decf8f56e097fd8db825b595e5afb55418b6e"
+        },
+        "sourceId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceId",
+          "before": "apcont.9bc38e6b4bf31879c416682d5c4826b530509d23b233e90fa4480fde81964cf4",
+          "after": "apcont.986f36d338ffa1fecc77870591133989050e74ee9c5c5413540d01591b88bbad"
+        },
+        "sourceHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceHash",
+          "before": "sha256:9bc38e6b4bf31879c416682d5c4826b530509d23b233e90fa4480fde81964cf4",
+          "after": "sha256:986f36d338ffa1fecc77870591133989050e74ee9c5c5413540d01591b88bbad"
+        },
+        "arithmeticCatalogueHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/paidProof/base/admissionProof/arithmeticAssessment/arithmeticCatalogueHash",
+          "before": "sha256:bcef510a595ee6a1ef6d127c3640ff3abe7a5b4e239452b17a3eba00a1176af1",
+          "after": "sha256:417a973236b8a6b0808d47eddf73b2ec42620431850fda73602fcaeab22aec56"
+        },
+        "caCompletionReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/paidProof/control/caCompletionReceiptId",
+          "before": "cmb.cd2d640ac32801eb0a655f18c0eb514716d2f7759c6fe1794d91a8e753e956b8",
+          "after": "cmb.08966769aeeb901c34188715c015716c1b2d22fce4064055aaa77afd284e695c"
+        },
+        "proofHash": {
+          "path": "/traces/*/proofHash",
+          "before": "sha256:29b012233fb4d2674e972047779b218242ef06ed764a08e77ca645e4856e439f",
+          "after": "sha256:97accf142def27704ef4a47653c718b4335f5b2f7ffd61196865756393895b02"
+        },
+        "eventHashes": {
+          "path": "/traces/*/eventHashes/*",
+          "before": "sha256:1c1173a8d57e3fda4353492f2a40fedb699d0b795a10f291c51ee9f73224f4ef",
+          "after": "sha256:f9792b6aa8ce01638dbc5c43c098569717608040d5df60363e9c299cafffa9e0"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-repeated-breakdown-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 121,
+        "baseHash": 864,
+        "commitmentId": 520,
+        "receiptId": 2220,
+        "priorPrefix": 332,
+        "resultId": 180,
+        "settlementId": 200,
+        "predecessorReceiptId": 640,
+        "relationshipId": 160,
+        "proofReceipts": 80,
+        "roundClosureReceiptId": 40,
+        "paidSourceHash": 100,
+        "releaseId": 60,
+        "openingReceiptId": 20,
+        "releaseCompletionReceiptId": 80,
+        "eventHash": 988,
+        "decisionId": 40,
+        "openingPrefix": 156,
+        "movementSourceHash": 132,
+        "cycleId": 260,
+        "capabilityId": 92,
+        "repeatedMovementCompletionSourceHash": 80,
+        "movementCompletionReceiptId": 20,
+        "prefix": 140,
+        "completionReceiptId": 80,
+        "relationId": 156,
+        "creationReceiptId": 156,
+        "commandHash": 688,
+        "breakdownCompletionReceiptId": 40,
+        "sourceId": 100,
+        "sourceHash": 120,
+        "arithmeticCatalogueHash": 20,
+        "caCompletionReceiptId": 20,
+        "controlId": 20,
+        "releaseOpeningReceiptId": 20,
+        "continuationSourceHash": 60,
+        "proofHash": 20,
+        "eventHashes": 20,
+        "stopId": 32,
+        "lastMoveReceiptId": 16,
+        "endedByReceiptId": 80,
+        "causeId": 120
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:0b1f4a5ab2445b761381de9ef216e3ad27152dba759e25d669504ef097cb3cd9",
+          "after": "sha256:24ace8254d43ec168f51e12af87c369f9cdb7541d9c7aaa7537a8c02ff0a3f83"
+        },
+        "baseHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:ab24cdcfbf7e0006fcd07d2fa6f0b5fcf8c94cab6dd6df240dc816507708ca31",
+          "after": "sha256:aa8d414864769a59422ab96708e7066651f5b1805d24532af9bf932cfec1a16b"
+        },
+        "commitmentId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/commitmentId",
+          "before": "cmt.7d7468bf6ef44aa20fa48851b8e692b48c2482c970ed2e5283fd59be8026bbee",
+          "after": "cmt.d7aea61632cae4b1ba0f43a9e908e7560ce0d130a5b84e065d0b6ed4e6ca44da"
+        },
+        "receiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/receiptId",
+          "before": "cmb.b5aa1fc1e9954d38ed93a78c70401202134fa9047f7e1ec326e92e139563fbe5",
+          "after": "cmb.2f047e9eabd512299e66efcfced50ff847f7cd1d703a800e8afd4f076ede460c"
+        },
+        "priorPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:c80786aa57715def45763866ad3a9776f9ff27a2e575855f928eff1c5307fbbb",
+          "after": "sha256:b92c49ae324b8ddf9cdfad93a7e6a01b0912cb32e65b413f2b946f7f925e6563"
+        },
+        "resultId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/result/resultId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "settlementId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/settlementId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753"
+        },
+        "predecessorReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/predecessorReceiptId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "relationshipId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/relationshipId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "proofReceipts": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/proofReceipts/*",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.disposition",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.disposition"
+        },
+        "roundClosureReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/roundClosureReceiptId",
+          "before": "cmb.35e98aebbcd3de6edeb40dcc5924af5881697aa183ae309a50b23591eaaee1e1",
+          "after": "cmb.ec76e65170947386ceb9524336eb3bc5d865dd3ba48767e649510208e9722e1e"
+        },
+        "paidSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/paidSourceHash",
+          "before": "sha256:c462ed82882ea8bae09ca26a0538c1f5c22064e56910aa5cfffc0bdccbf82b7a",
+          "after": "sha256:4e1fc51f07f8228e775a0d3de14fc6dc482882b771ef12605b0cb598eaf96908"
+        },
+        "releaseId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/releaseId",
+          "before": "aprel.61c9511ec4f6bbcb6197189b3bfd1ff82c2e497c34b6345014c0482134498fac",
+          "after": "aprel.2e3d056b925081117ecd82938346e397b1801c4651cd97f20b11d725a41cdd1c"
+        },
+        "openingReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/openingReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "releaseCompletionReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/releaseCompletionReceiptId",
+          "before": "apc.ae47ece5a7426da96d2d5f4158cad9ef13556b515f670ded47c4766e81ccf490",
+          "after": "apc.c236358ffea1a5818a2249c805dba09d79592e106c48efa174745a7cbd11771a"
+        },
+        "eventHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/progress/*/eventHash",
+          "before": "sha256:f99a87014ee394fe13d76f1080b6cb6ea5e21ace814c10f806fbd29101c439d1",
+          "after": "sha256:6051cb7af9b6449bee84ff8c7d402050e12539365e9e8e064261ac02154a4634"
+        },
+        "decisionId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/input/command/decisionId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd.decision",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf.decision"
+        },
+        "openingPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/nextCycle/openingPrefix",
+          "before": "sha256:f1bc7ebc845ee3cd6fbb5550fba8edc3222da80f393c890f4ac1f9321cb9b58f",
+          "after": "sha256:c790ee17faa2a3c1bb908a5328d5815f4e629d5017c37e156aee4e1a36be4135"
+        },
+        "movementSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/movementSourceHash",
+          "before": "sha256:cbd8e90d8e2531c1942c88f3ef99e894852bc978ae061248995f5613e2d575f9",
+          "after": "sha256:c467e2f916a5bc63f44b3f2e4e84e2838cc5d1f130c5278b41c0e1f1782bb69e"
+        },
+        "cycleId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/cycleId",
+          "before": "sha256:00e0531540267089efff30e610e335b16d5a107cfe45a319eed783bf462c0860",
+          "after": "sha256:5f0b1a4a0a6e1cb972bb6a3d0d359c48f805f9a2d5c2b805c8085bf2368becd4"
+        },
+        "capabilityId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/input/command/capabilityId",
+          "before": "sha256:3230917ab0bfd7d89b0b0091fca2a8a6607a0239f0228595fbadd141c7d387b9",
+          "after": "sha256:5b011c599186d799da7898143dbdba92c519c78bdb905ee61f89bcfd24f18d13"
+        },
+        "repeatedMovementCompletionSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/breakdownEventCanonicalUtf8/*/$json/repeatedMovementCompletionSourceHash",
+          "before": "sha256:08c5b3c6aae897d74d1a8692311f84eb17135149e55063f13b8265ae4a5d44af",
+          "after": "sha256:360fa9f42511735b37378c3b38d687c024444a70b8d973cb666ce5805e7b6637"
+        },
+        "movementCompletionReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/breakdownEventCanonicalUtf8/*/$json/effect/movementCompletionReceiptId",
+          "before": "armc.6eecc6d2c097e0398ee607e342ddb6e93d3ade0bb14009a8423d036d856a2c3d",
+          "after": "armc.7e5955dd292a7753fbfb44230c2bcacc95fc227bc2f4334cc9b379d2f90c8066"
+        },
+        "prefix": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/prefix",
+          "before": "sha256:49441d6f2a225e2eb7c211c35965a46f89ebded96a0450584a25c4e3ba529c1e",
+          "after": "sha256:648bb50aa17f7091c436f0cfa808fb180f7fe7bfe112244b6410f64d6c54dc1e"
+        },
+        "completionReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/movementEnd/completionReceiptId",
+          "before": "armc.6eecc6d2c097e0398ee607e342ddb6e93d3ade0bb14009a8423d036d856a2c3d",
+          "after": "armc.7e5955dd292a7753fbfb44230c2bcacc95fc227bc2f4334cc9b379d2f90c8066"
+        },
+        "relationId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/relationId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "creationReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/creationReceiptId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relationships",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relationships"
+        },
+        "commandHash": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/priorLifecycleReceipts/*/commandHash",
+          "before": "sha256:871123c254d10233b70a0a1880bee63c9e73d2e9196b9f379e804c1b17f73e5b",
+          "after": "sha256:9367b7c7d57e9e24d6f56822faed007508a74ab94be2fe5a235dfc11c49015f0"
+        },
+        "breakdownCompletionReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/breakdownCompletionReceiptId",
+          "before": "arbc.47813126ee4be4a57e32603d18d645f653a6a9d1e6192ddf30ac00e70b30fc0c",
+          "after": "arbc.02164b316bb213facc62a43f7dcce12d8f36eed30157379f890273001f2bed73"
+        },
+        "sourceId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceId",
+          "before": "arbcomp.6dabd61614b2e798d6d4b1b1ca1bf157840851e42f249b1fe11ff2714dc9a1bf",
+          "after": "arbcomp.36f27e84f84457f1fcab269eee5b925021d73af8d65c86034a6619d60262f833"
+        },
+        "sourceHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceHash",
+          "before": "sha256:6dabd61614b2e798d6d4b1b1ca1bf157840851e42f249b1fe11ff2714dc9a1bf",
+          "after": "sha256:36f27e84f84457f1fcab269eee5b925021d73af8d65c86034a6619d60262f833"
+        },
+        "arithmeticCatalogueHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/repeatedMovementCompletionProof/base/movementProof/base/continuationProof/base/paidProof/base/admissionProof/arithmeticAssessment/arithmeticCatalogueHash",
+          "before": "sha256:bcef510a595ee6a1ef6d127c3640ff3abe7a5b4e239452b17a3eba00a1176af1",
+          "after": "sha256:417a973236b8a6b0808d47eddf73b2ec42620431850fda73602fcaeab22aec56"
+        },
+        "caCompletionReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/repeatedMovementCompletionProof/base/movementProof/base/continuationProof/base/paidProof/control/caCompletionReceiptId",
+          "before": "cmb.cd2d640ac32801eb0a655f18c0eb514716d2f7759c6fe1794d91a8e753e956b8",
+          "after": "cmb.08966769aeeb901c34188715c015716c1b2d22fce4064055aaa77afd284e695c"
+        },
+        "controlId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/repeatedMovementCompletionProof/base/movementProof/base/continuationProof/control/controlId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf"
+        },
+        "releaseOpeningReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/repeatedMovementCompletionProof/base/movementProof/base/continuationProof/control/releaseOpeningReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "continuationSourceHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/repeatedMovementCompletionProof/base/movementProof/control/continuationSourceHash",
+          "before": "sha256:9bc38e6b4bf31879c416682d5c4826b530509d23b233e90fa4480fde81964cf4",
+          "after": "sha256:986f36d338ffa1fecc77870591133989050e74ee9c5c5413540d01591b88bbad"
+        },
+        "proofHash": {
+          "path": "/traces/*/proofHash",
+          "before": "sha256:f14fa03ac5c06109d09cb0f1d8fa18e8cc63379c70e4bad5b4170235d98b025c",
+          "after": "sha256:c32e0772559cd2c6a4467df7c2a0855cfa2ace35d95507e3dad84a295dd2ce9f"
+        },
+        "eventHashes": {
+          "path": "/traces/*/eventHashes/*",
+          "before": "sha256:db868074b1e5329c9a786f4dfb51129cf454d53c5f1745c8ebd418e0b7dfd9b7",
+          "after": "sha256:2eb64093715bfd785516356299957db7f999a77e1697e92501f6aa6cf25de370"
+        },
+        "stopId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/effect/stop/stopId",
+          "before": "armstop.52795a778c14d52b03996b87272b1d4424860977b97d8770f75852052d9feefa",
+          "after": "armstop.531b3db6de06a432a3e9ae5c92952be27bf90bec8ad4fd8d415c9fdf8e192b78"
+        },
+        "lastMoveReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/repeatedMovementCompletionSourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/effect/stop/lastMoveReceiptId",
+          "before": "armv.a6e3593a1e503984111815f7713cc8e44ae381c379083af363584aa8038fc21b",
+          "after": "armv.17598839e66fa7eecf35d75966366db0925fe2bbe996323e7a08fbb7716c7475"
+        },
+        "endedByReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/endedByReceiptId",
+          "before": "armv.a6e3593a1e503984111815f7713cc8e44ae381c379083af363584aa8038fc21b",
+          "after": "armv.17598839e66fa7eecf35d75966366db0925fe2bbe996323e7a08fbb7716c7475"
+        },
+        "causeId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/cohesionCauses/*/causeId",
+          "before": "armv.4fe0105aac9f9c11bcc7b76a09a55e010cb0f2d1423bd3ce26e7b023c59ef883.dp",
+          "after": "armv.5dfd518e0feb481c369a22b6c46e66f6b8d4a0e516b6e92108e7d8789385699f.dp"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-repeated-movement-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 101,
+        "baseHash": 868,
+        "commitmentId": 544,
+        "receiptId": 2268,
+        "priorPrefix": 312,
+        "resultId": 192,
+        "settlementId": 212,
+        "predecessorReceiptId": 688,
+        "relationshipId": 172,
+        "proofReceipts": 80,
+        "roundClosureReceiptId": 40,
+        "paidSourceHash": 100,
+        "releaseId": 60,
+        "openingReceiptId": 20,
+        "releaseCompletionReceiptId": 80,
+        "eventHash": 972,
+        "decisionId": 40,
+        "openingPrefix": 184,
+        "movementSourceHash": 144,
+        "cycleId": 268,
+        "capabilityId": 104,
+        "prefix": 152,
+        "relationId": 168,
+        "creationReceiptId": 168,
+        "completionReceiptId": 40,
+        "commandHash": 632,
+        "sourceId": 80,
+        "sourceHash": 100,
+        "arithmeticCatalogueHash": 20,
+        "caCompletionReceiptId": 20,
+        "controlId": 20,
+        "releaseOpeningReceiptId": 20,
+        "continuationSourceHash": 60,
+        "proofHash": 20,
+        "eventHashes": 52,
+        "stopId": 48,
+        "lastMoveReceiptId": 48,
+        "endedByReceiptId": 96,
+        "causeId": 144
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:a81191d6e40d1659657f4e6fc0623fc72ed291670b4771278aace9696649cf6c",
+          "after": "sha256:9551d1cd770178a878ff20710aaa1e9e1c0006b3061caa75852c72a7df705d3e"
+        },
+        "baseHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:ab24cdcfbf7e0006fcd07d2fa6f0b5fcf8c94cab6dd6df240dc816507708ca31",
+          "after": "sha256:aa8d414864769a59422ab96708e7066651f5b1805d24532af9bf932cfec1a16b"
+        },
+        "commitmentId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/commitmentId",
+          "before": "cmt.7d7468bf6ef44aa20fa48851b8e692b48c2482c970ed2e5283fd59be8026bbee",
+          "after": "cmt.d7aea61632cae4b1ba0f43a9e908e7560ce0d130a5b84e065d0b6ed4e6ca44da"
+        },
+        "receiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/receiptId",
+          "before": "cmb.b5aa1fc1e9954d38ed93a78c70401202134fa9047f7e1ec326e92e139563fbe5",
+          "after": "cmb.2f047e9eabd512299e66efcfced50ff847f7cd1d703a800e8afd4f076ede460c"
+        },
+        "priorPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:c80786aa57715def45763866ad3a9776f9ff27a2e575855f928eff1c5307fbbb",
+          "after": "sha256:b92c49ae324b8ddf9cdfad93a7e6a01b0912cb32e65b413f2b946f7f925e6563"
+        },
+        "resultId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/result/resultId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "settlementId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/settlementId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753"
+        },
+        "predecessorReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/predecessorReceiptId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "relationshipId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/relationshipId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "proofReceipts": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/proofReceipts/*",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.disposition",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.disposition"
+        },
+        "roundClosureReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/roundClosureReceiptId",
+          "before": "cmb.35e98aebbcd3de6edeb40dcc5924af5881697aa183ae309a50b23591eaaee1e1",
+          "after": "cmb.ec76e65170947386ceb9524336eb3bc5d865dd3ba48767e649510208e9722e1e"
+        },
+        "paidSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/paidSourceHash",
+          "before": "sha256:c462ed82882ea8bae09ca26a0538c1f5c22064e56910aa5cfffc0bdccbf82b7a",
+          "after": "sha256:4e1fc51f07f8228e775a0d3de14fc6dc482882b771ef12605b0cb598eaf96908"
+        },
+        "releaseId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/releaseId",
+          "before": "aprel.61c9511ec4f6bbcb6197189b3bfd1ff82c2e497c34b6345014c0482134498fac",
+          "after": "aprel.2e3d056b925081117ecd82938346e397b1801c4651cd97f20b11d725a41cdd1c"
+        },
+        "openingReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/openingReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "releaseCompletionReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/releaseCompletionReceiptId",
+          "before": "apc.ae47ece5a7426da96d2d5f4158cad9ef13556b515f670ded47c4766e81ccf490",
+          "after": "apc.c236358ffea1a5818a2249c805dba09d79592e106c48efa174745a7cbd11771a"
+        },
+        "eventHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/progress/*/eventHash",
+          "before": "sha256:f99a87014ee394fe13d76f1080b6cb6ea5e21ace814c10f806fbd29101c439d1",
+          "after": "sha256:6051cb7af9b6449bee84ff8c7d402050e12539365e9e8e064261ac02154a4634"
+        },
+        "decisionId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/input/command/decisionId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd.decision",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf.decision"
+        },
+        "openingPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementSourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/nextCycle/openingPrefix",
+          "before": "sha256:f1bc7ebc845ee3cd6fbb5550fba8edc3222da80f393c890f4ac1f9321cb9b58f",
+          "after": "sha256:c790ee17faa2a3c1bb908a5328d5815f4e629d5017c37e156aee4e1a36be4135"
+        },
+        "movementSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/movementSourceHash",
+          "before": "sha256:cbd8e90d8e2531c1942c88f3ef99e894852bc978ae061248995f5613e2d575f9",
+          "after": "sha256:c467e2f916a5bc63f44b3f2e4e84e2838cc5d1f130c5278b41c0e1f1782bb69e"
+        },
+        "cycleId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/cycleId",
+          "before": "sha256:00e0531540267089efff30e610e335b16d5a107cfe45a319eed783bf462c0860",
+          "after": "sha256:5f0b1a4a0a6e1cb972bb6a3d0d359c48f805f9a2d5c2b805c8085bf2368becd4"
+        },
+        "capabilityId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/input/command/capabilityId",
+          "before": "sha256:3230917ab0bfd7d89b0b0091fca2a8a6607a0239f0228595fbadd141c7d387b9",
+          "after": "sha256:5b011c599186d799da7898143dbdba92c519c78bdb905ee61f89bcfd24f18d13"
+        },
+        "prefix": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/prefix",
+          "before": "sha256:03f58f4ea07e84033fa18dc645f46eed0356dd958d34b281fcda5d9564577590",
+          "after": "sha256:6206e899c9713de2e16ae9ed23172c38d2656404862cc2e65a811de45070e935"
+        },
+        "relationId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/relationId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "creationReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/creationReceiptId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relationships",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relationships"
+        },
+        "completionReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/movementEnd/completionReceiptId",
+          "before": "armc.6eecc6d2c097e0398ee607e342ddb6e93d3ade0bb14009a8423d036d856a2c3d",
+          "after": "armc.7e5955dd292a7753fbfb44230c2bcacc95fc227bc2f4334cc9b379d2f90c8066"
+        },
+        "commandHash": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/receipts/*/commandHash",
+          "before": "sha256:871123c254d10233b70a0a1880bee63c9e73d2e9196b9f379e804c1b17f73e5b",
+          "after": "sha256:9367b7c7d57e9e24d6f56822faed007508a74ab94be2fe5a235dfc11c49015f0"
+        },
+        "sourceId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceId",
+          "before": "armcomp.08c5b3c6aae897d74d1a8692311f84eb17135149e55063f13b8265ae4a5d44af",
+          "after": "armcomp.360fa9f42511735b37378c3b38d687c024444a70b8d973cb666ce5805e7b6637"
+        },
+        "sourceHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceHash",
+          "before": "sha256:08c5b3c6aae897d74d1a8692311f84eb17135149e55063f13b8265ae4a5d44af",
+          "after": "sha256:360fa9f42511735b37378c3b38d687c024444a70b8d973cb666ce5805e7b6637"
+        },
+        "arithmeticCatalogueHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/movementProof/base/continuationProof/base/paidProof/base/admissionProof/arithmeticAssessment/arithmeticCatalogueHash",
+          "before": "sha256:bcef510a595ee6a1ef6d127c3640ff3abe7a5b4e239452b17a3eba00a1176af1",
+          "after": "sha256:417a973236b8a6b0808d47eddf73b2ec42620431850fda73602fcaeab22aec56"
+        },
+        "caCompletionReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/movementProof/base/continuationProof/base/paidProof/control/caCompletionReceiptId",
+          "before": "cmb.cd2d640ac32801eb0a655f18c0eb514716d2f7759c6fe1794d91a8e753e956b8",
+          "after": "cmb.08966769aeeb901c34188715c015716c1b2d22fce4064055aaa77afd284e695c"
+        },
+        "controlId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/movementProof/base/continuationProof/control/controlId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf"
+        },
+        "releaseOpeningReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/movementProof/base/continuationProof/control/releaseOpeningReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "continuationSourceHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/movementProof/control/continuationSourceHash",
+          "before": "sha256:9bc38e6b4bf31879c416682d5c4826b530509d23b233e90fa4480fde81964cf4",
+          "after": "sha256:986f36d338ffa1fecc77870591133989050e74ee9c5c5413540d01591b88bbad"
+        },
+        "proofHash": {
+          "path": "/traces/*/proofHash",
+          "before": "sha256:ab6e01b67f882a269a02abd7c8a844122923ea472d4fdec342e1dd21abca51e0",
+          "after": "sha256:0f4ff69c8f2adfd8d8e7a7c97a3863a9d7d1f99d6c4df0d461e929afadf626fc"
+        },
+        "eventHashes": {
+          "path": "/traces/*/eventHashes/*",
+          "before": "sha256:0da1af20f6079bb55db7ecb1f3d532511c953ae1ee20c1b6ef038975257ff927",
+          "after": "sha256:ca90276aa811021b2d2a3fe3ef0254785d819d21cd817c15dfe09f6d17edcb98"
+        },
+        "stopId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/effect/stop/stopId",
+          "before": "armstop.52795a778c14d52b03996b87272b1d4424860977b97d8770f75852052d9feefa",
+          "after": "armstop.531b3db6de06a432a3e9ae5c92952be27bf90bec8ad4fd8d415c9fdf8e192b78"
+        },
+        "lastMoveReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/lifecycleEventCanonicalUtf8/*/$json/effect/stop/lastMoveReceiptId",
+          "before": "armv.a6e3593a1e503984111815f7713cc8e44ae381c379083af363584aa8038fc21b",
+          "after": "armv.17598839e66fa7eecf35d75966366db0925fe2bbe996323e7a08fbb7716c7475"
+        },
+        "endedByReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/endedByReceiptId",
+          "before": "armv.a6e3593a1e503984111815f7713cc8e44ae381c379083af363584aa8038fc21b",
+          "after": "armv.17598839e66fa7eecf35d75966366db0925fe2bbe996323e7a08fbb7716c7475"
+        },
+        "causeId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/cohesionCauses/*/causeId",
+          "before": "armv.4fe0105aac9f9c11bcc7b76a09a55e010cb0f2d1423bd3ce26e7b023c59ef883.dp",
+          "after": "armv.5dfd518e0feb481c369a22b6c46e66f6b8d4a0e516b6e92108e7d8789385699f.dp"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-repeated-movement",
+      "shapeChanges": [],
+      "changedFields": {
+        "dependencyManifestHash": 17,
+        "baseHash": 176,
+        "commitmentId": 112,
+        "receiptId": 444,
+        "priorPrefix": 60,
+        "resultId": 40,
+        "settlementId": 44,
+        "predecessorReceiptId": 144,
+        "relationshipId": 36,
+        "proofReceipts": 16,
+        "roundClosureReceiptId": 8,
+        "paidSourceHash": 20,
+        "releaseId": 12,
+        "openingReceiptId": 4,
+        "releaseCompletionReceiptId": 16,
+        "eventHash": 172,
+        "decisionId": 8,
+        "openingPrefix": 32,
+        "continuationSourceHash": 40,
+        "cycleId": 48,
+        "relationId": 36,
+        "creationReceiptId": 36,
+        "prefix": 32,
+        "endedByReceiptId": 20,
+        "commandHash": 104,
+        "causeId": 36,
+        "sourceId": 12,
+        "sourceHash": 16,
+        "arithmeticCatalogueHash": 4,
+        "caCompletionReceiptId": 4,
+        "controlId": 4,
+        "releaseOpeningReceiptId": 4,
+        "proofHash": 4,
+        "eventHashes": 16
+      },
+      "examples": {
+        "dependencyManifestHash": {
+          "path": "/dependencyManifestHash",
+          "before": "sha256:3e0320f5bfa823e2d5496b37157f71c386e3f31510a80dcebedb690864b130cf",
+          "after": "sha256:7752a3be95c7ec37206c9d88914b7ff1986f52ff55c0c5db9cff5da2359ec43e"
+        },
+        "baseHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/baseHash",
+          "before": "sha256:ab24cdcfbf7e0006fcd07d2fa6f0b5fcf8c94cab6dd6df240dc816507708ca31",
+          "after": "sha256:aa8d414864769a59422ab96708e7066651f5b1805d24532af9bf932cfec1a16b"
+        },
+        "commitmentId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/commitmentId",
+          "before": "cmt.7d7468bf6ef44aa20fa48851b8e692b48c2482c970ed2e5283fd59be8026bbee",
+          "after": "cmt.d7aea61632cae4b1ba0f43a9e908e7560ce0d130a5b84e065d0b6ed4e6ca44da"
+        },
+        "receiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/receiptId",
+          "before": "cmb.b5aa1fc1e9954d38ed93a78c70401202134fa9047f7e1ec326e92e139563fbe5",
+          "after": "cmb.2f047e9eabd512299e66efcfced50ff847f7cd1d703a800e8afd4f076ede460c"
+        },
+        "priorPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/priorPrefix",
+          "before": "sha256:c80786aa57715def45763866ad3a9776f9ff27a2e575855f928eff1c5307fbbb",
+          "after": "sha256:b92c49ae324b8ddf9cdfad93a7e6a01b0912cb32e65b413f2b946f7f925e6563"
+        },
+        "resultId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/result/resultId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "settlementId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/settlementId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753"
+        },
+        "predecessorReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/predecessorReceiptId",
+          "before": "res.a1f0eb3f29f4f8c0551f5549ad5e09322c5732619dc8808ad4718f05fa5b3859",
+          "after": "res.0d26f4f6126493d78e95ccfd0ca8d726b79a90db9130d954aff7b16809f987a1"
+        },
+        "relationshipId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/payload/relationshipId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "proofReceipts": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/proofReceipts/*",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.disposition",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.disposition"
+        },
+        "roundClosureReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/paidSourceCanonicalUtf8/$json/paidEventCanonicalUtf8/*/$json/effect/roundClosureReceiptId",
+          "before": "cmb.35e98aebbcd3de6edeb40dcc5924af5881697aa183ae309a50b23591eaaee1e1",
+          "after": "cmb.ec76e65170947386ceb9524336eb3bc5d865dd3ba48767e649510208e9722e1e"
+        },
+        "paidSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/paidSourceHash",
+          "before": "sha256:c462ed82882ea8bae09ca26a0538c1f5c22064e56910aa5cfffc0bdccbf82b7a",
+          "after": "sha256:4e1fc51f07f8228e775a0d3de14fc6dc482882b771ef12605b0cb598eaf96908"
+        },
+        "releaseId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/releaseId",
+          "before": "aprel.61c9511ec4f6bbcb6197189b3bfd1ff82c2e497c34b6345014c0482134498fac",
+          "after": "aprel.2e3d056b925081117ecd82938346e397b1801c4651cd97f20b11d725a41cdd1c"
+        },
+        "openingReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/openingReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "releaseCompletionReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/releaseCompletionReceiptId",
+          "before": "apc.ae47ece5a7426da96d2d5f4158cad9ef13556b515f670ded47c4766e81ccf490",
+          "after": "apc.c236358ffea1a5818a2249c805dba09d79592e106c48efa174745a7cbd11771a"
+        },
+        "eventHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/assessment/progress/*/eventHash",
+          "before": "sha256:f99a87014ee394fe13d76f1080b6cb6ea5e21ace814c10f806fbd29101c439d1",
+          "after": "sha256:6051cb7af9b6449bee84ff8c7d402050e12539365e9e8e064261ac02154a4634"
+        },
+        "decisionId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/input/command/decisionId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd.decision",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf.decision"
+        },
+        "openingPrefix": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/continuationSourceCanonicalUtf8/$json/continuationEventCanonicalUtf8/*/$json/effect/nextCycle/openingPrefix",
+          "before": "sha256:f1bc7ebc845ee3cd6fbb5550fba8edc3222da80f393c890f4ac1f9321cb9b58f",
+          "after": "sha256:c790ee17faa2a3c1bb908a5328d5815f4e629d5017c37e156aee4e1a36be4135"
+        },
+        "continuationSourceHash": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementEventCanonicalUtf8/*/$json/continuationSourceHash",
+          "before": "sha256:9bc38e6b4bf31879c416682d5c4826b530509d23b233e90fa4480fde81964cf4",
+          "after": "sha256:986f36d338ffa1fecc77870591133989050e74ee9c5c5413540d01591b88bbad"
+        },
+        "cycleId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementEventCanonicalUtf8/*/$json/cycleId",
+          "before": "sha256:00e0531540267089efff30e610e335b16d5a107cfe45a319eed783bf462c0860",
+          "after": "sha256:5f0b1a4a0a6e1cb972bb6a3d0d359c48f805f9a2d5c2b805c8085bf2368becd4"
+        },
+        "relationId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementEventCanonicalUtf8/*/$json/effect/endedMemberships/*/relationId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relation",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relation"
+        },
+        "creationReceiptId": {
+          "path": "/traces/*/sourceCanonicalUtf8/$json/movementEventCanonicalUtf8/*/$json/effect/endedMemberships/*/creationReceiptId",
+          "before": "set.4dbf7a5acefab48109bac844405004a16a694a2641cd124b26d689174ace866e.relationships",
+          "after": "set.ee9b6ac96b88c2db46ac0f076b24886c7ecf3197959884226af0a566fcb1f753.relationships"
+        },
+        "prefix": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/prefix",
+          "before": "sha256:03f58f4ea07e84033fa18dc645f46eed0356dd958d34b281fcda5d9564577590",
+          "after": "sha256:6206e899c9713de2e16ae9ed23172c38d2656404862cc2e65a811de45070e935"
+        },
+        "endedByReceiptId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/relationships/*/endedByReceiptId",
+          "before": "armv.a6e3593a1e503984111815f7713cc8e44ae381c379083af363584aa8038fc21b",
+          "after": "armv.17598839e66fa7eecf35d75966366db0925fe2bbe996323e7a08fbb7716c7475"
+        },
+        "commandHash": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/receipts/*/commandHash",
+          "before": "sha256:52886ed6d079a9debb62ba5768e93368e2c708a29a034f246e07f065e53c5dfc",
+          "after": "sha256:e2aea300e859240901bc6e5a7dd66e53923caad49d40e46398fdda94d6a05a9c"
+        },
+        "causeId": {
+          "path": "/traces/*/controlCanonicalUtf8/*/$json/world/cohesionCauses/*/causeId",
+          "before": "armv.4fe0105aac9f9c11bcc7b76a09a55e010cb0f2d1423bd3ce26e7b023c59ef883.dp",
+          "after": "armv.5dfd518e0feb481c369a22b6c46e66f6b8d4a0e516b6e92108e7d8789385699f.dp"
+        },
+        "sourceId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceId",
+          "before": "armove.89076828d1bb96c3ba1562c92c1403b3efaf1ebd09fc5ae6dfabcf35682e3bc0",
+          "after": "armove.b6055d05e17413f0b1f0efdb4ff1fa5a171baeda939e93973450f13def644162"
+        },
+        "sourceHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/sourceHash",
+          "before": "sha256:89076828d1bb96c3ba1562c92c1403b3efaf1ebd09fc5ae6dfabcf35682e3bc0",
+          "after": "sha256:b6055d05e17413f0b1f0efdb4ff1fa5a171baeda939e93973450f13def644162"
+        },
+        "arithmeticCatalogueHash": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/continuationProof/base/paidProof/base/admissionProof/arithmeticAssessment/arithmeticCatalogueHash",
+          "before": "sha256:bcef510a595ee6a1ef6d127c3640ff3abe7a5b4e239452b17a3eba00a1176af1",
+          "after": "sha256:417a973236b8a6b0808d47eddf73b2ec42620431850fda73602fcaeab22aec56"
+        },
+        "caCompletionReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/continuationProof/base/paidProof/control/caCompletionReceiptId",
+          "before": "cmb.cd2d640ac32801eb0a655f18c0eb514716d2f7759c6fe1794d91a8e753e956b8",
+          "after": "cmb.08966769aeeb901c34188715c015716c1b2d22fce4064055aaa77afd284e695c"
+        },
+        "controlId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/continuationProof/control/controlId",
+          "before": "apctl.07722c203f86c9c3ce5ed3d83b65a36bbd794a494014e9134489db35000ce1fd",
+          "after": "apctl.023d87a36ae14012893206f0eef2c1b49daab0f8d3c280202692d5a1ce281caf"
+        },
+        "releaseOpeningReceiptId": {
+          "path": "/traces/*/proofCanonicalUtf8/$json/base/continuationProof/control/releaseOpeningReceiptId",
+          "before": "apc.1893b69f8df71cf1d03376157637a91749812fab8a2d92d4c26c4a2ad09efd68",
+          "after": "apc.48644c92ec0fb4bef555f73a04e36b588d0963807f043447897fa3787afcc389"
+        },
+        "proofHash": {
+          "path": "/traces/*/proofHash",
+          "before": "sha256:4282852ca3d56eca7ee550d072b6cc93c9c10de4965d51806213ce1cd6fae545",
+          "after": "sha256:e4090ac03e1a1168c3ebbf9e5cf8d0befbaba11c0a354aa51d685a52ee58bbeb"
+        },
+        "eventHashes": {
+          "path": "/traces/*/eventHashes/*",
+          "before": "sha256:dee84df6543121e6067a8901bf9e71cc656de8bca6cc53bdf35059adab27f8df",
+          "after": "sha256:f794119858ae3b358eefc9206124e9fc707889e7f4971a9042941d1f9001cd73"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-round-entry",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-positive-entry-v1.json": 1,
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": 1,
+        "docs/specs/combat-actual-selection-v1.schema.json": 1,
+        "docs/specs/fixtures/combat-actual-selection-v1.json": 1,
+        "docs/specs/verify-combat-actual-selection-v1.py": 1,
+        "docs/specs/verify-combat-inherited-successors-v1.py": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-positive-entry-v1.json": {
+          "path": "/originalSourceHashes/docs/specs/fixtures/combat-positive-entry-v1.json",
+          "before": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+          "after": "1096a7fd8a14693b33c8acf466dffb5e86415dcd4353aef18ff768131869e70a"
+        },
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": {
+          "path": "/originalSourceHashes/docs/specs/fixtures/combat-reserve-designation-v1.json",
+          "before": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        },
+        "docs/specs/combat-actual-selection-v1.schema.json": {
+          "path": "/additionalSourceHashes/docs/specs/combat-actual-selection-v1.schema.json",
+          "before": "da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1",
+          "after": "cd7bd01e5592412ba97fb8ce1b6708a713a32049cd8f529293e688d09c8fe746"
+        },
+        "docs/specs/fixtures/combat-actual-selection-v1.json": {
+          "path": "/additionalSourceHashes/docs/specs/fixtures/combat-actual-selection-v1.json",
+          "before": "019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604",
+          "after": "c5d0773e85cf0a10d70d001572a69b39e61a73e064007bca3258e0bce7818de8"
+        },
+        "docs/specs/verify-combat-actual-selection-v1.py": {
+          "path": "/additionalSourceHashes/docs/specs/verify-combat-actual-selection-v1.py",
+          "before": "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
+          "after": "8232227faf2ea4e6b1b5720c59fe46870cbc41cbda653fc04dbd7a8dd163e166"
+        },
+        "docs/specs/verify-combat-inherited-successors-v1.py": {
+          "path": "/additionalSourceHashes/docs/specs/verify-combat-inherited-successors-v1.py",
+          "before": "f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+          "after": "9ff5dceb7180748e262ba876b9f2ea3b666e0837108000bdfc58d2a7f5408fc0"
+        }
+      }
+    },
+    {
+      "name": "combat-actual-selection",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-positive-entry-v1.json": 1,
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-positive-entry-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-positive-entry-v1.json",
+          "before": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+          "after": "1096a7fd8a14693b33c8acf466dffb5e86415dcd4353aef18ff768131869e70a"
+        },
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-reserve-designation-v1.json",
+          "before": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        }
+      }
+    },
+    {
+      "name": "combat-authority-composition",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 9
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:4d948616fcc1c17443552d42cc7d5561977715fb0092e2359b9f5eb913d1bd30",
+          "after": "sha256:ee07bd4bb8d93981f1ec618143e5891cb86be620523e9329c776bceb1d0067b8"
+        }
+      }
+    },
+    {
+      "name": "combat-exercise-child-evidence",
+      "shapeChanges": [],
+      "changedFields": {
+        "verify-combat-exercise-occurrence-v1.py": 1,
+        "fixtures/combat-exercise-occurrence-v1.json": 1,
+        "childHash": 12,
+        "buildHash": 12,
+        "manifestHash": 13,
+        "hash": 25
+      },
+      "examples": {
+        "verify-combat-exercise-occurrence-v1.py": {
+          "path": "/sourcePins/verify-combat-exercise-occurrence-v1.py",
+          "before": "sha256:576d2edfdbdf6ef36071cccf59ddee7aecd1282c6d9865fd6e6d0de25fcf8866",
+          "after": "sha256:c3a29356a38d35c8fd2a61bb909078fe00cf51a56afc714feab77db66e76df70"
+        },
+        "fixtures/combat-exercise-occurrence-v1.json": {
+          "path": "/sourcePins/fixtures/combat-exercise-occurrence-v1.json",
+          "before": "sha256:0732373bb73f3a7c931b198f75ab9e89a06013550a5b2d6421d7d5b56480a656",
+          "after": "sha256:d391f2cd23deea514c6947db9e4451a68d76536d684ef027d2322f9392167392"
+        },
+        "childHash": {
+          "path": "/goldens/*/childHash",
+          "before": "sha256:c7a46edadc5ac314cb771ff0570f9fc78e42644917c85a550a5c1f78fedb735c",
+          "after": "sha256:e466f75db98bb458cb4e726fc04c7afda87b9d9c54a711647748a270ab0d2b57"
+        },
+        "buildHash": {
+          "path": "/goldens/*/childCanonicalJson/$json/manifest/buildHash",
+          "before": "sha256:a970d45eaafd067c7e9d5dd21c09c94703ebbaad8f5c1c73e4e3387886ca9ec8",
+          "after": "sha256:b59438a4b1bb6514aead83722897de9823f0ad90bcea34f51127a517936184be"
+        },
+        "manifestHash": {
+          "path": "/goldens/*/childCanonicalJson/$json/reconstruction/manifestHash",
+          "before": "sha256:c595309fdd3e01cfe5e5a5b99371187f1db4122429e4b7e7ed31d074a0bc463e",
+          "after": "sha256:fe79e6c5d8efde5cccf6b5e5b5cc397b5a90c902217b0d6bfa2b49a718d97ce9"
+        },
+        "hash": {
+          "path": "/goldens/*/childCanonicalJson/$json/artifactManifest/entries/*/hash",
+          "before": "sha256:1e94f35644b9bdf3618fd9be1e2d04399e76af09cc2e1f991496d23c7f60a5e6",
+          "after": "sha256:8c8c4ec6bf2078fad2f9bc9f20c919a2620e3af7dd20b23edbbf7a9c9ea1d94c"
+        }
+      }
+    },
+    {
+      "name": "combat-exercise-occurrence",
+      "shapeChanges": [],
+      "changedFields": {
+        "fixtures/combat-side-projection-v1.json": 1,
+        "verify-combat-side-projection-v1.py": 1,
+        "fixtures/combat-authority-composition-v1.json": 1
+      },
+      "examples": {
+        "fixtures/combat-side-projection-v1.json": {
+          "path": "/sourcePins/fixtures/combat-side-projection-v1.json",
+          "before": "sha256:3b0c8069a1a5f8bc88a8e5a4ba34e1b87ac0d457a5656065bea1ec6fede54ce4",
+          "after": "sha256:4682587f161f16a36ec06c87e3196db76366502055d26349d4538753253c1f62"
+        },
+        "verify-combat-side-projection-v1.py": {
+          "path": "/sourcePins/verify-combat-side-projection-v1.py",
+          "before": "sha256:84b4cc7d0c2456dbe2a087093140ddefb1465313abcd3d8bdc56853c9202e806",
+          "after": "sha256:acb8529d6dcb959c8b3693841bdf64078d047c04e80a3885223f69c88c265710"
+        },
+        "fixtures/combat-authority-composition-v1.json": {
+          "path": "/sourcePins/fixtures/combat-authority-composition-v1.json",
+          "before": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3",
+          "after": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7"
+        }
+      }
+    },
+    {
+      "name": "combat-exercise-parent-evidence",
+      "shapeChanges": [],
+      "changedFields": {
+        "combat-exercise-child-evidence-v1.schema.json": 1,
+        "fixtures/combat-exercise-child-evidence-v1.json": 1,
+        "buildHash": 31,
+        "manifestHash": 35,
+        "hash": 28,
+        "childHash": 19,
+        "initialEvidenceHash": 5,
+        "fingerprint": 10
+      },
+      "examples": {
+        "combat-exercise-child-evidence-v1.schema.json": {
+          "path": "/sourcePins/combat-exercise-child-evidence-v1.schema.json",
+          "before": "sha256:c02ccc798b1c4aa26f362f98eb756e385cb6280cdd3038185ba237b8dd8ea7b4",
+          "after": "sha256:7861713af044ccd2ac3273354a3cece63b046e8ef467ffd0ba60db683cab2feb"
+        },
+        "fixtures/combat-exercise-child-evidence-v1.json": {
+          "path": "/sourcePins/fixtures/combat-exercise-child-evidence-v1.json",
+          "before": "sha256:b0ba9b540cc7121b35dd59eddd69fdc44e70cd1067511a4a85d6f81b8c47effb",
+          "after": "sha256:c8dce8c2451d609f3021f30a6bf39029cc129ae172c04f9176f671c546360bd8"
+        },
+        "buildHash": {
+          "path": "/children/*/childCanonicalJson/$json/manifest/buildHash",
+          "before": "sha256:a970d45eaafd067c7e9d5dd21c09c94703ebbaad8f5c1c73e4e3387886ca9ec8",
+          "after": "sha256:b59438a4b1bb6514aead83722897de9823f0ad90bcea34f51127a517936184be"
+        },
+        "manifestHash": {
+          "path": "/children/*/childCanonicalJson/$json/reconstruction/manifestHash",
+          "before": "sha256:b7bff9e1c07a75d923dd955bd46a932e9331bd396f5faae2852bad152d66ba5b",
+          "after": "sha256:7e388ad6f0471023d88d672172864437b0de08bf85e8f050f5fc0856926167f9"
+        },
+        "hash": {
+          "path": "/children/*/childCanonicalJson/$json/artifactManifest/entries/*/hash",
+          "before": "sha256:a8e51797bc6953fb6c277fa28c335c295f349d9d41c39b9405fb1f5e57fc3007",
+          "after": "sha256:087fdd00ec47cb6ed25a289bb136b38000ef1121ec716ce7b12cd5ce2555f0d8"
+        },
+        "childHash": {
+          "path": "/parents/*/parentCanonicalJson/$json/deterministic/entries/*/childHash",
+          "before": "sha256:c70da98a25f1a85ac83a1832e25bfc80a6e0ea7fc9575efcd6b3d8500fee2728",
+          "after": "sha256:6ea682889146e24c687776500f28cb5c6f4d15281c8e10bae70303ae9766fde5"
+        },
+        "initialEvidenceHash": {
+          "path": "/parents/*/parentCanonicalJson/$json/deterministic/comparisons/*/initialEvidenceHash",
+          "before": "sha256:cb0bb9a3e6e8cf54c1fa44d4b9e1a5a4108bbcc46beac32ca08062d4fb9a6e71",
+          "after": "sha256:648c073fbd9f50fd1de7db3de38de3861e86007980584b06bd5ad07267c79f6d"
+        },
+        "fingerprint": {
+          "path": "/parents/*/parentCanonicalJson/$json/fingerprint",
+          "before": "sha256:ee063699da38b7c9b0483468cad94a33af158289b7dac9dd00c1f3a3825b0653",
+          "after": "sha256:a73eae9452f1d70b0a6db9ded0d31708c7d62f58259d8cda057f4bade8dd80a4"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-armed-continuation",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 2
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0",
+          "after": "sha256:cfe27c85506f7ad3c2a825d37ade06522be9fa869a5cfb0b411c47b68565e08e"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-breakdown-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2",
+          "after": "sha256:b0d7319d0983fdbf6e9f41a246476e9b7c9b0b4d22a7c2b6c6dd69bf218e32e1"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-cycle-control",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 2
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0",
+          "after": "sha256:cfe27c85506f7ad3c2a825d37ade06522be9fa869a5cfb0b411c47b68565e08e"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-movement-lifecycle",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc",
+          "after": "sha256:c95ffc66f0454418f0391af97be649d85d808a8e8e80f610dcaf62a3b9cebb89"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-movement",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": 1,
+        "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-reserve-designation-v1.json",
+          "before": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        },
+        "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": {
+          "path": "/sourceHashes/src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs",
+          "before": "sha256:85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1",
+          "after": "sha256:158c45673fed68bc2e2fd761a53be589f8663b35dca7ed7a98c6b5b447397246"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-no-attack",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:10b11204746629698fec14124ba128b3a2f36412a56a8681b1b7a9c4cdffe9df",
+          "after": "sha256:e4c7ff4950a0585566881798a974234383ae7e7fb6f6a379510d917a46262f30"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reaction-active-fallback",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json",
+          "before": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+          "after": "sha256:d6eb84f2945e80c0a4365633b6ab2f8e1f284049e3ed48c76bd82aa895f365d6"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reaction-closure",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json",
+          "before": "sha256:cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+          "after": "sha256:0f9b61299970397fe0c386f2607b07c28d1ae182ad4f7c51d54e3d65551376a8"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reaction-lifecycle",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json",
+          "before": "sha256:cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+          "after": "sha256:0f9b61299970397fe0c386f2607b07c28d1ae182ad4f7c51d54e3d65551376a8"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reaction-movement-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json",
+          "before": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+          "after": "sha256:d6eb84f2945e80c0a4365633b6ab2f8e1f284049e3ed48c76bd82aa895f365d6"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json",
+          "before": "sha256:97d2d5d42f5c279718c6f5cc797bc1963ff735c9ee0a2bbefe7d66376e7a8103",
+          "after": "sha256:6b80deac810d0a838897e4165e65b50086fd70ba7856735bedbab69811f940e8"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reaction-second-move",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json",
+          "before": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+          "after": "sha256:d6eb84f2945e80c0a4365633b6ab2f8e1f284049e3ed48c76bd82aa895f365d6"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reaction-trigger",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-movement-v1.json": 1,
+        "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-movement-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-movement-v1.json",
+          "before": "sha256:fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc",
+          "after": "sha256:c95ffc66f0454418f0391af97be649d85d808a8e8e80f610dcaf62a3b9cebb89"
+        },
+        "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": {
+          "path": "/sourceHashes/src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs",
+          "before": "sha256:85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1",
+          "after": "sha256:158c45673fed68bc2e2fd761a53be589f8663b35dca7ed7a98c6b5b447397246"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reserve-cycle",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reserve-movement-completion",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 2
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:1024c7931be06a52ee92b30c950707b1a4b7a6d4c5965c4de4c937c72ad9d894",
+          "after": "sha256:7a50fd25f60564dbbd9d635fc33c2dd074e9e263a20a4c98b234f0369f9e4164"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reserve-movement",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e",
+          "after": "sha256:b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-reserve-release",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:22d349c63acd9f567c9691f71bc5ea007334e596b5bf9f4789e1a6c229f7e10e",
+          "after": "sha256:0564489a8bd6dd6ee69ad0c23b7b1badbaffe87113aaaa5e7bcb792c83f0e1e1"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-selection",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:1c96440106610b13e21b9cee4457ad07ab37da175e8cba035e536918986fa104",
+          "after": "sha256:a41e95450055107f6441d0306f79260365a93c585078cb17dcfc1e633c392bd1"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-snapshot",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-movement-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-closure-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": 1,
+        "docs/specs/fixtures/combat-inherited-successors-v1.json": 1,
+        "docs/specs/fixtures/combat-opening-preamble-v1.json": 1,
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": 1,
+        "docs/specs/fixtures/combat-weather-v1.json": 1,
+        "docs/specs/verify-combat-inherited-successors-v1.py": 1,
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": 1,
+        "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json",
+          "before": "sha256:1c96440106610b13e21b9cee4457ad07ab37da175e8cba035e536918986fa104",
+          "after": "sha256:a41e95450055107f6441d0306f79260365a93c585078cb17dcfc1e633c392bd1"
+        },
+        "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json",
+          "before": "sha256:027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2",
+          "after": "sha256:b0d7319d0983fdbf6e9f41a246476e9b7c9b0b4d22a7c2b6c6dd69bf218e32e1"
+        },
+        "docs/specs/fixtures/combat-inherited-movement-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-movement-v1.json",
+          "before": "sha256:fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc",
+          "after": "sha256:c95ffc66f0454418f0391af97be649d85d808a8e8e80f610dcaf62a3b9cebb89"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json",
+          "before": "sha256:9dabfec0459b12c44d048636fa5e1f15267ffe41ae323a30871195cc08e081af",
+          "after": "sha256:0535af4f7edb6ee80a0a76b80bc06514800c89949d9b51e26b40653ee9c5854b"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-closure-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-reaction-closure-v1.json",
+          "before": "sha256:5653f154f841b6afb64fd149175676e8dd0d12fe5f7246e2b14dae557c1d8945",
+          "after": "sha256:df539ba7ccb05d4c11d2d19f699c14e3c8ce05bd4d09b977fefafbe5bd36b49d"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json",
+          "before": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+          "after": "sha256:d6eb84f2945e80c0a4365633b6ab2f8e1f284049e3ed48c76bd82aa895f365d6"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json",
+          "before": "sha256:fe7b7be0a8aaf65f54f01d33aacc2c396d9b2d156d7b3e0b726592c942e15149",
+          "after": "sha256:7607f776244188b68e2dcd80906e38d0eb19acc5e0c8a50b3d136556652573ad"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json",
+          "before": "sha256:97d2d5d42f5c279718c6f5cc797bc1963ff735c9ee0a2bbefe7d66376e7a8103",
+          "after": "sha256:6b80deac810d0a838897e4165e65b50086fd70ba7856735bedbab69811f940e8"
+        },
+        "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json",
+          "before": "sha256:cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+          "after": "sha256:0f9b61299970397fe0c386f2607b07c28d1ae182ad4f7c51d54e3d65551376a8"
+        },
+        "docs/specs/fixtures/combat-inherited-successors-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-inherited-successors-v1.json",
+          "before": "sha256:1de03913aa0026f986edd4bc474fe0579573a2fb3a18458dd889fc2f2c1a3192",
+          "after": "sha256:1e5d42836ac75308b4d0dc155b5cd11bec70d2a035c51a9310ce4af55f993385"
+        },
+        "docs/specs/fixtures/combat-opening-preamble-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-opening-preamble-v1.json",
+          "before": "sha256:f83a2b4e57eaf79921b3a70e468fd606a9dcdc8a8d8f5b32c19dc07ec81774c3",
+          "after": "sha256:14ba899e9590cc39fe47d3116854509628efacbbb37902273999a53312e1420e"
+        },
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-reserve-designation-v1.json",
+          "before": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        },
+        "docs/specs/fixtures/combat-weather-v1.json": {
+          "path": "/sourcePins/docs/specs/fixtures/combat-weather-v1.json",
+          "before": "sha256:a2dfb27232a3bf9c8817bc08919e64317b9c50f28adb263d0c7a34d0efe69420",
+          "after": "sha256:8909a05b398d1fad98701e75d9b7c41f1d0d91ed63369ada4d540dadc4a3bf60"
+        },
+        "docs/specs/verify-combat-inherited-successors-v1.py": {
+          "path": "/sourcePins/docs/specs/verify-combat-inherited-successors-v1.py",
+          "before": "sha256:f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+          "after": "sha256:9ff5dceb7180748e262ba876b9f2ea3b666e0837108000bdfc58d2a7f5408fc0"
+        },
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": {
+          "path": "/sourcePins/src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs",
+          "before": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+          "after": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062"
+        },
+        "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": {
+          "path": "/sourcePins/src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs",
+          "before": "sha256:85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1",
+          "after": "sha256:158c45673fed68bc2e2fd761a53be589f8663b35dca7ed7a98c6b5b447397246"
+        }
+      }
+    },
+    {
+      "name": "combat-inherited-successors",
+      "shapeChanges": [],
+      "changedFields": {
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": 1
+      },
+      "examples": {
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": {
+          "path": "/sourceHashes/src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs",
+          "before": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+          "after": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062"
+        }
+      }
+    },
+    {
+      "name": "combat-opening-preamble",
+      "shapeChanges": [],
+      "changedFields": {
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": 1
+      },
+      "examples": {
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": {
+          "path": "/sourceHashes/src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs",
+          "before": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+          "after": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062"
+        }
+      }
+    },
+    {
+      "name": "combat-positive-entry",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/fixtures/combat-reserve-designation-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-reserve-designation-v1.json",
+          "before": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+          "after": "sha256:dd4f784d22f7f7ef65e6627fb618698b6f22fae561885d4f1407b0167821188a"
+        }
+      }
+    },
+    {
+      "name": "combat-reserve-designation",
+      "shapeChanges": [],
+      "changedFields": {
+        "docs/specs/verify-combat-inherited-successors-v1.py": 1,
+        "docs/specs/fixtures/combat-inherited-successors-v1.json": 1
+      },
+      "examples": {
+        "docs/specs/verify-combat-inherited-successors-v1.py": {
+          "path": "/sourceHashes/docs/specs/verify-combat-inherited-successors-v1.py",
+          "before": "sha256:f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+          "after": "sha256:9ff5dceb7180748e262ba876b9f2ea3b666e0837108000bdfc58d2a7f5408fc0"
+        },
+        "docs/specs/fixtures/combat-inherited-successors-v1.json": {
+          "path": "/sourceHashes/docs/specs/fixtures/combat-inherited-successors-v1.json",
+          "before": "sha256:1de03913aa0026f986edd4bc474fe0579573a2fb3a18458dd889fc2f2c1a3192",
+          "after": "sha256:1e5d42836ac75308b4d0dc155b5cd11bec70d2a035c51a9310ce4af55f993385"
+        }
+      }
+    },
+    {
+      "name": "combat-side-projection",
+      "shapeChanges": [],
+      "changedFields": {
+        "sha256": 1,
+        "fixtures/combat-inherited-reserve-release-v1.json": 1,
+        "fixtures/combat-inherited-cycle-control-v1.json": 1,
+        "fixtures/combat-authority-composition-v1.json": 1
+      },
+      "examples": {
+        "sha256": {
+          "path": "/sourcePins/*/sha256",
+          "before": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3",
+          "after": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7"
+        },
+        "fixtures/combat-inherited-reserve-release-v1.json": {
+          "path": "/successor3/sourcePins/fixtures/combat-inherited-reserve-release-v1.json",
+          "before": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0",
+          "after": "sha256:cfe27c85506f7ad3c2a825d37ade06522be9fa869a5cfb0b411c47b68565e08e"
+        },
+        "fixtures/combat-inherited-cycle-control-v1.json": {
+          "path": "/successor3/sourcePins/fixtures/combat-inherited-cycle-control-v1.json",
+          "before": "sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e",
+          "after": "sha256:b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e"
+        },
+        "fixtures/combat-authority-composition-v1.json": {
+          "path": "/successor3b/sourcePins/fixtures/combat-authority-composition-v1.json",
+          "before": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3",
+          "after": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7"
+        }
+      }
+    },
+    {
+      "name": "combat-weather",
+      "shapeChanges": [],
+      "changedFields": {
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": 1
+      },
+      "examples": {
+        "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": {
+          "path": "/sourceHashes/src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs",
+          "before": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+          "after": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062"
+        }
+      }
+    }
+  ],
+  "timingAddition": {
+    "row": [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.MergedPr334RevisionRetainsExactReplayAndRejectsMixedSnapshotDependencies",
+      "Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.MergedPr334RevisionRetainsExactReplayAndRejectsMixedSnapshotDependencies"
+    ],
+    "key": "6e8267a4bbcb9fa6a6192659d33d144147a82ff202882a9f030c612b428200d5",
+    "ms": 5007
+  },
+  "outwardAdditionalPins": [
+    {
+      "path": "docs/specs/combat-content-v7.md",
+      "originalCommit": "8bbea59bbcc40d35beb17d7068d269e6834c1288",
+      "oldHash": "9ebe2882b2d8b41fde015b06fa3d5ff0eaad2283150d06bcf5301280ef391b78",
+      "currentHash": "79dbefd44a55ca66976e1299e1f74acbe495bbc4289af9fe9ea9befc29e16e4a"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-cycle-sequence-v1.json",
+      "originalCommit": "d59446eda4446c4d96fc9a10cc816fd2bb3a7011",
+      "oldHash": "de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
+      "currentHash": "805dc0453bf678957ea92ce0c609a7bf67af1c1b8898bc5f99df2b0777810005"
+    }
+  ],
+  "roundentry-native-result": {
+    "passed": 177,
+    "processes": [
+      {
+        "exit_code": 0,
+        "seconds": 259.628,
+        "selected": 45
+      },
+      {
+        "exit_code": 0,
+        "seconds": 253.767,
+        "selected": 44
+      },
+      {
+        "exit_code": 0,
+        "seconds": 302.004,
+        "selected": 44
+      },
+      {
+        "exit_code": 0,
+        "seconds": 303.908,
+        "selected": 44
+      }
+    ]
+  },
+  "r03-native-result": {
+    "passed": 300,
+    "processes": [
+      {
+        "exit_code": 0,
+        "seconds": 130.054,
+        "selected": 75
+      },
+      {
+        "exit_code": 0,
+        "seconds": 131.118,
+        "selected": 75
+      },
+      {
+        "exit_code": 0,
+        "seconds": 130.08,
+        "selected": 75
+      },
+      {
+        "exit_code": 0,
+        "seconds": 131.195,
+        "selected": 75
+      }
+    ]
+  },
+  "selectedNativeCounts": {
+    "Selection": 60,
+    "Snapshot": 24,
+    "retainedPR334": 1,
+    "legacy": 33,
+    "CoreP01": 10,
+    "HostP01": 46,
+    "boundary": 81,
+    "RoundEntry": 177,
+    "currentR03": 300
+  },
+  "snapshotOracle": {
+    "command": "python3 -B docs/specs/verify-combat-inherited-snapshot-v1.py",
+    "exitCode": 0,
+    "cuts": 368,
+    "mutations": 6992,
+    "omissions": 6992,
+    "rawNegatives": 2576,
+    "uniqueHistories": 286
+  },
+  "unrun": [
+    "full solution tests",
+    "hosted exact-head CI",
+    "full B2 registry execution",
+    "Maproom",
+    "external physical P01 archive admission",
+    "broad release validation"
+  ],
+  "occurrenceOracle": {
+    "command": "python3 -B docs/specs/verify-combat-exercise-occurrence-v1.py",
+    "exitCode": 0,
+    "seconds": 822.994,
+    "groups": 8,
+    "continuationCuts": 2576,
+    "dualSchedules": 192,
+    "rejections": 67,
+    "fixtureMutationRejects": 5
+  },
+  "parentOracle": {
+    "entrypoint": "original main() after owning generated_fixture()",
+    "result": "B3 PASS",
+    "children": 12,
+    "parents": 10,
+    "fixtureMutationRejects": 4,
+    "wrapperExitCode": 1,
+    "wrapperFailure": "Subsequent Outward check found2 pre-existing stale pins; corrected and rerun separately.",
+    "log": "artifacts/rc-snapshot/generate-combat-exercise-parent-evidence.log"
+  },
+  "outwardOracle": {
+    "command": "python3 -B docs/specs/verify-combat-outward-composition-v1.py --write-fixture",
+    "exitCode": 0,
+    "seconds": 345.892,
+    "requirements": 72,
+    "pins": 99,
+    "profiles": 12,
+    "readbacks": 51,
+    "fixtureMutationRejects": 4,
+    "semanticComparison": {
+      "requirementLine": 24,
+      "artifactByteCount": 3,
+      "digest": 26
+    }
+  },
+  "notes": [
+    "Counts are selected-run counts, not a deduplicated solution total.",
+    "Original source-pin failure retained in artifacts/rc-snapshot/baseline.log.",
+    "Interrupted initial runs are incomplete; final runs supersede them.",
+    "No public profile or original root promoted."
+  ],
+  "independentReview": {
+    "instance": 9,
+    "allowance": 9,
+    "verdict": "Ready",
+    "actionableFindings": 0,
+    "report": "docs/work/reviews/2026-10-27-snapshot-independent-review.md"
+  }
+}

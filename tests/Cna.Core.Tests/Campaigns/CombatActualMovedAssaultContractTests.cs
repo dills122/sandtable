@@ -122,9 +122,39 @@ public sealed class CombatActualMovedAssaultContractTests
         Assert.Equal(expected, context.Replay().ProofBytes);
     }
 
-    private sealed class LegacyBundle : IDisposable
+    [Fact]
+    public void MergedPr334RevisionRetainsExactReplayAndRejectsMixedSnapshotDependencies()
     {
-        private readonly System.IO.Compression.ZipArchive archive = new(new MemoryStream(Dependency("docs/specs/fixtures/combat-evidence-legacy-v1.zip")));
+        const string archivePath = "docs/specs/fixtures/combat-evidence-pr334-v1.zip";
+        Assert.Equal("d96e0fc8d0afc59a6a9849a88bb37ac49cc25bd0ddccd119e99b7bbe47408040",
+            Convert.ToHexStringLower(SHA256.HashData(Dependency(archivePath))));
+        using var retained = new LegacyBundle(archivePath);
+        var context = new Context("axis-player-decline-attacker-selected", retained.Read);
+        var current = context.Replay();
+        for (var index = 0; index <= context.Inputs.Length; index++)
+        {
+            var cut = context.Item.GetProperty("cuts")[index];
+            Check(cut, "source", current.SourceBytes);
+            Check(cut, "control", current.ControlBytes);
+            Check(cut, "proof", current.ProofBytes);
+            if (index == context.Inputs.Length) break;
+            current = context.Step(index);
+            Assert.Equal(Encoding.UTF8.GetBytes(context.Item.GetProperty("eventCanonicalUtf8")[index].GetString()!), current.EventBytes);
+        }
+        Assert.Equal(current.ProofBytes, context.Replay().ProofBytes);
+        const string changed = "docs/specs/combat-actual-moved-assault-v1.schema.json";
+        Assert.NotEqual(retained.Read(changed), Dependency(changed));
+        byte[] Mixed(string path) => path == changed ? Dependency(path) : retained.Read(path);
+        Assert.Equal("CMB-MAS-009", Assert.Throws<JsonException>(() => context.Replay(Mixed)).Message);
+        Assert.Equal(current.ProofBytes, context.Replay().ProofBytes);
+        Assert.Throws<JsonException>(() => CampaignCombatActualMovedAssault.ReadProof(current.ProofBytes,
+            context.Source, context.Request, context.Prefix, context.Lifecycle, context.Breakdown,
+            context.Selection, context.Round, context.Paid, Dependency));
+    }
+
+    private sealed class LegacyBundle(string archivePath = "docs/specs/fixtures/combat-evidence-legacy-v1.zip") : IDisposable
+    {
+        private readonly System.IO.Compression.ZipArchive archive = new(new MemoryStream(Dependency(archivePath)));
         private readonly Dictionary<string, byte[]> cache = new(StringComparer.Ordinal);
         public byte[] Read(string path)
         {

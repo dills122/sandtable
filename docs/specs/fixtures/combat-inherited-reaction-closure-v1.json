@@ -7,7 +7,7 @@
     "docs/specs/combat-inherited-reaction-lifecycle-v1.schema.json": "sha256:94ee18139f72ffd883ccae100baa417f4c4b4048842cb33cadc120963923428a",
     "docs/specs/combat-inherited-reaction-trigger-v1.md": "sha256:a3e2f4ebf9f7ff2e118bdda4133f52e1bc9421dd03644cc73fc1480b3cf086d3",
     "docs/specs/combat-inherited-reaction-trigger-v1.schema.json": "sha256:0a531b3196fbef885a6dcafc07bc6ff79765801cb2f529d099342257ed06cffd",
-    "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": "sha256:cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+    "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": "sha256:0f9b61299970397fe0c386f2607b07c28d1ae182ad4f7c51d54e3d65551376a8",
     "docs/specs/verify-combat-inherited-reaction-lifecycle-v1.py": "sha256:a2dc717ff7a28efcd90f0ecc041391a4603a07c6c319377acdc10e05f61aee31",
     "docs/specs/verify-combat-inherited-reaction-trigger-v1.py": "sha256:551df0d22256a9a8e8601dc9c3c2e9a236e1c0dd76a649ab922bf706706bf0c4",
     "docs/specs/zoc-reaction-v1.md": "sha256:909701d99a0b6065c36dd1214492c099298fc23da2105d1132b9af9cdd03d766",

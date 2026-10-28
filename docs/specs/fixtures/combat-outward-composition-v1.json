@@ -7,7 +7,7 @@
       "requirement": "Move or change representation: same unit key, new binding; old uncommitted choice fails without events/RNG. Elimination preserves history.",
       "decisions": "001-002; DES-002/005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 221,
+      "line": 226,
       "plannedTasks": [
         "CMB-TASK-009",
         "CMB-TASK-020"
@@ -25,7 +25,7 @@
       "requirement": "Same component name on another unit/campaign does not alias. Duplicate bindings and foreign provenance reject.",
       "decisions": "001-002/005; DES-002",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 222,
+      "line": 227,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009"
@@ -43,7 +43,7 @@
       "requirement": "Adjacent singleton infantry with empty ZOC can have a voluntary opportunity and no initial Contact. Positive-ZOC admission remains gated.",
       "decisions": "004/008; DES-003",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 223,
+      "line": 228,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009"
@@ -61,7 +61,7 @@
       "requirement": "Later arrival in a marked hex inherits no relation; ending one of two independent counterpart relations leaves the other intact. No transitive grouping.",
       "decisions": "004; DES-005 extension vector",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 224,
+      "line": 229,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -78,7 +78,7 @@
       "requirement": "Zero-loss Engaged still binds original participants; Retreat priority prevents that Engaged outcome. Adjacent prior assault survivors require the 15.81 Contact evaluation.",
       "decisions": "004; DES-005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 225,
+      "line": 230,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -95,7 +95,7 @@
       "requirement": "Same campaign ID/version but divergent authority prefix changes internal opportunity; equal visible histories leave outward IDs unchanged.",
       "decisions": "005/007; DES-002/005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 226,
+      "line": 231,
       "plannedTasks": [
         "CMB-TASK-009",
         "CMB-TASK-020"
@@ -113,7 +113,7 @@
       "requirement": "Two private envelopes share one base; envelope persistence adds no attacked entry. Combat-fact mutation invalidates the old opportunity.",
       "decisions": "005-006; DES-002",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 227,
+      "line": 232,
       "plannedTasks": [
         "CMB-TASK-011"
       ],
@@ -130,7 +130,7 @@
       "requirement": "Commit singleton `A -> B` once before RNG; duplicate replay fails. Same target hex cannot be assaulted again that segment, even with a new attacker.",
       "decisions": "003/006; DES-002/004",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 228,
+      "line": 233,
       "plannedTasks": [
         "CMB-TASK-012"
       ],
@@ -147,7 +147,7 @@
       "requirement": "Later cycle allows a new pair occurrence only with current resources; stage history persists and target-use resets. Reserve limits remain independent.",
       "decisions": "006; CYCLE-DES-001",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 229,
+      "line": 234,
       "plannedTasks": [
         "CMB-TASK-018",
         "CMB-TASK-019"
@@ -165,7 +165,7 @@
       "requirement": "Multi-unit, partial assignment, attachment, Probe, Barrage and Anti-Armor remain closed; empty structural steps produce no attacks.",
       "decisions": "008; DES-003/004",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 230,
+      "line": 235,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009"
@@ -183,7 +183,7 @@
       "requirement": "Hidden identity/TOE/count permutations do not alter equal visible artifacts. A profile permitting indistinguishable hidden bindings fails trusted certification before any active decision; no opportunity/action is offered and no hidden count/reason reaches side-visible errors. Suppressing extra bindings or ordering by authority ID does not satisfy this gate.",
       "decisions": "007; DES-005",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 231,
+      "line": 236,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009",
@@ -202,7 +202,7 @@
       "requirement": "Restart before either envelope, after commitment and after relation settlement reproduces IDs, mappings, history and target-use without duplicate RNG.",
       "decisions": "001-007; DES-002/005, CYCLE-DES-001",
       "source": "docs/design/combat-opportunity-identity-v1.md",
-      "line": 232,
+      "line": 237,
       "plannedTasks": [
         "CMB-TASK-008",
         "CMB-TASK-010",
@@ -889,7 +889,7 @@
       "requirement": "Admission covers every role/result/retreat/custody branch, certified route/reunion geometry and integer settlement CP. Hidden-blocker or unsupported variants fail profile certification before choice; no seed narrows results.",
       "decisions": "001/007",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 223,
+      "line": 226,
       "plannedTasks": [
         "CMB-TASK-006",
         "CMB-TASK-009",
@@ -909,7 +909,7 @@
       "requirement": "Refusal adds percentage before rounding; seed208 yields3 defender loss/3DP, while fulfilled retreat changes that result. Capture subset plus other losses conserve original10 TOE.",
       "decisions": "002",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 224,
+      "line": 227,
       "plannedTasks": [
         "CMB-TASK-005",
         "CMB-TASK-014"
@@ -927,7 +927,7 @@
       "requirement": "Guard transfer never counts toward30% loss DP. Loss3 plus captured2 deducts3, not5; subsequent one-TOE guard transfer preserves a separate asset balance.",
       "decisions": "002/004",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 225,
+      "line": 228,
       "plannedTasks": [
         "CMB-TASK-014",
         "CMB-TASK-015"
@@ -945,7 +945,7 @@
       "requirement": "Actual one-hex retreat spends1 CP; E=10->11 adds1DP after result. Refusal spends none. Frozen Morale/RNG do not change; DP then proved victory RP retain both causes.",
       "decisions": "002-003",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 226,
+      "line": 229,
       "plannedTasks": [
         "CMB-TASK-014",
         "CMB-TASK-016"
@@ -963,7 +963,7 @@
       "requirement": "Zero-distance produces no decision; real retreat/refusal takes exactly one disposition/loss/movement path. Lost replies, duplicates and stale timers cannot choose twice or move twice.",
       "decisions": "001/003/006",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 227,
+      "line": 230,
       "plannedTasks": [
         "CMB-TASK-014"
       ],
@@ -980,7 +980,7 @@
       "requirement": "Captures on either side settle with valid initial route and co-located one-TOE guard transfer, or immediate unguarded escape. No off-map guard, extra prisoner debit or unguarded transient action is possible.",
       "decisions": "004",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 228,
+      "line": 231,
       "plannedTasks": [
         "CMB-TASK-015"
       ],
@@ -997,7 +997,7 @@
       "requirement": "Escape reunites with certified friendly recipient, removes current custody and creates delayed replacement entitlement without restoring TOE. Guarded branch retains priority feeding and guard obligations across closure.",
       "decisions": "004/008",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 229,
+      "line": 232,
       "plannedTasks": [
         "CMB-TASK-015"
       ],
@@ -1014,7 +1014,7 @@
       "requirement": "Deadline equality, controller loss and clock regression produce refusal/unguarded fallback once. Accepted choices defeat later timers; committed attack cannot cancel or renew deadlines.",
       "decisions": "006",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 230,
+      "line": 233,
       "plannedTasks": [
         "CMB-TASK-014",
         "CMB-TASK-015"
@@ -1032,7 +1032,7 @@
       "requirement": "Raw Retreat suppresses Engaged even on refusal; adjacent survivors become Contact. Zero-loss Engaged remains when no Retreat; guard/new arrivals never inherit original relation.",
       "decisions": "005",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 231,
+      "line": 234,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -1049,7 +1049,7 @@
       "requirement": "Cuts before/after every event restore the same pending owner/capability, balances, entitlements, receipts and RNG. Wrong order, forged absence proof or altered before/after quantities fails readback.",
       "decisions": "001/008",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 232,
+      "line": 235,
       "plannedTasks": [
         "CMB-TASK-008",
         "CMB-TASK-014",
@@ -1069,7 +1069,7 @@
       "requirement": "Own-only changes advance only own projection; approved shared facts advance affected audiences. Hidden-equivalent variants preserve candidates, success/errors and side bytes, with no raw authority receipt in Runner/Dispatch/War Diary.",
       "decisions": "007",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 233,
+      "line": 236,
       "plannedTasks": [
         "CMB-TASK-020",
         "CMB-TASK-021",
@@ -1089,7 +1089,7 @@
       "requirement": "No immediate pending loss/retreat/custody/relation allows round closure; later upkeep/replacement records survive. Reserve entry does not prove supported repeat or production readiness.",
       "decisions": "001/008",
       "source": "docs/design/combat-settlement-disclosure-v1.md",
-      "line": 234,
+      "line": 237,
       "plannedTasks": [
         "CMB-TASK-016"
       ],
@@ -1456,8 +1456,8 @@
     },
     {
       "path": "docs/design/combat-opportunity-identity-v1.md",
-      "sha256": "sha256:2976a278e51235ff11e74699bf84ed23ed9140c1da6d638de81d8f862c32d762",
-      "bytes": 21713
+      "sha256": "sha256:887ecb8a5b695d20c5974932bdcefc9944159f2c5fcee6f3382974f5ac39d7e7",
+      "bytes": 22082
     },
     {
       "path": "docs/design/combat-sealed-decision-protocol-v1.md",
@@ -1466,8 +1466,8 @@
     },
     {
       "path": "docs/design/combat-settlement-disclosure-v1.md",
-      "sha256": "sha256:84d85139ed0c7111b70c464bde47837963ed7f19571adbc5279e2f8cb1572616",
-      "bytes": 23325
+      "sha256": "sha256:fe0aaae77c880971ed5737b6156aa22f941d757c660d625df0090a50b55b6c27",
+      "bytes": 23587
     },
     {
       "path": "docs/design/combat-step-transitions-v1.md",
@@ -1501,8 +1501,8 @@
     },
     {
       "path": "docs/specs/combat-content-v7.md",
-      "sha256": "sha256:9ebe2882b2d8b41fde015b06fa3d5ff0eaad2283150d06bcf5301280ef391b78",
-      "bytes": 16620
+      "sha256": "sha256:79dbefd44a55ca66976e1299e1f74acbe495bbc4289af9fe9ea9befc29e16e4a",
+      "bytes": 16546
     },
     {
       "path": "docs/specs/combat-cycle-control-v1.md",
@@ -1531,7 +1531,7 @@
     },
     {
       "path": "docs/specs/combat-exercise-child-evidence-v1.schema.json",
-      "sha256": "sha256:cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+      "sha256": "sha256:7861713af044ccd2ac3273354a3cece63b046e8ef467ffd0ba60db683cab2feb",
       "bytes": 5593
     },
     {
@@ -1551,7 +1551,7 @@
     },
     {
       "path": "docs/specs/combat-exercise-parent-evidence-v1.schema.json",
-      "sha256": "sha256:00d1fcd2cb7d06b6f25d9224ff0839308f23fd2052b42dab24c98ea378b30820",
+      "sha256": "sha256:df83b14d796b7cda32c9a06cde1ef5d5c714927d2ef789bf95466997f2e2d328",
       "bytes": 4113
     },
     {
@@ -1716,7 +1716,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-authority-composition-v1.json",
-      "sha256": "sha256:a90f88de9c05b4b1bd7081e7828abb7553e3e0537a6efa8cad042c87a6df50b1",
+      "sha256": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7",
       "bytes": 45458
     },
     {
@@ -1731,47 +1731,47 @@
     },
     {
       "path": "docs/specs/fixtures/combat-cycle-sequence-v1.json",
-      "sha256": "sha256:de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
+      "sha256": "sha256:805dc0453bf678957ea92ce0c609a7bf67af1c1b8898bc5f99df2b0777810005",
       "bytes": 137624
     },
     {
       "path": "docs/specs/fixtures/combat-exercise-child-evidence-v1.json",
-      "sha256": "sha256:5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6",
+      "sha256": "sha256:c8dce8c2451d609f3021f30a6bf39029cc129ae172c04f9176f671c546360bd8",
       "bytes": 7722577
     },
     {
       "path": "docs/specs/fixtures/combat-exercise-occurrence-v1.json",
-      "sha256": "sha256:aabc20a39229ac121703a6cda077c0ebeffbfdd7bc3142a3d0c1d0805af7a38e",
+      "sha256": "sha256:d391f2cd23deea514c6947db9e4451a68d76536d684ef027d2322f9392167392",
       "bytes": 1542785
     },
     {
       "path": "docs/specs/fixtures/combat-exercise-parent-evidence-v1.json",
-      "sha256": "sha256:08316dae3d4f12298c35bfe05f640dcd2559ae41cbf4144430cd52b121847a9f",
+      "sha256": "sha256:bb398b31e89981c32edcbcfcd44c9f91644d00d8348fae9fcae3ab85c539db2e",
       "bytes": 10943909
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json",
-      "sha256": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f",
+      "sha256": "sha256:ee07bd4bb8d93981f1ec618143e5891cb86be620523e9329c776bceb1d0067b8",
       "bytes": 15243
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json",
-      "sha256": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236",
+      "sha256": "sha256:b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e",
       "bytes": 7012
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-no-attack-v1.json",
-      "sha256": "sha256:4e8f8a9fa0d1e973d6a5d7046b3e013f4270bd31c53afa24ed7595f732be6bc1",
+      "sha256": "sha256:f6e59162bfbd38d55251a46c966ea195dd06daacc90828c057b67fa7f351e9e6",
       "bytes": 7483
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json",
-      "sha256": "sha256:e336d9b5afe498b3886318509958cb2e50ae860676ee1c4603c55540a41847d3",
+      "sha256": "sha256:b103915310b25950a32d5526b2e24d2218d2aa31d0c2b5e4332f5ea1ae6833ea",
       "bytes": 6073
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-selection-v1.json",
-      "sha256": "sha256:76240f2409f341757deea0f6ab5d346699de5a4a33690f95ccb7e74e160c1f4f",
+      "sha256": "sha256:e4c7ff4950a0585566881798a974234383ae7e7fb6f6a379510d917a46262f30",
       "bytes": 4428
     },
     {
@@ -1816,7 +1816,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-side-projection-v1.json",
-      "sha256": "sha256:07139da2ff125345c3007aa6bd9a5760eec44e4d4f25d0ec85c7e06fed4da44f",
+      "sha256": "sha256:4682587f161f16a36ec06c87e3196db76366502055d26349d4538753253c1f62",
       "bytes": 13882180
     },
     {
@@ -1856,7 +1856,7 @@
     },
     {
       "path": "docs/specs/verify-combat-exercise-occurrence-v1.py",
-      "sha256": "sha256:9e46db1943514629754cdc227fdc1a415c53c8b5e573b8fb0afd89c870f1fb53",
+      "sha256": "sha256:c3a29356a38d35c8fd2a61bb909078fe00cf51a56afc714feab77db66e76df70",
       "bytes": 40692
     },
     {
@@ -1931,7 +1931,7 @@
     },
     {
       "path": "docs/specs/verify-combat-side-projection-v1.py",
-      "sha256": "sha256:964f4b6a6901e446e5d0e0a6c49e79e778677ae458947681034a4ddd5d848a0d",
+      "sha256": "sha256:acb8529d6dcb959c8b3693841bdf64078d047c04e80a3885223f69c88c265710",
       "bytes": 200688
     },
     {
@@ -2243,7 +2243,7 @@
       "depthLimit": 48,
       "maximumArrayItems": 171,
       "arrayLimit": 1024,
-      "recordsHash": "sha256:650bf4bc4f376a466e55a4e6e05b75f84f3bd7c4de076508d6344f471f8685f3"
+      "recordsHash": "sha256:728a66dd2ab12d35258217b163d81359d7746988ea14cb0e1b7f748b94534ddd"
     },
     {
       "profile": "b3-parent",
@@ -2255,7 +2255,7 @@
       "depthLimit": 52,
       "maximumArrayItems": 26,
       "arrayLimit": 128,
-      "recordsHash": "sha256:02d64245425c3f4ca4b71bf939c957ee008974ca3d88e28dac0051db480b1d42"
+      "recordsHash": "sha256:5784401bfdf6728eb789b611a413356f4f271407285e1541592087392e786171"
     },
     {
       "profile": "task003-snapshot",
@@ -2775,7 +2775,7 @@
       "payloadType": "Child",
       "contractVersion": 1,
       "bytes": 901912,
-      "sha256": "sha256:31dd4411b79daf2b0e5c8561158ed9bf287fc93ce475975dfc80d5504dbfcc59"
+      "sha256": "sha256:8273dcdd3e1cf9631c95a7944f498f9594700c679abf67ee410dabf1aa4cd744"
     },
     {
       "name": "b2-failed-guard",
@@ -2786,7 +2786,7 @@
       "payloadType": "Child",
       "contractVersion": 1,
       "bytes": 900530,
-      "sha256": "sha256:67d895e5e1dbfd31ce84263b780263dd319b0c6364ab06622b7f08e3c5bdf096"
+      "sha256": "sha256:86c62affdd812e4447c07c8a6870908dd7ee8748c06ff41732edf417f5dfcd57"
     },
     {
       "name": "b2-fallback-a",
@@ -2797,7 +2797,7 @@
       "payloadType": "Child",
       "contractVersion": 1,
       "bytes": 424060,
-      "sha256": "sha256:369ee68fd371444424cb76e026310c123b268b87eb66c240e532ad3343fddc75"
+      "sha256": "sha256:6308a7069f4b0add504a0ab61f9922e9b79f7efd63e2f0f20bf6dbe49c6c689e"
     },
     {
       "name": "b3-guard-escape",
@@ -2808,7 +2808,7 @@
       "payloadType": "Parent",
       "contractVersion": 1,
       "bytes": 23777,
-      "sha256": "sha256:7c2f2b92acf3f7e6327ec3bb57d7a9803f8aa84dbc28d6dfaaec11224c1260ba"
+      "sha256": "sha256:f9da95bff0841a8235ca633075c9f7033d01afe08ebcadc35d296eab62935596"
     },
     {
       "name": "b3-validated-failures",
@@ -2819,7 +2819,7 @@
       "payloadType": "Parent",
       "contractVersion": 1,
       "bytes": 23998,
-      "sha256": "sha256:f24799a8b7daa3a1443b84d7a66e068a96e7795b72c69ae447b978a2b4e958f3"
+      "sha256": "sha256:4c653ca87aeee6960ead1272053adbbd5f181465e1c3e26f1cd868c7d73362d2"
     },
     {
       "name": "b3-limit-mismatch",
@@ -2830,7 +2830,7 @@
       "payloadType": "Parent",
       "contractVersion": 1,
       "bytes": 16474,
-      "sha256": "sha256:6d4720b9ae4383cf2e74aef67e277fce20b7008b4a386993dbaf2a7e983e2e23"
+      "sha256": "sha256:4464db779bf0e3ca8cef434cd2c95d603b2861919ff174e71d274595ece3bb20"
     }
   ],
   "exclusions": [

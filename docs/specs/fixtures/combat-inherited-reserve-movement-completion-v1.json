@@ -115,7 +115,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-reserve-movement-v1.json",
-      "sha256": "sha256:1024c7931be06a52ee92b30c950707b1a4b7a6d4c5965c4de4c937c72ad9d894"
+      "sha256": "sha256:7a50fd25f60564dbbd9d635fc33c2dd074e9e263a20a4c98b234f0369f9e4164"
     },
     {
       "path": "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json",
@@ -127,7 +127,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json",
-      "sha256": "sha256:027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2"
+      "sha256": "sha256:b0d7319d0983fdbf6e9f41a246476e9b7c9b0b4d22a7c2b6c6dd69bf218e32e1"
     },
     {
       "path": "docs/specs/combat-cycle-control-v1.schema.json",

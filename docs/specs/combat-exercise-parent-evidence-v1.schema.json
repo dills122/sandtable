@@ -77,8 +77,8 @@
     "combat-exercise-child-evidence-v1.schema.json"
   ],
   "sourcePins": {
-    "combat-exercise-child-evidence-v1.schema.json": "sha256:c02ccc798b1c4aa26f362f98eb756e385cb6280cdd3038185ba237b8dd8ea7b4",
+    "combat-exercise-child-evidence-v1.schema.json": "sha256:7861713af044ccd2ac3273354a3cece63b046e8ef467ffd0ba60db683cab2feb",
     "verify-combat-exercise-child-evidence-v1.py": "sha256:a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92",
-    "fixtures/combat-exercise-child-evidence-v1.json": "sha256:b0ba9b540cc7121b35dd59eddd69fdc44e70cd1067511a4a85d6f81b8c47effb"
+    "fixtures/combat-exercise-child-evidence-v1.json": "sha256:c8dce8c2451d609f3021f30a6bf39029cc129ae172c04f9176f671c546360bd8"
   }
 }

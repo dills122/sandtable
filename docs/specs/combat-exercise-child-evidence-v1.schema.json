@@ -132,8 +132,8 @@
   },
   "sourcePins": {
     "combat-exercise-occurrence-v1.schema.json": "sha256:dc4095e6dc7896c98d2110be50eaf703f84286dc0bb5f0e7941c60f61936b301",
-    "verify-combat-exercise-occurrence-v1.py": "sha256:576d2edfdbdf6ef36071cccf59ddee7aecd1282c6d9865fd6e6d0de25fcf8866",
-    "fixtures/combat-exercise-occurrence-v1.json": "sha256:0732373bb73f3a7c931b198f75ab9e89a06013550a5b2d6421d7d5b56480a656"
+    "verify-combat-exercise-occurrence-v1.py": "sha256:c3a29356a38d35c8fd2a61bb909078fe00cf51a56afc714feab77db66e76df70",
+    "fixtures/combat-exercise-occurrence-v1.json": "sha256:d391f2cd23deea514c6947db9e4451a68d76536d684ef027d2322f9392167392"
   },
   "externalContracts": [
     "combat-exercise-occurrence-v1.schema.json"

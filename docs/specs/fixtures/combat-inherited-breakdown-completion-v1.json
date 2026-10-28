@@ -141,7 +141,7 @@
   "sourcePins": [
     {"path": "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json", "sha256": "sha256:aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072"},
     {"path": "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py", "sha256": "sha256:f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920"},
-    {"path": "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json", "sha256": "sha256:027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2"},
+    {"path": "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json", "sha256": "sha256:b0d7319d0983fdbf6e9f41a246476e9b7c9b0b4d22a7c2b6c6dd69bf218e32e1"},
     {"path": "docs/specs/combat-cycle-sequence-v1.schema.json", "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"},
     {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs", "sha256": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413"},
     {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs", "sha256": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c"},

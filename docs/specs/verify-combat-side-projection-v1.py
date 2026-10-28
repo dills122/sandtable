@@ -886,7 +886,7 @@ def test_fixture_integrity():
 
 # A2 uses a disjoint codec/profile; accepted A1 surface above stays unchanged.
 A1_SCHEMA_HASH='baa45489e006c0cf5ab7cc4cea2b879e6f3cb478127ea0b579bc305dd62dcf5c'
-A1_FIXTURE_HASH='299aba7cbd8fc10f832e44b6b152fffee813990392a196d7cdb2aca6a91ef9e3'
+A1_FIXTURE_HASH='212455c4c918785eb564ddd1712844ab876defd224afe484ddaaadb6bec7e39f'
 
 
 # A2 is a separate typed profile over exact composed C3a / Round2 / Result2 evidence.
@@ -1580,7 +1580,7 @@ def fixture2():
 
 # A3 is an immutable-codec successor. Its live registry excludes private ledger probes.
 A2_SCHEMA_HASH='485df290cfaebc39b2d05e1d2a7af332c103a0a3a9283dd0252c281700c3d2ec'
-A2_FIXTURE_HASH='00f4cb383b84af91e7a7380c9cdfd3887c62d045d3d538caf423decc80e08e61'
+A2_FIXTURE_HASH='4dedbf19e4a23c023636fab81770221e8bb886c9d8bf6f97487f0ae29cd834ab'
 SCHEMA3={k:[tuple(f.split(':')) for f in v.split()] for k,v in INVENTORY['objects3'].items()}
 _spec3=importlib.util.spec_from_file_location('side_inherited_control3',ROOT/'verify-combat-inherited-cycle-control-v1.py')
 icc3=importlib.util.module_from_spec(_spec3);_spec3.loader.exec_module(icc3)
@@ -1591,7 +1591,7 @@ CAP_RELEASE3='sandtable.side.inherited-release-I.v3'
 CAP_CONTROL3='sandtable.side.inherited-release-control.v3'
 CAP_RESERVE_LEDGER3='sandtable.side.reserve-ledger.v3'
 CAP_CYCLE_LEDGER3='sandtable.side.cycle-ledger.v3'
-PINS3={'combat-inherited-reserve-release-v1.schema.json': 'sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea', 'verify-combat-inherited-reserve-release-v1.py': 'sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe', 'fixtures/combat-inherited-reserve-release-v1.json': 'sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0', 'combat-inherited-cycle-control-v1.schema.json': 'sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679', 'verify-combat-inherited-cycle-control-v1.py': 'sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0', 'fixtures/combat-inherited-cycle-control-v1.json': 'sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e', 'combat-reserve-release-v1.schema.json': 'sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32', 'verify-combat-reserve-release-v1.py': 'sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b', 'fixtures/combat-reserve-release-v1.json': 'sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9', 'combat-cycle-control-v1.schema.json': 'sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da', 'verify-combat-cycle-control-v1.py': 'sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f', 'fixtures/combat-cycle-control-v1.json': 'sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6'}
+PINS3={'combat-inherited-reserve-release-v1.schema.json': 'sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea', 'verify-combat-inherited-reserve-release-v1.py': 'sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe', 'fixtures/combat-inherited-reserve-release-v1.json': 'sha256:cfe27c85506f7ad3c2a825d37ade06522be9fa869a5cfb0b411c47b68565e08e', 'combat-inherited-cycle-control-v1.schema.json': 'sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679', 'verify-combat-inherited-cycle-control-v1.py': 'sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0', 'fixtures/combat-inherited-cycle-control-v1.json': 'sha256:b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e', 'combat-reserve-release-v1.schema.json': 'sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32', 'verify-combat-reserve-release-v1.py': 'sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b', 'fixtures/combat-reserve-release-v1.json': 'sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9', 'combat-cycle-control-v1.schema.json': 'sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da', 'verify-combat-cycle-control-v1.py': 'sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f', 'fixtures/combat-cycle-control-v1.json': 'sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6'}
 
 def source_pins3():
     actual={name:'sha256:'+hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in PINS3}
@@ -2353,7 +2353,7 @@ def test_a3_ledger_boundary():
 
 # A3b adds source adapters, keeping all A3a public descriptors and profile bytes frozen.
 A3A_SCHEMA_HASH='1e3555e3a8392e977e3135afcc9ded144072f4a1432ac7885617e2807ac4d228'
-A3A_FIXTURE_HASH='13efe99280894c06edc1c60b0263fbfc00cd6b55de7a20e4a7e0eaa0563a1035'
+A3A_FIXTURE_HASH='262a85ee0ec7b5799e01505c660253014fbf274df68068ee1a28e9a7c61a86f9'
 SCHEMA3.update({k:[tuple(f.split(':')) for f in v.split()] for k,v in INVENTORY['objects3b'].items()})
 _spec3b=importlib.util.spec_from_file_location('side_bridge3b',ROOT/'verify-combat-result-cycle-finish-v1.py')
 bridge3b=importlib.util.module_from_spec(_spec3b);_spec3b.loader.exec_module(bridge3b)
@@ -2361,7 +2361,7 @@ _spec003=importlib.util.spec_from_file_location('side_composition003',ROOT/'veri
 composition3b=importlib.util.module_from_spec(_spec003);_spec003.loader.exec_module(composition3b)
 CAP_CORRECTED3B='sandtable.side.corrected-composition.v3'
 CAP_TERMINAL3B='sandtable.side.historical-terminal.v3'
-PINS3B={'combat-result-cycle-finish-v1.schema.json': 'sha256:cbd61da864d102a08389a166486cd0cf5728a0db5feae002e3c8fb177b52d2d5', 'verify-combat-result-cycle-finish-v1.py': 'sha256:9eb64ccaf6788b60f04662f9569bac23265816d8fba86bdd8078eae27eeac4a9', 'fixtures/combat-result-cycle-finish-v1.json': 'sha256:a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2', 'combat-authority-composition-v1.schema.json': 'sha256:47210ccd00d3eba301c97d2190c16354626265707a4f6109754150e30406bd42', 'verify-combat-authority-composition-v1.py': 'sha256:97f9500f5b0566c9f8b295a1a7d524fdf53387038655872ea0d8005abe8702b7', 'fixtures/combat-authority-composition-v1.json': 'sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3'}
+PINS3B={'combat-result-cycle-finish-v1.schema.json': 'sha256:cbd61da864d102a08389a166486cd0cf5728a0db5feae002e3c8fb177b52d2d5', 'verify-combat-result-cycle-finish-v1.py': 'sha256:9eb64ccaf6788b60f04662f9569bac23265816d8fba86bdd8078eae27eeac4a9', 'fixtures/combat-result-cycle-finish-v1.json': 'sha256:a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2', 'combat-authority-composition-v1.schema.json': 'sha256:47210ccd00d3eba301c97d2190c16354626265707a4f6109754150e30406bd42', 'verify-combat-authority-composition-v1.py': 'sha256:97f9500f5b0566c9f8b295a1a7d524fdf53387038655872ea0d8005abe8702b7', 'fixtures/combat-authority-composition-v1.json': 'sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7'}
 
 
 def source_pins3b():

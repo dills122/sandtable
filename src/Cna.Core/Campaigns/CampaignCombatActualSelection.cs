@@ -300,12 +300,10 @@ internal static class CampaignCombatActualSelection
     internal static void VerifyDependencies(Func<string, byte[]> dependencyBytes)
     {
         ArgumentNullException.ThrowIfNull(dependencyBytes);
-        foreach (var pin in Dependencies)
-        {
-            try { Require(Hash(dependencyBytes(pin.Key).ToArray()) == "sha256:" + pin.Value, 9); }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or KeyNotFoundException) { throw new JsonException("CMB-ASE-009", e); }
-        }
+        _ = CombatEvidenceRevisions.Capture(dependencyBytes, Dependencies, NoDelivery,
+            134_217_728, "CMB-ASE-009");
     }
+    private static readonly Dictionary<string, string> NoDelivery = new(StringComparer.Ordinal);
     private static readonly Dictionary<string, string> Dependencies = new(StringComparer.Ordinal)
     {
         ["docs/specs/combat-positive-entry-v1.schema.json"] = "73724384ba3cf61b462ef7b47ae70e5108281a6bbaf0b80878c55247e4e6fa36",

@@ -3,7 +3,7 @@
   "sourceHashes": {
     "src/Cna.Core/Campaigns/CampaignV11Preamble.cs": "sha256:54103730ae29d0a7ea0392c462e2ebc3153389277c9e4d028ff5ca0dc9c559d4",
     "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
-    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:5db23d19429d0e35474c386c1e6651be678982ab71ecedd61711378e0db93062",
     "src/Cna.Core/Campaigns/CampaignCommand.cs": "sha256:bd7ff8d857fbe787ba3f3f27ce3f67a15fd2829bc6be806fad121827c50fd6a8",
     "src/Cna.Core/Campaigns/InitiativeResolver.cs": "sha256:7f97e4667db41d7e3e0eb5ea9f8f9e1e8b547b193ffe1434b547984d2c8128a5",
     "src/Cna.Core/Campaigns/InitiativeEventFactory.cs": "sha256:25b5f22cf9171d2f5c0bf7389a453188068f6102a86ea9cff88b549691b2c3f2",

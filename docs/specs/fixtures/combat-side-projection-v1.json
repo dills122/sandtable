@@ -32,7 +32,7 @@
     },
     {
       "path": "docs/specs/fixtures/combat-authority-composition-v1.json",
-      "sha256": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3"
+      "sha256": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7"
     },
     {
       "path": "docs/specs/verify-combat-authority-composition-v1.py",
@@ -24478,10 +24478,10 @@
     "sourcePins": {
       "combat-inherited-reserve-release-v1.schema.json": "sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea",
       "verify-combat-inherited-reserve-release-v1.py": "sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe",
-      "fixtures/combat-inherited-reserve-release-v1.json": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0",
+      "fixtures/combat-inherited-reserve-release-v1.json": "sha256:cfe27c85506f7ad3c2a825d37ade06522be9fa869a5cfb0b411c47b68565e08e",
       "combat-inherited-cycle-control-v1.schema.json": "sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679",
       "verify-combat-inherited-cycle-control-v1.py": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0",
-      "fixtures/combat-inherited-cycle-control-v1.json": "sha256:43b422033507631b4139e332eee268763af7f91909566aedc157e12f0ef3094e",
+      "fixtures/combat-inherited-cycle-control-v1.json": "sha256:b3e41385819f2e9246ccc64e6972215374488f221a8e02c48a5c593b1c7ff62e",
       "combat-reserve-release-v1.schema.json": "sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32",
       "verify-combat-reserve-release-v1.py": "sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b",
       "fixtures/combat-reserve-release-v1.json": "sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9",
@@ -31283,7 +31283,7 @@
       "fixtures/combat-result-cycle-finish-v1.json": "sha256:a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2",
       "combat-authority-composition-v1.schema.json": "sha256:47210ccd00d3eba301c97d2190c16354626265707a4f6109754150e30406bd42",
       "verify-combat-authority-composition-v1.py": "sha256:97f9500f5b0566c9f8b295a1a7d524fdf53387038655872ea0d8005abe8702b7",
-      "fixtures/combat-authority-composition-v1.json": "sha256:e54b3d4ef12fc2df04fd94b444ca71ea05cf6f4c7dcc62411616383b868eb2d3"
+      "fixtures/combat-authority-composition-v1.json": "sha256:2eef0db0e848c1087f6eb5f5c6c51b359a1cb44a695bf76768f23ed84f3be9d7"
     },
     "task003Handoff": {
       "owner": "CMB-TASK-003",

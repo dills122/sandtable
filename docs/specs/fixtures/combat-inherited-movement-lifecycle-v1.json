@@ -181,7 +181,7 @@
   "sourcePins": [
     {"path": "docs/specs/combat-inherited-movement-v1.schema.json", "sha256": "sha256:a9ad67ee9b9302f17582fb5087f6dd6e7e62574741e6cea7b5a3e58bf7fe2069"},
     {"path": "docs/specs/verify-combat-inherited-movement-v1.py", "sha256": "sha256:c10c51cd97fca3f3f04fc0983e90d474a35a6b58f4a2cce396272916910579e1"},
-    {"path": "docs/specs/fixtures/combat-inherited-movement-v1.json", "sha256": "sha256:fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc"},
+    {"path": "docs/specs/fixtures/combat-inherited-movement-v1.json", "sha256": "sha256:c95ffc66f0454418f0391af97be649d85d808a8e8e80f610dcaf62a3b9cebb89"},
     {"path": "docs/specs/combat-cycle-control-v1.schema.json", "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"},
     {"path": "docs/specs/verify-combat-cycle-control-v1.py", "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f"},
     {"path": "docs/specs/combat-cycle-sequence-v1.schema.json", "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"},
