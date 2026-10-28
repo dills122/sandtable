@@ -55,3 +55,16 @@ Host/Core/solution validation and hosted CI unrun at review time.
 
 Package retained commits and run CI. Review allowance exhausted; no additional
 instance authorized by this report.
+
+## CI timeout addendum — same review10
+
+First PR336 CI run40616911744 reached the Orleans20-minute test-step limit without
+completed Host XML; aggregate verification correctly failed that dependency.
+Same reviewer inspected the bounded workflow-only correction: step20→25minutes,
+job25→30minutes, preserving five-minute setup/upload headroom. Commands, exact-head
+verification, required artifacts and failure propagation unchanged. No actionable
+findings; **Ready**. New head still requires complete green CI before merge.
+
+Local actionlint exit0; WorkflowDeadlineTests2/2 pass; diff whitespace check passed.
+No new reviewer instance. Test/runtime implementation remains unchanged from the
+original review target; this addendum covers only CI budget and explanatory comment.
