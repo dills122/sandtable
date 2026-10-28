@@ -527,8 +527,9 @@ jobs:
   orleans:
     needs: prepare
     runs-on: ubuntu-24.04
-    # Full Host suite includes real child-process recovery; reserve time for evidence upload.
-    timeout-minutes: 25
+    # Full Host suite exceeded 20m with repeated crash/recovery proofs (PR336).
+    # Keep a bounded test window plus setup/evidence-upload headroom.
+    timeout-minutes: 30
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -544,7 +545,7 @@ jobs:
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
       - name: Run and verify Orleans host rows
-        timeout-minutes: 20
+        timeout-minutes: 25
         shell: bash
         run: |
           mkdir -p artifacts/orleans-results

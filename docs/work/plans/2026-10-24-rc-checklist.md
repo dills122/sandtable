@@ -1,13 +1,13 @@
 # RC checklist — October 24, 2026
 
-Working branch: `codex/rc-snapshot-evidence`. Status describes retained
+Working branch: `codex/rc-retreat-crash-recovery` (retains local Custody `611a4be2`). Status describes retained
 local evidence, not a public support certificate or a playable RC declaration.
 The [roadmap](../../roadmap/pre-alpha-roadmap.md) and canonical acceptance
 contracts remain authoritative. Every closure needs tested commit, exact profile,
 command/exit/counts, retained artifacts and reviewer disposition. A historical
 pass does not prove a later head.
 
-Latest packet: abrupt-process Reserve fallback recovery on merged PR333
+Retained crash packet: abrupt-process Reserve fallback recovery on merged PR333
 (`4017d78c`). [Crash handoff](../reviews/2026-10-25-reserve-crash-recovery-handoff.md)
 records two deterministic kill points: after Reserve transactional writes before
 Cycle entry/commit, and after commit before response. Fresh-process recovery and
@@ -16,12 +16,12 @@ and paid history. This is process termination evidence, not machine power loss.
 PR333 merged the earlier three fresh-process proofs; remaining lanes/crash cuts,
 public certification and playable-product gates remain open.
 
-Current evidence-maintenance packet: versioned private Combat dependencies. Legacy/archive
+Retained evidence-maintenance packet: versioned private Combat dependencies. Legacy/archive
 replay, refreshed native parity, rejection of mixed revisions and original oracle results
 must all be retained before closure. [Revision contract](../../specs/combat-evidence-revisions-v1.md)
 and [preflight](../reviews/2026-10-25-combat-source-pin-preflight.md) record scope. Review5's
 docs-only repair was rejected; user approved native compatibility work and final review6.
-Original Cycle/Breakdown root oracles now pass. Native focused batches659 cases and format/build pass; independent review6/6 Ready with non-blocking follow-ups. Unrelated Snapshot pins, Outward anchors/pins and full final-head oracle coverage remain open. [Exact validation](../reviews/2026-10-25-evidence-revisions-validation.md) separates passing, failing and unrun checks.
+Original Cycle/Breakdown root oracles now pass. Native focused batches659 cases and format/build pass; independent review6/6 Ready with non-blocking follow-ups. Snapshot pins and Outward anchors/pins subsequently reconciled in merged PR335 (`72a167f7`); full release-head coverage remains a separate gate. [Exact validation](../reviews/2026-10-25-evidence-revisions-validation.md) separates passing, failing and unrun checks.
 
 PR334 CI exposed missed original-P01 consumer coverage and 16 missing measured
 Core timing rows. Correction retains original P01 pins, separates refreshed R03
@@ -47,7 +47,7 @@ head; they do not admit original P01 roots or close product gates.
 | RBA deadline | Implemented `cbc6954d` | Deadline retained at Barrage entry; timeout cancels without decline, new roll or debit; moves retained; no-query restart, stale proposal and replay checks pass. |
 | Force deadline | Implemented `80d2881d`, `7d0f34fd`; invalid proposal fix `fb79b785` | Shared round starts at accepted decision entry; both owner seats use original deadline; zero/one seal cancellation, background restart, invalid proposal non-mutation and binding checks pass. |
 | Cycle-control deadline | Implemented `d7993d77` | Completed Release starts deadline; System finish enters same-slot Truck Convoy Movement with unchanged World/RNG; owner race, cold replay and repeated ordinals pass. |
-| Reserve Release deadline | Implemented `ac1cab54` | Due I converts to II, due II retained; accepted owner releases/allowances unchanged; immutable deadline, exact System batch, atomic Cycle entry, cold replay and invalid/tampered cases pass. Genuine cycle2 and cycle3 Host evidence retained: actual history proves initial System conversion and third-cycle retention, saved reopen, exact boundary, owner-record preservation and atomic rollback/retry. Fresh-process third-cycle Reserve now passes before/exact/retry boundaries with full journal parity and Finish continuation; abrupt crash recovery remains open. |
+| Reserve Release deadline | Implemented `ac1cab54` | Due I converts to II, due II retained; accepted owner releases/allowances unchanged; immutable deadline, exact System batch, atomic Cycle entry, cold replay and invalid/tampered cases pass. Genuine cycle2 and cycle3 Host evidence retained: actual history proves initial System conversion and third-cycle retention, saved reopen, exact boundary, owner-record preservation and atomic rollback/retry. Fresh-process third-cycle Reserve now passes before/exact/retry boundaries with full journal parity and Finish continuation; bounded precommit/postcommit crash proof merged in PR334; arbitrary crash cuts remain open. |
 | Custody deadline | Implemented `73e3af6f`; initial and genuine repeated single-lot expiry proved | Source-legal leave-unguarded effects recorded as System; settlement-bound immutable entry deadline; no invented guard debit/owner receipt; owner race, no-query restart, duplicate expiry, cold replay, row tampering and rollback pass. Actual repeated seed50 captured lot binds second settlement, escaped replacement state and unchanged paid cursor. Fresh-process before/exact/retry recovery now passes with three child launches, full journal parity and no owner Custody query. Exact initial seed5/repeated seed50 Custody-entry clock failure now passes with leave-unguarded fallback and preserved paid history. Every admitted cut has a legal fallback; unsupported routes/lots remain explicitly excluded. |
 | Required post-assault Retreat deadline | Implemented `38c17170`; initial and genuine repeated Host expiry/rollback proved | Result-entry immutable deadline; System `refuse-retreat` applies actual refusal settlement losses; no-query cold expiry, exact boundary, rejected late proposal non-mutation, owner retry, clock faults, tamper and rollback checks pass. Actual second required-Retreat expiry now matches legal owner-refusal World through verified replay. Fresh-process before/exact/retry recovery passes with three children, original deadline, full journal parity, unchanged owner records and paid RNG18. Exact initial seed6/repeated seed4 Retreat-entry clock failure now passes with refuse-retreat fallback and preserved paid history. |
 | Selection deadline | Implemented `ee1d7645`; initial and genuine repeated paths | Deadline retained at actual initial or repeated Breakdown entry; System `no-selection` distinct from owner Finish, unchanged World/RNG, no-query cold expiry, owner race/retry, invalid proposal non-mutation, generic-Append gating, atomic no-attack/Reserve continuation and strict replay pass. Preserve readonly historical schemas and fail closed for unsupported fallback scope. |
@@ -56,16 +56,19 @@ head; they do not admit original P01 roots or close product gates.
 ### Abrupt-process persistence gate
 
 Third-cycle Reserve precommit and postcommit/lost-response kill cases pass in
-bounded fixture. Parent uses OS termination while child is paused, then new
+bounded fixture. Retained repeated captured-lot Custody packet adds both boundaries;
+all14 focused tests and build/format passed. Parent uses OS termination while child is paused, then new
 processes recover/retry; full logical journal/replay parity excludes partial state
 and duplicate fallback. Other lanes, arbitrary write/fsync cuts and power loss
-remain unproved. No production crash hook or changed persistence contract.
+remain unproved. Repeated required-Retreat now also passes both process-kill boundaries with actual
+seed4 history and legal owner-refusal World parity. No production crash hook or
+changed persistence contract.
 
 ## Release evidence and publication
 
 | Gate / owner lane | Current status | Explicit pass criteria |
 | --- | --- | --- |
-| Source-oracle reconciliation / Core evidence | Cycle/Breakdown roots pass; Snapshot2 source pins and Outward anchors/pins open; full final-head owning-oracle coverage pending | Identify semantic source changes; document contract/source implications; update pins only with reviewed justification; applicable original oracles exit0 on release head. Never regenerate solely to silence failure. |
+| Source-oracle reconciliation / Core evidence | Cycle/Breakdown roots pass; Snapshot and dependent Outward reconciliation merged in PR335 with all48 PR-head checks green; full release-head owning-oracle coverage pending | Identify semantic source changes; document contract/source implications; update pins only with reviewed justification; applicable original oracles exit0 on release head. Never regenerate solely to silence failure. |
 | Original P01 certificate / evidence | 300 ancestry rows checked historically:44 provisional positive,256 absent,0 admitted | Close canonical AC-001–009 with original-root ancestry, action/obligation completeness, source conditions, authentic owner privacy, matching nonterminal recovery/fault/cap evidence and support review. Absent rows remain unsupported; terminal ancestry alone cannot close certificate. |
 | Public Combat / Core+Host | 020–021 and HOST-PUB-001 open | Admit only certified profile; equal-authorized hidden variants yield safe outward actions/results; unsupported profiles reject before decision. Prove atomic actual persistence, retries, lost responses and fresh-process recovery; disabling admission preserves recovery. |
 | Runner/studies / evidence | 022–025 open | Runner consumes same admitted public authority; strict reconstruction/readjudication produces retained repeat/finish trace; independent clean empty/settled-assault/repeated-Movement studies pass; all72 Combat ACs reconciled against actual accepted loop. |
@@ -127,7 +130,7 @@ claim RC readiness while applicable gates above remain open.
 
 ## October27 Snapshot reconciliation
 
-PR334 merged; bounded evidence and Reserve crash corrections retained. User
+PR334 and PR335 merged; Snapshot reconciliation retained at main `72a167f7`. User
 approved dependent evidence refresh, native revision compatibility and review9/9.
 Snapshot's two runtime pins now match reviewed source changes; owning Snapshot
 oracle passes368 cuts,6992 mutations,6992 omissions and2576 raw negatives.
@@ -143,8 +146,47 @@ Pass criteria and evidence:
 - [x] Pass Release solution build, changed-C# format,21 inherited owning oracles.
 - [x] Finish dependent B1/B3/Outward oracle checks and final semantic comparison.
 - [x] Final independent review9/9: Ready, no actionable findings.
-- [ ] Required exact-head hosted CI before merge; local discovery is a preparation check.
+- [x] PR335 all48 checks passed at `1cac9de8`; merged as `72a167f7`. New packets need their own exact-head CI.
 
 [Evidence and validation scope](../reviews/2026-10-27-snapshot-evidence-reconciliation.md)
 records source rationale, preservation and exact selected/unrun checks.
 No public certificate, Outward runtime acceptance or release-readiness claim follows.
+
+## Repeated Custody abrupt-process recovery
+
+Retained bounded #330 Host packet: actual two-paid, repeated captured-lot Custody.
+[Boundary and evidence](../reviews/2026-10-27-custody-crash-recovery.md).
+All14 selected tests, Host Release build and changed-file format passed.
+Initial coordinator review retained; combined independent review10 is Ready.
+Hosted exact-head CI remains required.
+
+- [x] Precommit process kill preserves original committed journal; fresh recovery
+  applies leave-unguarded once.
+- [x] Postcommit/lost-response process kill retains complete fallback; fresh retry
+  adds no event or state-version change.
+- [x] All14 logical tables/replay hashes match healthy control; exact lot, World,
+  owner records and paid RNG preserved.
+- [x] Focused crash, existing fresh-process and Custody regressions; build/format pass.
+
+No public admission or power-loss claim. Required-Retreat packet follows below.
+
+## Repeated required-Retreat abrupt-process recovery
+
+Current #330 Host packet uses genuine seed4 two-paid history requiring Retreat;
+[proof and scope](../reviews/2026-10-27-retreat-crash-recovery.md).
+
+- [x] Calibrated precommit OS kill preserves original journal; new process applies
+  System refusal exactly once.
+- [x] Postcommit/lost-response kill preserves complete settlement; fresh retry
+  produces no additional event or version.
+- [x] All14 tables/replay bytes/hashes match healthy control; settled World matches
+  separate legal owner-refusal branch, with paid RNG and owner records unchanged.
+- [x] New crash tests and existing Reserve/Custody/fresh-process/Retreat/default-child
+  regressions pass; focused Host build and format pass.
+
+All16 selected tests, Host build and changed-file format passed.
+Combined fresh-context review10: Ready, no actionable findings.
+[Review report](../reviews/2026-10-27-crash-recovery-independent-review.md).
+Hosted exact-head CI remains required. Package local Custody+Retreat
+commits for review and exact-head CI before merge; broader crash/certification
+obligations remain open.

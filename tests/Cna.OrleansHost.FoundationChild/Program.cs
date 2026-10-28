@@ -3,21 +3,26 @@ using Cna.Core.Exercises;
 using Cna.OrleansHost.Api;
 using Microsoft.Extensions.Logging.Abstractions;
 
-if (args is ["--native-reserve-crash-probe"])
+if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"] or ["--native-retreat-crash-probe"])
 {
-    var crashInput = JsonSerializer.Deserialize<ReserveCrashInput>(Console.ReadLine() ?? "")
-        ?? throw new InvalidOperationException("Missing Reserve crash input.");
-    var clock = new ReserveCrashClock(crashInput.NowUnixMilliseconds, crashInput.StopAtRead);
+    var crashInput = JsonSerializer.Deserialize<NativeCrashInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing native crash input.");
+    var clock = new NativeCrashClock(crashInput.NowUnixMilliseconds, crashInput.StopAtRead);
     var journal = CampaignDurableAuthorityJournal.OpenExisting(crashInput.Path, clock);
     var before = journal.ReadVerified(crashInput.CampaignId);
     if (!CampaignExercises.Reconstruct(before).IsVerified)
-        throw new InvalidOperationException("Initial Reserve replay failed.");
+        throw new InvalidOperationException("Initial crash-probe replay failed.");
     clock.Arm();
-    _ = journal.TickReserveRound(crashInput.CampaignId);
-    if (crashInput.StopAfterCommit) ReserveCrashClock.Pause("after-commit", clock.ReadIndex, clock.LastObserved);
+    if (args[0] == "--native-custody-crash-probe")
+        _ = journal.TickCustodyRound(crashInput.CampaignId);
+    else if (args[0] == "--native-retreat-crash-probe")
+        _ = journal.TickRetreatRound(crashInput.CampaignId);
+    else
+        _ = journal.TickReserveRound(crashInput.CampaignId);
+    if (crashInput.StopAfterCommit) NativeCrashClock.Pause("after-commit", clock.ReadIndex, clock.LastObserved);
     var after = journal.ReadVerified(crashInput.CampaignId);
     var replay = CampaignExercises.Reconstruct(after);
-    if (!replay.IsVerified) throw new InvalidOperationException("Final Reserve replay failed.");
+    if (!replay.IsVerified) throw new InvalidOperationException("Final crash-probe replay failed.");
     Console.WriteLine(JsonSerializer.Serialize(new
     {
         ProcessId = Environment.ProcessId,
@@ -77,10 +82,10 @@ internal sealed record ProbeReadbackInput(string Path, string CampaignId, string
 
 internal sealed record NativeDeadlineInput(string Path, string CampaignId, long NowUnixMilliseconds);
 
-internal sealed record ReserveCrashInput(string Path, string CampaignId, long NowUnixMilliseconds,
+internal sealed record NativeCrashInput(string Path, string CampaignId, long NowUnixMilliseconds,
     int StopAtRead = 0, bool StopAfterCommit = false);
 
-internal sealed class ReserveCrashClock(long now, int stopAtRead) : TimeProvider
+internal sealed class NativeCrashClock(long now, int stopAtRead) : TimeProvider
 {
     private bool armed;
     public int ReadIndex { get; private set; }
@@ -89,7 +94,7 @@ internal sealed class ReserveCrashClock(long now, int stopAtRead) : TimeProvider
     public override DateTimeOffset GetUtcNow()
     {
         if (!armed) return DateTimeOffset.FromUnixTimeMilliseconds(now);
-        if (++ReadIndex > 32) throw new InvalidOperationException("Reserve crash clock exceeded bound.");
+        if (++ReadIndex > 32) throw new InvalidOperationException("native crash clock exceeded bound.");
         LastObserved = checked(now + ReadIndex - 1);
         if (ReadIndex == stopAtRead) Pause("clock-read", ReadIndex, LastObserved);
         return DateTimeOffset.FromUnixTimeMilliseconds(LastObserved);

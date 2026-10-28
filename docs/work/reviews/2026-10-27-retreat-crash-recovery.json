@@ -1,0 +1,170 @@
+{
+  "base": "611a4be298c9f13ff1e0954d57215028a9a2710f",
+  "branch": "codex/rc-retreat-crash-recovery",
+  "rufloTask": "task-1793150798579-jn3r67",
+  "tests": [
+    {
+      "name": "retreat-crash",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*RepeatedRequiredRetreatCrashAtFallbackBoundary*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-retreat-crash/retreat-crash"
+      ],
+      "exit_code": 0,
+      "seconds": 34.623,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "custody-crash",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*RepeatedCustodyCrashAtFallbackBoundary*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-retreat-crash/custody-crash"
+      ],
+      "exit_code": 0,
+      "seconds": 31.75,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "reserve-crash",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*ReserveCrashAtFallbackBoundary*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-retreat-crash/reserve-crash"
+      ],
+      "exit_code": 0,
+      "seconds": 57.337,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "fresh-process",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*FreshProcess*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-retreat-crash/fresh-process"
+      ],
+      "exit_code": 0,
+      "seconds": 114.094,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "retreat-timeout",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*RepeatedRetreatTimeoutRefusesActualSecondRequiredRetreat*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-retreat-crash/retreat-timeout"
+      ],
+      "exit_code": 0,
+      "seconds": 20.167,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "legacy-child",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*ChildProcessReadsCommittedProbeAfterLostResponse*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-retreat-crash/legacy-child"
+      ],
+      "exit_code": 0,
+      "seconds": 2.53,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "build": {
+    "command": "dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj -c Release --no-restore",
+    "exitCode": 0
+  },
+  "format": {
+    "command": "dotnet format Sandtable.slnx --verify-no-changes --no-restore --include tests/Cna.OrleansHost.FoundationChild/Program.cs tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.RetreatCrash.cs",
+    "exitCode": 0
+  },
+  "sourceHashes": {
+    "tests/Cna.OrleansHost.FoundationChild/Program.cs": "c2be5147bbf604895fd505ac8998dce9e34d2055350f189946cd782b4f127eae",
+    "tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.RetreatCrash.cs": "1d08983207a0625458813b10ebc20aa3589da00ed2a03cede62637fc1b6400d8"
+  },
+  "review": "Coordinator source review; no new independent review.",
+  "unrun": [
+    "full solution",
+    "full Host suite",
+    "Core/Runner/Python/frontend",
+    "hosted exact-head CI"
+  ]
+}
