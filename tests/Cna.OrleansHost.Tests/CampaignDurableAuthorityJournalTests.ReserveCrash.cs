@@ -27,7 +27,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         try
         {
             var expectedDisk = IntegratedCampaignSave(original.Path, clock, saves);
-            var trace = new ReserveCrashTraceClock(deadline);
+            var trace = new NativeCrashTraceClock(deadline);
             var expected = expectedDisk.Open(trace);
             trace.Arm();
             Assert.True(expected.TickReserveRound(campaignId));
@@ -43,7 +43,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.Equal("axis-infantry", Assert.Single(expectedTimeout.RootElement.GetProperty("retainedElementIds").EnumerateArray()).GetString());
 
             var disk = IntegratedCampaignSave(original.Path, clock, saves);
-            await KillReserveCrashChild(disk.Path, campaignId, deadline, cycleRead.Index, cycleOpened, afterCommit,
+            await KillNativeCrashChild(disk.Path, campaignId, deadline, cycleRead.Index, cycleOpened, afterCommit,
                 () =>
                 {
                     // Read-only SQL avoids contending for the paused writer's lock.
@@ -78,7 +78,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         finally { foreach (var save in saves) save.Dispose(); }
     }
 
-    private sealed class ReserveCrashTraceClock(long now) : TimeProvider
+    private sealed class NativeCrashTraceClock(long now) : TimeProvider
     {
         private bool armed;
         public List<(int Index, long Observed)> Reads { get; } = [];
@@ -86,15 +86,16 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         public override DateTimeOffset GetUtcNow()
         {
             if (!armed) return DateTimeOffset.FromUnixTimeMilliseconds(now);
-            if (Reads.Count >= 32) throw new InvalidOperationException("Reserve trace exceeded bound.");
+            if (Reads.Count >= 32) throw new InvalidOperationException("Native crash trace exceeded bound.");
             var observed = checked(now + Reads.Count);
             Reads.Add((Reads.Count + 1, observed));
             return DateTimeOffset.FromUnixTimeMilliseconds(observed);
         }
     }
 
-    private static async Task KillReserveCrashChild(string path, string campaignId, long now,
-        int cycleRead, long cycleOpened, bool afterCommit, Action inspectWhilePaused)
+    private static async Task KillNativeCrashChild(string path, string campaignId, long now,
+        int cycleRead, long cycleOpened, bool afterCommit, Action inspectWhilePaused,
+        string mode = "--native-reserve-crash-probe")
     {
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Name;
         var child = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..",
@@ -108,7 +109,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             UseShellExecute = false
         };
         start.ArgumentList.Add(child);
-        start.ArgumentList.Add("--native-reserve-crash-probe");
+        start.ArgumentList.Add(mode);
         using var process = Process.Start(start) ?? throw new InvalidOperationException("Cannot start crash child.");
         var errors = process.StandardError.ReadToEndAsync();
         try

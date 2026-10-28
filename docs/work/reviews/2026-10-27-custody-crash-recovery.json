@@ -1,0 +1,148 @@
+{
+  "base": "72a167f763f436511b341105751a0a4a506ac89d",
+  "branch": "codex/rc-custody-crash-recovery",
+  "rufloTask": "task-1793150148372-r2bimj",
+  "tests": [
+    {
+      "name": "custody-crash",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*RepeatedCustodyCrashAtFallbackBoundary*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-custody-crash/custody-crash"
+      ],
+      "exit_code": 0,
+      "seconds": 34.731,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "reserve-crash",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*ReserveCrashAtFallbackBoundary*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-custody-crash/reserve-crash"
+      ],
+      "exit_code": 0,
+      "seconds": 55.582,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "fresh-process",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*FreshProcess*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-custody-crash/fresh-process"
+      ],
+      "exit_code": 0,
+      "seconds": 119.803,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "custody-timeout",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*RepeatedCustodyTimeoutLeavesActualSecondCapturedLotUnguarded*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-custody-crash/custody-timeout"
+      ],
+      "exit_code": 0,
+      "seconds": 20.225,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "legacy-child",
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--",
+        "--filter-method",
+        "*ChildProcessReadsCommittedProbeAfterLostResponse*",
+        "--report-xunit-xml",
+        "--results-directory",
+        "artifacts/rc-custody-crash/legacy-child"
+      ],
+      "exit_code": 0,
+      "seconds": 2.693,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "build": {
+    "command": "dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj -c Release --no-restore",
+    "exitCode": 0
+  },
+  "format": {
+    "command": "dotnet format Sandtable.slnx --verify-no-changes --no-restore --include tests/Cna.OrleansHost.FoundationChild/Program.cs tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.ReserveCrash.cs tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.CustodyCrash.cs",
+    "exitCode": 0
+  },
+  "sourceHashes": {
+    "tests/Cna.OrleansHost.FoundationChild/Program.cs": "83b76d2d1e25fb5591277dee8a4129c4ccc03a1505b4084e0761c0cd5e931fb3",
+    "tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.ReserveCrash.cs": "07d78fe39399d25c4feb8b9cede94e035b3f0d8e5038028f43edbf196912d086",
+    "tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.CustodyCrash.cs": "22779536ad73417054abd3f71561a9ba31a666379c8c6eee5f5c5cdebc485148"
+  },
+  "review": "Coordinator source review; no new independent review.",
+  "unrun": [
+    "full solution",
+    "full Host suite",
+    "Core/Runner/Python/frontend",
+    "hosted exact-head CI"
+  ],
+  "initialBuild": "Sandbox attempt silent; interrupted and terminated before retry. Not counted as passing evidence."
+}
