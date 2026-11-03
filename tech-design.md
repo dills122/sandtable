@@ -22,6 +22,14 @@ Local test selection is also developer tooling: project/class/method filters and
 Core chunks reuse existing tests and CI allocation without changing runtime boundaries. See
 [local testing](docs/runbooks/local-testing.md). Selected local runs are not exhaustive CI proof.
 
+## Proposed multi-server campaign hosting
+
+The [architecture record](docs/design/durable-orleans-campaign-hosting.md) and
+[phased plan](docs/work/plans/2026-10-24-orleans-hosting.md) describe durable campaign grains,
+shared transactional storage, deadlines, migration and capacity gates. These are proposals;
+current SQLite and temporary grain paths remain unchanged. Reconcile the remote-I/O boundary
+explicitly before implementing durable grains.
+
 ## Project website
 
 The repository root contains a dependency-free static project website under `site/`, with design
