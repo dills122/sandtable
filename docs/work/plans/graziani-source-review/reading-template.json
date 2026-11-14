@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "scope": "graziani-matruh-nz-formations-v1",
+  "reader_id": "replace-with-reviewer-id",
+  "manifest_sha256": "970b59f00a107f75cb01dc3bd6d67b74effc112e96f61d343839927304df9705",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981",
+    "land-rules": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99"
+  },
+  "rows": [
+    {
+      "id": "matruh-scenario",
+      "locator": "UNVERIFIED",
+      "values": {
+        "hex": null,
+        "essex_attached": null,
+        "durham_attached": null,
+        "staffordshires_attached": null
+      }
+    },
+    {
+      "id": "matruh-errata",
+      "locator": "UNVERIFIED",
+      "values": {
+        "buffs_assigned": null,
+        "hampshires_assigned": null
+      }
+    },
+    {
+      "id": "matruh-oa",
+      "locator": "UNVERIFIED",
+      "values": {
+        "no_assigned_units": null,
+        "attachment_max": null,
+        "movement_assault_exception": null
+      }
+    },
+    {
+      "id": "nz-schedule-brigade",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "nz-schedule-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null
+      }
+    },
+    {
+      "id": "nz-oa-brigade",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "nz-oa-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null
+      }
+    },
+    {
+      "id": "nz-example",
+      "locator": "UNVERIFIED",
+      "values": {
+        "brigade_turn": null,
+        "brigade_stage": null,
+        "artillery_turn": null,
+        "artillery_stage": null
+      }
+    },
+    {
+      "id": "cirene-oa",
+      "locator": "UNVERIFIED",
+      "values": {
+        "listed_rows": null,
+        "deployed_marker": null,
+        "tank_attachment": null
+      }
+    },
+    {
+      "id": "marmarica-oa",
+      "locator": "UNVERIFIED",
+      "values": {
+        "listed_rows": null,
+        "deployed_marker": null,
+        "tank_attachment": null
+      }
+    },
+    {
+      "id": "sirte-oa",
+      "locator": "UNVERIFIED",
+      "values": {
+        "listed_rows": null,
+        "turn": null,
+        "stage": null
+      }
+    }
+  ]
+}

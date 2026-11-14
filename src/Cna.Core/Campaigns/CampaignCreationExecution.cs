@@ -51,9 +51,17 @@ internal sealed record CampaignCreationExecutionResult
 
 internal static class CampaignCreationExecution
 {
-    public static CampaignCreationExecutionResult Execute(CampaignCreationRequest request)
+    public static CampaignSourceCreationResult Execute(CampaignCreationRequest request,
+        ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization) =>
+        CampaignSourceCreation.Create(request, content, initialization);
+
+    public static CampaignCreationExecutionResult Execute(CampaignCreationRequest request) =>
+        Execute(request, Cna1979SyntheticContentResolver.Instance);
+
+    public static CampaignCreationExecutionResult Execute(CampaignCreationRequest request, IContentPackV6Resolver resolver)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(resolver);
         if (request.ContractVersion != CampaignCreationRequest.CurrentContractVersion)
             return CampaignCreationExecutionResult.Rejected(
                 CampaignCreationRejectionReason.InvalidRequest);
@@ -83,7 +91,7 @@ internal static class CampaignCreationExecution
                 CampaignCreationRejectionReason.UnknownSetup);
         }
 
-        var resolution = Cna1979SyntheticContentResolver.Instance.ResolveV6(
+        var resolution = resolver.ResolveV6(
             request.ContentPackId,
             request.ContentHash);
         if (!resolution.IsResolved)
@@ -95,6 +103,8 @@ internal static class CampaignCreationExecution
         }
 
         var artifact = resolution.Artifact!;
+        if (artifact.Identity.PackId != request.ContentPackId || artifact.Identity.Hash != request.ContentHash)
+            return CampaignCreationExecutionResult.Rejected(CampaignCreationRejectionReason.ContentHashMismatch);
         var scenario = artifact.Definition.LegacyDefinition.Scenarios.SingleOrDefault(value =>
             string.Equals(value.ScenarioId, request.ScenarioId, StringComparison.Ordinal));
         if (scenario is null)

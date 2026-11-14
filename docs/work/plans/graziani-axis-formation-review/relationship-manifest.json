@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-setup-relationships-v1",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "rows": [
+    {
+      "id": "cirene-scenario",
+      "source": "scenario",
+      "fields": [
+        "hex",
+        "tank_mark",
+        "parent_mark"
+      ]
+    },
+    {
+      "id": "marmarica-scenario",
+      "source": "scenario",
+      "fields": [
+        "hex",
+        "tank_mark",
+        "parent_mark"
+      ]
+    },
+    {
+      "id": "cirene-tank-oa",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "assigned_parent",
+        "initial_attachment",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-tank-oa",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "assigned_parent",
+        "initial_attachment",
+        "arrival_mark"
+      ]
+    }
+  ]
+}

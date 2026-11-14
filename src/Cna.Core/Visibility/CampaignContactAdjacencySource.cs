@@ -90,6 +90,27 @@ internal static class CampaignContactAdjacencySource
             context.ArtifactV6, knowledge, movement.RepresentationId);
     }
 
+    internal static IReadOnlyList<CampaignContactTransition> OnNativeSecondMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeSecondMoveV44 movement, CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(movement);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(knowledge);
+        if (context.ArtifactV6 is null || movement.CampaignId != knowledge.CampaignId
+            || movement.PriorWorldHash != CampaignNativeCombatPaidWorldV22.Hash(before)
+            || movement.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(after)
+            || !before.Representations.Any(value => value.RepresentationId == movement.RepresentationId
+                && value.CurrentLocationId == movement.OriginLocationId)
+            || !after.Representations.Any(value => value.RepresentationId == movement.RepresentationId
+                && value.CurrentLocationId == movement.DestinationLocationId))
+            throw new ArgumentException("Second Movement does not bind both World cuts.", nameof(movement));
+        return Derive(before, after, movement.CampaignId, movement.StateVersion,
+            context.ArtifactV6, knowledge, movement.RepresentationId);
+    }
+
     public static IReadOnlyList<CampaignContactTransition> OnNativeSettlement(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatSettlementV24 settlement,

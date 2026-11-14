@@ -20,11 +20,40 @@ internal static class CampaignWorldFactory
                 nameof(scenario));
         }
 
-        var placements = scenario.InitialPlacements.ToArray();
-        var elements = artifact.Definition.Elements.ToDictionary(
+        var world = ConstructInitial(artifact.Definition, scenario);
+
+        if (!CampaignWorldValidator.IsValidInitial(world, artifact, scenario))
+        {
+            throw new InvalidOperationException(
+                "A validated Content Pack produced an invalid initial campaign world.");
+        }
+
+        return world;
+    }
+
+    // Candidate only: a draft identity validates references but does not admit a campaign.
+    internal static CampaignWorldSnapshot CreateCandidateInitial(
+        CampaignArrivalDraftIdentity identity)
+    {
+        ArgumentNullException.ThrowIfNull(identity);
+        var scenario = identity.Pack.Scenarios.Single(value => value.ScenarioId == identity.ScenarioId);
+        return ConstructInitial(identity.Pack, scenario);
+    }
+
+    private static CampaignWorldSnapshot ConstructInitial(ContentPackDefinition definition, ContentScenario scenario) =>
+        ConstructInitial(definition, scenario,
+            ContentScenarioInitialPlacements.Expand(scenario),
+            CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None);
+
+    internal static CampaignWorldSnapshot ConstructInitial(ContentPackDefinition definition, ContentScenario scenario,
+        IEnumerable<(string ElementId, string LocationId)> initialPlacements,
+        CapabilityPointAmount capabilityPointsExpended, int cohesionLevel, CampaignElementReserveStatus reserveStatus)
+    {
+        var placements = initialPlacements.ToArray();
+        var elements = definition.Elements.ToDictionary(
             element => element.ElementId,
             StringComparer.Ordinal);
-        var world = new CampaignWorldSnapshot(
+        return new CampaignWorldSnapshot(
             CampaignWorldSnapshot.CurrentContractVersion,
             placements
                 .Select(placement =>
@@ -33,12 +62,12 @@ internal static class CampaignWorldFactory
                     return new CampaignElementState(
                         placement.ElementId,
                         placement.LocationId,
-                        CampaignElementReserveStatus.None,
+                        reserveStatus,
                         new CampaignElementOperationalState(
                             scenario.Start.GameTurn,
                             scenario.Start.OperationStage,
-                            CapabilityPointAmount.Zero,
-                            0,
+                            capabilityPointsExpended,
+                            cohesionLevel,
                             cohort is null
                                 ? null
                                 : new CampaignVehicleBreakdownState(
@@ -58,13 +87,6 @@ internal static class CampaignWorldFactory
                     [placement.ElementId]))
                 .ToArray());
 
-        if (!CampaignWorldValidator.IsValidInitial(world, artifact, scenario))
-        {
-            throw new InvalidOperationException(
-                "A validated Content Pack produced an invalid initial campaign world.");
-        }
-
-        return world;
     }
 
     internal static bool ContainsScenario(

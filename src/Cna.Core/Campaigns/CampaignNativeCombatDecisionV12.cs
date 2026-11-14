@@ -24,10 +24,11 @@ internal record CampaignNativeCombatDecisionV12(
     string ActionId)
 {
     public const int CurrentContractVersion = 12;
+    public const int ActingSideContractVersion = 39;
 
     public virtual byte[] SerializeCanonical()
     {
-        if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1
+        if (ContractVersion is not (CurrentContractVersion or ActingSideContractVersion) || PriorStateVersion < 1
             || !Enum.IsDefined(Side))
             throw new JsonException("Invalid native Combat selection event.");
         _ = ContentContractGuards.RequireStableId(CampaignId, nameof(CampaignId));
@@ -115,11 +116,16 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
 
     public static CampaignNativeCombatDecisionStateV12 Select(CampaignSnapshotV11 prior,
         CampaignContentContext context, CampaignContactJournal contacts, LandSide side,
-        string actingElementId, string actionId)
+        string actingElementId, string actionId) => SelectCore(prior, context, contacts, side,
+            actingElementId, actionId, legacyInitiativeOwner: false);
+
+    private static CampaignNativeCombatDecisionStateV12 SelectCore(CampaignSnapshotV11 prior,
+        CampaignContentContext context, CampaignContactJournal contacts, LandSide side,
+        string actingElementId, string actionId, bool legacyInitiativeOwner)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(actionId);
         var cut = CampaignContactCombatSelectionCut.Project(prior, context, contacts,
-            side, actingElementId);
+            side, actingElementId, legacyInitiativeOwner);
         var offer = cut.AssaultOffers.SingleOrDefault(candidate => candidate.ActionId == actionId);
         var finish = cut.FinishOffer?.ActionId == actionId;
         if (offer is null && !finish)
@@ -132,7 +138,9 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
             || nextPosition.SegmentId != LandSegmentIds.Combat)
             throw new InvalidOperationException("Combat selection must advance to Barrage.");
         var selected = new CampaignNativeCombatDecisionV12(
-            CampaignNativeCombatDecisionV12.CurrentContractVersion, prior.CampaignId,
+            legacyInitiativeOwner || prior.InitiativeHolder == side
+                ? CampaignNativeCombatDecisionV12.CurrentContractVersion
+                : CampaignNativeCombatDecisionV12.ActingSideContractVersion, prior.CampaignId,
             prior.StateVersion, prior.CurrentPosition.SequenceContext.PositionId,
             nextPosition.PositionId,
             finish ? "finish-combat-without-attack" : "select-contact-assault",
@@ -150,8 +158,10 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
         var expected = selected is CampaignNativeCombatSelectionTimeoutV38 timeout
             ? new CampaignNativeCombatDecisionStateV12(prior, CampaignNativeCombatSelectionTimeoutV38.Create(prior, context, contacts,
                 timeout.Evidence.ConfigurationHash, timeout.Evidence.OpenedAtUnixMilliseconds, timeout.Evidence.DeadlineUnixMilliseconds,
-                timeout.Evidence.HighWaterUnixMilliseconds, timeout.Evidence.CancelledAtUnixMilliseconds, timeout.Evidence.Reason))
-            : Select(prior, context, contacts, selected.Side, selected.ActingElementId, selected.ActionId);
+                timeout.Evidence.HighWaterUnixMilliseconds, timeout.Evidence.CancelledAtUnixMilliseconds, timeout.Evidence.Reason,
+                legacyInitiativeOwner: timeout.Evidence.ContractVersion == 38))
+            : SelectCore(prior, context, contacts, selected.Side, selected.ActingElementId, selected.ActionId,
+                legacyInitiativeOwner: selected.ContractVersion == CampaignNativeCombatDecisionV12.CurrentContractVersion);
         if (!canonicalEvent.Span.SequenceEqual(expected.Decision.SerializeCanonical()))
             throw new InvalidCampaignHistoryException("Native Combat selection differs from the authority cut.");
         return expected;
@@ -185,7 +195,7 @@ internal sealed record CampaignNativeCombatDecisionStateV12(
             var root = document.RootElement;
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "campaignId",
                 "stateVersion", "priorSnapshot", "decision");
-            if (root.GetProperty("contractVersion").GetInt32() is not (CurrentContractVersion or 38))
+            if (root.GetProperty("contractVersion").GetInt32() is not (CurrentContractVersion or 38 or 40 or CampaignNativeCombatDecisionV12.ActingSideContractVersion))
                 throw new JsonException("Unsupported native Combat snapshot contract.");
             var priorBytes = JsonSerializer.SerializeToUtf8Bytes(root.GetProperty("priorSnapshot"));
             var prior = CampaignSnapshotV11Serializer.Deserialize(priorBytes);

@@ -64,11 +64,7 @@ internal static class CampaignObservationV7Projector
         var worldByElement = snapshot.World.Elements.ToDictionary(
             value => value.ElementId,
             StringComparer.Ordinal);
-        var ownElements = definition.Elements
-            .Where(value => string.Equals(value.SideId, sideId, StringComparison.Ordinal)
-                && value.PlacementMode == ContentPlacementMode.Independent)
-            .Select(value => CampaignOwnElementProjection.Project(value, worldByElement[value.ElementId]))
-            .ToArray();
+        var ownElements = CampaignOwnElementProjection.ProjectPlaced(definition, snapshot.World, observer);
         var opposingRepresentations = snapshot.World.Representations
             .Where(representation => representation.BoundElementIds.Any(elementId =>
                 elementsById.TryGetValue(elementId, out var element)

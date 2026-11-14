@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-arrivals-six-turns-v1",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "rows": [
+    {
+      "id": "schedule-polish",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "schedule-rtr-and-nz-artillery",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "schedule-indian-artillery",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "schedule-hussars",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "schedule-indian-brigade",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "schedule-nz-brigade",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "oa-polish",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-2-rtr",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-7-rtr",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-nz-artillery",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-indian-artillery",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-hussars",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-indian-brigade",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    },
+    {
+      "id": "oa-nz-brigade",
+      "source": "commonwealth-charts",
+      "fields": [
+        "turn",
+        "stage",
+        "listed_rows"
+      ]
+    }
+  ]
+}

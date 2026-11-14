@@ -1,7 +1,7 @@
 # RC checklist — October 24, 2026
 
-Working branch: `codex/rc-retreat-crash-recovery` (retains local Custody `611a4be2`). Status describes retained
-local evidence, not a public support certificate or a playable RC declaration.
+Current merged baseline: PR336 (`0f8a828a`). Status describes retained evidence,
+not a public support certificate or a playable RC declaration.
 The [roadmap](../../roadmap/pre-alpha-roadmap.md) and canonical acceptance
 contracts remain authoritative. Every closure needs tested commit, exact profile,
 command/exit/counts, retained artifacts and reviewer disposition. A historical
@@ -91,12 +91,100 @@ existing roadmap gates; no scope reduction is inferred from finishing Combat.
 | Roadmap gate | Current status | Evidence required to pass |
 | --- | --- | --- |
 | MVP-GATE-01 scenario freeze | Initial inventory; reconciliation open | Exact six-turn/18-stage reachable rules, decisions, content and source matrix; explicit unsupported count and rulings; reviewed implementation task graph. |
-| MVP-GATE-02 content | Not admitted | Versioned source-verified Graziani setup/map/arrivals/supply/repair content; stable IDs/hash, reference validation, independent setup cross-check, provenance/rights acceptance. |
+| MVP-GATE-02 content | Partial source data; not admitted | Versioned source-verified Graziani setup/map/arrivals/supply/repair content; stable IDs/hash, reference validation, independent setup cross-check, provenance/rights acceptance. |
 | MVP-GATE-03 authority | Incomplete | Every reachable mechanic and victory condition executes deterministically through Core; table/branch/replay/conservation tests pass; zero silent approximations. |
 | MVP-GATE-04 local lifecycle | Bounded journal implemented; product gate open | Create/checkpoint/stop/resume/recover through supported interface; process faults and schema compatibility pass; recovery and diagnostics documented; no model/I/O in authoritative turns. |
 | MVP-GATE-05 Maproom/hot-seat | Foundation/read preview; acceptance open | Two seats can inspect, choose, confirm, submit and hand off privately without model; stale-action, DOM/storage/log privacy and accessibility end-to-end checks pass. |
 | MVP-GATE-06 full playthrough | Not demonstrated | Two independently checked complete six-turn games, including save/resume and correct victory, reproduce from seeds/events; no reachable unsupported mechanics; retain build/content/test hashes. |
 | MVP-GATE-07 delivery | Open | Approved distribution/rights/notices; CI-built versioned package with hashes and supported-platform matrix; fresh-machine launch/create/play/save/quit/resume smoke; backup/save location/compatibility instructions. |
+
+### November 13 scenario and arrival working packet
+
+Matruh and 6th NZ printed conflicts have a bounded independent transcription;
+working interpretations and the full scenario source/rights review remain open.
+The [setup reconciliation](2026-11-13-graziani-setup-reconciliation.md) records
+supply and ruling boundaries, and a [blind supply packet](graziani-supply-review/README.md)
+awaits a second reading, as does the [truck-row packet](graziani-truck-review/README.md).
+The [six-turn arrival packet](graziani-arrival-review/README.md) and the
+[Axis formation packet](graziani-axis-formation-review/README.md) also await
+independent field-level entry; the [rules packet](graziani-rules-review/README.md)
+also awaits an independent reading, as does the [victory packet](graziani-victory-review/README.md).
+The [arrival laboratory](../../specs/scheduled-arrival-lab-v1.md)
+implements an isolated synthetic transition/replay exercise. A separate
+[World6 successor](../../specs/campaign-arrival-world6-successor-v1.md) now
+connects one synthetic arrival to an internal authenticated, durable Host
+journal path, with native preamble bytes in versioned records and replay,
+backward-compatibility and retry checks. It closes no playable-RC gate:
+normal campaign admission, native successor events, public player actions and
+observations, historical content and full privacy checks remain open. The
+[session handoff](2026-11-13-rc-session-handoff.md#synthetic-world6-durable-journal-checkpoint)
+records the scope and evidence.
+
+The production content model now represents a source-linked scheduled arrival
+in memory, tested with the 6th NZ artillery timing. A separate canonical content
+format now preserves and hashes these schedules; legacy formats reject them.
+The combat-fact successor also preserves scheduled seeds and selected printed
+gun characteristics, but does not implement the corresponding weapon rules or
+campaign admission. See the
+[content boundary](../../specs/campaign-scenario-arrival-content-v1.md).
+
+### November 14 working tree: normal engine progression
+
+Uncommitted changes correct Combat ownership when initiative holder acts last,
+and add explicit owner passes and second-side Reserve and one-hex Movement to
+the ordinary Core and durable Host paths. The latter retains any triggered
+Reaction window; movement completion advances to Breakdown only when no
+Reaction is pending. Handling Reaction and Breakdown remain open.
+These changes do not advance the scenario clock to the Polish brigade's
+turn-1/stage-3 arrival, much less later reinforcements.
+
+Real Graziani creation remains blocked by the synthetic-only normal creation
+and snapshot contracts, incomplete source-reviewed map and forces, unsupported
+historical weapons/attachments and missing six-turn rules. Source-linked partial
+data and a constructible initial-world excerpt are not admitted scenario
+content. The existing movement artifact recognizes only clear and desert
+terrain; Cairo's major-city terrain and the Delta/river crossings require a
+versioned rules successor, not a change to saved games' pinned rules. Full
+playable gates remain open. Focused tests and the boundary suite
+are local working-tree evidence only; exact-head full validation, independent
+review and CI remain outstanding.
+
+The normal durable Host journal also supports a versioned
+[source-initialization record](../../specs/campaign-source-creation-v1.md),
+retaining exact source-content bytes, placed World8 state and pending group IDs
+through cold replay. A source-backed Cairo excerpt exercises that version 2 path;
+it is incomplete and has no player seat, gameplay progression or arrival execution.
+The source-only format can preserve Cairo major-city identity without
+adding movement rules. This does not close campaign admission or MVP-GATE-02.
+The Commonwealth OA and characteristics charts also provide allowances for
+the excerpt's 16 counters from the 16th, 7th Indian and Polish brigades, plus
+26 more arrival and initial-formation candidates. These are source-linked
+production facts, not completed scenario setup. A separate independent reading
+is still open; Central India Horse's starting training state remains unresolved.
+
+The separate version 3 [pre-game supply cut](../../specs/graziani-pregame-supply-v1.md)
+adds a provisional Axis-only GT2 supply roll and partial allocation choices to the
+normal session and Host journal. Its source-backed Cairo input remains incomplete;
+setup cannot finish, the game clock cannot advance, and no arrival executes. The
+date and RNG-order policy need review and this closes no playable gate.
+
+Source-linked working candidates now include the French Motor Marine company,
+16th Infantry Brigade, the retained 4th Indian and 7th Armored members, Maletti,
+Catanzaro, 1st and 4th CCNN, and the Aresca/Tripoli tank-regiment subsets.
+These records retain printed strengths where read, not a complete setup. The
+Maletti/LX(L) split, conditional HQ/engineer values, training-dependent Central
+India Horse and many attachment, map and supply choices still need authority.
+One same-reader check corrected 201st Artillery's heavy AA seed from three to
+two; the new entries still require independent source review.
+
+Local November 14 validation: Release solution build succeeded with one
+`ASPIRE010` warning about the disabled Aspire CLI bundle. The Host suite passed
+251 tests on the current production implementation; later focused Host tests
+also verified movement completion through HTTP, retry, a fresh process and a
+corrupt predecessor. Runner passed 470, boundary 81, and contract suites 18
+tests. Source-linked content, initial-world and ZOC classes passed 65 focused
+tests. The full Core suite passed 3,822 tests. These results do not establish
+historical admission, exact-head CI or a playable RC.
 
 ## Merge checkpoint and follow-ups
 
@@ -106,21 +194,27 @@ remaining work with owner lanes and explicit pass criteria. PR329 merged as
 That bounded reliability checkpoint does not close release, certification or
 playable-product gates. Known
 Breakdown/cycle source-pin failures predate this PR: verifier files and pinned
-`Cna1979LandSequence.cs` are unchanged from base `16d76448`. They remain release
-blockers in #330, not waived successes. New PR regressions must be fixed before merge.
+`Cna1979LandSequence.cs` are unchanged from base `16d76448`. Those historical
+failures were not waived; PR334 subsequently reconciled and passed
+the original Breakdown/cycle oracles. Release-head oracle coverage remains open.
+New PR regressions must be fixed before merge.
 
 ## Next execution order
 
 1. Preserve merged [PR329](https://github.com/dills122/sandtable/pull/329) evidence
    and validate subsequent bounded packets on their own heads. All seven decision
    windows exist; prior review/CI does not automatically cover new changes.
-2. Close remaining integrated durable-flow proofs: unproved native process cuts
-   and other-lane crash/lost-response boundaries, alongside source-pin
-   reconciliation and dependency remediation in
-   separate owned packets.
-3. Close original/public certificate and Runner evidence gates; freeze exact RC
+2. Prepare the six-turn scenario surface for MVP-GATE-01: reconcile reachable
+   rules, decisions, content and source/rights status; count unsupported items and
+   propose an implementation task graph. Use that inventory to prioritize remaining
+   work against the playable RC; gate acceptance retains the roadmap's dependencies.
+   Start with the [working inventory and execution map](2026-11-12-graziani-playable-rc-inventory.md)
+   and [next work order](2026-11-12-graziani-rc-work-order.md).
+3. Close remaining integrated durable-flow proofs and release-head oracle coverage;
+   refresh dependency inventory and remediation in separately scoped packets.
+4. Close original/public certificate and Runner evidence gates; freeze exact RC
    support profile before any public admission.
-4. Progress measured scenario/product gates; run release-head partitioned CI and
+5. Progress remaining scenario/product gates; run release-head partitioned CI and
    independent review at a release checkpoint, not after every small edit.
 
 Use Ruflo namespace `sandtable-rc-20261023` for assignments and receipts. During
@@ -158,7 +252,7 @@ Retained bounded #330 Host packet: actual two-paid, repeated captured-lot Custod
 [Boundary and evidence](../reviews/2026-10-27-custody-crash-recovery.md).
 All14 selected tests, Host Release build and changed-file format passed.
 Initial coordinator review retained; combined independent review10 is Ready.
-Hosted exact-head CI remains required.
+PR336 passed all 48 checks on PR head `687e80bb` and merged as `0f8a828a`.
 
 - [x] Precommit process kill preserves original committed journal; fresh recovery
   applies leave-unguarded once.
@@ -187,6 +281,6 @@ Current #330 Host packet uses genuine seed4 two-paid history requiring Retreat;
 All16 selected tests, Host build and changed-file format passed.
 Combined fresh-context review10: Ready, no actionable findings.
 [Review report](../reviews/2026-10-27-crash-recovery-independent-review.md).
-Hosted exact-head CI remains required. Package local Custody+Retreat
-commits for review and exact-head CI before merge; broader crash/certification
-obligations remain open.
+PR336 passed all 48 checks on PR head `687e80bb` and merged as `0f8a828a`:
+[hosted run](https://github.com/dills122/sandtable/actions/runs/40619680565).
+Broader crash/certification obligations and release-head validation remain open.

@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "scope": "graziani-french-marine-review-v1",
+  "manifest_sha256": "545e0ffc7e5c3431223fb8b5808afff9c94277bfc3e02d3014afaf1532b8d49d",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "land-rules": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "marine-oa",
+      "locator": "PDF p. 21, Unassigned Allied Units",
+      "values": {
+        "unit": "1st Company, Fr Mtr Marine",
+        "counter_abbreviation": "1",
+        "id_code": "v",
+        "toe": "N",
+        "printed_arrival": "3/65"
+      }
+    },
+    {
+      "id": "marine-errata",
+      "locator": "PDF p. 1, §4.44b item 3",
+      "values": {
+        "corrected_arrival_marker": "D"
+      }
+    },
+    {
+      "id": "deployed-marker",
+      "locator": "printed p. 10, §4.45 Arrives",
+      "values": {
+        "D_meaning": "deployed on map at first scenario start"
+      }
+    },
+    {
+      "id": "marine-setup",
+      "locator": "printed p. 27, §60.41",
+      "values": {
+        "unit": "1st Coy French Motor Marines",
+        "location": "C3926",
+        "medium_trucks": 2
+      }
+    }
+  ]
+}

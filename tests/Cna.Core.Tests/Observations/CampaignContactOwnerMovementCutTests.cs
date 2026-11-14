@@ -108,6 +108,33 @@ public sealed class CampaignContactOwnerMovementCutTests
     }
 
     [Fact]
+    public void SecondSideMovementDoesNotExposeUnseenEnemyPosition()
+    {
+        var original = BreakdownSnapshotTests.Create(true);
+        var left = BreakdownMovementTests.ChangeElement(original, "commonwealth-infantry", "east");
+        var right = BreakdownMovementTests.ChangeElement(original, "commonwealth-infantry", "south-east");
+        var context = CampaignContentContext.Create(BreakdownContentFixture.Artifact(),
+            BreakdownSnapshotTests.Scenario().ScenarioId);
+        var catalog = Cna1979LandSequenceV4.CreateTurn(1).Single(position =>
+            position.OperationStage == 1 && position.ActorRole == LandActorRole.SecondActingSide
+            && position.SegmentId == LandSegmentIds.Movement);
+        var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
+            catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
+            catalog.ActorRole, LandSide.Axis, catalog.Sources);
+
+        var first = CampaignContactOwnerMovementCut.ProjectSecondMovement(left.World, position, context,
+            CampaignContactJournal.Initialize(left, context), LandSide.Axis, "axis-infantry");
+        var second = CampaignContactOwnerMovementCut.ProjectSecondMovement(right.World, position, context,
+            CampaignContactJournal.Initialize(right, context), LandSide.Axis, "axis-infantry");
+        Assert.Empty(first.ContactObservation.CurrentTargets);
+        Assert.NotEmpty(first.MovementOffers);
+        Assert.Equal(first.MovementOffers.Select(CampaignNativeSecondMoveV44.ActionIdFor),
+            second.MovementOffers.Select(CampaignNativeSecondMoveV44.ActionIdFor));
+        Assert.Equal(CampaignContactOwnerVisibleCutV1.SerializeSecondMovement(first),
+            CampaignContactOwnerVisibleCutV1.SerializeSecondMovement(second));
+    }
+
+    [Fact]
     public void ContactAtDestinationChangesOfferFromTheSameCut()
     {
         var original = BreakdownSnapshotTests.Create(true);

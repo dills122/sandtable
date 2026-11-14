@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "scope": "graziani-six-turn-victory-source-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "rows": [
+    {
+      "id": "scenario-cross-reference",
+      "source": "scenario",
+      "fields": [
+        "printed_victory_case",
+        "final_turn",
+        "final_stage"
+      ]
+    },
+    {
+      "id": "victory-heading",
+      "source": "scenario",
+      "fields": [
+        "scenario_name"
+      ]
+    },
+    {
+      "id": "italian-strategic",
+      "source": "scenario",
+      "fields": [
+        "take_hold",
+        "unit",
+        "supply"
+      ]
+    },
+    {
+      "id": "italian-decisive",
+      "source": "scenario",
+      "fields": [
+        "take_hold",
+        "unit",
+        "supply"
+      ]
+    },
+    {
+      "id": "italian-tactical",
+      "source": "scenario",
+      "fields": [
+        "take_hold",
+        "retain",
+        "supply"
+      ]
+    },
+    {
+      "id": "commonwealth-tactical",
+      "source": "scenario",
+      "fields": [
+        "take_hold",
+        "supply"
+      ]
+    },
+    {
+      "id": "commonwealth-decisive",
+      "source": "scenario",
+      "fields": [
+        "take_hold",
+        "supply"
+      ]
+    },
+    {
+      "id": "commonwealth-strategic",
+      "source": "scenario",
+      "fields": [
+        "take_hold",
+        "supply"
+      ]
+    }
+  ]
+}

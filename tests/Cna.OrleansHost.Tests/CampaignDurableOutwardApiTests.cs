@@ -197,6 +197,72 @@ public sealed class CampaignDurableOutwardApiTests
         }
     }
 
+    [Fact]
+    public async Task SyntheticArrivalDoesNotLeakThroughExistingPlayerOpenings()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "sandtable-arrival-outward-" + Guid.NewGuid().ToString("N"));
+        var journal = CampaignDurableAuthorityJournal.CreateNew(Path.Combine(directory, "campaign.sqlite"), OperatorSecret);
+        var request = new CampaignCreationRequest(1, "arrival-privacy", Cna1979Ruleset.Manifest.Hash, 12345,
+            "rules-lab.scheduled-world6.v1", "sha256:f1a99a29b552f2cdc87ea80ac6c35061a97663d7933bb54b97a19d4f3935f109",
+            "rules-lab.content.breakdown-truck.v1", "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
+            "breakdown-truck-lab");
+        journal.CreateScheduledWorld6(request);
+        var axis = journal.RedeemSeatGrant(journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var opponent = journal.RedeemSeatGrant(journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        var offer = Assert.Single(journal.QueryScheduledWorld6(axis));
+        Assert.Empty(journal.QueryScheduledWorld6(opponent));
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(journal);
+        await using var app = builder.Build();
+        app.MapDurableCampaignApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient { BaseAddress = new Uri(address) };
+            var before = await ReadOpponent();
+            Assert.NotNull(journal.SubmitScheduledWorld6(axis, offer.Reference));
+            var after = await ReadOpponent();
+            Assert.Equal(before, after);
+            Assert.DoesNotContain("axis-infantry", before, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("north-west", before, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(offer.Reference, before, StringComparison.Ordinal);
+
+            async Task<string> ReadOpponent()
+            {
+                var body = JsonSerializer.Serialize(new
+                {
+                    contractVersion = 2,
+                    credential = new
+                    {
+                        campaignId = request.CampaignId,
+                        audience = "commonwealth",
+                        epoch = opponent.Epoch,
+                        secret = opponent.Secret,
+                        expiresUnixMs = opponent.ExpiresUnixMs
+                    },
+                    stage = "movement",
+                    actingElementId = "axis-infantry"
+                });
+                var response = await Send(client, $"/api/v2/campaigns/{request.CampaignId}/openings", body);
+                var badCredential = body.Replace(opponent.Secret, new string('0', opponent.Secret.Length), StringComparison.Ordinal);
+                var denied = await Send(client, $"/api/v2/campaigns/{request.CampaignId}/openings", badCredential);
+                Assert.Equal(HttpStatusCode.Unauthorized, denied.StatusCode);
+                var responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+                Assert.True(response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Conflict,
+                    $"Unexpected status {response.StatusCode}: {responseBody}");
+                return responseBody;
+            }
+        }
+        finally
+        {
+            await app.StopAsync(TestContext.Current.CancellationToken);
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     private static string[] RetainedAuthority(string path)
     {
         using var connection = new SqliteConnection($"Data Source={path}");

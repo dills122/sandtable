@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "scope": "graziani-weather-review-v1",
+  "manifest_sha256": "837170deba2ae443b2400676d466e82fbf19e79cb56332d2def96f9b9e189e68",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "maps": "8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "scenario-calendar-map-d",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turns_1_to_6": null,
+        "scenario_ends_turn_6_stage_3": null
+      }
+    },
+    {
+      "id": "fall-season-29-1",
+      "locator": "UNVERIFIED",
+      "values": {
+        "fall_start": null,
+        "fall_end_inclusive": null,
+        "weather_per_operation_stage": null,
+        "foul_weather_location_die": null
+      }
+    },
+    {
+      "id": "chart-season-29-61",
+      "locator": "UNVERIFIED",
+      "values": {
+        "printed_fall_game_turns": null,
+        "normal": null,
+        "hot": null,
+        "sandstorm": null,
+        "rainstorm": null
+      }
+    },
+    {
+      "id": "chart-correction-29-61",
+      "locator": "UNVERIFIED",
+      "values": {
+        "seasonal_chart_is_incorrect": null,
+        "refer_to_case": null
+      }
+    },
+    {
+      "id": "hot-scope-29-31",
+      "locator": "UNVERIFIED",
+      "values": {
+        "hot_affects_all_map_sections": null
+      }
+    },
+    {
+      "id": "hot-loss-29-34",
+      "locator": "UNVERIFIED",
+      "values": {
+        "fuel_and_water_reduction_percent": null,
+        "wells_and_oases_water_excluded": null,
+        "fuel_and_water_in_actual_unit_consumption_excluded": null,
+        "phase": null
+      }
+    },
+    {
+      "id": "sandstorm-29-41",
+      "locator": "UNVERIFIED",
+      "values": {
+        "nile_delta_excluded": null,
+        "unaffected_map_sections_are_normal": null
+      }
+    },
+    {
+      "id": "weather-build-29-42-54",
+      "locator": "UNVERIFIED",
+      "values": {
+        "construction_in_sandstorm_hex": null,
+        "construction_in_rainstorm_hex": null
+      }
+    },
+    {
+      "id": "sandstorm-movement-29-44",
+      "locator": "UNVERIFIED",
+      "values": {
+        "movement_cost_multiplier": null
+      }
+    }
+  ]
+}

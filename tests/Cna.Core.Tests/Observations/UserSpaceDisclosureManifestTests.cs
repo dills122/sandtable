@@ -337,7 +337,10 @@ public sealed class UserSpaceDisclosureManifestTests
                         // Manifest v1 freezes its historical candidate closure; v2 audits all current variants.
                         && value.FullName != "Cna.Core.Actions.StopElementMovementAction"
                         && value.FullName != "Cna.Core.Actions.ResolveBreakdownStopAction"
-                        && value.FullName != "Cna.Core.Actions.CompleteBreakdownSegmentAction"))
+                        && value.FullName != "Cna.Core.Actions.CompleteBreakdownSegmentAction"
+                        // Pre-game choices use a later, Axis-private policy, not the frozen v1 cut.
+                        && value != typeof(PregameAxisSupplyRollAction)
+                        && value != typeof(PregameAxisSupplyAllocationAction)))
                     {
                         pending.Enqueue(variant);
                     }

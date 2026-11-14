@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using Cna.Core.Actions;
+using Cna.Core.Campaigns;
+using Cna.Core.Exercises;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -33,7 +35,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
         RequireOperator(connection, transaction, operatorSecret);
-        _ = Load(connection, transaction, campaignId);
+        if (IsScheduledWorld6(connection, transaction, campaignId))
+            _ = LoadScheduledWorld6(connection, transaction, campaignId);
+        else
+        {
+            var retained = Load(connection, transaction, campaignId);
+            if (retained.SourceSession is not null)
+                throw new InvalidOperationException("Source initialization is not yet playable.");
+            if (retained.Request.ContractVersion == CampaignPregameSourceCreation.RequestVersion
+                && !CampaignExercises.IsPregameAxisSetup(retained.Session, audience)
+                && !CampaignExercises.IsSourceSetupSeat(retained.Session, audience))
+                throw new InvalidOperationException("This setup seat is unavailable.");
+        }
         long epoch;
         using (var query = connection.CreateCommand())
         {
@@ -94,6 +107,24 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 || !SameDigest(reader.GetFieldValue<byte[]>(1), digest))
                 return null;
         }
+        using (var campaign = connection.CreateCommand())
+        {
+            campaign.Transaction = transaction;
+            campaign.CommandText = "SELECT contract_version FROM campaigns WHERE campaign_id=$id";
+            campaign.Parameters.AddWithValue("$id", grant.CampaignId);
+            if (campaign.ExecuteScalar() is long version)
+            {
+                if (version == CampaignSourceCreation.RequestVersion) return null;
+                if (version == CampaignPregameSourceCreation.RequestVersion)
+                {
+                    Loaded retained;
+                    try { retained = Load(connection, transaction, grant.CampaignId); }
+                    catch (InvalidOperationException) { return null; }
+                    if (!CampaignExercises.IsPregameAxisSetup(retained.Session, grant.Audience)
+                        && !CampaignExercises.IsSourceSetupSeat(retained.Session, grant.Audience)) return null;
+                }
+            }
+        }
         var credentialSecret = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
         var expires = checked(clock.GetUtcNow().ToUnixTimeMilliseconds()
             + (long)CredentialLifetime.TotalMilliseconds);
@@ -135,8 +166,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var query = connection.CreateCommand();
         query.Transaction = transaction;
         query.CommandText = """
-            SELECT epoch,credential_digest,credential_expires_ms
-            FROM seats WHERE campaign_id=$id AND side=$side
+            SELECT s.epoch,s.credential_digest,s.credential_expires_ms,c.contract_version
+            FROM seats s JOIN campaigns c ON c.campaign_id=s.campaign_id
+            WHERE s.campaign_id=$id AND s.side=$side
             """;
         query.Parameters.AddWithValue("$id", credential.CampaignId);
         query.Parameters.AddWithValue("$side", side);
@@ -144,8 +176,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!reader.Read() || reader.GetInt64(0) != credential.Epoch
             || reader.IsDBNull(1) || reader.IsDBNull(2)
             || reader.GetInt64(2) <= clock.GetUtcNow().ToUnixTimeMilliseconds()
-            || !SameDigest(reader.GetFieldValue<byte[]>(1), digest))
+            || !SameDigest(reader.GetFieldValue<byte[]>(1), digest)
+            || reader.GetInt64(3) == CampaignSourceCreation.RequestVersion)
             return null;
+        var version = reader.GetInt64(3);
+        reader.Close();
+        if (version == CampaignPregameSourceCreation.RequestVersion && credential.Audience != CampaignActionAudience.Axis)
+        {
+            Loaded retained;
+            try { retained = Load(connection, transaction, credential.CampaignId); }
+            catch (InvalidOperationException) { return null; }
+            if (!CampaignExercises.IsSourceSetupSeat(retained.Session, credential.Audience)) return null;
+        }
         return new CampaignSeatAuthority(credential.CampaignId, credential.Audience,
             credential.Epoch);
     }

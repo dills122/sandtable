@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "scope": "graziani-french-marine-review-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "land-rules": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99"
+  },
+  "rows": [
+    {
+      "id": "marine-oa",
+      "source": "commonwealth-charts",
+      "fields": [
+        "unit",
+        "counter_abbreviation",
+        "id_code",
+        "toe",
+        "printed_arrival"
+      ]
+    },
+    {
+      "id": "marine-errata",
+      "source": "errata",
+      "fields": [
+        "corrected_arrival_marker"
+      ]
+    },
+    {
+      "id": "deployed-marker",
+      "source": "land-rules",
+      "fields": [
+        "D_meaning"
+      ]
+    },
+    {
+      "id": "marine-setup",
+      "source": "scenario",
+      "fields": [
+        "unit",
+        "location",
+        "medium_trucks"
+      ]
+    }
+  ]
+}

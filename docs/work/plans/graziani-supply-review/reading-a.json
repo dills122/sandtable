@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "scope": "graziani-initial-supply-v1",
+  "reader_id": "existing-researcher-source-recheck",
+  "manifest_sha256": "ecce73c5d78509379bd9b9130af5728de7e9f2a6cf4e542b9c4d475e9f486297",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "rows": [
+    {
+      "id": "axis-tobruk",
+      "locator": "printed p. 28, §60.92, axis-tobruk",
+      "values": {
+        "count": 3,
+        "ammo_mark": 15,
+        "fuel_each": 50
+      }
+    },
+    {
+      "id": "axis-bardia",
+      "locator": "printed p. 28, §60.92, axis-bardia",
+      "values": {
+        "count": 2,
+        "ammo_mark": 10,
+        "fuel_each": 40
+      }
+    },
+    {
+      "id": "axis-benghazi",
+      "locator": "printed p. 28, §60.92, axis-benghazi",
+      "values": {
+        "count": 1,
+        "ammo_mark": 10,
+        "fuel_each": 10
+      }
+    },
+    {
+      "id": "axis-derna",
+      "locator": "printed p. 29, §60.92, axis-derna",
+      "values": {
+        "count": 1,
+        "ammo_mark": "—",
+        "fuel_each": 10
+      }
+    },
+    {
+      "id": "axis-tripoli",
+      "locator": "printed p. 29, §60.92, axis-tripoli",
+      "values": {
+        "count": 8,
+        "ammo_mark": 5,
+        "fuel_each": 60
+      }
+    },
+    {
+      "id": "axis-dump-1",
+      "locator": "printed p. 29, §60.92, axis-dump-1",
+      "values": {
+        "count": 3,
+        "ammo_mark": 40,
+        "fuel_each": 50
+      }
+    },
+    {
+      "id": "axis-dump-2",
+      "locator": "printed p. 29, §60.92, axis-dump-2",
+      "values": {
+        "count": 3,
+        "ammo_mark": 40,
+        "fuel_each": 50
+      }
+    },
+    {
+      "id": "axis-c0716",
+      "locator": "printed p. 29, §60.92, axis-c0716",
+      "values": {
+        "count": 1,
+        "ammo_mark": 20,
+        "fuel_each": 6
+      }
+    },
+    {
+      "id": "cw-mersa-matruh",
+      "locator": "printed p. 29, §60.92, cw-mersa-matruh",
+      "values": {
+        "count": 5,
+        "ammo_mark": 40,
+        "fuel_each": 60
+      }
+    },
+    {
+      "id": "cw-sidi-barrani",
+      "locator": "printed p. 29, §60.92, cw-sidi-barrani",
+      "values": {
+        "count": 1,
+        "ammo_mark": 40,
+        "fuel_each": 60
+      }
+    },
+    {
+      "id": "cw-dump-1",
+      "locator": "printed p. 29, §60.92, cw-dump-1",
+      "values": {
+        "count": 3,
+        "ammo_mark": 40,
+        "fuel_each": 30
+      }
+    },
+    {
+      "id": "cw-alexandria",
+      "locator": "printed p. 29, §60.92, cw-alexandria",
+      "values": {
+        "count": 3,
+        "ammo_mark": 40,
+        "fuel_each": 60
+      }
+    },
+    {
+      "id": "cw-cairo",
+      "locator": "printed p. 29, §60.92, cw-cairo",
+      "values": {
+        "count": 3,
+        "ammo_mark": 40,
+        "fuel_each": 60
+      }
+    },
+    {
+      "id": "axis-dummy-and-placement",
+      "locator": "printed p. 29, §60.92, axis-dummy-and-placement",
+      "values": {
+        "dump_groups": 2,
+        "dummy_groups": 2,
+        "dummy_per_group": 3,
+        "map_section": "C",
+        "region": "Libya",
+        "proximity_hexes": 4
+      }
+    },
+    {
+      "id": "cw-dummy-and-placement",
+      "locator": "printed p. 29, §60.92, cw-dummy-and-placement",
+      "values": {
+        "dump_groups": 1,
+        "dummy_groups": 1,
+        "dummy_per_group": 3,
+        "map_section": "D",
+        "relation": "west-of-matruh"
+      }
+    }
+  ]
+}

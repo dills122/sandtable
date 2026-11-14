@@ -1,0 +1,21 @@
+{
+  "status": "research-only-single-reader",
+  "source": "CNA1979:60.92(B-C)",
+  "source_sha256": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+  "units": "regular-supply-units",
+  "rows": [
+    {"id": "axis-tobruk", "side": "axis", "count": 3, "ammo_each": 15, "fuel_each": 50},
+    {"id": "axis-bardia", "side": "axis", "count": 2, "ammo_each": 10, "fuel_each": 40},
+    {"id": "axis-benghazi", "side": "axis", "count": 1, "ammo_each": 10, "fuel_each": 10},
+    {"id": "axis-derna", "side": "axis", "count": 1, "ammo_each": null, "fuel_each": 10},
+    {"id": "axis-tripoli", "side": "axis", "count": 8, "ammo_each": 5, "fuel_each": 60},
+    {"id": "axis-dump-1", "side": "axis", "count": 3, "ammo_each": 40, "fuel_each": 50},
+    {"id": "axis-dump-2", "side": "axis", "count": 3, "ammo_each": 40, "fuel_each": 50},
+    {"id": "axis-c0716", "side": "axis", "count": 1, "ammo_each": 20, "fuel_each": 6},
+    {"id": "cw-mersa-matruh", "side": "commonwealth", "count": 5, "ammo_each": 40, "fuel_each": 60},
+    {"id": "cw-sidi-barrani", "side": "commonwealth", "count": 1, "ammo_each": 40, "fuel_each": 60},
+    {"id": "cw-dump-1", "side": "commonwealth", "count": 3, "ammo_each": 40, "fuel_each": 30},
+    {"id": "cw-alexandria", "side": "commonwealth", "count": 3, "ammo_each": 40, "fuel_each": 60},
+    {"id": "cw-cairo", "side": "commonwealth", "count": 3, "ammo_each": 40, "fuel_each": 60}
+  ]
+}

@@ -141,6 +141,61 @@ public sealed class CampaignContactJournalTests
             readback.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
     }
 
+    [Fact]
+    public void SecondSideMovementReactionUsesItsOwnIdentityAndRoundTrips()
+    {
+        var (prior, after, moved, context, _) = AcceptedReactionMovement();
+        var catalog = Cna1979LandSequenceV4.CreateTurn(moved.GameTurn).Single(value =>
+            value.OperationStage == moved.OperationStage && value.ActorRole == LandActorRole.SecondActingSide
+            && value.SegmentId == LandSegmentIds.Movement);
+        var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
+            catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
+            catalog.ActorRole, moved.ActingSide, catalog.Sources);
+        var input = new ElementMovedV3ReplayInput(prior.CampaignId, prior.StateVersion, position.PositionId,
+            moved.ActingSide, moved.ElementId, moved.OriginLocationId, moved.DestinationLocationId);
+        var representation = after.World.Representations.Single(value => value.RepresentationId == moved.RepresentationId);
+        var opponent = moved.ActingSide == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
+        var hash = "sha256:" + new string('a', 64);
+        var worldHash = CampaignNativeCombatPaidWorldV22.Hash(prior.World);
+        var reservePosition = Cna1979LandSequenceV4.CreateTurn(moved.GameTurn).Single(value =>
+            value.OperationStage == moved.OperationStage && value.ActorRole == LandActorRole.SecondActingSide
+            && value.PhaseId == LandPhaseIds.ReserveDesignation);
+        var reserve = new CampaignNativeSecondReserveV43(43, prior.CampaignId, prior.StateVersion - 1, hash,
+            moved.ActingSide, reservePosition.PositionId, position.PositionId, null, worldHash, worldHash);
+        var orders = new[] { new CampaignOperationStageOrder(CampaignOperationStageOrder.CurrentContractVersion,
+            moved.GameTurn, moved.OperationStage, opponent, moved.ActingSide) };
+        var contacts = CampaignContactJournal.Initialize(prior, context);
+        var ownerCut = CampaignContactOwnerMovementCut.ProjectSecondMovement(prior.World, position, context,
+            contacts, moved.ActingSide, moved.ElementId);
+        var offer = Assert.Single(ownerCut.MovementOffers, value => value.DestinationLocationId == moved.DestinationLocationId);
+        var actual = CampaignNativeSecondMoveV44.Create(reserve, prior.World, context, orders, contacts,
+            moved.ActingSide, moved.GameTurn, moved.ElementId, CampaignNativeSecondMoveV44.ActionIdFor(offer), prior.RulesetHash);
+        Assert.NotNull(actual.Event.ReactionWindow);
+        Assert.Throws<InvalidOperationException>(() => CampaignNativeSecondMoveV44.Source(actual.Event, actual.World,
+            context, orders, moved.ActingSide, moved.GameTurn, actual.Event.StateVersion));
+        var window = CampaignElementMovedV3Factory.CreateWindowForMovement(prior.CampaignId, prior.RulesetHash,
+            prior.StateVersion, position, context.ArtifactV6!, context.Scenario, input, representation,
+            after.World, opponent, CampaignNativeSecondMoveV44.CurrentContractVersion);
+
+        Assert.NotNull(window);
+        Assert.NotEmpty(window.FrozenOpportunities);
+        Assert.Equal(CampaignNativeSecondMoveV44.CurrentContractVersion, window.TriggerAuthority.MoveContractVersion);
+        window.ValidateIdentities(prior.CampaignId, prior.RulesetHash);
+        var value = new CampaignNativeSecondMoveV44(44, prior.CampaignId, prior.StateVersion, hash,
+            moved.ActingSide, position.PositionId, hash, moved.ElementId, moved.RepresentationId,
+            moved.OriginLocationId, moved.DestinationLocationId, hash, hash, window);
+        var bytes = value.SerializeCanonical();
+        var replayed = CampaignNativeSecondMoveV44.Deserialize(bytes);
+        Assert.Equal(bytes, replayed.SerializeCanonical());
+        replayed.ReactionWindow!.ValidateIdentities(prior.CampaignId, prior.RulesetHash);
+        Assert.Throws<JsonException>(() => (value with { ElementId = "different-element" }).SerializeCanonical());
+        Assert.Throws<JsonException>(() => (value with { ReactionWindow = moved.OpenedReactionWindow }).SerializeCanonical());
+        Assert.Throws<JsonException>(() => (value with { PriorStateVersion = long.MaxValue }).SerializeCanonical());
+        using var document = JsonDocument.Parse(bytes);
+        Assert.Throws<JsonException>(() => CampaignV11CanonicalCodec.ParseReactionWindow(
+            document.RootElement.GetProperty("reactionWindow")));
+    }
+
     private static (CampaignSnapshotV11 Prior, CampaignSnapshotV11 After,
         ElementMovedV3 Movement, CampaignContentContext Context, ExerciseSession Opened) AcceptedReactionMovement()
     {

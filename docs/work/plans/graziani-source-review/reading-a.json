@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "scope": "graziani-matruh-nz-formations-v1",
+  "reader_id": "prior-session-single-researcher",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981",
+    "land-rules": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99"
+  },
+  "rows": [
+    {
+      "id": "matruh-scenario",
+      "locator": "printed p.27, 60.41",
+      "values": {
+        "hex": "D3714",
+        "essex_attached": true,
+        "durham_attached": true,
+        "staffordshires_attached": true
+      }
+    },
+    {
+      "id": "matruh-errata",
+      "locator": "PDF p.1, 4.44b item 2",
+      "values": {
+        "buffs_assigned": true,
+        "hampshires_assigned": true
+      }
+    },
+    {
+      "id": "matruh-oa",
+      "locator": "PDF p.10, Matruh Garrison",
+      "values": {
+        "no_assigned_units": true,
+        "attachment_max": 6,
+        "movement_assault_exception": true
+      }
+    },
+    {
+      "id": "nz-schedule-brigade",
+      "locator": "PDF p.3, 4.43a turn 6",
+      "values": {
+        "turn": 6,
+        "stage": 3,
+        "light": 25,
+        "medium": 85,
+        "heavy": 5
+      }
+    },
+    {
+      "id": "nz-schedule-artillery",
+      "locator": "PDF p.3, 4.43a turn 2",
+      "values": {
+        "turn": 2,
+        "stage": 3
+      }
+    },
+    {
+      "id": "nz-oa-brigade",
+      "locator": "PDF p.18, 2nd NZ Division",
+      "values": {
+        "turn": 6,
+        "stage": 3,
+        "listed_rows": 4
+      }
+    },
+    {
+      "id": "nz-oa-artillery",
+      "locator": "PDF p.18, 2nd NZ Division",
+      "values": {
+        "turn": 2,
+        "stage": 3
+      }
+    },
+    {
+      "id": "nz-example",
+      "locator": "printed p.31, 20.11",
+      "values": {
+        "brigade_turn": 2,
+        "brigade_stage": 3,
+        "artillery_turn": 2,
+        "artillery_stage": 3
+      }
+    },
+    {
+      "id": "cirene-oa",
+      "locator": "PDF p.4, 63rd Cirene",
+      "values": {
+        "listed_rows": 15,
+        "deployed_marker": "D",
+        "tank_attachment": "LXIII(L)"
+      }
+    },
+    {
+      "id": "marmarica-oa",
+      "locator": "PDF p.4, 62nd Marmarica",
+      "values": {
+        "listed_rows": 14,
+        "deployed_marker": "D",
+        "tank_attachment": "LXII(L)"
+      }
+    },
+    {
+      "id": "sirte-oa",
+      "locator": "PDF p.4, 61st Sirte",
+      "values": {
+        "listed_rows": 14,
+        "turn": 10,
+        "stage": 3
+      }
+    }
+  ],
+  "manifest_sha256": "970b59f00a107f75cb01dc3bd6d67b74effc112e96f61d343839927304df9705"
+}

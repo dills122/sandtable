@@ -1,4 +1,5 @@
 using Cna.Core.Content;
+using Cna.Core.Campaigns;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Actions;
@@ -7,6 +8,8 @@ public sealed record CampaignLegalActionSet
 {
     public const int CurrentContractVersion = 2;
     public const string CurrentPolicyId = "sandtable.legal-actions.v3";
+    public const string PregamePolicyId = "sandtable.legal-actions.graziani-pregame.v1";
+    public const string SourceSetupPolicyId = "sandtable.legal-actions.graziani-source-setup.v1";
     internal const string HistoricalPolicyIdV2 = "sandtable.legal-actions.v2";
 
     internal CampaignLegalActionSet(string campaignId, long stateVersion, string rulesetHash,
@@ -15,7 +18,7 @@ public sealed record CampaignLegalActionSet
         string policyId = CurrentPolicyId)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(stateVersion, 1);
-        if (policyId != CurrentPolicyId && policyId != HistoricalPolicyIdV2)
+        if (policyId != CurrentPolicyId && policyId != HistoricalPolicyIdV2 && policyId != PregamePolicyId && policyId != SourceSetupPolicyId)
             throw new ArgumentException("Unsupported legal-action policy.", nameof(policyId));
         if (!(policyId == HistoricalPolicyIdV2
                 ? Cna1979Ruleset.IsHistoricalHashV8(rulesetHash)
@@ -40,6 +43,25 @@ public sealed record CampaignLegalActionSet
             _ = ContentContractGuards.RequireSha256(candidate.ActionId, nameof(candidates));
         }
 
+        var hasPregameCandidate = copy.Any(candidate => candidate is PregameAxisSupplyRollAction or PregameAxisSupplyAllocationAction);
+        if (policyId == PregamePolicyId)
+        {
+            if (audience != CampaignActionAudience.Axis || positionId != CampaignPregameSourceCreation.PositionId
+                || copy.Any(candidate => candidate is not (PregameAxisSupplyRollAction or PregameAxisSupplyAllocationAction))
+                || (stateVersion == 1 && (copy.Length != 1 || copy[0] is not PregameAxisSupplyRollAction))
+                || (stateVersion > 1 && copy.Any(candidate => candidate is PregameAxisSupplyRollAction)))
+                throw new ArgumentException("Pre-game policy requires the Axis setup cut and pre-game candidates.", nameof(candidates));
+        }
+        else if (policyId == SourceSetupPolicyId)
+        {
+            if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth)
+                || positionId != CampaignSourceAuthorityState.SetupPositionId
+                || copy.Any(candidate => candidate is not CampaignSourceSetupAction action || action.StateVersion != stateVersion))
+                throw new ArgumentException("Source setup policy requires a side-private source setup cut.", nameof(candidates));
+        }
+        else if (hasPregameCandidate || copy.Any(candidate => candidate is CampaignSourceSetupAction))
+            throw new ArgumentException("Pre-game candidates require the pre-game policy.", nameof(candidates));
+
         ContractVersion = CurrentContractVersion;
         PolicyId = policyId;
         CampaignId = ContentContractGuards.RequireStableId(campaignId, nameof(campaignId));
@@ -47,10 +69,11 @@ public sealed record CampaignLegalActionSet
         RulesetHash = rulesetHash;
         PositionId = ContentContractGuards.RequireStableId(positionId, nameof(positionId));
         Audience = audience;
-        Candidates = Array.AsReadOnly(copy
-            .OrderBy(candidate => candidate.Kind, StringComparer.Ordinal)
-            .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
-            .ToArray());
+        Candidates = Array.AsReadOnly(policyId == SourceSetupPolicyId
+            ? copy.Cast<CampaignSourceSetupAction>().OrderBy(candidate => candidate.Family, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.ChoiceJson, StringComparer.Ordinal).Cast<CampaignActionCandidate>().ToArray()
+            : copy.OrderBy(candidate => candidate.Kind, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal).ToArray());
     }
 
     public int ContractVersion { get; }

@@ -11,6 +11,12 @@ internal sealed record CampaignReactionTriggerAuthority
         string originLocationId,
         string destinationLocationId) => new(3, elementId, triggeringRepresentation, originLocationId, destinationLocationId, true);
 
+    internal static CampaignReactionTriggerAuthority CreateForSecondMovement(
+        string elementId, CampaignMapRepresentationState triggeringRepresentation,
+        string originLocationId, string destinationLocationId) =>
+        new(CampaignNativeSecondMoveV44.CurrentContractVersion, elementId, triggeringRepresentation,
+            originLocationId, destinationLocationId, true, secondMovement: true);
+
     public CampaignReactionTriggerAuthority(
         int moveContractVersion,
         string elementId,
@@ -27,11 +33,12 @@ internal sealed record CampaignReactionTriggerAuthority
         CampaignMapRepresentationState triggeringRepresentation,
         string originLocationId,
         string destinationLocationId,
-        bool breakdown)
+        bool breakdown, bool secondMovement = false)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(
             moveContractVersion,
-            breakdown ? 3 : ElementMovedV2.CurrentContractVersion);
+            secondMovement ? CampaignNativeSecondMoveV44.CurrentContractVersion
+                : breakdown ? 3 : ElementMovedV2.CurrentContractVersion);
         ArgumentNullException.ThrowIfNull(triggeringRepresentation);
         ElementId = ContentContractGuards.RequireStableId(elementId, nameof(elementId));
         OriginLocationId = ContentContractGuards.RequireStableId(
@@ -217,7 +224,9 @@ internal sealed record CampaignReactionWindow
         if ((reactingPosition.SuspendedMovementPosition.ContractVersion == Cna1979LandSequence.ContractVersion
                 && triggerAuthority.MoveContractVersion != ElementMovedV2.CurrentContractVersion)
             || (reactingPosition.SuspendedMovementPosition.ContractVersion == Cna1979LandSequenceV4.ContractVersion
-                && triggerAuthority.MoveContractVersion != 3))
+                && triggerAuthority.MoveContractVersion != 3
+                && (triggerAuthority.MoveContractVersion != CampaignNativeSecondMoveV44.CurrentContractVersion
+                    || reactingPosition.SuspendedMovementPosition.ActorRole != LandActorRole.SecondActingSide)))
         {
             throw new ArgumentException("Reaction position and triggering move contracts must belong to the same version set.");
         }

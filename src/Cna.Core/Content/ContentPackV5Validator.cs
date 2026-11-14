@@ -7,21 +7,71 @@ public static class ContentPackV5Validator
 
     internal static ContentValidationResult Validate(
         ContentPackV5Definition definition,
-        bool allowEmptyNoncombat)
+        bool allowEmptyNoncombat) => ValidateCore(definition, allowEmptyNoncombat, scheduled: false, requireCompatibility: false);
+
+    // Checks content and current combat vocabulary only; it does not admit a campaign.
+    public static ContentValidationResult ValidateScheduledContent(ContentPackV5Definition definition)
+        => ValidateCore(definition, allowEmptyNoncombat: false, scheduled: true, requireCompatibility: true);
+
+    internal static ContentValidationResult ValidateScheduledStructure(ContentPackV5Definition definition,
+        bool allowEmptyNoncombat = false) => ValidateCore(definition, allowEmptyNoncombat, scheduled: true, requireCompatibility: false);
+
+    internal static ContentValidationResult ValidateSourceScheduledStructure(ContentPackV5Definition definition,
+        bool allowEmptyNoncombat = false) => ValidateCore(definition, allowEmptyNoncombat, scheduled: true,
+            requireCompatibility: false, source: true);
+
+    private static ContentValidationResult ValidateCore(ContentPackV5Definition definition,
+        bool allowEmptyNoncombat, bool scheduled, bool requireCompatibility, bool source = false)
     {
         ArgumentNullException.ThrowIfNull(definition);
         var issues = new List<ContentValidationIssue>();
-        issues.AddRange(ContentPackValidator.Validate(definition.LegacyDefinition).Issues);
+        issues.AddRange((scheduled ? source ? ContentScheduledPackSerializer.ValidateSource(definition.LegacyDefinition)
+                : ContentScheduledPackSerializer.Validate(definition.LegacyDefinition)
+            : ContentPackValidator.Validate(definition.LegacyDefinition)).Issues);
 
         ValidateLegacyBoundary(definition, issues);
         ValidateCombatFacts(definition, issues);
-        ValidatePlacementSeeds(definition, issues);
+        ValidatePlacementSeeds(definition, issues, scheduled);
         ValidateOrigins(definition, issues);
+        if (requireCompatibility)
+            issues.AddRange(Cna1979ContentV5CompatibilityValidator.Validate(definition).Issues);
+
+        if (!scheduled)
+        {
+            foreach (var facts in definition.ElementCombatFacts.Where(value => value.ComponentToeLimits.Count != 0))
+                Add(issues, "content.combat.component-limits-unsupported", $"/elements/{facts.ElementId}/componentToeLimits",
+                    "This capability cannot encode component TOE limits.");
+            foreach (var facts in definition.ElementCombatFacts.Where(value => value.MaximumCombinedToe is not null))
+                Add(issues, "content.combat.combined-toe-unsupported", $"/elements/{facts.ElementId}/maximumCombinedToe",
+                    "This capability cannot encode a combined TOE limit.");
+            foreach (var facts in definition.ElementCombatFacts)
+                foreach (var component in facts.Components.Where(value => value.DefensiveRatingParenthesized))
+                    Add(issues, "content.combat.parenthesized-defense-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/defensiveCloseAssaultRating",
+                        "This capability cannot interpret a parenthesized defensive rating.");
+            foreach (var facts in definition.ElementCombatFacts)
+                foreach (var component in facts.Components.Where(value => value.OffensiveCloseAssaultRating is not null))
+                    Add(issues, "content.combat.offensive-rating-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/offensiveCloseAssaultRating",
+                        "This capability cannot encode an offensive rating.");
+            foreach (var facts in definition.ElementCombatFacts)
+                foreach (var component in facts.Components.Where(value => value.BarrageRating is not null))
+                    Add(issues, "content.combat.barrage-rating-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/barrageRating",
+                        "This capability cannot encode a barrage rating.");
+            foreach (var facts in definition.ElementCombatFacts)
+                foreach (var component in facts.Components.Where(value => value.WeaponSourceProfile is not null))
+                    Add(issues, "content.combat.weapon-source-profile-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/weaponSourceProfile",
+                        "This capability cannot encode a weapon source profile.");
+        }
 
         foreach (var facts in definition.ElementCombatFacts.Where(facts =>
             facts.Components.Count == 0
             && !(allowEmptyNoncombat
-                && facts.CombatClassificationId == Rules.Cna1979Combat.TruckConvoyClassificationId)))
+                && facts.CombatClassificationId == Rules.Cna1979Combat.TruckConvoyClassificationId)
+            && !(scheduled
+                && facts.CombatClassificationId == Rules.Cna1979Combat.HeadquartersClassificationId)))
         {
             Add(issues, "content.combat.missing-components", $"/elements/{facts.ElementId}/components",
                 "At least one combat component is required by this contract.");
@@ -102,17 +152,40 @@ public static class ContentPackV5Validator
                     $"Component ID '{group.Key}' must be unique across the Content Pack.");
             }
         }
+
+        foreach (var facts in definition.ElementCombatFacts)
+        {
+            var ids = facts.Components.Select(value => value.ComponentId).ToHashSet(StringComparer.Ordinal);
+            foreach (var duplicate in facts.ComponentToeLimits.GroupBy(value => value.LimitId, StringComparer.Ordinal)
+                .Where(group => group.Count() > 1))
+                Add(issues, "content.combat.duplicate-component-limit", $"/elements/{facts.ElementId}/componentToeLimits/{duplicate.Key}",
+                    "Component TOE limit IDs must be unique within an element.");
+            foreach (var limit in facts.ComponentToeLimits)
+                foreach (var id in limit.ComponentIds.Where(id => !ids.Contains(id)))
+                    Add(issues, "content.combat.unknown-limited-component", $"/elements/{facts.ElementId}/componentToeLimits/{limit.LimitId}/{id}",
+                        "A component TOE limit must reference a component of the same element.");
+        }
     }
 
     private static void ValidatePlacementSeeds(
         ContentPackV5Definition definition,
-        List<ContentValidationIssue> issues)
+        List<ContentValidationIssue> issues,
+        bool scheduled)
     {
         var placements = definition.LegacyDefinition.Scenarios
             .SelectMany(scenario => scenario.InitialPlacements.Select(placement => (
                 scenario.ScenarioId,
                 placement.ElementId)))
             .ToHashSet();
+        if (scheduled)
+        {
+            placements.UnionWith(definition.LegacyDefinition.Scenarios.SelectMany(scenario =>
+                scenario.ScheduledArrivals.SelectMany(arrival => arrival.ElementIds
+                    .Select(elementId => (scenario.ScenarioId, ElementId: elementId)))));
+            placements.UnionWith(definition.LegacyDefinition.Scenarios.SelectMany(scenario =>
+                scenario.InitialGroups.SelectMany(group => group.ElementIds
+                    .Select(elementId => (scenario.ScenarioId, ElementId: elementId)))));
+        }
         var factsByElement = definition.ElementCombatFacts
             .GroupBy(value => value.ElementId, StringComparer.Ordinal)
             .Where(group => group.Count() == 1)
@@ -158,7 +231,9 @@ public static class ContentPackV5Validator
                 issues,
                 "content.initial-toe.missing-placement",
                 PlacementPath(missing.ScenarioId, missing.ElementId),
-                "Every initial placement requires one component TOE seed declaration.");
+                scheduled
+                    ? "Every initially placed, grouped or arriving element requires one component TOE seed declaration."
+                    : "Every initial placement requires one component TOE seed declaration.");
         }
     }
 
@@ -175,6 +250,20 @@ public static class ContentPackV5Validator
         var seedGroups = placement.InitialComponentToes
             .GroupBy(seed => seed.ComponentId, StringComparer.Ordinal)
             .ToArray();
+
+        if (elementFacts.MaximumCombinedToe is { } maximum
+            && placement.InitialComponentToes.Sum(seed => (long)seed.CurrentToe) > maximum)
+            Add(issues, "content.initial-toe.over-combined-maximum", path,
+                "The sum of component TOE seeds exceeds the element's combined maximum.");
+
+        foreach (var limit in elementFacts.ComponentToeLimits)
+        {
+            var ids = limit.ComponentIds.ToHashSet(StringComparer.Ordinal);
+            if (placement.InitialComponentToes.Where(seed => ids.Contains(seed.ComponentId))
+                .Sum(seed => (long)seed.CurrentToe) > limit.MaximumToe)
+                Add(issues, "content.initial-toe.over-component-limit", $"{path}/componentToeLimits/{limit.LimitId}",
+                    "The sum of component TOE seeds exceeds the component limit.");
+        }
 
         foreach (var group in seedGroups)
         {
@@ -280,6 +369,8 @@ public static class ContentPackV5Validator
             {
                 yield return (component.Origin, $"{path}/components/{component.ComponentId}");
             }
+            foreach (var limit in facts.ComponentToeLimits)
+                yield return (limit.Origin, $"{path}/componentToeLimits/{limit.LimitId}");
         }
 
         foreach (var placement in definition.InitialPlacementCombatFacts)

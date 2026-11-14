@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "scope": "graziani-initial-supply-v1",
+  "reader_id": "replace-with-reviewer-id",
+  "manifest_sha256": "ecce73c5d78509379bd9b9130af5728de7e9f2a6cf4e542b9c4d475e9f486297",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "rows": [
+    {
+      "id": "axis-tobruk",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-bardia",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-benghazi",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-derna",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-tripoli",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-dump-1",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-dump-2",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-c0716",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "cw-mersa-matruh",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "cw-sidi-barrani",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "cw-dump-1",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "cw-alexandria",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "cw-cairo",
+      "locator": "UNVERIFIED",
+      "values": {
+        "count": null,
+        "ammo_mark": null,
+        "fuel_each": null
+      }
+    },
+    {
+      "id": "axis-dummy-and-placement",
+      "locator": "UNVERIFIED",
+      "values": {
+        "dump_groups": null,
+        "dummy_groups": null,
+        "dummy_per_group": null,
+        "map_section": null,
+        "region": null,
+        "proximity_hexes": null
+      }
+    },
+    {
+      "id": "cw-dummy-and-placement",
+      "locator": "UNVERIFIED",
+      "values": {
+        "dump_groups": null,
+        "dummy_groups": null,
+        "dummy_per_group": null,
+        "map_section": null,
+        "relation": null
+      }
+    }
+  ]
+}

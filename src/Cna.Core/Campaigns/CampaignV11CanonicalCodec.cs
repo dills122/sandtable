@@ -191,7 +191,7 @@ internal static class CampaignV11CanonicalCodec
         writer.WriteEndObject();
     }
 
-    public static CampaignReactionWindow? ParseReactionWindow(JsonElement element)
+    public static CampaignReactionWindow? ParseReactionWindow(JsonElement element, bool allowSecondMovement = false)
     {
         if (element.ValueKind == JsonValueKind.Null)
         {
@@ -220,7 +220,7 @@ internal static class CampaignV11CanonicalCodec
             CampaignSnapshotSerializer.ParseSide(
                 element.GetProperty("reactingSide").GetString()),
             ParseReactingPosition(element.GetProperty("reactingPosition")),
-            ParseTriggerAuthority(element.GetProperty("triggerAuthority")),
+            ParseTriggerAuthority(element.GetProperty("triggerAuthority"), allowSecondMovement),
             ParseApparentTrigger(element.GetProperty("apparentTrigger")),
             element.GetProperty("frozenOpportunities")
                 .EnumerateArray().Select(ParseOpportunity).ToArray(),
@@ -493,7 +493,7 @@ internal static class CampaignV11CanonicalCodec
         writer.WriteEndObject();
     }
 
-    private static CampaignReactionTriggerAuthority ParseTriggerAuthority(JsonElement trigger)
+    private static CampaignReactionTriggerAuthority ParseTriggerAuthority(JsonElement trigger, bool allowSecondMovement)
     {
         CampaignSnapshotSerializer.RequireProperties(
             trigger,
@@ -502,7 +502,14 @@ internal static class CampaignV11CanonicalCodec
             "triggeringRepresentation",
             "originLocationId",
             "destinationLocationId");
-        if (trigger.GetProperty("moveContractVersion").GetInt32() != 3)
+        var version = trigger.GetProperty("moveContractVersion").GetInt32();
+        if (version == CampaignNativeSecondMoveV44.CurrentContractVersion && allowSecondMovement)
+            return CampaignReactionTriggerAuthority.CreateForSecondMovement(
+                trigger.GetProperty("elementId").GetString()!,
+                ParseRepresentation(trigger.GetProperty("triggeringRepresentation")),
+                trigger.GetProperty("originLocationId").GetString()!,
+                trigger.GetProperty("destinationLocationId").GetString()!);
+        if (version != 3)
             throw new JsonException("Expected Breakdown move contract 3.");
         return CampaignReactionTriggerAuthority.CreateForBreakdown(
             trigger.GetProperty("elementId").GetString()!,

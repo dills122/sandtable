@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "scope": "graziani-rail-review-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "rows": [
+    {
+      "id": "initial-rail-60-7",
+      "source": "scenario",
+      "fields": [
+        "rail_ends_at"
+      ]
+    },
+    {
+      "id": "rail-8-71",
+      "source": "land-compiled",
+      "fields": [
+        "usable_line",
+        "initial_text_permits",
+        "benghazi_barce_line_usable"
+      ]
+    },
+    {
+      "id": "axis-correction-8-71",
+      "source": "errata",
+      "fields": [
+        "axis_rail_use_subject_to"
+      ]
+    },
+    {
+      "id": "rail-8-72",
+      "source": "land-compiled",
+      "fields": [
+        "movement_per_operation_stage",
+        "stacks_per_direction",
+        "permitted_directions"
+      ]
+    },
+    {
+      "id": "rail-8-73",
+      "source": "land-compiled",
+      "fields": [
+        "must_start_on_rail",
+        "other_capability_point_expenditure_same_stage",
+        "entry_into_enemy_zoc_or_occupied_hex"
+      ]
+    },
+    {
+      "id": "reorganization-8-73",
+      "source": "errata",
+      "fields": [
+        "rail_traveller_may_earn_reorganization_points_same_stage"
+      ]
+    },
+    {
+      "id": "construction-24-61",
+      "source": "land-compiled",
+      "fields": [
+        "new_rail_builders",
+        "engineers_can_repair_existing_rail"
+      ]
+    },
+    {
+      "id": "construction-24-62",
+      "source": "land-compiled",
+      "fields": [
+        "one_company_stages_per_hex",
+        "two_companies_stages_per_hex",
+        "two_companies_must_share_hex"
+      ]
+    },
+    {
+      "id": "axis-rail-54-4",
+      "source": "air-rules",
+      "fields": [
+        "rail_hexes_controlled_and_contiguous",
+        "imported_rolling_stock",
+        "axis_may_build_new_rail",
+        "axis_may_repair_rail"
+      ]
+    },
+    {
+      "id": "supply-rail-32-34",
+      "source": "land-compiled",
+      "fields": [
+        "supply_units_per_stage",
+        "real_and_dummy",
+        "directions"
+      ]
+    }
+  ]
+}

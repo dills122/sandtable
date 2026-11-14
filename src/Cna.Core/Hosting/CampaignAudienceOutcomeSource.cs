@@ -66,8 +66,8 @@ public static class CampaignAudienceOutcomeSource
                 return CampaignAudienceOutcomePair.Unavailable();
 
             var eventBytes = acceptedStep.EventRecords[0];
-            var currentEvent = CampaignCurrentEventSerializer.Deserialize(eventBytes);
-            if (!eventBytes.AsSpan().SequenceEqual(CampaignCurrentEventSerializer.Serialize(currentEvent)))
+            var currentEvent = CampaignCurrentEventSerializer.Deserialize(eventBytes, predecessor.Context);
+            if (!eventBytes.AsSpan().SequenceEqual(CampaignCurrentEventSerializer.Serialize(currentEvent, predecessor.Context)))
                 return CampaignAudienceOutcomePair.Unavailable();
             using var parsed = JsonDocument.Parse(eventBytes);
             var eventKind = parsed.RootElement.GetProperty("eventType").GetString();
@@ -83,7 +83,7 @@ public static class CampaignAudienceOutcomeSource
             var source = prior.Setup;
             var sourceBinding = Hash(string.Join('\n', prior.RulesetHash, source.SetupHash,
                 source.Content.Pack.Hash, source.Content.ScenarioId));
-            var priorHead = Hash(CampaignCurrentSnapshotSerializer.Serialize(prior));
+            var priorHead = Hash(CampaignCurrentSnapshotSerializer.Serialize(prior, predecessor.Context));
             var successorHead = Hash(replay.Evidence.SnapshotCheckpoint);
             var campaignBinding = Hash(prior.CampaignId);
             var commandBinding = Hash(commandBytes);

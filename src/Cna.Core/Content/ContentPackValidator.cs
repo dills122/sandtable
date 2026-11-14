@@ -185,6 +185,19 @@ public static class ContentPackValidator
                     placement.Origin,
                     $"{scenarioPath}/initialPlacements/{placement.ElementId}");
             }
+
+            foreach (var arrival in scenario.ScheduledArrivals)
+            {
+                yield return (arrival.Origin, $"{scenarioPath}/scheduledArrivals/{arrival.GroupId}");
+            }
+            foreach (var area in scenario.EntryAreas)
+            {
+                yield return (area.Origin, $"{scenarioPath}/entryAreas/{area.AreaId}");
+            }
+            foreach (var group in scenario.InitialGroups)
+            {
+                yield return (group.Origin, $"{scenarioPath}/initialGroups/{group.GroupId}");
+            }
         }
     }
 
@@ -619,6 +632,22 @@ public static class ContentPackValidator
         {
             var scenarioPath = $"/scenarios/{scenario.ScenarioId}";
 
+            if (scenario.ScheduledArrivals.Count != 0)
+            {
+                Add(issues, "scenario.scheduled-arrivals-unsupported", $"{scenarioPath}/scheduledArrivals",
+                    "This content format cannot encode scheduled arrivals; a successor format is required.");
+            }
+            if (scenario.EntryAreas.Count != 0)
+            {
+                Add(issues, "scenario.entry-areas-unsupported", $"{scenarioPath}/entryAreas",
+                    "This content format cannot encode entry areas; a successor format is required.");
+            }
+            if (scenario.InitialGroups.Count != 0)
+            {
+                Add(issues, "scenario.initial-groups-unsupported", $"{scenarioPath}/initialGroups",
+                    "This content format cannot encode grouped initial elements; a successor format is required.");
+            }
+
             if (Compare(scenario.Start, scenario.End) > 0)
             {
                 Add(
@@ -678,6 +707,70 @@ public static class ContentPackValidator
             var placedIds = scenario.InitialPlacements
                 .Select(placement => placement.ElementId)
                 .ToHashSet(StringComparer.Ordinal);
+
+            var initialGroupIds = new HashSet<string>(StringComparer.Ordinal);
+            var groupedIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var group in scenario.InitialGroups)
+            {
+                var path = $"{scenarioPath}/initialGroups/{group.GroupId}";
+                if (!initialGroupIds.Add(group.GroupId))
+                    Add(issues, "initial-group.duplicate-group", path, "Initial group identifiers must be unique.");
+                if (group.SideId is not ("axis" or "commonwealth"))
+                    Add(issues, "initial-group.invalid-side", path, "The group must belong to a supported side.");
+                if (!locationIds.Contains(group.LocationId))
+                    Add(issues, "content.unknown-reference", $"{path}/locationId", "The group references an unknown location.");
+                foreach (var elementId in group.ElementIds)
+                {
+                    if (!groupedIds.Add(elementId))
+                        Add(issues, "initial-group.duplicate-element", path, "An element may occur in only one initial group.");
+                    if (placedIds.Contains(elementId))
+                        Add(issues, "initial-group.initially-placed", path, "A grouped element cannot have an independent placement.");
+                    if (!elements.TryGetValue(elementId, out var element))
+                        Add(issues, "content.unknown-reference", $"{path}/elementIds/{elementId}", "The group references an unknown element.");
+                    else if (element.SideId != group.SideId)
+                        Add(issues, "initial-group.element-owner", $"{path}/elementIds/{elementId}", "A grouped element must be owned by its group.");
+                }
+            }
+
+            var scheduledIds = new HashSet<string>(StringComparer.Ordinal);
+            var groupIds = new HashSet<string>(StringComparer.Ordinal);
+            var areaIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var area in scenario.EntryAreas)
+            {
+                var path = $"{scenarioPath}/entryAreas/{area.AreaId}";
+                if (!areaIds.Add(area.AreaId))
+                    Add(issues, "arrival.duplicate-entry-area", path, "Entry area identifiers must be unique.");
+                foreach (var locationId in area.LocationIds)
+                    if (!locationIds.Contains(locationId))
+                        Add(issues, "content.unknown-reference", $"{path}/locationIds/{locationId}",
+                            "The entry area references an unknown location.");
+            }
+            foreach (var arrival in scenario.ScheduledArrivals)
+            {
+                var path = $"{scenarioPath}/scheduledArrivals/{arrival.GroupId}";
+                if (!groupIds.Add(arrival.GroupId))
+                    Add(issues, "arrival.duplicate-group", path, "Arrival group identifiers must be unique.");
+                if (arrival.SideId is not ("axis" or "commonwealth"))
+                    Add(issues, "arrival.invalid-side", path, "The arrival must belong to a supported side.");
+                if (arrival.EntryAreaId is not null && !areaIds.Contains(arrival.EntryAreaId))
+                    Add(issues, "content.unknown-reference", $"{path}/entryAreaId", "The arrival references an unknown entry area.");
+                if (Compare(arrival.Arrival, scenario.Start) < 0 || Compare(arrival.Arrival, scenario.End) > 0)
+                    Add(issues, "arrival.outside-scenario", path, "The arrival must occur within the scenario.");
+                foreach (var elementId in arrival.ElementIds)
+                {
+                    if (!scheduledIds.Add(elementId))
+                        Add(issues, "arrival.duplicate-element", path, "An element may be scheduled only once.");
+                    if (placedIds.Contains(elementId))
+                        Add(issues, "arrival.initially-placed", path, "An arriving element cannot already be placed.");
+                    if (groupedIds.Contains(elementId))
+                        Add(issues, "arrival.initially-grouped", path, "An arriving element cannot already be in an initial group.");
+                    if (!elements.TryGetValue(elementId, out var element))
+                        Add(issues, "content.unknown-reference", $"{path}/elementIds/{elementId}", "The arrival references an unknown element.");
+                    else if (element.SideId != arrival.SideId || element.PlacementMode != ContentPlacementMode.Independent)
+                        Add(issues, "arrival.element-owner-or-placement", $"{path}/elementIds/{elementId}",
+                            "An arriving element must be independent and owned by its group.");
+                }
+            }
 
             foreach (var element in pack.Elements.Where(
                 element => element.PlacementMode == ContentPlacementMode.Independent))

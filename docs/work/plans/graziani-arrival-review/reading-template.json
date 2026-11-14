@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-arrivals-six-turns-v1",
+  "manifest_sha256": "599826eba2cd920f2cae0061b7758786d394cdda2b95eab638dec6d27bcaa35f",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "schedule-polish",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "schedule-rtr-and-nz-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "schedule-indian-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "schedule-hussars",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "schedule-indian-brigade",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "schedule-nz-brigade",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "oa-polish",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-2-rtr",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-7-rtr",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-nz-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-indian-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-hussars",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-indian-brigade",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    },
+    {
+      "id": "oa-nz-brigade",
+      "locator": "UNVERIFIED",
+      "values": {
+        "turn": null,
+        "stage": null,
+        "listed_rows": null
+      }
+    }
+  ]
+}

@@ -177,7 +177,15 @@ internal static class CampaignElementMovedV3Factory
         ElementMovedV3ReplayInput input,
         CampaignMapRepresentationState triggerAfter,
         CampaignWorldSnapshotV6 postMoveWorld,
-        LandSide reactingSide)
+        LandSide reactingSide) => CreateWindowForMovement(prior.CampaignId, prior.RulesetHash,
+            prior.StateVersion, prior.CurrentPosition.SequencePosition!, artifact, scenario, input,
+            triggerAfter, postMoveWorld, reactingSide, ElementMovedV3.CurrentContractVersion);
+
+    internal static CampaignReactionWindow? CreateWindowForMovement(
+        string campaignId, string rulesetHash, long priorStateVersion, LandSequencePosition movementPosition,
+        ContentPackV6Artifact artifact, ContentScenario scenario, ElementMovedV3ReplayInput input,
+        CampaignMapRepresentationState triggerAfter, CampaignWorldSnapshotV6 postMoveWorld,
+        LandSide reactingSide, int movementContractVersion)
     {
         var adjacent = FindAdjacentCombatRepresentations(
             postMoveWorld,
@@ -189,11 +197,11 @@ internal static class CampaignElementMovedV3Factory
             return null;
         }
 
-        var committedVersion = checked(prior.StateVersion + 1);
+        var committedVersion = checked(priorStateVersion + 1);
         var windowId = CampaignReactionIdentity.CreateWindow(
-            prior.CampaignId,
-            prior.RulesetHash,
-            ElementMovedV3.CurrentContractVersion,
+            campaignId,
+            rulesetHash,
+            movementContractVersion,
             committedVersion,
             triggerAfter,
             input.OriginLocationId,
@@ -215,7 +223,7 @@ internal static class CampaignElementMovedV3Factory
                 value,
                 elements,
                 facts,
-                prior.CurrentPosition.SequencePosition!,
+                movementPosition,
                 phasingControlled))
             .Select(value => new CampaignFrozenReactionOpportunity(
                 CampaignReactionIdentity.CreateOpportunity(windowId, value),
@@ -232,12 +240,12 @@ internal static class CampaignElementMovedV3Factory
             committedVersion,
             input.ActingSide,
             reactingSide,
-            CampaignReactingPosition.CreateForBreakdown(prior.CurrentPosition.SequencePosition!),
-            CampaignReactionTriggerAuthority.CreateForBreakdown(
-                input.ElementId,
-                triggerAfter,
-                input.OriginLocationId,
-                input.DestinationLocationId),
+            CampaignReactingPosition.CreateForBreakdown(movementPosition),
+            movementContractVersion == CampaignNativeSecondMoveV44.CurrentContractVersion
+                ? CampaignReactionTriggerAuthority.CreateForSecondMovement(input.ElementId, triggerAfter,
+                    input.OriginLocationId, input.DestinationLocationId)
+                : CampaignReactionTriggerAuthority.CreateForBreakdown(input.ElementId, triggerAfter,
+                    input.OriginLocationId, input.DestinationLocationId),
             new CampaignApparentReactionTrigger(
                 triggerAfter.RepresentationId,
                 input.OriginLocationId,
@@ -300,33 +308,109 @@ internal static class CampaignElementMovedV3Factory
     }
 
     internal static IReadOnlyList<string> DeriveControlledLocationIds(
+        CampaignWorldSnapshotV6 world, ContentPackV6Artifact artifact, ContentScenario scenario, LandSide side) =>
+        DeriveZocAuthority(world, artifact, scenario, side).ControlledLocationIds;
+
+    internal static CampaignZocAuthorityProjection DeriveZocAuthority(
         CampaignWorldSnapshotV6 world, ContentPackV6Artifact artifact, ContentScenario scenario, LandSide side)
     {
         if (!Enum.IsDefined(side) || !CampaignWorldV6Validator.IsValid(world, artifact, scenario))
             throw Unsupported("ZOC authority requires the certified Breakdown profile.");
-        // This profile admits at most one combat/HQ battalion at each own location, and
-        // Cna1979Movement's stacking authority currently defines exactly one organization
-        // ("land.organization.battalion") at StackingValue 1. A positive ZOC source
-        // requires aggregate stacking greater than one (10.11), so under this profile no
-        // location can ever produce a qualifying ZOC source or ZOC-exerting representation
-        // (the same holds for CampaignObservations.cs's apparentZocRepresentationIds: []
-        // and its sibling call sites) - returning [] here is mathematically equivalent to
-        // running the full Rules evaluation, not a shortcut that drops real ZOC coverage.
-        // The guard below fails loudly instead of silently if that ever stops being true.
-        // CampaignElementMovedV2Factory.DeriveZocAuthority has the real per-representation
-        // computation (ControlledLocationIds + SourceRepresentationIds) to port onto the V6
-        // world model when a broader, multi-unit-stacking content profile is certified.
-        if (Cna1979Movement.Definition.Stacking.Any(value => value.StackingValue > 1)
-            || Cna1979Movement.Definition.Stacking.Count > 1)
-        {
-            throw Unsupported(
-                "The stacking authority has changed since this ZOC stub was written " +
-                "(it now admits multi-unit stacking) - port " +
-                "CampaignElementMovedV2Factory.DeriveZocAuthority's real ZOC computation " +
-                "to the V6 world model instead of returning an empty set.");
-        }
+        return DeriveZocAuthority(world, artifact.Definition, side, allowUnattachedHeadquarters: true);
+    }
 
-        return [];
+    internal static CampaignZocAuthorityProjection DeriveZocAuthority(CampaignWorldSnapshotV6 world,
+        ICampaignCombatContentDefinition contentDefinition, LandSide side, bool allowUnattachedHeadquarters = false)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contentDefinition);
+        if (!Enum.IsDefined(side)) throw new ArgumentOutOfRangeException(nameof(side));
+        var definition = contentDefinition.LegacyDefinition;
+        var sideId = CampaignSnapshotSerializer.FormatSide(side);
+        var content = definition.Elements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var facts = contentDefinition.ElementCombatFacts.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var states = world.Elements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var locations = definition.Locations.ToDictionary(value => value.LocationId, StringComparer.Ordinal);
+        var ownCombat = new List<CampaignMapRepresentationState>();
+        var ownHeadquartersLocations = new HashSet<string>(StringComparer.Ordinal);
+        var represented = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var representation in world.Representations)
+        {
+            if (representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || representation.BoundElementIds.Count != 1)
+                throw Unsupported("ZOC requires independently represented elements.");
+            var id = representation.BoundElementIds[0];
+            if (!represented.Add(id) || !content.TryGetValue(id, out var element) || !facts.TryGetValue(id, out var elementFacts)
+                || !states.TryGetValue(id, out var state) || state.CurrentLocationId != representation.CurrentLocationId)
+                throw Unsupported("ZOC representation does not bind its content and world state.");
+            if (element.SideId != sideId) continue;
+            var classification = Cna1979Combat.FindClassification(elementFacts.CombatClassificationId);
+            if (classification is null)
+                throw Unsupported("A ZOC representation has unsupported classification authority.");
+            if (classification.Kind == ZocCombatClassificationKind.Headquarters && !allowUnattachedHeadquarters)
+                throw Unsupported("Headquarters ZOC needs attachment authority.");
+            if (classification.Kind == ZocCombatClassificationKind.Headquarters)
+                ownHeadquartersLocations.Add(representation.CurrentLocationId);
+            if (IsIndependentCombatUnit(elementFacts)) ownCombat.Add(representation);
+        }
+        if (represented.Count != states.Count) throw Unsupported("ZOC world contains unrepresented elements.");
+
+        var candidates = new List<ZocControlCandidate>();
+        var sources = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var group in ownCombat.GroupBy(value => value.CurrentLocationId, StringComparer.Ordinal))
+        {
+            var members = group.Select(value => value.BoundElementIds[0]).ToArray();
+            var stacking = 0;
+            foreach (var id in members)
+            {
+                var lookup = Cna1979Movement.LookupStackingValue(content[id].OrganizationId);
+                if (!lookup.IsSupported) throw Unsupported("A ZOC source has unsupported stacking authority.");
+                stacking = checked(stacking + lookup.Value.StackingValue);
+            }
+            if (stacking <= 1) continue;
+            if (ownHeadquartersLocations.Contains(group.Key))
+                throw Unsupported("Headquarters contributions to grouped ZOC need attachment authority.");
+            var components = members.SelectMany(id =>
+            {
+                if (facts[id].MaximumCombinedToe is not null || facts[id].ComponentToeLimits.Count != 0)
+                    throw Unsupported("A ZOC source has unsupported component-pool limits.");
+                var sourceComponents = facts[id].Components.ToDictionary(value => value.ComponentId, StringComparer.Ordinal);
+                if (sourceComponents.Count != states[id].Components.Count
+                    || states[id].Components.Any(component => !sourceComponents.TryGetValue(component.ComponentId, out var source)
+                        || source.DefensiveRatingParenthesized || component.CurrentToe > source.MaximumToe))
+                    throw Unsupported("A ZOC source has incomplete or invalid component state.");
+                return states[id].Components.Select(component =>
+                {
+                    var source = sourceComponents[component.ComponentId];
+                    return new ZocDefensiveCloseAssaultComponentFact(source.ComponentClassId,
+                        component.CurrentToe, source.DefensiveCloseAssaultRating);
+                });
+            });
+            var defense = Cna1979Combat.CalculateRawDefensivePointsForZoc(components)
+                .RawDefensiveCloseAssaultPoints;
+            foreach (var representation in group)
+            {
+                var id = representation.BoundElementIds[0];
+                var source = new ZocSourceFacts(facts[id].CombatClassificationId, stacking,
+                    states[id].OperationalState.CohesionLevel, defense, false);
+                var qualification = Cna1979Zoc.EvaluateSource(source);
+                if (!qualification.IsSupported) throw Unsupported("A ZOC source has unsupported qualification authority.");
+                if (!qualification.IsQualified) continue;
+                sources.Add(representation.RepresentationId);
+                foreach (var edge in definition.Edges.Where(value => value.FirstLocationId == group.Key
+                    || value.SecondLocationId == group.Key))
+                {
+                    var destinationId = edge.FirstLocationId == group.Key ? edge.SecondLocationId : edge.FirstLocationId;
+                    if (!locations.TryGetValue(destinationId, out var destination)
+                        || !Cna1979Movement.LookupTerrain(destination.TerrainId, content[id].MobilityId).IsSupported)
+                        throw Unsupported("A ZOC destination has unsupported terrain authority.");
+                    candidates.Add(new ZocControlCandidate(destinationId, source,
+                        new ZocProjectionFacts(edge.Features.Select(value => value.FeatureId), true)));
+                }
+            }
+        }
+        return new CampaignZocAuthorityProjection(Cna1979Zoc.DeriveControlledLocationIds(candidates),
+            Array.AsReadOnly(sources.Order(StringComparer.Ordinal).ToArray()));
     }
 
     internal static MovementResult CalculateMovement(

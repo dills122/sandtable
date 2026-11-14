@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "scope": "graziani-initial-trucks-v1",
+  "manifest_sha256": "5ebdd70270e13e5f65a28e6b02698d311a80c8b003d1ea4dd2fb821cd3925be6",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "axis-first-c4218",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c4120",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c4020",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c3920",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c3919",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c3918",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c3617",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c4707",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-c4507",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-bardia",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-tobruk",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-barce",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "axis-first-near-c0716",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c4131",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c3926",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c3922",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c3721",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c3520",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c3320",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-c3020",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-d3714",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-d3612",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-d3615",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-e1829",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "cw-first-alexandria",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-axis-tripoli",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-axis-libya",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-axis-air",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-cw-cairo",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-cw-alexandria",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-cw-maps",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    },
+    {
+      "id": "pool-cw-air",
+      "locator": "UNVERIFIED",
+      "values": {
+        "light": null,
+        "medium": null,
+        "heavy": null
+      }
+    }
+  ]
+}

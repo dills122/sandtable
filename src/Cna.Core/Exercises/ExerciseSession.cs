@@ -6,6 +6,31 @@ namespace Cna.Core.Exercises;
 
 public sealed class ExerciseSession
 {
+    private readonly CampaignSnapshotV11? currentSnapshot;
+    private readonly CampaignContentContext? context;
+    private readonly byte[][]? pregameHistory;
+
+    internal ExerciseSession(CampaignPregameSourceState pregame, CampaignContactJournal? contacts = null,
+        IEnumerable<byte[]>? history = null, CampaignSourceAuthorityState? sourceAuthority = null)
+    {
+        Pregame = pregame ?? throw new ArgumentNullException(nameof(pregame));
+        if (sourceAuthority is not null && sourceAuthority.Pregame != pregame)
+            throw new ArgumentException("Source authority must bind the retained pre-game state.", nameof(sourceAuthority));
+        SourceAuthority = sourceAuthority;
+        pregameHistory = (history ?? [pregame.SerializeGenesis()]).Select(value => value.ToArray()).ToArray();
+        CurrentHistory = ImmutableList<object>.Empty;
+        CurrentContacts = contacts ?? CampaignContactJournal.InitializePregameSource(pregame.Request.CampaignId);
+        if (CurrentContacts.CampaignId != pregame.Request.CampaignId
+            || CurrentContacts.AuthorityVersion != (sourceAuthority?.StateVersion ?? pregame.StateVersion)
+            || CurrentContacts.Records.Count != 0)
+            throw new ArgumentException("Pre-game contacts do not match authority.", nameof(contacts));
+        CurrentCombatRetreatMoves = [];
+        CurrentCombatForceSeals = [];
+        CurrentReserveReleaseEvents = [];
+        CurrentRepeatAssaultEvents = [];
+        CurrentPostRepeatEvents = [];
+    }
+
     internal ExerciseSession(CampaignSnapshotV11 snapshot, CampaignContentContext context,
         IEnumerable<object> history, CampaignContactJournal? contacts = null,
         CampaignNativeCombatDecisionStateV12? combatSelection = null,
@@ -43,8 +68,8 @@ public sealed class ExerciseSession
         IEnumerable<object>? postRepeatEvents = null,
         CampaignNativeCombatRbaCancellationV33? combatRbaCancellation = null)
     {
-        CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
-        Context = context ?? throw new ArgumentNullException(nameof(context));
+        currentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
+        this.context = context ?? throw new ArgumentNullException(nameof(context));
         ArgumentNullException.ThrowIfNull(history);
         CurrentHistory = history as ImmutableList<object> ?? ImmutableList.CreateRange(history);
         CurrentContacts = contacts ?? CampaignContactJournal.Empty(snapshot.CampaignId);
@@ -700,10 +725,134 @@ public sealed class ExerciseSession
             repeatCombatSelection: CurrentRepeatCombatSelection,
             repeatAssaultBaseContacts: CurrentRepeatAssaultBaseContacts,
             repeatAssaultEvents: CurrentRepeatAssaultEvents.Append(campaignEvent));
-    internal CampaignSnapshotV11 CurrentSnapshot { get; }
-    internal CampaignContentContext Context { get; }
-    internal ImmutableList<object> CurrentHistory { get; }
-    internal CampaignContactJournal CurrentContacts { get; }
+    internal CampaignPregameSourceState? Pregame { get; }
+    internal CampaignSourceAuthorityState? SourceAuthority { get; }
+    internal IReadOnlyList<byte[]> PregameHistory => Array.AsReadOnly(
+        (pregameHistory ?? throw new InvalidOperationException("Session has no pre-game history."))
+            .Select(value => value.ToArray()).ToArray());
+    internal CampaignSnapshotV11 CurrentSnapshot => currentSnapshot
+        ?? throw new InvalidOperationException("Pre-game setup does not have Snapshot 11 authority.");
+    internal CampaignContentContext Context => context
+        ?? throw new InvalidOperationException("Pre-game setup does not have Content 6 authority.");
+    internal ImmutableList<object> CurrentHistory { get; private set; }
+    internal CampaignContactJournal CurrentContacts { get; private set; }
+    internal CampaignNativeTruckConvoyPassV41? CurrentTruckConvoyPass { get; private set; }
+    internal ExerciseSession? TruckConvoyPassPredecessor { get; private set; }
+    internal CampaignNativePostCombatPassV42? CurrentPostCombatPass { get; private set; }
+    internal ExerciseSession? PostCombatPassPredecessor { get; private set; }
+    internal CampaignNativeSecondReserveV43? CurrentSecondReserve { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentSecondReserveWorld { get; private set; }
+    internal ExerciseSession? SecondReservePredecessor { get; private set; }
+    internal CampaignNativeSecondMoveV44? CurrentSecondMove { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentSecondMoveWorld { get; private set; }
+    internal ExerciseSession? SecondMovePredecessor { get; private set; }
+    internal CampaignNativeSecondMovementCompletedV45? CurrentSecondMovementCompletion { get; private set; }
+    internal ExerciseSession? SecondMovementCompletionPredecessor { get; private set; }
+    internal CampaignNativeSecondBreakdownV46? CurrentSecondBreakdown { get; private set; }
+    internal ExerciseSession? SecondBreakdownPredecessor { get; private set; }
+
+    internal ExerciseSession WithSecondBreakdown(CampaignNativeSecondBreakdownV46 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentSecondBreakdown is not null || CurrentSecondMovementCompletion is null
+            || completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Second Breakdown must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondBreakdownPredecessor = this;
+        successor.CurrentSecondBreakdown = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
+    internal ExerciseSession WithSecondMovementCompletion(CampaignNativeSecondMovementCompletedV45 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Second Movement completion must advance its retained cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondMovementCompletionPredecessor = this;
+        successor.CurrentSecondMovementCompletion = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
+    internal ExerciseSession WithSecondMove(CampaignNativeSecondMoveV44 movement,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (movement.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != movement.StateVersion
+            || movement.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Second Movement must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondMovePredecessor = this;
+        successor.CurrentSecondMove = movement;
+        successor.CurrentSecondMoveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(movement);
+        return successor;
+    }
+
+    internal ExerciseSession WithSecondReserve(CampaignNativeSecondReserveV43 reserve,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(reserve);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != reserve.StateVersion
+            || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Second Reserve must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondReservePredecessor = this;
+        successor.CurrentSecondReserve = reserve;
+        successor.CurrentSecondReserveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(reserve);
+        return successor;
+    }
+
+    internal ExerciseSession WithPostCombatPass(CampaignNativePostCombatPassV42 passed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(passed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentTruckConvoyPass is null || passed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != passed.StateVersion)
+            throw new InvalidOperationException("Post-combat pass must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.PostCombatPassPredecessor = this;
+        successor.CurrentPostCombatPass = passed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(passed);
+        return successor;
+    }
+
+    internal ExerciseSession WithTruckConvoyPass(CampaignNativeTruckConvoyPassV41 passed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(passed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentTruckConvoyPass is not null || passed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != passed.StateVersion)
+            throw new InvalidOperationException("Truck Convoy pass must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.TruckConvoyPassPredecessor = this;
+        successor.CurrentTruckConvoyPass = passed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(passed);
+        return successor;
+    }
     internal CampaignNativeCombatDecisionStateV12? CurrentCombatDecision { get; }
     internal CampaignNativeCombatNoAttackCompletionV13? CurrentNoAttackCompletion { get; }
     internal CampaignNativeCombatBarrageV14? CurrentCombatBarrage { get; }

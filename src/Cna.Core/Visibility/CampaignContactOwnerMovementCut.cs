@@ -45,13 +45,7 @@ internal sealed record CampaignContactOwnerMovementCut(
             && element.PlacementMode == ContentPlacementMode.Independent)
             ?? throw new ArgumentException("Acting element is not independently owned by this side.",
                 nameof(actingElementId));
-        var worldByElement = snapshot.World.Elements.ToDictionary(
-            element => element.ElementId, StringComparer.Ordinal);
-        var own = definition.Elements.Where(element =>
-                element.SideId == sideId && element.PlacementMode == ContentPlacementMode.Independent)
-            .Select(element => CampaignOwnElementProjection.Project(
-                element, worldByElement[element.ElementId]))
-            .ToArray();
+        var own = CampaignOwnElementProjection.ProjectPlaced(definition, snapshot.World, side);
         var owner = own.Single(element => element.ElementId == content.ElementId);
         var knowledge = contacts.ObserveFor(side, content.ParentFormationId);
         var locations = definition.Locations.Select(location =>
@@ -64,6 +58,48 @@ internal sealed record CampaignContactOwnerMovementCut(
         return new CampaignContactOwnerMovementCut(snapshot.StateVersion, knowledge,
             Array.AsReadOnly(locations), Array.AsReadOnly(edges), owner,
             Array.AsReadOnly(offers));
+    }
+
+    internal static CampaignContactOwnerMovementCut ProjectSecondMovement(
+        CampaignWorldSnapshotV6 world, LandSequencePosition position, CampaignContentContext context,
+        CampaignContactJournal contacts, LandSide side, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(position);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(contacts);
+        ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
+        if (context.ArtifactV6 is not { } artifact || !Enum.IsDefined(side)
+            || position.ActorRole != LandActorRole.SecondActingSide || position.ActiveSide != side
+            || position.SegmentId != LandSegmentIds.Movement
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new ArgumentException("Second Movement requires a valid owner World and position.");
+        Cna1979LandSequenceV4.RequireMaterializedMovement(position);
+        var definition = artifact.Definition.LegacyDefinition;
+        var content = definition.Elements.SingleOrDefault(element => element.ElementId == actingElementId
+            && element.SideId == CampaignSnapshotSerializer.FormatSide(side)
+            && element.PlacementMode == ContentPlacementMode.Independent && element.BreakdownVehicleCohort is null)
+            ?? throw new ArgumentException("Second Movement requires an independently owned non-vehicle element.");
+        var classification = artifact.Definition.ElementCombatFacts.Single(value => value.ElementId == actingElementId);
+        if (Cna1979Combat.FindClassification(classification.CombatClassificationId)?.Kind is not
+            (ZocCombatClassificationKind.CombatUnit or ZocCombatClassificationKind.Headquarters))
+            throw new ArgumentException("Second Movement requires a supported combat element.");
+        var own = CampaignOwnElementProjection.ProjectPlaced(definition, world, side);
+        var owner = own.Single(value => value.ElementId == actingElementId);
+        var knowledge = contacts.ObserveFor(side, content.ParentFormationId);
+        var locations = definition.Locations.Select(location =>
+            new CampaignObservationLocation(location.LocationId, location.TerrainId)).ToArray();
+        var edges = definition.Edges.Select(edge => new CampaignObservationEdge(edge.FirstLocationId,
+            edge.SecondLocationId, edge.Features.Select(feature => new CampaignObservationEdgeFeature(
+                feature.FeatureId, feature.DirectionFromLocationId)).ToArray())).ToArray();
+        var state = world.Elements.Single(value => value.ElementId == actingElementId);
+        var eligible = owner.ReserveStatus == CampaignObservationReserveStatus.None
+            && owner.VehicleBreakdownRisk is null && owner.CohesionLevel > -26
+            && owner.LedgerGameTurn == position.GameTurn && owner.LedgerOperationStage == position.OperationStage
+            && !CampaignOwnElementProjection.IsMovementEndedFor(state.OperationalState.MovementEnded, position);
+        var offers = eligible ? DeriveAdjacentOffers(owner, own, knowledge, locations, edges) : [];
+        return new CampaignContactOwnerMovementCut(contacts.AuthorityVersion, knowledge,
+            Array.AsReadOnly(locations), Array.AsReadOnly(edges), owner, Array.AsReadOnly(offers));
     }
 
     private static MoveElementAction[] DeriveMovementOffers(
@@ -97,6 +133,13 @@ internal sealed record CampaignContactOwnerMovementCut(
                     .OperationalState.MovementEnded, sequence))
             return [];
 
+        return DeriveAdjacentOffers(owner, own, knowledge, locations, edges);
+    }
+
+    private static MoveElementAction[] DeriveAdjacentOffers(ObservedOwnElement owner,
+        IReadOnlyList<ObservedOwnElement> own, CampaignContactObservationV1 knowledge,
+        IReadOnlyList<CampaignObservationLocation> locations, IReadOnlyList<CampaignObservationEdge> edges)
+    {
         var occupied = knowledge.CurrentTargets
             .Select(target => target.ApparentLocationId)
             .ToHashSet(StringComparer.Ordinal);

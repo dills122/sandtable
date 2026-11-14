@@ -215,7 +215,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     private void VerifySelectionRounds(SqliteConnection connection, SqliteTransaction transaction,
-        string campaignId, IReadOnlyList<CampaignHostAcceptedStep> steps,
+        string campaignId, List<CampaignHostAcceptedStep> steps,
         CampaignDecisionTimingConfigurationV1? timing)
     {
         if (schemaVersion < SelectionSchemaVersion) return;
@@ -224,9 +224,33 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var unavailable = new HashSet<string>(StringComparer.Ordinal);
         var timeouts = new Dictionary<string, (string Config, long Opened, long Deadline, long HighWater)>(StringComparer.Ordinal);
         string? pending = null;
-        foreach (var step in steps)
+        for (var index = 0; index < steps.Count; index++)
         {
-            var entry = CampaignHostAdapter.QueryNativeCombatSelectionEntryBinding(step);
+            var step = steps[index];
+            var entry = CampaignHostAdapter.QueryNativeCombatSelectionEntryBinding(step,
+                legacyInitiativeOwner: false, resolver: contentResolver);
+            if (entry is null
+                && CampaignHostAdapter.QueryNativeCombatSelectionEntryBinding(step,
+                    legacyInitiativeOwner: true, resolver: contentResolver) is { } legacy)
+            {
+                using var lookup = connection.CreateCommand();
+                lookup.Transaction = transaction;
+                lookup.CommandText = "SELECT 1 FROM selection_rounds WHERE campaign_id=$id AND entry_hash=$entry";
+                lookup.Parameters.AddWithValue("$id", campaignId);
+                lookup.Parameters.AddWithValue("$entry", legacy.EntryHash);
+                var hasRetainedRound = lookup.ExecuteScalar() is not null;
+                var hasRetainedUnavailableTimeout = false;
+                if (index + 1 < steps.Count
+                    && steps[index + 1].Kind == CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind
+                    && steps[index + 1].EventRecords.Count == 1)
+                {
+                    using var timeout = JsonDocument.Parse(steps[index + 1].EventRecords[0]);
+                    hasRetainedUnavailableTimeout = timeout.RootElement.GetProperty("contractVersion").GetInt32() == 38
+                        && timeout.RootElement.GetProperty("reason").GetString() == "selection-unavailable"
+                        && timeout.RootElement.GetProperty("entryHash").GetString() == legacy.EntryHash;
+                }
+                if (hasRetainedRound || hasRetainedUnavailableTimeout) entry = legacy;
+            }
             if (entry is { } binding)
             {
                 if (pending is not null) throw new InvalidOperationException("Selection entry overlaps pending round.");

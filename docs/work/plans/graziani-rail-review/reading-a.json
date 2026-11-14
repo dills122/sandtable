@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "scope": "graziani-rail-review-v1",
+  "manifest_sha256": "0933969aedbb35a12bfda48a9c907286a0cf15183ca6b7e8e42d71ffd14c78b6",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "initial-rail-60-7",
+      "locator": "printed p. 28, §60.7",
+      "values": {
+        "rail_ends_at": "Mersa Matruh"
+      }
+    },
+    {
+      "id": "rail-8-71",
+      "locator": "printed p. 15, §8.71",
+      "values": {
+        "usable_line": "Alexandria–Mersa Matruh",
+        "initial_text_permits": "Commonwealth only",
+        "benghazi_barce_line_usable": false
+      }
+    },
+    {
+      "id": "axis-correction-8-71",
+      "locator": "PDF p. 1, §8.71",
+      "values": {
+        "axis_rail_use_subject_to": "§54.4"
+      }
+    },
+    {
+      "id": "rail-8-72",
+      "locator": "printed p. 15, §8.72",
+      "values": {
+        "movement_per_operation_stage": 1,
+        "stacks_per_direction": 1,
+        "permitted_directions": "each direction"
+      }
+    },
+    {
+      "id": "rail-8-73",
+      "locator": "printed p. 15, §8.73",
+      "values": {
+        "must_start_on_rail": true,
+        "other_capability_point_expenditure_same_stage": false,
+        "entry_into_enemy_zoc_or_occupied_hex": false
+      }
+    },
+    {
+      "id": "reorganization-8-73",
+      "locator": "PDF p. 1, §8.73",
+      "values": {
+        "rail_traveller_may_earn_reorganization_points_same_stage": false
+      }
+    },
+    {
+      "id": "construction-24-61",
+      "locator": "printed p. 37, §24.61",
+      "values": {
+        "new_rail_builders": "10th and 13th NZ railroad construction companies",
+        "engineers_can_repair_existing_rail": true
+      }
+    },
+    {
+      "id": "construction-24-62",
+      "locator": "printed p. 37, §24.62",
+      "values": {
+        "one_company_stages_per_hex": 2,
+        "two_companies_stages_per_hex": 1,
+        "two_companies_must_share_hex": true
+      }
+    },
+    {
+      "id": "axis-rail-54-4",
+      "locator": "printed p. 23, §§54.41–54.43",
+      "values": {
+        "rail_hexes_controlled_and_contiguous": true,
+        "imported_rolling_stock": true,
+        "axis_may_build_new_rail": false,
+        "axis_may_repair_rail": true
+      }
+    },
+    {
+      "id": "supply-rail-32-34",
+      "locator": "printed p. 43, §32.34",
+      "values": {
+        "supply_units_per_stage": 2,
+        "real_and_dummy": true,
+        "directions": "one"
+      }
+    }
+  ]
+}

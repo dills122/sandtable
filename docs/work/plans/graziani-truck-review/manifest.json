@@ -1,0 +1,297 @@
+{
+  "version": 1,
+  "scope": "graziani-initial-trucks-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "rows": [
+    {
+      "id": "axis-first-c4218",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c4120",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c4020",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c3920",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c3919",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c3918",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c3617",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c4707",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-c4507",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-bardia",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-tobruk",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-barce",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "axis-first-near-c0716",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c4131",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c3926",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c3922",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c3721",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c3520",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c3320",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-c3020",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-d3714",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-d3612",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-d3615",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-e1829",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "cw-first-alexandria",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-axis-tripoli",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-axis-libya",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-axis-air",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-cw-cairo",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-cw-alexandria",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-cw-maps",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    },
+    {
+      "id": "pool-cw-air",
+      "source": "scenario",
+      "fields": [
+        "light",
+        "medium",
+        "heavy"
+      ]
+    }
+  ]
+}

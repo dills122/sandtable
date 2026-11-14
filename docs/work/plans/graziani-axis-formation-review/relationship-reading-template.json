@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-setup-relationships-v1",
+  "manifest_sha256": "c5a2b63bfdf8ce27d34851238ca964519148957c6c2c402caadccd5a4d0d5495",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "cirene-scenario",
+      "locator": "UNVERIFIED",
+      "values": {
+        "hex": null,
+        "tank_mark": null,
+        "parent_mark": null
+      }
+    },
+    {
+      "id": "marmarica-scenario",
+      "locator": "UNVERIFIED",
+      "values": {
+        "hex": null,
+        "tank_mark": null,
+        "parent_mark": null
+      }
+    },
+    {
+      "id": "cirene-tank-oa",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "assigned_parent": null,
+        "initial_attachment": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-tank-oa",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "assigned_parent": null,
+        "initial_attachment": null,
+        "arrival_mark": null
+      }
+    }
+  ]
+}

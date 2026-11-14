@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "scope": "graziani-abstract-convoy-review-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "axis-charts": "9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "rows": [
+    {
+      "id": "scenario-60-37",
+      "source": "scenario",
+      "fields": [
+        "pre_start_planning_period",
+        "permitted_lanes"
+      ]
+    },
+    {
+      "id": "cargo-32-61",
+      "source": "land-compiled",
+      "fields": [
+        "included_categories",
+        "simplified_convoy_has_tonnage_limit",
+        "cargo_may_be_divided_between_available_lanes"
+      ]
+    },
+    {
+      "id": "lane-limit-32-62",
+      "source": "land-compiled",
+      "fields": [
+        "supply_units_per_lane_per_naval_convoy_stage",
+        "motorization_points_per_lane_per_naval_convoy_stage",
+        "replacement_pool_chart_totals_apply_per_turn"
+      ]
+    },
+    {
+      "id": "attack-32-63",
+      "source": "land-compiled",
+      "fields": [
+        "weather_limits_attack",
+        "axis_announces_lanes_used",
+        "attack_each_arriving_convoy_separately"
+      ]
+    },
+    {
+      "id": "lookup-32-64",
+      "source": "land-compiled",
+      "fields": [
+        "bomb_points_depend_on_lane_and_qualifying_division",
+        "result_uses_two_sequential_dice",
+        "result_table"
+      ]
+    },
+    {
+      "id": "loss-32-65a",
+      "source": "land-compiled",
+      "fields": [
+        "ten_percent_applies_to",
+        "motorization_rounding",
+        "replacement_rounding"
+      ]
+    },
+    {
+      "id": "loss-32-65b",
+      "source": "land-compiled",
+      "fields": [
+        "threshold_percent",
+        "fraction_rounding",
+        "minimum_loss_instruction_present",
+        "tank_and_gun_aggregation"
+      ]
+    },
+    {
+      "id": "qualification-32-66",
+      "source": "axis-charts",
+      "fields": [
+        "division_must_be_non_shell",
+        "qualification",
+        "attacks_on_other_convoys_affect_attack_strength_or_results"
+      ]
+    },
+    {
+      "id": "bombardment-41-5",
+      "source": "common-charts",
+      "fields": [
+        "target",
+        "bomb_points_column",
+        "dice_range",
+        "result_percent"
+      ]
+    },
+    {
+      "id": "air-loss-41-67",
+      "source": "air-rules",
+      "fields": [
+        "fractions_round",
+        "tank_and_gun_groups",
+        "applies_to_each_cargo_type"
+      ]
+    },
+    {
+      "id": "errata-loss-41-67",
+      "source": "errata",
+      "fields": [
+        "percentage_applies_to_each_cargo_type"
+      ]
+    }
+  ]
+}

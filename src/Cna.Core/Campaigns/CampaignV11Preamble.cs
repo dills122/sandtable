@@ -53,6 +53,8 @@ internal static class CampaignV11Preamble
                 return new NoObligationOrganizationResolved(prior.CampaignId, version, from, turn, 1,
                     next, NoObligationOrganizationResolved.RequiredSources);
             case ResolveNoObligationNavalConvoyArrivalAction when prior.StateVersion == 7:
+                if (HasDueOrOverdueArrival(scenario, turn, position.OperationStage))
+                    throw new InvalidOperationException("Scheduled arrivals require successor authority.");
                 return new NoObligationNavalConvoyArrivalResolved(prior.CampaignId, version, from, turn, 1,
                     next, NoObligationNavalConvoyArrivalResolved.RequiredSources);
             case ResolveNoObligationFleetAssignmentAction when prior.StateVersion == 8:
@@ -68,7 +70,7 @@ internal static class CampaignV11Preamble
                 if (element is null || content is null || content.PlacementMode != ContentPlacementMode.Independent
                     || content.SideId != CampaignSnapshotSerializer.FormatSide(side)
                     || element.ReserveStatus != CampaignElementReserveStatus.None
-                    || scenario.InitialPlacements.Single(x => x.ElementId == element.ElementId).LocationId != element.CurrentLocationId)
+                    || ContentScenarioInitialPlacements.Expand(scenario).Single(x => x.ElementId == element.ElementId).LocationId != element.CurrentLocationId)
                     throw new InvalidOperationException("Invalid Reserve selection.");
                 return new ReserveElementDesignated(prior.CampaignId, version, from, turn, 1, side,
                     reserve.ElementId, CampaignElementReserveStatus.None, CampaignElementReserveStatus.ReserveI,
@@ -124,9 +126,7 @@ internal static class CampaignV11Preamble
                     rng = new(rng.ContractVersion, rng.AlgorithmId, rng.Seed, resolved.RandomCursorAfter);
                     break;
                 case ReserveElementDesignated reserve:
-                    world = new CampaignWorldSnapshotV6(6, world.Elements.Select(x => x.ElementId == reserve.ElementId
-                        ? new CampaignElementStateV5(x.ElementId, x.CurrentLocationId, CampaignElementReserveStatus.ReserveI,
-                            x.OperationalState, x.Components) : x), world.Representations, world.BrokenVehicleLots);
+                    world = CampaignWorldV6Factory.DesignateReserve(world, reserve.ElementId);
                     break;
                 case ReserveDesignationCompleted:
                     position = new(4, position.PositionId, position.GameTurn, position.OperationStage,
@@ -145,5 +145,12 @@ internal static class CampaignV11Preamble
         catch (Exception error) when (error is ArgumentException or InvalidOperationException or ArithmeticException or System.Text.Json.JsonException)
         { throw new InvalidCampaignHistoryException(error.Message); }
     }
+    internal static bool HasDueOrOverdueArrival(ContentScenario scenario, int gameTurn, int operationStage)
+    {
+        ArgumentNullException.ThrowIfNull(scenario);
+        return scenario.ScheduledArrivals.Any(arrival => arrival.Arrival.GameTurn < gameTurn
+            || (arrival.Arrival.GameTurn == gameTurn && arrival.Arrival.OperationStage <= operationStage));
+    }
+
     private static LandSide Opposite(LandSide side) => side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
 }

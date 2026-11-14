@@ -17,7 +17,7 @@ internal sealed record CampaignContactCombatSelectionCut(
 
     public static CampaignContactCombatSelectionCut Project(CampaignSnapshotV11 snapshot,
         CampaignContentContext context, CampaignContactJournal contacts, LandSide side,
-        string actingElementId)
+        string actingElementId, bool legacyInitiativeOwner = false)
     {
         var owner = CampaignContactOwnerMovementCut.Project(snapshot, context, contacts,
             side, actingElementId);
@@ -28,7 +28,10 @@ internal sealed record CampaignContactCombatSelectionCut(
             || position.SegmentId != LandSegmentIds.Combat
             || position.StepId != LandStepIds.PositionDetermination
             || position.ActorRole != LandActorRole.FirstActingSide
-            || snapshot.InitiativeHolder != side
+            || (legacyInitiativeOwner
+                ? snapshot.InitiativeHolder != side
+                : !snapshot.OperationStageOrders.Any(order => order.GameTurn == position.GameTurn
+                    && order.OperationStage == position.OperationStage && order.FirstSide == side))
             || snapshot.ReactionWindow is not null
             || snapshot.BreakdownFlow is not CampaignBreakdownFlow.Idle)
             throw new InvalidOperationException("Combat selection requires the acting side's position-determination cut.");
@@ -41,9 +44,15 @@ internal sealed record CampaignContactCombatSelectionCut(
         // V6 world has no positive ZOC source; future worlds must derive this from
         // their own certified source facts before they can offer a voluntary finish.
         var opposing = side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
-        var mayFinish = context.ArtifactV6 is { } artifact
-            && CampaignElementMovedV3Factory.DeriveControlledLocationIds(
-                snapshot.World, artifact, context.Scenario, opposing).Count == 0;
+        var mayFinish = false;
+        if (context.ArtifactV6 is { } artifact)
+        {
+            var enemyControl = CampaignElementMovedV3Factory.DeriveZocAuthority(
+                snapshot.World, artifact, context.Scenario, opposing);
+            if (enemyControl.SourceRepresentationIds.Count != 0 || enemyControl.ControlledLocationIds.Count != 0)
+                throw new InvalidOperationException("Positive ZOC needs a contact-safe Combat projection.");
+            mayFinish = true;
+        }
         return new(snapshot.StateVersion, owner, Array.AsReadOnly(offers),
             mayFinish ? new FinishCombatWithoutAttackAction(actingElementId) : null);
     }

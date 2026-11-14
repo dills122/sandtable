@@ -39,6 +39,17 @@ internal sealed class CampaignContactJournal
             new CampaignContactKnowledge(campaignId, LandSide.Commonwealth), []);
     }
 
+    // The pinned Cairo excerpt has no Axis counters and hence no initial contacts.
+    internal static CampaignContactJournal InitializePregameSource(string campaignId) =>
+        Empty(campaignId).AtAuthorityVersion(1);
+
+    internal CampaignContactJournal AdvancePregameSource(long priorVersion)
+    {
+        if (AuthorityVersion != priorVersion || priorVersion < 1 || records.Length != 0)
+            throw new InvalidOperationException("Invalid pre-game contact authority.");
+        return AtAuthorityVersion(checked(priorVersion + 1));
+    }
+
     public static CampaignContactJournal Initialize(CampaignSnapshotV11 created,
         CampaignContentContext context)
     {
@@ -303,6 +314,58 @@ internal sealed class CampaignContactJournal
             throw new ArgumentException("Cycle control does not bind contact authority.",
                 nameof(control));
         return AtAuthorityVersion(control.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceTruckConvoyPass(CampaignNativeTruckConvoyPassV41 passed)
+    {
+        ArgumentNullException.ThrowIfNull(passed);
+        if (passed.CampaignId != CampaignId || passed.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Truck Convoy pass does not bind contact authority.", nameof(passed));
+        return AtAuthorityVersion(passed.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvancePostCombatPass(CampaignNativePostCombatPassV42 passed)
+    {
+        ArgumentNullException.ThrowIfNull(passed);
+        if (passed.CampaignId != CampaignId || passed.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Post-combat pass does not bind contact authority.", nameof(passed));
+        return AtAuthorityVersion(passed.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceSecondReserve(CampaignNativeSecondReserveV43 reserve)
+    {
+        ArgumentNullException.ThrowIfNull(reserve);
+        if (reserve.CampaignId != CampaignId || reserve.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Second Reserve does not bind contact authority.", nameof(reserve));
+        return AtAuthorityVersion(reserve.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceSecondMovementCompletion(CampaignNativeSecondMovementCompletedV45 completed)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        if (completed.CampaignId != CampaignId || completed.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Second Movement completion does not bind contact authority.", nameof(completed));
+        return AtAuthorityVersion(completed.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceSecondBreakdown(CampaignNativeSecondBreakdownV46 completed)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        if (completed.CampaignId != CampaignId || completed.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Second Breakdown does not bind contact authority.", nameof(completed));
+        return AtAuthorityVersion(completed.StateVersion);
+    }
+
+    internal CampaignContactJournal AppendNativeSecondMove(CampaignWorldSnapshotV6 before,
+        CampaignWorldSnapshotV6 after, CampaignNativeSecondMoveV44 movement, CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        if (movement.CampaignId != CampaignId || movement.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Second Movement does not bind contact authority.", nameof(movement));
+        return ApplySources(
+            CampaignContactAdjacencySource.OnNativeSecondMove(before, after, movement, context, axis),
+            CampaignContactAdjacencySource.OnNativeSecondMove(before, after, movement, context, commonwealth))
+            .AtAuthorityVersion(movement.StateVersion);
     }
 
     internal CampaignContactJournal AdvanceNativeRepeatMove(

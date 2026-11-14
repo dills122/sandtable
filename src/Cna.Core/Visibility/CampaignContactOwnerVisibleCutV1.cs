@@ -12,7 +12,11 @@ internal static class CampaignContactOwnerVisibleCutV1
 {
     public const int ContractVersion = 1;
 
-    public static byte[] SerializeCanonical(CampaignContactOwnerMovementCut cut)
+    public static byte[] SerializeCanonical(CampaignContactOwnerMovementCut cut) => Serialize(cut, false);
+
+    internal static byte[] SerializeSecondMovement(CampaignContactOwnerMovementCut cut) => Serialize(cut, true);
+
+    private static byte[] Serialize(CampaignContactOwnerMovementCut cut, bool moveAndStop)
     {
         ArgumentNullException.ThrowIfNull(cut);
         var observation = cut.ContactObservation;
@@ -24,7 +28,7 @@ internal static class CampaignContactOwnerVisibleCutV1
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", ContractVersion);
+            writer.WriteNumber("contractVersion", moveAndStop ? 2 : ContractVersion);
             writer.WriteString("campaignId", observation.CampaignId);
             writer.WriteString("side", observation.Side == LandSide.Axis ? "axis" : "commonwealth");
             writer.WriteString("actingFormationId", observation.ActingFormationId);
@@ -40,7 +44,7 @@ internal static class CampaignContactOwnerVisibleCutV1
                          StringComparer.Ordinal))
             {
                 writer.WriteStartObject();
-                writer.WriteString("kind", "move-element");
+                writer.WriteString("kind", moveAndStop ? "move-and-stop" : "move-element");
                 writer.WriteString("elementId", offer.ElementId);
                 writer.WriteString("originLocationId", offer.OriginLocationId);
                 writer.WriteString("destinationLocationId", offer.DestinationLocationId);

@@ -7,6 +7,25 @@ namespace Cna.Core.Observations;
 /// <summary>Shared owner-only fields for historical and contact-based observations.</summary>
 internal static class CampaignOwnElementProjection
 {
+    // Content may contain scheduled units which do not yet have world state.
+    // Project only units present in this authority cut; arrival scheduling is
+    // private and belongs to its own owner-facing view.
+    internal static ObservedOwnElement[] ProjectPlaced(ContentPackDefinition definition,
+        CampaignWorldSnapshotV6 world, LandSide side)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        ArgumentNullException.ThrowIfNull(world);
+        if (!Enum.IsDefined(side)) throw new ArgumentOutOfRangeException(nameof(side));
+        var sideId = CampaignSnapshotSerializer.FormatSide(side);
+        var states = world.Elements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var represented = world.Representations.SelectMany(value => value.BoundElementIds)
+            .ToHashSet(StringComparer.Ordinal);
+        return definition.Elements.Where(value => value.SideId == sideId
+                && value.PlacementMode == ContentPlacementMode.Independent
+                && states.ContainsKey(value.ElementId) && represented.Contains(value.ElementId))
+            .Select(value => Project(value, states[value.ElementId])).ToArray();
+    }
+
     public static ObservedOwnElement Project(ContentCombatElement content,
         CampaignElementStateV5 state) => new(
         content.ElementId,

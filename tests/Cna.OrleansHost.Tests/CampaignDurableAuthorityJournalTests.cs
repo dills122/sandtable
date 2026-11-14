@@ -1181,7 +1181,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart()
+    public async Task VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart()
     {
         using var fixture = new JournalFixture();
         var journal = fixture.Create();
@@ -1218,6 +1218,310 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.True(finished.IsAccepted);
         Assert.Equal(28, CampaignExercises.QueryCheckpoint(
             fixture.Open().ReadVerified(request.CampaignId)).ContractVersion);
+        var opponent = reopened.RedeemSeatGrant(reopened.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        Assert.Throws<InvalidOperationException>(() => reopened.QueryTruckConvoyPassOwnerOpening(opponent));
+        var convoy = reopened.QueryTruckConvoyPassOwnerOpening(credential);
+        Assert.Single(convoy.PublicActionRefs);
+        Assert.False(reopened.SubmitOwnerTruckConvoyPass(credential, convoy.Revision + 1,
+            convoy.PublicActionRefs[0]).IsAccepted);
+        var passed = reopened.SubmitOwnerTruckConvoyPass(credential, convoy.Revision, convoy.PublicActionRefs[0]);
+        Assert.True(passed.IsAccepted);
+        var cold = fixture.Open();
+        var passRetry = cold.SubmitOwnerTruckConvoyPass(credential, convoy.Revision, convoy.PublicActionRefs[0]);
+        Assert.True(passRetry.IsAccepted);
+        Assert.Equal(passed.CanonicalReceipt, passRetry.CanonicalReceipt);
+        var afterPass = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(41, CampaignExercises.QueryCheckpoint(afterPass).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterPass).IsVerified);
+        CampaignOwnerOpening? firstPhase = null;
+        CampaignOwnerSubmissionResult? firstPhaseReceipt = null;
+        for (var index = 0; index < 4; index++)
+        {
+            cold = fixture.Open();
+            Assert.Throws<InvalidOperationException>(() => cold.QueryPostCombatPassOwnerOpening(opponent));
+            var phase = cold.QueryPostCombatPassOwnerOpening(credential);
+            var phaseResult = cold.SubmitOwnerPostCombatPass(credential, phase.Revision,
+                Assert.Single(phase.PublicActionRefs));
+            Assert.True(phaseResult.IsAccepted);
+            firstPhase ??= phase;
+            firstPhaseReceipt ??= phaseResult;
+        }
+        cold = fixture.Open();
+        var laterRetry = cold.SubmitOwnerPostCombatPass(credential, firstPhase!.Revision, firstPhase.PublicActionRefs[0]);
+        Assert.True(laterRetry.IsAccepted);
+        Assert.Equal(firstPhaseReceipt!.CanonicalReceipt, laterRetry.CanonicalReceipt);
+        var nextSide = cold.ReadVerified(request.CampaignId);
+        Assert.Equal(42, CampaignExercises.QueryCheckpoint(nextSide).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(nextSide).IsVerified);
+        Assert.Throws<InvalidOperationException>(() => cold.QueryPostCombatPassOwnerOpening(credential));
+        Assert.Throws<InvalidOperationException>(() => cold.QuerySecondReserveOwnerOpening(credential));
+        var secondReserve = cold.QuerySecondReserveOwnerOpening(opponent);
+        using var secondVisible = System.Text.Json.JsonDocument.Parse(secondReserve.VisibleBytes);
+        var secondChoices = secondVisible.RootElement.GetProperty("choices");
+        Assert.True(secondChoices.GetArrayLength() > 1);
+        var movementElement = secondChoices[0].GetProperty("elementId").GetString()!;
+        using var movementCopy = IntegratedCampaignSave(fixture.Path, TimeProvider.System, []);
+        Assert.DoesNotContain("axis-infantry", System.Text.Encoding.UTF8.GetString(secondReserve.VisibleBytes),
+            StringComparison.Ordinal);
+        var designated = cold.SubmitOwnerSecondReserve(opponent, secondReserve.Revision, secondReserve.PublicActionRefs[0]);
+        Assert.True(designated.IsAccepted);
+        var afterDesignation = fixture.Open();
+        var designationRetry = afterDesignation.SubmitOwnerSecondReserve(opponent, secondReserve.Revision,
+            secondReserve.PublicActionRefs[0]);
+        Assert.True(designationRetry.IsAccepted);
+        Assert.Equal(designated.CanonicalReceipt, designationRetry.CanonicalReceipt);
+        var completeReserve = afterDesignation.QuerySecondReserveOwnerOpening(opponent);
+        var completedReserve = afterDesignation.SubmitOwnerSecondReserve(opponent, completeReserve.Revision,
+            completeReserve.PublicActionRefs[^1]);
+        Assert.True(completedReserve.IsAccepted);
+        var finalReserve = fixture.Open().ReadVerified(request.CampaignId);
+        Assert.Equal(43, CampaignExercises.QueryCheckpoint(finalReserve).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(finalReserve).IsVerified);
+        var child = await FreshProcessRunDeadlineChild(fixture.Path, request.CampaignId,
+            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        Assert.True(child.IsVerified);
+        Assert.NotEqual(Environment.ProcessId, child.ProcessId);
+        Assert.Equal(43, child.ContractVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(finalReserve).EventStreamHash, child.EventStreamHash);
+
+        var completionJournal = fixture.Open();
+        Assert.Throws<InvalidOperationException>(() => completionJournal.QuerySecondMovementCompletionOwnerOpening(credential));
+        var movementCompletion = completionJournal.QuerySecondMovementCompletionOwnerOpening(opponent);
+        Assert.Contains("complete-movement", Encoding.UTF8.GetString(movementCompletion.VisibleBytes), StringComparison.Ordinal);
+        var completionBuilder = WebApplication.CreateBuilder();
+        completionBuilder.Environment.EnvironmentName = "Development";
+        completionBuilder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        completionBuilder.Services.AddSingleton(completionJournal);
+        await using (var completionApp = completionBuilder.Build())
+        {
+            completionApp.MapDurableCampaignApi();
+            await completionApp.StartAsync(TestContext.Current.CancellationToken);
+            try
+            {
+                var address = completionApp.Services.GetRequiredService<IServer>().Features
+                    .Get<IServerAddressesFeature>()!.Addresses.Single();
+                using var client = new HttpClient { BaseAddress = new Uri(address) };
+                object Seat(CampaignSeatCredential value) => new
+                {
+                    campaignId = value.CampaignId,
+                    audience = value.Audience == CampaignActionAudience.Axis ? "axis" : "commonwealth",
+                    epoch = value.Epoch,
+                    secret = value.Secret,
+                    expiresUnixMs = value.ExpiresUnixMs,
+                };
+                StringContent OpeningFor(CampaignSeatCredential value) => new(JsonSerializer.Serialize(new
+                {
+                    contractVersion = 2,
+                    credential = Seat(value),
+                    stage = "second-movement-completion",
+                    actingElementId = "land.second-movement-completion",
+                }), Encoding.UTF8, "application/json");
+                var path = $"/api/v2/campaigns/{request.CampaignId}/openings";
+                var denied = await client.PostAsync(path, OpeningFor(credential), TestContext.Current.CancellationToken);
+                Assert.Equal(HttpStatusCode.Conflict, denied.StatusCode);
+                var completionResponse = await client.PostAsync(path, OpeningFor(opponent), TestContext.Current.CancellationToken);
+                Assert.Equal(HttpStatusCode.OK, completionResponse.StatusCode);
+                using var outward = JsonDocument.Parse(await completionResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+                Assert.Equal(movementCompletion.Revision, outward.RootElement.GetProperty("revision").GetInt64());
+                Assert.Equal(movementCompletion.VisibleBytes,
+                    Convert.FromBase64String(outward.RootElement.GetProperty("visibleCutBase64").GetString()!));
+                var action = JsonSerializer.Serialize(new
+                {
+                    contractVersion = 2,
+                    credential = Seat(opponent),
+                    stage = "second-movement-completion",
+                    actingElementId = "land.second-movement-completion",
+                    openingRevision = movementCompletion.Revision,
+                    publicActionRef = movementCompletion.PublicActionRefs[0],
+                });
+                var completionAccepted = await client.PostAsync($"/api/v2/campaigns/{request.CampaignId}/actions",
+                    new StringContent(action, Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
+                Assert.Equal(HttpStatusCode.OK, completionAccepted.StatusCode);
+                var receipt = await completionAccepted.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+                Assert.DoesNotContain("actionId", receipt, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("axis-infantry", receipt, StringComparison.Ordinal);
+            }
+            finally
+            {
+                await completionApp.StopAsync(TestContext.Current.CancellationToken);
+            }
+        }
+        var completedMovement = completionJournal.SubmitOwnerSecondMovementCompletion(opponent,
+            movementCompletion.Revision, Assert.Single(movementCompletion.PublicActionRefs));
+        Assert.True(completedMovement.IsAccepted);
+        var completedCold = fixture.Open();
+        var completionRetry = completedCold.SubmitOwnerSecondMovementCompletion(opponent,
+            movementCompletion.Revision, movementCompletion.PublicActionRefs[0]);
+        Assert.True(completionRetry.IsAccepted);
+        Assert.Equal(completedMovement.CanonicalReceipt, completionRetry.CanonicalReceipt);
+        var completedHead = completedCold.ReadVerified(request.CampaignId);
+        var completedCheckpoint = CampaignExercises.QueryCheckpoint(completedHead);
+        Assert.Equal(46, completedCheckpoint.ContractVersion);
+        Assert.DoesNotContain("breakdown-determination", completedCheckpoint.PositionId, StringComparison.Ordinal);
+        Assert.True(CampaignExercises.Reconstruct(completedHead).IsVerified);
+        Assert.Throws<InvalidOperationException>(() => completedCold.QuerySecondMovementCompletionOwnerOpening(opponent));
+        var completionChild = await FreshProcessRunDeadlineChild(fixture.Path, request.CampaignId,
+            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        Assert.True(completionChild.IsVerified);
+        Assert.Equal(46, completionChild.ContractVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(completedHead).EventStreamHash, completionChild.EventStreamHash);
+
+        // Corrupt an intermediate retained predecessor in memory. Verifying the
+        // head must replay the whole chain, not just the latest completion.
+        const System.Reflection.BindingFlags hidden = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var breakdownPredecessor = typeof(ExerciseSession).GetProperty("SecondBreakdownPredecessor", hidden)!;
+        var completionPredecessor = typeof(ExerciseSession).GetProperty("SecondMovementCompletionPredecessor", hidden)!;
+        var reservePredecessor = typeof(ExerciseSession).GetProperty("SecondReservePredecessor", hidden)!;
+        var movementCompleteHead = (ExerciseSession)breakdownPredecessor.GetValue(completedHead)!;
+        var reserveHead = (ExerciseSession)completionPredecessor.GetValue(movementCompleteHead)!;
+        var intermediate = (ExerciseSession)reservePredecessor.GetValue(reserveHead)!;
+        reservePredecessor.SetValue(intermediate, intermediate);
+        Assert.False(CampaignExercises.Reconstruct(completedHead).IsVerified);
+
+        var movementJournal = movementCopy.Open();
+        var noReserve = movementJournal.QuerySecondReserveOwnerOpening(opponent);
+        Assert.True(movementJournal.SubmitOwnerSecondReserve(opponent, noReserve.Revision,
+            noReserve.PublicActionRefs[^1]).IsAccepted);
+        var beforeMovement = movementJournal.ReadVerified(request.CampaignId);
+        var movementCheckpoint = CampaignExercises.QueryCheckpoint(beforeMovement);
+        using var unblockedCopy = IntegratedCampaignSave(movementCopy.Path, TimeProvider.System, []);
+        using var noReserveVisible = JsonDocument.Parse(noReserve.VisibleBytes);
+        string? unblockedElement = null;
+        var unblockedIndex = -1;
+        foreach (var choice in noReserveVisible.RootElement.GetProperty("choices").EnumerateArray())
+        {
+            if (choice.GetProperty("elementId").ValueKind == JsonValueKind.Null) continue;
+            var id = choice.GetProperty("elementId").GetString()!;
+            var draft = CampaignHostAdapter.QuerySecondMovementOwnerDraft(beforeMovement,
+                CampaignActionAudience.Commonwealth, id);
+            for (var index = 0; index < draft.PrivateActionIds.Count; index++)
+            {
+                var candidate = CampaignHostAdapter.SubmitSecondMovement(beforeMovement,
+                    new CampaignActionSubmission(1, request.CampaignId, movementCheckpoint.StateVersion,
+                        movementCheckpoint.PositionId, CampaignActionAudience.Commonwealth,
+                        draft.PrivateActionIds[index]), id);
+                if (!candidate.IsAccepted) continue;
+                using var candidateEvent = JsonDocument.Parse(candidate.Evidence!.EventRecords[0]);
+                if (candidateEvent.RootElement.GetProperty("reactionWindow").ValueKind != JsonValueKind.Null) continue;
+                unblockedElement = id;
+                unblockedIndex = index;
+                break;
+            }
+            if (unblockedElement is not null) break;
+        }
+        Assert.NotNull(unblockedElement);
+        var unblockedJournal = unblockedCopy.Open();
+        var unblockedOpening = unblockedJournal.QuerySecondMovementOwnerOpening(opponent, unblockedElement);
+        Assert.True(unblockedJournal.SubmitOwnerSecondMovement(opponent, unblockedElement,
+            unblockedOpening.Revision, unblockedOpening.PublicActionRefs[unblockedIndex]).IsAccepted);
+        var finishAfterMove = unblockedJournal.QuerySecondMovementCompletionOwnerOpening(opponent);
+        Assert.True(unblockedJournal.SubmitOwnerSecondMovementCompletion(opponent, finishAfterMove.Revision,
+            Assert.Single(finishAfterMove.PublicActionRefs)).IsAccepted);
+        var afterUnblockedMove = unblockedCopy.Open().ReadVerified(request.CampaignId);
+        Assert.Equal(46, CampaignExercises.QueryCheckpoint(afterUnblockedMove).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterUnblockedMove).IsVerified);
+        var unblockedChild = await FreshProcessRunDeadlineChild(unblockedCopy.Path, request.CampaignId,
+            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        Assert.True(unblockedChild.IsVerified);
+        Assert.Equal(46, unblockedChild.ContractVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(afterUnblockedMove).EventStreamHash, unblockedChild.EventStreamHash);
+        var movementDraft = CampaignHostAdapter.QuerySecondMovementOwnerDraft(beforeMovement,
+            CampaignActionAudience.Commonwealth, movementElement);
+        var triggeredIndex = Enumerable.Range(0, movementDraft.PrivateActionIds.Count).FirstOrDefault(index =>
+        {
+            var step = CampaignHostAdapter.SubmitSecondMovement(beforeMovement,
+                new CampaignActionSubmission(1, request.CampaignId, movementCheckpoint.StateVersion,
+                    movementCheckpoint.PositionId, CampaignActionAudience.Commonwealth,
+                    movementDraft.PrivateActionIds[index]), movementElement);
+            if (!step.IsAccepted) return false;
+            using var candidate = System.Text.Json.JsonDocument.Parse(step.Evidence!.EventRecords[0]);
+            return candidate.RootElement.GetProperty("reactionWindow").ValueKind != System.Text.Json.JsonValueKind.Null;
+        }, -1);
+        Assert.True(triggeredIndex >= 0);
+        Assert.Throws<InvalidOperationException>(() => movementJournal.QuerySecondMovementOwnerOpening(credential, movementElement));
+        var moveOpening = movementJournal.QuerySecondMovementOwnerOpening(opponent, movementElement);
+        Assert.NotEmpty(moveOpening.PublicActionRefs);
+        Assert.Contains("move-and-stop", System.Text.Encoding.UTF8.GetString(moveOpening.VisibleBytes), StringComparison.Ordinal);
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(movementJournal);
+        await using (var app = builder.Build())
+        {
+            app.MapDurableCampaignApi();
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            try
+            {
+                var address = app.Services.GetRequiredService<IServer>().Features
+                    .Get<IServerAddressesFeature>()!.Addresses.Single();
+                using var client = new HttpClient { BaseAddress = new Uri(address) };
+                object Seat(CampaignSeatCredential value) => new
+                {
+                    campaignId = value.CampaignId,
+                    audience = value.Audience == CampaignActionAudience.Axis ? "axis" : "commonwealth",
+                    epoch = value.Epoch,
+                    secret = value.Secret,
+                    expiresUnixMs = value.ExpiresUnixMs,
+                };
+                StringContent BodyFor(CampaignSeatCredential value) => new(JsonSerializer.Serialize(new
+                {
+                    contractVersion = 2,
+                    credential = Seat(value),
+                    stage = "second-movement",
+                    actingElementId = movementElement,
+                }), Encoding.UTF8, "application/json");
+                var path = $"/api/v2/campaigns/{request.CampaignId}/openings";
+                var denied = await client.PostAsync(path, BodyFor(credential), TestContext.Current.CancellationToken);
+                Assert.Equal(HttpStatusCode.Conflict, denied.StatusCode);
+                var response = await client.PostAsync(path, BodyFor(opponent), TestContext.Current.CancellationToken);
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                using var outward = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+                var visibleBytes = Convert.FromBase64String(outward.RootElement.GetProperty("visibleCutBase64").GetString()!);
+                Assert.Equal(moveOpening.VisibleBytes, visibleBytes);
+                Assert.DoesNotContain("axis-infantry", Encoding.UTF8.GetString(visibleBytes), StringComparison.Ordinal);
+                Assert.Equal(moveOpening.Revision, outward.RootElement.GetProperty("revision").GetInt64());
+                var action = JsonSerializer.Serialize(new
+                {
+                    contractVersion = 2,
+                    credential = Seat(opponent),
+                    stage = "second-movement",
+                    actingElementId = movementElement,
+                    openingRevision = moveOpening.Revision,
+                    publicActionRef = moveOpening.PublicActionRefs[triggeredIndex],
+                });
+                var acceptedMove = await client.PostAsync($"/api/v2/campaigns/{request.CampaignId}/actions",
+                    new StringContent(action, Encoding.UTF8, "application/json"), TestContext.Current.CancellationToken);
+                Assert.Equal(HttpStatusCode.OK, acceptedMove.StatusCode);
+                var receipt = await acceptedMove.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+                Assert.DoesNotContain("axis-infantry", receipt, StringComparison.Ordinal);
+                Assert.DoesNotContain("actionId", receipt, StringComparison.OrdinalIgnoreCase);
+            }
+            finally
+            {
+                await app.StopAsync(TestContext.Current.CancellationToken);
+            }
+        }
+        var moved = movementJournal.SubmitOwnerSecondMovement(opponent, movementElement,
+            moveOpening.Revision, moveOpening.PublicActionRefs[triggeredIndex]);
+        Assert.True(moved.IsAccepted);
+        var movementCold = movementCopy.Open();
+        var movementRetry = movementCold.SubmitOwnerSecondMovement(opponent, movementElement,
+            moveOpening.Revision, moveOpening.PublicActionRefs[triggeredIndex]);
+        Assert.True(movementRetry.IsAccepted);
+        Assert.Equal(moved.CanonicalReceipt, movementRetry.CanonicalReceipt);
+        var movementHead = movementCold.ReadVerified(request.CampaignId);
+        using var movementEvent = System.Text.Json.JsonDocument.Parse(
+            CampaignExercises.Reconstruct(movementHead).ReconstructedSnapshotBytes!);
+        Assert.NotEqual(System.Text.Json.JsonValueKind.Null, movementEvent.RootElement.GetProperty("reactionWindow").ValueKind);
+        Assert.Equal(44, CampaignExercises.QueryCheckpoint(movementHead).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(movementHead).IsVerified);
+        Assert.Throws<InvalidOperationException>(() => movementCold.QuerySecondMovementCompletionOwnerOpening(opponent));
+        var movementChild = await FreshProcessRunDeadlineChild(movementCopy.Path, request.CampaignId,
+            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        Assert.True(movementChild.IsVerified);
+        Assert.Equal(44, movementChild.ContractVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(movementHead).EventStreamHash, movementChild.EventStreamHash);
     }
 
     [Theory]
@@ -1560,6 +1864,46 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         finally
         {
             Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void SuppliedContentResolverIsUsedForColdJournalReplay()
+    {
+        using var fixture = new JournalFixture();
+        var resolver = new RecordingContentResolver();
+        var journal = CampaignDurableAuthorityJournal.CreateNew(fixture.Path, OperatorSecret,
+            contentResolver: resolver);
+        var session = journal.CreateCampaign(Request());
+        var actionSet = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
+        var command = new CampaignActionSubmission(1, CampaignExercises.QueryCheckpoint(session).CampaignId,
+            actionSet.StateVersion, actionSet.PositionId, CampaignActionAudience.System,
+            actionSet.Candidates.Single().ActionId);
+        var accepted = journal.Append(command.CampaignId, command);
+        Assert.True(accepted.IsAccepted);
+        var callsBeforeReopen = resolver.Calls;
+        var reopened = CampaignDurableAuthorityJournal.OpenExisting(fixture.Path, contentResolver: resolver);
+        Assert.Equal(CampaignExercises.QueryCheckpoint(accepted.SuccessorSession!).StateVersion,
+            CampaignExercises.QueryCheckpoint(reopened.ReadVerified(command.CampaignId)).StateVersion);
+        Assert.True(resolver.Calls > callsBeforeReopen);
+        var unavailable = CampaignDurableAuthorityJournal.OpenExisting(fixture.Path,
+            contentResolver: new RecordingContentResolver(reject: true));
+        Assert.Throws<InvalidOperationException>(() => unavailable.ReadVerified(command.CampaignId));
+    }
+
+    private sealed class RecordingContentResolver(bool reject = false) : IContentPackV6Resolver
+    {
+        private readonly Cna.Core.Content.ContentPackV6Artifact artifact =
+            Cna1979SyntheticContentResolver.Instance.ResolveV6(Request().ContentPackId, Request().ContentHash).Artifact!;
+        public int Calls { get; private set; }
+
+        public Cna.Core.Content.ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash)
+        {
+            Calls++;
+            return reject || artifact.Identity.PackId != packId || artifact.Identity.Hash != expectedHash
+                ? Cna.Core.Content.ContentPackV6CatalogResolution.Rejected(
+                    Cna.Core.Content.ContentCatalogRejectionReason.UnknownPackId)
+                : Cna.Core.Content.ContentPackV6CatalogResolution.Resolved(artifact);
         }
     }
 

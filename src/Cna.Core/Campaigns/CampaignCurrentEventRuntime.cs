@@ -5,8 +5,19 @@ namespace Cna.Core.Campaigns;
 
 internal static class CampaignCurrentEventSerializer
 {
+    internal static byte[] Serialize(object campaignEvent, CampaignContentContext context) =>
+        campaignEvent is CampaignCreatedV10 created
+            ? SerializeCreated(created, context)
+            : Serialize(campaignEvent);
+
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeTruckConvoyPassV41 passed => passed.SerializeCanonical(),
+        CampaignNativePostCombatPassV42 passed => passed.SerializeCanonical(),
+        CampaignNativeSecondReserveV43 reserve => reserve.SerializeCanonical(),
+        CampaignNativeSecondMoveV44 movement => movement.SerializeCanonical(),
+        CampaignNativeSecondMovementCompletedV45 completed => completed.SerializeCanonical(),
+        CampaignNativeSecondBreakdownV46 breakdown => breakdown.SerializeCanonical(),
         CampaignNativeCombatRbaCancellationV33 rbaCancellation => rbaCancellation.SerializeCanonical(),
         CampaignNativeRepeatCombatNoAttackV32 noAttack => noAttack.SerializeCanonical(),
         CampaignNativeRepeatCombatDecisionV31 selection => selection.SerializeCanonical(),
@@ -34,20 +45,41 @@ internal static class CampaignCurrentEventSerializer
         CampaignEvent unchanged => CampaignV11PreambleCodec.Serialize(unchanged),
         _ => throw new JsonException("Unsupported current Campaign event."),
     };
-    public static object Deserialize(ReadOnlyMemory<byte> canonicalJson)
+    public static object Deserialize(ReadOnlyMemory<byte> canonicalJson) => Deserialize(canonicalJson, null);
+
+    internal static object DeserializeWithResolver(ReadOnlyMemory<byte> canonicalJson, IContentPackV6Resolver resolver)
+    {
+        ArgumentNullException.ThrowIfNull(resolver);
+        using var document = JsonDocument.Parse(canonicalJson);
+        if (document.RootElement.GetProperty("eventType").GetString() != "campaign-created")
+            return Deserialize(canonicalJson);
+        var setup = CampaignSetupV6Codec.ParseSetup(document.RootElement.GetProperty("setup"));
+        return Deserialize(canonicalJson, CampaignCurrentSnapshotSerializer.ResolveContext(setup, resolver));
+    }
+
+    internal static object Deserialize(ReadOnlyMemory<byte> canonicalJson, CampaignContentContext? retainedContext)
     {
         using var document = JsonDocument.Parse(canonicalJson);
         var eventType = document.RootElement.GetProperty("eventType").GetString();
         if (eventType == "campaign-created")
         {
             var setup = CampaignSetupV6Codec.ParseSetup(document.RootElement.GetProperty("setup"));
-            var context = CampaignCurrentSnapshotSerializer.ResolveContext(setup);
-            var created = CampaignCreatedV10Serializer.Deserialize(canonicalJson.Span, context.ArtifactV6!, context.Scenario);
-            _ = SerializeCreated(created);
+            var context = retainedContext ?? CampaignCurrentSnapshotSerializer.ResolveContext(setup);
+            if (context.ArtifactV6 is not { } artifact || artifact.Identity != setup.Content.Pack
+                || context.Scenario.ScenarioId != setup.Content.ScenarioId)
+                throw new JsonException("Creation content does not match its retained context.");
+            var created = CampaignCreatedV10Serializer.Deserialize(canonicalJson.Span, artifact, context.Scenario);
+            _ = SerializeCreated(created, context);
             return created;
         }
         return eventType switch
         {
+            "truck-convoy-movement-passed" => CampaignNativeTruckConvoyPassV41.Deserialize(canonicalJson),
+            "post-combat-phase-passed" => CampaignNativePostCombatPassV42.Deserialize(canonicalJson),
+            "second-reserve-decided" => CampaignNativeSecondReserveV43.Deserialize(canonicalJson),
+            "second-element-moved-and-stopped" => CampaignNativeSecondMoveV44.Deserialize(canonicalJson),
+            "second-movement-completed" => CampaignNativeSecondMovementCompletedV45.Deserialize(canonicalJson),
+            "second-breakdown-completed" => CampaignNativeSecondBreakdownV46.Deserialize(canonicalJson),
             "cycle-repeat-combat-no-attack-completed" =>
                 CampaignNativeRepeatCombatNoAttackV32.Deserialize(canonicalJson),
             "cycle-repeat-combat-selection-decided" =>
@@ -93,10 +125,20 @@ internal static class CampaignCurrentEventSerializer
     private static byte[] SerializeCreated(CampaignCreatedV10 created)
     {
         var context = CampaignCurrentSnapshotSerializer.ResolveContext(created.Setup);
-        var snapshot = CampaignCreationV10Factory.CreateSnapshot(created, context.ArtifactV6!, context.Scenario);
-        if (!CampaignSnapshotV11Admission.IsValid(snapshot, context.ArtifactV6!, context.Scenario))
+        return SerializeCreated(created, context);
+    }
+
+    private static byte[] SerializeCreated(CampaignCreatedV10 created, CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        if (context.ArtifactV6 is not { } artifact
+            || artifact.Identity != created.Setup.Content.Pack
+            || context.Scenario.ScenarioId != created.Setup.Content.ScenarioId)
+            throw new JsonException("Creation content does not match its retained context.");
+        var snapshot = CampaignCreationV10Factory.CreateSnapshot(created, artifact, context.Scenario);
+        if (!CampaignSnapshotV11Admission.IsValid(snapshot, artifact, context.Scenario))
             throw new JsonException("Creation is not current certified authority.");
-        return CampaignCreatedV10Serializer.Serialize(created, context.ArtifactV6!, context.Scenario);
+        return CampaignCreatedV10Serializer.Serialize(created, artifact, context.Scenario);
     }
 }
 
@@ -105,19 +147,40 @@ internal static class CampaignCurrentSnapshotSerializer
     public static byte[] Serialize(CampaignSnapshotV11 snapshot)
     {
         var context = ResolveContext(snapshot.Setup);
-        if (!CampaignSnapshotV11Admission.IsValid(snapshot, context.ArtifactV6!, context.Scenario))
-            throw new JsonException("invalid-breakdown-authority");
-        return CampaignSnapshotV11Serializer.Serialize(snapshot, context.ArtifactV6!, context.Scenario);
+        return Serialize(snapshot, context);
     }
-    public static CampaignSnapshotV11 Deserialize(ReadOnlyMemory<byte> bytes)
+
+    // A live campaign already holds the content that was used to create it.  Keep that
+    // binding through checkpoint serialization instead of resolving a global catalog again.
+    internal static byte[] Serialize(CampaignSnapshotV11 snapshot, CampaignContentContext context)
     {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        ArgumentNullException.ThrowIfNull(context);
+        if (context.ArtifactV6 is not { } artifact
+            || artifact.Identity != snapshot.Setup.Content.Pack
+            || context.Scenario.ScenarioId != snapshot.Setup.Content.ScenarioId)
+            throw new JsonException("Current checkpoint content does not match its retained context.");
+        if (!CampaignSnapshotV11Admission.IsValid(snapshot, artifact, context.Scenario))
+            throw new JsonException("invalid-breakdown-authority");
+        return CampaignSnapshotV11Serializer.Serialize(snapshot, artifact, context.Scenario);
+    }
+    public static CampaignSnapshotV11 Deserialize(ReadOnlyMemory<byte> bytes) =>
+        Deserialize(bytes, Cna1979SyntheticContentResolver.Instance);
+
+    internal static CampaignSnapshotV11 Deserialize(ReadOnlyMemory<byte> bytes, IContentPackV6Resolver resolver)
+    {
+        ArgumentNullException.ThrowIfNull(resolver);
         var snapshot = CampaignSnapshotV11Serializer.Deserialize(bytes);
-        _ = Serialize(snapshot);
+        _ = Serialize(snapshot, ResolveContext(snapshot.Setup, resolver));
         return snapshot;
     }
-    internal static CampaignContentContext ResolveContext(CampaignSetupSnapshotV6 setup)
+    internal static CampaignContentContext ResolveContext(CampaignSetupSnapshotV6 setup) =>
+        ResolveContext(setup, Cna1979SyntheticContentResolver.Instance);
+
+    internal static CampaignContentContext ResolveContext(CampaignSetupSnapshotV6 setup, IContentPackV6Resolver resolver)
     {
-        var resolution = Cna1979SyntheticContentCatalog.ResolveV6(setup.Content.Pack.PackId, setup.Content.Pack.Hash);
+        ArgumentNullException.ThrowIfNull(resolver);
+        var resolution = resolver.ResolveV6(setup.Content.Pack.PackId, setup.Content.Pack.Hash);
         if (!resolution.IsResolved || resolution.Artifact is null || resolution.Artifact.Identity != setup.Content.Pack)
             throw new JsonException("Current checkpoint content is not registered.");
         return CampaignContentContext.Create(resolution.Artifact, setup.Content.ScenarioId);

@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "scope": "graziani-port-conflict-review-v1",
+  "manifest_sha256": "5e4b8e35d049b73a879fb0f05b1b14199aced89aa39db003762f567890a5abb4",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "scenario-60-7",
+      "locator": "printed p. 28, §60.7",
+      "values": {
+        "tobruk_initial_efficiency": 7,
+        "harbor_partially_blocked": true
+      }
+    },
+    {
+      "id": "chart-55-3",
+      "locator": "printed p. 15, §55.3",
+      "values": {
+        "tobruk_listed_efficiency": 5,
+        "reinforcements_exempt_from_capacity_and_current_efficiency": true,
+        "initial_efficiency_below_five_due_to_blockage": true
+      }
+    },
+    {
+      "id": "capacity-55-14",
+      "locator": "printed p. 23, §55.14",
+      "values": {
+        "example_max_efficiency": 5,
+        "example_remaining_efficiency": 3,
+        "example_percent_capacity": 60,
+        "capacity_rounding": "nearest ton"
+      }
+    },
+    {
+      "id": "reinforcements-55-15",
+      "locator": "printed p. 23, §55.15",
+      "values": {
+        "scheduled_reinforcements_affect_capacity_or_efficiency": false,
+        "other_troops_may_reduce_efficiency": true
+      }
+    },
+    {
+      "id": "blockage-55-25",
+      "locator": "printed p. 24, §55.25",
+      "values": {
+        "tobruk_initial_reduction_levels": 3,
+        "vessel": "San Giorgio"
+      }
+    },
+    {
+      "id": "clearance-55-26",
+      "locator": "printed p. 24, §55.26",
+      "values": {
+        "tobruk_ammunition_per_level": 25,
+        "tobruk_stores_per_level": 10,
+        "eligible_unit": "friendly engineer battalion or CW HQ with engineering capability",
+        "rate": "one level per Operations Stage"
+      }
+    },
+    {
+      "id": "cw-sea-32-36",
+      "locator": "printed p. 43, §32.36",
+      "values": {
+        "minimum_destination_capacity_percent": 50,
+        "units_per_operation_stage": 1,
+        "ports": "Alexandria; Benghazi; Tobruk"
+      }
+    }
+  ]
+}

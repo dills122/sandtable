@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-formations-members-v1",
+  "manifest_sha256": "4e6e607e52ceb484e89bdea2acdd7a0690bc6492b9d85b23697f9cafe9874e3b",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "cirene-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-157-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-157-i",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-157-ii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-157-iii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-158-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-158-i",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-158-ii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-158-iii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-mg",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-at",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-engineer",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-bersaglieri",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "cirene-tank",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null,
+        "assigned_parent": null,
+        "initial_attachment": null
+      }
+    },
+    {
+      "id": "marmarica-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-115-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-115-i",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-115-ii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-115-iii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-116-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-116-i",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-116-ii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-116-iii",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-mg",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-at",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-engineer",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "marmarica-tank",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null,
+        "assigned_parent": null,
+        "initial_attachment": null
+      }
+    }
+  ]
+}

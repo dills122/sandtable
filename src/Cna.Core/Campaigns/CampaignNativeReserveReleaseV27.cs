@@ -157,7 +157,7 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             || predecessor.StateVersion != projection.StateVersion
             || predecessor.NextPositionId != projection.NextPosition.PositionId
             || predecessor.StateHash != CampaignNativeReserveReleaseEventV27.Hash(
-                projection.SerializeCanonical())
+                projection.SerializeCanonical(context))
             || predecessor.CustodyStateHash != CampaignNativeReserveReleaseEventV27.Hash(
                 CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(
                     projection.Custody))
@@ -320,7 +320,7 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             || successor.StateVersion != projection.StateVersion
             || successor.NextPositionId != projection.NextPosition.PositionId
             || successor.StateHash != CampaignNativeReserveReleaseEventV27.Hash(
-                projection.SerializeCanonical())
+                projection.SerializeCanonical(context))
             || successor.CustodyStateHash != CampaignNativeReserveReleaseEventV27.Hash(
                 CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(
                     projection.Custody))

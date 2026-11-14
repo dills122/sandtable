@@ -7,6 +7,11 @@
 **Scope:** Original 1979 *Graziani's Offensive*, Land Game only, both sides
 **Owner packet:** `REL-AUD-04` / `MVP-GATE-01`
 
+**Later source discovery:** [working source register](../work/plans/2026-11-12-graziani-source-register.md)
+records all three OA sheets embedded in the preserved errata PDF. Their publication
+provenance, scenario applicability and transcription remain to be independently
+checked. Corrections below update the October 18 investigation's source gaps.
+
 This inventory identifies source obligations before scenario transcription and implementation. It
 does not reproduce the published order of battle, setup tables, victory text, map art, or scans. It
 does not determine distribution rights. No historical scenario records were added to the engine.
@@ -45,7 +50,7 @@ item totals remain unknown.** `MVP-GATE-01` requires those totals and a second c
 | --- | --- | --- | --- |
 | Turn and operation-stage boundary | Scenario §60.22; Land §5.2 | Six turns; 18 stages; two ordered side blocks per stage. | Independently reconcile every source position and repeatable movement/combat loop with catalogue and terminal transition. |
 | Initiative and acting side | Scenario §60.6; Land §§7.11–7.15 | Italian first-turn holder; later holder not predetermined. | Exercise both holder outcomes and source-cited tie/actor rules across turns 2–6. |
-| Axis land setup and formation hierarchy | Scenario §§59.2, 60.31; errata §§4.44b, 60.31 | Printed p. 27 contains fixed, region-choice, and off-map placement clauses; Cirene and Marmarica appear among the initial formations. Errata removes a duplicated artillery listing and reports missing OA sheets for Sirte, Cirene, and Marmarica. | **Source gap:** the linked four-page errata scan does not include the supplemental OA sheets that its §4.44b mentions. Locate an authoritative original supplement before normalizing those three formation rosters, strengths, or subordinate assignments. Setup record counts remain unknown; scenario placement lines cannot substitute for OA composition. |
+| Axis land setup and formation hierarchy | Scenario §§59.2, 60.31; errata §§4.44b, 60.31 | Printed p. 27 contains fixed, region-choice, and off-map placement clauses; Cirene and Marmarica appear among the initial formations. Errata removes a duplicated artillery listing and reports missing OA sheets for Sirte, Cirene, and Marmarica. **Correction:** preserved errata PDF p. 4 contains scans of all three sheets; earlier inventory missed that page. | Independently double-enter the embedded scans, verify period provenance and rights, and reconcile scenario-specific roster, strengths and assignments. Setup record counts remain unknown; placement lines cannot substitute for OA composition. |
 | Commonwealth land setup and formation hierarchy | Scenario §§59.2, 60.41; errata §4.44b | Printed p. 27 contains fixed and choice placements plus an initial assignment correction. | Independently transcribe units and variants; reject a placement or composition that only a community aid supports. |
 | Map, terrain, facilities, and start construction | Scenario §§60.5, 60.7; Land movement/terrain and source charts; errata map D and §8.37 | Printed p. 28 lists airfield/strip/basin categories and start-map construction constraints; errata changes one map-D hexside. | Inventory exact relevant hexes/edges/topology and source authority for each; prove whether the erratum is reachable in six turns. Do not import map art. |
 | Initial trucks and movement capability | Scenario §§59.4, 60.33, 60.43, 60.92(A); errata §59.45 | Both sides have starting truck pools and placement choices; Land-only mode changes motorization treatment. | Normalize truck types, attachment/load choices, capability, losses, and all player allocations; verify no fleet/air truck deduction is silently applied twice. |
@@ -62,11 +67,11 @@ item totals remain unknown.** `MVP-GATE-01` requires those totals and a second c
 
 1. Apply the September errata before counting setup records. Its §60.31 removes a duplicated Axis
    artillery listing; §4.44b reports omitted OA sheets for Sirte, Cirene, and Marmarica and changes
-   two Commonwealth initial assignments relevant to the Italian scenarios. The preserved errata
-   scan names but does not supply those OA sheets; printed §60.31 places Cirene and Marmarica but
-   does not establish their complete rosters. Treat all three formations' OA data as blocked until
-   an authoritative supplement is found. §60.32 corrects an aircraft identifier, though detailed
-   aircraft records must first be classified for Land-only use.
+   two Commonwealth initial assignments relevant to the Italian scenarios. **Correction:** the
+   preserved errata PDF includes all three OA scans on p. 4; earlier text incorrectly said it did
+   not. Printed §60.31 alone does not establish complete rosters. Independently verify and reconcile
+   the scans, source provenance and rights before content admission. §60.32 corrects an aircraft
+   identifier, though detailed aircraft records must first be classified for Land-only use.
 2. Land-only §60.92 replaces the printed initial-supply status in §§60.34 and 60.44. Copying both
    would double-count; dropping the replacement would leave no authenticated initial supply.
    §60.44 also states Commonwealth repair facilities; whether that statement survives §60.92(C)

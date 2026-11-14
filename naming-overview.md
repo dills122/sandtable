@@ -49,6 +49,59 @@ Intelligence and Maproom cannot invent outcomes or mutate authority. Internally,
 `CampaignContactKnowledge` is a plain Core technical name for replayed side
 knowledge in the permanent fog rule; `CampaignContactView` is its outward
 projection, with private target binding retained only by Umpire.
+`ScheduledArrivalIndex` is an internal Umpire technical name for a source-neutral
+lookup; it does not execute arrivals or authorize a campaign action.
+`ArrivalLabFixture` and `ArrivalLabState` name an isolated synthetic transition
+model; they do not name a product or admitted campaign capability.
+`CampaignScheduledArrivalContentDraft` names an internal content diagnostic, not
+an admitted setup, artifact or campaign action.
+`CampaignArrivalDraftIdentity` and `CampaignDeferredWorldDraft` name internal
+candidate values; neither establishes an authoritative campaign identity or world.
+`CampaignArrivalReplayDraft` and `CampaignArrivalDraftEventCodec` name a synthetic
+replay experiment, not Chronicle events or Host persistence.
+`CampaignArrivalSyntheticProfile` identifies one repository-owned test fixture;
+it does not admit campaign creation.
+`CampaignSyntheticArrivalPhase` names an isolated Core phase experiment; it is
+not a Chronicle event, campaign save, or durable Host action.
+`CampaignScheduledWorld6Bridge` and the journal's scheduled-World6 methods name
+an internal synthetic integration cut, not a playable or historical campaign mode.
+`CampaignScheduledWorld6NativePreambleCodec` names its versioned native-event envelope;
+it is separate from the ordinary campaign event union.
+`ContentScheduledArrival` names a source-linked scenario record in the production content
+model; it is not itself a permitted campaign or an adjudicated arrival.
+`ContentInitialGroup` records source-listed counters at a shared location without deciding
+their attachment relationships or creating a map representation. `ContentSourceTruckQuantities`
+retains printed quantities without allocating or motorizing trucks.
+`ContentScheduledPackSerializer` and `ContentScheduledPackArtifact` name its canonical
+content envelope and identity, not a campaign-admission profile.
+`ContentScheduledCombatPackSerializer` and its artifact preserve partial combat facts,
+source rating markers and TOE seeds; they do not activate unsupported combat rules.
+`CampaignWorldV8Factory` constructs an internal scheduled-content initial world;
+it does not admit a campaign or execute arrivals.
+`CampaignSourceCreation` names the versioned source-initialization and replay contract;
+the normal Host journal can retain it, but it is not a playable campaign session.
+`Cna1979GrazianiCairoSourceExcerpt` builds partial source data for Cairo, not a complete
+campaign or admitted map.
+`CampaignPregameSourceCreation` names the provisional, source-backed Axis GT2 supply
+planning cut; it is not full setup, convoy arrival, or campaign admission.
+`CampaignSourceAuthorityState` retains the versioned successor's real setup choices,
+partial force evidence and pending arrivals; it does not imply a playable campaign.
+`CampaignSourceAxisSupplementalForces` names a versioned historical Axis source
+supplement, not an executable formation or a complete order of battle.
+`CampaignSourceBattlefield` records source-force locations and setup status; selected
+independent units also enter World8, but grouped source evidence is not yet native play.
+`CampaignGroupedWorld` retains a source-backed group and its motor reservations;
+it is not yet an admitted native gameplay snapshot.
+`IContentPackV6Resolver` supplies identity-checked certified content to ordinary creation and
+Host replay; it is distinct from the source-initialization content envelope.
+`Cna1979GrazianiCounterFacts` retains source-linked counter allowances for
+identified Graziani formation members; it is not a complete scenario catalogue.
+`CampaignElementMovedV3Factory.DeriveZocAuthority` is the shared World6 ZOC
+calculation; it does not itself admit grouped historical content.
+`ContentComponentToeLimit` records a shared source limit on selected component types;
+the current combat capability cannot enforce it during play.
+`ContentWeaponSourceProfile` and `ContentPrintedRating` preserve printed chart values
+and markers, not adjudicated weapon behavior.
 `CampaignNativeCombatSelectionStateV12` is the first internal Combat authority step:
 it stores the selected contact action and private defender binding for deterministic
 Exercise and Host replay. It is not a public Combat route or adjudicated result.
@@ -153,6 +206,9 @@ pagination separate from Selection, RBA, Force, Retreat, Custody and Reserve Rel
 V38 names explicit System Selection timeout: `no-selection` binds initial or
 repeated decision entry, then uses native no-work continuation without an owner
 choice. Its System identity is distinct from V12/V31 owner selection bytes.
+V39 names the corrected initial owner selection when the initiative holder acts
+last; V40 names its corresponding System timeout. Older V12/V38 evidence remains
+readable under its recorded policy.
 V37 names explicit System post-assault Retreat timeout: `refuse-retreat` applies
 source refusal effects through settlement after the persisted result-entry deadline.
 It is distinct from V33 RBA cancellation and from a defender-authored retreat.
@@ -191,6 +247,13 @@ repeat-or-finish cycle choice; its Core event and normal Host cold replay enter
 same-side Movement ordinal two or same-slot Truck Convoy. Repeat currently has
 a released-unit movement witness; V29 now accepts one such owner movement
 through normal Core/Host World/contact replay and a restart-stable receipt.
+Raw ZOC qualification can use source-backed armor, reconnaissance and anti-tank
+ratings; those names do not imply that their combat rules are admitted.
+V41/V42 name explicit owner passes through convoy, rail, towing, maintenance
+and patrol. V43 records second-side Reserve choices against the settled World and
+completion to Movement. V44 records a one-hex second-side move-and-stop, retaining
+any Reaction window. V45 records owner completion to Breakdown when no Reaction
+is pending. Those optional activities, Reaction handling and Breakdown remain unsupported.
 V30 records the cohortless Breakdown System determination into Combat with
 normal Host cold replay. Internal V31 projects repeated Combat owner offers
 without rebuilding V11 and binds an exact replayed owner choice. Exercise and

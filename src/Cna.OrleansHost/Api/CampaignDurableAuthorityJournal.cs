@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Microsoft.Data.Sqlite;
@@ -27,20 +28,23 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private const int TimingSchemaVersion = 6;
     private const int LegacySchemaVersion = 5;
     private const int MaxEvidenceBytes = 2_097_152;
+    private const int MaxSourceCreationBytes = 24 * 1024 * 1024;
     private readonly string path;
     private readonly TimeProvider clock;
     private readonly int schemaVersion;
+    private readonly IContentPackV6Resolver contentResolver;
 
     private CampaignDurableAuthorityJournal(string path, TimeProvider clock,
-        int schemaVersion = SchemaVersion)
+        int schemaVersion = SchemaVersion, IContentPackV6Resolver? contentResolver = null)
     {
         this.path = path;
         this.clock = clock;
         this.schemaVersion = schemaVersion;
+        this.contentResolver = contentResolver ?? Cna1979SyntheticContentResolver.Instance;
     }
 
     internal static CampaignDurableAuthorityJournal CreateNew(string absolutePath,
-        string operatorSecret, TimeProvider? clock = null)
+        string operatorSecret, TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
     {
         RequirePath(absolutePath);
         var operatorDigest = CredentialDigest("operator", operatorSecret);
@@ -54,7 +58,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     | UnixFileMode.UserExecute);
         }
         RequirePrivateDirectory(directory);
-        var journal = new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System);
+        var journal = new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
+            contentResolver: contentResolver);
         using var connection = journal.Connect(create: true);
         Execute(connection, "PRAGMA journal_mode=WAL");
         Execute(connection, "PRAGMA synchronous=FULL");
@@ -230,7 +235,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     internal static CampaignDurableAuthorityJournal OpenExisting(string absolutePath,
-        TimeProvider? clock = null)
+        TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
     {
         RequirePath(absolutePath);
         if (!File.Exists(absolutePath)) throw new InvalidOperationException("Journal is missing.");
@@ -250,7 +255,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             || version is not (SchemaVersion or RetreatSchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
             throw new InvalidOperationException("Journal schema is not recognized.");
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
-            version);
+            version, contentResolver);
     }
 
     internal ExerciseSession CreateCampaign(CampaignCreationRequest request,
@@ -280,7 +285,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             || timing.ContentHash != request.ContentHash))
             throw new ArgumentException("Decision timing must bind the campaign rules and content.",
                 nameof(timing));
-        var created = CampaignHostAdapter.Create(request);
+        var created = CampaignHostAdapter.Create(request, contentResolver);
         if (!created.IsStarted) throw new InvalidOperationException("Core rejected campaign creation.");
         var creation = created.CreationEventBytes!;
         var snapshot = created.InitialSnapshotBytes!;
@@ -288,6 +293,84 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAdapter.QueryContactRecords(created.Session!));
         RequireBounded(creation);
         RequireBounded(snapshot);
+        InsertCampaign(connection, transaction, request, creation, snapshot, contacts, timingBytes);
+        transaction.Commit();
+        return created.Session!;
+    }
+
+    internal CampaignSourceSession CreateCampaign(CampaignCreationRequest request,
+        ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(content);
+        ArgumentNullException.ThrowIfNull(initialization);
+        if (schemaVersion != SchemaVersion)
+            throw new InvalidOperationException("Create new campaigns in a current journal.");
+        var created = CampaignHostAdapter.Create(request, content, initialization);
+        RequireBounded(created.CreationEventBytes, MaxSourceCreationBytes);
+        RequireBounded(created.InitialSnapshotBytes, MaxSourceCreationBytes);
+        var contacts = EncodeContactRecords([]);
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        using (var lookup = connection.CreateCommand())
+        {
+            lookup.Transaction = transaction;
+            lookup.CommandText = "SELECT 1 FROM campaigns WHERE campaign_id=$id";
+            lookup.Parameters.AddWithValue("$id", request.CampaignId);
+            if (lookup.ExecuteScalar() is not null)
+            {
+                var retained = Load(connection, transaction, request.CampaignId);
+                if (retained.Request != request || retained.SourceSession is null
+                    || !retained.SourceSession.Content.CanonicalBytes.AsSpan().SequenceEqual(content.CanonicalBytes))
+                    throw new InvalidOperationException("Campaign creation conflicts with retained authority.");
+                return retained.SourceSession;
+            }
+        }
+        InsertCampaign(connection, transaction, request, created.CreationEventBytes,
+            created.InitialSnapshotBytes, contacts, []);
+        transaction.Commit();
+        return created.Session;
+    }
+
+    internal ExerciseSession CreatePregameSourceCampaign(CampaignCreationRequest request,
+        ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(content);
+        ArgumentNullException.ThrowIfNull(initialization);
+        RequireWritable();
+        if (request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new ArgumentException("Pregame source requires its own creation contract.", nameof(request));
+        var created = CampaignHostAdapter.CreatePregameSource(request, content, initialization);
+        if (!created.IsStarted) throw new InvalidOperationException("Core rejected pregame source creation.");
+        var creation = created.CreationEventBytes!;
+        var snapshot = created.InitialSnapshotBytes!;
+        var contacts = EncodeContactRecords(CampaignHostAdapter.QueryContactRecords(created.Session!));
+        RequireBounded(creation, MaxSourceCreationBytes);
+        RequireBounded(snapshot, MaxSourceCreationBytes);
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        using (var lookup = connection.CreateCommand())
+        {
+            lookup.Transaction = transaction;
+            lookup.CommandText = "SELECT 1 FROM campaigns WHERE campaign_id=$id";
+            lookup.Parameters.AddWithValue("$id", request.CampaignId);
+            if (lookup.ExecuteScalar() is not null)
+            {
+                var retained = Load(connection, transaction, request.CampaignId);
+                if (retained.Request != request || retained.TimingBytes.Length != 0)
+                    throw new InvalidOperationException("Campaign creation conflicts with retained authority.");
+                return retained.Session;
+            }
+        }
+        InsertCampaign(connection, transaction, request, creation, snapshot, contacts, []);
+        transaction.Commit();
+        return created.Session!;
+    }
+
+    private static void InsertCampaign(SqliteConnection connection, SqliteTransaction transaction,
+        CampaignCreationRequest request, byte[] creation, byte[] snapshot, byte[] contacts, byte[] timingBytes)
+    {
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
         command.CommandText = """
@@ -310,8 +393,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
         command.Parameters.AddWithValue("$head", InitialHash(request, creation, snapshot, contacts,
             timingBytes));
         command.ExecuteNonQuery();
-        transaction.Commit();
-        return created.Session!;
     }
 
     internal ExerciseSession ReadVerified(string campaignId)
@@ -321,6 +402,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return Load(connection, transaction, campaignId).Session;
     }
 
+    internal CampaignSourceSession ReadSourceVerified(string campaignId)
+    {
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction();
+        return Load(connection, transaction, campaignId).SourceSession
+            ?? throw new InvalidOperationException("Campaign does not use source initialization.");
+    }
+
     internal ExerciseStepResult Append(string campaignId, CampaignActionSubmission submission)
     {
         RequireWritable();
@@ -328,6 +417,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
         var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion == CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Pregame owner choices require an authenticated owner opening.");
         var result = CampaignHostAdapter.Submit(head.Session, submission);
         if (!result.IsAccepted) return result;
         var selectionPending = true;
@@ -358,6 +449,723 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return result;
     }
 
+    internal bool AdmitSourceAxisSupplement(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceAxisSupplementAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceAxisSupplement(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source supplement is not available at this position.");
+        var command = CampaignHostAdapter.SourceAxisSupplementCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisSupplementKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCommonwealthSupplement(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCommonwealthSupplementAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCommonwealthSupplement(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source supplement is not available at this position.");
+        var command = CampaignHostAdapter.SourceCommonwealthSupplementCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCommonwealthSupplementKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourcePriorityMotorization(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourcePriorityMotorizationAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourcePriorityMotorization(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourcePriorityMotorizationCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourcePriorityMotorizationKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceAttachedInitialLoads(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceAttachedInitialLoadsAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceAttachedInitialLoads(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceAttachedInitialLoadsCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceInitialWrecks(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceInitialWrecksAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceInitialWrecks(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceInitialWrecksCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceInitialWrecksKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceAxisFreeSetup(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceAxisFreeSetupAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceAxisFreeSetup(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceAxisFreeSetupCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisFreeSetupKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceAxisCorpsSetup(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceAxisCorpsSetupAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceAxisCorpsSetup(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceAxisCorpsSetupCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisCorpsSetupKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceMalettiHierarchy(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceMalettiHierarchyAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceMalettiHierarchy(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceMalettiHierarchyCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceMalettiHierarchyKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceGt2Correction(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceGt2CorrectionAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceGt2Correction(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceGt2CorrectionCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceGt2CorrectionKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCwPriorityCatalog(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCwPriorityCatalogAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCwPriorityCatalog(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceCwPriorityCatalogCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCwPriorityCatalogKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCompactCheckpoint(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCompactCheckpointAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCompactCheckpoint(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceCompactCheckpointCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCompactCheckpointKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceFourthIndianWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceFourthIndianWorldAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceFourthIndianWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceFourthIndianWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceFourthIndianWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceMatruhGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceMatruhGroupedWorldAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceMatruhGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceMatruhGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceMalettiGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceMalettiGroupedWorldAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceMalettiGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceMalettiGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceLibyanGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceLibyanGroupedWorldAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceLibyanGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceLibyanGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceMatruhFormation(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceMatruhFormationAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceMatruhFormation(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceMatruhFormationCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceMatruhFormationKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCwFreeGuns(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCwFreeGunsAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCwFreeGuns(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceCwFreeGunsCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCwFreeGunsKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceAxisPriorityMotorization(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceAxisPriorityMotorizationAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceAxisPriorityMotorization(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceAxisPriorityMotorizationCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceAxisMinorGarrisons(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceAxisMinorGarrisons(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source garrisons are not available at this position.");
+        var command = CampaignHostAdapter.SourceAxisMinorGarrisonsCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceBattlefield(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceBattlefieldAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceBattlefield(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source battlefield is not available at this position.");
+        var command = CampaignHostAdapter.SourceBattlefieldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceBattlefieldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCairoSetup(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCairoSetupAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCairoSetup(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Cairo setup is not available at this position.");
+        var command = CampaignHostAdapter.SourceCairoSetupCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCairoSetupKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCairoWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCairoWorldAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCairoWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Cairo World requires all supported player placements.");
+        var command = CampaignHostAdapter.SourceCairoWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCairoWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceMaletti(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceMaletti(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceMaletti(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Maletti promotion is not available at this position.");
+        var command = CampaignHostAdapter.SourceMalettiCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceMalettiKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceIndependent(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceIndependent(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceIndependent(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Independent force promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceIndependentCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceIndependentKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceExpandedIndependent(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceExpandedIndependent(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceExpandedIndependent(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Expanded independent force promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceExpandedIndependentCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceExpandedIndependentKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceAxisFreeWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceAxisFreeWorld(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceAxisFreeWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Axis free-world promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceAxisFreeWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisFreeWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceAxisCorpsWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceAxisCorpsWorld(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceAxisCorpsWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Axis corps-world promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceAxisCorpsWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceAxisCorpsWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceCertifiedMalettiWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceCertifiedMalettiWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("certified Maletti world promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceCertifiedMalettiWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceMatruhDetachedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceMatruhDetachedWorld(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceMatruhDetachedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Matruh detached world promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceMatruhDetachedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceCwPriorityWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceCwPriorityWorld(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceCwPriorityWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Commonwealth priority world promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceCwPriorityWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCwPriorityWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool PromoteSourceCwFreeGunsWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (!CampaignExercises.CanPromoteSourceCwFreeGunsWorld(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.PromoteSourceCwFreeGunsWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Commonwealth priority world promotion is unavailable.");
+        var command = CampaignHostAdapter.SourceCwFreeGunsWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceLocalMap(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceLocalMapAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceLocalMap(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source map is unavailable at this position.");
+        var command = CampaignHostAdapter.SourceLocalMapCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceLocalMapKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    // Apply only deterministic source-profile migrations. Player setup choices
+    // and game-clock advancement are never part of this operator operation.
+    internal int AdmitAvailableSourceProfiles(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        (Func<ExerciseSession, bool> AlreadyAdmitted, Func<ExerciseSession, ExerciseStepResult> Admit,
+            Func<ExerciseSession, ExerciseStepResult, CampaignActionSubmission> Command, string Kind)[] migrations =
+        [
+            (CampaignExercises.IsSourceAxisSupplementAdmitted, CampaignHostAdapter.AdmitSourceAxisSupplement,
+                CampaignHostAdapter.SourceAxisSupplementCommand, CampaignHostAcceptedStep.SourceAxisSupplementKind),
+            (CampaignExercises.IsSourceCommonwealthSupplementAdmitted, CampaignHostAdapter.AdmitSourceCommonwealthSupplement,
+                CampaignHostAdapter.SourceCommonwealthSupplementCommand, CampaignHostAcceptedStep.SourceCommonwealthSupplementKind),
+            (CampaignExercises.IsSourcePriorityMotorizationAdmitted, CampaignHostAdapter.AdmitSourcePriorityMotorization,
+                CampaignHostAdapter.SourcePriorityMotorizationCommand, CampaignHostAcceptedStep.SourcePriorityMotorizationKind),
+            (CampaignExercises.IsSourceAxisPriorityMotorizationAdmitted, CampaignHostAdapter.AdmitSourceAxisPriorityMotorization,
+                CampaignHostAdapter.SourceAxisPriorityMotorizationCommand, CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind),
+            (CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted, CampaignHostAdapter.AdmitSourceAxisMinorGarrisons,
+                CampaignHostAdapter.SourceAxisMinorGarrisonsCommand, CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind),
+            (CampaignExercises.IsSourceBattlefieldAdmitted, CampaignHostAdapter.AdmitSourceBattlefield,
+                CampaignHostAdapter.SourceBattlefieldCommand, CampaignHostAcceptedStep.SourceBattlefieldKind),
+            (CampaignExercises.IsSourceCairoSetupAdmitted, CampaignHostAdapter.AdmitSourceCairoSetup,
+                CampaignHostAdapter.SourceCairoSetupCommand, CampaignHostAcceptedStep.SourceCairoSetupKind),
+        ];
+        var count = 0;
+        foreach (var migration in migrations)
+        {
+            if (migration.AlreadyAdmitted(head.Session)) continue;
+            var accepted = migration.Admit(head.Session);
+            if (!accepted.IsAccepted)
+                throw new InvalidOperationException("Source setup must first reach a supported migration predecessor.");
+            var command = migration.Command(head.Session, accepted);
+            head = PersistAccepted(connection, transaction, campaignId, head,
+                migration.Kind, null, null, null, null, command, accepted);
+            count++;
+        }
+        transaction.Commit();
+        return count;
+    }
+
     private static Loaded PersistAccepted(SqliteConnection connection,
         SqliteTransaction transaction, string campaignId, Loaded head, string kind,
         string? actingElementId, string? ownerPublicRef, long? seatEpoch,
@@ -371,8 +1179,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var checkpoint = evidence.SnapshotCheckpoint;
         var contactBytes = EncodeContactRecords(AppendedContactRecords(
             head.Session, result.SuccessorSession!));
-        foreach (var bytes in new[] { commandBytes, eventBytes, receiptBytes, checkpoint })
+        foreach (var bytes in new[] { commandBytes, eventBytes, receiptBytes })
             RequireBounded(bytes);
+        // Source checkpoints retain pinned content artifacts; they can be larger
+        // than ordinary events, but remain bounded on both write and replay.
+        RequireBounded(checkpoint, head.Request.ContractVersion == CampaignPregameSourceCreation.RequestVersion
+            ? MaxSourceCreationBytes : MaxEvidenceBytes);
         var nextSequence = checked(head.Sequence + 1);
         var nextHash = StepHash(head.Hash, nextSequence,
             kind, actingElementId, ownerPublicRef, seatEpoch, ownerRevision,
@@ -416,7 +1228,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (update.ExecuteNonQuery() != 1)
                 throw new InvalidOperationException("Campaign head changed before commit.");
         }
-        return head with { Session = result.SuccessorSession!, Sequence = nextSequence, Hash = nextHash };
+        return head with { LegacySession = result.SuccessorSession!, Sequence = nextSequence, Hash = nextHash };
     }
 
     private void RequireWritable()
@@ -457,8 +1269,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 ulong.Parse(reader.GetString(2), System.Globalization.CultureInfo.InvariantCulture),
                 reader.GetString(3), reader.GetString(4), reader.GetString(5), reader.GetString(6),
                 reader.GetString(7));
-            creation = ReadBounded(reader, 8);
-            initial = ReadBounded(reader, 9);
+            var initialLimit = request.ContractVersion is CampaignSourceCreation.RequestVersion
+                or CampaignPregameSourceCreation.RequestVersion
+                ? MaxSourceCreationBytes : MaxEvidenceBytes;
+            creation = ReadBounded(reader, 8, initialLimit);
+            initial = ReadBounded(reader, 9, initialLimit);
             initialContactBytes = ReadBounded(reader, 10);
             timingBytes = schemaVersion == LegacySchemaVersion ? []
                 : reader.GetFieldValue<byte[]>(11);
@@ -475,6 +1290,53 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var sequence = 0L;
         var hash = InitialHash(request, creation, initial, initialContactBytes, timingBytes,
             schemaVersion == LegacySchemaVersion);
+        if (request.ContractVersion == CampaignPregameSourceCreation.RequestVersion)
+        {
+            if (timing is not null) throw new InvalidOperationException("Pregame source timing is not supported.");
+            IEnumerable<(CampaignHostAcceptedStep Step, IReadOnlyList<byte[]> Contacts)> ReadSourceSteps()
+            {
+                using var sourceCommand = connection.CreateCommand();
+                sourceCommand.Transaction = transaction;
+                sourceCommand.CommandText = """
+                    SELECT sequence,action_kind,acting_element_id,owner_public_ref,seat_epoch,owner_revision,
+                      canonical_command,canonical_event,canonical_receipt,snapshot_checkpoint,canonical_contacts,
+                      prior_hash,record_hash
+                    FROM accepted_steps WHERE campaign_id=$id ORDER BY sequence
+                    """;
+                sourceCommand.Parameters.AddWithValue("$id", campaignId);
+                using var reader = sourceCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    if (reader.GetInt64(0) != checked(++sequence) || reader.GetString(11) != hash)
+                        throw new InvalidOperationException("Campaign journal order changed.");
+                    var kind = reader.GetString(1);
+                    var element = reader.IsDBNull(2) ? null : reader.GetString(2);
+                    var publicRef = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    var epoch = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
+                    var revision = reader.IsDBNull(5) ? (long?)null : reader.GetInt64(5);
+                    var commandBytes = ReadBounded(reader, 6);
+                    var eventBytes = ReadBounded(reader, 7);
+                    var receiptBytes = ReadBounded(reader, 8);
+                    var checkpoint = ReadBounded(reader, 9, MaxSourceCreationBytes);
+                    var contacts = ReadBounded(reader, 10);
+                    hash = StepHash(hash, sequence, kind, element, publicRef, epoch, revision,
+                        commandBytes, eventBytes, receiptBytes, checkpoint, contacts);
+                    if (reader.GetString(12) != hash)
+                        throw new InvalidOperationException("Campaign journal record changed.");
+                    yield return (new CampaignHostAcceptedStep(commandBytes, [eventBytes], receiptBytes,
+                        checkpoint, kind, element), DecodeContactRecords(contacts));
+                }
+                if (sequence != headSequence || hash != headHash)
+                    throw new InvalidOperationException("Campaign journal head changed.");
+            }
+            var sourceImport = CampaignHostAdapter.ImportPregameSourceStream(request, creation, initial,
+                ReadSourceSteps(), DecodeContactRecords(initialContactBytes));
+            if (!sourceImport.IsVerified)
+                throw new InvalidOperationException("Core rejected retained campaign authority.");
+            VerifyPregameAuxiliaryAuthority(connection, transaction, campaignId,
+                CampaignExercises.IsSourceSetupSeat(sourceImport.Session!, CampaignActionAudience.Commonwealth));
+            return new Loaded(sourceImport.Session!, sequence, hash, null, request, timingBytes);
+        }
         var steps = new List<CampaignHostAcceptedStep>();
         var stepContacts = new List<IReadOnlyList<byte[]>>();
         using (var command = connection.CreateCommand())
@@ -492,6 +1354,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
+                if (request.ContractVersion == CampaignSourceCreation.RequestVersion)
+                    throw new InvalidOperationException("Source initialization does not admit gameplay steps.");
                 if (reader.GetInt64(0) != checked(++sequence) || reader.GetString(11) != hash)
                     throw new InvalidOperationException("Campaign journal order changed.");
                 var kind = reader.GetString(1);
@@ -502,7 +1366,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var commandBytes = ReadBounded(reader, 6);
                 var eventBytes = ReadBounded(reader, 7);
                 var receiptBytes = ReadBounded(reader, 8);
-                var checkpoint = ReadBounded(reader, 9);
+                var checkpoint = ReadBounded(reader, 9,
+                    request.ContractVersion == CampaignPregameSourceCreation.RequestVersion
+                        ? MaxSourceCreationBytes : MaxEvidenceBytes);
                 var contacts = ReadBounded(reader, 10);
                 hash = StepHash(hash, sequence, kind, actingElementId, ownerPublicRef,
                     seatEpoch, ownerRevision, commandBytes,
@@ -516,10 +1382,26 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         if (sequence != headSequence || hash != headHash)
             throw new InvalidOperationException("Campaign journal head changed.");
-        var imported = CampaignHostAdapter.Import(request, creation, initial, steps,
-            DecodeContactRecords(initialContactBytes), stepContacts, timing);
+        if (request.ContractVersion == CampaignSourceCreation.RequestVersion)
+        {
+            if (timing is not null || !initialContactBytes.AsSpan().SequenceEqual(EncodeContactRecords([])))
+                throw new InvalidOperationException("Source initialization has unsupported retained authority.");
+            VerifySourceHasNoAuxiliaryAuthority(connection, transaction, campaignId);
+            var source = CampaignSourceCreation.Replay(request, creation, initial);
+            return new Loaded(null, sequence, hash, null, request, timingBytes, source.Session);
+        }
+        if (request.ContractVersion == CampaignPregameSourceCreation.RequestVersion && timing is not null)
+            throw new InvalidOperationException("Pregame source timing is not supported.");
+        var imported = request.ContractVersion == CampaignPregameSourceCreation.RequestVersion
+            ? CampaignHostAdapter.ImportPregameSource(request, creation, initial, steps,
+                DecodeContactRecords(initialContactBytes), stepContacts)
+            : CampaignHostAdapter.ImportWithContentResolver(request, creation, initial, steps, contentResolver,
+                DecodeContactRecords(initialContactBytes), stepContacts, timing);
         if (!imported.IsVerified)
             throw new InvalidOperationException("Core rejected retained campaign authority.");
+        if (request.ContractVersion == CampaignPregameSourceCreation.RequestVersion)
+            VerifyPregameAuxiliaryAuthority(connection, transaction, campaignId,
+                CampaignExercises.IsSourceSetupSeat(imported.Session!, CampaignActionAudience.Commonwealth));
         VerifyForceRounds(connection, transaction, campaignId, steps, timing);
         VerifyRbaRounds(connection, transaction, campaignId, steps, timing);
         VerifyCycleRounds(connection, transaction, campaignId, steps, timing);
@@ -528,6 +1410,65 @@ internal sealed partial class CampaignDurableAuthorityJournal
         VerifyRetreatRounds(connection, transaction, campaignId, steps, timing);
         VerifySelectionRounds(connection, transaction, campaignId, steps, timing);
         return new Loaded(imported.Session!, sequence, hash, timing, request, timingBytes);
+    }
+
+    private void VerifySourceHasNoAuxiliaryAuthority(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        if (schemaVersion != SchemaVersion)
+            throw new InvalidOperationException("Source initialization requires the current journal schema.");
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            SELECT 1 FROM seats WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM owner_openings WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM owner_actions WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM force_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM rba_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM cycle_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM reserve_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM custody_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM retreat_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM selection_rounds WHERE campaign_id=$id
+            LIMIT 1
+            """;
+        command.Parameters.AddWithValue("$id", campaignId);
+        if (command.ExecuteScalar() is not null)
+            throw new InvalidOperationException("Source initialization has unsupported retained authority.");
+    }
+
+    private void VerifyPregameAuxiliaryAuthority(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId, bool sourceSetup)
+    {
+        if (schemaVersion != SchemaVersion)
+            throw new InvalidOperationException("Pregame source requires the current journal schema.");
+        using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            SELECT 1 FROM seats WHERE campaign_id=$id AND side<>'axis' AND (side<>'commonwealth' OR $source=0)
+            UNION ALL SELECT 1 FROM owner_openings WHERE campaign_id=$id AND NOT
+              ((side='axis' AND acting_element_id IN ('land.pregame-axis-supply','land.pregame-axis-supply-finish'))
+               OR ($source=1 AND side='axis' AND acting_element_id IN ('land.graziani-axis-dumps','land.graziani-axis-gt1-supply','land.graziani-axis-autoblinda','land.graziani-axis-priority-motorization','land.graziani-axis-free-setup','land.graziani-axis-corps-setup','land.graziani-axis-maletti-hierarchy','land.graziani-axis-gt2-correction'))
+               OR ($source=1 AND side IN ('axis','commonwealth') AND acting_element_id IN ('land.graziani-dummy-groups','land.graziani-motorization','land.graziani-unattached-cargo','land.graziani-source-actions'))
+               OR ($source=1 AND side='commonwealth' AND acting_element_id IN ('land.graziani-commonwealth-supply','land.graziani-commonwealth-supply-plan','land.graziani-commonwealth-priority-motorization','land.graziani-commonwealth-cairo-setup','land.graziani-commonwealth-attached-initial-loads','land.graziani-commonwealth-initial-wrecks','land.graziani-commonwealth-matruh-formation','land.graziani-commonwealth-priority-catalog','land.graziani-commonwealth-free-guns')))
+            UNION ALL SELECT 1 FROM owner_actions WHERE campaign_id=$id AND NOT
+              ((side='axis' AND acting_element_id IN ('land.pregame-axis-supply','land.pregame-axis-supply-finish'))
+               OR ($source=1 AND side='axis' AND acting_element_id IN ('land.graziani-axis-dumps','land.graziani-axis-gt1-supply','land.graziani-axis-autoblinda','land.graziani-axis-priority-motorization','land.graziani-axis-free-setup','land.graziani-axis-corps-setup','land.graziani-axis-maletti-hierarchy','land.graziani-axis-gt2-correction'))
+               OR ($source=1 AND side IN ('axis','commonwealth') AND acting_element_id IN ('land.graziani-dummy-groups','land.graziani-motorization','land.graziani-unattached-cargo','land.graziani-source-actions'))
+               OR ($source=1 AND side='commonwealth' AND acting_element_id IN ('land.graziani-commonwealth-supply','land.graziani-commonwealth-supply-plan','land.graziani-commonwealth-priority-motorization','land.graziani-commonwealth-cairo-setup','land.graziani-commonwealth-attached-initial-loads','land.graziani-commonwealth-initial-wrecks','land.graziani-commonwealth-matruh-formation','land.graziani-commonwealth-priority-catalog','land.graziani-commonwealth-free-guns')))
+            UNION ALL SELECT 1 FROM force_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM rba_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM cycle_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM reserve_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM custody_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM retreat_rounds WHERE campaign_id=$id
+            UNION ALL SELECT 1 FROM selection_rounds WHERE campaign_id=$id
+            LIMIT 1
+            """;
+        command.Parameters.AddWithValue("$id", campaignId);
+        command.Parameters.AddWithValue("$source", sourceSetup ? 1 : 0);
+        if (command.ExecuteScalar() is not null)
+            throw new InvalidOperationException("Pregame source has unsupported retained authority.");
     }
 
     private SqliteConnection Connect(bool create)
@@ -545,10 +1486,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return connection;
     }
 
-    private static byte[] ReadBounded(SqliteDataReader reader, int ordinal)
+    private static byte[] ReadBounded(SqliteDataReader reader, int ordinal, int maximum = MaxEvidenceBytes)
     {
         var length = reader.GetBytes(ordinal, 0, null, 0, 0);
-        if (length is < 1 or > MaxEvidenceBytes)
+        if (length < 1 || length > maximum)
             throw new InvalidOperationException("Campaign evidence length is invalid.");
         var bytes = new byte[(int)length];
         if (reader.GetBytes(ordinal, 0, bytes, 0, bytes.Length) != length)
@@ -556,9 +1497,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return bytes;
     }
 
-    private static void RequireBounded(byte[] bytes)
+    private static void RequireBounded(byte[] bytes, int maximum = MaxEvidenceBytes)
     {
-        if (bytes.Length is < 1 or > MaxEvidenceBytes)
+        if (bytes.Length < 1 || bytes.Length > maximum)
             throw new InvalidOperationException("Campaign evidence length is invalid.");
     }
 
@@ -644,6 +1585,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return (long)command.ExecuteScalar()!;
     }
 
-    private sealed record Loaded(ExerciseSession Session, long Sequence, string Hash,
-        CampaignDecisionTimingConfigurationV1? Timing, CampaignCreationRequest Request, byte[] TimingBytes);
+    private sealed record Loaded(ExerciseSession? LegacySession, long Sequence, string Hash,
+        CampaignDecisionTimingConfigurationV1? Timing, CampaignCreationRequest Request, byte[] TimingBytes,
+        CampaignSourceSession? SourceSession = null)
+    {
+        internal ExerciseSession Session => LegacySession
+            ?? throw new InvalidOperationException("Source initialization has no admitted gameplay session.");
+    }
 }

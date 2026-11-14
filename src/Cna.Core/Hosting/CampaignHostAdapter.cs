@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
 using Cna.Core.Exercises;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
@@ -13,6 +14,677 @@ public static class CampaignHostAdapter
 {
     public static ExerciseStartResult Create(CampaignCreationRequest request) =>
         CampaignExercises.Begin(request);
+
+    public static ExerciseStartResult Create(CampaignCreationRequest request, IContentPackV6Resolver resolver) =>
+        CampaignExercises.Begin(request, resolver);
+
+    public static CampaignSourceCreationResult Create(CampaignCreationRequest request,
+        ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization) =>
+        CampaignCreationExecution.Execute(request, content, initialization);
+
+    public static ExerciseStartResult CreatePregameSource(CampaignCreationRequest request,
+        ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization) =>
+        CampaignExercises.Begin(request, content, initialization);
+
+    public static CampaignPregameAxisDraft QueryPregameAxisSupplyOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        if (!CampaignExercises.IsPregameAxisSetup(session, audience))
+            throw new InvalidOperationException("This seat does not own the pregame Axis setup.");
+        return CampaignExercises.QueryPregameAxisDraft(session, audience);
+    }
+
+    public static CampaignPregameAxisDraft QueryPregameAxisSupplyFinishDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QueryPregameAxisSupplyFinishDraft(session, audience);
+
+    public static ExerciseStepResult FinishPregameAxisSupply(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.FinishPregameAxisSupply(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceAxisDumpDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAxisDumpDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceAxisDump(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceAxisDump(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceCommonwealthSupplyDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceCommonwealthSupplyDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceCommonwealthSupply(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceCommonwealthSupply(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceDummyDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceDummyDraft(session, audience);
+
+    public static ExerciseStepResult DecideSourceDummy(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.DecideSourceDummy(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceMotorizationDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceMotorizationDraft(session, audience);
+
+    public static ExerciseStepResult AdjustSourceMotorization(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.AdjustSourceMotorization(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceUnattachedCargoDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceUnattachedCargoDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceUnattachedCargo(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceUnattachedCargo(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceActionsDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceActionsDraft(session, audience);
+
+    public static CampaignPregameAxisDraft QuerySourceAxisGt1SupplyDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAxisGt1SupplyDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceAxisGt1Supply(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceAxisGt1Supply(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceCommonwealthSupplyPlanDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceCommonwealthSupplyPlanDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceCommonwealthSupplyPlan(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceCommonwealthSupplyPlan(session, submission);
+
+    public static ExerciseStepResult AdmitSourceAxisSupplement(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceAxisSupplement(session);
+
+    public static ExerciseStepResult AdmitSourceCommonwealthSupplement(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCommonwealthSupplement(session);
+
+    public static ExerciseStepResult AdmitSourcePriorityMotorization(ExerciseSession session) =>
+        CampaignExercises.AdmitSourcePriorityMotorization(session);
+
+    public static ExerciseStepResult AdmitSourceAttachedInitialLoads(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceAttachedInitialLoads(session);
+
+    public static ExerciseStepResult AdmitSourceInitialWrecks(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceInitialWrecks(session);
+
+    public static ExerciseStepResult AdmitSourceAxisFreeSetup(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceAxisFreeSetup(session);
+
+    public static ExerciseStepResult AdmitSourceAxisCorpsSetup(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceAxisCorpsSetup(session);
+
+    public static ExerciseStepResult AdmitSourceMalettiHierarchy(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceMalettiHierarchy(session);
+
+    public static ExerciseStepResult AdmitSourceGt2Correction(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceGt2Correction(session);
+
+    public static ExerciseStepResult AdmitSourceCwPriorityCatalog(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCwPriorityCatalog(session);
+
+    public static ExerciseStepResult AdmitSourceCompactCheckpoint(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCompactCheckpoint(session);
+
+    public static ExerciseStepResult AdmitSourceFourthIndianWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceFourthIndianWorld(session);
+
+    public static ExerciseStepResult AdmitSourceMatruhGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceMatruhGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceMalettiGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceMalettiGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceLibyanGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceLibyanGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceMatruhFormation(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceMatruhFormation(session);
+
+    public static ExerciseStepResult AdmitSourceCwFreeGuns(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCwFreeGuns(session);
+
+    public static ExerciseStepResult AdmitSourceAxisPriorityMotorization(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceAxisPriorityMotorization(session);
+
+    public static ExerciseStepResult AdmitSourceAxisMinorGarrisons(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceAxisMinorGarrisons(session);
+
+    public static ExerciseStepResult AdmitSourceBattlefield(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceBattlefield(session);
+
+    public static ExerciseStepResult AdmitSourceCairoSetup(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCairoSetup(session);
+
+    public static ExerciseStepResult AdmitSourceCairoWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCairoWorld(session);
+
+    public static ExerciseStepResult PromoteSourceMaletti(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceMaletti(session);
+
+    public static ExerciseStepResult PromoteSourceIndependent(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceIndependent(session);
+
+    public static ExerciseStepResult AdmitSourceLocalMap(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceLocalMap(session);
+
+    public static ExerciseStepResult PromoteSourceExpandedIndependent(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceExpandedIndependent(session);
+
+    public static ExerciseStepResult PromoteSourceAxisFreeWorld(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceAxisFreeWorld(session);
+
+    public static ExerciseStepResult PromoteSourceAxisCorpsWorld(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceAxisCorpsWorld(session);
+
+    public static ExerciseStepResult PromoteSourceCertifiedMalettiWorld(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceCertifiedMalettiWorld(session);
+
+    public static ExerciseStepResult PromoteSourceMatruhDetachedWorld(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceMatruhDetachedWorld(session);
+
+    public static ExerciseStepResult PromoteSourceCwPriorityWorld(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceCwPriorityWorld(session);
+
+    public static ExerciseStepResult PromoteSourceCwFreeGunsWorld(ExerciseSession session) =>
+        CampaignExercises.PromoteSourceCwFreeGunsWorld(session);
+
+    public static CampaignPregameAxisDraft QuerySourceCairoSetupDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceCairoSetupDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceCairoUnit(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceCairoUnit(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceAxisPriorityDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAxisPriorityDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceAxisPriority(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceAxisPriority(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourcePriorityMotorizationDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourcePriorityMotorizationDraft(session, audience);
+
+    public static ExerciseStepResult AdjustSourcePriorityMotorization(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.AdjustSourcePriorityMotorization(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceAttachedInitialLoadsDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAttachedInitialLoadsDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceAttachedInitialLoads(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceAttachedInitialLoads(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceInitialWrecksDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceInitialWrecksDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceInitialWreck(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceInitialWreck(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceAxisFreeSetupDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAxisFreeSetupDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceAxisFreeUnit(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceAxisFreeUnit(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceAxisCorpsSetupDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAxisCorpsSetupDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceAxisCorpsUnit(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceAxisCorpsUnit(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceMalettiHierarchyDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceMalettiHierarchyDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceMalettiHierarchy(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceMalettiHierarchy(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceGt2CorrectionDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceGt2CorrectionDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceGt2Correction(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceGt2Correction(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceCwPriorityCatalogDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceCwPriorityCatalogDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceCwPriorityCatalog(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceCwPriorityCatalog(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceMatruhFormationDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceMatruhFormationDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceMatruhFormation(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceMatruhFormation(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceCwFreeGunsDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceCwFreeGunsDraft(session, audience);
+
+    public static ExerciseStepResult PlaceSourceCwFreeGun(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.PlaceSourceCwFreeGun(session, submission);
+
+    public static CampaignPregameAxisDraft QuerySourceAutoblindaDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CampaignExercises.QuerySourceAutoblindaDraft(session, audience);
+
+    public static ExerciseStepResult SubmitSourceAutoblinda(
+        ExerciseSession session, CampaignActionSubmission submission) =>
+        CampaignExercises.SubmitSourceAutoblinda(session, submission);
+
+    public static CampaignActionSubmission SourceAxisSupplementCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source supplement is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCommonwealthSupplementCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source supplement is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourcePriorityMotorizationCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAttachedInitialLoadsCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceInitialWrecksCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAxisFreeSetupCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAxisCorpsSetupCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceMalettiHierarchyCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceGt2CorrectionCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCwPriorityCatalogCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCompactCheckpointCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceFourthIndianWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceMatruhGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceMalettiGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceLibyanGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceMatruhFormationCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCwFreeGunsCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAxisPriorityMotorizationCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAxisMinorGarrisonsCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceBattlefieldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source battlefield migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCairoSetupCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Cairo setup migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCairoWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Cairo World migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceMalettiCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Maletti World promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceIndependentCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted independent force promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceExpandedIndependentCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted expanded independent force promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAxisFreeWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Axis free-world promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceAxisCorpsWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Axis corps-world promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCertifiedMalettiWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted certified Maletti world promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceMatruhDetachedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Matruh detached world promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCwPriorityWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Commonwealth priority world promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCwFreeGunsWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted Commonwealth priority world promotion is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceLocalMapCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source map migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
 
     /// <summary>
     /// Trusted successor input for the normal campaign host. The visible bytes contain no
@@ -668,7 +1340,16 @@ public static class CampaignHostAdapter
         return CampaignExercises.QueryNativeCombatSelectionRoundBinding(session);
     }
 
-    public static (string EntryHash, long StateVersion)? QueryNativeCombatSelectionEntryBinding(CampaignHostAcceptedStep step)
+    public static (string EntryHash, long StateVersion)? QueryNativeCombatSelectionEntryBinding(CampaignHostAcceptedStep step) =>
+        QueryNativeCombatSelectionEntryBinding(step, legacyInitiativeOwner: false);
+
+    /// <summary>Resolve a retained entry under its recorded pre-correction owner policy.</summary>
+    public static (string EntryHash, long StateVersion)? QueryNativeCombatSelectionEntryBinding(CampaignHostAcceptedStep step,
+        bool legacyInitiativeOwner) =>
+        QueryNativeCombatSelectionEntryBinding(step, legacyInitiativeOwner, Cna1979SyntheticContentResolver.Instance);
+
+    public static (string EntryHash, long StateVersion)? QueryNativeCombatSelectionEntryBinding(CampaignHostAcceptedStep step,
+        bool legacyInitiativeOwner, IContentPackV6Resolver resolver)
     {
         ArgumentNullException.ThrowIfNull(step);
         if (step.Kind == CampaignHostAcceptedStep.NativeRepeatBreakdownKind && step.EventRecords.Count == 1)
@@ -683,7 +1364,8 @@ public static class CampaignHostAdapter
         try
         {
             CampaignNativeCombatSelectionTimeoutV38.ValidateInitialScope(snapshot,
-                CampaignCurrentSnapshotSerializer.ResolveContext(snapshot.Setup));
+                CampaignCurrentSnapshotSerializer.ResolveContext(snapshot.Setup,
+                    resolver), legacyInitiativeOwner);
         }
         catch (InvalidOperationException) { return null; }
         return (CampaignSelectionTimeoutEvidenceV38.Digest(step.SnapshotCheckpoint), snapshot.StateVersion);
@@ -705,7 +1387,8 @@ public static class CampaignHostAdapter
         if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence)
             throw new ArgumentException("Accepted selection timeout is required.", nameof(accepted));
         var timeout = CampaignSelectionTimeoutEvidenceV38.Deserialize(evidence.EventRecords[0]);
-        var binding = QueryNativeCombatSelectionRoundBinding(predecessor);
+        var binding = CampaignExercises.QueryNativeCombatSelectionRoundBinding(predecessor,
+            legacyInitiativeOwner: timeout.ContractVersion == 38);
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         if (timeout.CampaignId != checkpoint.CampaignId || timeout.PriorStateVersion != binding.StateVersion
             || timeout.EntryHash != binding.EntryHash || timeout.PositionId != checkpoint.PositionId
@@ -871,6 +1554,276 @@ public static class CampaignHostAdapter
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
             checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
             CampaignActionAudience.System, evidence.Receipt.ActionId);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QuerySecondMovementOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Second Movement needs an owner side."),
+        };
+        var cut = CampaignExercises.QuerySecondMovementCut(session, side, elementId);
+        var actions = cut.MovementOffers.OrderBy(value => value.OriginLocationId, StringComparer.Ordinal)
+            .ThenBy(value => value.DestinationLocationId, StringComparer.Ordinal)
+            .Select(CampaignNativeSecondMoveV44.ActionIdFor).ToArray();
+        return new CampaignHostCycleControlOwnerDraft(cut.AuthorityVersion,
+            CampaignContactOwnerVisibleCutV1.SerializeSecondMovement(cut), actions);
+    }
+
+    public static ExerciseStepResult SubmitSecondMovement(ExerciseSession session,
+        CampaignActionSubmission submission, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QuerySecondMovementOwnerDraft(session, submission.Audience, elementId); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitSecondMovement(session, submission.Audience, submission.ActionId, elementId);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QuerySecondMovementCompletionOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Second Movement completion needs an owner."),
+        };
+        var (predecessor, world) = CampaignExercises.QuerySecondMovementSource(session);
+        var proposed = CampaignNativeSecondMovementCompletedV45.Create(predecessor, world, session.Context,
+            session.CurrentSnapshot.OperationStageOrders, side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentContacts.AuthorityVersion);
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativeSecondMovementCompletedV45.CurrentContractVersion);
+            writer.WriteString("campaignId", proposed.CampaignId);
+            writer.WriteString("side", side.ToString());
+            writer.WriteString("positionId", proposed.PositionId);
+            writer.WriteString("choice", "complete-movement");
+            writer.WriteEndObject();
+        }
+        var visible = stream.ToArray();
+        var action = "sha256:" + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+            (byte[])[.. visible, 0, .. System.Text.Encoding.UTF8.GetBytes("complete-movement")]));
+        return new CampaignHostCycleControlOwnerDraft(proposed.PriorStateVersion, visible, [action]);
+    }
+
+    public static ExerciseStepResult SubmitSecondMovementCompletion(ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QuerySecondMovementCompletionOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.CompleteSecondMovement(session, submission.Audience, submission.ActionId);
+    }
+
+    private static (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions)
+        CreateSecondReserveOwnerDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Second Reserve needs an owner side."),
+        };
+        var (predecessor, world) = CampaignExercises.QuerySecondReserveSource(session);
+        var (check, _) = CampaignNativeSecondReserveV43.Create(predecessor, world, session.Context,
+            session.CurrentSnapshot.OperationStageOrders, side, null, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentContacts.AuthorityVersion);
+        var definition = session.Context.ArtifactV6!.Definition.LegacyDefinition;
+        var actions = CampaignOwnElementProjection.ProjectPlaced(definition, world, side)
+            .Where(element => element.ReserveStatus == CampaignObservationReserveStatus.None
+                && element.VehicleBreakdownRisk is null)
+            .Select(element => (CampaignActionCandidate)new DesignateReserveAction(element.ElementId))
+            .Append(new CompleteReserveDesignationAction()).ToArray();
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativeSecondReserveV43.CurrentContractVersion);
+            writer.WriteString("campaignId", check.CampaignId);
+            writer.WriteString("side", side.ToString());
+            writer.WriteString("positionId", check.PositionId);
+            writer.WriteStartArray("choices");
+            foreach (var action in actions)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", action is DesignateReserveAction ? "designate" : "complete");
+                if (action is DesignateReserveAction designated) writer.WriteString("elementId", designated.ElementId);
+                else writer.WriteNull("elementId");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+        return (new CampaignHostCycleControlOwnerDraft(check.PriorStateVersion, stream.ToArray(),
+            actions.Select(action => action.ActionId).ToArray()), actions);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QuerySecondReserveOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience) => CreateSecondReserveOwnerDraft(session, audience).Draft;
+
+    public static ExerciseStepResult SubmitSecondReserve(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions) cut;
+        try { cut = CreateSecondReserveOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
+        if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitSecondReserve(session, submission.Audience, submission.ActionId,
+            action is DesignateReserveAction designated ? designated.ElementId : null);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QueryPostCombatPassOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Post-combat pass needs an owner side."),
+        };
+        var proposed = CampaignNativePostCombatPassV42.Create(CampaignExercises.QueryPostCombatPassSource(session),
+            side, session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativePostCombatPassV42.CurrentContractVersion);
+            writer.WriteString("campaignId", proposed.CampaignId);
+            writer.WriteString("side", side.ToString());
+            writer.WriteString("positionId", proposed.PositionId);
+            writer.WriteString("choice", "finish-without-activity");
+            writer.WriteEndObject();
+        }
+        var visible = stream.ToArray();
+        var action = "sha256:" + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+            (byte[])[.. visible, 0, .. System.Text.Encoding.UTF8.GetBytes("finish-without-activity")]));
+        return new CampaignHostCycleControlOwnerDraft(proposed.PriorStateVersion, visible, [action]);
+    }
+
+    public static ExerciseStepResult SubmitPostCombatPass(ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QueryPostCombatPassOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitPostCombatPass(session, submission.Audience, submission.ActionId);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QueryTruckConvoyPassOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Truck Convoy pass needs an owner side."),
+        };
+        var (release, control) = CampaignExercises.QueryTruckConvoyPassSource(session);
+        var proposed = CampaignNativeTruckConvoyPassV41.Create(release, control, side,
+            session.CurrentContacts.AuthorityVersion);
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativeTruckConvoyPassV41.CurrentContractVersion);
+            writer.WriteString("campaignId", proposed.CampaignId);
+            writer.WriteString("side", side.ToString());
+            writer.WriteString("positionId", proposed.PositionId);
+            writer.WriteString("choice", "pass");
+            writer.WriteEndObject();
+        }
+        var visible = stream.ToArray();
+        var action = "sha256:" + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+            (byte[])[.. visible, 0, .. System.Text.Encoding.UTF8.GetBytes("pass")]));
+        return new CampaignHostCycleControlOwnerDraft(control.StateVersion, visible, [action]);
+    }
+
+    public static ExerciseStepResult SubmitTruckConvoyPass(ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QueryTruckConvoyPassOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitTruckConvoyPass(session, submission.Audience, submission.ActionId);
     }
 
     public static CampaignHostCycleControlOwnerDraft QueryNativeCycleControlOwnerDraft(
@@ -1073,6 +2026,21 @@ public static class CampaignHostAdapter
         ExerciseSession session) =>
         CampaignExercises.CompleteNativeRepeatBreakdown(session);
 
+    public static ExerciseStepResult CompleteSecondBreakdown(ExerciseSession session) =>
+        CampaignExercises.CompleteSecondBreakdown(session);
+
+    public static CampaignActionSubmission SecondBreakdownCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.SuccessorSession?.CurrentSecondBreakdown is null)
+            throw new ArgumentException("Accepted second Breakdown completion required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
     public static CampaignActionSubmission NativeRepeatBreakdownCommand(
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
@@ -1192,14 +2160,184 @@ public static class CampaignHostAdapter
         IReadOnlyList<CampaignHostAcceptedStep> steps,
         IReadOnlyList<byte[]>? initialContactRecords = null,
         IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null,
-        CampaignDecisionTimingConfigurationV1? timing = null)
+        CampaignDecisionTimingConfigurationV1? timing = null) =>
+        ImportCore(request, creationEvent, initialSnapshot, steps, initialContactRecords, stepContactRecords,
+            timing, Cna1979SyntheticContentResolver.Instance);
+
+    public static CampaignHostImportResult ImportWithContentResolver(
+        CampaignCreationRequest request,
+        ReadOnlyMemory<byte> creationEvent,
+        ReadOnlyMemory<byte> initialSnapshot,
+        IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IContentPackV6Resolver resolver,
+        IReadOnlyList<byte[]>? initialContactRecords = null,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null,
+        CampaignDecisionTimingConfigurationV1? timing = null) =>
+        ImportCore(request, creationEvent, initialSnapshot, steps, initialContactRecords, stepContactRecords,
+            timing, resolver ?? throw new ArgumentNullException(nameof(resolver)));
+
+    private static CampaignHostImportResult ImportCore(
+        CampaignCreationRequest request,
+        ReadOnlyMemory<byte> creationEvent,
+        ReadOnlyMemory<byte> initialSnapshot,
+        IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IReadOnlyList<byte[]>? initialContactRecords,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords,
+        CampaignDecisionTimingConfigurationV1? timing,
+        IContentPackV6Resolver resolver)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(steps);
+        if (steps.Any(step => step?.Kind is CampaignHostAcceptedStep.PregameAxisSupplyKind
+            or CampaignHostAcceptedStep.PregameAxisSupplyFinishKind or CampaignHostAcceptedStep.SourceAxisDumpKind
+            or CampaignHostAcceptedStep.SourceCommonwealthSupplyKind or CampaignHostAcceptedStep.SourceDummyKind
+            or CampaignHostAcceptedStep.SourceMotorizationKind or CampaignHostAcceptedStep.SourceAxisGt1SupplyKind
+            or CampaignHostAcceptedStep.SourceUnattachedCargoKind
+            or CampaignHostAcceptedStep.SourceActionsKind
+            or CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind or CampaignHostAcceptedStep.SourceAxisSupplementKind
+            or CampaignHostAcceptedStep.SourceAutoblindaKind or CampaignHostAcceptedStep.SourceCommonwealthSupplementKind
+            or CampaignHostAcceptedStep.SourcePriorityMotorizationKind or CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind
+            or CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind or CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind
+            or CampaignHostAcceptedStep.SourceInitialWrecksKind or CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind
+            or CampaignHostAcceptedStep.SourceAxisFreeSetupKind or CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind
+            or CampaignHostAcceptedStep.SourceAxisCorpsSetupKind or CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind
+            or CampaignHostAcceptedStep.SourceMalettiHierarchyKind or CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind
+            or CampaignHostAcceptedStep.SourceGt2CorrectionKind or CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind
+            or CampaignHostAcceptedStep.SourceCwPriorityCatalogKind or CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind
+            or CampaignHostAcceptedStep.SourceCompactCheckpointKind
+            or CampaignHostAcceptedStep.SourceFourthIndianWorldKind
+            or CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceMatruhFormationKind or CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind
+            or CampaignHostAcceptedStep.SourceCwFreeGunsKind or CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind
+            or CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind or CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind
+            or CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind or CampaignHostAcceptedStep.SourceBattlefieldKind
+            or CampaignHostAcceptedStep.SourceCairoSetupKind or CampaignHostAcceptedStep.SourceCairoUnitKind
+            or CampaignHostAcceptedStep.SourceCairoWorldKind or CampaignHostAcceptedStep.SourceMalettiKind
+            or CampaignHostAcceptedStep.SourceIndependentKind or CampaignHostAcceptedStep.SourceLocalMapKind
+            or CampaignHostAcceptedStep.SourceExpandedIndependentKind or CampaignHostAcceptedStep.SourceAxisFreeWorldKind or CampaignHostAcceptedStep.SourceAxisCorpsWorldKind or CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind or CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind or CampaignHostAcceptedStep.SourceCwPriorityWorldKind or CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+        return ImportStarted(Create(request, resolver), creationEvent, initialSnapshot, steps,
+            initialContactRecords, stepContactRecords, timing);
+    }
+
+    public static CampaignHostImportResult ImportPregameSource(
+        CampaignCreationRequest request, ReadOnlyMemory<byte> creationEvent,
+        ReadOnlyMemory<byte> initialSnapshot, IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IReadOnlyList<byte[]>? initialContactRecords = null,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(steps);
+        if (steps.Any(step => !IsSourceStep(step)))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+        ExerciseStartResult started;
+        try { started = CampaignExercises.ReplayPregameGenesis(request, creationEvent, initialSnapshot); }
+        catch (Exception exception) when (exception is System.Text.Json.JsonException
+            or ArgumentException or InvalidOperationException or InvalidCampaignHistoryException
+            or KeyNotFoundException or FormatException or OverflowException)
+        { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation); }
+        return ImportStarted(started, creationEvent, initialSnapshot, steps,
+            initialContactRecords, stepContactRecords, null);
+    }
+
+    private static bool IsSourceStep(CampaignHostAcceptedStep? step) => step is not null && (step.Kind, step.ActingElementId) is
+            ((CampaignHostAcceptedStep.PregameAxisSupplyKind, "land.pregame-axis-supply") or
+             (CampaignHostAcceptedStep.PregameAxisSupplyFinishKind, "land.pregame-axis-supply-finish") or
+             (CampaignHostAcceptedStep.SourceAxisDumpKind, "land.graziani-axis-dumps") or
+             (CampaignHostAcceptedStep.SourceCommonwealthSupplyKind, "land.graziani-commonwealth-supply") or
+             (CampaignHostAcceptedStep.SourceDummyKind, "land.graziani-dummy-groups") or
+             (CampaignHostAcceptedStep.SourceMotorizationKind, "land.graziani-motorization") or
+             (CampaignHostAcceptedStep.SourceUnattachedCargoKind, "land.graziani-unattached-cargo") or
+             (CampaignHostAcceptedStep.SourceActionsKind, "land.graziani-source-actions") or
+             (CampaignHostAcceptedStep.SourceAxisGt1SupplyKind, "land.graziani-axis-gt1-supply") or
+             (CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind, "land.graziani-commonwealth-supply-plan") or
+             (CampaignHostAcceptedStep.SourceAxisSupplementKind, null) or
+             (CampaignHostAcceptedStep.SourceAutoblindaKind, "land.graziani-axis-autoblinda") or
+             (CampaignHostAcceptedStep.SourceCommonwealthSupplementKind, null) or
+             (CampaignHostAcceptedStep.SourcePriorityMotorizationKind, null) or
+             (CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind, "land.graziani-commonwealth-priority-motorization") or
+             (CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind, null) or
+             (CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind, "land.graziani-commonwealth-attached-initial-loads") or
+             (CampaignHostAcceptedStep.SourceInitialWrecksKind, null) or
+             (CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind, "land.graziani-commonwealth-initial-wrecks") or
+             (CampaignHostAcceptedStep.SourceAxisFreeSetupKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind, "land.graziani-axis-free-setup") or
+             (CampaignHostAcceptedStep.SourceAxisCorpsSetupKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind, "land.graziani-axis-corps-setup") or
+             (CampaignHostAcceptedStep.SourceMalettiHierarchyKind, null) or
+             (CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind, "land.graziani-axis-maletti-hierarchy") or
+             (CampaignHostAcceptedStep.SourceGt2CorrectionKind, null) or
+             (CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind, "land.graziani-axis-gt2-correction") or
+             (CampaignHostAcceptedStep.SourceCwPriorityCatalogKind, null) or
+             (CampaignHostAcceptedStep.SourceCompactCheckpointKind, null) or
+             (CampaignHostAcceptedStep.SourceFourthIndianWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind, "land.graziani-commonwealth-priority-catalog") or
+             (CampaignHostAcceptedStep.SourceMatruhFormationKind, null) or
+             (CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind, "land.graziani-commonwealth-matruh-formation") or
+             (CampaignHostAcceptedStep.SourceCwFreeGunsKind, null) or
+             (CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind, "land.graziani-commonwealth-free-guns") or
+             (CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind, "land.graziani-axis-priority-motorization") or
+             (CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind, null) or
+             (CampaignHostAcceptedStep.SourceBattlefieldKind, null) or
+             (CampaignHostAcceptedStep.SourceCairoSetupKind, null) or
+             (CampaignHostAcceptedStep.SourceCairoUnitKind, "land.graziani-commonwealth-cairo-setup") or
+             (CampaignHostAcceptedStep.SourceCairoWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceMalettiKind, null) or
+             (CampaignHostAcceptedStep.SourceIndependentKind, null) or
+             (CampaignHostAcceptedStep.SourceLocalMapKind, null) or
+             (CampaignHostAcceptedStep.SourceExpandedIndependentKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisFreeWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisCorpsWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceCwPriorityWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind, null));
+
+    /// <summary>Re-adjudicates source journal rows lazily; caller verifies row chain and head.</summary>
+    public static CampaignHostImportResult ImportPregameSourceStream(
+        CampaignCreationRequest request, ReadOnlyMemory<byte> creationEvent, ReadOnlyMemory<byte> initialSnapshot,
+        IEnumerable<(CampaignHostAcceptedStep Step, IReadOnlyList<byte[]> Contacts)> steps,
+        IReadOnlyList<byte[]> initialContactRecords)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(steps);
+        ArgumentNullException.ThrowIfNull(initialContactRecords);
+        ExerciseStartResult started;
+        try { started = CampaignExercises.ReplayPregameGenesis(request, creationEvent, initialSnapshot); }
+        catch (Exception exception) when (exception is System.Text.Json.JsonException
+            or ArgumentException or InvalidOperationException or InvalidCampaignHistoryException
+            or KeyNotFoundException or FormatException or OverflowException)
+        { return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation); }
+        return ImportStartedStream(started, creationEvent, initialSnapshot,
+            steps.Select(value => (value.Step, (IReadOnlyList<byte[]>?)value.Contacts)), initialContactRecords, null, true);
+    }
+
+    private static CampaignHostImportResult ImportStarted(
+        ExerciseStartResult started, ReadOnlyMemory<byte> creationEvent,
+        ReadOnlyMemory<byte> initialSnapshot, IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IReadOnlyList<byte[]>? initialContactRecords,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords,
+        CampaignDecisionTimingConfigurationV1? timing)
+    {
         ArgumentNullException.ThrowIfNull(steps);
         if ((initialContactRecords is null) != (stepContactRecords is null)
             || (stepContactRecords is not null && stepContactRecords.Count != steps.Count))
             return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
-        var started = Create(request);
+        return ImportStartedStream(started, creationEvent, initialSnapshot,
+            steps.Select((step, index) => (step, stepContactRecords?[index])), initialContactRecords, timing, false);
+    }
+
+    private static CampaignHostImportResult ImportStartedStream(
+        ExerciseStartResult started, ReadOnlyMemory<byte> creationEvent, ReadOnlyMemory<byte> initialSnapshot,
+        IEnumerable<(CampaignHostAcceptedStep Step, IReadOnlyList<byte[]>? Contacts)> steps,
+        IReadOnlyList<byte[]>? initialContactRecords, CampaignDecisionTimingConfigurationV1? timing, bool sourceOnly)
+    {
         if (!started.IsStarted
             || !creationEvent.Span.SequenceEqual(started.CreationEventBytes)
             || !initialSnapshot.Span.SequenceEqual(started.InitialSnapshotBytes))
@@ -1209,10 +2347,10 @@ public static class CampaignHostAdapter
         if (initialContactRecords is not null
             && !ContactRecordsMatch(session.CurrentContacts.Records, initialContactRecords))
             return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
-        for (var index = 0; index < steps.Count; index++)
+        foreach (var item in steps)
         {
-            var step = steps[index];
-            if (step is null)
+            var step = item.Step;
+            if (step is null || (sourceOnly && (!IsSourceStep(step) || item.Contacts is null)))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignActionSubmission submission;
             try
@@ -1226,6 +2364,61 @@ public static class CampaignHostAdapter
             }
 
             if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind
+                or CampaignHostAcceptedStep.PregameAxisSupplyKind
+                or CampaignHostAcceptedStep.PregameAxisSupplyFinishKind
+                or CampaignHostAcceptedStep.SourceAxisDumpKind
+                or CampaignHostAcceptedStep.SourceCommonwealthSupplyKind
+                or CampaignHostAcceptedStep.SourceDummyKind
+                or CampaignHostAcceptedStep.SourceMotorizationKind
+                or CampaignHostAcceptedStep.SourceUnattachedCargoKind
+                or CampaignHostAcceptedStep.SourceActionsKind
+                or CampaignHostAcceptedStep.SourceAxisGt1SupplyKind
+                or CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind
+                or CampaignHostAcceptedStep.SourceAxisSupplementKind
+                or CampaignHostAcceptedStep.SourceAutoblindaKind
+                or CampaignHostAcceptedStep.SourceCommonwealthSupplementKind
+                or CampaignHostAcceptedStep.SourcePriorityMotorizationKind
+                or CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind
+                or CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind
+                or CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind
+                or CampaignHostAcceptedStep.SourceInitialWrecksKind
+                or CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind
+                or CampaignHostAcceptedStep.SourceAxisFreeSetupKind
+                or CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind
+                or CampaignHostAcceptedStep.SourceAxisCorpsSetupKind
+                or CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind
+                or CampaignHostAcceptedStep.SourceMalettiHierarchyKind
+                or CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind
+                or CampaignHostAcceptedStep.SourceGt2CorrectionKind
+                or CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind
+                or CampaignHostAcceptedStep.SourceCwPriorityCatalogKind
+                or CampaignHostAcceptedStep.SourceCompactCheckpointKind
+                or CampaignHostAcceptedStep.SourceFourthIndianWorldKind
+            or CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind
+                or CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind
+                or CampaignHostAcceptedStep.SourceMatruhFormationKind
+                or CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind
+                or CampaignHostAcceptedStep.SourceCwFreeGunsKind
+                or CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind
+                or CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind
+                or CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind
+                or CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind
+                or CampaignHostAcceptedStep.SourceBattlefieldKind
+                or CampaignHostAcceptedStep.SourceCairoSetupKind
+                or CampaignHostAcceptedStep.SourceCairoUnitKind
+                or CampaignHostAcceptedStep.SourceCairoWorldKind
+                or CampaignHostAcceptedStep.SourceMalettiKind
+                or CampaignHostAcceptedStep.SourceIndependentKind
+                or CampaignHostAcceptedStep.SourceLocalMapKind
+                or CampaignHostAcceptedStep.SourceExpandedIndependentKind
+                or CampaignHostAcceptedStep.SourceAxisFreeWorldKind
+                or CampaignHostAcceptedStep.SourceAxisCorpsWorldKind
+                or CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind
+                or CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind
+                or CampaignHostAcceptedStep.SourceCwPriorityWorldKind
+                or CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind
                 or CampaignHostAcceptedStep.ContactMovementKind
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
@@ -1252,6 +2445,12 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
                 or CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind
                 or CampaignHostAcceptedStep.ContactCycleControlKind
+                or CampaignHostAcceptedStep.ContactTruckConvoyPassKind
+                or CampaignHostAcceptedStep.ContactPostCombatPassKind
+                or CampaignHostAcceptedStep.ContactSecondReserveKind
+                or CampaignHostAcceptedStep.ContactSecondMovementKind
+                or CampaignHostAcceptedStep.ContactSecondMovementCompletionKind
+                or CampaignHostAcceptedStep.NativeSecondBreakdownKind
                 or CampaignHostAcceptedStep.ContactRepeatMovementKind
                 or CampaignHostAcceptedStep.NativeRepeatBreakdownKind
                 or CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind
@@ -1289,6 +2488,22 @@ public static class CampaignHostAdapter
                     if (timing is null && (rbaCancellation.Reason != "rba-unavailable"
                         || rbaCancellation.ConfigurationHash != NoTimingRbaCancellationHash))
                         return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                }
+            }
+            ReadOnlyMemory<byte>? retainedLegacySelection = null;
+            if (step.Kind == CampaignHostAcceptedStep.ContactCombatSelectionKind)
+            {
+                if (step.EventRecords.Count != 1)
+                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                try
+                {
+                    var recorded = CampaignNativeCombatDecisionV12.Deserialize(step.EventRecords[0]);
+                    if (recorded.ContractVersion == CampaignNativeCombatDecisionV12.CurrentContractVersion)
+                        retainedLegacySelection = step.EventRecords[0];
                 }
                 catch (System.Text.Json.JsonException)
                 {
@@ -1346,9 +2561,10 @@ public static class CampaignHostAdapter
             }
             var accepted = step.Kind switch
             {
-                CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind => TimeoutNativeCombatSelection(session,
+                CampaignHostAcceptedStep.NativeCombatSelectionTimeoutKind => CampaignExercises.TimeoutNativeCombatSelection(session,
                     timing, selectionTimeout!.OpenedAtUnixMilliseconds, selectionTimeout.DeadlineUnixMilliseconds,
-                    selectionTimeout.HighWaterUnixMilliseconds, selectionTimeout.CancelledAtUnixMilliseconds, selectionTimeout.Reason),
+                    selectionTimeout.HighWaterUnixMilliseconds, selectionTimeout.CancelledAtUnixMilliseconds, selectionTimeout.Reason,
+                    legacyInitiativeOwner: selectionTimeout.ContractVersion == 38),
                 CampaignHostAcceptedStep.NativeCombatRetreatTimeoutKind => TimeoutNativeCombatRetreat(session,
                     timing, retreatTimeout!.OpenedAtUnixMilliseconds, retreatTimeout.DeadlineUnixMilliseconds,
                     retreatTimeout.HighWaterUnixMilliseconds, retreatTimeout.CancelledAtUnixMilliseconds, retreatTimeout.Reason),
@@ -1362,6 +2578,61 @@ public static class CampaignHostAdapter
                     timing, cycleTimeout!.OpenedAtUnixMilliseconds, cycleTimeout.DeadlineUnixMilliseconds,
                     cycleTimeout.HighWaterUnixMilliseconds, cycleTimeout.CancelledAtUnixMilliseconds, cycleTimeout.Reason),
                 CampaignHostAcceptedStep.LegacyKind => Submit(session, submission),
+                CampaignHostAcceptedStep.PregameAxisSupplyKind => Submit(session, submission),
+                CampaignHostAcceptedStep.PregameAxisSupplyFinishKind => FinishPregameAxisSupply(session, submission),
+                CampaignHostAcceptedStep.SourceAxisDumpKind => PlaceSourceAxisDump(session, submission),
+                CampaignHostAcceptedStep.SourceCommonwealthSupplyKind => PlaceSourceCommonwealthSupply(session, submission),
+                CampaignHostAcceptedStep.SourceDummyKind => DecideSourceDummy(session, submission),
+                CampaignHostAcceptedStep.SourceMotorizationKind => AdjustSourceMotorization(session, submission),
+                CampaignHostAcceptedStep.SourceUnattachedCargoKind => SubmitSourceUnattachedCargo(session, submission),
+                CampaignHostAcceptedStep.SourceActionsKind => Submit(session, submission),
+                CampaignHostAcceptedStep.SourceAxisGt1SupplyKind => SubmitSourceAxisGt1Supply(session, submission),
+                CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind => SubmitSourceCommonwealthSupplyPlan(session, submission),
+                CampaignHostAcceptedStep.SourceAxisSupplementKind => AdmitSourceAxisSupplement(session),
+                CampaignHostAcceptedStep.SourceAutoblindaKind => SubmitSourceAutoblinda(session, submission),
+                CampaignHostAcceptedStep.SourceCommonwealthSupplementKind => AdmitSourceCommonwealthSupplement(session),
+                CampaignHostAcceptedStep.SourcePriorityMotorizationKind => AdmitSourcePriorityMotorization(session),
+                CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind => AdjustSourcePriorityMotorization(session, submission),
+                CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind => AdmitSourceAttachedInitialLoads(session),
+                CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind => SubmitSourceAttachedInitialLoads(session, submission),
+                CampaignHostAcceptedStep.SourceInitialWrecksKind => AdmitSourceInitialWrecks(session),
+                CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind => PlaceSourceInitialWreck(session, submission),
+                CampaignHostAcceptedStep.SourceAxisFreeSetupKind => AdmitSourceAxisFreeSetup(session),
+                CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind => PlaceSourceAxisFreeUnit(session, submission),
+                CampaignHostAcceptedStep.SourceAxisCorpsSetupKind => AdmitSourceAxisCorpsSetup(session),
+                CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind => PlaceSourceAxisCorpsUnit(session, submission),
+                CampaignHostAcceptedStep.SourceMalettiHierarchyKind => AdmitSourceMalettiHierarchy(session),
+                CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind => SubmitSourceMalettiHierarchy(session, submission),
+                CampaignHostAcceptedStep.SourceGt2CorrectionKind => AdmitSourceGt2Correction(session),
+                CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind => SubmitSourceGt2Correction(session, submission),
+                CampaignHostAcceptedStep.SourceCwPriorityCatalogKind => AdmitSourceCwPriorityCatalog(session),
+                CampaignHostAcceptedStep.SourceCompactCheckpointKind => AdmitSourceCompactCheckpoint(session),
+                CampaignHostAcceptedStep.SourceFourthIndianWorldKind => AdmitSourceFourthIndianWorld(session),
+                CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind => AdmitSourceMatruhGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind => AdmitSourceMalettiGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind => AdmitSourceLibyanGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind => SubmitSourceCwPriorityCatalog(session, submission),
+                CampaignHostAcceptedStep.SourceMatruhFormationKind => AdmitSourceMatruhFormation(session),
+                CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind => SubmitSourceMatruhFormation(session, submission),
+                CampaignHostAcceptedStep.SourceCwFreeGunsKind => AdmitSourceCwFreeGuns(session),
+                CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind => PlaceSourceCwFreeGun(session, submission),
+                CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind => AdmitSourceAxisPriorityMotorization(session),
+                CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind => CampaignExercises.ReplaySourceAxisPriority(session, submission),
+                CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind => AdmitSourceAxisMinorGarrisons(session),
+                CampaignHostAcceptedStep.SourceBattlefieldKind => AdmitSourceBattlefield(session),
+                CampaignHostAcceptedStep.SourceCairoSetupKind => AdmitSourceCairoSetup(session),
+                CampaignHostAcceptedStep.SourceCairoUnitKind => PlaceSourceCairoUnit(session, submission),
+                CampaignHostAcceptedStep.SourceCairoWorldKind => AdmitSourceCairoWorld(session),
+                CampaignHostAcceptedStep.SourceMalettiKind => CampaignExercises.ReplaySourceMalettiPromotion(session),
+                CampaignHostAcceptedStep.SourceIndependentKind => CampaignExercises.ReplaySourceIndependentPromotion(session),
+                CampaignHostAcceptedStep.SourceLocalMapKind => AdmitSourceLocalMap(session),
+                CampaignHostAcceptedStep.SourceExpandedIndependentKind => CampaignExercises.ReplaySourceExpandedIndependentPromotion(session),
+                CampaignHostAcceptedStep.SourceAxisFreeWorldKind => PromoteSourceAxisFreeWorld(session),
+                CampaignHostAcceptedStep.SourceAxisCorpsWorldKind => PromoteSourceAxisCorpsWorld(session),
+                CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind => PromoteSourceCertifiedMalettiWorld(session),
+                CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind => PromoteSourceMatruhDetachedWorld(session),
+                CampaignHostAcceptedStep.SourceCwPriorityWorldKind => PromoteSourceCwPriorityWorld(session),
+                CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind => PromoteSourceCwFreeGunsWorld(session),
                 CampaignHostAcceptedStep.ContactMovementKind => SubmitContactOwnerMovement(
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
@@ -1406,6 +2677,18 @@ public static class CampaignHostAdapter
                         step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactCycleControlKind =>
                     SubmitNativeCycleControl(session, submission),
+                CampaignHostAcceptedStep.ContactTruckConvoyPassKind =>
+                    SubmitTruckConvoyPass(session, submission),
+                CampaignHostAcceptedStep.ContactPostCombatPassKind =>
+                    SubmitPostCombatPass(session, submission),
+                CampaignHostAcceptedStep.ContactSecondReserveKind =>
+                    SubmitSecondReserve(session, submission),
+                CampaignHostAcceptedStep.ContactSecondMovementKind =>
+                    SubmitSecondMovement(session, submission, step.ActingElementId!),
+                CampaignHostAcceptedStep.ContactSecondMovementCompletionKind =>
+                    SubmitSecondMovementCompletion(session, submission),
+                CampaignHostAcceptedStep.NativeSecondBreakdownKind =>
+                    CompleteSecondBreakdown(session),
                 CampaignHostAcceptedStep.ContactRepeatMovementKind =>
                     SubmitNativeRepeatMovement(session, submission),
                 CampaignHostAcceptedStep.NativeRepeatBreakdownKind =>
@@ -1424,8 +2707,174 @@ public static class CampaignHostAdapter
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactForceSealKind => SubmitContactOwnerForceSeal(
                     session, submission, step.ActingElementId!),
-                _ => SubmitContactOwnerCombatSelection(session, submission, step.ActingElementId!),
+                _ => CampaignExercises.SubmitContactOwnerCombatSelection(session, submission,
+                    step.ActingElementId!, retainedLegacySelection),
             };
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisSupplementKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisSupplementCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCommonwealthSupplementKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCommonwealthSupplementCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourcePriorityMotorizationKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourcePriorityMotorizationCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAttachedInitialLoadsCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceInitialWrecksKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceInitialWrecksCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisFreeSetupKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisFreeSetupCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisCorpsSetupKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisCorpsSetupCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceMalettiHierarchyKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceMalettiHierarchyCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceGt2CorrectionKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceGt2CorrectionCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCwPriorityCatalogKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCwPriorityCatalogCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCompactCheckpointKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCompactCheckpointCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceFourthIndianWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceFourthIndianWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceMatruhGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceMalettiGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceLibyanGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceMatruhFormationKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceMatruhFormationCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCwFreeGunsKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCwFreeGunsCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisPriorityMotorizationCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisMinorGarrisonsCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceBattlefieldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceBattlefieldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCairoSetupKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCairoSetupCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCairoWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCairoWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceMalettiKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceMalettiCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceIndependentKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceIndependentCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceExpandedIndependentKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceExpandedIndependentCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisFreeWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisFreeWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceAxisCorpsWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceAxisCorpsWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCertifiedMalettiWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceMatruhDetachedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCwPriorityWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCwPriorityWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCwFreeGunsWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceLocalMapKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceLocalMapCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SecondBreakdownCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (step.Kind == CampaignHostAcceptedStep.NativeCombatNoAttackKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
@@ -1522,13 +2971,13 @@ public static class CampaignHostAdapter
             if (!accepted.IsAccepted
                 || !step.Matches(accepted.Evidence!))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
-            if (stepContactRecords is not null)
+            if (item.Contacts is not null)
             {
                 var before = session.CurrentContacts.Records;
                 var after = accepted.SuccessorSession!.CurrentContacts.Records;
                 if (after.Count < before.Count
                     || !ContactRecordsMatch(after.Take(before.Count).ToArray(), before)
-                    || !ContactRecordsMatch(after.Skip(before.Count).ToArray(), stepContactRecords[index]))
+                    || !ContactRecordsMatch(after.Skip(before.Count).ToArray(), item.Contacts))
                     return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             }
             session = accepted.SuccessorSession!;
@@ -1825,6 +3274,67 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeCombatCustodyTimeoutContractVersion = 30;
     public const int NativeCombatRetreatTimeoutContractVersion = 31;
     public const int NativeCombatSelectionTimeoutContractVersion = 32;
+    public const int ContactTruckConvoyPassContractVersion = 33;
+    public const int ContactPostCombatPassContractVersion = 34;
+    public const int ContactSecondReserveContractVersion = 35;
+    public const int ContactSecondMovementContractVersion = 36;
+    public const int ContactSecondMovementCompletionContractVersion = 37;
+    public const int PregameAxisSupplyContractVersion = 38;
+    public const int NativeSecondBreakdownContractVersion = 39;
+    public const int PregameAxisSupplyFinishContractVersion = 40;
+    public const int SourceAxisDumpContractVersion = 41;
+    public const int SourceCommonwealthSupplyContractVersion = 42;
+    public const int SourceDummyContractVersion = 43;
+    public const int SourceMotorizationContractVersion = 44;
+    public const int SourceAxisGt1SupplyContractVersion = 45;
+    public const int SourceCommonwealthSupplyPlanContractVersion = 46;
+    public const int SourceAxisSupplementContractVersion = 47;
+    public const int SourceAutoblindaContractVersion = 48;
+    public const int SourceCommonwealthSupplementContractVersion = 49;
+    public const int SourcePriorityMotorizationContractVersion = 50;
+    public const int SourcePriorityMotorizationChoiceContractVersion = 51;
+    public const int SourceAxisPriorityMotorizationContractVersion = 52;
+    public const int SourceAxisPriorityChoiceContractVersion = 53;
+    public const int SourceAxisMinorGarrisonsContractVersion = 54;
+    public const int SourceBattlefieldContractVersion = 55;
+    public const int SourceCairoSetupContractVersion = 56;
+    public const int SourceCairoUnitContractVersion = 57;
+    public const int SourceCairoWorldContractVersion = 58;
+    public const int SourceMalettiContractVersion = 59;
+    public const int SourceIndependentContractVersion = 60;
+    public const int SourceLocalMapContractVersion = 61;
+    public const int SourceExpandedIndependentContractVersion = 62;
+    public const int SourceAttachedInitialLoadsContractVersion = 63;
+    public const int SourceAttachedInitialLoadsChoiceContractVersion = 64;
+    public const int SourceInitialWrecksContractVersion = 65;
+    public const int SourceInitialWrecksChoiceContractVersion = 66;
+    public const int SourceAxisFreeSetupContractVersion = 67;
+    public const int SourceAxisFreeSetupChoiceContractVersion = 68;
+    public const int SourceAxisCorpsSetupContractVersion = 70;
+    public const int SourceAxisCorpsSetupChoiceContractVersion = 71;
+    public const int SourceMalettiHierarchyContractVersion = 73;
+    public const int SourceMalettiHierarchyChoiceContractVersion = 74;
+    public const int SourceMatruhFormationContractVersion = 76;
+    public const int SourceMatruhFormationChoiceContractVersion = 77;
+    public const int SourceMatruhDetachedWorldContractVersion = 78;
+    public const int SourceGt2CorrectionContractVersion = 79;
+    public const int SourceGt2CorrectionChoiceContractVersion = 80;
+    public const int SourceCwPriorityCatalogContractVersion = 81;
+    public const int SourceCwPriorityCatalogChoiceContractVersion = 82;
+    public const int SourceCwPriorityWorldContractVersion = 83;
+    public const int SourceCompactCheckpointContractVersion = 84;
+    public const int SourceCwFreeGunsContractVersion = 85;
+    public const int SourceCwFreeGunsChoiceContractVersion = 86;
+    public const int SourceCwFreeGunsWorldContractVersion = 87;
+    public const int SourceUnattachedCargoContractVersion = 88;
+    public const int SourceActionsContractVersion = 89;
+    public const int SourceFourthIndianWorldContractVersion = 90;
+    public const int SourceMatruhGroupedWorldContractVersion = 91;
+    public const int SourceMalettiGroupedWorldContractVersion = 92;
+    public const int SourceLibyanGroupedWorldContractVersion = 93;
+    public const int SourceCertifiedMalettiWorldContractVersion = 75;
+    public const int SourceAxisCorpsWorldContractVersion = 72;
+    public const int SourceAxisFreeWorldContractVersion = 69;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
@@ -1847,6 +3357,67 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeReserveReleaseCompletionKind = "native-reserve-release-completion";
     public const string ContactReserveReleaseChoiceKind = "contact-reserve-release-choice";
     public const string ContactCycleControlKind = "contact-cycle-control";
+    public const string ContactTruckConvoyPassKind = "contact-truck-convoy-pass";
+    public const string ContactPostCombatPassKind = "contact-post-combat-pass";
+    public const string ContactSecondReserveKind = "contact-second-reserve";
+    public const string ContactSecondMovementKind = "contact-second-movement";
+    public const string ContactSecondMovementCompletionKind = "contact-second-movement-completion";
+    public const string PregameAxisSupplyKind = "pregame-axis-supply";
+    public const string PregameAxisSupplyFinishKind = "pregame-axis-supply-finish";
+    public const string SourceAxisDumpKind = "source-axis-dump";
+    public const string SourceCommonwealthSupplyKind = "source-commonwealth-supply";
+    public const string SourceDummyKind = "source-dummy";
+    public const string SourceMotorizationKind = "source-motorization";
+    public const string SourceUnattachedCargoKind = "source-unattached-cargo";
+    public const string SourceActionsKind = "source-actions";
+    public const string SourceAxisGt1SupplyKind = "source-axis-gt1-supply";
+    public const string SourceCommonwealthSupplyPlanKind = "source-commonwealth-supply-plan";
+    public const string SourceAxisSupplementKind = "source-axis-supplement";
+    public const string SourceAutoblindaKind = "source-autoblinda";
+    public const string SourceCommonwealthSupplementKind = "source-commonwealth-supplement";
+    public const string SourcePriorityMotorizationKind = "source-priority-motorization";
+    public const string SourcePriorityMotorizationChoiceKind = "source-priority-motorization-choice";
+    public const string SourceAttachedInitialLoadsKind = "source-attached-initial-loads";
+    public const string SourceAttachedInitialLoadsChoiceKind = "source-attached-initial-loads-choice";
+    public const string SourceInitialWrecksKind = "source-initial-wrecks";
+    public const string SourceInitialWrecksChoiceKind = "source-initial-wrecks-choice";
+    public const string SourceAxisFreeSetupKind = "source-axis-free-setup";
+    public const string SourceAxisFreeSetupChoiceKind = "source-axis-free-setup-choice";
+    public const string SourceAxisCorpsSetupKind = "source-axis-corps-setup";
+    public const string SourceAxisCorpsSetupChoiceKind = "source-axis-corps-setup-choice";
+    public const string SourceMalettiHierarchyKind = "source-maletti-hierarchy";
+    public const string SourceMalettiHierarchyChoiceKind = "source-maletti-hierarchy-choice";
+    public const string SourceGt2CorrectionKind = "source-gt2-correction";
+    public const string SourceGt2CorrectionChoiceKind = "source-gt2-correction-choice";
+    public const string SourceCwPriorityCatalogKind = "source-cw-priority-catalog";
+    public const string SourceCompactCheckpointKind = "source-compact-checkpoint";
+    public const string SourceFourthIndianWorldKind = "source-fourth-indian-world";
+    public const string SourceMatruhGroupedWorldKind = "source-matruh-grouped-world";
+    public const string SourceMalettiGroupedWorldKind = "source-maletti-grouped-world";
+    public const string SourceLibyanGroupedWorldKind = "source-libyan-grouped-world";
+    public const string SourceCwPriorityCatalogChoiceKind = "source-cw-priority-catalog-choice";
+    public const string SourceMatruhFormationKind = "source-matruh-formation";
+    public const string SourceMatruhFormationChoiceKind = "source-matruh-formation-choice";
+    public const string SourceCwFreeGunsKind = "source-cw-free-guns";
+    public const string SourceCwFreeGunsChoiceKind = "source-cw-free-guns-choice";
+    public const string SourceAxisPriorityMotorizationKind = "source-axis-priority-motorization";
+    public const string SourceAxisPriorityChoiceKind = "source-axis-priority-choice";
+    public const string SourceAxisMinorGarrisonsKind = "source-axis-minor-garrisons";
+    public const string SourceBattlefieldKind = "source-battlefield";
+    public const string SourceCairoSetupKind = "source-cairo-setup";
+    public const string SourceCairoUnitKind = "source-cairo-unit";
+    public const string SourceCairoWorldKind = "source-cairo-world";
+    public const string SourceMalettiKind = "source-maletti";
+    public const string SourceIndependentKind = "source-independent";
+    public const string SourceLocalMapKind = "source-local-map";
+    public const string SourceExpandedIndependentKind = "source-expanded-independent";
+    public const string SourceAxisFreeWorldKind = "source-axis-free-world";
+    public const string SourceAxisCorpsWorldKind = "source-axis-corps-world";
+    public const string SourceCertifiedMalettiWorldKind = "source-certified-maletti-world";
+    public const string SourceMatruhDetachedWorldKind = "source-matruh-detached-world";
+    public const string SourceCwPriorityWorldKind = "source-cw-priority-world";
+    public const string SourceCwFreeGunsWorldKind = "source-cw-free-guns-world";
+    public const string NativeSecondBreakdownKind = "native-second-breakdown";
     public const string ContactRepeatMovementKind = "contact-repeat-movement";
     public const string NativeRepeatBreakdownKind = "native-repeat-breakdown";
     public const string ContactRepeatCombatSelectionKind = "contact-repeat-combat-selection";
@@ -1867,7 +3438,7 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or ContactMovementKind or ContactCombatSelectionKind
+        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactCombatSelectionKind
                 or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
@@ -1876,29 +3447,85 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or ContactCombatCustodyKind or NativeCombatSuccessorKind
                 or NativeReserveReleaseCompletionKind
-                or ContactReserveReleaseChoiceKind or ContactCycleControlKind
-                or ContactRepeatMovementKind or NativeRepeatBreakdownKind
+                or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
+                or ContactRepeatMovementKind or NativeRepeatBreakdownKind or NativeSecondBreakdownKind
                 or ContactRepeatCombatSelectionKind or NativeRepeatCombatNoAttackKind
                 or NativeCombatRbaCancellationKind or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind)
-            || (kind is ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
+            || (kind is PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAutoblindaKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogChoiceKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityChoiceKind or SourceCairoUnitKind or ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
-                or ContactReserveReleaseChoiceKind or ContactCycleControlKind
+                or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
                 or ContactRepeatMovementKind or ContactRepeatCombatSelectionKind
                 && string.IsNullOrWhiteSpace(actingElementId))
-            || (kind is LegacyKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
+            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 or NativeCombatAntiArmorKind or NativeCombatCancelledAssaultKind
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or NativeCombatSuccessorKind or NativeReserveReleaseCompletionKind
-                or NativeRepeatBreakdownKind or NativeRepeatCombatNoAttackKind or NativeCombatRbaCancellationKind
+                or NativeRepeatBreakdownKind or NativeSecondBreakdownKind or NativeRepeatCombatNoAttackKind or NativeCombatRbaCancellationKind
                 or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
         ContractVersion = kind switch
         {
             LegacyKind => CurrentContractVersion,
+            PregameAxisSupplyKind => PregameAxisSupplyContractVersion,
+            PregameAxisSupplyFinishKind => PregameAxisSupplyFinishContractVersion,
+            SourceAxisDumpKind => SourceAxisDumpContractVersion,
+            SourceCommonwealthSupplyKind => SourceCommonwealthSupplyContractVersion,
+            SourceDummyKind => SourceDummyContractVersion,
+            SourceMotorizationKind => SourceMotorizationContractVersion,
+            SourceUnattachedCargoKind => SourceUnattachedCargoContractVersion,
+            SourceActionsKind => SourceActionsContractVersion,
+            SourceAxisGt1SupplyKind => SourceAxisGt1SupplyContractVersion,
+            SourceCommonwealthSupplyPlanKind => SourceCommonwealthSupplyPlanContractVersion,
+            SourceAxisSupplementKind => SourceAxisSupplementContractVersion,
+            SourceAutoblindaKind => SourceAutoblindaContractVersion,
+            SourceCommonwealthSupplementKind => SourceCommonwealthSupplementContractVersion,
+            SourcePriorityMotorizationKind => SourcePriorityMotorizationContractVersion,
+            SourcePriorityMotorizationChoiceKind => SourcePriorityMotorizationChoiceContractVersion,
+            SourceAttachedInitialLoadsKind => SourceAttachedInitialLoadsContractVersion,
+            SourceAttachedInitialLoadsChoiceKind => SourceAttachedInitialLoadsChoiceContractVersion,
+            SourceInitialWrecksKind => SourceInitialWrecksContractVersion,
+            SourceInitialWrecksChoiceKind => SourceInitialWrecksChoiceContractVersion,
+            SourceAxisFreeSetupKind => SourceAxisFreeSetupContractVersion,
+            SourceAxisFreeSetupChoiceKind => SourceAxisFreeSetupChoiceContractVersion,
+            SourceAxisCorpsSetupKind => SourceAxisCorpsSetupContractVersion,
+            SourceAxisCorpsSetupChoiceKind => SourceAxisCorpsSetupChoiceContractVersion,
+            SourceMalettiHierarchyKind => SourceMalettiHierarchyContractVersion,
+            SourceMalettiHierarchyChoiceKind => SourceMalettiHierarchyChoiceContractVersion,
+            SourceGt2CorrectionKind => SourceGt2CorrectionContractVersion,
+            SourceGt2CorrectionChoiceKind => SourceGt2CorrectionChoiceContractVersion,
+            SourceCwPriorityCatalogKind => SourceCwPriorityCatalogContractVersion,
+            SourceCompactCheckpointKind => SourceCompactCheckpointContractVersion,
+            SourceFourthIndianWorldKind => SourceFourthIndianWorldContractVersion,
+            SourceMatruhGroupedWorldKind => SourceMatruhGroupedWorldContractVersion,
+            SourceMalettiGroupedWorldKind => SourceMalettiGroupedWorldContractVersion,
+            SourceLibyanGroupedWorldKind => SourceLibyanGroupedWorldContractVersion,
+            SourceCwPriorityCatalogChoiceKind => SourceCwPriorityCatalogChoiceContractVersion,
+            SourceMatruhFormationKind => SourceMatruhFormationContractVersion,
+            SourceMatruhFormationChoiceKind => SourceMatruhFormationChoiceContractVersion,
+            SourceCwFreeGunsKind => SourceCwFreeGunsContractVersion,
+            SourceCwFreeGunsChoiceKind => SourceCwFreeGunsChoiceContractVersion,
+            SourceAxisPriorityMotorizationKind => SourceAxisPriorityMotorizationContractVersion,
+            SourceAxisPriorityChoiceKind => SourceAxisPriorityChoiceContractVersion,
+            SourceAxisMinorGarrisonsKind => SourceAxisMinorGarrisonsContractVersion,
+            SourceBattlefieldKind => SourceBattlefieldContractVersion,
+            SourceCairoSetupKind => SourceCairoSetupContractVersion,
+            SourceCairoUnitKind => SourceCairoUnitContractVersion,
+            SourceCairoWorldKind => SourceCairoWorldContractVersion,
+            SourceMalettiKind => SourceMalettiContractVersion,
+            SourceIndependentKind => SourceIndependentContractVersion,
+            SourceLocalMapKind => SourceLocalMapContractVersion,
+            SourceExpandedIndependentKind => SourceExpandedIndependentContractVersion,
+            SourceAxisFreeWorldKind => SourceAxisFreeWorldContractVersion,
+            SourceAxisCorpsWorldKind => SourceAxisCorpsWorldContractVersion,
+            SourceCertifiedMalettiWorldKind => SourceCertifiedMalettiWorldContractVersion,
+            SourceMatruhDetachedWorldKind => SourceMatruhDetachedWorldContractVersion,
+            SourceCwPriorityWorldKind => SourceCwPriorityWorldContractVersion,
+            SourceCwFreeGunsWorldKind => SourceCwFreeGunsWorldContractVersion,
+            NativeSecondBreakdownKind => NativeSecondBreakdownContractVersion,
             ContactMovementKind => ContactMovementContractVersion,
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
             ContactRbaDeclineKind => ContactRbaDeclineContractVersion,
@@ -1918,6 +3545,11 @@ public sealed class CampaignHostAcceptedStep
             NativeReserveReleaseCompletionKind => NativeReserveReleaseCompletionContractVersion,
             ContactReserveReleaseChoiceKind => ContactReserveReleaseChoiceContractVersion,
             ContactCycleControlKind => ContactCycleControlContractVersion,
+            ContactTruckConvoyPassKind => ContactTruckConvoyPassContractVersion,
+            ContactPostCombatPassKind => ContactPostCombatPassContractVersion,
+            ContactSecondReserveKind => ContactSecondReserveContractVersion,
+            ContactSecondMovementKind => ContactSecondMovementContractVersion,
+            ContactSecondMovementCompletionKind => ContactSecondMovementCompletionContractVersion,
             ContactRepeatMovementKind => ContactRepeatMovementContractVersion,
             NativeRepeatBreakdownKind => NativeRepeatBreakdownContractVersion,
             ContactRepeatCombatSelectionKind => ContactRepeatCombatSelectionContractVersion,
