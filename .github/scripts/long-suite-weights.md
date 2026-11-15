@@ -438,3 +438,15 @@ the local report under `artifacts/pr345-ci-timing` had SHA-256
 Prior weights remain unchanged; new rows are marked provisional pending hosted
 calibration. The complete discovered inventory still allocates to 61 groups.
 These timings do not establish hosted performance or exact-head CI success.
+## Graziani replay stress session
+
+The default source-authority theory now exercises real setup legal choices and
+seeded interleaving; one Core issued-action binding test is new. A local macOS
+arm64 .NET 10 Release run of both classes passed 3/3. The existing seed 0 and
+seed 14 rows measured 63,337 ms and 24,540 ms; the new binding row measured
+11 ms. The optional `SANDTABLE_GRAZIANI_SOAK=1` workload was not enabled for
+these CI weights. Command:
+`dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --artifacts-path artifacts/graziani-session-final --filter-class '*CampaignSourceIssuedActionBindingTests*' '*GrazianiSourceAuthorityTests*' --report-xunit-xml --results-directory artifacts/graziani-session-final/ci-timings -p:NuGetAudit=false`.
+DLL SHA-256 `1b93e7c8c9027c6673f8210600ff20732a5e0f6195779e2ced08c016a8ce7f2d`;
+XML SHA-256 `b73820099b8633553d78adb773b0810d6e2e600fa845ef1f0c228bcb95b8436f`.
+The measured rows remain provisional pending hosted calibration.

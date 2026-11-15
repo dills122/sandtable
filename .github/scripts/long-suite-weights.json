@@ -751,6 +751,9 @@
     },
     "Cna.Core.Tests.Setups.ScheduledArrivalLaboratoryTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignSourceIssuedActionBindingTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4188,7 +4191,7 @@
     "75d87f85a286e2643d92d97d36bd7399890138993d493ca7797ef05ef1a8fcd9": 1,
     "76255e4f0ea19fcbce9a0d897cd2c91a3c37519d2e546d9006ce5c3f2b6ad03d": 3,
     "7a0bc3107a22ad448a773c28941b465afa05f21191fd1c3c60f931b1f0c495cb": 1,
-    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": 27814,
+    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": 63337,
     "7b7ef6fd729b956936a24915113caa7b603e0445cad5d91ce40fae70352aa807": 1,
     "7d31d515076963ebf18ea76fe64edd1777c8835845a0922f8d40aa4e540020be": 1,
     "7d34c27b783847a8fa5393f8d98b36647b2b89619dc4e5430b03554cf52ebce1": 2,
@@ -4204,7 +4207,7 @@
     "8cb904ab1edc93029f4befcf16416f1898da5c71ce1eacc6368cffb7066641bc": 2,
     "8cd0f05e40de0672608bb4fb55c2c0dfa1138897af410b7461e883276effd532": 1,
     "8cf5e1585b69ae05fa189b8dd889f73a999a4dd4f43666c5a9d18a1fbe7b30b9": 1,
-    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": 33038,
+    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": 24540,
     "8e0f23b659b34cd027a989616e65262690e7573a67878b50b8ff8b6c10d2f344": 1,
     "8e313f2a49c202241ad33773a2f9d069a51482c26bc15da9193605b1d4998b35": 1,
     "9023157ab2a92117e2dfbaee3a9aa950e3d6793acd29abee0d7d74a4b492eaf2": 4,
@@ -4308,7 +4311,8 @@
     "fef2653e776c7408db0f931ea1c2d54d2c4e808857a8d25486a925466314034f": 82,
     "ff0bf65ab225d6fc5d05fd2e388fca3441a0b3faf1a26932938cd8754e8f1414": 5,
     "ffb67eda40d75380a578e7544f56a8e39b081f39f17d28038103a32f3ab6cedb": 1,
-    "fffdb75b618065ecf4c02e0d4ac9a0dbd0f836f9d2f7a77bad5020e0ba253e94": 3
+    "fffdb75b618065ecf4c02e0d4ac9a0dbd0f836f9d2f7a77bad5020e0ba253e94": 3,
+    "9635b4f72447ff408187b854b120f4ac1396557c847edac2080c0d4133d532b7": 11
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4503,7 +4507,7 @@
     "75d87f85a286e2643d92d97d36bd7399890138993d493ca7797ef05ef1a8fcd9": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "76255e4f0ea19fcbce9a0d897cd2c91a3c37519d2e546d9006ce5c3f2b6ad03d": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "7a0bc3107a22ad448a773c28941b465afa05f21191fd1c3c60f931b1f0c495cb": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
-    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
+    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration",
     "7b7ef6fd729b956936a24915113caa7b603e0445cad5d91ce40fae70352aa807": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "7d31d515076963ebf18ea76fe64edd1777c8835845a0922f8d40aa4e540020be": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "7d34c27b783847a8fa5393f8d98b36647b2b89619dc4e5430b03554cf52ebce1": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
@@ -4519,7 +4523,7 @@
     "8cb904ab1edc93029f4befcf16416f1898da5c71ce1eacc6368cffb7066641bc": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "8cd0f05e40de0672608bb4fb55c2c0dfa1138897af410b7461e883276effd532": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "8cf5e1585b69ae05fa189b8dd889f73a999a4dd4f43666c5a9d18a1fbe7b30b9": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
-    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
+    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration",
     "8e0f23b659b34cd027a989616e65262690e7573a67878b50b8ff8b6c10d2f344": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "8e313f2a49c202241ad33773a2f9d069a51482c26bc15da9193605b1d4998b35": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "9023157ab2a92117e2dfbaee3a9aa950e3d6793acd29abee0d7d74a4b492eaf2": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
@@ -4623,7 +4627,8 @@
     "fef2653e776c7408db0f931ea1c2d54d2c4e808857a8d25486a925466314034f": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "ff0bf65ab225d6fc5d05fd2e388fca3441a0b3faf1a26932938cd8754e8f1414": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "ffb67eda40d75380a578e7544f56a8e39b081f39f17d28038103a32f3ab6cedb": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
-    "fffdb75b618065ecf4c02e0d4ac9a0dbd0f836f9d2f7a77bad5020e0ba253e94": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration"
+    "fffdb75b618065ecf4c02e0d4ac9a0dbd0f836f9d2f7a77bad5020e0ba253e94": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
+    "9635b4f72447ff408187b854b120f4ac1396557c847edac2080c0d4133d532b7": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",

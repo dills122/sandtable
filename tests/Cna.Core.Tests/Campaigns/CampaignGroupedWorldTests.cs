@@ -72,7 +72,7 @@ public sealed class CampaignGroupedWorldTests
         var next6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(element),
             prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
         var next8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, next6, prior.PendingArrivals);
-        var promoted = detached.Rebind(next8);
+        var promoted = detached.Rebind(next8, 1, 1);
         Assert.Empty(promoted.Detached);
         Assert.Equal(5, Assert.Single(promoted.ExternalReservations).AssignedMotorPoints);
         Assert.Equal(30, promoted.RemainingMotorPoints(group.GroupId));
@@ -111,19 +111,33 @@ public sealed class CampaignGroupedWorldTests
         var next6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(element),
             prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
         var next8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, next6, prior.PendingArrivals);
-        var promoted = detached.Rebind(next8);
+        var promoted = detached.Rebind(next8, 1, 1);
         Assert.Empty(promoted.Detached);
         Assert.Equal(2, promoted.OccupantsAt("d3714").Count);
         Assert.Equal(1, promoted.StackAt("commonwealth", "d3714", _ => 1));
         Assert.Equal(prior.PendingArrivals, promoted.Prior.PendingArrivals);
-        Assert.Throws<InvalidOperationException>(() => world.Rebind(next8));
+        Assert.Throws<InvalidOperationException>(() => world.Rebind(next8, 1, 1));
         var changedElement = new CampaignElementStateV5("1-essex", "d3714", CampaignElementReserveStatus.None,
             new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null),
             [new CampaignComponentToeState("1-essex.infantry", 5, ContentSourceMatruhDetachedPackArtifact.Origin)]);
         var changed6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(changedElement),
             prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
         var changed8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, changed6, prior.PendingArrivals);
-        Assert.Throws<InvalidOperationException>(() => detached.Rebind(changed8));
+        Assert.Throws<InvalidOperationException>(() => detached.Rebind(changed8, 1, 1));
+        var futureLedger = new CampaignElementStateV5("1-essex", "d3714", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(2, 1, CapabilityPointAmount.Zero, 0, null, null),
+            [new CampaignComponentToeState("1-essex.infantry", 6, ContentSourceMatruhDetachedPackArtifact.Origin)]);
+        var futureWorld = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(futureLedger),
+            prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
+        var future = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, futureWorld, prior.PendingArrivals);
+        Assert.Throws<InvalidOperationException>(() => detached.Rebind(future, 1, 1));
+        var laterStage = new CampaignElementStateV5("1-essex", "d3714", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(1, 2, CapabilityPointAmount.Zero, 0, null, null),
+            [new CampaignComponentToeState("1-essex.infantry", 6, ContentSourceMatruhDetachedPackArtifact.Origin)]);
+        var laterStageWorld = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(laterStage),
+            prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
+        var later = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, laterStageWorld, prior.PendingArrivals);
+        Assert.Throws<InvalidOperationException>(() => detached.Rebind(later, 1, 1));
     }
 
     [Fact]

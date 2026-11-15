@@ -162,7 +162,13 @@ internal sealed class CampaignSourceAuthorityState
         if (cwFreeGunsWorld is not null && cwFreeGuns is null) throw new ArgumentException("CW free guns world requires setup.");
         CwFreeGuns = cwFreeGuns;
         CwFreeGunsWorld = cwFreeGunsWorld;
-        GroupedWorld = groupedWorld is null ? null : groupedWorld.Prior == World ? groupedWorld : groupedWorld.Rebind(World);
+        if (groupedWorld is null || groupedWorld.Prior == World) GroupedWorld = groupedWorld;
+        else
+        {
+            var scenarioStart = pregame.Source.Session.Content.Definition.LegacyDefinition.Scenarios
+                .Single(value => value.ScenarioId == World.ScenarioId).Start;
+            GroupedWorld = groupedWorld.Rebind(World, scenarioStart.GameTurn, scenarioStart.OperationStage);
+        }
         StateVersion = stateVersion;
         // Later setup actions must not invalidate either retained, owner-selected
         // source stack proof. Unsupported new occupants fail closed here.

@@ -37,7 +37,10 @@ the member from the formation and retains it as an independent occupant, with it
 component and operational state. It supplies the resulting formation stack explicitly;
 the generic world does not assume a formation remains non-shell. A later World8
 promotion replaces that occupant only after checking its identity, location, component
-TOE, expenditure and cohesion. Other additions at a grouped location fail closed.
+TOE, expenditure, cohesion and turn/stage ledger against the owning authority's
+explicit promotion context. Graziani setup derives that context from the pinned
+scenario start; it does not infer a ledger from unrelated active units. Other
+additions at a grouped location fail closed.
 The optional detached array is omitted when empty, preserving earlier canonical bytes.
 Parent-owned motor reservations remain charged to the same pool when a member is
 detached or promoted. An independently represented priority member's reservation

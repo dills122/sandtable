@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
@@ -85,6 +86,27 @@ public static class CampaignHostAdapter
     public static CampaignPregameAxisDraft QuerySourceActionsDraft(
         ExerciseSession session, CampaignActionAudience audience) =>
         CampaignExercises.QuerySourceActionsDraft(session, audience);
+
+    /// <summary>Checks a retained source-owner action against its issued visible choice and revision.</summary>
+    public static bool MatchesIssuedSourceAction(long authorityVersion, byte[] visibleBytes, int ordinal,
+        string actionId)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(visibleBytes);
+            var choices = document.RootElement.GetProperty("choices");
+            if (choices.ValueKind != JsonValueKind.Array || ordinal < 0 || ordinal >= choices.GetArrayLength())
+                return false;
+            var choice = choices[ordinal];
+            var action = new CampaignSourceSetupAction(authorityVersion,
+                choice.GetProperty("family").GetString()!, "", choice.GetProperty("choice"));
+            return action.ActionId == actionId;
+        }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException or JsonException or KeyNotFoundException)
+        {
+            return false;
+        }
+    }
 
     public static CampaignPregameAxisDraft QuerySourceAxisGt1SupplyDraft(
         ExerciseSession session, CampaignActionAudience audience) =>

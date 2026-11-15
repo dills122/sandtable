@@ -72,6 +72,20 @@ if (args is ["--scheduled-arrival-retry"])
     return;
 }
 
+if (args is ["--source-owner-crash-probe"])
+{
+    var sourceCrashInput = JsonSerializer.Deserialize<SourceOwnerCrashInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing source-owner crash input.");
+    var clock = new NativeCrashClock(sourceCrashInput.NowUnixMilliseconds, sourceCrashInput.AfterCommit ? 0 : 1);
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(sourceCrashInput.Path, clock);
+    _ = journal.ReadVerified(sourceCrashInput.Credential.CampaignId);
+    clock.Arm();
+    var sourceCrashResult = journal.SubmitSourceActions(sourceCrashInput.Credential, sourceCrashInput.Revision, sourceCrashInput.Reference);
+    if (!sourceCrashResult.IsAccepted) throw new InvalidOperationException("Source owner action was rejected.");
+    if (sourceCrashInput.AfterCommit) NativeCrashClock.Pause("source-after-commit", clock.ReadIndex, clock.LastObserved);
+    throw new InvalidOperationException("Source crash probe was not terminated by parent.");
+}
+
 if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"] or ["--native-retreat-crash-probe"])
 {
     var crashInput = JsonSerializer.Deserialize<NativeCrashInput>(Console.ReadLine() ?? "")
@@ -154,6 +168,9 @@ internal sealed record NativeDeadlineInput(string Path, string CampaignId, long 
 internal sealed record ScheduledArrivalInput(string Path, CampaignSeatCredential Credential, string Reference);
 
 internal sealed record SourceCampaignInput(string Path, string CampaignId);
+
+internal sealed record SourceOwnerCrashInput(string Path, CampaignSeatCredential Credential, long Revision,
+    string Reference, long NowUnixMilliseconds, bool AfterCommit);
 
 internal sealed record NativeCrashInput(string Path, string CampaignId, long NowUnixMilliseconds,
     int StopAtRead = 0, bool StopAfterCommit = false);
