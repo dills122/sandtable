@@ -6,11 +6,32 @@ namespace Cna.Core.Actions;
 
 public static class CampaignLegalActionSerializer
 {
-    public static byte[] Serialize(CampaignLegalActionSet actionSet) =>
-        CampaignObservationV7LegalActionSerializer.Serialize(actionSet);
+    public static byte[] Serialize(CampaignLegalActionSet actionSet)
+    {
+        ArgumentNullException.ThrowIfNull(actionSet);
+        return actionSet.PolicyId switch
+        {
+            CampaignLegalActionSet.PregamePolicyId => CampaignPregameLegalActionSerializer.Serialize(actionSet),
+            CampaignLegalActionSet.SourceSetupPolicyId => CampaignSourceSetupActionSerializer.Serialize(actionSet),
+            _ => CampaignObservationV7LegalActionSerializer.Serialize(actionSet),
+        };
+    }
 
-    public static CampaignLegalActionSet DeserializeCanonical(ReadOnlySpan<byte> utf8Json) =>
-        CampaignObservationV7LegalActionSerializer.DeserializeCanonical(utf8Json);
+    public static CampaignLegalActionSet DeserializeCanonical(ReadOnlySpan<byte> utf8Json)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(utf8Json.ToArray());
+            return document.RootElement.GetProperty("policyId").GetString() switch
+            {
+                CampaignLegalActionSet.PregamePolicyId => CampaignPregameLegalActionSerializer.DeserializeCanonical(utf8Json),
+                CampaignLegalActionSet.SourceSetupPolicyId => CampaignSourceSetupActionSerializer.DeserializeCanonical(utf8Json),
+                _ => CampaignObservationV7LegalActionSerializer.DeserializeCanonical(utf8Json),
+            };
+        }
+        catch (Exception error) when (error is KeyNotFoundException or InvalidOperationException)
+        { throw new JsonException("Invalid legal-action policy.", error); }
+    }
 
     public static byte[] SerializeHistoricalV2(CampaignLegalActionSet actionSet) =>
         CampaignObservationV6LegalActionSerializer.Serialize(actionSet);
@@ -27,6 +48,10 @@ public static class CampaignLegalActionSerializer
 
         switch (candidate)
         {
+            case PregameAxisSupplyAllocationAction allocation:
+                writer.WriteNumber("lane", allocation.Lane);
+                writer.WriteNumber("operationStage", allocation.Stage);
+                break;
             case DesignateReserveAction designation:
                 writer.WriteString("elementId", designation.ElementId);
                 break;
@@ -41,6 +66,7 @@ public static class CampaignLegalActionSerializer
                 writer.WriteNumber("operationStage", candidate.OperationStage!.Value);
                 break;
             case ResolveInitiativeAction:
+            case PregameAxisSupplyRollAction:
             case ResolveNoObligationNavalConvoyScheduleAction:
             case ResolveNoObligationTacticalShippingAction:
             case ResolveWeatherAction:
@@ -68,6 +94,9 @@ public static class CampaignLegalActionSerializer
         var kind = candidate.GetProperty("kind").GetString();
         CampaignActionCandidate parsed = kind switch
         {
+            "pregame-axis-gt2-supply-roll" => ParsePayloadless(candidate, new PregameAxisSupplyRollAction()),
+            "pregame-axis-gt2-supply-add" => ParsePregameSupplyAllocation(candidate, 1),
+            "pregame-axis-gt2-supply-remove" => ParsePregameSupplyAllocation(candidate, -1),
             "resolve-initiative" => ParsePayloadless(candidate, new ResolveInitiativeAction()),
             "resolve-no-obligation-naval-convoy-schedule" => ParsePayloadless(
                 candidate,
@@ -108,6 +137,13 @@ public static class CampaignLegalActionSerializer
         }
 
         return parsed;
+    }
+
+    private static PregameAxisSupplyAllocationAction ParsePregameSupplyAllocation(JsonElement candidate, int delta)
+    {
+        RequireProperties(candidate, "contractVersion", "actionId", "kind", "lane", "operationStage");
+        return new PregameAxisSupplyAllocationAction(candidate.GetProperty("lane").GetInt32(),
+            candidate.GetProperty("operationStage").GetInt32(), delta);
     }
 
     private static CampaignActionCandidate ParsePayloadless(

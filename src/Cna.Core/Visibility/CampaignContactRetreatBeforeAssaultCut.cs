@@ -114,11 +114,7 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
         if (side == selected.Decision.Side)
             throw new InvalidOperationException("RBA defender cannot own the selected assault.");
         var state = world.Elements.Single(value => value.ElementId == defenderId);
-        var own = definition.Elements.Where(value => value.SideId == defender.SideId
-                && value.PlacementMode == ContentPlacementMode.Independent)
-            .Select(value => CampaignOwnElementProjection.Project(value,
-                world.Elements.Single(element => element.ElementId == value.ElementId)))
-            .ToArray();
+        var own = CampaignOwnElementProjection.ProjectPlaced(definition, world, side);
         var observed = own.Single(value => value.ElementId == defenderId);
         var knowledge = contacts.ObserveFor(side, defender.ParentFormationId);
         var locations = definition.Locations.Select(value =>

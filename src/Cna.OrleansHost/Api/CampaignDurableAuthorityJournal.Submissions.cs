@@ -19,6 +19,121 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.Movement);
 
+    internal CampaignOwnerSubmissionResult SubmitPregameAxisSupply(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, PregameAxisSupplyOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.PregameAxisSupply);
+
+    internal CampaignOwnerSubmissionResult SubmitPregameAxisSupplyFinish(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, PregameAxisSupplyFinishOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.PregameAxisSupplyFinish);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceAxisDump(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAxisDumpOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAxisDump);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceCommonwealthSupply(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceCommonwealthSupplyOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceCommonwealthSupply);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceDummy(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceDummyOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceDummy);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceMotorization(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceMotorizationOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceMotorization);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceUnattachedCargo(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceUnattachedCargoOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceUnattachedCargo);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceActions(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceActionsOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceActions);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceAxisGt1Supply(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAxisGt1SupplyOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAxisGt1Supply);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceCommonwealthSupplyPlan(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceCommonwealthSupplyPlanOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceCommonwealthSupplyPlan);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceAutoblinda(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAutoblindaOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAutoblinda);
+
+    internal CampaignOwnerSubmissionResult SubmitSourcePriorityMotorization(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourcePriorityMotorizationOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourcePriorityMotorization);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceAttachedInitialLoads(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAttachedInitialLoadsOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAttachedInitialLoads);
+
+    internal CampaignOwnerSubmissionResult PlaceSourceInitialWreck(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceInitialWrecksOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceInitialWrecks);
+
+    internal CampaignOwnerSubmissionResult PlaceSourceAxisFreeUnit(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAxisFreeSetupOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAxisFreeSetup);
+
+    internal CampaignOwnerSubmissionResult PlaceSourceAxisCorpsUnit(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAxisCorpsSetupOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAxisCorpsSetup);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceMalettiHierarchy(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceMalettiHierarchyOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceMalettiHierarchy);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceGt2Correction(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceGt2CorrectionOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceGt2Correction);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceCwPriorityCatalog(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceCwPriorityCatalogOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceCwPriorityCatalog);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceMatruhFormation(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceMatruhFormationOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceMatruhFormation);
+
+    internal CampaignOwnerSubmissionResult PlaceSourceCwFreeGun(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceCwFreeGunsOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceCwFreeGuns);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceAxisPriority(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceAxisPriorityOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceAxisPriority);
+
+    internal CampaignOwnerSubmissionResult SubmitSourceCairoUnit(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SourceCairoSetupOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.SourceCairoSetup);
+
     internal CampaignOwnerSubmissionResult SubmitOwnerCombatSelection(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, actingElementId, openingRevision, publicActionRef,
@@ -62,6 +177,30 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string publicActionRef) =>
         SubmitOwnerActionCore(credential, CycleControlOpeningKey, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.CycleControl);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerTruckConvoyPass(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, TruckConvoyPassOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.TruckConvoyPass);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerPostCombatPass(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, PostCombatPassOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.PostCombatPass);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerSecondReserve(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SecondReserveOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.SecondReserve);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovement(CampaignSeatCredential credential,
+        string elementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, elementId, openingRevision, publicActionRef, CampaignOwnerOpeningKind.SecondMovement);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovementCompletion(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, SecondMovementCompletionOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.SecondMovementCompletion);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerRepeatMovement(
         CampaignSeatCredential credential, long openingRevision,
@@ -169,7 +308,145 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string[] actionIds;
         try
         {
-            if (kind == CampaignOwnerOpeningKind.CombatSelection)
+            if (kind == CampaignOwnerOpeningKind.PregameAxisSupply)
+            {
+                var draft = CampaignHostAdapter.QueryPregameAxisSupplyOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.PregameAxisSupplyFinish)
+            {
+                var draft = CampaignHostAdapter.QueryPregameAxisSupplyFinishDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAxisDump)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAxisDumpDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceCommonwealthSupply)
+            {
+                var draft = CampaignHostAdapter.QuerySourceCommonwealthSupplyDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceDummy)
+            {
+                var draft = CampaignHostAdapter.QuerySourceDummyDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceMotorization)
+            {
+                var draft = CampaignHostAdapter.QuerySourceMotorizationDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceUnattachedCargo)
+            {
+                var draft = CampaignHostAdapter.QuerySourceUnattachedCargoDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceActions)
+            {
+                var draft = CampaignHostAdapter.QuerySourceActionsDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAxisGt1Supply)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAxisGt1SupplyDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceCommonwealthSupplyPlan)
+            {
+                var draft = CampaignHostAdapter.QuerySourceCommonwealthSupplyPlanDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAutoblinda)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAutoblindaDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourcePriorityMotorization)
+            {
+                var draft = CampaignHostAdapter.QuerySourcePriorityMotorizationDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAttachedInitialLoads)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAttachedInitialLoadsDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceInitialWrecks)
+            {
+                var draft = CampaignHostAdapter.QuerySourceInitialWrecksDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAxisFreeSetup)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAxisFreeSetupDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAxisCorpsSetup)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAxisCorpsSetupDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceMalettiHierarchy)
+            {
+                var draft = CampaignHostAdapter.QuerySourceMalettiHierarchyDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceGt2Correction)
+            {
+                var draft = CampaignHostAdapter.QuerySourceGt2CorrectionDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceCwPriorityCatalog)
+            {
+                var draft = CampaignHostAdapter.QuerySourceCwPriorityCatalogDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceMatruhFormation)
+            {
+                var draft = CampaignHostAdapter.QuerySourceMatruhFormationDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceCwFreeGuns)
+            {
+                var draft = CampaignHostAdapter.QuerySourceCwFreeGunsDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceAxisPriority)
+            {
+                var draft = CampaignHostAdapter.QuerySourceAxisPriorityDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SourceCairoSetup)
+            {
+                var draft = CampaignHostAdapter.QuerySourceCairoSetupDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.CombatSelection)
             {
                 var draft = CampaignHostAdapter.QueryContactCombatOwnerDraft(head.Session,
                     seat.Audience, actingElementId);
@@ -215,6 +492,36 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 var draft = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(
                     head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.TruckConvoyPass)
+            {
+                var draft = CampaignHostAdapter.QueryTruckConvoyPassOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
+            {
+                var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SecondReserve)
+            {
+                var draft = CampaignHostAdapter.QuerySecondReserveOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SecondMovement)
+            {
+                var draft = CampaignHostAdapter.QuerySecondMovementOwnerDraft(head.Session, seat.Audience, actingElementId);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
+            else if (kind == CampaignOwnerOpeningKind.SecondMovementCompletion)
+            {
+                var draft = CampaignHostAdapter.QuerySecondMovementCompletionOwnerDraft(head.Session, seat.Audience);
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
@@ -297,6 +604,29 @@ internal sealed partial class CampaignDurableAuthorityJournal
             checkpoint.StateVersion, checkpoint.PositionId, seat.Audience, coreActionId);
         var result = kind switch
         {
+            CampaignOwnerOpeningKind.PregameAxisSupply => CampaignHostAdapter.Submit(head.Session, submission),
+            CampaignOwnerOpeningKind.PregameAxisSupplyFinish => CampaignHostAdapter.FinishPregameAxisSupply(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAxisDump => CampaignHostAdapter.PlaceSourceAxisDump(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceCommonwealthSupply => CampaignHostAdapter.PlaceSourceCommonwealthSupply(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceDummy => CampaignHostAdapter.DecideSourceDummy(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceMotorization => CampaignHostAdapter.AdjustSourceMotorization(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceUnattachedCargo => CampaignHostAdapter.SubmitSourceUnattachedCargo(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceActions => CampaignHostAdapter.Submit(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAxisGt1Supply => CampaignHostAdapter.SubmitSourceAxisGt1Supply(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceCommonwealthSupplyPlan => CampaignHostAdapter.SubmitSourceCommonwealthSupplyPlan(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAutoblinda => CampaignHostAdapter.SubmitSourceAutoblinda(head.Session, submission),
+            CampaignOwnerOpeningKind.SourcePriorityMotorization => CampaignHostAdapter.AdjustSourcePriorityMotorization(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAttachedInitialLoads => CampaignHostAdapter.SubmitSourceAttachedInitialLoads(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceInitialWrecks => CampaignHostAdapter.PlaceSourceInitialWreck(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAxisFreeSetup => CampaignHostAdapter.PlaceSourceAxisFreeUnit(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAxisCorpsSetup => CampaignHostAdapter.PlaceSourceAxisCorpsUnit(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceMalettiHierarchy => CampaignHostAdapter.SubmitSourceMalettiHierarchy(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceGt2Correction => CampaignHostAdapter.SubmitSourceGt2Correction(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceCwPriorityCatalog => CampaignHostAdapter.SubmitSourceCwPriorityCatalog(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceMatruhFormation => CampaignHostAdapter.SubmitSourceMatruhFormation(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceCwFreeGuns => CampaignHostAdapter.PlaceSourceCwFreeGun(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceAxisPriority => CampaignHostAdapter.SubmitSourceAxisPriority(head.Session, submission),
+            CampaignOwnerOpeningKind.SourceCairoSetup => CampaignHostAdapter.PlaceSourceCairoUnit(head.Session, submission),
             CampaignOwnerOpeningKind.CombatSelection =>
                 CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
                     submission, actingElementId),
@@ -320,6 +650,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     submission, actingElementId),
             CampaignOwnerOpeningKind.CycleControl =>
                 CampaignHostAdapter.SubmitNativeCycleControl(head.Session, submission),
+            CampaignOwnerOpeningKind.TruckConvoyPass =>
+                CampaignHostAdapter.SubmitTruckConvoyPass(head.Session, submission),
+            CampaignOwnerOpeningKind.PostCombatPass =>
+                CampaignHostAdapter.SubmitPostCombatPass(head.Session, submission),
+            CampaignOwnerOpeningKind.SecondReserve =>
+                CampaignHostAdapter.SubmitSecondReserve(head.Session, submission),
+            CampaignOwnerOpeningKind.SecondMovement =>
+                CampaignHostAdapter.SubmitSecondMovement(head.Session, submission, actingElementId),
+            CampaignOwnerOpeningKind.SecondMovementCompletion =>
+                CampaignHostAdapter.SubmitSecondMovementCompletion(head.Session, submission),
             CampaignOwnerOpeningKind.RepeatMovement =>
                 CampaignHostAdapter.SubmitNativeRepeatMovement(head.Session, submission),
             CampaignOwnerOpeningKind.RepeatCombatSelection =>
@@ -428,6 +768,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
             UpdateCycleRound(connection, transaction, cycleRound! with { Status = "completed" });
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
+        if (kind == CampaignOwnerOpeningKind.SecondMovementCompletion)
+        {
+            // Preserve the player's accepted completion even when the engine cannot
+            // yet prove that Breakdown has no outstanding obligations.
+            var breakdown = CampaignHostAdapter.CompleteSecondBreakdown(acceptedHead.Session);
+            if (breakdown.IsAccepted)
+            {
+                var command = CampaignHostAdapter.SecondBreakdownCommand(acceptedHead.Session, breakdown);
+                PersistAccepted(connection, transaction, seat.CampaignId, acceptedHead,
+                    CampaignHostAcceptedStep.NativeSecondBreakdownKind, null,
+                    null, null, null, command, breakdown);
+            }
+        }
         if (kind == CampaignOwnerOpeningKind.Custody)
         {
             UpdateCustodyRound(connection, transaction, custodyRound! with { Status = "completed" });
@@ -557,10 +910,43 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind,
             CampaignOwnerOpeningKind.CycleControl =>
                 CampaignHostAcceptedStep.ContactCycleControlKind,
+            CampaignOwnerOpeningKind.TruckConvoyPass =>
+                CampaignHostAcceptedStep.ContactTruckConvoyPassKind,
+            CampaignOwnerOpeningKind.PostCombatPass =>
+                CampaignHostAcceptedStep.ContactPostCombatPassKind,
+            CampaignOwnerOpeningKind.SecondReserve =>
+                CampaignHostAcceptedStep.ContactSecondReserveKind,
+            CampaignOwnerOpeningKind.SecondMovement =>
+                CampaignHostAcceptedStep.ContactSecondMovementKind,
+            CampaignOwnerOpeningKind.SecondMovementCompletion =>
+                CampaignHostAcceptedStep.ContactSecondMovementCompletionKind,
             CampaignOwnerOpeningKind.RepeatMovement =>
                 CampaignHostAcceptedStep.ContactRepeatMovementKind,
             CampaignOwnerOpeningKind.RepeatCombatSelection =>
                 CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind,
+            CampaignOwnerOpeningKind.PregameAxisSupply => CampaignHostAcceptedStep.PregameAxisSupplyKind,
+            CampaignOwnerOpeningKind.PregameAxisSupplyFinish => CampaignHostAcceptedStep.PregameAxisSupplyFinishKind,
+            CampaignOwnerOpeningKind.SourceAxisDump => CampaignHostAcceptedStep.SourceAxisDumpKind,
+            CampaignOwnerOpeningKind.SourceCommonwealthSupply => CampaignHostAcceptedStep.SourceCommonwealthSupplyKind,
+            CampaignOwnerOpeningKind.SourceDummy => CampaignHostAcceptedStep.SourceDummyKind,
+            CampaignOwnerOpeningKind.SourceMotorization => CampaignHostAcceptedStep.SourceMotorizationKind,
+            CampaignOwnerOpeningKind.SourceUnattachedCargo => CampaignHostAcceptedStep.SourceUnattachedCargoKind,
+            CampaignOwnerOpeningKind.SourceActions => CampaignHostAcceptedStep.SourceActionsKind,
+            CampaignOwnerOpeningKind.SourceAxisGt1Supply => CampaignHostAcceptedStep.SourceAxisGt1SupplyKind,
+            CampaignOwnerOpeningKind.SourceCommonwealthSupplyPlan => CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind,
+            CampaignOwnerOpeningKind.SourceAutoblinda => CampaignHostAcceptedStep.SourceAutoblindaKind,
+            CampaignOwnerOpeningKind.SourcePriorityMotorization => CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind,
+            CampaignOwnerOpeningKind.SourceAttachedInitialLoads => CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind,
+            CampaignOwnerOpeningKind.SourceInitialWrecks => CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind,
+            CampaignOwnerOpeningKind.SourceAxisFreeSetup => CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind,
+            CampaignOwnerOpeningKind.SourceAxisCorpsSetup => CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind,
+            CampaignOwnerOpeningKind.SourceMalettiHierarchy => CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind,
+            CampaignOwnerOpeningKind.SourceGt2Correction => CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind,
+            CampaignOwnerOpeningKind.SourceCwPriorityCatalog => CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind,
+            CampaignOwnerOpeningKind.SourceMatruhFormation => CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind,
+            CampaignOwnerOpeningKind.SourceCwFreeGuns => CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind,
+            CampaignOwnerOpeningKind.SourceAxisPriority => CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind,
+            CampaignOwnerOpeningKind.SourceCairoSetup => CampaignHostAcceptedStep.SourceCairoUnitKind,
             _ => throw new ArgumentOutOfRangeException(nameof(kind)),
         };
 

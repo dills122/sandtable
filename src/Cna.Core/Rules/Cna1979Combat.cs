@@ -18,6 +18,9 @@ public static class Cna1979Combat
         "land.combat-classification.informational-marker";
     public const string InfantryComponentClassId =
         "land.combat-component.infantry";
+    public const string ArmorComponentClassId = "land.combat-component.armor";
+    public const string ReconnaissanceComponentClassId = "land.combat-component.reconnaissance";
+    public const string AntiTankComponentClassId = "land.combat-component.anti-tank";
 
     private static readonly RuleReference CombatUnitSource = new(
         "spi-1979-land-rules",
@@ -99,7 +102,19 @@ public static class Cna1979Combat
             StringComparison.Ordinal));
 
     public static ZocRawDefensiveCloseAssaultResult CalculateRawDefensiveCloseAssaultPoints(
-        IEnumerable<ZocDefensiveCloseAssaultComponentFact> components)
+        IEnumerable<ZocDefensiveCloseAssaultComponentFact> components) =>
+        CalculateRawDefensiveCloseAssaultPoints(components, IsSupportedComponentClassId);
+
+    // Land 10.15 uses raw defensive points for ZOC, independently of whether
+    // the current combat profile can resolve these historical weapon classes.
+    // Artillery position and parenthesized ratings require separate authority.
+    internal static ZocRawDefensiveCloseAssaultResult CalculateRawDefensivePointsForZoc(
+        IEnumerable<ZocDefensiveCloseAssaultComponentFact> components) =>
+        CalculateRawDefensiveCloseAssaultPoints(components, id => id is InfantryComponentClassId
+            or ArmorComponentClassId or ReconnaissanceComponentClassId or AntiTankComponentClassId);
+
+    private static ZocRawDefensiveCloseAssaultResult CalculateRawDefensiveCloseAssaultPoints(
+        IEnumerable<ZocDefensiveCloseAssaultComponentFact> components, Func<string?, bool> isSupported)
     {
         ArgumentNullException.ThrowIfNull(components);
         var copy = components.ToArray();
@@ -113,7 +128,7 @@ public static class Cna1979Combat
         long total = 0;
         foreach (var component in copy)
         {
-            if (!IsSupportedComponentClassId(component.ComponentClassId))
+            if (!isSupported(component.ComponentClassId))
             {
                 throw new ArgumentException(
                     $"Unsupported combat component class '{component.ComponentClassId}'.",

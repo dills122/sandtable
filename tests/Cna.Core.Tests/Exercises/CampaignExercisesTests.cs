@@ -13,6 +13,79 @@ namespace Cna.Core.Tests.Exercises;
 public sealed class CampaignExercisesTests
 {
     [Fact]
+    public void LiveEvidenceUsesRetainedContentAndRejectsAnIncompatibleContext()
+    {
+        var started = CampaignExercises.Begin(CreateRequest());
+        var session = Assert.IsType<ExerciseSession>(started.Session);
+        var context = session.Context;
+        var created = session.CurrentHistory[0];
+        Assert.Equal(started.CreationEventBytes, CampaignCurrentEventSerializer.Serialize(created, context));
+        Assert.Equal(started.InitialSnapshotBytes, CampaignCurrentSnapshotSerializer.Serialize(session.CurrentSnapshot, context));
+        Assert.Equal(created, CampaignCurrentEventSerializer.Deserialize(started.CreationEventBytes!, context));
+
+        var incompatible = CampaignContentContext.Create(context.Artifact, context.Scenario.ScenarioId);
+        Assert.Throws<JsonException>(() => CampaignCurrentEventSerializer.Serialize(created, incompatible));
+        Assert.Throws<JsonException>(() => CampaignCurrentEventSerializer.Deserialize(started.CreationEventBytes!, incompatible));
+        Assert.Throws<JsonException>(() => CampaignCurrentSnapshotSerializer.Serialize(session.CurrentSnapshot, incompatible));
+    }
+
+    [Fact]
+    public void NormalHostCreationAndReplayUseSuppliedContentResolver()
+    {
+        var request = CreateRequest();
+        var directResolver = new RecordingResolver();
+        var direct = CampaignAuthority.Create(request, directResolver);
+        Assert.True(direct.IsCreated);
+        Assert.Equal(1, directResolver.Calls);
+        var resolver = new RecordingResolver();
+        var started = Cna.Core.Hosting.CampaignHostAdapter.Create(request, resolver);
+        Assert.True(started.IsStarted);
+        Assert.Equal(CampaignCurrentSnapshotSerializer.Serialize(direct.Handle!.CurrentSnapshot!, direct.Handle.Context),
+            started.InitialSnapshotBytes);
+        Assert.Equal(1, resolver.Calls);
+        var actions = Cna.Core.Hosting.CampaignHostAdapter.QuerySystem(started.Session!).ActionSet!;
+        var command = new CampaignActionSubmission(1, actions.CampaignId, actions.StateVersion,
+            actions.PositionId, actions.Audience, Assert.Single(actions.Candidates).ActionId);
+        var accepted = Cna.Core.Hosting.CampaignHostAdapter.Submit(started.Session!, command);
+        Assert.True(accepted.IsAccepted);
+        var evidence = accepted.Evidence!;
+        var step = new Cna.Core.Hosting.CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(command), evidence.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt), evidence.SnapshotCheckpoint);
+        var restored = Cna.Core.Hosting.CampaignHostAdapter.ImportWithContentResolver(request, started.CreationEventBytes!,
+            started.InitialSnapshotBytes!, [step], resolver: resolver);
+        Assert.True(restored.IsVerified);
+        Assert.Equal(evidence.SnapshotCheckpoint,
+            CampaignCurrentSnapshotSerializer.Serialize(restored.Session!.CurrentSnapshot, restored.Session.Context));
+        Assert.Equal(2, resolver.Calls);
+        _ = CampaignExercises.ReadCheckpoint(started.InitialSnapshotBytes!, resolver);
+        Assert.Equal(3, resolver.Calls);
+        CampaignExercises.ValidateCanonicalEvent(started.CreationEventBytes!, resolver);
+        Assert.Equal(4, resolver.Calls);
+
+        var wrongHash = new CampaignCreationRequest(request.ContractVersion, request.CampaignId, request.RulesetHash,
+            request.Seed, request.SetupId, request.SetupHash, request.ContentPackId,
+            "sha256:" + new string('0', 64), request.ScenarioId);
+        var dishonest = new RecordingResolver(ignoreRequestedIdentity: true);
+        Assert.Equal(CampaignCreationRejectionReason.ContentHashMismatch,
+            Cna.Core.Hosting.CampaignHostAdapter.Create(wrongHash, dishonest).RejectionReason);
+    }
+
+    private sealed class RecordingResolver(bool ignoreRequestedIdentity = false) : IContentPackV6Resolver
+    {
+        public int Calls { get; private set; }
+
+        public Cna.Core.Content.ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash)
+        {
+            Calls++;
+            if (!ignoreRequestedIdentity)
+                return Cna1979SyntheticContentResolver.Instance.ResolveV6(packId, expectedHash);
+            var original = CreateRequest();
+            return Cna1979SyntheticContentResolver.Instance.ResolveV6(original.ContentPackId, original.ContentHash);
+        }
+    }
+
+    [Fact]
     public void BeginMintsOnlyAnOpaqueFreshSessionWithDefensiveCanonicalEvidence()
     {
         var request = CreateRequest();

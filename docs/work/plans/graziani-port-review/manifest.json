@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "scope": "graziani-port-conflict-review-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5"
+  },
+  "rows": [
+    {
+      "id": "scenario-60-7",
+      "source": "scenario",
+      "fields": [
+        "tobruk_initial_efficiency",
+        "harbor_partially_blocked"
+      ]
+    },
+    {
+      "id": "chart-55-3",
+      "source": "common-charts",
+      "fields": [
+        "tobruk_listed_efficiency",
+        "reinforcements_exempt_from_capacity_and_current_efficiency",
+        "initial_efficiency_below_five_due_to_blockage"
+      ]
+    },
+    {
+      "id": "capacity-55-14",
+      "source": "air-rules",
+      "fields": [
+        "example_max_efficiency",
+        "example_remaining_efficiency",
+        "example_percent_capacity",
+        "capacity_rounding"
+      ]
+    },
+    {
+      "id": "reinforcements-55-15",
+      "source": "air-rules",
+      "fields": [
+        "scheduled_reinforcements_affect_capacity_or_efficiency",
+        "other_troops_may_reduce_efficiency"
+      ]
+    },
+    {
+      "id": "blockage-55-25",
+      "source": "air-rules",
+      "fields": [
+        "tobruk_initial_reduction_levels",
+        "vessel"
+      ]
+    },
+    {
+      "id": "clearance-55-26",
+      "source": "air-rules",
+      "fields": [
+        "tobruk_ammunition_per_level",
+        "tobruk_stores_per_level",
+        "eligible_unit",
+        "rate"
+      ]
+    },
+    {
+      "id": "cw-sea-32-36",
+      "source": "land-compiled",
+      "fields": [
+        "minimum_destination_capacity_percent",
+        "units_per_operation_stage",
+        "ports"
+      ]
+    }
+  ]
+}

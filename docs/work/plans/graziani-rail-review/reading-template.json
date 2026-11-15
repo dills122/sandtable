@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "scope": "graziani-rail-review-v1",
+  "manifest_sha256": "0933969aedbb35a12bfda48a9c907286a0cf15183ca6b7e8e42d71ffd14c78b6",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "initial-rail-60-7",
+      "locator": "UNVERIFIED",
+      "values": {
+        "rail_ends_at": null
+      }
+    },
+    {
+      "id": "rail-8-71",
+      "locator": "UNVERIFIED",
+      "values": {
+        "usable_line": null,
+        "initial_text_permits": null,
+        "benghazi_barce_line_usable": null
+      }
+    },
+    {
+      "id": "axis-correction-8-71",
+      "locator": "UNVERIFIED",
+      "values": {
+        "axis_rail_use_subject_to": null
+      }
+    },
+    {
+      "id": "rail-8-72",
+      "locator": "UNVERIFIED",
+      "values": {
+        "movement_per_operation_stage": null,
+        "stacks_per_direction": null,
+        "permitted_directions": null
+      }
+    },
+    {
+      "id": "rail-8-73",
+      "locator": "UNVERIFIED",
+      "values": {
+        "must_start_on_rail": null,
+        "other_capability_point_expenditure_same_stage": null,
+        "entry_into_enemy_zoc_or_occupied_hex": null
+      }
+    },
+    {
+      "id": "reorganization-8-73",
+      "locator": "UNVERIFIED",
+      "values": {
+        "rail_traveller_may_earn_reorganization_points_same_stage": null
+      }
+    },
+    {
+      "id": "construction-24-61",
+      "locator": "UNVERIFIED",
+      "values": {
+        "new_rail_builders": null,
+        "engineers_can_repair_existing_rail": null
+      }
+    },
+    {
+      "id": "construction-24-62",
+      "locator": "UNVERIFIED",
+      "values": {
+        "one_company_stages_per_hex": null,
+        "two_companies_stages_per_hex": null,
+        "two_companies_must_share_hex": null
+      }
+    },
+    {
+      "id": "axis-rail-54-4",
+      "locator": "UNVERIFIED",
+      "values": {
+        "rail_hexes_controlled_and_contiguous": null,
+        "imported_rolling_stock": null,
+        "axis_may_build_new_rail": null,
+        "axis_may_repair_rail": null
+      }
+    },
+    {
+      "id": "supply-rail-32-34",
+      "locator": "UNVERIFIED",
+      "values": {
+        "supply_units_per_stage": null,
+        "real_and_dummy": null,
+        "directions": null
+      }
+    }
+  ]
+}

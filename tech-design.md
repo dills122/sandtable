@@ -711,7 +711,80 @@ references and participate in the ruleset hash. Static topology, force assignmen
 declarations carry their own provenance and participate in an independent content hash. A campaign
 records both exact identities. Commands produce events; events rebuild campaign state; snapshots
 are replay checkpoints. Unsupported mechanics fail explicitly rather than falling through to a
-plausible approximation.
+plausible approximation. An internal [scheduled-arrival index](docs/specs/scheduled-arrival-index-v1.md)
+validates and looks up synthetic groups; the isolated [arrival laboratory](docs/specs/scheduled-arrival-lab-v1.md)
+exercises obligation resolution and replay. Neither has campaign authority or content admission.
+The internal [arrival content draft analyzer](docs/specs/campaign-scheduled-arrival-content-draft-v1.md)
+checks deferred references against real content definitions while retaining the unmodified legacy
+validation result; it does not admit a new content format or authorize campaign creation.
+The [draft identity](docs/specs/campaign-arrival-draft-identity-v1.md) binds candidate
+content, schedule and rulings, and its world contribution creates synthetic deferred-unit
+values only. Existing campaign identity, validation and persistence remain unchanged.
+An internal [replay draft](docs/specs/campaign-arrival-replay-draft-v1.md) checks
+serialized candidate events and recovered retry receipts, without admitting a campaign
+event or providing durable Host storage.
+The [synthetic arrival profile](docs/specs/campaign-synthetic-arrival-profile-v1.md)
+restricts candidate identity resolution to one repository-owned fixture; it is not
+an admitted setup or a substitute for versioned campaign creation.
+The [synthetic arrival phase](docs/specs/campaign-synthetic-arrival-phase-v1.md)
+exercises an exact Land-sequence cut, owner-only offers and replay-validated
+checkpoints; the ordinary campaign and durable journal do not yet use it.
+The separate [World6 successor cut](docs/specs/campaign-arrival-world6-successor-v1.md)
+uses certified synthetic content, and its [internal durable journal path](docs/specs/campaign-scheduled-world6-durable-host-v1.md)
+replays and commits its own versioned evidence. Its direct preamble computation emits native
+event bytes into v2 journal envelopes, with replay support for older digest-only envelopes.
+It has no public campaign route;
+normal Snapshot11 and historical setup behavior remain unchanged.
+The production [scenario arrival content boundary](docs/specs/campaign-scenario-arrival-content-v1.md)
+adds source-linked scheduled arrivals and grouped initial counters to the in-memory model
+and fail-closed legacy validation. Its versioned envelopes retain those records,
+printed truck quantities, weapon-source values and combat-fact seeds, but do not implement artillery
+rules or admit a historical campaign. Component-pool TOE limits are checked at
+source-content validation and rejected by current runtime profiles because play-time
+enforcement is not yet implemented.
+The internal [World8 initial constructor](docs/specs/campaign-world-v8.md) uses this
+content to create on-map component state and retain pending arrivals. It shares the
+existing World6 component initialization. The normal journal's
+[source-initialization contract](docs/specs/campaign-source-creation-v1.md) stores
+and reconstructs that initial world from pinned source bytes, without admitting it
+to the gameplay snapshot or issuing player seats. No arrival transition is enabled.
+`Cna1979GrazianiCairoSourceExcerpt` makes the same incomplete Cairo artifact available
+in production content; it does not certify the map or scenario for gameplay.
+The [provisional Axis pre-game supply cut](docs/specs/graziani-pregame-supply-v1.md)
+retains an availability roll and partial owner allocations as ordinary session and
+Host journal events. A development-only, loopback, operator/Axis-seat-authenticated
+API exposes these choices; it neither completes pre-start planning nor advances the clock.
+The [version 4 source authority](docs/specs/graziani-source-authority-v4.md) records
+the finalized convoy plan, source-linked force evidence, and private Axis and
+Commonwealth setup decisions in the same journal. Replay re-adjudicates each
+owner decision; the game clock stays absent while the world and setup are incomplete.
+An operator can apply [versioned source-force upgrades](docs/specs/graziani-source-forces-v5.md)
+through replayed system transitions. Selected historical units can enter World8,
+while other formations remain grouped source evidence and the historical setup is
+incomplete. Source-only Host replay validates and re-adjudicates journal steps as a
+stream, preserving existing checkpoint bytes and limiting individual checkpoint size.
+The source authority can additionally retain a grouped world for owner-confirmed
+4th Indian, Matruh, Maletti and Libyan formations, with supported detachments and motor
+reservations. Native Snapshot11 adjudicators still consume World6 and cannot execute
+grouped source movement or combat.
+The source setup records provisional Axis GT3–4 September supply plans using
+the retained random stream; unmodeled convoy cargo remains unresolved.
+Core can also admit proposed 62 Marmarica and 63 Cirene formations; their
+system admission is not yet exposed through the Host.
+The opt-in compact source checkpoint binds the full replay-derived projection by hash
+instead of repeating historical artifacts in each new row. It requires the retained
+genesis and complete event journal; it is not a standalone recovery snapshot. Replay
+still re-adjudicates the full history and hashes the full legacy projection.
+The ordinary Host journal passes its configured Content 6 resolver through creation and
+re-adjudication, while live sessions serialize against their retained content context.
+The resolver is external to the journal and must be available again after restart. This does
+not change Content 6 certification or admit source-scheduled content.
+Normal World6 authority now uses the existing ZOC rules calculation rather than an
+empty stub. Existing admission still excludes combat stacks; positive ZOC requires
+contact-safe player projection before a broader profile may be admitted.
+The normal Snapshot11 arrival action and replay also fail closed if its scenario
+contains a due or overdue scheduled group; Snapshot11 has no arrival ledger.
+The [Graziani setup draft](docs/specs/graziani-setup-draft.md) records the remaining gates.
 
 The physical game's hierarchical sequence must remain visible in the model. A weekly Game Turn
 contains Operation Stages, player phases, and repeatable movement/combat segments. The engine
@@ -841,6 +914,25 @@ expiry and settlement share one transaction. Selection starts a persisted round 
 Native V38 records explicit System `no-selection` and native Position
 Determination progression; existing no-work continuation reaches Reserve Release
 without a fabricated owner Finish, target use, resource debit or RNG draw.
+When the initiative holder elects to act last, V39 owner selection and V40
+timeout bind the recorded first-acting side. Replay retains the earlier V12/V38
+owner policy for recorded legacy events.
+World6's ZOC calculation uses current source-backed infantry, armor,
+reconnaissance and anti-tank defensive ratings. This is limited to raw ZOC
+qualification: conditional ratings, artillery position and contact-safe
+disclosure remain unsupported, and the current combat profile does not admit
+the additional historical component classes.
+Native V41/V42 record explicit owner passes through first-side Truck Convoy,
+Rail, Towing, Maintenance and Patrol. Core and the normal Host journal retain
+each decision separately and advance to second-side Reserve Designation. The
+passes do not implement those activities. V43 then lets the second side designate
+eligible units in the settled World and complete Reserve Designation. V44 permits
+an eligible second-side element to move one hex and stop, deriving contacts and
+retaining any Reaction window. V45 records explicit completion to Breakdown
+when no Reaction is pending. Reaction handling and Breakdown remain unsupported. See the
+[post-combat pass contract](docs/specs/native-post-combat-pass-v41.md) and
+[second-side Reserve](docs/specs/native-second-reserve-v43.md) and
+[Movement](docs/specs/native-second-movement-v44.md) contracts.
 The deadline begins before any owner query, survives cold restart, and gates
 both owner and generic submission paths. This native combined transition is
 distinct from the isolated C3a closure/structural-step contract; it does not

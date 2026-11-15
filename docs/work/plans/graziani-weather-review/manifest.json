@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "scope": "graziani-weather-review-v1",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "maps": "8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030"
+  },
+  "rows": [
+    {
+      "id": "scenario-calendar-map-d",
+      "source": "maps",
+      "fields": [
+        "turns_1_to_6",
+        "scenario_ends_turn_6_stage_3"
+      ]
+    },
+    {
+      "id": "fall-season-29-1",
+      "source": "land-compiled",
+      "fields": [
+        "fall_start",
+        "fall_end_inclusive",
+        "weather_per_operation_stage",
+        "foul_weather_location_die"
+      ]
+    },
+    {
+      "id": "chart-season-29-61",
+      "source": "common-charts",
+      "fields": [
+        "printed_fall_game_turns",
+        "normal",
+        "hot",
+        "sandstorm",
+        "rainstorm"
+      ]
+    },
+    {
+      "id": "chart-correction-29-61",
+      "source": "errata",
+      "fields": [
+        "seasonal_chart_is_incorrect",
+        "refer_to_case"
+      ]
+    },
+    {
+      "id": "hot-scope-29-31",
+      "source": "land-compiled",
+      "fields": [
+        "hot_affects_all_map_sections"
+      ]
+    },
+    {
+      "id": "hot-loss-29-34",
+      "source": "land-compiled",
+      "fields": [
+        "fuel_and_water_reduction_percent",
+        "wells_and_oases_water_excluded",
+        "fuel_and_water_in_actual_unit_consumption_excluded",
+        "phase"
+      ]
+    },
+    {
+      "id": "sandstorm-29-41",
+      "source": "land-compiled",
+      "fields": [
+        "nile_delta_excluded",
+        "unaffected_map_sections_are_normal"
+      ]
+    },
+    {
+      "id": "weather-build-29-42-54",
+      "source": "land-compiled",
+      "fields": [
+        "construction_in_sandstorm_hex",
+        "construction_in_rainstorm_hex"
+      ]
+    },
+    {
+      "id": "sandstorm-movement-29-44",
+      "source": "land-compiled",
+      "fields": [
+        "movement_cost_multiplier"
+      ]
+    }
+  ]
+}

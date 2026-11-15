@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "scope": "graziani-six-turn-victory-source-v1",
+  "manifest_sha256": "f81498e8a1e6715f25362426d55ac1974475d48a5ccf2d1bec4fa8f026f45b2d",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "scenario-cross-reference",
+      "locator": "UNVERIFIED",
+      "values": {
+        "printed_victory_case": null,
+        "final_turn": null,
+        "final_stage": null
+      }
+    },
+    {
+      "id": "victory-heading",
+      "locator": "UNVERIFIED",
+      "values": {
+        "scenario_name": null
+      }
+    },
+    {
+      "id": "italian-strategic",
+      "locator": "UNVERIFIED",
+      "values": {
+        "take_hold": null,
+        "unit": null,
+        "supply": null
+      }
+    },
+    {
+      "id": "italian-decisive",
+      "locator": "UNVERIFIED",
+      "values": {
+        "take_hold": null,
+        "unit": null,
+        "supply": null
+      }
+    },
+    {
+      "id": "italian-tactical",
+      "locator": "UNVERIFIED",
+      "values": {
+        "take_hold": null,
+        "retain": null,
+        "supply": null
+      }
+    },
+    {
+      "id": "commonwealth-tactical",
+      "locator": "UNVERIFIED",
+      "values": {
+        "take_hold": null,
+        "supply": null
+      }
+    },
+    {
+      "id": "commonwealth-decisive",
+      "locator": "UNVERIFIED",
+      "values": {
+        "take_hold": null,
+        "supply": null
+      }
+    },
+    {
+      "id": "commonwealth-strategic",
+      "locator": "UNVERIFIED",
+      "values": {
+        "take_hold": null,
+        "supply": null
+      }
+    }
+  ]
+}

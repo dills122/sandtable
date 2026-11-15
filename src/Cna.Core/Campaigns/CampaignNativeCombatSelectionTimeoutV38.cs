@@ -10,7 +10,8 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
     string CampaignId, long PriorStateVersion, int CycleOrdinal, string PositionId,
     string NextPositionId, LandSide Side, string EntryHash, string WorldHash,
     string ConfigurationHash, long OpenedAtUnixMilliseconds, long DeadlineUnixMilliseconds,
-    long HighWaterUnixMilliseconds, long? CancelledAtUnixMilliseconds, string Reason)
+    long HighWaterUnixMilliseconds, long? CancelledAtUnixMilliseconds, string Reason,
+    int ContractVersion = 38)
 {
     internal const string NoTimingConfigurationHash = "sha256:" +
         "0000000000000000000000000000000000000000000000000000000000000000";
@@ -19,7 +20,8 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
 
     internal byte[] SerializeCanonical()
     {
-        if (PriorStateVersion < 1 || CycleOrdinal < 1 || !Enum.IsDefined(Side)
+        if (ContractVersion is not (38 or 40) || (ContractVersion == 40 && CycleOrdinal != 1)
+            || PriorStateVersion < 1 || CycleOrdinal < 1 || !Enum.IsDefined(Side)
             || !IsHash(EntryHash) || !IsHash(WorldHash) || !IsHash(ConfigurationHash)
             || Reason is not ("deadline" or "clock-unavailable" or "clock-regression"
                 or "controller-unavailable" or "selection-unavailable")
@@ -36,7 +38,7 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", 38);
+            writer.WriteNumber("contractVersion", ContractVersion);
             writer.WriteString("eventType", "combat-selection-timeout");
             writer.WriteString("campaignId", ContentContractGuards.RequireStableId(CampaignId, nameof(CampaignId)));
             writer.WriteNumber("priorStateVersion", PriorStateVersion);
@@ -72,7 +74,8 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
             if (hasTime) fields.Add("cancelledAtUnixMilliseconds");
             fields.Add("reason");
             CampaignSnapshotSerializer.RequireProperties(root, fields.ToArray());
-            if (root.GetProperty("contractVersion").GetInt32() != 38
+            var contractVersion = root.GetProperty("contractVersion").GetInt32();
+            if (contractVersion is not (38 or 40)
                 || root.GetProperty("eventType").GetString() != "combat-selection-timeout"
                 || root.GetProperty("fallback").GetString() != "no-selection") throw new JsonException("Unknown selection timeout.");
             var result = new CampaignSelectionTimeoutEvidenceV38(root.GetProperty("campaignId").GetString()!,
@@ -82,7 +85,7 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
                 root.GetProperty("entryHash").GetString()!, root.GetProperty("worldHash").GetString()!,
                 root.GetProperty("configurationHash").GetString()!, root.GetProperty("openedAtUnixMilliseconds").GetInt64(),
                 root.GetProperty("deadlineUnixMilliseconds").GetInt64(), root.GetProperty("highWaterUnixMilliseconds").GetInt64(),
-                hasTime ? time.GetInt64() : null, root.GetProperty("reason").GetString()!);
+                hasTime ? time.GetInt64() : null, root.GetProperty("reason").GetString()!, contractVersion);
             if (!bytes.Span.SequenceEqual(result.SerializeCanonical())) throw new JsonException("Noncanonical selection timeout.");
             return result;
         }
@@ -102,7 +105,7 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
 }
 
 internal sealed record CampaignNativeCombatSelectionTimeoutV38(CampaignSelectionTimeoutEvidenceV38 Evidence)
-    : CampaignNativeCombatDecisionV12(38, Evidence.CampaignId, Evidence.PriorStateVersion, Evidence.PositionId,
+    : CampaignNativeCombatDecisionV12(Evidence.ContractVersion, Evidence.CampaignId, Evidence.PriorStateVersion, Evidence.PositionId,
         Evidence.NextPositionId, "finish-combat-without-attack", Evidence.Side, "system", null, null, null, Evidence.Hash)
 {
     public override byte[] SerializeCanonical() => Evidence.CycleOrdinal == 1
@@ -110,9 +113,10 @@ internal sealed record CampaignNativeCombatSelectionTimeoutV38(CampaignSelection
 
     internal static CampaignNativeCombatSelectionTimeoutV38 Create(CampaignSnapshotV11 prior,
         CampaignContentContext context, CampaignContactJournal contacts, string configurationHash,
-        long opened, long deadline, long highWater, long? observed, string reason)
+        long opened, long deadline, long highWater, long? observed, string reason,
+        bool legacyInitiativeOwner = false)
     {
-        var side = ValidateInitialScope(prior, context);
+        var side = ValidateInitialScope(prior, context, legacyInitiativeOwner);
         if (contacts.CampaignId != prior.CampaignId || contacts.AuthorityVersion != prior.StateVersion)
             throw new InvalidOperationException("Selection requires same-cut contacts.");
         var position = prior.CurrentPosition.SequencePosition!;
@@ -120,12 +124,14 @@ internal sealed record CampaignNativeCombatSelectionTimeoutV38(CampaignSelection
         var timeout = new CampaignNativeCombatSelectionTimeoutV38(new CampaignSelectionTimeoutEvidenceV38(
             prior.CampaignId, prior.StateVersion, 1, position.PositionId, next.PositionId, side,
             CampaignSelectionTimeoutEvidenceV38.Digest(CampaignSnapshotV11Serializer.Serialize(prior)),
-            CampaignNativeCombatPaidWorldV22.Hash(prior.World), configurationHash, opened, deadline, highWater, observed, reason));
+            CampaignNativeCombatPaidWorldV22.Hash(prior.World), configurationHash, opened, deadline, highWater, observed, reason,
+            legacyInitiativeOwner || prior.InitiativeHolder == side ? 38 : 40));
         // Verify no-work content scope before accepting the System closure.
         _ = CampaignNativeCombatNoAttackCompletionV13.Create(new CampaignNativeCombatDecisionStateV12(prior, timeout), context);
         return timeout;
     }
-    internal static LandSide ValidateInitialScope(CampaignSnapshotV11 prior, CampaignContentContext context)
+    internal static LandSide ValidateInitialScope(CampaignSnapshotV11 prior, CampaignContentContext context,
+        bool legacyInitiativeOwner = false)
     {
         var position = prior.CurrentPosition.SequencePosition;
         if (context.ArtifactV6 is not { } artifact || position is null
@@ -133,10 +139,14 @@ internal sealed record CampaignNativeCombatSelectionTimeoutV38(CampaignSelection
             || position.PhaseId != LandPhaseIds.MovementAndCombat || position.SegmentId != LandSegmentIds.Combat
             || position.StepId != LandStepIds.PositionDetermination || position.ActorRole != LandActorRole.FirstActingSide
             || prior.ReactionWindow is not null || prior.BreakdownFlow is not CampaignBreakdownFlow.Idle
-            || prior.InitiativeHolder is not { } side
+            || prior.InitiativeHolder is null
             || artifact.Definition.ElementCombatFacts.SelectMany(value => value.Components)
                 .Any(value => value.ComponentClassId != Cna1979Combat.InfantryComponentClassId))
             throw new InvalidOperationException("No pending supported Combat selection.");
+        var order = prior.OperationStageOrders.SingleOrDefault(value => value.GameTurn == position.GameTurn
+            && value.OperationStage == position.OperationStage)
+            ?? throw new InvalidOperationException("Combat selection requires a recorded stage order.");
+        var side = legacyInitiativeOwner ? prior.InitiativeHolder.Value : order.FirstSide;
         if (CampaignElementMovedV3Factory.DeriveControlledLocationIds(prior.World, artifact, context.Scenario,
                 side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis).Count != 0)
             throw new InvalidOperationException("Selection timeout requires a source-legal no-attack fallback.");

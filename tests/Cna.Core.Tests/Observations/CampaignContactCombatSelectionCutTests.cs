@@ -578,6 +578,132 @@ public sealed class CampaignContactCombatSelectionCutTests
             finishedStep.SuccessorSession!);
         Assert.True(reconstructedCycle.IsVerified,
             reconstructedCycle.FailureReason.ToString());
+        var convoyOwner = afterRelease.ActingSide == LandSide.Axis
+            ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        var otherOwner = convoyOwner == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        var convoySession = finishedStep.SuccessorSession!;
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignHostAdapter.QueryTruckConvoyPassOwnerDraft(convoySession, otherOwner));
+        var convoyDraft = CampaignHostAdapter.QueryTruckConvoyPassOwnerDraft(convoySession, convoyOwner);
+        var convoyCut = CampaignExercises.QueryCheckpoint(convoySession);
+        var passCommand = new CampaignActionSubmission(1, convoyCut.CampaignId, convoyCut.StateVersion,
+            convoyCut.PositionId, convoyOwner, Assert.Single(convoyDraft.PrivateActionIds));
+        var passed = CampaignHostAdapter.SubmitTruckConvoyPass(convoySession, passCommand);
+        Assert.True(passed.IsAccepted, passed.RejectionReason.ToString());
+        var passedCheckpoint = CampaignExercises.QueryCheckpoint(passed.SuccessorSession!);
+        Assert.Equal(41, passedCheckpoint.ContractVersion);
+        Assert.Equal(LandPhaseIds.CommonwealthRailMovement,
+            Cna1979LandSequenceV4.CreateTurn(1).Single(position => position.PositionId == passedCheckpoint.PositionId).PhaseId);
+        Assert.True(CampaignExercises.Reconstruct(passed.SuccessorSession!).IsVerified);
+        Assert.Equal(passed.Evidence!.EventRecords[0], CampaignCurrentEventSerializer.Serialize(
+            CampaignCurrentEventSerializer.Deserialize(passed.Evidence.EventRecords[0])));
+        Assert.False(CampaignHostAdapter.SubmitTruckConvoyPass(passed.SuccessorSession!, passCommand).IsAccepted);
+        var phaseSession = passed.SuccessorSession!;
+        foreach (var expectedPhase in new[]
+                 { LandPhaseIds.CommonwealthRailMovement, LandPhaseIds.Repair, LandPhaseIds.Repair, LandPhaseIds.Patrol })
+        {
+            var current = CampaignExercises.QueryCheckpoint(phaseSession);
+            Assert.Equal(expectedPhase, Cna1979LandSequenceV4.CreateTurn(1)
+                .Single(position => position.PositionId == current.PositionId).PhaseId);
+            Assert.Throws<InvalidOperationException>(() =>
+                CampaignHostAdapter.QueryPostCombatPassOwnerDraft(phaseSession, otherOwner));
+            var phaseDraft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(phaseSession, convoyOwner);
+            Assert.Contains("finish-without-activity", Encoding.UTF8.GetString(phaseDraft.VisibleBytes), StringComparison.Ordinal);
+            var command = new CampaignActionSubmission(1, current.CampaignId, current.StateVersion,
+                current.PositionId, convoyOwner, Assert.Single(phaseDraft.PrivateActionIds));
+            var phaseStep = CampaignHostAdapter.SubmitPostCombatPass(phaseSession, command);
+            Assert.True(phaseStep.IsAccepted, phaseStep.RejectionReason.ToString());
+            phaseSession = phaseStep.SuccessorSession!;
+            Assert.Equal(42, CampaignExercises.QueryCheckpoint(phaseSession).ContractVersion);
+        }
+        var secondSide = Cna1979LandSequenceV4.CreateTurn(1).Single(position =>
+            position.PositionId == CampaignExercises.QueryCheckpoint(phaseSession).PositionId);
+        Assert.Equal(LandPhaseIds.ReserveDesignation, secondSide.PhaseId);
+        Assert.Equal(LandActorRole.SecondActingSide, secondSide.ActorRole);
+        Assert.True(CampaignExercises.Reconstruct(phaseSession).IsVerified);
+        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QueryPostCombatPassOwnerDraft(phaseSession, convoyOwner));
+        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QuerySecondReserveOwnerDraft(phaseSession, convoyOwner));
+        var reserveDraft = CampaignHostAdapter.QuerySecondReserveOwnerDraft(phaseSession, otherOwner);
+        using var reserveVisible = JsonDocument.Parse(reserveDraft.VisibleBytes);
+        var reserveChoices = reserveVisible.RootElement.GetProperty("choices");
+        Assert.True(reserveChoices.GetArrayLength() > 1);
+        var reserveElement = reserveChoices[0].GetProperty("elementId").GetString()!;
+        var reserveCut = CampaignExercises.QueryCheckpoint(phaseSession);
+        var reserveCommand = new CampaignActionSubmission(1, reserveCut.CampaignId, reserveCut.StateVersion,
+            reserveCut.PositionId, otherOwner, reserveDraft.PrivateActionIds[0]);
+        var designated = CampaignHostAdapter.SubmitSecondReserve(phaseSession, reserveCommand);
+        Assert.True(designated.IsAccepted, designated.RejectionReason.ToString());
+        Assert.Equal(CampaignElementReserveStatus.ReserveI, designated.SuccessorSession!.CurrentSecondReserveWorld!
+            .Elements.Single(value => value.ElementId == reserveElement).ReserveStatus);
+        Assert.False(CampaignHostAdapter.SubmitSecondReserve(designated.SuccessorSession, reserveCommand).IsAccepted);
+        var finishReserve = CampaignHostAdapter.QuerySecondReserveOwnerDraft(designated.SuccessorSession, otherOwner);
+        var finishCut = CampaignExercises.QueryCheckpoint(designated.SuccessorSession);
+        var finishCommand = new CampaignActionSubmission(1, finishCut.CampaignId, finishCut.StateVersion,
+            finishCut.PositionId, otherOwner, finishReserve.PrivateActionIds[^1]);
+        var reserveCompleted = CampaignHostAdapter.SubmitSecondReserve(designated.SuccessorSession, finishCommand);
+        Assert.True(reserveCompleted.IsAccepted, reserveCompleted.RejectionReason.ToString());
+        var secondMovementPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(position =>
+            position.PositionId == CampaignExercises.QueryCheckpoint(reserveCompleted.SuccessorSession!).PositionId);
+        Assert.Equal(LandSegmentIds.Movement, secondMovementPosition.SegmentId);
+        Assert.Equal(LandActorRole.SecondActingSide, secondMovementPosition.ActorRole);
+        Assert.True(CampaignExercises.Reconstruct(reserveCompleted.SuccessorSession!).IsVerified);
+        // Alternate branch: leave that element out of Reserve and move it one
+        // hex with an explicit stop, preserving contact and reaction authority.
+        var noReserveCommand = new CampaignActionSubmission(1, reserveCut.CampaignId, reserveCut.StateVersion,
+            reserveCut.PositionId, otherOwner, reserveDraft.PrivateActionIds[^1]);
+        var noReserve = CampaignHostAdapter.SubmitSecondReserve(phaseSession, noReserveCommand);
+        Assert.True(noReserve.IsAccepted);
+        var secondMoveDraft = CampaignHostAdapter.QuerySecondMovementOwnerDraft(noReserve.SuccessorSession!,
+            otherOwner, reserveElement);
+        Assert.NotEmpty(secondMoveDraft.PrivateActionIds);
+        Assert.Contains("move-and-stop", Encoding.UTF8.GetString(secondMoveDraft.VisibleBytes), StringComparison.Ordinal);
+        var secondMoveCut = CampaignExercises.QueryCheckpoint(noReserve.SuccessorSession!);
+        var secondMoveCommand = new CampaignActionSubmission(1, secondMoveCut.CampaignId, secondMoveCut.StateVersion,
+            secondMoveCut.PositionId, otherOwner, secondMoveDraft.PrivateActionIds[0]);
+        var secondMoved = CampaignHostAdapter.SubmitSecondMovement(noReserve.SuccessorSession!, secondMoveCommand, reserveElement);
+        Assert.True(secondMoved.IsAccepted, secondMoved.RejectionReason.ToString());
+        Assert.Equal(44, CampaignExercises.QueryCheckpoint(secondMoved.SuccessorSession!).ContractVersion);
+        Assert.Null(secondMoved.SuccessorSession!.CurrentSecondMove!.ReactionWindow);
+        Assert.Empty(CampaignHostAdapter.QuerySecondMovementOwnerDraft(
+            secondMoved.SuccessorSession, otherOwner, reserveElement).PrivateActionIds);
+        Assert.Equal(CampaignCurrentEventSerializer.Serialize(CampaignCurrentEventSerializer.Deserialize(
+            secondMoved.Evidence!.EventRecords[0])), secondMoved.Evidence.EventRecords[0]);
+        var movementReplay = CampaignExercises.Reconstruct(secondMoved.SuccessorSession!);
+        Assert.True(movementReplay.IsVerified);
+        using var framedHistory = new MemoryStream();
+        foreach (var item in secondMoved.SuccessorSession.CurrentHistory)
+        {
+            framedHistory.Write(CampaignCurrentEventSerializer.Serialize(item));
+            framedHistory.WriteByte((byte)'\n');
+        }
+        Assert.Equal("sha256:" + Convert.ToHexStringLower(
+            System.Security.Cryptography.SHA256.HashData(framedHistory.ToArray())), movementReplay.EventStreamHash);
+        Assert.False(CampaignHostAdapter.SubmitSecondMovement(secondMoved.SuccessorSession!, secondMoveCommand, reserveElement).IsAccepted);
+        Assert.False(CampaignExercises.CompleteSecondBreakdown(secondMoved.SuccessorSession!).IsAccepted);
+        var finishSecondDraft = CampaignHostAdapter.QuerySecondMovementCompletionOwnerDraft(secondMoved.SuccessorSession!, otherOwner);
+        var finishSecondCut = CampaignExercises.QueryCheckpoint(secondMoved.SuccessorSession!);
+        var finishSecondCommand = new CampaignActionSubmission(1, finishSecondCut.CampaignId, finishSecondCut.StateVersion,
+            finishSecondCut.PositionId, otherOwner, Assert.Single(finishSecondDraft.PrivateActionIds));
+        var secondFinished = CampaignHostAdapter.SubmitSecondMovementCompletion(secondMoved.SuccessorSession!, finishSecondCommand);
+        Assert.True(secondFinished.IsAccepted, secondFinished.RejectionReason.ToString());
+        var breakdown = CampaignExercises.CompleteSecondBreakdown(secondFinished.SuccessorSession!);
+        Assert.True(breakdown.IsAccepted, breakdown.RejectionReason.ToString());
+        var breakdownCut = CampaignExercises.QueryCheckpoint(breakdown.SuccessorSession!);
+        Assert.Equal(46, breakdownCut.ContractVersion);
+        var combatPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(position => position.PositionId == breakdownCut.PositionId);
+        Assert.Equal(LandActorRole.SecondActingSide, combatPosition.ActorRole);
+        Assert.Equal(LandSegmentIds.Combat, combatPosition.SegmentId);
+        Assert.Equal(LandStepIds.PositionDetermination, combatPosition.StepId);
+        Assert.Equal(CampaignActionAudience.System, breakdown.Evidence!.Receipt.Audience);
+        Assert.Equal(breakdown.Evidence.EventRecords[0], CampaignCurrentEventSerializer.Serialize(
+            CampaignCurrentEventSerializer.Deserialize(breakdown.Evidence.EventRecords[0])));
+        Assert.True(CampaignExercises.Reconstruct(breakdown.SuccessorSession!).IsVerified);
+        Assert.False(CampaignExercises.CompleteSecondBreakdown(breakdown.SuccessorSession!).IsAccepted);
+        var forged = breakdown.SuccessorSession!.CurrentSecondBreakdown! with { PriorEventHash = "sha256:" + new string('0', 64) };
+        var forgedSession = secondFinished.SuccessorSession!.WithSecondBreakdown(forged,
+            secondFinished.SuccessorSession.CurrentContacts.AdvanceSecondBreakdown(forged));
+        Assert.False(CampaignExercises.Reconstruct(forgedSession).IsVerified);
         Assert.Equal(finish.SerializeCanonical(), CampaignCurrentEventSerializer.Serialize(
             CampaignCurrentEventSerializer.Deserialize(
                 finishedStep.Evidence.EventRecords[0])));

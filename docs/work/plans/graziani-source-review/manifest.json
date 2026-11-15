@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "scope": "graziani-matruh-nz-formations-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981",
+    "land-rules": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99"
+  },
+  "rows": [
+    {"id": "matruh-scenario", "source": "scenario", "fields": ["hex", "essex_attached", "durham_attached", "staffordshires_attached"]},
+    {"id": "matruh-errata", "source": "errata", "fields": ["buffs_assigned", "hampshires_assigned"]},
+    {"id": "matruh-oa", "source": "commonwealth-charts", "fields": ["no_assigned_units", "attachment_max", "movement_assault_exception"]},
+    {"id": "nz-schedule-brigade", "source": "commonwealth-charts", "fields": ["turn", "stage", "light", "medium", "heavy"]},
+    {"id": "nz-schedule-artillery", "source": "commonwealth-charts", "fields": ["turn", "stage"]},
+    {"id": "nz-oa-brigade", "source": "commonwealth-charts", "fields": ["turn", "stage", "listed_rows"]},
+    {"id": "nz-oa-artillery", "source": "commonwealth-charts", "fields": ["turn", "stage"]},
+    {"id": "nz-example", "source": "land-rules", "fields": ["brigade_turn", "brigade_stage", "artillery_turn", "artillery_stage"]},
+    {"id": "cirene-oa", "source": "errata", "fields": ["listed_rows", "deployed_marker", "tank_attachment"]},
+    {"id": "marmarica-oa", "source": "errata", "fields": ["listed_rows", "deployed_marker", "tank_attachment"]},
+    {"id": "sirte-oa", "source": "errata", "fields": ["listed_rows", "turn", "stage"]}
+  ]
+}

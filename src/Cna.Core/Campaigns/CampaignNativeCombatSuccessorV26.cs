@@ -22,7 +22,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
         RandomStreamState RandomState, LandSequencePosition NextPosition,
         CampaignNativeCombatCustodyStateV25? Custody)
     {
-        internal byte[] SerializeCanonical()
+        internal byte[] SerializeCanonical(CampaignContentContext context)
         {
             using var stream = new MemoryStream();
             using (var writer = new Utf8JsonWriter(stream))
@@ -32,7 +32,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
                 writer.WriteString("campaignId", PriorSnapshot.CampaignId);
                 writer.WriteNumber("stateVersion", StateVersion);
                 writer.WriteString("priorSnapshotHash", Hash(
-                    CampaignCurrentSnapshotSerializer.Serialize(PriorSnapshot)));
+                    CampaignCurrentSnapshotSerializer.Serialize(PriorSnapshot, context)));
                 writer.WriteString("positionId", NextPosition.PositionId);
                 writer.WriteString("worldHash", CampaignNativeCombatPaidWorldV22.Hash(World));
                 writer.WriteStartObject("randomState");
@@ -113,7 +113,7 @@ internal sealed record CampaignNativeCombatSuccessorV26(
         return new(CurrentContractVersion, disposition.CampaignId,
             disposition.StateVersion, Hash(disposition.SerializeCanonical()),
             projected.NextPosition.PositionId,
-            Hash(projected.SerializeCanonical()),
+            Hash(projected.SerializeCanonical(context)),
             Hash(CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(
                 projected.Custody)));
     }

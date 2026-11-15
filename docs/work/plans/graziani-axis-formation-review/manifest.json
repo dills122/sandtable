@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-formations-members-v1",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "rows": [
+    {
+      "id": "cirene-hq",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-157-hq",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-157-i",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-157-ii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-157-iii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-158-hq",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-158-i",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-158-ii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-158-iii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-mg",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-at",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-artillery",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-engineer",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-bersaglieri",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "cirene-tank",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark",
+        "assigned_parent",
+        "initial_attachment"
+      ]
+    },
+    {
+      "id": "marmarica-hq",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-115-hq",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-115-i",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-115-ii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-115-iii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-116-hq",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-116-i",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-116-ii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-116-iii",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-mg",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-at",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-artillery",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-engineer",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "marmarica-tank",
+      "source": "errata",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark",
+        "assigned_parent",
+        "initial_attachment"
+      ]
+    }
+  ]
+}

@@ -118,6 +118,23 @@ references identify provenance; they must not embed copied rules prose.
   derivative implementation.
 - How defects in the published abstract Air/Logistics rules affect scenario balance.
 
+### Rights research lead — November 13, 2026
+
+The [original Land scan](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf)
+prints a 1979 SPI copyright notice. [Grognard’s listing](https://grognard.com/m-article-page-list.aspx?GameID=c045)
+attributed its online September 1979 addenda copy to the courtesy of Decision
+Games. Decision Games' [own product page](https://shop.decisiongames.com/ProductDetails.php?ProductCode=P3034)
+describes its separate *North African Campaign* project as an update of an SPI
+classic. These are useful provenance and inquiry leads; none establishes the
+current ownership chain for every original asset, permission to redistribute
+those scans or derived content, or authorization to publish this adaptation.
+
+Before content admission or distribution, the project owner should obtain an
+appropriate rights review covering the original name, rule expression, map and
+counter art, source-derived structured data and intended distribution channels.
+Keep the existing external-source boundary until that review is completed. No
+rights-holder contact or request has been made by this research pass.
+
 ## Source inventory
 
 | Material | Provenance and use | Assessment |
@@ -129,6 +146,8 @@ references identify provenance; they must not embed copied rules prose.
 | [Common charts](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf) | Preserved original SPI scan | Required adjudication data |
 | [Commonwealth charts](https://spigames.net/PDFv10/CNA_ChartsCWPlayer.pdf) | Preserved original SPI scan | Required side data |
 | [Axis charts](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf) | Preserved original SPI scan | Required side data |
+| [Map sheets](https://spigames.net/PDFv10/CNA_Maps.pdf) | Preserved five-page original scan, later located | Topology and provenance research; rights remain open |
+| [Complete archival package](https://spigames.net/PDFv2/CampaignNorthAfrica.pdf) | Original material in one package | Source comparison; not an independent edition |
 | [Log sheets](https://spigames.net/PDFv10/CNA_Charts_LogSheets.pdf) | Preserved original SPI scan | State-model evidence |
 | [SPI preservation index](https://spigames.net/rules_downloads.htm) | Collection and component discovery | Useful index; no reuse license identified |
 | [Contemporary game profile](https://www.spigames.net/MovesScans/Moves49/CNAGPM49.pdf) | 1979 *Moves* profile | Design context, not rules authority |

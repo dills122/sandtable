@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "scope": "graziani-initial-supply-v1",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "rows": [
+    {
+      "id": "axis-tobruk",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-bardia",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-benghazi",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-derna",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-tripoli",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-dump-1",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-dump-2",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-c0716",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "cw-mersa-matruh",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "cw-sidi-barrani",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "cw-dump-1",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "cw-alexandria",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "cw-cairo",
+      "source": "scenario",
+      "fields": [
+        "count",
+        "ammo_mark",
+        "fuel_each"
+      ]
+    },
+    {
+      "id": "axis-dummy-and-placement",
+      "source": "scenario",
+      "fields": [
+        "dump_groups",
+        "dummy_groups",
+        "dummy_per_group",
+        "map_section",
+        "region",
+        "proximity_hexes"
+      ]
+    },
+    {
+      "id": "cw-dummy-and-placement",
+      "source": "scenario",
+      "fields": [
+        "dump_groups",
+        "dummy_groups",
+        "dummy_per_group",
+        "map_section",
+        "relation"
+      ]
+    }
+  ]
+}

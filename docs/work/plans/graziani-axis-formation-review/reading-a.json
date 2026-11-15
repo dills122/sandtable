@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-formations-members-v1",
+  "manifest_sha256": "4e6e607e52ceb484e89bdea2acdd7a0690bc6492b9d85b23697f9cafe9874e3b",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "cirene-hq",
+      "locator": "errata PDF p. 4, OA cirene-hq",
+      "values": {
+        "counter_abbreviation": "63 Cir",
+        "id_code": "b",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-hq",
+      "locator": "errata PDF p. 4, OA cirene-157-hq",
+      "values": {
+        "counter_abbreviation": "157",
+        "id_code": "h",
+        "toe_mark": "1×65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-i",
+      "locator": "errata PDF p. 4, OA cirene-157-i",
+      "values": {
+        "counter_abbreviation": "I/157",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-ii",
+      "locator": "errata PDF p. 4, OA cirene-157-ii",
+      "values": {
+        "counter_abbreviation": "II/157",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-iii",
+      "locator": "errata PDF p. 4, OA cirene-157-iii",
+      "values": {
+        "counter_abbreviation": "III/157",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-hq",
+      "locator": "errata PDF p. 4, OA cirene-158-hq",
+      "values": {
+        "counter_abbreviation": "158",
+        "id_code": "h",
+        "toe_mark": "1×65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-i",
+      "locator": "errata PDF p. 4, OA cirene-158-i",
+      "values": {
+        "counter_abbreviation": "I/158",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-ii",
+      "locator": "errata PDF p. 4, OA cirene-158-ii",
+      "values": {
+        "counter_abbreviation": "II/158",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-iii",
+      "locator": "errata PDF p. 4, OA cirene-158-iii",
+      "values": {
+        "counter_abbreviation": "III/158",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-mg",
+      "locator": "errata PDF p. 4, OA cirene-mg",
+      "values": {
+        "counter_abbreviation": "63",
+        "id_code": "bb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-at",
+      "locator": "errata PDF p. 4, OA cirene-at",
+      "values": {
+        "counter_abbreviation": "63",
+        "id_code": "rr",
+        "toe_mark": "2×47/32 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-artillery",
+      "locator": "errata PDF p. 4, OA cirene-artillery",
+      "values": {
+        "counter_abbreviation": "45",
+        "id_code": "kk",
+        "toe_mark": "6×75/18 Gun-Howitzer, 3×100/17 Howitzer, 3×Light AA",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-engineer",
+      "locator": "errata PDF p. 4, OA cirene-engineer",
+      "values": {
+        "counter_abbreviation": "63",
+        "id_code": "bbb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-bersaglieri",
+      "locator": "errata PDF p. 4, OA cirene-bersaglieri",
+      "values": {
+        "counter_abbreviation": "63 Brs",
+        "id_code": "aaa",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-tank",
+      "locator": "errata PDF p. 4, OA cirene-tank",
+      "values": {
+        "counter_abbreviation": "LXIII(L)",
+        "id_code": "not-listed",
+        "toe_mark": "not-listed",
+        "arrival_mark": "D",
+        "assigned_parent": "Libyan Tank Command",
+        "initial_attachment": "63 Cirene"
+      }
+    },
+    {
+      "id": "marmarica-hq",
+      "locator": "errata PDF p. 4, OA marmarica-hq",
+      "values": {
+        "counter_abbreviation": "62 Mrm",
+        "id_code": "b",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-hq",
+      "locator": "errata PDF p. 4, OA marmarica-115-hq",
+      "values": {
+        "counter_abbreviation": "115",
+        "id_code": "h",
+        "toe_mark": "1×65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-i",
+      "locator": "errata PDF p. 4, OA marmarica-115-i",
+      "values": {
+        "counter_abbreviation": "I/115",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-ii",
+      "locator": "errata PDF p. 4, OA marmarica-115-ii",
+      "values": {
+        "counter_abbreviation": "II/115",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-iii",
+      "locator": "errata PDF p. 4, OA marmarica-115-iii",
+      "values": {
+        "counter_abbreviation": "III/115",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-hq",
+      "locator": "errata PDF p. 4, OA marmarica-116-hq",
+      "values": {
+        "counter_abbreviation": "116",
+        "id_code": "h",
+        "toe_mark": "1×65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-i",
+      "locator": "errata PDF p. 4, OA marmarica-116-i",
+      "values": {
+        "counter_abbreviation": "I/116",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-ii",
+      "locator": "errata PDF p. 4, OA marmarica-116-ii",
+      "values": {
+        "counter_abbreviation": "II/116",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-iii",
+      "locator": "errata PDF p. 4, OA marmarica-116-iii",
+      "values": {
+        "counter_abbreviation": "III/116",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-mg",
+      "locator": "errata PDF p. 4, OA marmarica-mg",
+      "values": {
+        "counter_abbreviation": "62",
+        "id_code": "bb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-at",
+      "locator": "errata PDF p. 4, OA marmarica-at",
+      "values": {
+        "counter_abbreviation": "62",
+        "id_code": "rr",
+        "toe_mark": "2×47/32 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-artillery",
+      "locator": "errata PDF p. 4, OA marmarica-artillery",
+      "values": {
+        "counter_abbreviation": "44",
+        "id_code": "kk",
+        "toe_mark": "6×75/27 Gun, 3×105/28 Gun, 3×Light AA",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-engineer",
+      "locator": "errata PDF p. 4, OA marmarica-engineer",
+      "values": {
+        "counter_abbreviation": "62",
+        "id_code": "bbb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-tank",
+      "locator": "errata PDF p. 4, OA marmarica-tank",
+      "values": {
+        "counter_abbreviation": "LXII(L)",
+        "id_code": "not-listed",
+        "toe_mark": "not-listed",
+        "arrival_mark": "D",
+        "assigned_parent": "Libyan Tank Command",
+        "initial_attachment": "62 Marmarica"
+      }
+    }
+  ]
+}

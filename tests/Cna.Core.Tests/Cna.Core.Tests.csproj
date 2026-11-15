@@ -146,6 +146,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="../Shared/GrazianiSourceExcerpt.cs" Link="Shared/GrazianiSourceExcerpt.cs" />
     <ProjectReference Include="../../src/Cna.Core/Cna.Core.csproj" />
   </ItemGroup>
 </Project>

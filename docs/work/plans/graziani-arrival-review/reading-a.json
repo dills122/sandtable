@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-arrivals-six-turns-v1",
+  "manifest_sha256": "599826eba2cd920f2cae0061b7758786d394cdda2b95eab638dec6d27bcaa35f",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "schedule-polish",
+      "locator": "PDF p. 3, §4.43a, polish",
+      "values": {
+        "turn": 1,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-rtr-and-nz-artillery",
+      "locator": "PDF p. 3, §4.43a, rtr-and-nz-artillery",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-indian-artillery",
+      "locator": "PDF p. 3, §4.43a, indian-artillery",
+      "values": {
+        "turn": 3,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-hussars",
+      "locator": "PDF p. 3, §4.43a, hussars",
+      "values": {
+        "turn": 4,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-indian-brigade",
+      "locator": "PDF p. 3, §4.43a, indian-brigade",
+      "values": {
+        "turn": 5,
+        "stage": 1,
+        "light": 5,
+        "medium": 20,
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-nz-brigade",
+      "locator": "PDF p. 3, §4.43a, nz-brigade",
+      "values": {
+        "turn": 6,
+        "stage": 3,
+        "light": 25,
+        "medium": 85,
+        "heavy": 5
+      }
+    },
+    {
+      "id": "oa-polish",
+      "locator": "PDF p. 21, OA polish",
+      "values": {
+        "turn": 1,
+        "stage": 3,
+        "listed_rows": 8
+      }
+    },
+    {
+      "id": "oa-2-rtr",
+      "locator": "PDF p. 11, OA 2-rtr",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-7-rtr",
+      "locator": "PDF p. 11, OA 7-rtr",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-nz-artillery",
+      "locator": "PDF p. 18, OA nz-artillery",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-indian-artillery",
+      "locator": "PDF p. 15, OA indian-artillery",
+      "values": {
+        "turn": 3,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-hussars",
+      "locator": "PDF p. 11, OA hussars",
+      "values": {
+        "turn": 4,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-indian-brigade",
+      "locator": "PDF p. 15, OA indian-brigade",
+      "values": {
+        "turn": 5,
+        "stage": 1,
+        "listed_rows": 4
+      }
+    },
+    {
+      "id": "oa-nz-brigade",
+      "locator": "PDF p. 18, OA nz-brigade",
+      "values": {
+        "turn": 6,
+        "stage": 3,
+        "listed_rows": 4
+      }
+    }
+  ]
+}

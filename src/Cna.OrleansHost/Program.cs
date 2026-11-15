@@ -1,3 +1,4 @@
+using Cna.Core.Campaigns;
 using Cna.OrleansHost;
 using Cna.OrleansHost.Api;
 
@@ -5,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IContentPackV6Resolver>(Cna1979SyntheticContentResolver.Instance);
 builder.Services.AddSingleton<LocalSessionStore>();
 builder.Services.AddSingleton<LocalCampaignCreationStore>();
 builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
@@ -19,9 +21,9 @@ if (!string.IsNullOrWhiteSpace(campaignJournalPath))
             "CampaignJournal:OperatorSecret is required when the durable journal is configured.");
     builder.Services.AddSingleton(services => File.Exists(campaignJournalPath)
         ? CampaignDurableAuthorityJournal.OpenExisting(campaignJournalPath,
-            services.GetRequiredService<TimeProvider>())
+            services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>())
         : CampaignDurableAuthorityJournal.CreateNew(campaignJournalPath,
-            operatorSecret, services.GetRequiredService<TimeProvider>()));
+            operatorSecret, services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>()));
     builder.Services.AddHostedService<CampaignCombatTimeoutService>();
 }
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration

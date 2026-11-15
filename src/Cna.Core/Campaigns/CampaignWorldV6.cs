@@ -83,6 +83,19 @@ internal sealed record CampaignWorldSnapshotV6
 
 internal static class CampaignWorldV6Factory
 {
+    internal static CampaignWorldSnapshotV6 DesignateReserve(CampaignWorldSnapshotV6 world, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentException.ThrowIfNullOrWhiteSpace(elementId);
+        var selected = world.Elements.SingleOrDefault(value => value.ElementId == elementId)
+            ?? throw new InvalidOperationException("Reserve element is absent from the World.");
+        if (selected.ReserveStatus != CampaignElementReserveStatus.None)
+            throw new InvalidOperationException("Reserve element is already designated.");
+        return new CampaignWorldSnapshotV6(6, world.Elements.Select(value => value.ElementId == elementId
+            ? new CampaignElementStateV5(value.ElementId, value.CurrentLocationId, CampaignElementReserveStatus.ReserveI,
+                value.OperationalState, value.Components) : value), world.Representations, world.BrokenVehicleLots);
+    }
+
     public static CampaignWorldSnapshotV6 CreateInitial(
         ContentPackV6Artifact artifact,
         ContentScenario scenario)
@@ -100,13 +113,29 @@ internal static class CampaignWorldV6Factory
 
         var legacyArtifact = ContentPackArtifact.Create(artifact.Definition.LegacyDefinition);
         var legacyWorld = CampaignWorldFactory.CreateInitial(legacyArtifact, scenario);
-        var seeds = artifact.Definition.InitialPlacementCombatFacts
+        var world = CreateFromLegacyWorld(legacyWorld, artifact.Definition, scenario.ScenarioId);
+
+        if (!CampaignWorldV6Validator.IsValidInitial(world, artifact, scenario))
+        {
+            throw new InvalidOperationException(
+                "A validated Content Pack v6 produced an invalid initial campaign World v6.");
+        }
+
+        return world;
+    }
+
+    internal static CampaignWorldSnapshotV6 CreateFromLegacyWorld(
+        CampaignWorldSnapshot legacyWorld,
+        ICampaignCombatContentDefinition content,
+        string scenarioId)
+    {
+        var seeds = content.InitialPlacementCombatFacts
             .Where(value => string.Equals(
                 value.ScenarioId,
-                scenario.ScenarioId,
+                scenarioId,
                 StringComparison.Ordinal))
             .ToDictionary(value => value.ElementId, StringComparer.Ordinal);
-        var world = new CampaignWorldSnapshotV6(
+        return new CampaignWorldSnapshotV6(
             CampaignWorldSnapshotV6.CurrentContractVersion,
             legacyWorld.Elements.Select(element => new CampaignElementStateV5(
                 element.ElementId,
@@ -125,14 +154,6 @@ internal static class CampaignWorldV6Factory
                         seed.CurrentToe,
                         seed.Origin)))),
             legacyWorld.Representations, []);
-
-        if (!CampaignWorldV6Validator.IsValidInitial(world, artifact, scenario))
-        {
-            throw new InvalidOperationException(
-                "A validated Content Pack v6 produced an invalid initial campaign World v6.");
-        }
-
-        return world;
     }
 }
 
@@ -223,7 +244,7 @@ internal static class CampaignWorldV6Validator
                 || !seeds.TryGetValue(state.ElementId, out var initial)
                 || contentElement.PlacementMode != ContentPlacementMode.Independent
                 || !locations.Contains(state.CurrentLocationId)
-                || !HasValidComponents(state.Components, facts.Components, initial.InitialComponentToes)
+                || !HasValidComponents(state.Components, facts, initial.InitialComponentToes)
                 || state.OperationalState.CapabilityPointsExpended > new CapabilityPointAmount(contentElement.BaseCapabilityPointAllowance, 1)
                 || state.OperationalState.LedgerGameTurn != scenario.Start.GameTurn
                 || state.OperationalState.LedgerOperationStage != scenario.Start.OperationStage
@@ -292,11 +313,12 @@ internal static class CampaignWorldV6Validator
         return broken == ledger.BrokenPointCount && broken + ledger.WorkingPointCount == cohort.WorkingPointCount;
     }
 
-    private static bool HasValidComponents(
+    internal static bool HasValidComponents(
         IReadOnlyList<CampaignComponentToeState> states,
-        IReadOnlyList<ContentCombatComponent> components,
+        ContentElementCombatFacts facts,
         IReadOnlyList<ContentInitialComponentToe> seeds)
     {
+        var components = facts.Components;
         if (states.Count != components.Count || states.Count != seeds.Count)
         {
             return false;
@@ -304,11 +326,17 @@ internal static class CampaignWorldV6Validator
 
         var contentById = components.ToDictionary(value => value.ComponentId, StringComparer.Ordinal);
         var seedsById = seeds.ToDictionary(value => value.ComponentId, StringComparer.Ordinal);
-        return states.All(state =>
+        if (!states.All(state =>
             contentById.TryGetValue(state.ComponentId, out var component)
             && seedsById.TryGetValue(state.ComponentId, out var seed)
             && state.CurrentToe <= component.MaximumToe
-            && state.InitialToeOrigin == seed.Origin);
+            && state.InitialToeOrigin == seed.Origin)) return false;
+        if (facts.MaximumCombinedToe is { } maximum
+            && states.Sum(value => (long)value.CurrentToe) > maximum) return false;
+        if (facts.ComponentToeLimits.Count == 0) return true;
+        var statesById = states.ToDictionary(value => value.ComponentId, StringComparer.Ordinal);
+        return facts.ComponentToeLimits.All(limit => limit.ComponentIds.All(statesById.ContainsKey)
+            && limit.ComponentIds.Sum(id => (long)statesById[id].CurrentToe) <= limit.MaximumToe);
     }
 
     private static bool HasInitialToe(

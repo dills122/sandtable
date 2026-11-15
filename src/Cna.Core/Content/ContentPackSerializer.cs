@@ -18,6 +18,16 @@ public static class ContentPackSerializer
             throw new InvalidContentPackException(issues);
         }
 
+        return SerializeDraftDefinition(definition);
+    }
+
+    // Internal draft encoding only; callers must not treat these bytes as an admitted artifact.
+    internal static byte[] SerializeDraftDefinition(ContentPackDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        if (definition.Scenarios.Any(scenario => scenario.ScheduledArrivals.Count != 0 || scenario.EntryAreas.Count != 0
+            || scenario.InitialGroups.Count != 0))
+            throw new InvalidOperationException("This content format cannot encode scheduled arrivals, entry areas or initial groups.");
         using var stream = new MemoryStream();
 
         using (var writer = new Utf8JsonWriter(stream))

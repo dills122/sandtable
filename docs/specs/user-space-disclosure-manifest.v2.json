@@ -158,6 +158,18 @@
     "Cna.Core.Actions.CampaignLegalActionSet"
   ],
   "allowedJsonPropertyNames": [
+    "family",
+    "choice",
+    "id",
+    "lane",
+    "stage",
+    "delta",
+    "targetGameTurn",
+    "target",
+    "dumpId",
+    "placementId",
+    "dummyId",
+    "poolId",
     "actionId",
     "activeMovement",
     "activeParticipant",
@@ -548,6 +560,18 @@
         "ElementId",
         "OriginLocationId"
       ]
+    },
+    {
+      "name": "Cna.Core.Actions.PregameAxisSupplyAllocationAction",
+      "declaredMembers": ["Delta", "Lane", "Stage"]
+    },
+    {
+      "name": "Cna.Core.Actions.PregameAxisSupplyRollAction",
+      "declaredMembers": []
+    },
+    {
+      "name": "Cna.Core.Actions.CampaignSourceSetupAction",
+      "declaredMembers": ["ChoiceJson", "Family"]
     },
     {
       "name": "Cna.Core.Actions.DeclineRetreatBeforeAssaultAction",

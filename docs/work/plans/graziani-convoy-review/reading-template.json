@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "scope": "graziani-abstract-convoy-review-v1",
+  "manifest_sha256": "ba11367727c0498e1b86fa2063079663190bb9c440fcdf15015734145f164a9a",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "axis-charts": "9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "scenario-60-37",
+      "locator": "UNVERIFIED",
+      "values": {
+        "pre_start_planning_period": null,
+        "permitted_lanes": null
+      }
+    },
+    {
+      "id": "cargo-32-61",
+      "locator": "UNVERIFIED",
+      "values": {
+        "included_categories": null,
+        "simplified_convoy_has_tonnage_limit": null,
+        "cargo_may_be_divided_between_available_lanes": null
+      }
+    },
+    {
+      "id": "lane-limit-32-62",
+      "locator": "UNVERIFIED",
+      "values": {
+        "supply_units_per_lane_per_naval_convoy_stage": null,
+        "motorization_points_per_lane_per_naval_convoy_stage": null,
+        "replacement_pool_chart_totals_apply_per_turn": null
+      }
+    },
+    {
+      "id": "attack-32-63",
+      "locator": "UNVERIFIED",
+      "values": {
+        "weather_limits_attack": null,
+        "axis_announces_lanes_used": null,
+        "attack_each_arriving_convoy_separately": null
+      }
+    },
+    {
+      "id": "lookup-32-64",
+      "locator": "UNVERIFIED",
+      "values": {
+        "bomb_points_depend_on_lane_and_qualifying_division": null,
+        "result_uses_two_sequential_dice": null,
+        "result_table": null
+      }
+    },
+    {
+      "id": "loss-32-65a",
+      "locator": "UNVERIFIED",
+      "values": {
+        "ten_percent_applies_to": null,
+        "motorization_rounding": null,
+        "replacement_rounding": null
+      }
+    },
+    {
+      "id": "loss-32-65b",
+      "locator": "UNVERIFIED",
+      "values": {
+        "threshold_percent": null,
+        "fraction_rounding": null,
+        "minimum_loss_instruction_present": null,
+        "tank_and_gun_aggregation": null
+      }
+    },
+    {
+      "id": "qualification-32-66",
+      "locator": "UNVERIFIED",
+      "values": {
+        "division_must_be_non_shell": null,
+        "qualification": null,
+        "attacks_on_other_convoys_affect_attack_strength_or_results": null
+      }
+    },
+    {
+      "id": "bombardment-41-5",
+      "locator": "UNVERIFIED",
+      "values": {
+        "target": null,
+        "bomb_points_column": null,
+        "dice_range": null,
+        "result_percent": null
+      }
+    },
+    {
+      "id": "air-loss-41-67",
+      "locator": "UNVERIFIED",
+      "values": {
+        "fractions_round": null,
+        "tank_and_gun_groups": null,
+        "applies_to_each_cargo_type": null
+      }
+    },
+    {
+      "id": "errata-loss-41-67",
+      "locator": "UNVERIFIED",
+      "values": {
+        "percentage_applies_to_each_cargo_type": null
+      }
+    }
+  ]
+}

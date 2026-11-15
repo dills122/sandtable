@@ -1,4 +1,5 @@
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
@@ -31,7 +32,7 @@ public static class CampaignLegalActions
         {
             return CampaignLegalActionQueryResult.Success(
                 snapshot.CurrentPosition.Kind != CampaignPositionV11Kind.Reaction
-                    ? GenerateForSystem(snapshot)
+                    ? GenerateForSystem(snapshot, handle.Context.Scenario)
                     : CampaignObservationV7ActionDerivation.DeriveSystem(
                         ProjectV7(handle, snapshot.ReactionWindow!.ReactingSide)));
         }
@@ -214,7 +215,7 @@ public static class CampaignLegalActions
             snapshot.SequencePosition.PositionId, CampaignActionAudience.System, candidates);
     }
 
-    private static CampaignLegalActionSet GenerateForSystem(CampaignSnapshotV11 snapshot)
+    private static CampaignLegalActionSet GenerateForSystem(CampaignSnapshotV11 snapshot, ContentScenario scenario)
     {
         if (snapshot.CurrentPosition.Kind == CampaignPositionV11Kind.BreakdownStop)
             return CreateSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
@@ -262,7 +263,8 @@ public static class CampaignLegalActions
                 SegmentId: null,
             } when HasAdmittedStageEntryPolicy(
                 snapshot,
-                snapshot.Setup.StageEntry.NavalConvoyArrival) =>
+                snapshot.Setup.StageEntry.NavalConvoyArrival)
+                && !CampaignV11Preamble.HasDueOrOverdueArrival(scenario, sequence.GameTurn, sequence.OperationStage) =>
                 [new ResolveNoObligationNavalConvoyArrivalAction()],
             {
                 OperationStage: 1,

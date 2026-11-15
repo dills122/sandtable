@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "scope": "graziani-six-turn-victory-source-v1",
+  "manifest_sha256": "f81498e8a1e6715f25362426d55ac1974475d48a5ccf2d1bec4fa8f026f45b2d",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "scenario-cross-reference",
+      "locator": "printed p. 27, §60.22",
+      "values": {
+        "printed_victory_case": "60.71",
+        "final_turn": 6,
+        "final_stage": 3
+      }
+    },
+    {
+      "id": "victory-heading",
+      "locator": "printed p. 28, §60.81 heading",
+      "values": {
+        "scenario_name": "Graziani’s Offensive"
+      }
+    },
+    {
+      "id": "italian-strategic",
+      "locator": "printed p. 28, §60.81 Italian Strategic",
+      "values": {
+        "take_hold": "Alexandria or Cairo, any hex",
+        "unit": "combat unit",
+        "supply": "convoy from any hex on map D"
+      }
+    },
+    {
+      "id": "italian-decisive",
+      "locator": "printed p. 28, §60.81 Italian Decisive",
+      "values": {
+        "take_hold": "Mersa Matruh and Siwa",
+        "unit": "combat unit",
+        "supply": "convoy from Tobruk"
+      }
+    },
+    {
+      "id": "italian-tactical",
+      "locator": "printed p. 28, §60.81 Italian Tactical",
+      "values": {
+        "take_hold": "Sidi Birani",
+        "retain": "Sollum; Fort Maddalena; Giarabub",
+        "supply": "in supply, as above, to Tobruk"
+      }
+    },
+    {
+      "id": "commonwealth-tactical",
+      "locator": "printed p. 28, §60.81 Commonwealth Tactical",
+      "values": {
+        "take_hold": "Sollum; Halfaya Pass C3922; Siwa C0127",
+        "supply": "truck convoy back to Alexandria or Cairo"
+      }
+    },
+    {
+      "id": "commonwealth-decisive",
+      "locator": "printed p. 28, §60.81 Commonwealth Decisive",
+      "values": {
+        "take_hold": "Bardia; Fort Maddalena; Sidi Omar; Sollum; Siwa",
+        "supply": "as above"
+      }
+    },
+    {
+      "id": "commonwealth-strategic",
+      "locator": "printed p. 28, §60.81 Commonwealth Strategic",
+      "values": {
+        "take_hold": "Tobruk",
+        "supply": "as above"
+      }
+    }
+  ]
+}

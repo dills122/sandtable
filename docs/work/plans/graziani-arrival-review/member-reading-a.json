@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-oa-members-v1",
+  "manifest_sha256": "dba41f612a9853273a3defd3d1b5a247e00c5dd7f787da6bcef9f974a95e6066",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "polish-hq",
+      "locator": "PDF p. 21, OA row polish-hq",
+      "values": {
+        "counter_abbreviation": "Polish",
+        "id_code": "a",
+        "toe_mark": "N",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-1-bn",
+      "locator": "PDF p. 21, OA row polish-1-bn",
+      "values": {
+        "counter_abbreviation": "1 Pol",
+        "id_code": "s",
+        "toe_mark": "N",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-2-bn",
+      "locator": "PDF p. 21, OA row polish-2-bn",
+      "values": {
+        "counter_abbreviation": "2 Pol",
+        "id_code": "s",
+        "toe_mark": "N",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-3-bn",
+      "locator": "PDF p. 21, OA row polish-3-bn",
+      "values": {
+        "counter_abbreviation": "3 Pol",
+        "id_code": "s",
+        "toe_mark": "N",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-kopanski-mg",
+      "locator": "PDF p. 21, OA row polish-kopanski-mg",
+      "values": {
+        "counter_abbreviation": "Kopnski",
+        "id_code": "w",
+        "toe_mark": "U@1",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-cavalry",
+      "locator": "PDF p. 21, OA row polish-cavalry",
+      "values": {
+        "counter_abbreviation": "1 PolCv",
+        "id_code": "ss",
+        "toe_mark": "N",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-at",
+      "locator": "PDF p. 21, OA row polish-at",
+      "values": {
+        "counter_abbreviation": "1 Pol",
+        "id_code": "dd",
+        "toe_mark": "1×2-pounder",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "polish-artillery",
+      "locator": "PDF p. 21, OA row polish-artillery",
+      "values": {
+        "counter_abbreviation": "1 Pol",
+        "id_code": "y",
+        "toe_mark": "4×18-pounder",
+        "arrival_mark": "3/1"
+      }
+    },
+    {
+      "id": "2-rtr",
+      "locator": "PDF p. 11, OA row 2-rtr",
+      "values": {
+        "counter_abbreviation": "2 RTR",
+        "id_code": "g",
+        "toe_mark": "10×A13 Cruiser",
+        "arrival_mark": "3/2"
+      }
+    },
+    {
+      "id": "7-rtr",
+      "locator": "PDF p. 11, OA row 7-rtr",
+      "values": {
+        "counter_abbreviation": "7 RTR",
+        "id_code": "g",
+        "toe_mark": "10×Matilda",
+        "arrival_mark": "3/2"
+      }
+    },
+    {
+      "id": "6-nz-field",
+      "locator": "PDF p. 18, OA row 6-nz-field",
+      "values": {
+        "counter_abbreviation": "6 NZ Fld",
+        "id_code": "x",
+        "toe_mark": "6×18/25-pounder",
+        "arrival_mark": "3/2"
+      }
+    },
+    {
+      "id": "1-field-4-indian",
+      "locator": "PDF p. 15, OA row 1-field-4-indian",
+      "values": {
+        "counter_abbreviation": "1 Fld",
+        "id_code": "x",
+        "toe_mark": "6×18/25-pounder",
+        "arrival_mark": "3/3"
+      }
+    },
+    {
+      "id": "3-hussars",
+      "locator": "PDF p. 11, OA row 3-hussars",
+      "values": {
+        "counter_abbreviation": "3 Hus",
+        "id_code": "g",
+        "toe_mark": "10×Mark VI Light",
+        "arrival_mark": "3/4"
+      }
+    },
+    {
+      "id": "7-indian-hq",
+      "locator": "PDF p. 15, OA row 7-indian-hq",
+      "values": {
+        "counter_abbreviation": "7 In",
+        "id_code": "a",
+        "toe_mark": "N",
+        "arrival_mark": "1/5"
+      }
+    },
+    {
+      "id": "royal-sussex",
+      "locator": "PDF p. 15, OA row royal-sussex",
+      "values": {
+        "counter_abbreviation": "1 RSsx",
+        "id_code": "p",
+        "toe_mark": "N",
+        "arrival_mark": "1/5"
+      }
+    },
+    {
+      "id": "4-11-sikhs",
+      "locator": "PDF p. 15, OA row 4-11-sikhs",
+      "values": {
+        "counter_abbreviation": "4/11 Skh",
+        "id_code": "p",
+        "toe_mark": "N",
+        "arrival_mark": "1/5"
+      }
+    },
+    {
+      "id": "4-16-punjab",
+      "locator": "PDF p. 15, OA row 4-16-punjab",
+      "values": {
+        "counter_abbreviation": "4/16 Pjb",
+        "id_code": "p",
+        "toe_mark": "N",
+        "arrival_mark": "1/5"
+      }
+    },
+    {
+      "id": "6-nz-hq",
+      "locator": "PDF p. 18, OA row 6-nz-hq",
+      "values": {
+        "counter_abbreviation": "6 NZ",
+        "id_code": "a",
+        "toe_mark": "N",
+        "arrival_mark": "3/6"
+      }
+    },
+    {
+      "id": "24-nz",
+      "locator": "PDF p. 18, OA row 24-nz",
+      "values": {
+        "counter_abbreviation": "24 NZ",
+        "id_code": "m",
+        "toe_mark": "N",
+        "arrival_mark": "3/6"
+      }
+    },
+    {
+      "id": "25-nz",
+      "locator": "PDF p. 18, OA row 25-nz",
+      "values": {
+        "counter_abbreviation": "25 NZ",
+        "id_code": "m",
+        "toe_mark": "N",
+        "arrival_mark": "3/6"
+      }
+    },
+    {
+      "id": "26-nz",
+      "locator": "PDF p. 18, OA row 26-nz",
+      "values": {
+        "counter_abbreviation": "26 NZ",
+        "id_code": "m",
+        "toe_mark": "N",
+        "arrival_mark": "3/6"
+      }
+    }
+  ]
+}

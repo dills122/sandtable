@@ -7,6 +7,92 @@ public sealed class ExerciseCheckpoint
 {
     public const int CurrentContractVersion = 1;
 
+    internal ExerciseCheckpoint(CampaignSourceAuthorityState authority)
+    {
+        ArgumentNullException.ThrowIfNull(authority);
+        ContractVersion = authority.ProfileVersion;
+        CampaignId = authority.Request.CampaignId;
+        StateVersion = authority.StateVersion;
+        RulesetHash = authority.Request.RulesetHash;
+        PositionId = CampaignSourceAuthorityState.SetupPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignPregameSourceState pregame)
+    {
+        ArgumentNullException.ThrowIfNull(pregame);
+        ContractVersion = CampaignPregameSourceCreation.RequestVersion;
+        CampaignId = pregame.Request.CampaignId;
+        StateVersion = pregame.StateVersion;
+        RulesetHash = pregame.Request.RulesetHash;
+        PositionId = CampaignPregameSourceCreation.PositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeSecondBreakdownV46 completed, CampaignSnapshotV11 initial)
+    {
+        if (completed.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Second Breakdown belongs to another campaign.");
+        ContractVersion = CampaignNativeSecondBreakdownV46.CurrentContractVersion;
+        CampaignId = completed.CampaignId;
+        StateVersion = completed.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = completed.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeSecondMovementCompletedV45 completed, CampaignSnapshotV11 initial)
+    {
+        if (completed.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Second Movement completion belongs to another campaign.");
+        ContractVersion = CampaignNativeSecondMovementCompletedV45.CurrentContractVersion;
+        CampaignId = completed.CampaignId;
+        StateVersion = completed.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = completed.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeSecondMoveV44 movement, CampaignSnapshotV11 initial)
+    {
+        if (movement.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Second Movement belongs to another campaign.");
+        ContractVersion = CampaignNativeSecondMoveV44.CurrentContractVersion;
+        CampaignId = movement.CampaignId;
+        StateVersion = movement.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = movement.PositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeSecondReserveV43 reserve, CampaignSnapshotV11 initial)
+    {
+        if (reserve.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Second Reserve belongs to another campaign.");
+        ContractVersion = CampaignNativeSecondReserveV43.CurrentContractVersion;
+        CampaignId = reserve.CampaignId;
+        StateVersion = reserve.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = reserve.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativePostCombatPassV42 passed, CampaignSnapshotV11 initial)
+    {
+        if (passed.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Post-combat pass belongs to another campaign.");
+        ContractVersion = CampaignNativePostCombatPassV42.CurrentContractVersion;
+        CampaignId = passed.CampaignId;
+        StateVersion = passed.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = passed.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeTruckConvoyPassV41 passed, CampaignSnapshotV11 initial)
+    {
+        if (passed.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Truck Convoy pass belongs to another campaign.");
+        ContractVersion = CampaignNativeTruckConvoyPassV41.CurrentContractVersion;
+        CampaignId = passed.CampaignId;
+        StateVersion = passed.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = passed.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignSnapshotV11 snapshot)
     {
         ArgumentNullException.ThrowIfNull(snapshot);

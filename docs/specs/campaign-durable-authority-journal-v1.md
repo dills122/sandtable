@@ -94,6 +94,21 @@ without fabricating an owner Finish, changing World/RNG or repeating movement.
 Cold replay checks every release has its row or explicit unavailable event,
 checks every ending against its release and verifies exact clock evidence.
 
+After owner or timeout Finish, `truck-convoy-pass` accepts the acting side's
+explicit V41 pass. `post-combat-pass` accepts V42 passes at rail, towing,
+maintenance and patrol. Both use the same authenticated opening, reference,
+accepted-step and cold import machinery. Passing preserves World, RNG and
+contact records; it does not certify that those activities are implemented.
+At the resulting second-side Reserve Designation, `second-reserve` opens a
+private own-unit selection or completion. V43 records each change to the
+settled World and is checked by normal cold import. `second-movement` accepts
+V44 one-hex move-and-stop choices through that same journal, retaining contacts
+and any Reaction window. Handling the window and completing Movement are not yet
+supported. Reconstruction still replays every predecessor and checks its World
+and contacts; it hashes the framed successor stream at the requested head rather
+than again for each V41–V44 predecessor. The earlier base replay still computes
+its own stream hash.
+
 Background combat ticking adds an independent sixteen-campaign cycle cursor, so
 RBA/Force queues and corrupt campaigns cannot starve it. Schema 5–9 remains
 read-only, preserving schema 9 Force entry checks and schema 8 RBA checks. No
@@ -176,6 +191,8 @@ all earlier lane verification thresholds remain unchanged.
 The seventh independently paginated scheduler lane closes an unresolved Selection with
 System V38 `combat-selection-timeout`, then a distinct normal native no-attack completion
 and Reserve Release. No owner finish, target, acting element, RNG draw or debit is fabricated.
+For an initial act-last order, corrected System V40 records the first-acting side;
+the journal retains V38 replay for existing records.
 Initial and repeated owner selection and generic Append validate proposals before checking
 clock. Current native owner Selection has no generic legal-action route, so generic submissions
 reject without consuming its deadline; the generic gate also guards any admitted route. Invalid proposals cannot consume expired state; accepted receipts remain retryable.
@@ -185,3 +202,15 @@ Strict replay binds each entry to its round/closure and checks hashes, config, i
 budget, clock evidence and statuses. Entry/timeout/downstream failures roll back atomically.
 An Append return describes its accepted input transition; `ReadVerified` supplies current
 durable authority including any immediately chained System fallback.
+
+## Second-side Breakdown completion
+
+After an owner completes second-side Movement, the journal asks Core to
+adjudicate the no-obligation Breakdown successor. When Core proves the retained
+movement history has no vehicle-breakdown or unresolved reaction obligation,
+the same transaction appends the System `native-second-breakdown` step. Its
+canonical command, event, receipt and checkpoint are re-adjudicated on cold
+replay. If Core cannot prove this case, the owner's completion remains committed
+and the campaign stays at Breakdown; Host does not invent a result. This
+normal-engine successor does not by itself admit the incomplete Graziani
+source setup or make its arrivals reachable.

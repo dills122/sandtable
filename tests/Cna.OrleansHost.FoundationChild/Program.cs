@@ -3,6 +3,75 @@ using Cna.Core.Exercises;
 using Cna.OrleansHost.Api;
 using Microsoft.Extensions.Logging.Abstractions;
 
+if (args is ["--source-authority-read"])
+{
+    var sourceAuthorityInput = JsonSerializer.Deserialize<SourceCampaignInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing source campaign input.");
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(sourceAuthorityInput.Path);
+    var session = journal.ReadVerified(sourceAuthorityInput.CampaignId);
+    var checkpoint = CampaignExercises.QueryCheckpoint(session);
+    Console.WriteLine(JsonSerializer.Serialize(new
+    {
+        ProcessId = Environment.ProcessId,
+        checkpoint.CampaignId,
+        checkpoint.StateVersion,
+        checkpoint.PositionId,
+        VisibleBase64 = ""
+    }));
+    return;
+}
+
+if (args is ["--pregame-axis-read"])
+{
+    var pregameInput = JsonSerializer.Deserialize<SourceCampaignInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing pregame campaign input.");
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(pregameInput.Path);
+    var session = journal.ReadVerified(pregameInput.CampaignId);
+    var checkpoint = CampaignExercises.QueryCheckpoint(session);
+    var draft = CampaignExercises.QueryPregameAxisDraft(session, Cna.Core.Actions.CampaignActionAudience.Axis);
+    Console.WriteLine(JsonSerializer.Serialize(new
+    {
+        ProcessId = Environment.ProcessId,
+        checkpoint.CampaignId,
+        checkpoint.StateVersion,
+        checkpoint.PositionId,
+        VisibleBase64 = Convert.ToBase64String(draft.VisibleBytes)
+    }));
+    return;
+}
+
+if (args is ["--source-campaign-read"])
+{
+    var sourceInput = JsonSerializer.Deserialize<SourceCampaignInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing source campaign input.");
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(sourceInput.Path);
+    var source = journal.ReadSourceVerified(sourceInput.CampaignId);
+    Console.WriteLine(JsonSerializer.Serialize(new
+    {
+        ProcessId = Environment.ProcessId,
+        source.Request.CampaignId,
+        source.Request.ContentHash,
+        PendingGroupIds = source.PendingArrivalGroupIds
+    }));
+    return;
+}
+
+if (args is ["--scheduled-arrival-retry"])
+{
+    var scheduledInput = JsonSerializer.Deserialize<ScheduledArrivalInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing scheduled arrival input.");
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(scheduledInput.Path);
+    var offers = journal.QueryScheduledWorld6(scheduledInput.Credential);
+    var receipt = journal.SubmitScheduledWorld6(scheduledInput.Credential, scheduledInput.Reference);
+    Console.WriteLine(JsonSerializer.Serialize(new
+    {
+        ProcessId = Environment.ProcessId,
+        OfferCount = offers.Count,
+        Receipt = receipt is null ? null : Convert.ToBase64String(receipt)
+    }));
+    return;
+}
+
 if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"] or ["--native-retreat-crash-probe"])
 {
     var crashInput = JsonSerializer.Deserialize<NativeCrashInput>(Console.ReadLine() ?? "")
@@ -81,6 +150,10 @@ internal sealed record ProbeReadbackInput(string Path, string CampaignId, string
     string ExactBytesHex);
 
 internal sealed record NativeDeadlineInput(string Path, string CampaignId, long NowUnixMilliseconds);
+
+internal sealed record ScheduledArrivalInput(string Path, CampaignSeatCredential Credential, string Reference);
+
+internal sealed record SourceCampaignInput(string Path, string CampaignId);
 
 internal sealed record NativeCrashInput(string Path, string CampaignId, long NowUnixMilliseconds,
     int StopAtRead = 0, bool StopAfterCommit = false);

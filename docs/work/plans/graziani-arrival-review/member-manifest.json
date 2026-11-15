@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-oa-members-v1",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "rows": [
+    {
+      "id": "polish-hq",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-1-bn",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-2-bn",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-3-bn",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-kopanski-mg",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-cavalry",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-at",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "polish-artillery",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "2-rtr",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "7-rtr",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "6-nz-field",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "1-field-4-indian",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "3-hussars",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "7-indian-hq",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "royal-sussex",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "4-11-sikhs",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "4-16-punjab",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "6-nz-hq",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "24-nz",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "25-nz",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    },
+    {
+      "id": "26-nz",
+      "source": "commonwealth-charts",
+      "fields": [
+        "counter_abbreviation",
+        "id_code",
+        "toe_mark",
+        "arrival_mark"
+      ]
+    }
+  ]
+}

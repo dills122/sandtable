@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "scope": "graziani-patrol-fog-review-v1",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "rows": [
+    {
+      "id": "patrol-general",
+      "source": "land-compiled",
+      "fields": [
+        "stage_condition",
+        "source_units_physically_move"
+      ]
+    },
+    {
+      "id": "patrol-specific-16-21",
+      "source": "land-compiled",
+      "fields": [
+        "phasing_player_condition",
+        "barrage_prevents_patrol_entirely",
+        "target_that_underwent_barrage_or_bombardment_prohibited"
+      ]
+    },
+    {
+      "id": "patrol-count-16-13-15",
+      "source": "land-compiled",
+      "fields": [
+        "maximum_points_from_one_hex",
+        "maximum_points_per_target",
+        "ineligible_cohesion"
+      ]
+    },
+    {
+      "id": "patrol-weather-16-17",
+      "source": "land-compiled",
+      "fields": [
+        "rainstorm_or_sandstorm_origin_or_target_prohibited"
+      ]
+    },
+    {
+      "id": "patrol-target-16-22",
+      "source": "land-compiled",
+      "fields": [
+        "target_within_hexes",
+        "enemy_occupied_target",
+        "path_passability_restrictions"
+      ]
+    },
+    {
+      "id": "patrol-no-supply-32-25",
+      "source": "land-compiled",
+      "fields": [
+        "patrolling_requires_supply_expenditure"
+      ]
+    },
+    {
+      "id": "patrol-survival-16-32",
+      "source": "land-compiled",
+      "fields": [
+        "empty_of_combat_units_disclosed",
+        "survival_roll_when_no_combat_units"
+      ]
+    },
+    {
+      "id": "patrol-info-16-51",
+      "source": "land-compiled",
+      "fields": [
+        "reported_fields",
+        "patroller_identifies_toe_point_types"
+      ]
+    },
+    {
+      "id": "patrol-eligibility-errata-16-11",
+      "source": "errata",
+      "fields": [
+        "added_types"
+      ]
+    },
+    {
+      "id": "dummy-report-16-45",
+      "source": "land-compiled",
+      "fields": [
+        "defender_may_choose_dummy_tank_designation_and_strength",
+        "patroller_knows_dummy_before_attack"
+      ]
+    }
+  ]
+}

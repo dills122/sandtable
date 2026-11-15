@@ -7,10 +7,22 @@ public sealed record ContentCombatComponent
         string componentClassId,
         int maximumToe,
         int defensiveCloseAssaultRating,
-        ContentOrigin origin)
+        ContentOrigin origin,
+        bool defensiveRatingParenthesized = false,
+        int? offensiveCloseAssaultRating = null,
+        bool offensiveRatingParenthesized = false,
+        int? barrageRating = null,
+        bool barrageRatingParenthesized = false,
+        ContentWeaponSourceProfile? weaponSourceProfile = null)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maximumToe, 0);
         ArgumentOutOfRangeException.ThrowIfNegative(defensiveCloseAssaultRating);
+        if (offensiveCloseAssaultRating < 0) throw new ArgumentOutOfRangeException(nameof(offensiveCloseAssaultRating));
+        if (offensiveRatingParenthesized && offensiveCloseAssaultRating is null)
+            throw new ArgumentException("A parenthesized offensive rating requires a value.", nameof(offensiveRatingParenthesized));
+        if (barrageRating < 0) throw new ArgumentOutOfRangeException(nameof(barrageRating));
+        if (barrageRatingParenthesized && barrageRating is null)
+            throw new ArgumentException("A parenthesized barrage rating requires a value.", nameof(barrageRatingParenthesized));
         ArgumentNullException.ThrowIfNull(origin);
 
         ComponentId = ContentContractGuards.RequireStableId(componentId, nameof(componentId));
@@ -20,6 +32,12 @@ public sealed record ContentCombatComponent
         MaximumToe = maximumToe;
         DefensiveCloseAssaultRating = defensiveCloseAssaultRating;
         Origin = origin;
+        DefensiveRatingParenthesized = defensiveRatingParenthesized;
+        OffensiveCloseAssaultRating = offensiveCloseAssaultRating;
+        OffensiveRatingParenthesized = offensiveRatingParenthesized;
+        BarrageRating = barrageRating;
+        BarrageRatingParenthesized = barrageRatingParenthesized;
+        WeaponSourceProfile = weaponSourceProfile;
     }
 
     public string ComponentId { get; }
@@ -31,6 +49,53 @@ public sealed record ContentCombatComponent
     public int DefensiveCloseAssaultRating { get; }
 
     public ContentOrigin Origin { get; }
+
+    // Source marker only; the runtime does not yet implement its condition.
+    public bool DefensiveRatingParenthesized { get; }
+
+    public int? OffensiveCloseAssaultRating { get; }
+
+    public bool OffensiveRatingParenthesized { get; }
+
+    public int? BarrageRating { get; }
+
+    public bool BarrageRatingParenthesized { get; }
+
+    public ContentWeaponSourceProfile? WeaponSourceProfile { get; }
+}
+
+public sealed record ContentComponentToeLimit
+{
+    public ContentComponentToeLimit(string limitId, IEnumerable<string> componentIds, int maximumToe, ContentOrigin origin)
+    {
+        ArgumentNullException.ThrowIfNull(componentIds);
+        ArgumentNullException.ThrowIfNull(origin);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumToe);
+        var members = componentIds.Select(value => ContentContractGuards.RequireStableId(value, nameof(componentIds))).ToArray();
+        if (members.Length == 0 || members.Distinct(StringComparer.Ordinal).Count() != members.Length)
+            throw new ArgumentException("A component TOE limit requires distinct members.", nameof(componentIds));
+        LimitId = ContentContractGuards.RequireStableId(limitId, nameof(limitId));
+        ComponentIds = Array.AsReadOnly(members.Order(StringComparer.Ordinal).ToArray());
+        MaximumToe = maximumToe;
+        Origin = origin;
+    }
+
+    public string LimitId { get; }
+    public IReadOnlyList<string> ComponentIds { get; }
+    public int MaximumToe { get; }
+    public ContentOrigin Origin { get; }
+    public bool Equals(ContentComponentToeLimit? other) => ReferenceEquals(this, other)
+        || (other is not null && LimitId == other.LimitId && MaximumToe == other.MaximumToe
+            && ComponentIds.SequenceEqual(other.ComponentIds) && Origin == other.Origin);
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(LimitId, StringComparer.Ordinal);
+        foreach (var id in ComponentIds) hash.Add(id, StringComparer.Ordinal);
+        hash.Add(MaximumToe);
+        hash.Add(Origin);
+        return hash.ToHashCode();
+    }
 }
 
 public sealed record ContentElementCombatFacts
@@ -39,8 +104,10 @@ public sealed record ContentElementCombatFacts
         string elementId,
         string combatClassificationId,
         IEnumerable<ContentCombatComponent> components,
-        ContentOrigin origin)
-        : this(elementId, combatClassificationId, components, origin, allowEmptyNoncombat: false)
+        ContentOrigin origin,
+        int? maximumCombinedToe = null, IEnumerable<ContentComponentToeLimit>? componentToeLimits = null)
+        : this(elementId, combatClassificationId, components, origin, allowEmptyNoncombat: false,
+            maximumCombinedToe: maximumCombinedToe, componentToeLimits: componentToeLimits)
     {
     }
 
@@ -51,20 +118,36 @@ public sealed record ContentElementCombatFacts
         ContentOrigin origin) =>
         new(elementId, combatClassificationId, components, origin, allowEmptyNoncombat: true);
 
+    // Scheduled source interchange only; empty headquarters do not imply runtime support.
+    public static ContentElementCombatFacts CreateScheduledHeadquarters(string elementId, ContentOrigin origin) =>
+        new(elementId, Rules.Cna1979Combat.HeadquartersClassificationId, [], origin,
+            allowEmptyNoncombat: false, allowEmptyHeadquarters: true);
+
+    internal static ContentElementCombatFacts CreateScheduled(string elementId, string combatClassificationId,
+        IEnumerable<ContentCombatComponent> components, ContentOrigin origin, int? maximumCombinedToe,
+        IEnumerable<ContentComponentToeLimit>? componentToeLimits) =>
+        new(elementId, combatClassificationId, components, origin, allowEmptyNoncombat: true,
+            allowEmptyHeadquarters: true, maximumCombinedToe: maximumCombinedToe, componentToeLimits: componentToeLimits);
+
     private ContentElementCombatFacts(
         string elementId,
         string combatClassificationId,
         IEnumerable<ContentCombatComponent> components,
         ContentOrigin origin,
-        bool allowEmptyNoncombat)
+        bool allowEmptyNoncombat,
+        bool allowEmptyHeadquarters = false,
+        int? maximumCombinedToe = null, IEnumerable<ContentComponentToeLimit>? componentToeLimits = null)
     {
         ArgumentNullException.ThrowIfNull(origin);
+        if (maximumCombinedToe <= 0) throw new ArgumentOutOfRangeException(nameof(maximumCombinedToe));
         var componentCopy = ContentContractGuards.CopyValues(
             components,
             nameof(components));
         if (componentCopy.Length == 0
             && !(allowEmptyNoncombat
-                && combatClassificationId == Rules.Cna1979Combat.TruckConvoyClassificationId))
+                && combatClassificationId == Rules.Cna1979Combat.TruckConvoyClassificationId)
+            && !(allowEmptyHeadquarters
+                && combatClassificationId == Rules.Cna1979Combat.HeadquartersClassificationId))
         {
             throw new ArgumentException(
                 "At least one combat component is required.",
@@ -79,6 +162,9 @@ public sealed record ContentElementCombatFacts
             .OrderBy(component => component.ComponentId, StringComparer.Ordinal)
             .ToArray());
         Origin = origin;
+        MaximumCombinedToe = maximumCombinedToe;
+        ComponentToeLimits = Array.AsReadOnly(ContentContractGuards.CopyValues(componentToeLimits ?? [], nameof(componentToeLimits))
+            .OrderBy(value => value.LimitId, StringComparer.Ordinal).ToArray());
     }
 
     public string ElementId { get; }
@@ -89,6 +175,10 @@ public sealed record ContentElementCombatFacts
 
     public ContentOrigin Origin { get; }
 
+    public int? MaximumCombinedToe { get; }
+
+    public IReadOnlyList<ContentComponentToeLimit> ComponentToeLimits { get; }
+
     public bool Equals(ContentElementCombatFacts? other) =>
         ReferenceEquals(this, other)
         || (other is not null
@@ -98,6 +188,8 @@ public sealed record ContentElementCombatFacts
                 other.CombatClassificationId,
                 StringComparison.Ordinal)
             && Components.SequenceEqual(other.Components)
+            && MaximumCombinedToe == other.MaximumCombinedToe
+            && ComponentToeLimits.SequenceEqual(other.ComponentToeLimits)
             && Origin == other.Origin);
 
     public override int GetHashCode()
@@ -111,6 +203,8 @@ public sealed record ContentElementCombatFacts
         }
 
         hash.Add(Origin);
+        hash.Add(MaximumCombinedToe);
+        foreach (var limit in ComponentToeLimits) hash.Add(limit);
         return hash.ToHashCode();
     }
 }
@@ -180,7 +274,7 @@ public sealed record ContentInitialPlacementCombatFacts
     }
 }
 
-public sealed class ContentPackV5Definition
+public sealed class ContentPackV5Definition : ICampaignCombatContentDefinition
 {
     public const int SchemaVersion = 5;
     public const string CanonicalFormatId = "sandtable.content-json.v4";

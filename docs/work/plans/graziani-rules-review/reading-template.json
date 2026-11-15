@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "scope": "graziani-arrival-supply-repair-rules-v1",
+  "manifest_sha256": "730059184af0b23f76508c3dc76ba3facafb234395c187c1625460bd26166689",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "cw-reinforcement-destination",
+      "locator": "UNVERIFIED",
+      "values": {
+        "default": null,
+        "return_choice": null,
+        "layforce_turn": null,
+        "tiger_turn": null
+      }
+    },
+    {
+      "id": "axis-reinforcement-destination",
+      "locator": "UNVERIFIED",
+      "values": {
+        "default": null,
+        "conditional_diversion": null,
+        "minimum_efficiency": null,
+        "max_associated_transport": null
+      }
+    },
+    {
+      "id": "cw-replacement-scenario",
+      "locator": "UNVERIFIED",
+      "values": {
+        "no_replacements_before": null
+      }
+    },
+    {
+      "id": "supply-planning-lead",
+      "locator": "UNVERIFIED",
+      "values": {
+        "axis_turns": null,
+        "commonwealth_turns": null,
+        "starting_turn_exception": null
+      }
+    },
+    {
+      "id": "axis-supply-table-period",
+      "locator": "UNVERIFIED",
+      "values": {
+        "table_month": null
+      }
+    },
+    {
+      "id": "cw-supply-table-period",
+      "locator": "UNVERIFIED",
+      "values": {
+        "table_period": null
+      }
+    },
+    {
+      "id": "cw-supply-destination",
+      "locator": "UNVERIFIED",
+      "values": {
+        "default": null,
+        "alternative": null,
+        "alternative_when_more_than": null,
+        "units_per_alternative": null
+      }
+    },
+    {
+      "id": "repair-availability",
+      "locator": "UNVERIFIED",
+      "values": {
+        "no_supplies_prohibits": null
+      }
+    },
+    {
+      "id": "field-truck-cost",
+      "locator": "UNVERIFIED",
+      "values": {
+        "supply_expenditure": null
+      }
+    },
+    {
+      "id": "field-recce-cost",
+      "locator": "UNVERIFIED",
+      "values": {
+        "supply_expenditure": null
+      }
+    },
+    {
+      "id": "field-tank-cost",
+      "locator": "UNVERIFIED",
+      "values": {
+        "fuel_per_tank_toe": null,
+        "before_roll": null
+      }
+    },
+    {
+      "id": "facility-repair-cost",
+      "locator": "UNVERIFIED",
+      "values": {
+        "stores_per_point": null,
+        "fuel_per_point": null,
+        "before_roll": null
+      }
+    },
+    {
+      "id": "destroyed-tank-cost",
+      "locator": "UNVERIFIED",
+      "values": {
+        "stores_per_point": null,
+        "fuel_per_point": null,
+        "logistics_game_only": null
+      }
+    },
+    {
+      "id": "abstract-supply-replacement",
+      "locator": "UNVERIFIED",
+      "values": {
+        "ordinary_expenditure_ignored": null,
+        "only_section_supply_rules_apply": null
+      }
+    },
+    {
+      "id": "repair-modifier-errata",
+      "locator": "UNVERIFIED",
+      "values": {
+        "ignore_22_35_reference": null,
+        "chart_modifier_text_wrong": null,
+        "modifier_reference": null
+      }
+    }
+  ]
+}

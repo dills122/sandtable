@@ -14,6 +14,10 @@ V38 canonical evidence: campaign, prior version, cycle ordinal (1 initial),
 position and successor, acting side, entry hash, World hash, fallback,
 configuration hash, opened/deadline/high-water clocks, optional observation and
 reason. No owner action, acting element, commitment or target is serialized.
+When the initiative holder chooses to act last, initial timeout V40 uses the
+recorded first-acting side; V38 remains the historical reader and is retained
+for existing act-first and repeated-cycle records. Replay chooses the policy
+from the recorded contract version rather than rewriting retained evidence.
 Initial entry hash binds V11 snapshot; repeated entry binds accepted V30
 Breakdown and moved World. Replay reconstructs source-legal no-selection from
 retained authority, including legal no-attack scope, before byte comparison.

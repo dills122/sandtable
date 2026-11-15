@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "scope": "graziani-arrival-supply-repair-rules-v1",
+  "manifest_sha256": "730059184af0b23f76508c3dc76ba3facafb234395c187c1625460bd26166689",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "existing-researcher-source-recheck",
+  "rows": [
+    {
+      "id": "cw-reinforcement-destination",
+      "locator": "printed p. 31, §20.14",
+      "values": {
+        "default": "Cairo",
+        "return_choice": "Cairo or Alexandria",
+        "layforce_turn": 19,
+        "tiger_turn": 32
+      }
+    },
+    {
+      "id": "axis-reinforcement-destination",
+      "locator": "printed p. 31, §20.15",
+      "values": {
+        "default": "Tripoli",
+        "conditional_diversion": "Benghazi",
+        "minimum_efficiency": 3,
+        "max_associated_transport": 10
+      }
+    },
+    {
+      "id": "cw-replacement-scenario",
+      "locator": "printed p. 28, §60.47",
+      "values": {
+        "no_replacements_before": "November 1940"
+      }
+    },
+    {
+      "id": "supply-planning-lead",
+      "locator": "printed p. 44, §32.43",
+      "values": {
+        "axis_turns": 2,
+        "commonwealth_turns": 4,
+        "starting_turn_exception": true
+      }
+    },
+    {
+      "id": "axis-supply-table-period",
+      "locator": "printed p. 44, §32.44",
+      "values": {
+        "table_month": "planning"
+      }
+    },
+    {
+      "id": "cw-supply-table-period",
+      "locator": "printed p. 44, §32.45",
+      "values": {
+        "table_period": "arrival"
+      }
+    },
+    {
+      "id": "cw-supply-destination",
+      "locator": "printed p. 43, §32.42",
+      "values": {
+        "default": "Cairo",
+        "alternative": "Alexandria",
+        "alternative_when_more_than": 3,
+        "units_per_alternative": 3
+      }
+    },
+    {
+      "id": "repair-availability",
+      "locator": "printed p. 34, §22.13(b)",
+      "values": {
+        "no_supplies_prohibits": true
+      }
+    },
+    {
+      "id": "field-truck-cost",
+      "locator": "printed p. 35, §22.23",
+      "values": {
+        "supply_expenditure": "none"
+      }
+    },
+    {
+      "id": "field-recce-cost",
+      "locator": "printed p. 35, §22.24",
+      "values": {
+        "supply_expenditure": "none"
+      }
+    },
+    {
+      "id": "field-tank-cost",
+      "locator": "printed p. 35, §22.26",
+      "values": {
+        "fuel_per_tank_toe": 1,
+        "before_roll": true
+      }
+    },
+    {
+      "id": "facility-repair-cost",
+      "locator": "printed p. 35, §22.35",
+      "values": {
+        "stores_per_point": 1,
+        "fuel_per_point": 1,
+        "before_roll": true
+      }
+    },
+    {
+      "id": "destroyed-tank-cost",
+      "locator": "printed p. 35, §22.42",
+      "values": {
+        "stores_per_point": 2,
+        "fuel_per_point": 2,
+        "logistics_game_only": true
+      }
+    },
+    {
+      "id": "abstract-supply-replacement",
+      "locator": "printed p. 43, §32.11",
+      "values": {
+        "ordinary_expenditure_ignored": true,
+        "only_section_supply_rules_apply": true
+      }
+    },
+    {
+      "id": "repair-modifier-errata",
+      "locator": "PDF p. 2, §§22.34 and 22.8",
+      "values": {
+        "ignore_22_35_reference": true,
+        "chart_modifier_text_wrong": true,
+        "modifier_reference": "22.34"
+      }
+    }
+  ]
+}

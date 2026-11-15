@@ -86,6 +86,19 @@ Core now retains contact transitions with campaign evidence and supplies a same-
 movement view and offers. Host stores a private owner opening and accepts contact-derived
 movement through the durable journal. Host atomically stores the initial and per-step canonical
 contact records with their source evidence, then compares them to Core re-adjudication on cold
-read. The public route and native Combat action stage are still
-absent. Explicit sharing and the full source-backed detection rule remain open. This contract
-does not by itself admit Combat.
+read. The bounded native contact path has since gained Combat owner drafts and
+submissions, including selection and later choices, through the trusted
+[Host adapter](../../src/Cna.Core/Hosting/CampaignHostAdapter.cs). The current
+[baseline evidence](../work/reviews/2026-10-24-rc-baseline-evidence.md) records
+its selected assault/repeat and cold-replay scope. Its Development loopback route
+does not certify public Combat activation or the original P01 profile. Explicit
+sharing, full source-backed detection and the successor publication contract
+remain open. This contract does not by itself admit Combat.
+
+The shared adjacency source can also derive contact transitions for an atomic
+addition of independently represented members. It rejects changed existing
+state, mismatched or duplicate bindings and mixed-side additions. An unobserved
+addition yields no opposing contact; an adjacent addition yields an opaque
+contact handle. This accepts only already-adjudicated world cuts and does not
+prove arrival timing or placement legality. No arrival event or normal Host
+replay calls it yet; that integration remains open.

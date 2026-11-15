@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "scope": "graziani-arrival-supply-repair-rules-v1",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "rows": [
+    {
+      "id": "cw-reinforcement-destination",
+      "source": "land-compiled",
+      "fields": [
+        "default",
+        "return_choice",
+        "layforce_turn",
+        "tiger_turn"
+      ]
+    },
+    {
+      "id": "axis-reinforcement-destination",
+      "source": "land-compiled",
+      "fields": [
+        "default",
+        "conditional_diversion",
+        "minimum_efficiency",
+        "max_associated_transport"
+      ]
+    },
+    {
+      "id": "cw-replacement-scenario",
+      "source": "scenario",
+      "fields": [
+        "no_replacements_before"
+      ]
+    },
+    {
+      "id": "supply-planning-lead",
+      "source": "land-compiled",
+      "fields": [
+        "axis_turns",
+        "commonwealth_turns",
+        "starting_turn_exception"
+      ]
+    },
+    {
+      "id": "axis-supply-table-period",
+      "source": "land-compiled",
+      "fields": [
+        "table_month"
+      ]
+    },
+    {
+      "id": "cw-supply-table-period",
+      "source": "land-compiled",
+      "fields": [
+        "table_period"
+      ]
+    },
+    {
+      "id": "cw-supply-destination",
+      "source": "land-compiled",
+      "fields": [
+        "default",
+        "alternative",
+        "alternative_when_more_than",
+        "units_per_alternative"
+      ]
+    },
+    {
+      "id": "repair-availability",
+      "source": "land-compiled",
+      "fields": [
+        "no_supplies_prohibits"
+      ]
+    },
+    {
+      "id": "field-truck-cost",
+      "source": "land-compiled",
+      "fields": [
+        "supply_expenditure"
+      ]
+    },
+    {
+      "id": "field-recce-cost",
+      "source": "land-compiled",
+      "fields": [
+        "supply_expenditure"
+      ]
+    },
+    {
+      "id": "field-tank-cost",
+      "source": "land-compiled",
+      "fields": [
+        "fuel_per_tank_toe",
+        "before_roll"
+      ]
+    },
+    {
+      "id": "facility-repair-cost",
+      "source": "land-compiled",
+      "fields": [
+        "stores_per_point",
+        "fuel_per_point",
+        "before_roll"
+      ]
+    },
+    {
+      "id": "destroyed-tank-cost",
+      "source": "land-compiled",
+      "fields": [
+        "stores_per_point",
+        "fuel_per_point",
+        "logistics_game_only"
+      ]
+    },
+    {
+      "id": "abstract-supply-replacement",
+      "source": "land-compiled",
+      "fields": [
+        "ordinary_expenditure_ignored",
+        "only_section_supply_rules_apply"
+      ]
+    },
+    {
+      "id": "repair-modifier-errata",
+      "source": "errata",
+      "fields": [
+        "ignore_22_35_reference",
+        "chart_modifier_text_wrong",
+        "modifier_reference"
+      ]
+    }
+  ]
+}

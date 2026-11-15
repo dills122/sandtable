@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
+using Cna.Core.Exercises;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
 using Cna.Core.Tests.Campaigns;
@@ -12,6 +14,51 @@ namespace Cna.Core.Tests.Observations;
 [Trait("Boundary", "UserSpace")]
 public sealed class UserSpaceDisclosureManifestV2Tests
 {
+    [Fact]
+    public void PregameActionsRemainOutsideLegacyPoliciesAndPrivateDraftDoesNotSerialize()
+    {
+        var roll = new PregameAxisSupplyRollAction();
+        var hash = Cna1979Ruleset.Manifest.Hash;
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("private-pregame", 1, hash,
+            CampaignPregameSourceCreation.PositionId, CampaignActionAudience.Axis, [roll]));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("private-pregame", 1,
+            Cna1979Ruleset.HistoricalManifestV8.Hash, CampaignPregameSourceCreation.PositionId,
+            CampaignActionAudience.Axis, [roll], CampaignLegalActionSet.HistoricalPolicyIdV2));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("private-pregame", 1, hash,
+            CampaignPregameSourceCreation.PositionId, CampaignActionAudience.Commonwealth, [roll],
+            CampaignLegalActionSet.PregamePolicyId));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("private-pregame", 1, hash,
+            CampaignPregameSourceCreation.PositionId, CampaignActionAudience.Axis, [new ResolveInitiativeAction()],
+            CampaignLegalActionSet.PregamePolicyId));
+        var actionSet = new CampaignLegalActionSet("private-pregame", 1, hash,
+            CampaignPregameSourceCreation.PositionId, CampaignActionAudience.Axis, [roll],
+            CampaignLegalActionSet.PregamePolicyId);
+        var encoded = CampaignLegalActionSerializer.Serialize(actionSet);
+        Assert.Throws<ArgumentException>(() => CampaignObservationV6LegalActionSerializer.Serialize(actionSet));
+        Assert.Throws<ArgumentException>(() => CampaignObservationV7LegalActionSerializer.Serialize(actionSet));
+        Assert.Throws<JsonException>(() => CampaignObservationV6LegalActionSerializer.DeserializeCanonical(encoded));
+        Assert.Throws<JsonException>(() => CampaignObservationV7LegalActionSerializer.DeserializeCanonical(encoded));
+        var draft = new CampaignPregameAxisDraft(1, "{}"u8.ToArray(), [roll.ActionId]);
+        Assert.Equal("{}", JsonSerializer.Serialize(draft));
+
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var init = new CampaignSourceInitialization(new CapabilityPointAmount(0, 1), 0);
+        var request = new CampaignCreationRequest(CampaignPregameSourceCreation.RequestVersion,
+            "private-pregame", hash, 0, CampaignPregameSourceCreation.SetupId,
+            CampaignPregameSourceCreation.CalculateSetupHash(artifact.Identity, init),
+            artifact.Identity.PackId, artifact.Identity.Hash, Cna1979GrazianiCairoSourceExcerpt.ScenarioId);
+        var started = CampaignExercises.Begin(request, artifact, init);
+        Assert.False(CampaignExercises.Query(started.Session!, CampaignActionAudience.Commonwealth).IsSuccessful);
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryPregameAxisDraft(
+            started.Session!, CampaignActionAudience.Commonwealth));
+        var visible = CampaignExercises.QueryPregameAxisDraft(started.Session!, CampaignActionAudience.Axis);
+        var json = System.Text.Encoding.UTF8.GetString(visible.VisibleBytes);
+        Assert.DoesNotContain(roll.ActionId, json);
+        Assert.DoesNotContain("randomSeed", json);
+        Assert.DoesNotContain("randomCursor", json);
+        Assert.DoesNotContain("sourceSnapshot", json);
+    }
+
     [Fact]
     public void ManifestRegistersEveryReachableCurrentTypeFromDeclaredRoots()
     {

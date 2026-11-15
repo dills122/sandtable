@@ -13,6 +13,12 @@ public static class Cna1979ContentV5CompatibilityValidator
 
         foreach (var facts in definition.ElementCombatFacts)
         {
+            if (facts.ComponentToeLimits.Count != 0)
+                Add(issues, "content.combat.component-limits-unsupported", $"/elements/{facts.ElementId}/componentToeLimits",
+                    "The current combat capability cannot enforce component TOE limits.");
+            if (facts.MaximumCombinedToe is not null)
+                Add(issues, "content.combat.combined-toe-unsupported", $"/elements/{facts.ElementId}/maximumCombinedToe",
+                    "The current combat capability cannot enforce a combined TOE limit.");
             if (!Cna1979Combat.IsSupportedClassificationId(facts.CombatClassificationId))
             {
                 Add(
@@ -24,6 +30,30 @@ public static class Cna1979ContentV5CompatibilityValidator
 
             foreach (var component in facts.Components)
             {
+                if (component.DefensiveRatingParenthesized)
+                {
+                    Add(issues, "content.combat.parenthesized-defense-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/defensiveCloseAssaultRating",
+                        "The current combat capability cannot interpret a parenthesized defensive rating.");
+                }
+                if (component.OffensiveCloseAssaultRating is not null)
+                {
+                    Add(issues, "content.combat.offensive-rating-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/offensiveCloseAssaultRating",
+                        "The current combat capability cannot interpret an offensive rating in this profile.");
+                }
+                if (component.BarrageRating is not null)
+                {
+                    Add(issues, "content.combat.barrage-rating-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/barrageRating",
+                        "The current combat capability cannot interpret a barrage rating in this profile.");
+                }
+                if (component.WeaponSourceProfile is not null)
+                {
+                    Add(issues, "content.combat.weapon-source-profile-unsupported",
+                        $"/elements/{facts.ElementId}/components/{component.ComponentId}/weaponSourceProfile",
+                        "The current combat capability cannot interpret a weapon source profile.");
+                }
                 if (!Cna1979Combat.IsSupportedComponentClassId(component.ComponentClassId))
                 {
                     Add(

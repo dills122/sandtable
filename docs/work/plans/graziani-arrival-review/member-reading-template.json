@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-oa-members-v1",
+  "manifest_sha256": "dba41f612a9853273a3defd3d1b5a247e00c5dd7f787da6bcef9f974a95e6066",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "reader_id": "replace-with-reviewer-id",
+  "rows": [
+    {
+      "id": "polish-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-1-bn",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-2-bn",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-3-bn",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-kopanski-mg",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-cavalry",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-at",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "polish-artillery",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "2-rtr",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "7-rtr",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "6-nz-field",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "1-field-4-indian",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "3-hussars",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "7-indian-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "royal-sussex",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "4-11-sikhs",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "4-16-punjab",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "6-nz-hq",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "24-nz",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "25-nz",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    },
+    {
+      "id": "26-nz",
+      "locator": "UNVERIFIED",
+      "values": {
+        "counter_abbreviation": null,
+        "id_code": null,
+        "toe_mark": null,
+        "arrival_mark": null
+      }
+    }
+  ]
+}

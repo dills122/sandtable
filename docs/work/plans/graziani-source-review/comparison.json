@@ -1,0 +1,190 @@
+{
+  "scope": "graziani-matruh-nz-formations-v1",
+  "manifest_sha256": "970b59f00a107f75cb01dc3bd6d67b74effc112e96f61d343839927304df9705",
+  "readers": [
+    "prior-session-single-researcher",
+    "fresh-reviewer-2026-11-12"
+  ],
+  "expected_rows": 11,
+  "evidence": [
+    {
+      "row": "matruh-scenario",
+      "source": "scenario",
+      "locators": [
+        "printed p.27, 60.41",
+        "Scenario PDF p. 3, printed p. 27, §60.41, D3714 Matruh Garrison"
+      ]
+    },
+    {
+      "row": "matruh-errata",
+      "source": "errata",
+      "locators": [
+        "PDF p.1, 4.44b item 2",
+        "September 1979 errata PDF p. 1, §4.44b item 2"
+      ]
+    },
+    {
+      "row": "matruh-oa",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p.10, Matruh Garrison",
+        "Commonwealth charts PDF p. 10, Selby Force/The Matruh Garrison paragraph"
+      ]
+    },
+    {
+      "row": "nz-schedule-brigade",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p.3, 4.43a turn 6",
+        "Commonwealth charts PDF p. 3, §4.43a reinforcement schedule, GT 6 OpS 3 row"
+      ]
+    },
+    {
+      "row": "nz-schedule-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p.3, 4.43a turn 2",
+        "Commonwealth charts PDF p. 3, §4.43a reinforcement schedule, GT 2 OpS 3 row"
+      ]
+    },
+    {
+      "row": "nz-oa-brigade",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p.18, 2nd NZ Division",
+        "Commonwealth charts PDF p. 18, 2nd New Zealand Division OA, 6th NZ Bde HQ and 24th-26th NZ Bn rows"
+      ]
+    },
+    {
+      "row": "nz-oa-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p.18, 2nd NZ Division",
+        "Commonwealth charts PDF p. 18, 2nd New Zealand Division OA, 6th NZ Field Artillery Regt row"
+      ]
+    },
+    {
+      "row": "nz-example",
+      "source": "land-rules",
+      "locators": [
+        "printed p.31, 20.11",
+        "Land rules PDF and printed p. 31, §20.11 reinforcement example"
+      ]
+    },
+    {
+      "row": "cirene-oa",
+      "source": "errata",
+      "locators": [
+        "PDF p.4, 63rd Cirene",
+        "September 1979 errata PDF p. 4, 63rd Cirene Division OA and note a"
+      ]
+    },
+    {
+      "row": "marmarica-oa",
+      "source": "errata",
+      "locators": [
+        "PDF p.4, 62nd Marmarica",
+        "September 1979 errata PDF p. 4, 62nd Marmarica Division OA and note a"
+      ]
+    },
+    {
+      "row": "sirte-oa",
+      "source": "errata",
+      "locators": [
+        "PDF p.4, 61st Sirte",
+        "September 1979 errata PDF p. 4, 61st Sirte Division OA rows"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "matruh-scenario",
+      "locators": [
+        "printed p.27, 60.41",
+        "Scenario PDF p. 3, printed p. 27, §60.41, D3714 Matruh Garrison"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "matruh-errata",
+      "locators": [
+        "PDF p.1, 4.44b item 2",
+        "September 1979 errata PDF p. 1, §4.44b item 2"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "matruh-oa",
+      "locators": [
+        "PDF p.10, Matruh Garrison",
+        "Commonwealth charts PDF p. 10, Selby Force/The Matruh Garrison paragraph"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "nz-schedule-brigade",
+      "locators": [
+        "PDF p.3, 4.43a turn 6",
+        "Commonwealth charts PDF p. 3, §4.43a reinforcement schedule, GT 6 OpS 3 row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "nz-schedule-artillery",
+      "locators": [
+        "PDF p.3, 4.43a turn 2",
+        "Commonwealth charts PDF p. 3, §4.43a reinforcement schedule, GT 2 OpS 3 row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "nz-oa-brigade",
+      "locators": [
+        "PDF p.18, 2nd NZ Division",
+        "Commonwealth charts PDF p. 18, 2nd New Zealand Division OA, 6th NZ Bde HQ and 24th-26th NZ Bn rows"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "nz-oa-artillery",
+      "locators": [
+        "PDF p.18, 2nd NZ Division",
+        "Commonwealth charts PDF p. 18, 2nd New Zealand Division OA, 6th NZ Field Artillery Regt row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "nz-example",
+      "locators": [
+        "printed p.31, 20.11",
+        "Land rules PDF and printed p. 31, §20.11 reinforcement example"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-oa",
+      "locators": [
+        "PDF p.4, 63rd Cirene",
+        "September 1979 errata PDF p. 4, 63rd Cirene Division OA and note a"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-oa",
+      "locators": [
+        "PDF p.4, 62nd Marmarica",
+        "September 1979 errata PDF p. 4, 62nd Marmarica Division OA and note a"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "sirte-oa",
+      "locators": [
+        "PDF p.4, 61st Sirte",
+        "September 1979 errata PDF p. 4, 61st Sirte Division OA rows"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

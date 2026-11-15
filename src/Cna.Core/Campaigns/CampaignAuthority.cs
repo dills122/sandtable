@@ -67,9 +67,12 @@ public sealed record CampaignAuthorityCreationResult
 
 public static class CampaignAuthority
 {
-    public static CampaignAuthorityCreationResult Create(CampaignCreationRequest request)
+    public static CampaignAuthorityCreationResult Create(CampaignCreationRequest request) =>
+        Create(request, Cna1979SyntheticContentResolver.Instance);
+
+    public static CampaignAuthorityCreationResult Create(CampaignCreationRequest request, IContentPackV6Resolver resolver)
     {
-        var execution = CampaignCreationExecution.Execute(request);
+        var execution = CampaignCreationExecution.Execute(request, resolver);
         return execution.IsCreated
             ? CampaignAuthorityCreationResult.Created(
                 new CampaignAuthorityHandle(execution.CurrentSnapshot!, execution.Context!))

@@ -69,13 +69,11 @@ internal sealed record CampaignContactRetreatAfterAssaultCut(
             .ToHashSet(StringComparer.Ordinal);
         var combatFacts = artifact.Definition.ElementCombatFacts.ToDictionary(value =>
             value.ElementId, StringComparer.Ordinal);
-        var friendlyCombat = definition.Elements.Where(value =>
-                value.SideId == defender.SideId
+        var friendlyCombat = CampaignOwnElementProjection.ProjectPlaced(definition, paidWorld, side)
+            .Where(value => value.ElementId != defender.ElementId
                 && combatFacts[value.ElementId].CombatClassificationId
-                    != Cna1979Combat.TruckConvoyClassificationId
-                && value.ElementId != defender.ElementId)
-            .Select(value => paidWorld.Elements.Single(stateValue =>
-                stateValue.ElementId == value.ElementId).CurrentLocationId)
+                    != Cna1979Combat.TruckConvoyClassificationId)
+            .Select(value => value.CurrentLocationId)
             .ToHashSet(StringComparer.Ordinal);
         var locations = definition.Locations.ToDictionary(value =>
             value.LocationId, StringComparer.Ordinal);
