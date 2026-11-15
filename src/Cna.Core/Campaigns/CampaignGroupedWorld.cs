@@ -209,9 +209,11 @@ internal sealed class CampaignGroupedWorld
             Detached.Append(individual), ExternalReservations);
     }
 
-    internal CampaignGroupedWorld Rebind(CampaignWorldSnapshotV8 successor)
+    internal CampaignGroupedWorld Rebind(CampaignWorldSnapshotV8 successor, int ledgerGameTurn, int ledgerOperationStage)
     {
         ArgumentNullException.ThrowIfNull(successor);
+        ArgumentOutOfRangeException.ThrowIfLessThan(ledgerGameTurn, 1);
+        if (ledgerOperationStage is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(ledgerOperationStage));
         var newRepresentations = successor.World.Representations.Except(Prior.World.Representations).ToArray();
         var promoted = new HashSet<string>(StringComparer.Ordinal);
         foreach (var representation in newRepresentations.Where(value => Groups.Any(group => group.LocationId == value.CurrentLocationId)))
@@ -227,6 +229,8 @@ internal sealed class CampaignGroupedWorld
                 ?? throw new InvalidOperationException("Detached member state is missing.");
             if (!promoted.Add(id) || element.CurrentLocationId != detached.LocationId
                 || element.ReserveStatus != Prior.Initialization.ReserveStatus
+                || element.OperationalState.LedgerGameTurn != ledgerGameTurn
+                || element.OperationalState.LedgerOperationStage != ledgerOperationStage
                 || element.OperationalState.CapabilityPointsExpended != detached.Member.CapabilityPointsExpended
                 || element.OperationalState.CohesionLevel != detached.Member.CohesionLevel
                 || element.OperationalState.VehicleBreakdownState is not null

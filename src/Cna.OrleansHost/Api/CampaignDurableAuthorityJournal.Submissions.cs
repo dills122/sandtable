@@ -222,9 +222,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         ArgumentNullException.ThrowIfNull(credential);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        var seat = AuthenticateSeat(connection, transaction, credential)
+        var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
-        var head = Load(connection, transaction, seat.CampaignId);
+        var head = verifiedHead ?? Load(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.ForceAssignment && head.Timing is null)
             return CampaignOwnerSubmissionResult.Rejected();
         if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
@@ -574,8 +574,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
             ordinal = reader.GetInt32(0);
             coreActionId = reader.GetString(1);
         }
-        if (ordinal < 0 || ordinal >= actionIds.Length
-            || coreActionId != actionIds[ordinal])
+        if (ordinal < 0 || ordinal >= actionIds.Length)
+            return CampaignOwnerSubmissionResult.Rejected();
+        if (kind == CampaignOwnerOpeningKind.SourceActions)
+        {
+            if (!CampaignHostAdapter.MatchesIssuedSourceAction(authorityVersion, visibleBytes, ordinal, coreActionId))
+                return CampaignOwnerSubmissionResult.Rejected();
+            // A hidden opponent decision can advance the source version without changing this
+            // authenticated visible offer. Submit its freshly revalidated current identity.
+            coreActionId = actionIds[ordinal];
+        }
+        else if (coreActionId != actionIds[ordinal])
             return CampaignOwnerSubmissionResult.Rejected();
         var expectedRef = Reference(ReadReferenceKey(connection, transaction), seat.CampaignId,
             Side(seat.Audience), actingElementId, seat.Epoch, openingRevision,

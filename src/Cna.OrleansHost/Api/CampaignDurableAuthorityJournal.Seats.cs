@@ -158,7 +158,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private CampaignSeatAuthority? AuthenticateSeat(SqliteConnection connection,
         SqliteTransaction transaction, CampaignSeatCredential credential)
+        => AuthenticateSeat(connection, transaction, credential, out _);
+
+    private CampaignSeatAuthority? AuthenticateSeat(SqliteConnection connection,
+        SqliteTransaction transaction, CampaignSeatCredential credential, out Loaded? verifiedHead)
     {
+        verifiedHead = null;
         ArgumentNullException.ThrowIfNull(credential);
         var digest = TryCredentialDigest("seat-credential", credential.Secret);
         if (digest is null) return null;
@@ -187,6 +192,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             try { retained = Load(connection, transaction, credential.CampaignId); }
             catch (InvalidOperationException) { return null; }
             if (!CampaignExercises.IsSourceSetupSeat(retained.Session, credential.Audience)) return null;
+            verifiedHead = retained;
         }
         return new CampaignSeatAuthority(credential.CampaignId, credential.Audience,
             credential.Epoch);

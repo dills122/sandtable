@@ -22,6 +22,14 @@ maps choices to opaque owner references. Opposing source state, seed, internal
 source IDs, and event bytes are not published. System admissions and source
 content migrations remain authenticated system operations.
 
+When an opposing setup decision advances the authority version without changing
+the owner's visible opening, the Host validates the retained action against its
+issued version and canonical choice, then submits the corresponding freshly
+queried action at the current version. A changed visible opening, invalid
+reference, altered retained action or no-longer-legal choice is rejected. This
+does not relax Core's current-version submission rule or authorize an action
+from a different visible opening.
+
 The GT2 supply correction remains a source setup decision, not an arrival.
 Future convoy execution must require the finalized correction and use its
 allocations as the effective GT2 plan; the original plan remains historical

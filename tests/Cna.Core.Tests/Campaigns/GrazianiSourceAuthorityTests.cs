@@ -809,6 +809,53 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(5, italianConfirmed.SourceAuthority.GroupedWorld!.StackAt("axis", "c4120", _ => null));
         Assert.Equal(5, italianConfirmed.SourceAuthority.GroupedWorld.StackAt("axis", "c3918", _ => null));
         Assert.True(CampaignExercises.Reconstruct(italianConfirmed).IsVerified);
+        if (seed == 0)
+        {
+            // Stress the unified legal-action contract after real grouped admissions.
+            // Each advertised family is submitted against the same retained state,
+            // independently of the other choices, then checked for replay and loss.
+            foreach (var audience in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
+            {
+                var actions = CampaignExercises.Query(italianConfirmed, audience).ActionSet!.Candidates
+                    .OfType<CampaignSourceSetupAction>().GroupBy(value => value.Family, StringComparer.Ordinal)
+                    .SelectMany(group => group.Take(1).Concat(group.TakeLast(1)).DistinctBy(value => value.ActionId));
+                foreach (var action in actions)
+                {
+                    var result = CampaignExercises.Submit(italianConfirmed, Submission(italianConfirmed, action.ActionId, audience));
+                    Assert.True(result.IsAccepted, $"Advertised {audience} action {action.Family} was rejected: {result.RejectionReason}");
+                    var successor = result.SuccessorSession!;
+                    Assert.Equal(italianConfirmed.SourceAuthority.World.PendingArrivals, successor.SourceAuthority!.World.PendingArrivals);
+                    Assert.Equal(italianConfirmed.SourceAuthority.GroupedWorld.Groups.Count, successor.SourceAuthority.GroupedWorld!.Groups.Count);
+                    Assert.True(CampaignExercises.Reconstruct(successor).IsVerified, $"Could not replay {audience} action {action.Family}");
+                }
+            }
+            // Exercise a deterministic interleaving from the same historical state.
+            // The second branch executes the same user choices independently.
+            var random = new Random(3451979);
+            var left = italianConfirmed;
+            var right = italianConfirmed;
+            for (var i = 0; i < 16; i++)
+            {
+                var audience = i % 2 == 0 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+                var choices = CampaignExercises.Query(left, audience).ActionSet!.Candidates
+                    .OfType<CampaignSourceSetupAction>().ToArray();
+                Assert.NotEmpty(choices);
+                var action = choices[random.Next(choices.Length)];
+                var leftStep = CampaignExercises.Submit(left, Submission(left, action.ActionId, audience));
+                var rightStep = CampaignExercises.Submit(right, Submission(right, action.ActionId, audience));
+                Assert.True(leftStep.IsAccepted, $"Interleaved {audience} action {action.Family} failed at step {i}");
+                Assert.True(rightStep.IsAccepted, $"Repeated {audience} action {action.Family} failed at step {i}");
+                Assert.Equal(leftStep.Evidence!.SnapshotCheckpoint, rightStep.Evidence!.SnapshotCheckpoint);
+                left = leftStep.SuccessorSession!;
+                right = rightStep.SuccessorSession!;
+                Assert.Equal(left.SourceAuthority!.RandomState, right.SourceAuthority!.RandomState);
+                Assert.Equal(italianConfirmed.SourceAuthority.World.PendingArrivals, left.SourceAuthority.World.PendingArrivals);
+            }
+            Assert.True(CampaignExercises.Reconstruct(left).IsVerified);
+            Assert.True(CampaignExercises.Reconstruct(right).IsVerified);
+            if (Environment.GetEnvironmentVariable("SANDTABLE_GRAZIANI_SOAK") == "1")
+                RunSourceSoak(italianConfirmed);
+        }
         var secondConfirmed = CampaignExercises.Submit(libyanProposed, Submission(libyanProposed, secondChoice.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
         var firstAfter = CampaignExercises.Query(secondConfirmed, CampaignActionAudience.Axis).ActionSet!.Candidates
             .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "libyan-disposition");
@@ -951,6 +998,50 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(10, cwSession.SourceAuthority.World.World.Elements.Count);
         Assert.Equal(2, cwSession.SourceAuthority.World.PendingArrivals.Count);
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
+    }
+
+    private static void RunSourceSoak(ExerciseSession initial)
+    {
+        foreach (var seed in new[] { 104, 345, 1979 })
+        {
+            var random = new Random(seed);
+            var left = initial;
+            var right = initial;
+            var step = 0;
+            try
+            {
+                for (; step < 32; step++)
+                {
+                    var audience = step % 2 == 0 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+                    var options = CampaignExercises.Query(left, audience).ActionSet!.Candidates.OfType<CampaignSourceSetupAction>().ToArray();
+                    Assert.True(options.Length > 0, $"No action at seed {seed}, step {step}");
+                    var choice = options[random.Next(options.Length)];
+                    var before = left.SourceAuthority!.SerializeCheckpoint();
+                    var forged = Submission(left, "sha256:" + new string('0', 64), audience);
+                    Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.Submit(left, forged).RejectionReason);
+                    Assert.Equal(before, left.SourceAuthority.SerializeCheckpoint());
+                    var command = Submission(left, choice.ActionId, audience);
+                    var stale = command with { ExpectedStateVersion = command.ExpectedStateVersion - 1 };
+                    Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, CampaignExercises.Submit(left, stale).RejectionReason);
+                    Assert.Equal(before, left.SourceAuthority.SerializeCheckpoint());
+                    var one = CampaignExercises.Submit(left, command);
+                    var two = CampaignExercises.Submit(right, Submission(right, choice.ActionId, audience));
+                    Assert.True(one.IsAccepted && two.IsAccepted, $"Rejected {choice.Family} at seed {seed}, step {step}");
+                    Assert.Equal(one.Evidence!.SnapshotCheckpoint, two.Evidence!.SnapshotCheckpoint);
+                    left = one.SuccessorSession!;
+                    right = two.SuccessorSession!;
+                    Assert.Equal(left.SourceAuthority!.RandomState, right.SourceAuthority!.RandomState);
+                    Assert.Equal(initial.SourceAuthority!.World.PendingArrivals, left.SourceAuthority.World.PendingArrivals);
+                    Assert.Equal(initial.SourceAuthority.GroupedWorld!.Groups.Count, left.SourceAuthority.GroupedWorld!.Groups.Count);
+                }
+                Assert.True(CampaignExercises.Reconstruct(left).IsVerified, $"Replay failed at seed {seed}");
+                Assert.True(CampaignExercises.Reconstruct(right).IsVerified, $"Repeated replay failed at seed {seed}");
+            }
+            catch (Exception error)
+            {
+                throw new InvalidOperationException($"Graziani soak failed at seed {seed}, step {step}.", error);
+            }
+        }
     }
 
     private static CampaignActionSubmission Submission(ExerciseSession session, string actionId, CampaignActionAudience audience)
