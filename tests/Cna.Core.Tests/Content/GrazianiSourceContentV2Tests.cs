@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
-using Cna.Core.Rules;
 using Cna.Core.Hosting;
+using Cna.Core.Rules;
 using Cna.Tests.Shared;
 
 namespace Cna.Core.Tests.Content;

@@ -423,3 +423,18 @@ Snapshot reconciliation adds one measured row; existing weights unchanged.
 | Test | Key prefix | Observed ms |
 | --- | --- | ---: |
 | `Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests.MergedPr334RevisionRetainsExactReplayAndRejectsMixedSnapshotDependencies` | `6e8267a4bbcb` | 5007 |
+## PR 345: Graziani setup and arrival coverage
+
+The PR 345 hosted prepare artifact for merge SHA `80781740235e9837bfaf40a16f6d65293febaeb1`
+discovered 212 Core rows absent from the existing manifest and no removed rows.
+All 212 exact display names were selected from that inventory and measured on
+macOS arm64 with .NET 10 Release, MTP xUnit XML and two collection threads:
+`python3 /private/tmp/sandtable-pr345-measure.py`. The run passed 212/212 in
+1m 03s; the two longest source-authority rows measured 33,038 and 27,814 ms.
+The Release test DLL SHA-256 was
+`bcfb60e719e0addf2f365a6b2c32994aed1beac5ca975bf9f14755dcdfaaac9f`;
+the local report under `artifacts/pr345-ci-timing` had SHA-256
+`4135d0937c5af0c39995e8d4a2a68b4b8b691e64c71a71ab0c23f96f109a6936`.
+Prior weights remain unchanged; new rows are marked provisional pending hosted
+calibration. The complete discovered inventory still allocates to 61 groups.
+These timings do not establish hosted performance or exact-head CI success.

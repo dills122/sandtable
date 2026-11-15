@@ -36,8 +36,11 @@ internal sealed class CampaignGroupedFormation
         MotorPool = motorPool;
         DispositionConfirmed = dispositionConfirmed;
         var values = ContentContractGuards.CopyValues(members, nameof(members))
-            .Select(value => value with { AdditionalComponents = value.AdditionalComponents is null ? null
-                : Array.AsReadOnly(value.AdditionalComponents.OrderBy(component => component.ComponentType, StringComparer.Ordinal).ToArray()) })
+            .Select(value => value with
+            {
+                AdditionalComponents = value.AdditionalComponents is null ? null
+                : Array.AsReadOnly(value.AdditionalComponents.OrderBy(component => component.ComponentType, StringComparer.Ordinal).ToArray())
+            })
             .OrderBy(value => value.ElementId, StringComparer.Ordinal).ToArray();
         if (values.Length == 0 || values.Select(value => value.ElementId).Distinct(StringComparer.Ordinal).Count() != values.Length)
             throw new ArgumentException("Formation members must be unique.", nameof(members));
@@ -113,8 +116,14 @@ internal sealed class CampaignGroupedWorld
             throw new ArgumentException("Grouped members must be unique and absent from the retained world and arrivals.", nameof(groups));
         Groups = Array.AsReadOnly(values);
         var independent = ContentContractGuards.CopyValues(detached ?? [], nameof(detached))
-            .Select(value => value with { Member = value.Member with { AdditionalComponents = value.Member.AdditionalComponents is null ? null
-                : Array.AsReadOnly(value.Member.AdditionalComponents.OrderBy(component => component.ComponentType, StringComparer.Ordinal).ToArray()) } })
+            .Select(value => value with
+            {
+                Member = value.Member with
+                {
+                    AdditionalComponents = value.Member.AdditionalComponents is null ? null
+                : Array.AsReadOnly(value.Member.AdditionalComponents.OrderBy(component => component.ComponentType, StringComparer.Ordinal).ToArray())
+                }
+            })
             .OrderBy(value => value.Member.ElementId, StringComparer.Ordinal).ToArray();
         var independentIds = independent.Select(value => value.Member.ElementId).ToArray();
         if (independentIds.Distinct(StringComparer.Ordinal).Count() != independentIds.Length

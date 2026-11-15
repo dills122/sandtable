@@ -157,8 +157,12 @@ internal static class CampaignSourceLibyanGroupedDefinition
                     if (member.ParentId is null) writer.WriteNull("parentId"); else writer.WriteString("parentId", member.ParentId);
                     writer.WriteString("sourceCode", member.SourceCode); writer.WriteNumber("cpa", member.CapabilityPoints);
                     if (member.Components is null) writer.WriteNull("components");
-                    else { writer.WriteStartArray("components"); foreach (var component in member.Components)
-                        { writer.WriteStartObject(); writer.WriteString("type", component.ComponentType); writer.WriteNumber("toe", component.Toe); writer.WriteEndObject(); } writer.WriteEndArray(); }
+                    else
+                    {
+                        writer.WriteStartArray("components"); foreach (var component in member.Components)
+                        { writer.WriteStartObject(); writer.WriteString("type", component.ComponentType); writer.WriteNumber("toe", component.Toe); writer.WriteEndObject(); }
+                        writer.WriteEndArray();
+                    }
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray(); writer.WriteEndObject();

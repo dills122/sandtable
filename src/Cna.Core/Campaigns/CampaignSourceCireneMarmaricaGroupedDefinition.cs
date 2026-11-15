@@ -49,8 +49,16 @@ internal static class CampaignSourceCireneMarmaricaGroupedDefinition
                 : element.EndsWith("-engineer", StringComparison.Ordinal) ? "bbb"
                 : element == "63-bersaglieri" ? "aaa" : element is "lxiii-light-tank" or "lxii-light-tank" ? "k"
                 : throw new InvalidOperationException("Unsupported source division member.");
-            var cpa = code switch { "b" or "k" => 30, "h" => 20, "u" => 10, "bb" => 8,
-                "rr" or "kk" => 15, "bbb" or "aaa" => 25, _ => throw new InvalidOperationException() };
+            var cpa = code switch
+            {
+                "b" or "k" => 30,
+                "h" => 20,
+                "u" => 10,
+                "bb" => 8,
+                "rr" or "kk" => 15,
+                "bbb" or "aaa" => 25,
+                _ => throw new InvalidOperationException()
+            };
             IReadOnlyList<CampaignGroupedComponent>? components = null;
             if (seeds.TryGetValue(element, out var seed))
                 components = Array.AsReadOnly(seed.InitialComponentToes.Select(value =>
@@ -162,8 +170,12 @@ internal static class CampaignSourceCireneMarmaricaGroupedDefinition
                     if (member.ParentId is null) writer.WriteNull("parentId"); else writer.WriteString("parentId", member.ParentId);
                     writer.WriteString("sourceCode", member.SourceCode); writer.WriteNumber("cpa", member.CapabilityPoints);
                     if (member.Components is null) writer.WriteNull("components");
-                    else { writer.WriteStartArray("components"); foreach (var component in member.Components)
-                        { writer.WriteStartObject(); writer.WriteString("type", component.ComponentType); writer.WriteNumber("toe", component.Toe); writer.WriteEndObject(); } writer.WriteEndArray(); }
+                    else
+                    {
+                        writer.WriteStartArray("components"); foreach (var component in member.Components)
+                        { writer.WriteStartObject(); writer.WriteString("type", component.ComponentType); writer.WriteNumber("toe", component.Toe); writer.WriteEndObject(); }
+                        writer.WriteEndArray();
+                    }
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray(); writer.WriteEndObject();
