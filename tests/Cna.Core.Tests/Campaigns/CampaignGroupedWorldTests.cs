@@ -259,4 +259,25 @@ public sealed class CampaignGroupedWorldTests
         var collidingSuccessor8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, collidingSuccessor6, prior.PendingArrivals);
         Assert.Throws<InvalidOperationException>(() => world.Rebind(collidingSuccessor8, 1, 1));
     }
+
+    [Fact]
+    public void ContractVersionDistinguishesMovedFromUnknownMotorPoolIndependently()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId,
+            new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None));
+        var group = new CampaignGroupedFormation("group-a", "commonwealth", "group-a-hq", "d3615", null, 0,
+        [
+            new CampaignGroupedMember("group-a-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ], motorPoolKnown: false);
+        var world = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group]);
+        using var baseJson = System.Text.Json.JsonDocument.Parse(world.SerializeCanonical());
+        Assert.Equal(10, baseJson.RootElement.GetProperty("contractVersion").GetInt32());
+        var costs = new Dictionary<string, CapabilityPointAmount> { ["group-a-hq"] = new CapabilityPointAmount(1, 1) };
+        var moved = world.MoveFormation("group-a", "d3616", costs, 0, 1, 1);
+        // Moved AND an unknown motor pool must stay distinguishable from Moved
+        // alone (version 11) instead of the two aliasing to the same number.
+        using var movedJson = System.Text.Json.JsonDocument.Parse(moved.SerializeCanonical());
+        Assert.Equal(12, movedJson.RootElement.GetProperty("contractVersion").GetInt32());
+    }
 }

@@ -486,7 +486,11 @@ internal sealed class CampaignGroupedWorld
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject(); writer.WriteNumber("contractVersion", MovedGroupIds.Count > 0 ? 11 : Groups.Any(group => !group.MotorPoolKnown) ? 10 : 9);
+            // Independent bits, not a single ordered ternary: a world that is both
+            // Moved and has an unknown-motor-pool group must stay distinguishable
+            // from one that is only Moved, instead of the two aliasing to the same number.
+            var contractVersion = 9 + (MovedGroupIds.Count > 0 ? 2 : 0) + (Groups.Any(group => !group.MotorPoolKnown) ? 1 : 0);
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", contractVersion);
             writer.WriteString("contentHash", ContentHash);
             writer.WriteString("priorContentHash", Prior.ContentIdentity.Hash); writer.WriteString("scenarioId", Prior.ScenarioId);
             writer.WriteStartObject("initialization");
