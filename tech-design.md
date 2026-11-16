@@ -767,10 +767,55 @@ The source authority can additionally retain a grouped world for owner-confirmed
 4th Indian, Matruh, Maletti and Libyan formations, with supported detachments and motor
 reservations. Native Snapshot11 adjudicators still consume World6 and cannot execute
 grouped source movement or combat.
-The source setup records provisional Axis GT3–4 September supply plans using
-the retained random stream; unmodeled convoy cargo remains unresolved.
-Core can also admit proposed 62 Marmarica and 63 Cirene formations; their
-system admission is not yet exposed through the Host.
+The source setup records optional provisional September preplanning for Axis
+GT3–4 October supply arrivals using the retained random stream; unmodeled
+convoy cargo remains unresolved.
+The Host admits proposed 62 Marmarica, 63 Cirene, 64 Catanzaro, 7th Armored and 16th Brigade
+formations through versioned, replay-adjudicated source setup steps, followed by
+their respective owner's confirmation.
+Source setup now supports private owner finalization and reopening, with distinct
+successor checkpoint schemas. A bounded source-turn authority retains that setup,
+its grouped world, pending arrivals and random stream through GT1 planning,
+explicit tactical-shipping declines, initiative order, stage-one weather,
+selected convoy deliveries and a single-hex Polish arrival transition.
+The Host re-adjudicates its versioned system steps and owner actions. It cannot
+start on the current incomplete battlefield, map, control and contact coverage;
+Convoy arrivals, grouped movement and full campaign play remain open. The
+opening Organization completion step uses a versioned provisional ruling
+that no unlisted construction was already in progress; Australian training
+must be interrupted and both sides must decline voluntary work. Replay retains
+the training ledger. It does not bypass start readiness.
+The stage-one arrival completion step checks both retained unit schedules and
+all due Axis lanes; it remains blocked for a rolled Commonwealth opening supply
+plan until that side's arrival allocation is implemented.
+The following GT1 stage-one fleet step advances over assignment and repair
+under scenario §60.45's initial undamaged fleet and GT1 movement restriction.
+The first acting owner can decline reserves and materialize its movement
+segment, then explicitly finish movement to reach breakdown determination.
+The supported opening move is still limited to 4th Indian and remains
+behind the campaign-start readiness gate.
+The breakdown successor re-derives that one move from retained source state,
+or proves there was no movement, before advancing without a breakdown roll.
+An embedded [historical map transcription](docs/specs/graziani-historical-map-transcription.md)
+is hash-pinned and checked by the source opening-road and Polish Cairo-entry
+paths. Same-sheet topology and three approved C/D crossings are queryable;
+other seams and general grouped control remain excluded from authoritative gameplay.
+Map-bound source contacts use known same-sheet adjacency; version 3 additionally
+uses the approved crossings. Version-one turns retain their earlier contact geometry.
+New source-turn checkpoints and events use version 3 to bind the historical map
+and provisional C3533–D3501 and C4033–D3901 tracks and C3633–D3601 unfinished
+railway. The unfinished line is not an admitted rail route. Replay retains the original
+version 1 and version 2 geometry for their respective source-turn starts.
+Axis garrisons, the Giarabub motor machine-gun counter and two Commonwealth
+frontline counters have versioned native World8 setup and journal steps. Removed
+Land-only anti-air counters remain explicit source evidence. Motorization and
+frontline gameplay load consumption and detachment remain incomplete. Commonwealth
+setup records the two frontline truck pools and optional initial loads through
+versioned owner events. An explicit empty-load choice clears that load-specific
+blocker; any carried supplies still block start until their use is implemented.
+Independent-counter contacts use a separate version 2 observer identity;
+the local Host checks the authenticated seat and active counter ownership before
+returning its observation. Existing formation contact records retain version 1.
 The opt-in compact source checkpoint binds the full replay-derived projection by hash
 instead of repeating historical artifacts in each new row. It requires the retained
 genesis and complete event journal; it is not a standalone recovery snapshot. Replay

@@ -3,6 +3,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -44,7 +45,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 throw new InvalidOperationException("Source initialization is not yet playable.");
             if (retained.Request.ContractVersion == CampaignPregameSourceCreation.RequestVersion
                 && !CampaignExercises.IsPregameAxisSetup(retained.Session, audience)
-                && !CampaignExercises.IsSourceSetupSeat(retained.Session, audience))
+                && !CampaignExercises.IsSourceSetupSeat(retained.Session, audience)
+                && !CampaignExercises.IsSourceTurnSeat(retained.Session, audience))
                 throw new InvalidOperationException("This setup seat is unavailable.");
         }
         long epoch;
@@ -121,7 +123,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     try { retained = Load(connection, transaction, grant.CampaignId); }
                     catch (InvalidOperationException) { return null; }
                     if (!CampaignExercises.IsPregameAxisSetup(retained.Session, grant.Audience)
-                        && !CampaignExercises.IsSourceSetupSeat(retained.Session, grant.Audience)) return null;
+                        && !CampaignExercises.IsSourceSetupSeat(retained.Session, grant.Audience)
+                        && !CampaignExercises.IsSourceTurnSeat(retained.Session, grant.Audience)) return null;
                 }
             }
         }
@@ -156,9 +159,26 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return AuthenticateSeat(connection, transaction, credential);
     }
 
+    internal byte[] QuerySourceCounterContacts(CampaignSeatCredential credential, string counterId)
+    {
+        ArgumentNullException.ThrowIfNull(credential);
+        ArgumentException.ThrowIfNullOrWhiteSpace(counterId);
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction();
+        var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
+            ?? throw new UnauthorizedAccessException();
+        var head = verifiedHead ?? Load(connection, transaction, seat.CampaignId);
+        return CampaignHostAdapter.QuerySourceCounterContacts(head.Session, seat.Audience, counterId);
+    }
+
     private CampaignSeatAuthority? AuthenticateSeat(SqliteConnection connection,
         SqliteTransaction transaction, CampaignSeatCredential credential)
+        => AuthenticateSeat(connection, transaction, credential, out _);
+
+    private CampaignSeatAuthority? AuthenticateSeat(SqliteConnection connection,
+        SqliteTransaction transaction, CampaignSeatCredential credential, out Loaded? verifiedHead)
     {
+        verifiedHead = null;
         ArgumentNullException.ThrowIfNull(credential);
         var digest = TryCredentialDigest("seat-credential", credential.Secret);
         if (digest is null) return null;
@@ -186,7 +206,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
             Loaded retained;
             try { retained = Load(connection, transaction, credential.CampaignId); }
             catch (InvalidOperationException) { return null; }
-            if (!CampaignExercises.IsSourceSetupSeat(retained.Session, credential.Audience)) return null;
+            if (!CampaignExercises.IsSourceSetupSeat(retained.Session, credential.Audience)
+                && !CampaignExercises.IsSourceTurnSeat(retained.Session, credential.Audience)) return null;
+            verifiedHead = retained;
         }
         return new CampaignSeatAuthority(credential.CampaignId, credential.Audience,
             credential.Epoch);

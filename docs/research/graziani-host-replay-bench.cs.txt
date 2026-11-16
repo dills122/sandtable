@@ -1,0 +1,144 @@
+using System.Diagnostics;
+using System.Text.Json;
+using Cna.Core.Actions;
+using Cna.Core.Campaigns;
+using Cna.Core.Content;
+using Cna.Core.Hosting;
+using Cna.Core.Rules;
+using Cna.OrleansHost.Api;
+using Microsoft.Data.Sqlite;
+
+namespace Cna.OrleansHost.Tests;
+
+public sealed class TemporaryGrazianiReplayBenchmark
+{
+    private static string DirectoryName => Environment.GetEnvironmentVariable("SANDTABLE_BENCH_DIR")
+        ?? throw new InvalidOperationException("A private benchmark directory is required.");
+    private const string Secret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
+    private const string CampaignId = "graziani-source-benchmark";
+
+    [Fact]
+    public void Prepare()
+    {
+        Directory.CreateDirectory(DirectoryName);
+        if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(DirectoryName, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        var content = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var init = new CampaignSourceInitialization(CapabilityPointAmount.Zero, 0);
+        var request = new CampaignCreationRequest(CampaignPregameSourceCreation.RequestVersion, CampaignId,
+            Cna1979Ruleset.Manifest.Hash, 0, CampaignPregameSourceCreation.SetupId,
+            CampaignPregameSourceCreation.CalculateSetupHash(content.Identity, init), content.Identity.PackId,
+            content.Identity.Hash, Cna1979GrazianiCairoSourceExcerpt.ScenarioId);
+        var journal = CampaignDurableAuthorityJournal.CreateNew(Path.Combine(DirectoryName, "baseline.sqlite"), Secret);
+        journal.CreatePregameSourceCampaign(request, content, init);
+        var axis = Assert.IsType<CampaignSeatCredential>(journal.RedeemSeatGrant(journal.IssueSeatGrant(CampaignId, CampaignActionAudience.Axis, Secret)));
+        var roll = journal.QueryPregameAxisSupplyOpening(axis);
+        Assert.True(journal.SubmitPregameAxisSupply(axis, roll.Revision, Assert.Single(roll.PublicActionRefs)).IsAccepted);
+        var finish = journal.QueryPregameAxisSupplyFinishOpening(axis);
+        Assert.True(journal.SubmitPregameAxisSupplyFinish(axis, finish.Revision, Assert.Single(finish.PublicActionRefs)).IsAccepted);
+        Assert.True(journal.AdmitSourceCompactCheckpoint(CampaignId, Secret));
+        Assert.Equal(7, journal.AdmitAvailableSourceProfiles(CampaignId, Secret));
+        var cw = Assert.IsType<CampaignSeatCredential>(journal.RedeemSeatGrant(journal.IssueSeatGrant(CampaignId, CampaignActionAudience.Commonwealth, Secret)));
+        File.WriteAllText(Path.Combine(DirectoryName, "seat.json"), JsonSerializer.Serialize(cw));
+    }
+
+    [Fact]
+    public void Grow()
+    {
+        var seat = JsonSerializer.Deserialize<CampaignSeatCredential>(File.ReadAllText(Path.Combine(DirectoryName, "seat.json")))!;
+        var baseline = Path.Combine(DirectoryName, "baseline.sqlite");
+        var target = Path.Combine(DirectoryName, Environment.GetEnvironmentVariable("SANDTABLE_BENCH_GROW_OUTPUT") ?? "long80.sqlite");
+        using (var source = new SqliteConnection($"Data Source={baseline};Mode=ReadOnly;Pooling=False"))
+        using (var dest = new SqliteConnection($"Data Source={target};Mode=ReadWriteCreate;Pooling=False"))
+        {
+            source.Open(); dest.Open(); source.BackupDatabase(dest);
+        }
+        if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(target, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        var journal = CampaignDurableAuthorityJournal.OpenExisting(target);
+        string? pool = null, location = null;
+        var steps = int.Parse(Environment.GetEnvironmentVariable("SANDTABLE_BENCH_STEPS") ?? "70", System.Globalization.CultureInfo.InvariantCulture);
+        for (var i = 0; i < steps; i++)
+        {
+            var opening = journal.QuerySourceMotorizationOpening(seat);
+            using var visible = JsonDocument.Parse(opening.VisibleBytes);
+            var choices = visible.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+            var delta = i % 2 == 0 ? 1 : -1;
+            var index = Array.FindIndex(choices, choice => choice.GetProperty("delta").GetInt32() == delta
+                && (pool is null || (choice.GetProperty("poolId").GetString() == pool && choice.GetProperty("locationId").GetString() == location)));
+            Assert.True(index >= 0);
+            pool ??= choices[index].GetProperty("poolId").GetString();
+            location ??= choices[index].GetProperty("locationId").GetString();
+            Assert.True(journal.SubmitSourceMotorization(seat, opening.Revision, opening.PublicActionRefs[index]).IsAccepted);
+        }
+    }
+
+    [Fact]
+    public void FreshProcessReplay()
+    {
+        var path = Path.Combine(DirectoryName, Environment.GetEnvironmentVariable("SANDTABLE_BENCH_SOURCE")
+            ?? throw new InvalidOperationException("A benchmark journal copy is required."));
+        using var process = Process.GetCurrentProcess();
+        var cpu = process.TotalProcessorTime;
+        var timer = Stopwatch.StartNew();
+        var journal = CampaignDurableAuthorityJournal.OpenExisting(path);
+        _ = journal.ReadVerified(CampaignId);
+        timer.Stop();
+        var replayCpuMs = (process.TotalProcessorTime - cpu).TotalMilliseconds;
+        using var connection = new SqliteConnection($"Data Source={path};Mode=ReadOnly;Pooling=False");
+        connection.Open();
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT count(*) FROM accepted_steps";
+        var count = (long)query.ExecuteScalar()!;
+        var peak = process.PeakWorkingSet64;
+        File.WriteAllText(Path.Combine(DirectoryName, Environment.GetEnvironmentVariable("SANDTABLE_BENCH_OUTPUT")
+                ?? throw new InvalidOperationException("A result filename is required.")),
+            JsonSerializer.Serialize(new { count, replayWallMs = timer.Elapsed.TotalMilliseconds, replayCpuMs,
+                peakWorkingSetBytes = peak > 0 ? (long?)peak : null, workingSetBytesAtEnd = process.WorkingSet64 }));
+    }
+
+    [Fact]
+    public void Measure()
+    {
+        var seat = JsonSerializer.Deserialize<CampaignSeatCredential>(File.ReadAllText(Path.Combine(DirectoryName, "seat.json")))!;
+        var baseline = Path.Combine(DirectoryName, Environment.GetEnvironmentVariable("SANDTABLE_BENCH_SOURCE") ?? "baseline.sqlite");
+        using var source = new SqliteConnection($"Data Source={baseline};Mode=ReadOnly;Pooling=False");
+        source.Open();
+        using var query = source.CreateCommand();
+        query.CommandText = "SELECT count(*) FROM accepted_steps";
+        var count = (long)query.ExecuteScalar()!;
+        var measurements = new List<object>();
+        for (var run = 0; run < 4; run++)
+        {
+            var copy = Path.Combine(DirectoryName, $"copy-{run}.sqlite");
+            using (var dest = new SqliteConnection($"Data Source={copy};Mode=ReadWriteCreate;Pooling=False"))
+            {
+                dest.Open(); source.BackupDatabase(dest);
+            }
+            if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(copy, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            var process = Process.GetCurrentProcess();
+            var cpu = process.TotalProcessorTime;
+            var timer = Stopwatch.StartNew();
+            var journal = CampaignDurableAuthorityJournal.OpenExisting(copy);
+            _ = journal.ReadVerified(CampaignId);
+            var freshHostReplayMs = timer.Elapsed.TotalMilliseconds;
+            var freshHostReplayCpuMs = (process.TotalProcessorTime - cpu).TotalMilliseconds;
+            cpu = process.TotalProcessorTime;
+            timer.Restart();
+            var opening = journal.QuerySourceCommonwealthSupplyOpening(seat);
+            var queryMs = timer.Elapsed.TotalMilliseconds;
+            var queryCpu = (process.TotalProcessorTime - cpu).TotalMilliseconds;
+            cpu = process.TotalProcessorTime;
+            timer.Restart();
+            Assert.True(journal.SubmitSourceCommonwealthSupply(seat, opening.Revision, opening.PublicActionRefs[0]).IsAccepted);
+            var submit = timer.Elapsed.TotalMilliseconds;
+            var submitCpu = (process.TotalProcessorTime - cpu).TotalMilliseconds;
+            measurements.Add(new { run, freshHostReplayMs, freshHostReplayCpuMs, queryMs, queryCpu, submit, submitCpu });
+        }
+        using var current = Process.GetCurrentProcess();
+        var peak = current.PeakWorkingSet64;
+        File.WriteAllText(Path.Combine(DirectoryName, Environment.GetEnvironmentVariable("SANDTABLE_BENCH_OUTPUT") ?? "measure.json"),
+            JsonSerializer.Serialize(new { count, bytes = new FileInfo(baseline).Length,
+                walBytes = File.Exists(baseline + "-wal") ? new FileInfo(baseline + "-wal").Length : 0,
+                peakWorkingSetBytes = peak > 0 ? (long?)peak : null,
+                workingSetBytesAtEnd = current.WorkingSet64, measurements }));
+    }
+}

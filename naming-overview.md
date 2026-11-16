@@ -92,6 +92,8 @@ supplement, not an executable formation or a complete order of battle.
 independent units also enter World8, but grouped source evidence is not yet native play.
 `CampaignGroupedWorld` retains a source-backed group and its motor reservations;
 it is not yet an admitted native gameplay snapshot.
+`Cna1979HistoricalMap` identifies the pinned map and the separately versioned,
+provisional C/D seam policy; it does not certify the remaining map joins.
 `IContentPackV6Resolver` supplies identity-checked certified content to ordinary creation and
 Host replay; it is distinct from the source-initialization content envelope.
 `Cna1979GrazianiCounterFacts` retains source-linked counter allowances for

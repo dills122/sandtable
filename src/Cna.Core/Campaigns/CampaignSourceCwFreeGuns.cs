@@ -50,9 +50,9 @@ internal sealed class CampaignSourceCwFreeGuns
     {
         ArgumentNullException.ThrowIfNull(state);
         var battlefield = state.Battlefield ?? throw new InvalidOperationException("Source battlefield missing.");
-        if (!IsConsistent(battlefield)) throw new InvalidOperationException("CW free-gun source occupancy is inconsistent.");
+        if (!IsConsistent(battlefield, state.GroupedWorld)) throw new InvalidOperationException("CW free-gun source occupancy is inconsistent.");
     }
-    private bool IsConsistent(CampaignSourceBattlefield battlefield)
+    private bool IsConsistent(CampaignSourceBattlefield battlefield, CampaignGroupedWorld? grouped = null)
     {
         foreach (var unit in UnitData)
         {
@@ -63,17 +63,22 @@ internal sealed class CampaignSourceCwFreeGuns
                     : entry.AuthorityStatus is not ("source-cw-free-gun-placed" or "source-cw-free-gun-active"))
                 || entry.LocationId != placed?.LocationId) return false;
         }
-        return placements.Select(value => value.LocationId).Distinct(StringComparer.Ordinal).All(site => SiteSafe(battlefield, site));
+        return placements.Select(value => value.LocationId).Distinct(StringComparer.Ordinal).All(site => SiteSafe(battlefield, site, grouped));
     }
-    private bool SiteSafe(CampaignSourceBattlefield battlefield, string site)
+    private bool SiteSafe(CampaignSourceBattlefield battlefield, string site, CampaignGroupedWorld? grouped = null)
     {
         var occupants = battlefield.Entries.Where(entry => entry.LocationId == site).ToArray();
-        return occupants.Length <= 8 && occupants.All(entry => entry.SideId == "commonwealth" &&
+        var australian = grouped?.Groups.SingleOrDefault(value => value.GroupId == "6th-australian-division" && value.LocationId == site);
+        var australianIds = australian?.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal) ?? [];
+        if (australian is not null && (australian.SideId != "commonwealth" || australian.StackValue != 5
+            || !australian.DispositionConfirmed || australianIds.Any(id => !occupants.Any(entry => entry.ElementId == id)))) return false;
+        return occupants.Length - australianIds.Count + (australian?.StackValue ?? 0) <= 8 && occupants.All(entry => entry.SideId == "commonwealth" &&
             (CampaignSourceCairoInitialSetup.Units.Any(unit => unit.ElementId == entry.ElementId)
                 && entry.AuthorityStatus is "source-setup-placed" or "world8-active"
              || UnitData.Any(unit => unit.ElementId == entry.ElementId)
                 && (entry.AuthorityStatus is "source-cw-free-gun-placed" or "source-cw-free-gun-active")
-                && placements.Any(value => value.ElementId == entry.ElementId && value.LocationId == site)));
+                && placements.Any(value => value.ElementId == entry.ElementId && value.LocationId == site)
+             || australianIds.Contains(entry.ElementId) && entry.AuthorityStatus == "source-australian-grouped"));
     }
     internal CampaignSourceCwFreeGuns Place(string elementId, string locationId, CampaignSourceBattlefield battlefield)
     {

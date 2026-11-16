@@ -12,6 +12,11 @@ Normal campaign Host storage retains the canonical Core creation evidence and ev
 - Contact-derived owner movement submission authenticates the seat, checks the opening revision, compares the retained visible cut and action mapping with the freshly derived cut, verifies the HMAC reference, and asks Core to adjudicate that offer against the current private authority in the same immediate transaction. An unseen accepted step may advance that private version while visible bytes and offers remain equal; it does not invalidate the old reference. A changed visible cut or offer does. The committed step is marked `contact-movement`; cold replay uses the contact path rather than historical V7 action lookup. A retry of the same accepted reference and opening revision returns the retained receipt after full cold replay. Unknown, stale, or forged references return one generic rejection.
 - Read uses one SQLite snapshot transaction. It rejects missing, reordered, truncated, or altered records and requires `CampaignHostAdapter.Import` to reproduce every retained command, event, receipt, checkpoint, and creation/step contact record from independently replayed authority. A failed read never returns a session.
 
+For source setup owner requests, if seat authentication has already verified
+the journal in the request's SQLite transaction, the opening or submission
+reuses that same verified result within the transaction. Each separate request
+still reads and verifies the journal; no verified state is cached across requests.
+
 This journal stores no plaintext seat secret. Owner opening and movement submission include bounded native Combat stages through the explicitly configured, loopback-only Development v2 API. Creation retries retain the existing 201 acknowledgement; identity conflicts use generic 409, with operator authentication before campaign lookup. This does not activate public hosting or close original HOST-PUB certification obligations. Historical temporary and P01 private stores remain separate.
 
 ## Persisted RBA lifecycle (schema v8)

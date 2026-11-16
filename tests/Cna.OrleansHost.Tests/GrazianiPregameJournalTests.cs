@@ -27,6 +27,124 @@ public sealed class GrazianiPregameJournalTests
     private const string Secret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
 
     [Fact]
+    public void OwnerSetupFinalizationSurvivesReplayWithoutExposingOpposingChoice()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "graziani-owner-finalization-" + Guid.NewGuid().ToString("N"));
+        var path = Path.Combine(directory, "campaign.sqlite");
+        try
+        {
+            var content = Cna1979GrazianiCairoSourceExcerpt.Build();
+            var init = new CampaignSourceInitialization(CapabilityPointAmount.Zero, 0);
+            var request = new CampaignCreationRequest(CampaignPregameSourceCreation.RequestVersion,
+                "graziani-owner-finalization", Cna1979Ruleset.Manifest.Hash, 0,
+                CampaignPregameSourceCreation.SetupId, CampaignPregameSourceCreation.CalculateSetupHash(content.Identity, init),
+                content.Identity.PackId, content.Identity.Hash, Cna1979GrazianiCairoSourceExcerpt.ScenarioId);
+            var journal = CampaignDurableAuthorityJournal.CreateNew(path, Secret);
+            journal.CreatePregameSourceCampaign(request, content, init);
+            var axis = Assert.IsType<CampaignSeatCredential>(journal.RedeemSeatGrant(
+                journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Axis, Secret)));
+            var opening = journal.QueryPregameAxisSupplyOpening(axis);
+            Assert.True(journal.SubmitPregameAxisSupply(axis, opening.Revision, Assert.Single(opening.PublicActionRefs)).IsAccepted);
+            opening = journal.QueryPregameAxisSupplyFinishOpening(axis);
+            Assert.True(journal.SubmitPregameAxisSupplyFinish(axis, opening.Revision, Assert.Single(opening.PublicActionRefs)).IsAccepted);
+            var commonwealth = Assert.IsType<CampaignSeatCredential>(journal.RedeemSeatGrant(
+                journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Commonwealth, Secret)));
+
+            Assert.Throws<UnauthorizedAccessException>(() => journal.QuerySourceCounterContacts(
+                commonwealth with { Secret = new string('0', 64) }, "scheferzen-garrison"));
+            Assert.Throws<InvalidOperationException>(() => journal.QuerySourceCounterContacts(
+                commonwealth, "scheferzen-garrison"));
+
+            var cwBefore = journal.QuerySourceActionsOpening(commonwealth);
+            var axisBefore = journal.QuerySourceActionsOpening(axis);
+            var axisFinish = FindFinalization(axisBefore.VisibleBytes, "finish");
+            Assert.True(journal.SubmitSourceActions(axis, axisBefore.Revision, axisBefore.PublicActionRefs[axisFinish]).IsAccepted);
+            var cwAfter = journal.QuerySourceActionsOpening(commonwealth);
+            Assert.Equal(cwBefore.VisibleBytes, cwAfter.VisibleBytes);
+            Assert.Equal(cwBefore.PublicActionRefs, cwAfter.PublicActionRefs);
+            var cwFinish = FindFinalization(cwAfter.VisibleBytes, "finish");
+            Assert.True(journal.SubmitSourceActions(commonwealth, cwAfter.Revision, cwAfter.PublicActionRefs[cwFinish]).IsAccepted);
+            var axisFinalized = journal.QuerySourceActionsOpening(axis);
+            Assert.True(FindFinalization(axisFinalized.VisibleBytes, "reopen") >= 0);
+            var reopened = CampaignDurableAuthorityJournal.OpenExisting(path);
+            var afterReplay = reopened.QuerySourceActionsOpening(axis);
+            Assert.Equal(axisFinalized.VisibleBytes, afterReplay.VisibleBytes);
+            Assert.Equal(axisFinalized.PublicActionRefs, afterReplay.PublicActionRefs);
+            var cwFinalized = reopened.QuerySourceActionsOpening(commonwealth);
+            var axisReopen = FindFinalization(afterReplay.VisibleBytes, "reopen");
+            Assert.True(reopened.SubmitSourceActions(axis, afterReplay.Revision, afterReplay.PublicActionRefs[axisReopen]).IsAccepted);
+            var cwAfterReopen = reopened.QuerySourceActionsOpening(commonwealth);
+            Assert.Equal(cwFinalized.VisibleBytes, cwAfterReopen.VisibleBytes);
+            Assert.Equal(cwFinalized.PublicActionRefs, cwAfterReopen.PublicActionRefs);
+            Assert.Throws<InvalidOperationException>(() => reopened.StartSourceTurn(request.CampaignId, Secret));
+        }
+        finally { if (Directory.Exists(directory)) Directory.Delete(directory, true); }
+    }
+
+    private static int FindFinalization(byte[] visible, string kind)
+    {
+        using var document = JsonDocument.Parse(visible);
+        var choices = document.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+        var index = Array.FindIndex(choices, choice => choice.GetProperty("family").GetString() == "owner-finalization"
+            && choice.GetProperty("choice").GetProperty("kind").GetString() == kind);
+        Assert.True(index >= 0);
+        return index;
+    }
+
+    [Fact]
+    public void HorseRulingUsesPrivateOwnerChoicesAndSurvivesHostReplay()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "graziani-horse-ruling-" + Guid.NewGuid().ToString("N"));
+        var path = Path.Combine(directory, "campaign.sqlite");
+        try
+        {
+            var content = Cna1979GrazianiCairoSourceExcerpt.Build();
+            var init = new CampaignSourceInitialization(CapabilityPointAmount.Zero, 0);
+            var request = new CampaignCreationRequest(CampaignPregameSourceCreation.RequestVersion,
+                "graziani-horse-ruling", Cna1979Ruleset.Manifest.Hash, 0,
+                CampaignPregameSourceCreation.SetupId, CampaignPregameSourceCreation.CalculateSetupHash(content.Identity, init),
+                content.Identity.PackId, content.Identity.Hash, Cna1979GrazianiCairoSourceExcerpt.ScenarioId);
+            var journal = CampaignDurableAuthorityJournal.CreateNew(path, Secret);
+            journal.CreatePregameSourceCampaign(request, content, init);
+            var axis = Assert.IsType<CampaignSeatCredential>(journal.RedeemSeatGrant(
+                journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Axis, Secret)));
+            var supply = journal.QueryPregameAxisSupplyOpening(axis);
+            Assert.True(journal.SubmitPregameAxisSupply(axis, supply.Revision, Assert.Single(supply.PublicActionRefs)).IsAccepted);
+            supply = journal.QueryPregameAxisSupplyFinishOpening(axis);
+            Assert.True(journal.SubmitPregameAxisSupplyFinish(axis, supply.Revision, Assert.Single(supply.PublicActionRefs)).IsAccepted);
+            var cw = Assert.IsType<CampaignSeatCredential>(journal.RedeemSeatGrant(
+                journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Commonwealth, Secret)));
+
+            var before = journal.QuerySourceActionsOpening(cw);
+            var axisOpening = journal.QuerySourceActionsOpening(axis);
+            var axisVote = FindSourceChoice(axisOpening.VisibleBytes, "central-india-horse-ruling", "approve");
+            Assert.True(journal.SubmitSourceActions(axis, axisOpening.Revision, axisOpening.PublicActionRefs[axisVote]).IsAccepted);
+            var after = journal.QuerySourceActionsOpening(cw);
+            Assert.Equal(before.VisibleBytes, after.VisibleBytes);
+            Assert.Equal(before.PublicActionRefs, after.PublicActionRefs);
+            var cwVote = FindSourceChoice(after.VisibleBytes, "central-india-horse-ruling", "approve");
+            Assert.True(journal.SubmitSourceActions(cw, after.Revision, after.PublicActionRefs[cwVote]).IsAccepted);
+            var agreed = journal.QuerySourceActionsOpening(cw);
+            var reopened = CampaignDurableAuthorityJournal.OpenExisting(path);
+            var replayed = reopened.QuerySourceActionsOpening(cw);
+            Assert.Equal(agreed.VisibleBytes, replayed.VisibleBytes);
+            Assert.Equal(agreed.PublicActionRefs, replayed.PublicActionRefs);
+            Assert.True(FindSourceChoice(replayed.VisibleBytes, "central-india-horse-ruling", "withdraw") >= 0);
+        }
+        finally { if (Directory.Exists(directory)) Directory.Delete(directory, true); }
+    }
+
+    private static int FindSourceChoice(byte[] visible, string family, string kind)
+    {
+        using var document = JsonDocument.Parse(visible);
+        var choices = document.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+        var index = Array.FindIndex(choices, choice => choice.GetProperty("family").GetString() == family
+            && choice.GetProperty("choice").GetProperty("kind").GetString() == kind);
+        Assert.True(index >= 0);
+        return index;
+    }
+
+    [Fact]
     public async Task OperatorBatchRetainsEachSourceMigrationWithoutChoosingForEitherSide()
     {
         var directory = Path.Combine(Path.GetTempPath(), "graziani-source-batch-" + Guid.NewGuid().ToString("N"));
@@ -971,6 +1089,153 @@ public sealed class GrazianiPregameJournalTests
                 Assert.False(journal.SubmitSourceActions(commonwealth, opening.Revision, opening.PublicActionRefs[confirm]).IsAccepted);
                 Assert.True(journal.SubmitSourceActions(renewedAxis, opening.Revision, opening.PublicActionRefs[confirm]).IsAccepted);
             }
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceItalianDivisionsGroupedWorld(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceItalianDivisionsGroupedWorld(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceItalianDivisionsGroupedWorld(request.CampaignId, Secret));
+            Assert.DoesNotContain("italian-division-disposition", Encoding.UTF8.GetString(journal.QuerySourceActionsOpening(commonwealth).VisibleBytes), StringComparison.Ordinal);
+            var confirmedItalianGroups = new HashSet<string>(StringComparer.Ordinal);
+            for (var index = 0; index < 2; index++)
+            {
+                var opening = journal.QuerySourceActionsOpening(renewedAxis);
+                using var view = JsonDocument.Parse(opening.VisibleBytes);
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var confirm = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "italian-division-disposition"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == "confirm");
+                Assert.True(confirm >= 0);
+                Assert.True(confirmedItalianGroups.Add(choices[confirm].GetProperty("choice").GetProperty("groupId").GetString()!));
+                Assert.False(journal.SubmitSourceActions(commonwealth, opening.Revision, opening.PublicActionRefs[confirm]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(renewedAxis, opening.Revision, opening.PublicActionRefs[confirm]).IsAccepted);
+            }
+            Assert.Equal(2, confirmedItalianGroups.Count);
+            Assert.Contains("cirene-division", confirmedItalianGroups);
+            Assert.Contains("marmarica-division", confirmedItalianGroups);
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceSeventhArmoredGroupedWorld(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceSeventhArmoredGroupedWorld(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceSeventhArmoredGroupedWorld(request.CampaignId, Secret));
+            Assert.DoesNotContain("seventh-armored-disposition", Encoding.UTF8.GetString(journal.QuerySourceActionsOpening(renewedAxis).VisibleBytes), StringComparison.Ordinal);
+            var seventhOpening = journal.QuerySourceActionsOpening(commonwealth);
+            using (var view = JsonDocument.Parse(seventhOpening.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var confirm = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "seventh-armored-disposition"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == "confirm");
+                Assert.True(confirm >= 0);
+                Assert.False(journal.SubmitSourceActions(renewedAxis, seventhOpening.Revision, seventhOpening.PublicActionRefs[confirm]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(commonwealth, seventhOpening.Revision, seventhOpening.PublicActionRefs[confirm]).IsAccepted);
+            }
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceSixteenthBrigadeGroupedWorld(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceSixteenthBrigadeGroupedWorld(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceSixteenthBrigadeGroupedWorld(request.CampaignId, Secret));
+            Assert.DoesNotContain("sixteenth-brigade-disposition", Encoding.UTF8.GetString(journal.QuerySourceActionsOpening(renewedAxis).VisibleBytes), StringComparison.Ordinal);
+            var sixteenthOpening = journal.QuerySourceActionsOpening(commonwealth);
+            using (var view = JsonDocument.Parse(sixteenthOpening.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var confirm = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "sixteenth-brigade-disposition"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == "confirm");
+                Assert.True(confirm >= 0);
+                Assert.False(journal.SubmitSourceActions(renewedAxis, sixteenthOpening.Revision, sixteenthOpening.PublicActionRefs[confirm]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(commonwealth, sixteenthOpening.Revision, sixteenthOpening.PublicActionRefs[confirm]).IsAccepted);
+            }
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceCatanzaroGroupedWorld(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceCatanzaroGroupedWorld(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceCatanzaroGroupedWorld(request.CampaignId, Secret));
+            Assert.DoesNotContain("catanzaro-disposition", Encoding.UTF8.GetString(journal.QuerySourceActionsOpening(commonwealth).VisibleBytes), StringComparison.Ordinal);
+            var catanzaroOpening = journal.QuerySourceActionsOpening(renewedAxis);
+            using (var view = JsonDocument.Parse(catanzaroOpening.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var confirm = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "catanzaro-disposition"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == "confirm");
+                Assert.True(confirm >= 0);
+                Assert.False(journal.SubmitSourceActions(commonwealth, catanzaroOpening.Revision, catanzaroOpening.PublicActionRefs[confirm]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(renewedAxis, catanzaroOpening.Revision, catanzaroOpening.PublicActionRefs[confirm]).IsAccepted);
+            }
+            var ccnnOpening = journal.QuerySourceActionsOpening(renewedAxis);
+            using (var view = JsonDocument.Parse(ccnnOpening.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var accept = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "ccnn-batch-disposition"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == "accept"
+                    && value.GetProperty("choice").GetProperty("groupId").GetString() == "1-and-4-ccnn");
+                Assert.True(accept >= 0);
+                Assert.False(journal.SubmitSourceActions(commonwealth, ccnnOpening.Revision, ccnnOpening.PublicActionRefs[accept]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(renewedAxis, ccnnOpening.Revision, ccnnOpening.PublicActionRefs[accept]).IsAccepted);
+            }
+            var arescaOpening = journal.QuerySourceActionsOpening(renewedAxis);
+            using (var view = JsonDocument.Parse(arescaOpening.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var accept = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "aresca-disposition"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == "accept"
+                    && value.GetProperty("choice").GetProperty("groupId").GetString() == "aresca-tank-regiment");
+                Assert.True(accept >= 0);
+                Assert.False(journal.SubmitSourceActions(commonwealth, arescaOpening.Revision, arescaOpening.PublicActionRefs[accept]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(renewedAxis, arescaOpening.Revision, arescaOpening.PublicActionRefs[accept]).IsAccepted);
+            }
+            var australianOpening = journal.QuerySourceActionsOpening(commonwealth);
+            using (var view = JsonDocument.Parse(australianOpening.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var place = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "sixth-australian-placement"
+                    && value.GetProperty("choice").GetProperty("locationId").GetString() == "e1829");
+                Assert.True(place >= 0);
+                Assert.False(journal.SubmitSourceActions(renewedAxis, australianOpening.Revision, australianOpening.PublicActionRefs[place]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(commonwealth, australianOpening.Revision, australianOpening.PublicActionRefs[place]).IsAccepted);
+            }
+            Assert.DoesNotContain("sixth-australian-placement", Encoding.UTF8.GetString(journal.QuerySourceActionsOpening(renewedAxis).VisibleBytes), StringComparison.Ordinal);
+            Assert.Throws<UnauthorizedAccessException>(() => journal.CorrectSourceSeventhShell(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.CorrectSourceSeventhShell(request.CampaignId, Secret));
+            Assert.False(journal.CorrectSourceSeventhShell(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceAxisMinorGarrisons(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceAxisMinorGarrisons(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceAxisMinorGarrisons(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceAxisGarrisonRemainder(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceAxisGarrisonRemainder(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceAxisGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceGiarabubMotorMachineGun(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceGiarabubMotorMachineGun(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceGiarabubMotorMachineGun(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceCwFrontline(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceCwFrontline(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceCwFrontline(request.CampaignId, Secret));
+            var frontlineChoices = Enumerable.Repeat((Kind: "frontline-attach", ElementId: "1-rtr"), 5)
+                .Concat(Enumerable.Repeat((Kind: "frontline-attach", ElementId: "11-hussars"), 3))
+                .Concat(new[] { (Kind: "frontline-finish", ElementId: "frontline"),
+                    (Kind: "frontline-reopen", ElementId: "frontline"), (Kind: "frontline-fuel", ElementId: "1-rtr") });
+            foreach (var (kind, elementId) in frontlineChoices)
+            {
+                var opening = journal.QuerySourceActionsOpening(commonwealth);
+                using var view = JsonDocument.Parse(opening.VisibleBytes);
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var index = Array.FindIndex(choices, value => value.GetProperty("family").GetString() == "attached-loads"
+                    && value.GetProperty("choice").GetProperty("kind").GetString() == kind
+                    && value.GetProperty("choice").GetProperty("elementId").GetString() == elementId);
+                Assert.True(index >= 0);
+                Assert.False(journal.SubmitSourceActions(renewedAxis, opening.Revision, opening.PublicActionRefs[index]).IsAccepted);
+                Assert.True(journal.SubmitSourceActions(commonwealth, opening.Revision, opening.PublicActionRefs[index]).IsAccepted);
+            }
+            var cwBeforeMotorPolicy = journal.QuerySourceMotorizationOpening(commonwealth);
+            var axisBeforeMotorPolicy = journal.QuerySourceMotorizationOpening(renewedAxis);
+            Assert.NotEmpty(axisBeforeMotorPolicy.PublicActionRefs);
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceGiarabubMotorPlacementPolicy(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceGiarabubMotorPlacementPolicy(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceGiarabubMotorPlacementPolicy(request.CampaignId, Secret));
+            var cwAfterMotorPolicy = journal.QuerySourceMotorizationOpening(commonwealth);
+            Assert.Equal(cwBeforeMotorPolicy.VisibleBytes, cwAfterMotorPolicy.VisibleBytes);
+            Assert.Equal(cwBeforeMotorPolicy.PublicActionRefs, cwAfterMotorPolicy.PublicActionRefs);
+            var giarabubMotor = journal.QuerySourceMotorizationOpening(renewedAxis);
+            Assert.False(journal.SubmitSourceMotorization(renewedAxis, axisBeforeMotorPolicy.Revision,
+                axisBeforeMotorPolicy.PublicActionRefs[0]).IsAccepted);
+            using (var view = JsonDocument.Parse(giarabubMotor.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var place = Array.FindIndex(choices, value => value.GetProperty("poolId").GetString() == "axis-libya-unattached"
+                    && value.GetProperty("locationId").GetString() == "c1014" && value.GetProperty("delta").GetInt32() == 1);
+                Assert.True(place >= 0);
+                Assert.False(journal.SubmitSourceMotorization(commonwealth, giarabubMotor.Revision, giarabubMotor.PublicActionRefs[place]).IsAccepted);
+                Assert.True(journal.SubmitSourceMotorization(renewedAxis, giarabubMotor.Revision, giarabubMotor.PublicActionRefs[place]).IsAccepted);
+            }
             // Complete actual Commonwealth unattached pool placement before starting cargo.
             for (var attempts = 0; attempts < 20; attempts++)
             {
@@ -1015,10 +1280,28 @@ public sealed class GrazianiPregameJournalTests
             Assert.Equal(hiddenAxisCargo.PublicActionRefs, axisCargoAfter.PublicActionRefs);
             var compactOwner = journal.QuerySourceMotorizationOpening(renewedAxis);
             Assert.NotEmpty(compactOwner.PublicActionRefs);
-            Assert.True(journal.SubmitSourceMotorization(renewedAxis, compactOwner.Revision, compactOwner.PublicActionRefs[0]).IsAccepted);
+            using (var view = JsonDocument.Parse(compactOwner.VisibleBytes))
+            {
+                var choices = view.RootElement.GetProperty("choices").EnumerateArray().ToArray();
+                var other = Array.FindIndex(choices, value => value.GetProperty("locationId").GetString() != "c1014");
+                Assert.True(other >= 0);
+                Assert.True(journal.SubmitSourceMotorization(renewedAxis, compactOwner.Revision, compactOwner.PublicActionRefs[other]).IsAccepted);
+            }
             checkpoint = CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId));
             var compactChild = await ReadInFreshProcess(path, request.CampaignId, "--source-authority-read");
             Assert.Equal(checkpoint.StateVersion, compactChild.StateVersion);
+            var reopenedMotor = CampaignDurableAuthorityJournal.OpenExisting(path).QuerySourceMotorizationOpening(renewedAxis);
+            var reopenedLoads = CampaignDurableAuthorityJournal.OpenExisting(path).QuerySourceAttachedInitialLoadsOpening(commonwealth);
+            using (var view = JsonDocument.Parse(reopenedLoads.VisibleBytes))
+                Assert.Contains(view.RootElement.GetProperty("targets").EnumerateArray(), value =>
+                    value.GetProperty("elementId").GetString() == "1-rtr"
+                    && value.GetProperty("attachedPoints").GetInt32() == 5
+                    && value.GetProperty("fuelPoints").GetInt32() == 3);
+            using (var view = JsonDocument.Parse(reopenedMotor.VisibleBytes))
+                Assert.Contains(view.RootElement.GetProperty("allocations").EnumerateArray(), value =>
+                    value.GetProperty("poolId").GetString() == "axis-libya-unattached"
+                    && value.GetProperty("locationId").GetString() == "c1014"
+                    && value.GetProperty("points").GetInt32() == 1);
             using (var compactQuery = connection.CreateCommand())
             {
                 compactQuery.CommandText = "SELECT snapshot_checkpoint FROM accepted_steps WHERE campaign_id=$id ORDER BY sequence DESC LIMIT 1";
@@ -1026,9 +1309,21 @@ public sealed class GrazianiPregameJournalTests
                 var compactBytes = (byte[])compactQuery.ExecuteScalar()!;
                 Assert.True(compactBytes.Length < 16_384);
                 using var compact = JsonDocument.Parse(compactBytes);
-                Assert.Equal(30, compact.RootElement.GetProperty("contractVersion").GetInt32());
-                Assert.Equal(JsonValueKind.Null, compact.RootElement.GetProperty("gameClock").ValueKind);
-                Assert.StartsWith("sha256:", compact.RootElement.GetProperty("legacyProjectionHash").GetString());
+                Assert.Equal(63, compact.RootElement.GetProperty("contractVersion").GetInt32());
+                Assert.StartsWith("sha256:", compact.RootElement.GetProperty("cwFrontlineContentHash").GetString());
+                using var motorMachineGun = JsonDocument.Parse(compact.RootElement.GetProperty("baseCheckpoint").GetBytesFromBase64());
+                Assert.Equal(62, motorMachineGun.RootElement.GetProperty("contractVersion").GetInt32());
+                Assert.StartsWith("sha256:", motorMachineGun.RootElement.GetProperty("motorMachineGunContentHash").GetString());
+                using var remainder = JsonDocument.Parse(motorMachineGun.RootElement.GetProperty("baseCheckpoint").GetBytesFromBase64());
+                Assert.Equal(61, remainder.RootElement.GetProperty("contractVersion").GetInt32());
+                Assert.StartsWith("sha256:", remainder.RootElement.GetProperty("garrisonRemainderContentHash").GetString());
+                using var minorGarrisons = JsonDocument.Parse(remainder.RootElement.GetProperty("baseCheckpoint").GetBytesFromBase64());
+                Assert.Equal(60, minorGarrisons.RootElement.GetProperty("contractVersion").GetInt32());
+                Assert.StartsWith("sha256:", minorGarrisons.RootElement.GetProperty("minorGarrisonContentHash").GetString());
+                using var compactBase = JsonDocument.Parse(minorGarrisons.RootElement.GetProperty("baseCheckpoint").GetBytesFromBase64());
+                Assert.Equal(52, compactBase.RootElement.GetProperty("contractVersion").GetInt32());
+                Assert.Equal(JsonValueKind.Null, compactBase.RootElement.GetProperty("gameClock").ValueKind);
+                Assert.StartsWith("sha256:", compactBase.RootElement.GetProperty("legacyProjectionHash").GetString());
                 compactQuery.CommandText = "SELECT snapshot_checkpoint FROM accepted_steps WHERE campaign_id=$id AND sequence=$seq";
                 compactQuery.Parameters.AddWithValue("$seq", legacyHeadSequence);
                 Assert.Equal(finalCheckpointBytes, (byte[])compactQuery.ExecuteScalar()!);
@@ -1053,6 +1348,19 @@ public sealed class GrazianiPregameJournalTests
                 Assert.Equal(1, update.ExecuteNonQuery());
             }
             CheckCorruptRecordHash(1);
+            using (var sourceDivision = corruptConnection.CreateCommand())
+            {
+                sourceDivision.CommandText = "SELECT sequence FROM accepted_steps WHERE campaign_id=$id AND action_kind=$kind";
+                sourceDivision.Parameters.AddWithValue("$id", request.CampaignId);
+                var kind = sourceDivision.Parameters.AddWithValue("$kind", "source-italian-divisions-grouped-world");
+                CheckCorruptRecordHash(Assert.IsType<long>(sourceDivision.ExecuteScalar()));
+                kind.Value = "source-seventh-armored-grouped-world";
+                CheckCorruptRecordHash(Assert.IsType<long>(sourceDivision.ExecuteScalar()));
+                kind.Value = "source-sixteenth-brigade-grouped-world";
+                CheckCorruptRecordHash(Assert.IsType<long>(sourceDivision.ExecuteScalar()));
+                kind.Value = "source-catanzaro-grouped-world";
+                CheckCorruptRecordHash(Assert.IsType<long>(sourceDivision.ExecuteScalar()));
+            }
             CheckCorruptRecordHash(checkpoint.StateVersion - 1);
             using (var missing = corruptConnection.CreateCommand())
             {
@@ -1143,6 +1451,47 @@ public sealed class GrazianiPregameJournalTests
             Assert.Equal("incomplete", acknowledgment.RootElement.GetProperty("status").GetString());
             Assert.Equal("provisional", acknowledgment.RootElement.GetProperty("policyStatus").GetString());
             Assert.DoesNotContain("seed", acknowledgment.RootElement.GetRawText(), StringComparison.OrdinalIgnoreCase);
+            var invalidCounterQuery = new
+            {
+                contractVersion = 2,
+                credential = new
+                {
+                    campaignId = "graziani-bundled",
+                    audience = "axis",
+                    epoch = 1,
+                    secret = new string('0', 64),
+                    expiresUnixMs = long.MaxValue
+                },
+                counterId = "scheferzen-garrison"
+            };
+            Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync(
+                "/api/v2/campaigns/graziani-bundled/source-counter-contacts", invalidCounterQuery,
+                TestContext.Current.CancellationToken)).StatusCode);
+            const string italianRoute = "/api/v2/campaigns/graziani-bundled/source-italian-divisions-grouped-world";
+            const string seventhRoute = "/api/v2/campaigns/graziani-bundled/source-seventh-armored-grouped-world";
+            const string sixteenthRoute = "/api/v2/campaigns/graziani-bundled/source-sixteenth-brigade-grouped-world";
+            const string catanzaroRoute = "/api/v2/campaigns/graziani-bundled/source-catanzaro-grouped-world";
+            const string sourceStartRoute = "/api/v2/campaigns/graziani-bundled/source-turn/start";
+            const string sourceInitiativeRoute = "/api/v2/campaigns/graziani-bundled/source-turn/initiative";
+            const string sourceSchedulingRoute = "/api/v2/campaigns/graziani-bundled/source-turn/complete-gt1-scheduling";
+            const string sourceWeatherRoute = "/api/v2/campaigns/graziani-bundled/source-turn/gt1-weather";
+            const string sourceLaneRoute = "/api/v2/campaigns/graziani-bundled/source-turn/gt1-lane2";
+            const string sourceLane3Route = "/api/v2/campaigns/graziani-bundled/source-turn/gt1-lane3";
+            const string shellCorrectionRoute = "/api/v2/campaigns/graziani-bundled/source-seventh-shell-correction";
+            const string minorGarrisonsRoute = "/api/v2/campaigns/graziani-bundled/source-axis-minor-garrisons-activation";
+            const string remainderRoute = "/api/v2/campaigns/graziani-bundled/source-axis-garrison-remainder-activation";
+            const string motorMachineGunRoute = "/api/v2/campaigns/graziani-bundled/source-giarabub-motor-machine-gun-activation";
+            const string cwFrontlineRoute = "/api/v2/campaigns/graziani-bundled/source-cw-frontline-activation";
+            const string giarabubPolicyRoute = "/api/v2/campaigns/graziani-bundled/source-giarabub-motor-placement-policy";
+            const string sourceMultiLaneRoute = "/api/v2/campaigns/graziani-bundled/source-turn/gt1-multiple-lanes";
+            client.DefaultRequestHeaders.Remove("X-Sandtable-Operator");
+            foreach (var route in new[] { italianRoute, seventhRoute, sixteenthRoute, catanzaroRoute, sourceStartRoute, sourceInitiativeRoute, sourceSchedulingRoute, sourceWeatherRoute, sourceLaneRoute, sourceLane3Route, shellCorrectionRoute, minorGarrisonsRoute, remainderRoute, motorMachineGunRoute, cwFrontlineRoute, giarabubPolicyRoute, sourceMultiLaneRoute })
+                Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync(route, null,
+                    TestContext.Current.CancellationToken)).StatusCode);
+            client.DefaultRequestHeaders.Add("X-Sandtable-Operator", Secret);
+            foreach (var route in new[] { italianRoute, seventhRoute, sixteenthRoute, catanzaroRoute, sourceStartRoute, sourceInitiativeRoute, sourceSchedulingRoute, sourceWeatherRoute, sourceLaneRoute, sourceLane3Route, shellCorrectionRoute, minorGarrisonsRoute, remainderRoute, motorMachineGunRoute, cwFrontlineRoute, giarabubPolicyRoute, sourceMultiLaneRoute })
+                Assert.Equal(HttpStatusCode.Conflict, (await client.PostAsync(route, null,
+                    TestContext.Current.CancellationToken)).StatusCode);
             Assert.Equal(HttpStatusCode.Created, (await client.PostAsJsonAsync("/api/v2/campaigns/pregame-source/graziani",
                 body, TestContext.Current.CancellationToken)).StatusCode);
             var conflict = new

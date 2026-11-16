@@ -1,5 +1,7 @@
 # .NET build and generated output
 /artifacts/
+__pycache__/
+*.pyc
 **/[Bb]in/
 **/[Oo]bj/
 [Dd]ebug/

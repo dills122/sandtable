@@ -6,7 +6,7 @@ namespace Cna.Core.Actions;
 public sealed record CampaignSourceSetupAction : CampaignActionCandidate
 {
     private static readonly HashSet<string> AllowedFields = new(StringComparer.Ordinal)
-    { "kind", "elementId", "locationId", "id", "groupId", "lane", "stage", "operationStage", "delta", "targetGameTurn", "target", "dumpId", "placementId", "dummyId", "poolId" };
+    { "kind", "elementId", "locationId", "id", "groupId", "lane", "stage", "operationStage", "delta", "targetGameTurn", "target", "dumpId", "placementId", "dummyId", "poolId", "rulingId" };
 
     internal CampaignSourceSetupAction(long stateVersion, string family, string sourceActionId, JsonElement choice)
         : this(stateVersion, family, sourceActionId, CanonicalChoice(choice)) { }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
@@ -86,6 +87,140 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionAudience audience) =>
         CampaignExercises.QuerySourceActionsDraft(session, audience);
 
+    /// <summary>Checks a retained source-owner action against its issued visible choice and revision.</summary>
+    public static bool MatchesIssuedSourceAction(long authorityVersion, byte[] visibleBytes, int ordinal,
+        string actionId)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(visibleBytes);
+            var choices = document.RootElement.GetProperty("choices");
+            if (choices.ValueKind != JsonValueKind.Array || ordinal < 0 || ordinal >= choices.GetArrayLength())
+                return false;
+            var choice = choices[ordinal];
+            if (choice.GetProperty("family").GetString() == "sixth-australian-baseline")
+            {
+                var turnChoice = choice.GetProperty("choice");
+                if (turnChoice.GetProperty("rulingId").GetString() != "graziani.6-australian.initial-untrained-zero.v1")
+                    return false;
+                var vote = turnChoice.GetProperty("kind").GetString() switch
+                {
+                    "approve" => CampaignSourceTurnAction.ApproveSixthAustralianBaseline(authorityVersion),
+                    "withdraw" => CampaignSourceTurnAction.WithdrawSixthAustralianBaseline(authorityVersion),
+                    _ => null,
+                };
+                return vote?.ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "fourth-indian-opening-move")
+            {
+                var turnChoice = choice.GetProperty("choice");
+                if (turnChoice.GetProperty("kind").GetString() != "move"
+                    || turnChoice.GetProperty("groupId").GetString() != "4-indian-division"
+                    || turnChoice.GetProperty("destination").GetString() != "d3715")
+                    return false;
+                return CampaignSourceTurnAction.MoveFourthIndianOpening(authorityVersion,
+                    turnChoice.GetProperty("supplyId").GetString()!).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "sixth-australian-training")
+            {
+                if (choice.GetProperty("choice").GetProperty("kind").GetString() != "interrupt")
+                    return false;
+                return CampaignSourceTurnAction.InterruptSixthAustralianTraining(authorityVersion).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "axis-gt1-convoy-attack")
+            {
+                var turnChoice = choice.GetProperty("choice");
+                if (turnChoice.GetProperty("kind").GetString() != "decline"
+                    || turnChoice.GetProperty("operationStage").GetInt32() != 1)
+                    return false;
+                var laneAction = turnChoice.GetProperty("lane").GetInt32() switch
+                {
+                    2 => CampaignSourceTurnAction.DeclineGt1Lane2Attack(authorityVersion),
+                    3 => CampaignSourceTurnAction.DeclineGt1Lane3Attack(authorityVersion),
+                    6 => CampaignSourceTurnAction.DeclineGt1Lane6Attack(authorityVersion),
+                    _ => null,
+                };
+                return laneAction?.ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "first-movement")
+            {
+                if (choice.GetProperty("choice").GetProperty("kind").GetString() != "finish")
+                    return false;
+                return CampaignSourceTurnAction.FinishFirstMovement(authorityVersion).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "first-reserve-designation")
+            {
+                if (choice.GetProperty("choice").GetProperty("kind").GetString() != "decline")
+                    return false;
+                return CampaignSourceTurnAction.DeclineFirstReserves(authorityVersion).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "voluntary-organization")
+            {
+                if (choice.GetProperty("choice").GetProperty("kind").GetString() != "decline")
+                    return false;
+                return CampaignSourceTurnAction.DeclineVoluntaryOrganization(authorityVersion).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "initiative-declaration")
+            {
+                var turnChoice = choice.GetProperty("choice");
+                if (turnChoice.GetProperty("operationStage").GetInt32() != 1)
+                    return false;
+                var declaredAction = turnChoice.GetProperty("kind").GetString() switch
+                {
+                    "act-first" => CampaignSourceTurnAction.ActFirst(authorityVersion),
+                    "act-last" => CampaignSourceTurnAction.ActLast(authorityVersion),
+                    _ => null,
+                };
+                return declaredAction?.ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "tactical-shipping")
+            {
+                if (choice.GetProperty("choice").GetProperty("kind").GetString() != "decline")
+                    return false;
+                return CampaignSourceTurnAction.DeclineTacticalShipping(authorityVersion).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "cw-gt5-supply")
+            {
+                var turnChoice = choice.GetProperty("choice");
+                if (turnChoice.GetProperty("kind").GetString() != "roll"
+                    || turnChoice.GetProperty("targetGameTurn").GetInt32() != 5)
+                    return false;
+                return CampaignSourceTurnAction.RollGt5Supply(authorityVersion).ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "axis-gt3-supply")
+            {
+                var turnChoice = choice.GetProperty("choice");
+                if (turnChoice.GetProperty("targetGameTurn").GetInt32() != 3)
+                    return false;
+                var kind = turnChoice.GetProperty("kind").GetString();
+                var turnAction = kind switch
+                {
+                    "roll" => CampaignSourceTurnAction.RollGt3Supply(authorityVersion),
+                    "finish" => CampaignSourceTurnAction.FinishGt3Supply(authorityVersion),
+                    "add" or "remove" when turnChoice.GetProperty("delta").GetInt32() == (kind == "add" ? 1 : -1)
+                        => CampaignSourceTurnAction.AdjustGt3Supply(authorityVersion,
+                            turnChoice.GetProperty("lane").GetInt32(), turnChoice.GetProperty("operationStage").GetInt32(),
+                            turnChoice.GetProperty("delta").GetInt32()),
+                    _ => null,
+                };
+                return turnAction?.ActionId == actionId;
+            }
+            if (choice.GetProperty("family").GetString() == "polish-arrival")
+            {
+                var turnAction = new CampaignSourceTurnAction(authorityVersion,
+                    choice.GetProperty("choice").GetProperty("destination").GetString()!);
+                return turnAction.ActionId == actionId;
+            }
+            var action = new CampaignSourceSetupAction(authorityVersion,
+                choice.GetProperty("family").GetString()!, "", choice.GetProperty("choice"));
+            return action.ActionId == actionId;
+        }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException or JsonException or KeyNotFoundException or FormatException)
+        {
+            return false;
+        }
+    }
+
     public static CampaignPregameAxisDraft QuerySourceAxisGt1SupplyDraft(
         ExerciseSession session, CampaignActionAudience audience) =>
         CampaignExercises.QuerySourceAxisGt1SupplyDraft(session, audience);
@@ -146,6 +281,87 @@ public static class CampaignHostAdapter
 
     public static ExerciseStepResult AdmitSourceLibyanGroupedWorld(ExerciseSession session) =>
         CampaignExercises.AdmitSourceLibyanGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceItalianDivisionsGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceItalianDivisionsGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceSeventhArmoredGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceSeventhArmoredGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceSixteenthBrigadeGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceSixteenthBrigadeGroupedWorld(session);
+
+    public static ExerciseStepResult AdmitSourceCatanzaroGroupedWorld(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceCatanzaroGroupedWorld(session);
+
+    public static ExerciseStepResult StartSourceTurn(ExerciseSession session) =>
+        CampaignExercises.StartSourceTurn(session);
+
+    internal static bool IsLegacySourceTurnStart(CampaignHostAcceptedStep step)
+        => SourceTurnStartVersion(step) == CampaignSourceTurnAuthority.ContractVersion;
+
+    internal static int SourceTurnStartVersion(CampaignHostAcceptedStep step)
+    {
+        try
+        {
+            var records = step.EventRecords;
+            if (records.Count != 1) return 0;
+            using var document = System.Text.Json.JsonDocument.Parse(records[0]);
+            return document.RootElement.GetProperty("contractVersion").GetInt32();
+        }
+        catch (Exception error) when (error is System.Text.Json.JsonException or InvalidOperationException or KeyNotFoundException or FormatException)
+        {
+            return 0;
+        }
+    }
+
+    public static ExerciseStepResult ResolveSourceInitiative(ExerciseSession session) =>
+        CampaignExercises.ResolveSourceInitiative(session);
+
+    public static ExerciseStepResult CompleteSourceGt1Scheduling(ExerciseSession session) =>
+        CampaignExercises.CompleteSourceGt1Scheduling(session);
+
+    public static ExerciseStepResult CompleteSourceGt1Organization(ExerciseSession session) =>
+        CampaignExercises.CompleteSourceGt1Organization(session);
+
+    public static ExerciseStepResult CompleteSourceGt1StageOneArrivals(ExerciseSession session) =>
+        CampaignExercises.CompleteSourceGt1StageOneArrivals(session);
+
+    public static ExerciseStepResult CompleteSourceGt1StageOneFleet(ExerciseSession session) =>
+        CampaignExercises.CompleteSourceGt1StageOneFleet(session);
+
+    public static ExerciseStepResult CompleteSourceGt1FirstBreakdown(ExerciseSession session) =>
+        CampaignExercises.CompleteSourceGt1FirstBreakdown(session);
+
+    public static ExerciseStepResult ResolveSourceGt1Weather(ExerciseSession session) =>
+        CampaignExercises.ResolveSourceGt1Weather(session);
+
+    public static ExerciseStepResult AnnounceSourceGt1Lane2(ExerciseSession session) =>
+        CampaignExercises.AnnounceSourceGt1Lane2(session);
+
+    public static ExerciseStepResult AnnounceSourceGt1Lane3(ExerciseSession session) =>
+        CampaignExercises.AnnounceSourceGt1Lane3(session);
+
+    public static ExerciseStepResult CorrectSourceSeventhShell(ExerciseSession session) =>
+        CampaignExercises.CorrectSourceSeventhShell(session);
+
+    public static ExerciseStepResult ActivateSourceAxisMinorGarrisons(ExerciseSession session) =>
+        CampaignExercises.ActivateSourceAxisMinorGarrisons(session);
+
+    public static ExerciseStepResult ActivateSourceAxisGarrisonRemainder(ExerciseSession session) =>
+        CampaignExercises.ActivateSourceAxisGarrisonRemainder(session);
+
+    public static ExerciseStepResult ActivateSourceGiarabubMotorMachineGun(ExerciseSession session) =>
+        CampaignExercises.ActivateSourceGiarabubMotorMachineGun(session);
+
+    public static ExerciseStepResult ActivateSourceCwFrontline(ExerciseSession session) =>
+        CampaignExercises.ActivateSourceCwFrontline(session);
+
+    public static ExerciseStepResult AdmitSourceGiarabubMotorPlacementPolicy(ExerciseSession session) =>
+        CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(session);
+
+    public static ExerciseStepResult AnnounceSourceGt1MultiLanes(ExerciseSession session) =>
+        CampaignExercises.AnnounceSourceGt1MultiLanes(session);
 
     public static ExerciseStepResult AdmitSourceMatruhFormation(ExerciseSession session) =>
         CampaignExercises.AdmitSourceMatruhFormation(session);
@@ -482,6 +698,66 @@ public static class CampaignHostAdapter
             CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
     }
 
+    public static CampaignActionSubmission SourceItalianDivisionsGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceSeventhArmoredGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceSixteenthBrigadeGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceCatanzaroGroupedWorldCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source policy migration is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
+    public static CampaignActionSubmission SourceTurnSystemCommand(ExerciseSession predecessor,
+        ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is null)
+            throw new ArgumentException("An accepted source turn event is required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence.Receipt.ActionId);
+    }
+
     public static CampaignActionSubmission SourceMatruhFormationCommand(ExerciseSession predecessor,
         ExerciseStepResult accepted)
     {
@@ -812,6 +1088,11 @@ public static class CampaignHostAdapter
         ArgumentNullException.ThrowIfNull(session);
         return session.CurrentContacts.Records;
     }
+
+    /// <summary>Side-authorized source contacts for an active independent counter.</summary>
+    public static byte[] QuerySourceCounterContacts(ExerciseSession session,
+        CampaignActionAudience audience, string counterId) =>
+        CampaignExercises.QuerySourceCounterContacts(session, audience, counterId);
 
     public static CampaignHostAudienceCut QueryAudience(
         ExerciseSession session, CampaignActionAudience audience)
@@ -2209,6 +2490,23 @@ public static class CampaignHostAdapter
             or CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind
             or CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind
             or CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceTurnStartKind
+            or CampaignHostAcceptedStep.SourceTurnInitiativeKind
+            or CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind or CampaignHostAcceptedStep.SourceGt1FleetCompleteKind or CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind or CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind or CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind
+            or CampaignHostAcceptedStep.SourceGt1WeatherKind
+            or CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind
+            or CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind
+            or CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind
+            or CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind
+            or CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind
+            or CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind
+            or CampaignHostAcceptedStep.SourceCwFrontlineKind
+            or CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind
+            or CampaignHostAcceptedStep.SourceGt1MultiLanesKind
             or CampaignHostAcceptedStep.SourceMatruhFormationKind or CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind
             or CampaignHostAcceptedStep.SourceCwFreeGunsKind or CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind
             or CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind or CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind
@@ -2276,6 +2574,27 @@ public static class CampaignHostAdapter
              (CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind, null) or
              (CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind, null) or
              (CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind, null) or
+             (CampaignHostAcceptedStep.SourceTurnStartKind, null) or
+             (CampaignHostAcceptedStep.SourceTurnInitiativeKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1FleetCompleteKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1WeatherKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind, null) or
+             (CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind, null) or
+             (CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind, null) or
+             (CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind, null) or
+             (CampaignHostAcceptedStep.SourceCwFrontlineKind, null) or
+             (CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind, null) or
+             (CampaignHostAcceptedStep.SourceGt1MultiLanesKind, null) or
              (CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind, "land.graziani-commonwealth-priority-catalog") or
              (CampaignHostAcceptedStep.SourceMatruhFormationKind, null) or
              (CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind, "land.graziani-commonwealth-matruh-formation") or
@@ -2397,6 +2716,23 @@ public static class CampaignHostAdapter
             or CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind
             or CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind
             or CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind
+            or CampaignHostAcceptedStep.SourceTurnStartKind
+            or CampaignHostAcceptedStep.SourceTurnInitiativeKind
+            or CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind or CampaignHostAcceptedStep.SourceGt1FleetCompleteKind or CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind or CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind or CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind
+            or CampaignHostAcceptedStep.SourceGt1WeatherKind
+            or CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind
+            or CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind
+            or CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind
+            or CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind
+            or CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind
+            or CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind
+            or CampaignHostAcceptedStep.SourceCwFrontlineKind
+            or CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind
+            or CampaignHostAcceptedStep.SourceGt1MultiLanesKind
                 or CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind
                 or CampaignHostAcceptedStep.SourceMatruhFormationKind
                 or CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind
@@ -2611,6 +2947,27 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind => AdmitSourceMatruhGroupedWorld(session),
                 CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind => AdmitSourceMalettiGroupedWorld(session),
                 CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind => AdmitSourceLibyanGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind => AdmitSourceItalianDivisionsGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind => AdmitSourceSeventhArmoredGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind => AdmitSourceSixteenthBrigadeGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind => AdmitSourceCatanzaroGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceTurnStartKind => CampaignExercises.StartSourceTurn(session, SourceTurnStartVersion(step)),
+                CampaignHostAcceptedStep.SourceTurnInitiativeKind => ResolveSourceInitiative(session),
+                CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind => CompleteSourceGt1FirstBreakdown(session),
+                CampaignHostAcceptedStep.SourceGt1FleetCompleteKind => CompleteSourceGt1StageOneFleet(session),
+                CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind => CompleteSourceGt1StageOneArrivals(session),
+                CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind => CompleteSourceGt1Organization(session),
+                CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind => CompleteSourceGt1Scheduling(session),
+                CampaignHostAcceptedStep.SourceGt1WeatherKind => ResolveSourceGt1Weather(session),
+                CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind => AnnounceSourceGt1Lane2(session),
+                CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind => AnnounceSourceGt1Lane3(session),
+                CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind => CorrectSourceSeventhShell(session),
+                CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind => ActivateSourceAxisMinorGarrisons(session),
+                CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind => ActivateSourceAxisGarrisonRemainder(session),
+                CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => ActivateSourceGiarabubMotorMachineGun(session),
+                CampaignHostAcceptedStep.SourceCwFrontlineKind => ActivateSourceCwFrontline(session),
+                CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => AdmitSourceGiarabubMotorPlacementPolicy(session),
+                CampaignHostAcceptedStep.SourceGt1MultiLanesKind => AnnounceSourceGt1MultiLanes(session),
                 CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind => SubmitSourceCwPriorityCatalog(session, submission),
                 CampaignHostAcceptedStep.SourceMatruhFormationKind => AdmitSourceMatruhFormation(session),
                 CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind => SubmitSourceMatruhFormation(session, submission),
@@ -2784,6 +3141,39 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         SourceLibyanGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceItalianDivisionsGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceSeventhArmoredGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceSixteenthBrigadeGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceCatanzaroGroupedWorldCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind is CampaignHostAcceptedStep.SourceTurnStartKind or CampaignHostAcceptedStep.SourceTurnInitiativeKind
+                or CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind or CampaignHostAcceptedStep.SourceGt1FleetCompleteKind or CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind or CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind or CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind or CampaignHostAcceptedStep.SourceGt1WeatherKind
+                or CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind or CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind
+                or CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind or CampaignHostAcceptedStep.SourceGt1MultiLanesKind
+                or CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind
+                or CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind
+                or CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind
+                or CampaignHostAcceptedStep.SourceCwFrontlineKind
+                or CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SourceTurnSystemCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (step.Kind == CampaignHostAcceptedStep.SourceMatruhFormationKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
@@ -3332,6 +3722,27 @@ public sealed class CampaignHostAcceptedStep
     public const int SourceMatruhGroupedWorldContractVersion = 91;
     public const int SourceMalettiGroupedWorldContractVersion = 92;
     public const int SourceLibyanGroupedWorldContractVersion = 93;
+    public const int SourceItalianDivisionsGroupedWorldContractVersion = 94;
+    public const int SourceSeventhArmoredGroupedWorldContractVersion = 95;
+    public const int SourceSixteenthBrigadeGroupedWorldContractVersion = 96;
+    public const int SourceCatanzaroGroupedWorldContractVersion = 97;
+    public const int SourceTurnStartContractVersion = 98;
+    public const int SourceTurnInitiativeContractVersion = 99;
+    public const int SourceGt1BreakdownCompleteContractVersion = 114;
+    public const int SourceGt1FleetCompleteContractVersion = 113;
+    public const int SourceGt1ArrivalsCompleteContractVersion = 112;
+    public const int SourceGt1OrganizationCompleteContractVersion = 111;
+    public const int SourceGt1SchedulingCompleteContractVersion = 100;
+    public const int SourceGt1WeatherContractVersion = 101;
+    public const int SourceGt1Lane2AnnounceContractVersion = 102;
+    public const int SourceGt1Lane3AnnounceContractVersion = 103;
+    public const int SourceSeventhShellCorrectionContractVersion = 104;
+    public const int SourceGt1MultiLanesContractVersion = 105;
+    public const int SourceAxisMinorGarrisonsActivationContractVersion = 106;
+    public const int SourceAxisGarrisonRemainderContractVersion = 107;
+    public const int SourceGiarabubMotorMachineGunContractVersion = 108;
+    public const int SourceCwFrontlineContractVersion = 109;
+    public const int SourceGiarabubMotorPlacementPolicyContractVersion = 110;
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
@@ -3395,6 +3806,27 @@ public sealed class CampaignHostAcceptedStep
     public const string SourceMatruhGroupedWorldKind = "source-matruh-grouped-world";
     public const string SourceMalettiGroupedWorldKind = "source-maletti-grouped-world";
     public const string SourceLibyanGroupedWorldKind = "source-libyan-grouped-world";
+    public const string SourceItalianDivisionsGroupedWorldKind = "source-italian-divisions-grouped-world";
+    public const string SourceSeventhArmoredGroupedWorldKind = "source-seventh-armored-grouped-world";
+    public const string SourceSixteenthBrigadeGroupedWorldKind = "source-sixteenth-brigade-grouped-world";
+    public const string SourceCatanzaroGroupedWorldKind = "source-catanzaro-grouped-world";
+    public const string SourceTurnStartKind = "source-turn-start";
+    public const string SourceTurnInitiativeKind = "source-turn-initiative";
+    public const string SourceGt1BreakdownCompleteKind = "source-gt1-first-breakdown-complete";
+    public const string SourceGt1FleetCompleteKind = "source-gt1-stage1-fleet-complete";
+    public const string SourceGt1ArrivalsCompleteKind = "source-gt1-stage1-arrivals-complete";
+    public const string SourceGt1OrganizationCompleteKind = "source-gt1-organization-complete";
+    public const string SourceGt1SchedulingCompleteKind = "source-gt1-scheduling-complete";
+    public const string SourceGt1WeatherKind = "source-gt1-weather";
+    public const string SourceGt1Lane2AnnounceKind = "source-gt1-lane2-announce";
+    public const string SourceGt1Lane3AnnounceKind = "source-gt1-lane3-announce";
+    public const string SourceSeventhShellCorrectionKind = "source-seventh-shell-correction";
+    public const string SourceGt1MultiLanesKind = "source-gt1-multi-lanes";
+    public const string SourceAxisMinorGarrisonsActivationKind = "source-axis-minor-garrisons-activation";
+    public const string SourceAxisGarrisonRemainderKind = "source-axis-garrison-remainder-activation";
+    public const string SourceGiarabubMotorMachineGunKind = "source-giarabub-motor-machine-gun-activation";
+    public const string SourceCwFrontlineKind = "source-cw-frontline-activation";
+    public const string SourceGiarabubMotorPlacementPolicyKind = "source-giarabub-motor-placement-policy";
     public const string SourceCwPriorityCatalogChoiceKind = "source-cw-priority-catalog-choice";
     public const string SourceMatruhFormationKind = "source-matruh-formation";
     public const string SourceMatruhFormationChoiceKind = "source-matruh-formation-choice";
@@ -3438,7 +3870,7 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactCombatSelectionKind
+        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactCombatSelectionKind
                 or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
@@ -3457,7 +3889,7 @@ public sealed class CampaignHostAcceptedStep
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
                 or ContactRepeatMovementKind or ContactRepeatCombatSelectionKind
                 && string.IsNullOrWhiteSpace(actingElementId))
-            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
+            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 or NativeCombatAntiArmorKind or NativeCombatCancelledAssaultKind
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
@@ -3503,6 +3935,27 @@ public sealed class CampaignHostAcceptedStep
             SourceMatruhGroupedWorldKind => SourceMatruhGroupedWorldContractVersion,
             SourceMalettiGroupedWorldKind => SourceMalettiGroupedWorldContractVersion,
             SourceLibyanGroupedWorldKind => SourceLibyanGroupedWorldContractVersion,
+            SourceItalianDivisionsGroupedWorldKind => SourceItalianDivisionsGroupedWorldContractVersion,
+            SourceSeventhArmoredGroupedWorldKind => SourceSeventhArmoredGroupedWorldContractVersion,
+            SourceSixteenthBrigadeGroupedWorldKind => SourceSixteenthBrigadeGroupedWorldContractVersion,
+            SourceCatanzaroGroupedWorldKind => SourceCatanzaroGroupedWorldContractVersion,
+            SourceTurnStartKind => SourceTurnStartContractVersion,
+            SourceTurnInitiativeKind => SourceTurnInitiativeContractVersion,
+            SourceGt1BreakdownCompleteKind => SourceGt1BreakdownCompleteContractVersion,
+            SourceGt1FleetCompleteKind => SourceGt1FleetCompleteContractVersion,
+            SourceGt1ArrivalsCompleteKind => SourceGt1ArrivalsCompleteContractVersion,
+            SourceGt1OrganizationCompleteKind => SourceGt1OrganizationCompleteContractVersion,
+            SourceGt1SchedulingCompleteKind => SourceGt1SchedulingCompleteContractVersion,
+            SourceGt1WeatherKind => SourceGt1WeatherContractVersion,
+            SourceGt1Lane2AnnounceKind => SourceGt1Lane2AnnounceContractVersion,
+            SourceGt1Lane3AnnounceKind => SourceGt1Lane3AnnounceContractVersion,
+            SourceSeventhShellCorrectionKind => SourceSeventhShellCorrectionContractVersion,
+            SourceGt1MultiLanesKind => SourceGt1MultiLanesContractVersion,
+            SourceAxisMinorGarrisonsActivationKind => SourceAxisMinorGarrisonsActivationContractVersion,
+            SourceAxisGarrisonRemainderKind => SourceAxisGarrisonRemainderContractVersion,
+            SourceGiarabubMotorMachineGunKind => SourceGiarabubMotorMachineGunContractVersion,
+            SourceCwFrontlineKind => SourceCwFrontlineContractVersion,
+            SourceGiarabubMotorPlacementPolicyKind => SourceGiarabubMotorPlacementPolicyContractVersion,
             SourceCwPriorityCatalogChoiceKind => SourceCwPriorityCatalogChoiceContractVersion,
             SourceMatruhFormationKind => SourceMatruhFormationContractVersion,
             SourceMatruhFormationChoiceKind => SourceMatruhFormationChoiceContractVersion,

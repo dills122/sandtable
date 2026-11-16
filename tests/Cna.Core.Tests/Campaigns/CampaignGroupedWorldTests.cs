@@ -64,6 +64,14 @@ public sealed class CampaignGroupedWorldTests
         var detached = world.DetachMember(group.GroupId, id, 1, null).AssignMotorization(group.GroupId, id, 5);
         Assert.Equal(30, detached.RemainingMotorPoints(group.GroupId));
         Assert.Equal(5, Assert.Single(detached.Detached).Member.AssignedMotorPoints);
+        var movementCosts = detached.Groups.Single().Members.ToDictionary(value => value.ElementId,
+            value => new CapabilityPointAmount(1, 1), StringComparer.Ordinal);
+        var moved = detached.MoveFormation(group.GroupId, "c3618", movementCosts, 4, 1, 1);
+        Assert.Equal("c3617", Assert.Single(moved.Detached).LocationId);
+        Assert.Equal("c3618", Assert.Single(moved.Groups).LocationId);
+        Assert.Equal(30, moved.RemainingMotorPoints(group.GroupId));
+        Assert.Throws<InvalidOperationException>(() => moved.AssignMotorization(group.GroupId, id, -1));
+        Assert.Equal("c3617", Assert.Single(detached.Groups).LocationId);
         var element = new CampaignElementStateV5(id, "c3617", CampaignElementReserveStatus.None,
             new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null),
             [new CampaignComponentToeState(id + ".infantry", 5, ContentSourceCertifiedMalettiPackArtifact.Origin)]);
@@ -72,10 +80,14 @@ public sealed class CampaignGroupedWorldTests
         var next6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(element),
             prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
         var next8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, next6, prior.PendingArrivals);
-        var promoted = detached.Rebind(next8);
+        var promoted = detached.Rebind(next8, 1, 1);
         Assert.Empty(promoted.Detached);
         Assert.Equal(5, Assert.Single(promoted.ExternalReservations).AssignedMotorPoints);
         Assert.Equal(30, promoted.RemainingMotorPoints(group.GroupId));
+        var movedPromoted = promoted.MoveFormation(group.GroupId, "c3618", movementCosts, 4, 1, 1);
+        Assert.Equal("c3617", movedPromoted.Prior.World.Elements.Single(value => value.ElementId == id).CurrentLocationId);
+        Assert.Equal(30, movedPromoted.RemainingMotorPoints(group.GroupId));
+        Assert.Throws<InvalidOperationException>(() => movedPromoted.AssignMotorization(group.GroupId, id, -1));
         var imported = CampaignGroupedWorld.Create(next8, CampaignSourceFourthIndianDefinition.Hash(), detached.Groups,
             externalReservations: [new CampaignGroupedExternalReservation(group.GroupId, id, 5, 5)]);
         Assert.Equal(30, imported.RemainingMotorPoints(group.GroupId));
@@ -111,19 +123,33 @@ public sealed class CampaignGroupedWorldTests
         var next6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(element),
             prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
         var next8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, next6, prior.PendingArrivals);
-        var promoted = detached.Rebind(next8);
+        var promoted = detached.Rebind(next8, 1, 1);
         Assert.Empty(promoted.Detached);
         Assert.Equal(2, promoted.OccupantsAt("d3714").Count);
         Assert.Equal(1, promoted.StackAt("commonwealth", "d3714", _ => 1));
         Assert.Equal(prior.PendingArrivals, promoted.Prior.PendingArrivals);
-        Assert.Throws<InvalidOperationException>(() => world.Rebind(next8));
+        Assert.Throws<InvalidOperationException>(() => world.Rebind(next8, 1, 1));
         var changedElement = new CampaignElementStateV5("1-essex", "d3714", CampaignElementReserveStatus.None,
             new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null),
             [new CampaignComponentToeState("1-essex.infantry", 5, ContentSourceMatruhDetachedPackArtifact.Origin)]);
         var changed6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(changedElement),
             prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
         var changed8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, changed6, prior.PendingArrivals);
-        Assert.Throws<InvalidOperationException>(() => detached.Rebind(changed8));
+        Assert.Throws<InvalidOperationException>(() => detached.Rebind(changed8, 1, 1));
+        var futureLedger = new CampaignElementStateV5("1-essex", "d3714", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(2, 1, CapabilityPointAmount.Zero, 0, null, null),
+            [new CampaignComponentToeState("1-essex.infantry", 6, ContentSourceMatruhDetachedPackArtifact.Origin)]);
+        var futureWorld = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(futureLedger),
+            prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
+        var future = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, futureWorld, prior.PendingArrivals);
+        Assert.Throws<InvalidOperationException>(() => detached.Rebind(future, 1, 1));
+        var laterStage = new CampaignElementStateV5("1-essex", "d3714", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(1, 2, CapabilityPointAmount.Zero, 0, null, null),
+            [new CampaignComponentToeState("1-essex.infantry", 6, ContentSourceMatruhDetachedPackArtifact.Origin)]);
+        var laterStageWorld = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(laterStage),
+            prior.World.Representations.Append(representation), prior.World.BrokenVehicleLots);
+        var later = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, laterStageWorld, prior.PendingArrivals);
+        Assert.Throws<InvalidOperationException>(() => detached.Rebind(later, 1, 1));
     }
 
     [Fact]
@@ -170,5 +196,88 @@ public sealed class CampaignGroupedWorldTests
         Assert.Throws<InvalidOperationException>(() => world.AssignMotorization(group.GroupId, "1-royal-fusiliers", 1));
         Assert.Equal(world.Hash(), assigned.AssignMotorization(group.GroupId, "central-india-horse", -6).Hash());
         Assert.Throws<ArgumentException>(() => CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group, group]));
+    }
+
+    [Fact]
+    public void MovedGroupIdsTracksOnlyTheFormationThatActuallyMoved()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId,
+            new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None));
+        var groupA = new CampaignGroupedFormation("group-a", "commonwealth", "group-a-hq", "d3615", null, 10,
+        [
+            new CampaignGroupedMember("group-a-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ]);
+        var groupB = new CampaignGroupedFormation("group-b", "commonwealth", "group-b-hq", "d3714", null, 10,
+        [
+            new CampaignGroupedMember("group-b-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ]);
+        var world = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [groupA, groupB]);
+        Assert.Empty(world.MovedGroupIds);
+        var costs = new Dictionary<string, CapabilityPointAmount> { ["group-a-hq"] = new CapabilityPointAmount(1, 1) };
+        var moved = world.MoveFormation("group-a", "d3616", costs, 0, 1, 1);
+        // Only the formation that actually moved is tracked; an untouched sibling
+        // formation's own location-coherence checks must stay fully enforced.
+        Assert.Single(moved.MovedGroupIds);
+        Assert.Contains("group-a", moved.MovedGroupIds);
+        Assert.DoesNotContain("group-b", moved.MovedGroupIds);
+        Assert.Equal("d3714", moved.Groups.Single(value => value.GroupId == "group-b").LocationId);
+    }
+
+    [Fact]
+    public void RebindAdmitsANewUnrelatedIndependentUnitSharingAGroupsHex()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var initialization = new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None);
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId, initialization);
+        var group = new CampaignGroupedFormation("group-a", "commonwealth", "group-a-hq", "d3615", null, 10,
+        [
+            new CampaignGroupedMember("group-a-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ]);
+        var world = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group]);
+        var newElement = new CampaignElementStateV5("new-independent-unit", "d3615", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null), []);
+        var newRepresentation = new CampaignMapRepresentationState("new-rep.new-independent-unit", "d3615",
+            CampaignMapRepresentationBindingKind.IndependentElement, [newElement.ElementId]);
+        var successor6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(newElement),
+            prior.World.Representations.Append(newRepresentation), prior.World.BrokenVehicleLots);
+        var successor8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, successor6, prior.PendingArrivals);
+        // A freshly activated, unrelated independent unit (e.g. a minor garrison
+        // or CW-frontline element) may legitimately land on a hex a grouped
+        // formation already occupies; Rebind must admit it, not reject it as an
+        // invalid detached-member promotion.
+        var rebound = world.Rebind(successor8, 1, 1);
+        Assert.Equal(2, rebound.OccupantsAt("d3615").Count);
+        Assert.Empty(rebound.Detached);
+        Assert.Same(group, Assert.Single(rebound.Groups));
+        var colliding = new CampaignMapRepresentationState("colliding-rep", "d3615",
+            CampaignMapRepresentationBindingKind.IndependentElement, ["group-a-hq"]);
+        var collidingElement = new CampaignElementStateV5("group-a-hq", "d3615", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null), []);
+        var collidingSuccessor6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(collidingElement),
+            prior.World.Representations.Append(colliding), prior.World.BrokenVehicleLots);
+        var collidingSuccessor8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, collidingSuccessor6, prior.PendingArrivals);
+        Assert.Throws<InvalidOperationException>(() => world.Rebind(collidingSuccessor8, 1, 1));
+    }
+
+    [Fact]
+    public void ContractVersionDistinguishesMovedFromUnknownMotorPoolIndependently()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId,
+            new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None));
+        var group = new CampaignGroupedFormation("group-a", "commonwealth", "group-a-hq", "d3615", null, 0,
+        [
+            new CampaignGroupedMember("group-a-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ], motorPoolKnown: false);
+        var world = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group]);
+        using var baseJson = System.Text.Json.JsonDocument.Parse(world.SerializeCanonical());
+        Assert.Equal(10, baseJson.RootElement.GetProperty("contractVersion").GetInt32());
+        var costs = new Dictionary<string, CapabilityPointAmount> { ["group-a-hq"] = new CapabilityPointAmount(1, 1) };
+        var moved = world.MoveFormation("group-a", "d3616", costs, 0, 1, 1);
+        // Moved AND an unknown motor pool must stay distinguishable from Moved
+        // alone (version 11) instead of the two aliasing to the same number.
+        using var movedJson = System.Text.Json.JsonDocument.Parse(moved.SerializeCanonical());
+        Assert.Equal(12, movedJson.RootElement.GetProperty("contractVersion").GetInt32());
     }
 }

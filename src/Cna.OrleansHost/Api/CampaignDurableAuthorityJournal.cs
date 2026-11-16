@@ -764,6 +764,202 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return true;
     }
 
+    internal bool AdmitSourceItalianDivisionsGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceItalianDivisionsGroupedAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceItalianDivisionsGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceItalianDivisionsGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceSeventhArmoredGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceSeventhArmoredGroupedAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceSeventhArmoredGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceSeventhArmoredGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceSixteenthBrigadeGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceSixteenthBrigadeGroupedAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceSixteenthBrigadeGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceSixteenthBrigadeGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool AdmitSourceCatanzaroGroupedWorld(string campaignId, string operatorSecret)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not a source-backed setup.");
+        if (CampaignExercises.IsSourceCatanzaroGroupedAdmitted(head.Session))
+            return false;
+        var accepted = CampaignHostAdapter.AdmitSourceCatanzaroGroupedWorld(head.Session);
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source policy is not available at this position.");
+        var command = CampaignHostAdapter.SourceCatanzaroGroupedWorldCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head,
+            CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
+    internal bool StartSourceTurn(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTurnStartKind);
+
+    internal bool ResolveSourceInitiative(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTurnInitiativeKind);
+
+    internal bool CompleteSourceGt1Scheduling(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind);
+
+    internal bool CompleteSourceGt1Organization(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind);
+
+    internal bool CompleteSourceGt1StageOneArrivals(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind);
+
+    internal bool CompleteSourceGt1StageOneFleet(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1FleetCompleteKind);
+
+    internal bool CompleteSourceGt1FirstBreakdown(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind);
+
+    internal bool ResolveSourceGt1Weather(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1WeatherKind);
+
+    internal bool AnnounceSourceGt1Lane2(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind);
+
+    internal bool AnnounceSourceGt1Lane3(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind);
+
+    internal bool CorrectSourceSeventhShell(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind);
+
+    internal bool ActivateSourceAxisMinorGarrisons(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind);
+
+    internal bool ActivateSourceAxisGarrisonRemainder(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind);
+
+    internal bool ActivateSourceGiarabubMotorMachineGun(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind);
+
+    internal bool ActivateSourceCwFrontline(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceCwFrontlineKind);
+
+    internal bool AdmitSourceGiarabubMotorPlacementPolicy(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind);
+
+    internal bool AnnounceSourceGt1MultiLanes(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1MultiLanesKind);
+
+    private bool ApplySourceTurnSystemStep(string campaignId, string operatorSecret, string kind)
+    {
+        RequireWritable();
+        using var connection = Connect(create: false);
+        using var transaction = connection.BeginTransaction(deferred: false);
+        RequireOperator(connection, transaction, operatorSecret);
+        var head = Load(connection, transaction, campaignId);
+        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
+            throw new InvalidOperationException("Campaign is not source-backed.");
+        var alreadyApplied = kind switch
+        {
+            CampaignHostAcceptedStep.SourceTurnStartKind => CampaignExercises.IsSourceTurnStarted(head.Session),
+            CampaignHostAcceptedStep.SourceTurnInitiativeKind => CampaignExercises.IsSourceInitiativeResolved(head.Session),
+            CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind => CampaignExercises.IsSourceGt1SchedulingCompleted(head.Session),
+            CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind => CampaignExercises.IsSourceGt1OrganizationCompleted(head.Session),
+            CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind => CampaignExercises.IsSourceGt1StageOneArrivalsCompleted(head.Session),
+            CampaignHostAcceptedStep.SourceGt1FleetCompleteKind => CampaignExercises.IsSourceGt1StageOneFleetCompleted(head.Session),
+            CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind => CampaignExercises.IsSourceGt1FirstBreakdownCompleted(head.Session),
+            CampaignHostAcceptedStep.SourceGt1WeatherKind => CampaignExercises.IsSourceGt1WeatherResolved(head.Session),
+            CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind => CampaignExercises.IsSourceGt1Lane2Announced(head.Session),
+            CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind => CampaignExercises.IsSourceGt1Lane3Announced(head.Session),
+            CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind => CampaignExercises.IsSourceSeventhShellCorrected(head.Session),
+            CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind => CampaignExercises.IsSourceAxisMinorGarrisonsActivated(head.Session),
+            CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind => CampaignExercises.IsSourceAxisGarrisonRemainderActivated(head.Session),
+            CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => CampaignExercises.IsSourceGiarabubMotorMachineGunActivated(head.Session),
+            CampaignHostAcceptedStep.SourceCwFrontlineKind => CampaignExercises.IsSourceCwFrontlineActivated(head.Session),
+            CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignExercises.IsSourceGiarabubMotorPlacementPolicyAdmitted(head.Session),
+            CampaignHostAcceptedStep.SourceGt1MultiLanesKind => CampaignExercises.IsSourceGt1MultiLanesAnnounced(head.Session),
+            _ => throw new ArgumentException("Unknown source turn step.", nameof(kind)),
+        };
+        if (alreadyApplied)
+            return false;
+        var accepted = kind switch
+        {
+            CampaignHostAcceptedStep.SourceTurnStartKind => CampaignHostAdapter.StartSourceTurn(head.Session),
+            CampaignHostAcceptedStep.SourceTurnInitiativeKind => CampaignHostAdapter.ResolveSourceInitiative(head.Session),
+            CampaignHostAcceptedStep.SourceGt1SchedulingCompleteKind => CampaignHostAdapter.CompleteSourceGt1Scheduling(head.Session),
+            CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind => CampaignHostAdapter.CompleteSourceGt1Organization(head.Session),
+            CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind => CampaignHostAdapter.CompleteSourceGt1StageOneArrivals(head.Session),
+            CampaignHostAcceptedStep.SourceGt1FleetCompleteKind => CampaignHostAdapter.CompleteSourceGt1StageOneFleet(head.Session),
+            CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind => CampaignHostAdapter.CompleteSourceGt1FirstBreakdown(head.Session),
+            CampaignHostAcceptedStep.SourceGt1WeatherKind => CampaignHostAdapter.ResolveSourceGt1Weather(head.Session),
+            CampaignHostAcceptedStep.SourceGt1Lane2AnnounceKind => CampaignHostAdapter.AnnounceSourceGt1Lane2(head.Session),
+            CampaignHostAcceptedStep.SourceGt1Lane3AnnounceKind => CampaignHostAdapter.AnnounceSourceGt1Lane3(head.Session),
+            CampaignHostAcceptedStep.SourceSeventhShellCorrectionKind => CampaignHostAdapter.CorrectSourceSeventhShell(head.Session),
+            CampaignHostAcceptedStep.SourceAxisMinorGarrisonsActivationKind => CampaignHostAdapter.ActivateSourceAxisMinorGarrisons(head.Session),
+            CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind => CampaignHostAdapter.ActivateSourceAxisGarrisonRemainder(head.Session),
+            CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => CampaignHostAdapter.ActivateSourceGiarabubMotorMachineGun(head.Session),
+            CampaignHostAcceptedStep.SourceCwFrontlineKind => CampaignHostAdapter.ActivateSourceCwFrontline(head.Session),
+            CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignHostAdapter.AdmitSourceGiarabubMotorPlacementPolicy(head.Session),
+            CampaignHostAcceptedStep.SourceGt1MultiLanesKind => CampaignHostAdapter.AnnounceSourceGt1MultiLanes(head.Session),
+            _ => throw new ArgumentException("Unknown source turn step.", nameof(kind)),
+        };
+        if (!accepted.IsAccepted)
+            throw new InvalidOperationException("Source turn step is unavailable at this position.");
+        var command = CampaignHostAdapter.SourceTurnSystemCommand(head.Session, accepted);
+        PersistAccepted(connection, transaction, campaignId, head, kind, null, null, null, null, command, accepted);
+        transaction.Commit();
+        return true;
+    }
+
     internal bool AdmitSourceMatruhFormation(string campaignId, string operatorSecret)
     {
         RequireWritable();
@@ -1334,7 +1530,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (!sourceImport.IsVerified)
                 throw new InvalidOperationException("Core rejected retained campaign authority.");
             VerifyPregameAuxiliaryAuthority(connection, transaction, campaignId,
-                CampaignExercises.IsSourceSetupSeat(sourceImport.Session!, CampaignActionAudience.Commonwealth));
+                CampaignExercises.IsSourceSetupSeat(sourceImport.Session!, CampaignActionAudience.Commonwealth)
+                || CampaignExercises.IsSourceTurnSeat(sourceImport.Session!, CampaignActionAudience.Commonwealth));
             return new Loaded(sourceImport.Session!, sequence, hash, null, request, timingBytes);
         }
         var steps = new List<CampaignHostAcceptedStep>();
@@ -1401,7 +1598,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             throw new InvalidOperationException("Core rejected retained campaign authority.");
         if (request.ContractVersion == CampaignPregameSourceCreation.RequestVersion)
             VerifyPregameAuxiliaryAuthority(connection, transaction, campaignId,
-                CampaignExercises.IsSourceSetupSeat(imported.Session!, CampaignActionAudience.Commonwealth));
+                CampaignExercises.IsSourceSetupSeat(imported.Session!, CampaignActionAudience.Commonwealth)
+                || CampaignExercises.IsSourceTurnSeat(imported.Session!, CampaignActionAudience.Commonwealth));
         VerifyForceRounds(connection, transaction, campaignId, steps, timing);
         VerifyRbaRounds(connection, transaction, campaignId, steps, timing);
         VerifyCycleRounds(connection, transaction, campaignId, steps, timing);

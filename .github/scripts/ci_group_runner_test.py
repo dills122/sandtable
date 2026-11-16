@@ -127,7 +127,7 @@ class ResourcePolicyTests(unittest.TestCase):
 
     def test_runtime_group_aggregate_and_host_reserve_are_fail_closed(self):
         self.assertTrue(runner.validate_sample(self.snapshot(), {'a': 2**30}))
-        for snapshot, groups in [(self.snapshot(), {'a': 4 * 2**30 + 1}), (self.snapshot(), {'a': 3 * 2**30, 'b': 3 * 2**30, 'c': 3 * 2**30}), (dict(self.snapshot(), memory_available_bytes=3 * 2**30), {'a': 1})]:
+        for snapshot, groups in [(self.snapshot(), {'a': 5 * 2**30 + 1}), (self.snapshot(), {'a': 3 * 2**30, 'b': 3 * 2**30, 'c': 3 * 2**30}), (dict(self.snapshot(), memory_available_bytes=3 * 2**30), {'a': 1})]:
             with self.assertRaises(ValueError): runner.validate_sample(snapshot, groups)
 
     def test_linux_uses_tightest_ancestor_cgroup_limit_and_remaining_memory(self):
@@ -144,7 +144,7 @@ class ResourcePolicyTests(unittest.TestCase):
     def test_kernel_peak_units_are_explicit_and_overshoot_fails(self):
         self.assertEqual(runner.kernel_peak_bytes(1024, 'Linux'), 2**20)
         self.assertEqual(runner.kernel_peak_bytes(1024, 'Darwin'), 1024)
-        with self.assertRaises(ValueError): runner.validate_kernel_peak(4 * 2**30 + 1)
+        with self.assertRaises(ValueError): runner.validate_kernel_peak(5 * 2**30 + 1)
 
 
 class ResourceMonitorTests(unittest.TestCase):
@@ -155,10 +155,10 @@ class ResourceMonitorTests(unittest.TestCase):
             guard = runner.ResourceGuard(cancellation, 'r02-1', {})
             guard.preflight()
             guard.register('support-contract', 123)
-            with mock.patch.object(runner, 'session_rss', return_value={'support-contract': 4 * 2**30 + 1}): guard.sample_once()
+            with mock.patch.object(runner, 'session_rss', return_value={'support-contract': 5 * 2**30 + 1}): guard.sample_once()
         self.assertTrue(cancellation.is_set())
-        self.assertIn('4GiB', guard.evidence['abort_reason'])
-        self.assertGreater(guard.evidence['peak_group_rss_bytes']['support-contract'], 4 * 2**30)
+        self.assertIn('5GiB', guard.evidence['abort_reason'])
+        self.assertGreater(guard.evidence['peak_group_rss_bytes']['support-contract'], 5 * 2**30)
 
 
 class LaneSupervisorTests(unittest.TestCase):

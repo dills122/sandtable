@@ -7,6 +7,17 @@ public sealed class ExerciseCheckpoint
 {
     public const int CurrentContractVersion = 1;
 
+    internal ExerciseCheckpoint(CampaignSourceTurnAuthority turn)
+    {
+        ArgumentNullException.ThrowIfNull(turn);
+        ContractVersion = turn.World.CdSeamBound ? CampaignSourceTurnAuthority.CdSeamContractVersion
+            : turn.World.MapIdentityBound ? CampaignSourceTurnAuthority.MapBoundContractVersion : CampaignSourceTurnAuthority.ContractVersion;
+        CampaignId = turn.Source.Request.CampaignId;
+        StateVersion = turn.StateVersion;
+        RulesetHash = turn.Source.Request.RulesetHash;
+        PositionId = turn.Position.PositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignSourceAuthorityState authority)
     {
         ArgumentNullException.ThrowIfNull(authority);

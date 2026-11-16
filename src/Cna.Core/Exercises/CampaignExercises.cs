@@ -10,6 +10,714 @@ namespace Cna.Core.Exercises;
 
 public static class CampaignExercises
 {
+    public static ExerciseStepResult SubmitSourceOwnerFinalization(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority is not { } authority || session.SourceTurn is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var finish = !authority.IsOwnerFinalized(submission.Audience);
+        if (submission.ActionId != CampaignSourceAuthorityState.SetupFinalizationActionId(submission.Audience, finish))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.SetOwnerFinalization(submission.Audience, finish);
+        var bytes = authority.SerializeSetupFinalizationEvent(next, submission.Audience, finish);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion,
+            next.StateVersion, CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame,
+            session.CurrentContacts.AdvancePregameSource(authority.StateVersion), [.. session.PregameHistory, bytes], next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static CampaignPregameAxisDraft QuerySourceHorseSetupDraft(ExerciseSession session, CampaignActionAudience audience, bool stageOne)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var authority = session.SourceAuthority ?? throw new InvalidOperationException("Source setup authority is unavailable.");
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth)
+            || stageOne && audience != CampaignActionAudience.Commonwealth)
+            throw new InvalidOperationException("Horse setup owner is unavailable.");
+        var kind = stageOne ? authority.HorseStageOneNoTraining ? "reopen-stage1" : "decline-stage1"
+            : authority.HasHorseRulingVote(audience) ? "withdraw" : "approve";
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteString("rulingId", CampaignSourceAuthorityState.HorseRulingId);
+            writer.WriteString("classification", "provisional-oa-note-c-untrained-motorized-infantry");
+            writer.WriteString("classificationStatus", authority.HorseRulingVotes == 3 ? "agreed-provisional" : "awaiting-independent-approvals");
+            writer.WriteBoolean("ownApproval", authority.HasHorseRulingVote(audience));
+            writer.WriteNull("priorTrainingProgress"); writer.WriteNull("priorTrainingActive");
+            if (stageOne) { writer.WriteBoolean("noTrainingInGt1Stage1", authority.HorseStageOneNoTraining); writer.WriteString("priorProgressEffect", "unknown-not-reset-by-this-choice"); }
+            writer.WriteStartArray("choices"); writer.WriteStartObject(); writer.WriteString("kind", kind);
+            writer.WriteString("rulingId", CampaignSourceAuthorityState.HorseRulingId); writer.WriteEndObject(); writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(),
+            [CampaignSourceAuthorityState.HorseSetupActionId(audience, kind)]);
+    }
+
+    public static ExerciseStepResult SubmitSourceHorseSetup(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority is not { } authority || session.SourceTurn is not null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var kinds = submission.Audience == CampaignActionAudience.Commonwealth
+            ? new[] { "approve", "withdraw", "decline-stage1", "reopen-stage1" } : new[] { "approve", "withdraw" };
+        var kind = kinds.SingleOrDefault(value => CampaignSourceAuthorityState.HorseSetupActionId(submission.Audience, value) == submission.ActionId);
+        if (kind is null || authority.IsOwnerFinalized(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        CampaignSourceAuthorityState next;
+        try { next = authority.SetHorseSetupDecision(submission.Audience, kind); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal); }
+        var bytes = authority.SerializeHorseSetupEvent(next, submission.Audience, kind);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame,
+            session.CurrentContacts.AdvancePregameSource(authority.StateVersion), [.. session.PregameHistory, bytes], next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static bool IsSourceTurnStarted(ExerciseSession session) => session?.SourceTurn is not null;
+
+    public static byte[] QuerySourceCounterContacts(ExerciseSession session, CampaignActionAudience audience, string counterId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var turn = session.SourceTurn ?? throw new InvalidOperationException("Source turn authority is unavailable.");
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Source counter observer seat is unavailable."),
+        };
+        return session.CurrentContacts.ObserveSourceCounter(turn, side, counterId);
+    }
+
+    public static bool IsSourceInitiativeResolved(ExerciseSession session) => session?.SourceTurn?.InitiativeHolder is not null;
+
+    public static bool IsSourceGt1SchedulingCompleted(ExerciseSession session) =>
+        session?.SourceTurn is { Gt3Supply.Finished: true, Gt5Supply.Die: not null } turn
+        && turn.Position.PhaseId != LandPhaseIds.NavalConvoySchedule;
+
+    public static bool IsSourceGt1WeatherResolved(ExerciseSession session) => session?.SourceTurn?.StageOneWeather is not null;
+
+    public static bool IsSourceGt1Lane2Announced(ExerciseSession session) => session?.SourceTurn?.AxisArrival.Announced == true;
+
+    public static bool IsSourceGt1Lane3Announced(ExerciseSession session) => session?.SourceTurn?.BenghaziArrival.Announced == true;
+
+    public static bool IsSourceGt1MultiLanesAnnounced(ExerciseSession session) => session?.SourceTurn?.MultiArrival is not null;
+
+    public static bool IsSourceTurnSeat(ExerciseSession session, CampaignActionAudience audience) =>
+        session is not null && session.SourceTurn is not null
+        && audience is CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth;
+
+    public static ExerciseStepResult SubmitSourceGt3SupplyRoll(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Axis)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction action)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = action.Kind switch
+        {
+            "source-axis-gt3-supply-roll" => prior.RollGt3Supply(),
+            "source-axis-gt3-supply-adjust" => prior.AdjustGt3Supply(action.Lane!.Value, action.Stage!.Value, action.Delta!.Value),
+            "source-axis-gt3-supply-finish" => prior.FinishGt3Supply(),
+            _ => throw new InvalidOperationException("Unsupported GT3 supply action."),
+        };
+        var eventType = action.Kind switch
+        {
+            "source-axis-gt3-supply-roll" => "source-axis-gt3-supply-rolled",
+            "source-axis-gt3-supply-adjust" => "source-axis-gt3-supply-adjusted",
+            _ => "source-axis-gt3-supply-finished",
+        };
+        var bytes = next.SerializeEvent(eventType, submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: "axis", lane: action.Lane, stage: action.Stage, delta: action.Delta);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.Axis, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion), [.. session.PregameHistory, bytes], prior.Source, next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceGt5SupplyRoll(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Commonwealth)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-commonwealth-gt5-supply-roll" })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = prior.RollGt5Supply();
+        var bytes = next.SerializeEvent("source-commonwealth-gt5-supply-rolled", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: "commonwealth");
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.Commonwealth, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion), [.. session.PregameHistory, bytes], prior.Source, next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceTacticalShippingDecline(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-tactical-shipping-decline" })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var side = submission.Audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var next = prior.DeclineTacticalShipping(side);
+        var bytes = next.SerializeEvent("source-tactical-shipping-declined", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: side == LandSide.Axis ? "axis" : "commonwealth");
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceStageOneOrder(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Axis)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction action || action.Kind is not ("source-stage1-act-first" or "source-stage1-act-last"))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = prior.DeclareStageOneOrder(action.Kind == "source-stage1-act-first");
+        var bytes = next.SerializeEvent("source-stage1-order-declared", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: "axis", axisFirst: action.Kind == "source-stage1-act-first");
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.Axis, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceVoluntaryOrganizationDecline(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-voluntary-organization-decline" })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var side = submission.Audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var next = prior.DeclineVoluntaryOrganization(side);
+        var bytes = next.SerializeEvent("source-voluntary-organization-declined", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: side == LandSide.Axis ? "axis" : "commonwealth");
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceGt1FirstReservesDecline(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-stage1-first-reserves-decline" })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var side = submission.Audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var next = prior.DeclineGt1FirstReserves(side);
+        var actor = side == LandSide.Axis ? "axis" : "commonwealth";
+        var bytes = next.SerializeEvent("source-gt1-first-reserves-declined", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: actor);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceGt1FirstMovementFinish(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-stage1-first-movement-finish" })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var side = submission.Audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var next = prior.FinishGt1FirstMovement(side);
+        var actor = side == LandSide.Axis ? "axis" : "commonwealth";
+        var bytes = next.SerializeEvent("source-gt1-first-movement-finished", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: actor);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceFourthIndianOpeningMove(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Commonwealth)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-fourth-indian-opening-move", Destination: { } supplyId })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        CampaignSourceTurnAuthority next; CampaignContactJournal contacts;
+        try
+        {
+            next = prior.MoveFourthIndianOpening(supplyId);
+            contacts = session.CurrentContacts.AppendSourceMovement(prior, next, CampaignSourceFourthIndianMovement.GroupId);
+        }
+        catch (Exception error) when (error is InvalidOperationException or ArgumentException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-fourth-indian-opening-moved", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: "commonwealth", supplyId: supplyId);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame, contacts,
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceAustralianBaselineVote(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion
+            || submission.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-australian-baseline-approve" or "source-australian-baseline-withdraw" } action)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var side = submission.Audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var approve = action.Kind == "source-australian-baseline-approve";
+        var next = prior.VoteSixthAustralianBaseline(side, approve);
+        var bytes = next.SerializeEvent("source-australian-baseline-voted", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: side == LandSide.Axis ? "axis" : "commonwealth", baselineApproved: approve);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceSixthAustralianTrainingInterrupt(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Commonwealth)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-sixth-australian-training-interrupt" })
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = prior.InterruptSixthAustralianTraining();
+        var bytes = next.SerializeEvent("source-sixth-australian-training-interrupted", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: "commonwealth");
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult SubmitSourceGt1Lane2AttackDecline(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Commonwealth)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var query = CampaignSourceSetupBridge.QueryTurn(session, submission.Audience);
+        if (!query.IsSuccessful || query.ActionSet?.Candidates.SingleOrDefault(value => value.ActionId == submission.ActionId)
+                is not CampaignSourceTurnAction { Kind: "source-gt1-lane2-attack-decline" or "source-gt1-lane3-attack-decline" or "source-gt1-lane6-attack-decline" } action)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var lane = action.Kind switch { "source-gt1-lane2-attack-decline" => 2, "source-gt1-lane3-attack-decline" => 3, _ => 6 };
+        var next = prior.MultiArrival is not null ? prior.DeclineGt1MultiLaneAttack(lane)
+            : lane == 2 ? prior.DeclineGt1Lane2Attack() : prior.DeclineGt1Lane3Attack();
+        var eventType = prior.MultiArrival is not null ? "source-gt1-op1-multi-lane-declined"
+            : lane == 2 ? "source-gt1-op1-lane2-attack-declined" : "source-gt1-op1-lane3-attack-declined";
+        var bytes = next.SerializeEvent(eventType, submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), actor: "commonwealth", lane: lane, stage: 1);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult AnnounceSourceGt1Lane2(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.AnnounceGt1Lane2(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-op1-lane2-announced", CampaignSourceTurnAuthority.AnnounceGt1Lane2ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), lane: 2, stage: 1);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.AnnounceGt1Lane2ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult AnnounceSourceGt1Lane3(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.AnnounceGt1Lane3(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-op1-lane3-announced", CampaignSourceTurnAuthority.AnnounceGt1Lane3ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), lane: 3, stage: 1);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.AnnounceGt1Lane3ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult AnnounceSourceGt1MultiLanes(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.AnnounceGt1MultiLanes(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-op1-multi-lanes-announced", CampaignSourceTurnAuthority.AnnounceGt1MultiLanesActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), announcedLanes: next.MultiArrival!.Lanes);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.AnnounceGt1MultiLanesActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    /// <summary>Return the Commonwealth's source-backed Polish arrival options at their actual turn position.</summary>
+    public static CampaignPregameAxisDraft QuerySourcePolishArrivalDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience != CampaignActionAudience.Commonwealth || session.SourceTurn is not { } turn)
+            throw new InvalidOperationException("Polish arrival authority is unavailable.");
+        var choices = CampaignSourcePolishArrival.ValidDestinations(turn.World, turn.Position);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("positionId", turn.Position.PositionId);
+            writer.WriteString("groupId", CampaignSourcePolishArrival.GroupId);
+            writer.WriteStartArray("choices");
+            foreach (var location in choices) { writer.WriteStartObject(); writer.WriteString("destination", location); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(turn.StateVersion, stream.ToArray(), choices.Select(turn.PolishActionId));
+    }
+
+    public static ExerciseStepResult SubmitSourcePolishArrival(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Commonwealth)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != prior.Source.Request.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != prior.Position.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var destination = CampaignSourcePolishArrival.ValidDestinations(prior.World, prior.Position)
+            .SingleOrDefault(value => prior.PolishActionId(value) == submission.ActionId);
+        if (destination is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = prior.ArrivePolish(destination);
+        var bytes = next.SerializeEvent("source-polish-brigade-arrived", submission.ActionId,
+            prior.StateVersion, prior.SerializeCheckpoint(), destination);
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.Commonwealth, submission.ActionId);
+        CampaignContactJournal contacts;
+        try { contacts = session.CurrentContacts.AppendSourcePolishArrival(prior, next); }
+        catch (Exception error) when (error is InvalidOperationException or ArgumentException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            contacts, [.. session.PregameHistory, bytes], prior.Source, next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    /// <summary>Start the source-backed turn only after its historical setup is ready.</summary>
+    public static ExerciseStepResult StartSourceTurn(ExerciseSession session) => StartSourceTurn(session, CampaignSourceTurnAuthority.CdSeamContractVersion);
+
+    internal static ExerciseStepResult StartSourceTurn(ExerciseSession session, bool legacy) => StartSourceTurn(session,
+        legacy ? CampaignSourceTurnAuthority.ContractVersion : CampaignSourceTurnAuthority.MapBoundContractVersion);
+
+    internal static ExerciseStepResult StartSourceTurn(ExerciseSession session, int contractVersion)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (contractVersion is not (CampaignSourceTurnAuthority.ContractVersion or CampaignSourceTurnAuthority.MapBoundContractVersion
+                or CampaignSourceTurnAuthority.CdSeamContractVersion)
+            || session.SourceTurn is not null || session.SourceAuthority is not { } source)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority turn;
+        try
+        {
+            turn = CampaignSourceTurnAuthority.Start(source, legacy: contractVersion == CampaignSourceTurnAuthority.ContractVersion,
+            cdSeam: contractVersion == CampaignSourceTurnAuthority.CdSeamContractVersion);
+        }
+        catch (Exception error) when (error is InvalidOperationException or ArgumentException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = turn.SerializeEvent("source-turn-started", CampaignSourceTurnAuthority.StartActionId,
+            source.StateVersion, source.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(source.Request.CampaignId, source.StateVersion, turn.StateVersion,
+            turn.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.StartActionId);
+        CampaignContactJournal contacts;
+        try { contacts = session.CurrentContacts.AppendSourceTurnStart(turn); }
+        catch (Exception error) when (error is InvalidOperationException or ArgumentException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        return ExerciseStepResult.Accepted(new ExerciseSession(source.Pregame,
+            contacts, [.. session.PregameHistory, bytes], source, turn),
+            new ExerciseStepEvidence(receipt, bytes, turn.SerializeCheckpoint()));
+    }
+
+    /// <summary>Resolve the first turn's predetermined initiative without resetting the retained RNG.</summary>
+    public static ExerciseStepResult ResolveSourceInitiative(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.ResolveInitiative(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-initiative-determined", CampaignSourceTurnAuthority.InitiativeActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.InitiativeActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion), [.. session.PregameHistory, bytes], prior.Source, next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult CompleteSourceGt1Scheduling(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.CompleteGt1Scheduling(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-convoy-schedule-completed", CampaignSourceTurnAuthority.CompleteGt1ScheduleActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.CompleteGt1ScheduleActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion), [.. session.PregameHistory, bytes], prior.Source, next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static bool IsSourceGt1OrganizationCompleted(ExerciseSession session) =>
+        session?.SourceTurn is { } turn && (turn.Position.GameTurn > 1 || turn.Position.OperationStage > 1
+            || (turn.VoluntaryOrganizationDeclinedMask == 3 && turn.Position.PhaseId != LandPhaseIds.Organization));
+
+    public static bool IsSourceGt1StageOneArrivalsCompleted(ExerciseSession session) =>
+        session?.SourceTurn is { } turn && (turn.Position.GameTurn > 1 || turn.Position.OperationStage > 1
+            || (turn.Position.GameTurn == 1 && turn.Position.OperationStage == 1
+                && turn.Position.PositionId == Cna1979LandSequenceV4.BreakdownStopPositionId)
+            || (turn.Position.GameTurn == 1 && turn.Position.OperationStage == 1
+                && turn.VoluntaryOrganizationDeclinedMask == 3
+                && Cna1979LandSequenceV4.CreateTurn(1).ToList().FindIndex(value => value.PositionId == turn.Position.PositionId)
+                    > Cna1979LandSequenceV4.CreateTurn(1).ToList().FindIndex(value => value.OperationStage == 1
+                        && value.PhaseId == LandPhaseIds.NavalConvoyArrival && value.SegmentId is null)));
+
+    public static bool IsSourceGt1StageOneFleetCompleted(ExerciseSession session) =>
+        session?.SourceTurn is { } turn && (turn.Position.GameTurn > 1 || turn.Position.OperationStage > 1
+            || (turn.Position.GameTurn == 1 && turn.Position.OperationStage == 1
+                && turn.Position.PositionId == Cna1979LandSequenceV4.BreakdownStopPositionId)
+            || (turn.Position.GameTurn == 1 && turn.Position.OperationStage == 1
+                && Cna1979LandSequenceV4.CreateTurn(1).ToList().FindIndex(value => value.PositionId == turn.Position.PositionId)
+                    > Cna1979LandSequenceV4.CreateTurn(1).ToList().FindIndex(value => value.OperationStage == 1
+                        && value.PhaseId == LandPhaseIds.CommonwealthFleet && value.SegmentId == LandSegmentIds.FleetRepair)));
+
+    public static bool IsSourceGt1FirstBreakdownCompleted(ExerciseSession session) =>
+        session?.SourceTurn is { } turn && (turn.Position.GameTurn > 1 || turn.Position.OperationStage > 1
+            || (turn.Position.GameTurn == 1 && turn.Position.OperationStage == 1
+                && Cna1979LandSequenceV4.CreateTurn(1).ToList().FindIndex(value => value.PositionId == turn.Position.PositionId)
+                    > Cna1979LandSequenceV4.CreateTurn(1).ToList().FindIndex(value => value.OperationStage == 1
+                        && value.ActorRole == LandActorRole.FirstActingSide && value.SegmentId == LandSegmentIds.BreakdownDetermination)));
+
+    public static ExerciseStepResult CompleteSourceGt1FirstBreakdown(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.CompleteGt1FirstBreakdown(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-first-breakdown-completed", CampaignSourceTurnAuthority.CompleteGt1FirstBreakdownActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.CompleteGt1FirstBreakdownActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult CompleteSourceGt1StageOneFleet(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.CompleteGt1StageOneFleet(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-stage1-fleet-completed", CampaignSourceTurnAuthority.CompleteGt1FleetActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.CompleteGt1FleetActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult CompleteSourceGt1StageOneArrivals(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.CompleteGt1StageOneArrivals(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-stage1-arrivals-completed", CampaignSourceTurnAuthority.CompleteGt1ArrivalsActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.CompleteGt1ArrivalsActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult CompleteSourceGt1Organization(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.CompleteGt1Organization(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-organization-completed", CampaignSourceTurnAuthority.CompleteGt1OrganizationActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.CompleteGt1OrganizationActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static ExerciseStepResult ResolveSourceGt1Weather(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not { } prior)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceTurnAuthority next;
+        try { next = prior.ResolveStageOneWeather(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = next.SerializeEvent("source-gt1-stage1-weather-determined", CampaignSourceTurnAuthority.ResolveStageOneWeatherActionId,
+            prior.StateVersion, prior.SerializeCheckpoint());
+        var receipt = new CampaignActionAcceptanceReceipt(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion,
+            next.Position.PositionId, CampaignActionAudience.System, CampaignSourceTurnAuthority.ResolveStageOneWeatherActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(prior.Source.Pregame,
+            session.CurrentContacts.AdvanceSourceTurnNonMovement(prior.Source.Request.CampaignId, prior.StateVersion, next.StateVersion),
+            [.. session.PregameHistory, bytes], prior.Source, next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
     /// <summary>Begin the bounded source-backed pre-game setup, not a complete campaign.</summary>
     public static ExerciseStartResult Begin(CampaignCreationRequest request,
         ContentSourceScheduledCombatPackArtifact artifact, CampaignSourceInitialization initialization)
@@ -28,7 +736,7 @@ public static class CampaignExercises
     }
 
     public static bool IsPregameAxisSetup(ExerciseSession session, CampaignActionAudience audience) =>
-        session is not null && session.Pregame is not null && session.SourceAuthority is null
+        session is not null && session.Pregame is not null && session.SourceAuthority is null && session.SourceTurn is null
         && audience == CampaignActionAudience.Axis;
 
     /// <summary>Setup seats are available only after the source-authority transition.</summary>
@@ -77,6 +785,184 @@ public static class CampaignExercises
     public static CampaignPregameAxisDraft QuerySourceActionsDraft(ExerciseSession session, CampaignActionAudience audience)
     {
         var query = Query(session, audience);
+        if (query.IsSuccessful && query.ActionSet?.PolicyId == CampaignLegalActionSet.SourceTurnPolicyId)
+        {
+            using var sourceStream = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(sourceStream))
+            {
+                writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1);
+                writer.WriteString("positionId", query.ActionSet.PositionId);
+                writer.WriteString("status", "turn-in-progress"); writer.WriteStartArray("contexts");
+                if (session.SourceTurn?.StageOneFirstSide is { } firstSide)
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "stage1-order"); writer.WriteStartObject("state");
+                    writer.WriteString("firstSide", firstSide == LandSide.Axis ? "axis" : "commonwealth");
+                    writer.WriteString("secondSide", firstSide == LandSide.Axis ? "commonwealth" : "axis");
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (session.SourceTurn?.StageOneWeather is { } weather)
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "stage1-weather"); writer.WriteStartObject("state");
+                    writer.WriteString("season", weather.Season.ToString()); writer.WriteNumber("firstDie", weather.FirstDie);
+                    writer.WriteNumber("secondDie", weather.SecondDie); writer.WriteString("kind", weather.Kind.ToString());
+                    writer.WriteString("scope", weather.Scope.ToString());
+                    if (weather.LocationDie is int locationDie) writer.WriteNumber("locationDie", locationDie); else writer.WriteNull("locationDie");
+                    writer.WriteStartArray("affectedAreas"); foreach (var area in weather.AffectedAreas) writer.WriteStringValue(area.ToString()); writer.WriteEndArray();
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (audience == CampaignActionAudience.Axis && session.SourceTurn is { Position.PhaseId: LandPhaseIds.NavalConvoySchedule, Gt3Supply: { } supply })
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "axis-gt3-supply"); writer.WriteStartObject("state");
+                    writer.WriteNumber("targetGameTurn", 3);
+                    if (supply.Die is int die) writer.WriteNumber("die", die); else writer.WriteNull("die");
+                    if (supply.Maximum is int maximum) writer.WriteNumber("maximumSupply", maximum); else writer.WriteNull("maximumSupply");
+                    writer.WriteNumber("allocated", supply.Allocated); writer.WriteBoolean("finished", supply.Finished);
+                    writer.WriteString("scope", "gt3-supply-planning-only-not-delivery");
+                    writer.WriteString("unusedSupplyPolicy", "provisional-owner-choice");
+                    writer.WriteStartArray("allocations");
+                    foreach (var lane in new[] { 2, 3, 6 }) for (var stage = 1; stage <= 3; stage++)
+                    {
+                        var quantity = supply.QuantityAt(lane, stage); if (quantity == 0) continue;
+                        writer.WriteStartObject(); writer.WriteNumber("lane", lane); writer.WriteNumber("operationStage", stage);
+                        writer.WriteNumber("supplyUnits", quantity); writer.WriteEndObject();
+                    }
+                    writer.WriteEndArray(); writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (audience == CampaignActionAudience.Commonwealth && session.SourceTurn is { Position.PhaseId: LandPhaseIds.NavalConvoySchedule, Gt5Supply: { } cwSupply })
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "cw-gt5-supply"); writer.WriteStartObject("state");
+                    writer.WriteNumber("targetGameTurn", 5);
+                    if (cwSupply.Die is int die) writer.WriteNumber("die", die); else writer.WriteNull("die");
+                    if (cwSupply.Units is int units) writer.WriteNumber("supplyUnits", units); else writer.WriteNull("supplyUnits");
+                    writer.WriteString("scope", "availability-only-not-delivered"); writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (session.SourceTurn is { Position.PhaseId: LandPhaseIds.NavalConvoyArrival, Position.OperationStage: 1, AxisArrival.Announced: true } arrival)
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "axis-gt1-convoy-attack"); writer.WriteStartObject("state");
+                    writer.WriteNumber("lane", 2); writer.WriteNumber("operationStage", 1);
+                    writer.WriteBoolean("delivered", arrival.AxisArrival.Delivered);
+                    writer.WriteString("supportedChoices", "decline-only-attacks-not-yet-supported");
+                    if (audience == CampaignActionAudience.Axis) writer.WriteNumber("supplyUnits", arrival.AxisArrival.Lane2Units);
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (session.SourceTurn is { Position.PhaseId: LandPhaseIds.NavalConvoyArrival, Position.OperationStage: 1, BenghaziArrival.Announced: true } benghazi)
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "axis-gt1-convoy-attack"); writer.WriteStartObject("state");
+                    writer.WriteNumber("lane", 3); writer.WriteNumber("operationStage", 1);
+                    writer.WriteBoolean("delivered", benghazi.BenghaziArrival.Delivered);
+                    writer.WriteString("supportedChoices", "decline-only-attacks-not-yet-supported");
+                    writer.WriteString("coordinateRuling", "rul-gra-05-a4827-provisional-scenario-b4827");
+                    if (audience == CampaignActionAudience.Axis) writer.WriteNumber("supplyUnits", benghazi.BenghaziArrival.Units);
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (session.SourceTurn is { Position.PhaseId: LandPhaseIds.NavalConvoyArrival, Position.OperationStage: 1, MultiArrival: { } multi })
+                {
+                    writer.WriteStartObject(); writer.WriteString("family", "axis-gt1-convoy-arrivals"); writer.WriteStartObject("state");
+                    writer.WriteString("supportedChoices", "decline-only-attacks-not-yet-supported");
+                    writer.WriteStartArray("lanes");
+                    foreach (var announcedLane in multi.Lanes)
+                    {
+                        writer.WriteStartObject(); writer.WriteNumber("lane", announcedLane); writer.WriteNumber("operationStage", 1);
+                        if (announcedLane != 6 || audience == CampaignActionAudience.Axis)
+                            writer.WriteBoolean("delivered", multi.IsDelivered(announcedLane));
+                        if (announcedLane == 6)
+                        {
+                            writer.WriteBoolean("attackDeclined", multi.Lane6CommonwealthCut().AttackDeclined);
+                            writer.WriteString("portEfficiency", "scenario-7-versus-chart-5-obstruction-conflict-unresolved");
+                            if (audience == CampaignActionAudience.Axis && multi.Lane6Declined && !multi.IsDelivered(6))
+                                writer.WriteString("status", "delivery-blocked-overflow-ruling-unresolved");
+                        }
+                        if (announcedLane == 3) writer.WriteString("coordinateRuling", "rul-gra-05-a4827-provisional-scenario-b4827");
+                        if (audience == CampaignActionAudience.Axis) writer.WriteNumber("supplyUnits", multi.Quantity(announcedLane));
+                        writer.WriteEndObject();
+                    }
+                    writer.WriteEndArray(); writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (session.SourceTurn is { Position.PhaseId: LandPhaseIds.TacticalShipping } shipping)
+                {
+                    var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+                    writer.WriteStartObject(); writer.WriteString("family", "tactical-shipping"); writer.WriteStartObject("state");
+                    writer.WriteBoolean("ownSideDeclined", shipping.HasDeclinedTacticalShipping(side));
+                    writer.WriteString("supportedChoices", "decline-only-shipping-plans-not-yet-supported");
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                if (session.SourceTurn is { Position.PhaseId: LandPhaseIds.Organization } organization)
+                {
+                    var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+                    writer.WriteStartObject(); writer.WriteString("family", "voluntary-organization"); writer.WriteStartObject("state");
+                    writer.WriteBoolean("ownSideDeclined", organization.HasDeclinedVoluntaryOrganization(side));
+                    writer.WriteString("scope", "no-voluntary-changes-only");
+                    writer.WriteString("mandatoryWork", "construction-and-training-completion-unresolved");
+                    writer.WriteStartObject("provisionalTrainingBaseline");
+                    writer.WriteString("rulingId", CampaignSourceTrainingLedger.ProvisionalBaselineId);
+                    writer.WriteString("interpretation", "uniform-initial-morale-minus-three-zero-prior-qualifying-stages");
+                    writer.WriteString("status", organization.Training.BaselineVotes == 3 ? "agreed-provisional" : "awaiting-independent-approvals");
+                    writer.WriteBoolean("ownApproval", organization.Training.HasBaselineVote(audience == CampaignActionAudience.Axis));
+                    writer.WriteBoolean("historicalFact", false);
+                    writer.WriteEndObject();
+
+                    if (audience == CampaignActionAudience.Commonwealth)
+                    {
+                        writer.WriteStartObject("sixthAustralianTraining");
+                        if (organization.Training.CurrentMorale is int morale) writer.WriteNumber("currentMorale", morale); else writer.WriteNull("currentMorale");
+                        if (organization.Training.QualifyingStages is int stages) writer.WriteNumber("priorQualifyingStages", stages); else writer.WriteNull("priorQualifyingStages");
+                        writer.WriteString("status", "starting-state-ruling-and-instructor-evidence-required");
+                        writer.WriteBoolean("interrupted", organization.Training.Interrupted);
+                        writer.WriteString("supportedTrainingChoices", "interrupt-only-resumption-and-progress-not-yet-supported");
+                        writer.WriteBoolean("rulingInputSupported", false);
+                        writer.WriteEndObject();
+                    }
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteStartArray("choices");
+                foreach (var action in query.ActionSet.Candidates.Cast<CampaignSourceTurnAction>())
+                {
+                    writer.WriteStartObject();
+                    var isSupply = action.Kind.StartsWith("source-axis-gt3-supply-", StringComparison.Ordinal);
+                    var isCwSupply = action.Kind == "source-commonwealth-gt5-supply-roll";
+                    var isShipping = action.Kind == "source-tactical-shipping-decline";
+                    var isOrder = action.Kind is "source-stage1-act-first" or "source-stage1-act-last";
+                    var isOrganization = action.Kind == "source-voluntary-organization-decline";
+                    var isReserves = action.Kind == "source-stage1-first-reserves-decline";
+                    var isMovementFinish = action.Kind == "source-stage1-first-movement-finish";
+                    var isConvoyAttack = action.Kind is "source-gt1-lane2-attack-decline" or "source-gt1-lane3-attack-decline" or "source-gt1-lane6-attack-decline";
+                    var isTrainingInterrupt = action.Kind == "source-sixth-australian-training-interrupt";
+                    var isBaselineVote = action.Kind is "source-australian-baseline-approve" or "source-australian-baseline-withdraw";
+                    var isOpeningMove = action.Kind == "source-fourth-indian-opening-move";
+                    writer.WriteString("family", isSupply ? "axis-gt3-supply" : isCwSupply ? "cw-gt5-supply" : isShipping ? "tactical-shipping" : isOrder ? "initiative-declaration" : isOrganization ? "voluntary-organization" : isReserves ? "first-reserve-designation" : isMovementFinish ? "first-movement" : isConvoyAttack ? "axis-gt1-convoy-attack" : isTrainingInterrupt ? "sixth-australian-training" : isBaselineVote ? "sixth-australian-baseline" : isOpeningMove ? "fourth-indian-opening-move" : "polish-arrival");
+                    writer.WriteStartObject("choice");
+                    if (isSupply)
+                    {
+                        writer.WriteString("kind", action.Kind switch
+                        {
+                            "source-axis-gt3-supply-roll" => "roll",
+                            "source-axis-gt3-supply-finish" => "finish",
+                            "source-axis-gt3-supply-adjust" when action.Delta == 1 => "add",
+                            "source-axis-gt3-supply-adjust" => "remove",
+                            _ => throw new InvalidOperationException("Unsupported GT3 supply action."),
+                        });
+                        writer.WriteNumber("targetGameTurn", 3);
+                        if (action.Lane is int lane) { writer.WriteNumber("lane", lane); writer.WriteNumber("operationStage", action.Stage!.Value); writer.WriteNumber("delta", action.Delta!.Value); }
+                    }
+                    else if (isCwSupply) { writer.WriteString("kind", "roll"); writer.WriteNumber("targetGameTurn", 5); }
+                    else if (isShipping) writer.WriteString("kind", "decline");
+                    else if (isOrder) { writer.WriteString("kind", action.Kind == "source-stage1-act-first" ? "act-first" : "act-last"); writer.WriteNumber("operationStage", 1); }
+                    else if (isOrganization) writer.WriteString("kind", "decline");
+                    else if (isReserves) writer.WriteString("kind", "decline");
+                    else if (isMovementFinish) writer.WriteString("kind", "finish");
+                    else if (isTrainingInterrupt) writer.WriteString("kind", "interrupt");
+                    else if (isBaselineVote) { writer.WriteString("kind", action.Kind == "source-australian-baseline-approve" ? "approve" : "withdraw"); writer.WriteString("rulingId", CampaignSourceTrainingLedger.ProvisionalBaselineId); }
+                    else if (isOpeningMove) { writer.WriteString("kind", "move"); writer.WriteString("groupId", CampaignSourceFourthIndianMovement.GroupId); writer.WriteString("destination", "d3715"); writer.WriteString("supplyId", action.Destination); }
+                    else if (isConvoyAttack) { writer.WriteString("kind", "decline"); writer.WriteNumber("lane", action.Kind switch { "source-gt1-lane2-attack-decline" => 2, "source-gt1-lane3-attack-decline" => 3, _ => 6 }); writer.WriteNumber("operationStage", 1); }
+                    else writer.WriteString("destination", action.Destination);
+                    writer.WriteEndObject(); writer.WriteEndObject();
+                }
+                writer.WriteEndArray(); writer.WriteEndObject();
+            }
+            return new CampaignPregameAxisDraft(query.ActionSet.StateVersion, sourceStream.ToArray(),
+                query.ActionSet.Candidates.Select(value => value.ActionId));
+        }
         if (!query.IsSuccessful || query.ActionSet?.PolicyId != CampaignLegalActionSet.SourceSetupPolicyId)
             throw new InvalidOperationException("Source setup action cut unavailable.");
         using var stream = new MemoryStream();
@@ -99,9 +985,310 @@ public static class CampaignExercises
         }
         return new CampaignPregameAxisDraft(query.ActionSet.StateVersion, stream.ToArray(), query.ActionSet.Candidates.Select(value => value.ActionId));
     }
+    public static bool IsSourceCatanzaroGroupedAdmitted(ExerciseSession session) => session.SourceAuthority?.IsCatanzaroGrouped == true;
+    public static ExerciseStepResult AdmitSourceCatanzaroGroupedWorld(ExerciseSession session)
+    {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { } authority || !authority.CanAdmitCatanzaro)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitCatanzaroGroupedWorld(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeCatanzaroGroupedEvent(next, false);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitCatanzaroActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static CampaignPregameAxisDraft QuerySourceCatanzaroDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience != CampaignActionAudience.Axis || session.SourceAuthority?.IsCatanzaroGrouped != true)
+            throw new InvalidOperationException("Catanzaro source world unavailable.");
+        var authority = session.SourceAuthority;
+        var group = authority.GroupedWorld!.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1); writer.WriteString("positionId", CampaignSourceAuthorityState.SetupPositionId);
+            writer.WriteString("status", "setup-incomplete"); writer.WriteString("dispositionPolicy", "provisional-source-default-alternatives-unavailable");
+            writer.WriteString("groupId", group.GroupId); writer.WriteString("locationId", group.LocationId);
+            writer.WriteBoolean("dispositionConfirmed", group.DispositionConfirmed);
+            writer.WriteNumber("remainingMotorPoints", authority.GroupedWorld.RemainingMotorPoints(group.GroupId));
+            writer.WriteStartArray("members"); foreach (var member in group.Members)
+            { writer.WriteStartObject(); writer.WriteString("elementId", member.ElementId); if (member.ParentId is null) writer.WriteNull("parentId"); else writer.WriteString("parentId", member.ParentId); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteStartArray("choices");
+            if (!group.DispositionConfirmed) { writer.WriteStartObject(); writer.WriteString("kind", "confirm"); writer.WriteString("groupId", group.GroupId); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(), group.DispositionConfirmed ? [] : [CampaignSourceAuthorityState.ConfirmCatanzaroActionId]);
+    }
+    public static ExerciseStepResult SubmitSourceCatanzaro(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority?.IsCatanzaroGrouped != true) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        var authority = session.SourceAuthority;
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || !Enum.IsDefined(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var group = authority.GroupedWorld!.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        if (submission.Audience != CampaignActionAudience.Axis || group.DispositionConfirmed || submission.ActionId != CampaignSourceAuthorityState.ConfirmCatanzaroActionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.ConfirmCatanzaro(); var bytes = authority.SerializeCatanzaroGroupedEvent(next, true);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion, CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static bool IsSourceSeventhArmoredGroupedAdmitted(ExerciseSession session) => session.SourceAuthority?.IsSeventhArmoredGrouped == true;
+    public static bool IsSourceSeventhShellCorrected(ExerciseSession session) => session.SourceAuthority?.IsSeventhShellCorrected == true;
+    public static ExerciseStepResult CorrectSourceSeventhShell(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanCorrectSeventhShell: true } authority || session.SourceTurn is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        var next = authority.CorrectSeventhShell(); var bytes = authority.SerializeSeventhShellCorrection(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.CorrectSeventhShellActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult AdmitSourceSeventhArmoredGroupedWorld(ExerciseSession session)
+    {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { } authority || !authority.CanAdmitSeventhArmored)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitSeventhArmoredGroupedWorld(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSeventhArmoredGroupedEvent(next, false);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitSeventhArmoredActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static CampaignPregameAxisDraft QuerySourceSeventhArmoredDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience != CampaignActionAudience.Commonwealth || session.SourceAuthority?.IsSeventhArmoredGrouped != true)
+            throw new InvalidOperationException("Seventh Armored source world unavailable.");
+        var authority = session.SourceAuthority;
+        var group = authority.GroupedWorld!.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1); writer.WriteString("positionId", CampaignSourceAuthorityState.SetupPositionId);
+            writer.WriteString("status", "setup-incomplete"); writer.WriteString("dispositionPolicy", "provisional-source-default-alternatives-unavailable");
+            writer.WriteString("shellStatus", "division-shell-one-nonshell-brigade-of-three");
+            writer.WriteString("stackRuling", authority.IsSeventhShellCorrected
+                ? "common-charts-9.4-division-shell-stacks-three"
+                : "provisional-shell-stacks-printed-five-when-confirmed");
+            writer.WriteString("groupId", group.GroupId); writer.WriteString("locationId", group.LocationId);
+            writer.WriteBoolean("dispositionConfirmed", group.DispositionConfirmed);
+            writer.WriteNumber("remainingMotorPoints", authority.GroupedWorld.RemainingMotorPoints(group.GroupId));
+            writer.WriteStartArray("members"); foreach (var member in group.Members)
+            { writer.WriteStartObject(); writer.WriteString("elementId", member.ElementId); if (member.ParentId is null) writer.WriteNull("parentId"); else writer.WriteString("parentId", member.ParentId); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteStartArray("choices");
+            if (!group.DispositionConfirmed) { writer.WriteStartObject(); writer.WriteString("kind", "confirm"); writer.WriteString("groupId", group.GroupId); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(), group.DispositionConfirmed ? [] : [CampaignSourceAuthorityState.ConfirmSeventhArmoredActionId]);
+    }
+    public static ExerciseStepResult SubmitSourceSeventhArmored(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority?.IsSeventhArmoredGrouped != true) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        var authority = session.SourceAuthority;
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || !Enum.IsDefined(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var group = authority.GroupedWorld!.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        if (submission.Audience != CampaignActionAudience.Commonwealth || group.DispositionConfirmed || submission.ActionId != CampaignSourceAuthorityState.ConfirmSeventhArmoredActionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.ConfirmSeventhArmored(); var bytes = authority.SerializeSeventhArmoredGroupedEvent(next, true);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion, CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static CampaignPregameAxisDraft QuerySourceArescaDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var authority = session.SourceAuthority ?? throw new InvalidOperationException("Source authority missing.");
+        if (audience != CampaignActionAudience.Axis || !authority.CanAdmitAresca) throw new InvalidOperationException("Aresca setup unavailable.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteString("status", "setup-incomplete");
+            writer.WriteString("policy", "source-default-colocated-hierarchy-other-dispositions-unsupported");
+            writer.WriteString("shellStack", "one-point-common-charts-9.4");
+            writer.WriteStartArray("choices"); writer.WriteStartObject(); writer.WriteString("kind", "accept");
+            writer.WriteString("groupId", CampaignSourceArescaGroupedDefinition.GroupId); writer.WriteEndObject(); writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(), [CampaignSourceAuthorityState.ArescaActionId]);
+    }
+    public static ExerciseStepResult SubmitSourceAresca(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority is not { } authority || submission.Audience != CampaignActionAudience.Axis
+            || !authority.CanAdmitAresca) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (submission.ActionId != CampaignSourceAuthorityState.ArescaActionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.AdmitAresca(); var bytes = authority.SerializeAresca(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static CampaignPregameAxisDraft QuerySourceCcnnBatchDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var authority = session.SourceAuthority ?? throw new InvalidOperationException("Source authority missing.");
+        if (audience != CampaignActionAudience.Axis || !authority.CanAdmitCcnnBatch) throw new InvalidOperationException("CCNN setup unavailable.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteString("status", "setup-incomplete");
+            writer.WriteString("policy", "source-default-colocated-hierarchies-other-dispositions-unsupported");
+            writer.WriteString("limitations", "division-hq-and-engineer-component-details-incomplete");
+            writer.WriteStartArray("choices"); writer.WriteStartObject(); writer.WriteString("kind", "accept");
+            writer.WriteString("groupId", "1-and-4-ccnn"); writer.WriteEndObject(); writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(), [CampaignSourceAuthorityState.CcnnBatchActionId]);
+    }
+    public static ExerciseStepResult SubmitSourceCcnnBatch(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority is not { } authority || submission.Audience != CampaignActionAudience.Axis
+            || !authority.CanAdmitCcnnBatch) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (submission.ActionId != CampaignSourceAuthorityState.CcnnBatchActionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.AdmitCcnnBatch(); var bytes = authority.SerializeCcnnBatch(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static CampaignPregameAxisDraft QuerySourceSixthAustralianDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var authority = session.SourceAuthority ?? throw new InvalidOperationException("Source authority missing.");
+        if (audience != CampaignActionAudience.Commonwealth || !authority.CanPlaceSixthAustralian)
+            throw new InvalidOperationException("Australian placement is unavailable.");
+        var locations = CampaignSourceSixthAustralianGroupedDefinition.Locations.Where(authority.CanPlaceSixthAustralianAt).ToArray();
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteString("status", "setup-incomplete");
+            writer.WriteString("policy", "all-in-one-source-hex-split-placement-unsupported");
+            writer.WriteString("training", "current-morale-and-prior-stages-unknown");
+            writer.WriteStartArray("choices");
+            foreach (var location in locations)
+            { writer.WriteStartObject(); writer.WriteString("kind", "place"); writer.WriteString("locationId", location); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(), locations.Select(CampaignSourceAuthorityState.SixthAustralianActionId).ToArray());
+    }
+    public static ExerciseStepResult SubmitSourceSixthAustralian(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority is not { } authority || submission.Audience != CampaignActionAudience.Commonwealth
+            || authority.IsOwnerFinalized(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var location = CampaignSourceSixthAustralianGroupedDefinition.Locations.SingleOrDefault(value => CampaignSourceAuthorityState.SixthAustralianActionId(value) == submission.ActionId);
+        if (location is null || !authority.CanPlaceSixthAustralianAt(location)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.PlaceSixthAustralian(location); var bytes = authority.SerializeSixthAustralianPlacement(next, location);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static bool IsSourceSixteenthBrigadeGroupedAdmitted(ExerciseSession session) => session.SourceAuthority?.IsSixteenthBrigadeGrouped == true;
+    public static ExerciseStepResult AdmitSourceSixteenthBrigadeGroupedWorld(ExerciseSession session)
+    {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { } authority || !authority.CanAdmitSixteenthBrigade)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitSixteenthBrigadeGroupedWorld(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSixteenthBrigadeGroupedEvent(next, false);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitSixteenthBrigadeActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static CampaignPregameAxisDraft QuerySourceSixteenthBrigadeDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (audience != CampaignActionAudience.Commonwealth || session.SourceAuthority?.IsSixteenthBrigadeGrouped != true)
+            throw new InvalidOperationException("Sixteenth Brigade source world unavailable.");
+        var authority = session.SourceAuthority;
+        var group = authority.GroupedWorld!.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1); writer.WriteString("positionId", CampaignSourceAuthorityState.SetupPositionId);
+            writer.WriteString("status", "setup-incomplete"); writer.WriteString("dispositionPolicy", "provisional-source-default-alternatives-unavailable");
+            writer.WriteString("shellStatus", "brigade-non-shell-three-battalions");
+            writer.WriteString("stackRuling", "non-shell-stacks-printed-two-when-confirmed");
+            writer.WriteString("groupId", group.GroupId); writer.WriteString("locationId", group.LocationId);
+            writer.WriteBoolean("dispositionConfirmed", group.DispositionConfirmed);
+            writer.WriteNumber("remainingMotorPoints", authority.GroupedWorld.RemainingMotorPoints(group.GroupId));
+            writer.WriteStartArray("members"); foreach (var member in group.Members)
+            { writer.WriteStartObject(); writer.WriteString("elementId", member.ElementId); if (member.ParentId is null) writer.WriteNull("parentId"); else writer.WriteString("parentId", member.ParentId); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteStartArray("choices");
+            if (!group.DispositionConfirmed) { writer.WriteStartObject(); writer.WriteString("kind", "confirm"); writer.WriteString("groupId", group.GroupId); writer.WriteEndObject(); }
+            writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(), group.DispositionConfirmed ? [] : [CampaignSourceAuthorityState.ConfirmSixteenthBrigadeActionId]);
+    }
+    public static ExerciseStepResult SubmitSourceSixteenthBrigade(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority?.IsSixteenthBrigadeGrouped != true) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        var authority = session.SourceAuthority;
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || !Enum.IsDefined(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var group = authority.GroupedWorld!.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        if (submission.Audience != CampaignActionAudience.Commonwealth || group.DispositionConfirmed || submission.ActionId != CampaignSourceAuthorityState.ConfirmSixteenthBrigadeActionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        var next = authority.ConfirmSixteenthBrigade(); var bytes = authority.SerializeSixteenthBrigadeGroupedEvent(next, true);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion, CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
     public static bool IsSourceItalianDivisionsGroupedAdmitted(ExerciseSession session) => session.SourceAuthority?.IsItalianDivisionsGrouped == true;
     public static ExerciseStepResult AdmitSourceItalianDivisionsGroupedWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { } authority || !authority.CanAdmitItalianDivisionsGrouped)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -147,6 +1334,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceItalianDivision(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.IsItalianDivisionsGrouped != true) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -164,6 +1353,8 @@ public static class CampaignExercises
     public static bool IsSourceLibyanGroupedWorldAdmitted(ExerciseSession session) => session.SourceAuthority?.IsLibyanGrouped == true;
     public static ExerciseStepResult AdmitSourceLibyanGroupedWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { } authority || !authority.CanAdmitLibyanGrouped)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -209,6 +1400,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceLibyan(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.IsLibyanGrouped != true) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -226,6 +1419,8 @@ public static class CampaignExercises
     public static bool IsSourceMalettiGroupedWorldAdmitted(ExerciseSession session) => session.SourceAuthority?.IsMalettiGrouped == true;
     public static ExerciseStepResult AdmitSourceMalettiGroupedWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { } authority || !authority.CanAdmitMalettiGrouped)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -241,6 +1436,8 @@ public static class CampaignExercises
     public static bool IsSourceMatruhGroupedWorldAdmitted(ExerciseSession session) => session.SourceAuthority?.IsMatruhGrouped == true;
     public static ExerciseStepResult AdmitSourceMatruhGroupedWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { } authority || !authority.CanAdmitMatruhGrouped)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -256,6 +1453,8 @@ public static class CampaignExercises
     public static bool IsSourceFourthIndianWorldAdmitted(ExerciseSession session) => session.SourceAuthority?.GroupedWorld is not null;
     public static ExerciseStepResult AdmitSourceFourthIndianWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { } authority || !authority.CanAdmitFourthIndian)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -321,6 +1520,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceFourthIndian(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.GroupedWorld is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -338,12 +1539,94 @@ public static class CampaignExercises
             [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
     }
     public static bool IsSourceCwFreeGunsAdmitted(ExerciseSession session) => session.SourceAuthority?.CwFreeGuns is not null;
+    public static bool IsSourceAxisMinorGarrisonsActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.MinorGarrisonContent is not null;
+    public static bool IsSourceAxisGarrisonRemainderActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.GarrisonRemainderContent is not null;
+    public static bool IsSourceCwFrontlineActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.CwFrontlineContent is not null;
+    public static ExerciseStepResult ActivateSourceCwFrontline(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateCwFrontline: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateCwFrontline(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeCwFrontlineEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateCwFrontlineActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static bool IsSourceGiarabubMotorPlacementPolicyAdmitted(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.AxisMotorization.GiarabubPlacementAdmitted == true;
+
+    public static ExerciseStepResult AdmitSourceGiarabubMotorPlacementPolicy(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanAdmitGiarabubMotorPlacementPolicy: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        var next = authority.AdmitGiarabubMotorPlacementPolicy();
+        var bytes = authority.SerializeGiarabubMotorPlacementPolicyEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitGiarabubMotorPlacementPolicyActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
+    public static bool IsSourceGiarabubMotorMachineGunActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.MotorMachineGunContent is not null;
+    public static ExerciseStepResult ActivateSourceGiarabubMotorMachineGun(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateGiarabubMotorMachineGun: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateGiarabubMotorMachineGun(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeGiarabubMotorMachineGunEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateGiarabubMotorMachineGunActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult ActivateSourceAxisGarrisonRemainder(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateAxisGarrisonRemainder: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateAxisGarrisonRemainder(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeAxisGarrisonRemainderEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateAxisGarrisonRemainderActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult ActivateSourceAxisMinorGarrisons(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateAxisMinorGarrisons: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateAxisMinorGarrisons(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeAxisMinorGarrisonsEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateAxisMinorGarrisonsActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
     public static bool CanPromoteSourceCwFreeGunsWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteCwFreeGunsWorld == true;
     public static ExerciseStepResult AdmitSourceCwFreeGuns(ExerciseSession session) => ApplySourceCwFreeGunsSystem(session, false);
     public static ExerciseStepResult PromoteSourceCwFreeGunsWorld(ExerciseSession session) => ApplySourceCwFreeGunsSystem(session, true);
     private static ExerciseStepResult ApplySourceCwFreeGunsSystem(ExerciseSession session, bool promote)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority?.FinalizedOwners != 0 && session.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (session.SourceAuthority is not { } authority || (promote ? !authority.CanPromoteCwFreeGunsWorld : authority.CwPriorityWorld is null || authority.CwFreeGuns is not null))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         CampaignSourceAuthorityState next;
@@ -382,6 +1665,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult PlaceSourceCwFreeGun(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.CwFreeGuns is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -433,6 +1718,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceUnattachedCargo(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || !Enum.IsDefined(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
@@ -454,6 +1741,8 @@ public static class CampaignExercises
     public static bool IsSourceCompactCheckpointAdmitted(ExerciseSession session) => session.SourceAuthority?.CompactCheckpoint == true;
     public static ExerciseStepResult AdmitSourceCompactCheckpoint(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CompactCheckpoint: false } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -466,6 +1755,8 @@ public static class CampaignExercises
     public static bool CanPromoteSourceCwPriorityWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteCwPriorityWorld == true;
     public static ExerciseStepResult PromoteSourceCwPriorityWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CanPromoteCwPriorityWorld: true } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -481,6 +1772,8 @@ public static class CampaignExercises
     public static bool IsSourceCwPriorityCatalogAdmitted(ExerciseSession session) => session.SourceAuthority?.CwPriorityCatalog is not null;
     public static ExerciseStepResult AdmitSourceCwPriorityCatalog(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { AttachedInitialLoads: not null, CwPriorityCatalog: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -525,6 +1818,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceCwPriorityCatalog(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.CwPriorityCatalog is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -544,6 +1839,8 @@ public static class CampaignExercises
     public static bool IsSourceGt2CorrectionAdmitted(ExerciseSession session) => session.SourceAuthority?.Gt2Correction is not null;
     public static ExerciseStepResult AdmitSourceGt2Correction(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { Gt2Correction: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -586,6 +1883,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceGt2Correction(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.Gt2Correction is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -606,6 +1905,8 @@ public static class CampaignExercises
     public static bool CanPromoteSourceMatruhDetachedWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteMatruhDetachedWorld == true;
     public static ExerciseStepResult PromoteSourceMatruhDetachedWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CanPromoteMatruhDetachedWorld: true } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -621,6 +1922,8 @@ public static class CampaignExercises
     public static bool IsSourceMatruhFormationAdmitted(ExerciseSession session) => session.SourceAuthority?.MatruhFormation is not null;
     public static ExerciseStepResult AdmitSourceMatruhFormation(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { MalettiHierarchy.Confirmed: true, Battlefield: not null, MatruhFormation: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -664,6 +1967,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceMatruhFormation(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.MatruhFormation is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -683,6 +1988,8 @@ public static class CampaignExercises
     public static bool CanPromoteSourceCertifiedMalettiWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteCertifiedMalettiWorld == true;
     public static ExerciseStepResult PromoteSourceCertifiedMalettiWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CanPromoteCertifiedMalettiWorld: true } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -698,6 +2005,8 @@ public static class CampaignExercises
     public static bool IsSourceMalettiHierarchyAdmitted(ExerciseSession session) => session.SourceAuthority?.MalettiHierarchy is not null;
     public static ExerciseStepResult AdmitSourceMalettiHierarchy(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { AxisCorpsArtilleryWorld: not null, MalettiHierarchy: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -741,6 +2050,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult SubmitSourceMalettiHierarchy(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.MalettiHierarchy is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -760,6 +2071,8 @@ public static class CampaignExercises
     public static bool CanPromoteSourceAxisCorpsWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteAxisCorpsWorld == true;
     public static ExerciseStepResult PromoteSourceAxisCorpsWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CanPromoteAxisCorpsWorld: true } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -772,6 +2085,8 @@ public static class CampaignExercises
     public static bool IsSourceAxisCorpsSetupAdmitted(ExerciseSession session) => session.SourceAuthority?.AxisCorpsArtillery is not null;
     public static ExerciseStepResult AdmitSourceAxisCorpsSetup(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not
             {
@@ -819,6 +2134,8 @@ public static class CampaignExercises
     }
     public static ExerciseStepResult PlaceSourceAxisCorpsUnit(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.AxisCorpsArtillery is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -839,6 +2156,8 @@ public static class CampaignExercises
     public static bool CanPromoteSourceAxisFreeWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteAxisFreeWorld == true;
     public static ExerciseStepResult PromoteSourceAxisFreeWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CanPromoteAxisFreeWorld: true } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -853,6 +2172,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceAxisFreeSetup(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { InitialWrecks: not null, Battlefield: not null, AxisFreeArtillery: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -900,6 +2221,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult PlaceSourceAxisFreeUnit(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.AxisFreeArtillery is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -922,6 +2245,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceInitialWrecks(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { AttachedInitialLoads: not null, InitialWrecks: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -970,6 +2295,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult PlaceSourceInitialWreck(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.InitialWrecks is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -992,6 +2319,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceAttachedInitialLoads(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { ExpandedIndependentWorld: not null, AttachedInitialLoads: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1017,6 +2346,18 @@ public static class CampaignExercises
             if (loads.CanClearLoad(id, "ammo")) yield return ("unload-ammo", id);
             if (loads.CanClearLoad(id, "fuel")) yield return ("unload-fuel", id);
         }
+        if (authority.CwFreeGunsWorld?.CwFrontlineContent is null) yield break;
+        if (loads.FrontlineFinished) { yield return ("frontline-reopen", "frontline"); yield break; }
+        foreach (var target in CampaignSourceAttachedInitialLoads.FrontlineTargets)
+        {
+            var id = target.ElementId;
+            if (loads.CanAttachFrontline(id, authority.CommonwealthMotorization)) yield return ("frontline-attach", id);
+            if (loads.CanDetach(id)) yield return ("frontline-detach", id);
+            if (loads.CanLoad(id)) { yield return ("frontline-ammo", id); yield return ("frontline-fuel", id); }
+            if (loads.CanClearLoad(id, "ammo")) yield return ("frontline-unload-ammo", id);
+            if (loads.CanClearLoad(id, "fuel")) yield return ("frontline-unload-fuel", id);
+        }
+        if (loads.CanFinishFrontline(authority.CommonwealthMotorization)) yield return ("frontline-finish", "frontline");
     }
 
     public static CampaignPregameAxisDraft QuerySourceAttachedInitialLoadsDraft(ExerciseSession session, CampaignActionAudience audience)
@@ -1029,10 +2370,23 @@ public static class CampaignExercises
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", 1);
+            writer.WriteNumber("contractVersion", session.SourceAuthority.CwFreeGunsWorld?.CwFrontlineContent is null ? 1 : 2);
             writer.WriteString("positionId", CampaignSourceAuthorityState.SetupPositionId);
             writer.WriteString("status", "setup-incomplete");
             writer.WriteString("globalPriorityStatus", "incomplete");
+            if (session.SourceAuthority.CwFreeGunsWorld?.CwFrontlineContent is not null)
+            {
+                writer.WriteBoolean("frontlineFinished", loads.FrontlineFinished);
+                writer.WriteStartArray("frontlinePools");
+                foreach (var target in CampaignSourceAttachedInitialLoads.FrontlineTargets)
+                {
+                    writer.WriteStartObject(); writer.WriteString("elementId", target.ElementId);
+                    writer.WriteString("poolId", target.PoolId);
+                    writer.WriteNumber("totalPoints", session.SourceAuthority.CommonwealthMotorization.Pools.Single(value => value.Id == target.PoolId).Points);
+                    writer.WriteNumber("assignedPoints", loads.Attached(target.ElementId)); writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+            }
             writer.WriteStartArray("targets");
             foreach (var target in loads.Targets)
             {
@@ -1058,6 +2412,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult SubmitSourceAttachedInitialLoads(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.AttachedInitialLoads is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -1091,6 +2447,8 @@ public static class CampaignExercises
     private static ExerciseStepResult PromoteSourceExpandedIndependentCore(ExerciseSession session, bool replay)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority?.FinalizedOwners != 0 && session.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (session.SourceAuthority is not { CanPromoteExpandedIndependent: true } authority
             || (!replay && (authority.AxisFreeArtilleryWorld is not null || HasUncertifiedPendingMaletti(authority))))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1106,6 +2464,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceLocalMap(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { IndependentWorld: not null, LocalMapWorld: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1128,6 +2488,8 @@ public static class CampaignExercises
     private static ExerciseStepResult PromoteSourceIndependentCore(ExerciseSession session, bool replay)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority?.FinalizedOwners != 0 && session.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (session.SourceAuthority is not { CanPromoteIndependent: true } authority
             || (!replay && (authority.AxisFreeArtilleryWorld is not null || HasUncertifiedPendingMaletti(authority))))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1143,6 +2505,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult PromoteSourceMaletti(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
     }
@@ -1150,6 +2514,8 @@ public static class CampaignExercises
     internal static ExerciseStepResult ReplaySourceMalettiPromotion(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority?.FinalizedOwners != 0 && session.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (session.SourceAuthority is not { CanPromoteMaletti: true, AxisFreeArtillery: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var next = authority.PromoteMaletti();
@@ -1164,6 +2530,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceCairoWorld(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CairoSetup: { PendingIds.Count: 0 }, CairoWorld: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1179,6 +2547,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceCairoSetup(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { Battlefield: not null, CairoSetup: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1194,6 +2564,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceBattlefield(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { AxisGarrisons: not null, Battlefield: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1209,6 +2581,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceAxisMinorGarrisons(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { AxisPriorityMotorization: not null, AxisGarrisons: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1224,6 +2598,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceAxisPriorityMotorization(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { PriorityMotorization: not null, AxisPriorityMotorization: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1239,6 +2615,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourcePriorityMotorization(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { CommonwealthSupplement: not null, PriorityMotorization: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1254,6 +2632,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdmitSourceCommonwealthSupplement(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { AxisSupplement: not null, CommonwealthSupplement: null } authority)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1270,6 +2650,8 @@ public static class CampaignExercises
     /// <summary>System migration to a source-bound expanded Axis roster; no player choice or game clock advance.</summary>
     public static ExerciseStepResult AdmitSourceAxisSupplement(ExerciseSession session)
     {
+        if (session?.SourceAuthority?.FinalizedOwners != 0 && session?.SourceAuthority is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         ArgumentNullException.ThrowIfNull(session);
         if (session.SourceAuthority is not { } authority || authority.AxisSupplement is not null)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -1348,7 +2730,7 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         if (audience != CampaignActionAudience.Axis || session.Pregame is not { } pregame
-            || session.SourceAuthority is not null || pregame.Die is null)
+            || session.SourceAuthority is not null || session.SourceTurn is not null || pregame.Die is null)
             throw new InvalidOperationException("The Axis supply plan cannot be finalized at this position.");
         var plan = CampaignSourceConvoyPlan.Create(pregame);
         using var stream = new MemoryStream();
@@ -1375,7 +2757,7 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
-        if (session.Pregame is not { } pregame || session.SourceAuthority is not null)
+        if (session.Pregame is not { } pregame || session.SourceAuthority is not null || session.SourceTurn is not null)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || !Enum.IsDefined(submission.Audience))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
@@ -1440,6 +2822,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult PlaceSourceAxisDump(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority)
@@ -1511,6 +2895,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult PlaceSourceCommonwealthSupply(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority)
@@ -1604,6 +2990,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult DecideSourceDummy(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority)
@@ -1688,6 +3076,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdjustSourceMotorization(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority)
@@ -1781,6 +3171,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult SubmitSourceAxisGt1Supply(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority)
@@ -1857,6 +3249,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult SubmitSourceCommonwealthSupplyPlan(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority)
@@ -1930,6 +3324,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult SubmitSourceSeptemberSupply(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority is not { } authority) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || !Enum.IsDefined(submission.Audience)) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
@@ -1993,6 +3389,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult SubmitSourceAutoblinda(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.Autoblinda is null)
@@ -2077,6 +3475,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult AdjustSourcePriorityMotorization(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.PriorityMotorization is null)
@@ -2187,6 +3587,8 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         if (session.SourceAuthority?.AxisPriorityMotorization is null)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         var authority = session.SourceAuthority;
@@ -2262,6 +3664,8 @@ public static class CampaignExercises
 
     public static ExerciseStepResult PlaceSourceCairoUnit(ExerciseSession session, CampaignActionSubmission submission)
     {
+        if (submission is not null && session?.SourceAuthority?.IsOwnerFinalized(submission.Audience) == true)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.SourceAuthority?.CairoSetup is null)
@@ -2313,6 +3717,8 @@ public static class CampaignExercises
         CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is not null)
+            return CampaignSourceSetupBridge.QueryTurn(session, audience);
         if (session.SourceAuthority is not null)
             return CampaignSourceSetupBridge.Query(session, audience);
         if (session.Pregame is { } pregame)
@@ -2411,6 +3817,7 @@ public static class CampaignExercises
     public static ExerciseCheckpoint QueryCheckpoint(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceTurn is { } sourceTurn) return new ExerciseCheckpoint(sourceTurn);
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
         if (session.CurrentSecondBreakdown is { } secondBreakdown)
@@ -2576,6 +3983,9 @@ public static class CampaignExercises
     private static void RequireLegacyCheckpoint(ReadOnlyMemory<byte> bytes)
     {
         using var document = JsonDocument.Parse(bytes);
+        if (document.RootElement.TryGetProperty("kind", out var kind)
+            && kind.ValueKind == JsonValueKind.String && kind.GetString() == "source-turn")
+            throw new JsonException("Source turn checkpoints require retained genesis and replay.");
         if (document.RootElement.TryGetProperty("contractVersion", out var version)
             && version.ValueKind == JsonValueKind.Number && version.TryGetInt32(out var value)
             && (value == CampaignPregameSourceCreation.RequestVersion
@@ -2607,7 +4017,19 @@ public static class CampaignExercises
                     or CampaignSourceAuthorityState.CompactCheckpointContractVersion
                     or CampaignSourceAuthorityState.UnattachedCargoContractVersion
                     or CampaignSourceAuthorityState.CwFreeGunsContractVersion
-                    or CampaignSourceAuthorityState.CwFreeGunsWorldContractVersion or 34 or 35 or 36 or 37 or 38)
+                    or CampaignSourceAuthorityState.CwFreeGunsWorldContractVersion or 34 or 35 or 36 or 37 or 38 or 39 or 40 or 41 or 42 or 45 or 47 or 49 or 55 or 57
+                    or CampaignSourceAuthorityState.AustralianCompactCheckpointContractVersion
+                    or CampaignSourceAuthorityState.CcnnCompactCheckpointContractVersion or CampaignSourceAuthorityState.CombinedCompactCheckpointContractVersion
+                    or CampaignSourceAuthorityState.ShellCorrectedLegacyCheckpointContractVersion or CampaignSourceAuthorityState.ShellCorrectedCompactCheckpointContractVersion
+                    or CampaignSourceAuthorityState.ShellCorrectedFinalizedLegacyCheckpointContractVersion or CampaignSourceAuthorityState.ShellCorrectedFinalizedCompactCheckpointContractVersion
+                    or CampaignSourceAuthorityState.ArescaCompactCheckpointContractVersion or CampaignSourceAuthorityState.CombinedArescaCompactCheckpointContractVersion
+                    or CampaignSourceAuthorityState.HorseRulingCheckpointContractVersion
+                    or CampaignSourceAuthorityState.AxisMinorGarrisonsCheckpointContractVersion
+                    or CampaignSourceAuthorityState.AxisGarrisonRemainderCheckpointContractVersion
+                    or CampaignSourceAuthorityState.CwFrontlineCheckpointContractVersion
+                    or CampaignSourceAuthorityState.GiarabubMotorMachineGunCheckpointContractVersion
+                    or CampaignSourceAuthorityState.FinalizedLegacyCheckpointContractVersion
+                    or CampaignSourceAuthorityState.FinalizedCompactCheckpointContractVersion)
                     && document.RootElement.TryGetProperty("status", out var status)
                     && status.GetString() == "setup-in-progress"))
             throw new JsonException("Pre-game checkpoints require retained genesis and replay.");
@@ -2621,7 +4043,9 @@ public static class CampaignExercises
             && kind.GetString() is "pregame-source-created" or "pregame-axis-gt2-supply-rolled"
                 or "pregame-axis-gt2-supply-adjusted" or "source-authority-started" or "source-axis-supply-dump-placed"
                 or "source-commonwealth-supply-placed" or "source-dummy-group-decided" or "source-motorization-adjusted"
+                or "source-giarabub-motor-placement-policy-admitted"
                 or "source-gt1-supply-planned" or "source-commonwealth-supply-planned" or "source-axis-september-supply-changed"
+                or "source-horse-setup-decision" or "source-owner-setup-finalization-changed"
                 or "source-axis-force-supplement-admitted" or "source-autoblinda-choice"
                 or "source-commonwealth-force-supplement-admitted" or "source-priority-motorization-admitted"
                 or "source-priority-motorization-adjusted" or "source-axis-priority-motorization-admitted"
@@ -2629,7 +4053,7 @@ public static class CampaignExercises
                 or "source-battlefield-admitted" or "source-cairo-setup-admitted" or "source-cairo-unit-placed"
                 or "source-cairo-world-admitted" or "source-maletti-world-promoted"
                 or "source-independent-world-promoted" or "source-local-map-admitted" or "source-expanded-independent-world-promoted"
-                or "source-attached-initial-loads-admitted" or "source-attached-initial-loads-changed"
+                or "source-attached-initial-loads-admitted" or "source-attached-initial-loads-changed" or "source-frontline-initial-loads-changed"
                 or "source-initial-wrecks-admitted" or "source-initial-wreck-placed"
                 or "source-axis-free-setup-admitted" or "source-axis-free-unit-placed" or "source-axis-free-world-promoted"
                 or "source-axis-corps-setup-admitted" or "source-axis-corps-unit-placed" or "source-axis-corps-world-promoted"
@@ -2639,6 +4063,9 @@ public static class CampaignExercises
                 or "source-cw-priority-catalog-admitted" or "source-cw-priority-catalog-adjusted" or "source-cw-priority-world-promoted"
                 or "source-compact-checkpoint-admitted" or "source-unattached-cargo-changed"
                 or "source-libyan-grouped-world-admitted" or "source-libyan-disposition-confirmed"
+                or "source-italian-divisions-grouped-world-admitted" or "source-italian-division-disposition-confirmed"
+                or "source-seventh-armored-grouped-world-admitted" or "source-seventh-armored-disposition-confirmed"
+                or "source-catanzaro-grouped-world-admitted" or "source-catanzaro-disposition-confirmed" or "source-sixth-australian-placed" or "source-ccnn-batch-admitted" or "source-seventh-shell-stack-corrected" or "source-aresca-admitted"
                 or "source-maletti-grouped-world-admitted" or "source-matruh-grouped-world-admitted"
                 or "source-fourth-indian-world-admitted" or "source-fourth-indian-disposition-confirmed" or "source-fourth-indian-motor-adjusted"
                 or "source-cw-free-guns-admitted" or "source-cw-free-gun-placed" or "source-cw-free-guns-world-promoted")
@@ -2651,6 +4078,25 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceTurn is { } sourceTurn)
+            return sourceTurn.Position.PhaseId switch
+            {
+                LandPhaseIds.NavalConvoySchedule => submission.Audience == CampaignActionAudience.Axis
+                    ? SubmitSourceGt3SupplyRoll(session, submission) : SubmitSourceGt5SupplyRoll(session, submission),
+                LandPhaseIds.TacticalShipping => SubmitSourceTacticalShippingDecline(session, submission),
+                LandPhaseIds.InitiativeDeclaration => SubmitSourceStageOneOrder(session, submission),
+                LandPhaseIds.Organization => submission.ActionId == CampaignSourceTurnAction.InterruptSixthAustralianTraining(sourceTurn.StateVersion).ActionId
+                    ? SubmitSourceSixthAustralianTrainingInterrupt(session, submission)
+                    : submission.ActionId == CampaignSourceTurnAction.ApproveSixthAustralianBaseline(sourceTurn.StateVersion).ActionId
+                        || submission.ActionId == CampaignSourceTurnAction.WithdrawSixthAustralianBaseline(sourceTurn.StateVersion).ActionId
+                        ? SubmitSourceAustralianBaselineVote(session, submission) : SubmitSourceVoluntaryOrganizationDecline(session, submission),
+                LandPhaseIds.ReserveDesignation when sourceTurn.Position.OperationStage == 1 => SubmitSourceGt1FirstReservesDecline(session, submission),
+                LandPhaseIds.MovementAndCombat when sourceTurn.Position.SegmentId == LandSegmentIds.Movement =>
+                    submission.ActionId == CampaignSourceTurnAction.FinishFirstMovement(sourceTurn.StateVersion).ActionId
+                        ? SubmitSourceGt1FirstMovementFinish(session, submission) : SubmitSourceFourthIndianOpeningMove(session, submission),
+                LandPhaseIds.NavalConvoyArrival when sourceTurn.Position.OperationStage == 1 => SubmitSourceGt1Lane2AttackDecline(session, submission),
+                _ => SubmitSourcePolishArrival(session, submission),
+            };
         if (session.SourceAuthority is not null)
             return CampaignSourceSetupBridge.Submit(session, submission);
         if (session.Pregame is { } pregame)
@@ -5415,25 +6861,371 @@ public static class CampaignExercises
     private static ExerciseReconstructionResult ReconstructPregame(ExerciseSession session, bool includeStreamHash)
     {
         var state = session.Pregame!;
-        var expected = session.SourceAuthority?.SerializeCheckpoint() ?? state.SerializeCheckpoint();
+        var expected = session.SourceTurn?.SerializeCheckpoint() ?? session.SourceAuthority?.SerializeCheckpoint() ?? state.SerializeCheckpoint();
         var expectedHash = Hash(expected);
         try
         {
             var records = session.PregameHistory;
             if (session.CurrentContacts.CampaignId != state.Request.CampaignId
-                || session.CurrentContacts.AuthorityVersion != (session.SourceAuthority?.StateVersion ?? state.StateVersion)
-                || session.CurrentContacts.Records.Count != 0
-                || records.Count != (session.SourceAuthority?.StateVersion ?? state.StateVersion))
+                || session.CurrentContacts.AuthorityVersion != (session.SourceTurn?.StateVersion ?? session.SourceAuthority?.StateVersion ?? state.StateVersion)
+                || (session.SourceTurn is null && session.CurrentContacts.Records.Count != 0)
+                || records.Count != (session.SourceTurn?.StateVersion ?? session.SourceAuthority?.StateVersion ?? state.StateVersion))
                 return new(ExerciseReconstructionFailureReason.InvalidHistory, null, null, expectedHash, null);
             var initial = state.Source.Session.InitialWorld.Initialization;
             var genesis = CampaignPregameSourceState.Create(state.Request, state.Source.Session.Content,
                 new(initial.CapabilityPointsExpended, initial.CohesionLevel));
             var replayed = CampaignPregameSourceState.ReplayGenesis(state.Request, records[0], genesis.SerializeCheckpoint());
             CampaignSourceAuthorityState? authority = null;
+            CampaignSourceTurnAuthority? sourceTurn = null;
+            var replayedContacts = CampaignContactJournal.InitializePregameSource(state.Request.CampaignId);
             foreach (var record in records.Skip(1))
             {
                 using var document = JsonDocument.Parse(record);
                 var eventType = document.RootElement.GetProperty("eventType").GetString();
+                if (sourceTurn is null && eventType != "source-turn-started")
+                    replayedContacts = replayedContacts.AdvancePregameSource(replayedContacts.AuthorityVersion);
+                else if (sourceTurn is not null && eventType is not ("source-polish-brigade-arrived" or "source-fourth-indian-opening-moved"))
+                    replayedContacts = replayedContacts.AdvanceSourceTurnNonMovement(state.Request.CampaignId,
+                        sourceTurn.StateVersion, checked(sourceTurn.StateVersion + 1));
+                if (authority is not null && sourceTurn is null && authority.FinalizedOwners != 0
+                    && eventType is not ("source-owner-setup-finalization-changed" or "source-turn-started" or "source-seventh-shell-stack-corrected"))
+                {
+                    var actor = document.RootElement.GetProperty("actor").GetString();
+                    if (actor == "system" || actor == "axis" && authority.IsOwnerFinalized(CampaignActionAudience.Axis)
+                        || actor == "commonwealth" && authority.IsOwnerFinalized(CampaignActionAudience.Commonwealth))
+                        throw new InvalidOperationException("Finalized setup cannot accept this source event.");
+                }
+                if (eventType == "source-horse-setup-decision")
+                {
+                    if (authority is null || sourceTurn is not null) throw new InvalidOperationException("Invalid Horse setup decision.");
+                    var owner = document.RootElement.GetProperty("actor").GetString() switch
+                    {
+                        "axis" => CampaignActionAudience.Axis,
+                        "commonwealth" => CampaignActionAudience.Commonwealth,
+                        _ => throw new InvalidOperationException("Invalid Horse setup owner."),
+                    };
+                    var kind = document.RootElement.GetProperty("kind").GetString() ?? throw new InvalidOperationException("Horse decision missing.");
+                    var decided = authority.SetHorseSetupDecision(owner, kind);
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeHorseSetupEvent(decided, owner, kind)))
+                        throw new InvalidOperationException("Horse setup decision differs from re-adjudication.");
+                    authority = decided;
+                    continue;
+                }
+                if (eventType == "source-owner-setup-finalization-changed")
+                {
+                    if (authority is null || sourceTurn is not null) throw new InvalidOperationException("Invalid owner finalization.");
+                    var audience = document.RootElement.GetProperty("actor").GetString() switch
+                    {
+                        "axis" => CampaignActionAudience.Axis,
+                        "commonwealth" => CampaignActionAudience.Commonwealth,
+                        _ => throw new InvalidOperationException("Invalid setup owner."),
+                    };
+                    var finish = document.RootElement.GetProperty("finished").GetBoolean();
+                    var finalized = authority.SetOwnerFinalization(audience, finish);
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSetupFinalizationEvent(finalized, audience, finish)))
+                        throw new InvalidOperationException("Owner finalization differs from re-adjudication.");
+                    authority = finalized;
+                    continue;
+                }
+                if (eventType == "source-turn-started")
+                {
+                    if (authority is null || sourceTurn is not null) throw new InvalidOperationException("Invalid source turn start.");
+                    var version = document.RootElement.GetProperty("contractVersion").GetInt32();
+                    if (version is not (CampaignSourceTurnAuthority.ContractVersion or CampaignSourceTurnAuthority.MapBoundContractVersion or CampaignSourceTurnAuthority.CdSeamContractVersion))
+                        throw new InvalidOperationException("Unsupported source turn contract.");
+                    sourceTurn = CampaignSourceTurnAuthority.Start(authority, legacy: version == CampaignSourceTurnAuthority.ContractVersion,
+                        cdSeam: version == CampaignSourceTurnAuthority.CdSeamContractVersion);
+                    if (!record.AsSpan().SequenceEqual(sourceTurn.SerializeEvent(eventType, CampaignSourceTurnAuthority.StartActionId,
+                            authority.StateVersion, authority.SerializeCheckpoint())))
+                        throw new InvalidOperationException("Source turn start differs from re-adjudication.");
+                    replayedContacts = replayedContacts.AppendSourceTurnStart(sourceTurn);
+                    continue;
+                }
+                if (sourceTurn is not null)
+                {
+                    if (eventType == "source-gt1-op1-multi-lanes-announced")
+                    {
+                        var announced = sourceTurn.AnnounceGt1MultiLanes();
+                        if (!record.AsSpan().SequenceEqual(announced.SerializeEvent(eventType, CampaignSourceTurnAuthority.AnnounceGt1MultiLanesActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), announcedLanes: announced.MultiArrival!.Lanes)))
+                            throw new InvalidOperationException("GT1 multi-lane announcement differs from re-adjudication.");
+                        sourceTurn = announced;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-op1-multi-lane-declined")
+                    {
+                        var lane = document.RootElement.GetProperty("lane").GetInt32();
+                        var move = lane switch
+                        {
+                            2 => CampaignSourceTurnAction.DeclineGt1Lane2Attack(sourceTurn.StateVersion),
+                            3 => CampaignSourceTurnAction.DeclineGt1Lane3Attack(sourceTurn.StateVersion),
+                            6 => CampaignSourceTurnAction.DeclineGt1Lane6Attack(sourceTurn.StateVersion),
+                            _ => throw new InvalidOperationException("Unsupported multi-lane choice.")
+                        };
+                        var delivered = sourceTurn.DeclineGt1MultiLaneAttack(lane);
+                        if (!record.AsSpan().SequenceEqual(delivered.SerializeEvent(eventType, move.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "commonwealth", lane: lane, stage: 1)))
+                            throw new InvalidOperationException("GT1 multi-lane delivery differs from re-adjudication.");
+                        sourceTurn = delivered;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-op1-lane3-announced")
+                    {
+                        var announced = sourceTurn.AnnounceGt1Lane3();
+                        if (!record.AsSpan().SequenceEqual(announced.SerializeEvent(eventType, CampaignSourceTurnAuthority.AnnounceGt1Lane3ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), lane: 3, stage: 1)))
+                            throw new InvalidOperationException("GT1 lane 3 announcement differs from re-adjudication.");
+                        sourceTurn = announced;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-op1-lane3-attack-declined")
+                    {
+                        var lane3Decline = CampaignSourceTurnAction.DeclineGt1Lane3Attack(sourceTurn.StateVersion);
+                        var delivered = sourceTurn.DeclineGt1Lane3Attack();
+                        if (!record.AsSpan().SequenceEqual(delivered.SerializeEvent(eventType, lane3Decline.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "commonwealth", lane: 3, stage: 1)))
+                            throw new InvalidOperationException("GT1 lane 3 delivery differs from re-adjudication.");
+                        sourceTurn = delivered;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-op1-lane2-announced")
+                    {
+                        var announced = sourceTurn.AnnounceGt1Lane2();
+                        if (!record.AsSpan().SequenceEqual(announced.SerializeEvent(eventType, CampaignSourceTurnAuthority.AnnounceGt1Lane2ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), lane: 2, stage: 1)))
+                            throw new InvalidOperationException("GT1 lane 2 announcement differs from re-adjudication.");
+                        sourceTurn = announced;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-op1-lane2-attack-declined")
+                    {
+                        var convoyDeclineAction = CampaignSourceTurnAction.DeclineGt1Lane2Attack(sourceTurn.StateVersion);
+                        var delivered = sourceTurn.DeclineGt1Lane2Attack();
+                        if (!record.AsSpan().SequenceEqual(delivered.SerializeEvent(eventType, convoyDeclineAction.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "commonwealth", lane: 2, stage: 1)))
+                            throw new InvalidOperationException("GT1 lane 2 delivery differs from re-adjudication.");
+                        sourceTurn = delivered;
+                        continue;
+                    }
+                    if (eventType == "source-fourth-indian-opening-moved")
+                    {
+                        var supplyId = document.RootElement.GetProperty("supplyId").GetString()
+                            ?? throw new InvalidOperationException("Movement supply selection missing.");
+                        var moveAction = CampaignSourceTurnAction.MoveFourthIndianOpening(sourceTurn.StateVersion, supplyId);
+                        var moved = sourceTurn.MoveFourthIndianOpening(supplyId);
+                        if (!record.AsSpan().SequenceEqual(moved.SerializeEvent(eventType, moveAction.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "commonwealth", supplyId: supplyId)))
+                            throw new InvalidOperationException("Fourth Indian opening move differs from re-adjudication.");
+                        replayedContacts = replayedContacts.AppendSourceMovement(sourceTurn, moved, CampaignSourceFourthIndianMovement.GroupId);
+                        sourceTurn = moved;
+                        continue;
+                    }
+                    if (eventType == "source-australian-baseline-voted")
+                    {
+                        var actor = document.RootElement.GetProperty("actor").GetString();
+                        var side = actor switch { "axis" => LandSide.Axis, "commonwealth" => LandSide.Commonwealth, _ => throw new InvalidOperationException("Invalid baseline voter.") };
+                        var approve = document.RootElement.GetProperty("baselineApproved").GetBoolean();
+                        var voteAction = approve ? CampaignSourceTurnAction.ApproveSixthAustralianBaseline(sourceTurn.StateVersion)
+                            : CampaignSourceTurnAction.WithdrawSixthAustralianBaseline(sourceTurn.StateVersion);
+                        var voted = sourceTurn.VoteSixthAustralianBaseline(side, approve);
+                        if (!record.AsSpan().SequenceEqual(voted.SerializeEvent(eventType, voteAction.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: actor, baselineApproved: approve)))
+                            throw new InvalidOperationException("Australian baseline vote differs from re-adjudication.");
+                        sourceTurn = voted;
+                        continue;
+                    }
+                    if (eventType == "source-sixth-australian-training-interrupted")
+                    {
+                        var trainingAction = CampaignSourceTurnAction.InterruptSixthAustralianTraining(sourceTurn.StateVersion);
+                        var interrupted = sourceTurn.InterruptSixthAustralianTraining();
+                        if (!record.AsSpan().SequenceEqual(interrupted.SerializeEvent(eventType, trainingAction.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "commonwealth")))
+                            throw new InvalidOperationException("Sixth Australian training choice differs from re-adjudication.");
+                        sourceTurn = interrupted;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-first-breakdown-completed")
+                    {
+                        var completed = sourceTurn.CompleteGt1FirstBreakdown();
+                        if (!record.AsSpan().SequenceEqual(completed.SerializeEvent(eventType,
+                                CampaignSourceTurnAuthority.CompleteGt1FirstBreakdownActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                            throw new InvalidOperationException("First-player breakdown differs from re-adjudication.");
+                        sourceTurn = completed;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-first-movement-finished")
+                    {
+                        var actor = document.RootElement.GetProperty("actor").GetString();
+                        var side = actor switch
+                        {
+                            "axis" => LandSide.Axis,
+                            "commonwealth" => LandSide.Commonwealth,
+                            _ => throw new InvalidOperationException("Invalid movement owner.")
+                        };
+                        var finishActionId = CampaignSourceTurnAction.FinishFirstMovement(sourceTurn.StateVersion).ActionId;
+                        var finished = sourceTurn.FinishGt1FirstMovement(side);
+                        if (!record.AsSpan().SequenceEqual(finished.SerializeEvent(eventType, finishActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: actor)))
+                            throw new InvalidOperationException("First-player movement completion differs from re-adjudication.");
+                        sourceTurn = finished;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-first-reserves-declined")
+                    {
+                        var actor = document.RootElement.GetProperty("actor").GetString();
+                        var side = actor switch
+                        {
+                            "axis" => LandSide.Axis,
+                            "commonwealth" => LandSide.Commonwealth,
+                            _ => throw new InvalidOperationException("Invalid reserve owner.")
+                        };
+                        var reserveActionId = CampaignSourceTurnAction.DeclineFirstReserves(sourceTurn.StateVersion).ActionId;
+                        var declined = sourceTurn.DeclineGt1FirstReserves(side);
+                        if (!record.AsSpan().SequenceEqual(declined.SerializeEvent(eventType, reserveActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: actor)))
+                            throw new InvalidOperationException("First-player reserve choice differs from re-adjudication.");
+                        sourceTurn = declined;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-stage1-fleet-completed")
+                    {
+                        var completed = sourceTurn.CompleteGt1StageOneFleet();
+                        if (!record.AsSpan().SequenceEqual(completed.SerializeEvent(eventType,
+                                CampaignSourceTurnAuthority.CompleteGt1FleetActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                            throw new InvalidOperationException("Stage-one fleet completion differs from re-adjudication.");
+                        sourceTurn = completed;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-stage1-arrivals-completed")
+                    {
+                        var completed = sourceTurn.CompleteGt1StageOneArrivals();
+                        if (!record.AsSpan().SequenceEqual(completed.SerializeEvent(eventType,
+                                CampaignSourceTurnAuthority.CompleteGt1ArrivalsActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                            throw new InvalidOperationException("Stage-one arrivals completion differs from re-adjudication.");
+                        sourceTurn = completed;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-organization-completed")
+                    {
+                        var completed = sourceTurn.CompleteGt1Organization();
+                        if (!record.AsSpan().SequenceEqual(completed.SerializeEvent(eventType,
+                                CampaignSourceTurnAuthority.CompleteGt1OrganizationActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                            throw new InvalidOperationException("Opening organization completion differs from re-adjudication.");
+                        sourceTurn = completed;
+                        continue;
+                    }
+                    if (eventType == "source-voluntary-organization-declined")
+                    {
+                        var actor = document.RootElement.GetProperty("actor").GetString();
+                        var side = actor switch { "axis" => LandSide.Axis, "commonwealth" => LandSide.Commonwealth, _ => throw new InvalidOperationException("Invalid organization owner.") };
+                        var organizationActionId = CampaignSourceTurnAction.DeclineVoluntaryOrganization(sourceTurn.StateVersion).ActionId;
+                        var declined = sourceTurn.DeclineVoluntaryOrganization(side);
+                        if (!record.AsSpan().SequenceEqual(declined.SerializeEvent(eventType, organizationActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: actor)))
+                            throw new InvalidOperationException("Voluntary organization choice differs from re-adjudication.");
+                        sourceTurn = declined;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-stage1-weather-determined")
+                    {
+                        var weather = sourceTurn.ResolveStageOneWeather();
+                        if (!record.AsSpan().SequenceEqual(weather.SerializeEvent(eventType, CampaignSourceTurnAuthority.ResolveStageOneWeatherActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                            throw new InvalidOperationException("Stage-one weather differs from re-adjudication.");
+                        sourceTurn = weather;
+                        continue;
+                    }
+                    if (eventType == "source-stage1-order-declared")
+                    {
+                        var axisFirst = document.RootElement.GetProperty("axisFirst").GetBoolean();
+                        var orderAction = axisFirst ? CampaignSourceTurnAction.ActFirst(sourceTurn.StateVersion) : CampaignSourceTurnAction.ActLast(sourceTurn.StateVersion);
+                        var declared = sourceTurn.DeclareStageOneOrder(axisFirst);
+                        if (!record.AsSpan().SequenceEqual(declared.SerializeEvent(eventType, orderAction.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "axis", axisFirst: axisFirst)))
+                            throw new InvalidOperationException("Stage-one initiative declaration differs from re-adjudication.");
+                        sourceTurn = declared;
+                        continue;
+                    }
+                    if (eventType == "source-tactical-shipping-declined")
+                    {
+                        var actor = document.RootElement.GetProperty("actor").GetString();
+                        var side = actor switch { "axis" => LandSide.Axis, "commonwealth" => LandSide.Commonwealth, _ => throw new InvalidOperationException("Invalid tactical shipping owner.") };
+                        var shippingActionId = CampaignSourceTurnAction.DeclineTacticalShipping(sourceTurn.StateVersion).ActionId;
+                        var declined = sourceTurn.DeclineTacticalShipping(side);
+                        if (!record.AsSpan().SequenceEqual(declined.SerializeEvent(eventType, shippingActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: actor)))
+                            throw new InvalidOperationException("Tactical shipping choice differs from re-adjudication.");
+                        sourceTurn = declined;
+                        continue;
+                    }
+                    if (eventType == "source-gt1-convoy-schedule-completed")
+                    {
+                        var completed = sourceTurn.CompleteGt1Scheduling();
+                        if (!record.AsSpan().SequenceEqual(completed.SerializeEvent(eventType, CampaignSourceTurnAuthority.CompleteGt1ScheduleActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                            throw new InvalidOperationException("GT1 convoy scheduling differs from re-adjudication.");
+                        sourceTurn = completed;
+                        continue;
+                    }
+                    if (eventType == "source-commonwealth-gt5-supply-rolled")
+                    {
+                        var cwRollActionId = CampaignSourceTurnAction.RollGt5Supply(sourceTurn.StateVersion).ActionId;
+                        var cwRolled = sourceTurn.RollGt5Supply();
+                        if (!record.AsSpan().SequenceEqual(cwRolled.SerializeEvent(eventType, cwRollActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "commonwealth")))
+                            throw new InvalidOperationException("GT5 supply roll differs from re-adjudication.");
+                        sourceTurn = cwRolled;
+                        continue;
+                    }
+                    if (eventType is "source-axis-gt3-supply-rolled" or "source-axis-gt3-supply-adjusted" or "source-axis-gt3-supply-finished")
+                    {
+                        var isAdjustment = eventType == "source-axis-gt3-supply-adjusted";
+                        int? lane = isAdjustment ? document.RootElement.GetProperty("lane").GetInt32() : null;
+                        int? stage = isAdjustment ? document.RootElement.GetProperty("operationStage").GetInt32() : null;
+                        int? delta = isAdjustment ? document.RootElement.GetProperty("delta").GetInt32() : null;
+                        var supplyAction = eventType switch
+                        {
+                            "source-axis-gt3-supply-rolled" => CampaignSourceTurnAction.RollGt3Supply(sourceTurn.StateVersion),
+                            "source-axis-gt3-supply-finished" => CampaignSourceTurnAction.FinishGt3Supply(sourceTurn.StateVersion),
+                            _ => CampaignSourceTurnAction.AdjustGt3Supply(sourceTurn.StateVersion, lane!.Value, stage!.Value, delta!.Value),
+                        };
+                        var supplyNext = eventType switch
+                        {
+                            "source-axis-gt3-supply-rolled" => sourceTurn.RollGt3Supply(),
+                            "source-axis-gt3-supply-finished" => sourceTurn.FinishGt3Supply(),
+                            _ => sourceTurn.AdjustGt3Supply(lane!.Value, stage!.Value, delta!.Value),
+                        };
+                        if (!record.AsSpan().SequenceEqual(supplyNext.SerializeEvent(eventType, supplyAction.ActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), actor: "axis", lane: lane, stage: stage, delta: delta)))
+                            throw new InvalidOperationException("GT3 supply plan differs from re-adjudication.");
+                        sourceTurn = supplyNext;
+                        continue;
+                    }
+                    if (eventType == "source-polish-brigade-arrived")
+                    {
+                        var destination = document.RootElement.GetProperty("destination").GetString()
+                            ?? throw new InvalidOperationException("Polish arrival destination missing.");
+                        var arrivalActionId = sourceTurn.PolishActionId(destination);
+                        var arrived = sourceTurn.ArrivePolish(destination);
+                        if (!record.AsSpan().SequenceEqual(arrived.SerializeEvent(eventType, arrivalActionId,
+                                sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint(), destination)))
+                            throw new InvalidOperationException("Polish arrival differs from re-adjudication.");
+                        replayedContacts = replayedContacts.AppendSourcePolishArrival(sourceTurn, arrived);
+                        sourceTurn = arrived;
+                        continue;
+                    }
+                    if (eventType != "source-initiative-determined") throw new InvalidOperationException("Unsupported source turn event.");
+                    var successor = sourceTurn.ResolveInitiative();
+                    if (!record.AsSpan().SequenceEqual(successor.SerializeEvent(eventType, CampaignSourceTurnAuthority.InitiativeActionId,
+                            sourceTurn.StateVersion, sourceTurn.SerializeCheckpoint())))
+                        throw new InvalidOperationException("Source initiative differs from re-adjudication.");
+                    sourceTurn = successor;
+                    continue;
+                }
                 if (eventType == "source-authority-started")
                 {
                     if (authority is not null) throw new InvalidOperationException("Duplicate source authority transition.");
@@ -5441,6 +7233,67 @@ public static class CampaignExercises
                     if (!record.AsSpan().SequenceEqual(authority.SerializeEvent()))
                         throw new InvalidOperationException("Source authority event differs from re-adjudication.");
                     continue;
+                }
+                if (eventType == "source-aresca-admitted")
+                {
+                    if (authority is null || authority.IsOwnerFinalized(CampaignActionAudience.Axis)) throw new InvalidOperationException("Aresca setup owner is unavailable.");
+                    var successor = authority.AdmitAresca();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeAresca(successor))) throw new InvalidOperationException("Aresca setup differs from re-adjudication.");
+                    authority = successor; continue;
+                }
+                if (eventType == "source-seventh-shell-stack-corrected")
+                {
+                    if (authority is null || sourceTurn is not null) throw new InvalidOperationException("Seventh Armored setup correction unavailable.");
+                    var successor = authority.CorrectSeventhShell();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSeventhShellCorrection(successor)))
+                        throw new InvalidOperationException("Seventh Armored shell correction differs from re-adjudication.");
+                    authority = successor; continue;
+                }
+                if (eventType == "source-ccnn-batch-admitted")
+                {
+                    if (authority is null || authority.IsOwnerFinalized(CampaignActionAudience.Axis))
+                        throw new InvalidOperationException("CCNN setup owner is unavailable.");
+                    var successor = authority.AdmitCcnnBatch();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeCcnnBatch(successor)))
+                        throw new InvalidOperationException("CCNN batch differs from re-adjudication.");
+                    authority = successor; continue;
+                }
+                if (eventType == "source-sixth-australian-placed")
+                {
+                    if (authority is null || authority.IsOwnerFinalized(CampaignActionAudience.Commonwealth))
+                        throw new InvalidOperationException("Australian setup owner is unavailable.");
+                    var location = document.RootElement.GetProperty("locationId").GetString()!;
+                    var successor = authority.PlaceSixthAustralian(location);
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSixthAustralianPlacement(successor, location)))
+                        throw new InvalidOperationException("Australian placement differs from re-adjudication.");
+                    authority = successor; continue;
+                }
+                if (eventType is "source-catanzaro-grouped-world-admitted" or "source-catanzaro-disposition-confirmed")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var confirm = eventType == "source-catanzaro-disposition-confirmed";
+                    var successor = confirm ? authority.ConfirmCatanzaro() : authority.AdmitCatanzaroGroupedWorld();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeCatanzaroGroupedEvent(successor, confirm)))
+                        throw new InvalidOperationException("Catanzaro grouped world differs from re-adjudication.");
+                    authority = successor; continue;
+                }
+                if (eventType is "source-seventh-armored-grouped-world-admitted" or "source-seventh-armored-disposition-confirmed")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var confirm = eventType == "source-seventh-armored-disposition-confirmed";
+                    var successor = confirm ? authority.ConfirmSeventhArmored() : authority.AdmitSeventhArmoredGroupedWorld();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSeventhArmoredGroupedEvent(successor, confirm)))
+                        throw new InvalidOperationException("Seventh Armored grouped world differs from re-adjudication.");
+                    authority = successor; continue;
+                }
+                if (eventType is "source-sixteenth-brigade-grouped-world-admitted" or "source-sixteenth-brigade-disposition-confirmed")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var confirm = eventType == "source-sixteenth-brigade-disposition-confirmed";
+                    var successor = confirm ? authority.ConfirmSixteenthBrigade() : authority.AdmitSixteenthBrigadeGroupedWorld();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSixteenthBrigadeGroupedEvent(successor, confirm)))
+                        throw new InvalidOperationException("Sixteenth Brigade grouped world differs from re-adjudication.");
+                    authority = successor; continue;
                 }
                 if (eventType is "source-italian-divisions-grouped-world-admitted" or "source-italian-division-disposition-confirmed")
                 {
@@ -5716,6 +7569,51 @@ public static class CampaignExercises
                     authority = successor;
                     continue;
                 }
+                if (eventType == "source-cw-frontline-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateCwFrontline();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeCwFrontlineEvent(successor)))
+                        throw new InvalidOperationException("CW frontline differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-giarabub-motor-placement-policy-admitted")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.AdmitGiarabubMotorPlacementPolicy();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeGiarabubMotorPlacementPolicyEvent(successor)))
+                        throw new InvalidOperationException("Giarabub motor placement policy differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-giarabub-motor-machine-gun-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateGiarabubMotorMachineGun();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeGiarabubMotorMachineGunEvent(successor)))
+                        throw new InvalidOperationException("Giarabub motor MG differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-axis-garrison-remainder-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateAxisGarrisonRemainder();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeAxisGarrisonRemainderEvent(successor)))
+                        throw new InvalidOperationException("Axis garrison remainder differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-axis-minor-garrisons-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateAxisMinorGarrisons();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeAxisMinorGarrisonsEvent(successor)))
+                        throw new InvalidOperationException("Axis minor garrisons differ from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
                 if (eventType is "source-cw-free-guns-admitted" or "source-cw-free-gun-placed" or "source-cw-free-guns-world-promoted")
                 {
                     if (authority is null) throw new InvalidOperationException("Source setup has not started.");
@@ -5874,10 +7772,10 @@ public static class CampaignExercises
                     authority = successor;
                     continue;
                 }
-                if (eventType is "source-attached-initial-loads-admitted" or "source-attached-initial-loads-changed")
+                if (eventType is "source-attached-initial-loads-admitted" or "source-attached-initial-loads-changed" or "source-frontline-initial-loads-changed")
                 {
                     if (authority is null) throw new InvalidOperationException("Source setup has not started.");
-                    var kind = eventType == "source-attached-initial-loads-changed" ? document.RootElement.GetProperty("kind").GetString()! : null;
+                    var kind = eventType != "source-attached-initial-loads-admitted" ? document.RootElement.GetProperty("kind").GetString()! : null;
                     var element = kind is null ? null : document.RootElement.GetProperty("elementId").GetString()!;
                     var successor = kind is null ? authority.AdmitAttachedInitialLoads() : authority.ApplyAttachedInitialLoads(kind, element!);
                     if (!record.AsSpan().SequenceEqual(authority.SerializeAttachedInitialLoadsEvent(successor, kind, element)))
@@ -5913,7 +7811,13 @@ public static class CampaignExercises
                     throw new InvalidOperationException("Pre-game event differs from re-adjudication.");
                 replayed = next;
             }
-            var actual = authority?.SerializeCheckpoint() ?? replayed.SerializeCheckpoint();
+            var actual = sourceTurn?.SerializeCheckpoint() ?? authority?.SerializeCheckpoint() ?? replayed.SerializeCheckpoint();
+            var actualContacts = session.CurrentContacts.Records;
+            var reconstructedContacts = replayedContacts.Records;
+            if (replayedContacts.AuthorityVersion != session.CurrentContacts.AuthorityVersion
+                || actualContacts.Count != reconstructedContacts.Count
+                || actualContacts.Where((value, index) => !value.AsSpan().SequenceEqual(reconstructedContacts[index])).Any())
+                return new(ExerciseReconstructionFailureReason.InvalidHistory, null, null, expectedHash, null);
             if (!expected.AsSpan().SequenceEqual(actual))
                 return new(ExerciseReconstructionFailureReason.SnapshotMismatch, null, null, expectedHash, Hash(actual));
             return new(ExerciseReconstructionFailureReason.None, actual,

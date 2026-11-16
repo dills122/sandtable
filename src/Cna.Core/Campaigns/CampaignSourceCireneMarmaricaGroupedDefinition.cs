@@ -112,7 +112,8 @@ internal static class CampaignSourceCireneMarmaricaGroupedDefinition
     internal static void Validate(CampaignSourceAuthorityState state, CampaignGroupedWorld world)
     {
         ArgumentNullException.ThrowIfNull(state); ArgumentNullException.ThrowIfNull(world);
-        if (world.ContentHash != ContentSourceCireneMarmaricaGroupedPackArtifact.ContentHash
+        if (world.ContentHash != (world.Groups.Any(value => value.GroupId == CampaignSourceCcnnBatch.FirstId) ? Cna.Core.Content.ContentSourceCcnnBatchPackArtifact.HashFor(world.Groups.Any(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId), world.Groups.Any(value => value.GroupId == CampaignSourceArescaGroupedDefinition.GroupId)) : world.Groups.Any(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId) ? Cna.Core.Content.ContentSourceSixthAustralianGroupedPackArtifact.ContentHash : world.Groups.Any(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId) ? ContentSourceCatanzaroGroupedPackArtifact.ContentHash : world.Groups.Any(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId) ? ContentSourceSixteenthBrigadeGroupedPackArtifact.ContentHash : world.Groups.Any(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId)
+                ? ContentSourceSeventhArmoredGroupedPackArtifact.ContentHash : ContentSourceCireneMarmaricaGroupedPackArtifact.ContentHash)
             || state.AxisSupplement?.Hash() != CampaignSourceAxisSupplementalForces.ContentHash)
             throw new InvalidOperationException("Italian grouped content differs from pinned source.");
         foreach (var source in Data)

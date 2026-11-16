@@ -130,12 +130,43 @@ reserve its existing motor pool for Central India Horse. The same grouped source
 world can retain the confirmed Matruh garrison and Maletti, including their selected
 detachments, and propose both Libyan divisions for Axis confirmation. This state is
 replayable but is not yet accepted by native movement or combat.
-Core also supports confirming proposed 62 Marmarica and 63 Cirene groups; their
-system admission is not yet exposed through the Host.
-Axis can also record provisional GT3–4 September supply plans through the same
-setup actions. Other convoy cargo remains unresolved; no delivery is implied.
+The Host can also admit proposed 62 Marmarica, 63 Cirene and 64 Catanzaro groups for Axis
+confirmation, and 7th Armored and 16th Brigade groups for Commonwealth
+confirmation, through normal source setup actions and journal replay.
+Axis can optionally preplan GT3–4 supply arrivals in September through the same
+setup actions; those arrivals are in October. Other convoy cargo remains
+unresolved; no delivery is implied.
+Both owners can finish or reopen setup privately. A source-turn authority now
+retains the grouped state and random stream and includes bounded GT1 planning,
+tactical-shipping declines, initiative declaration, weather, selected convoy
+deliveries and a single-hex Polish arrival. Its start gate still rejects the
+incomplete historical map, control and contact coverage, so those turn and
+arrival transitions cannot yet be reached through a real campaign.
+After Australian training is interrupted and both sides finish opening
+Organization choices, a journaled GT1 completion step applies the provisional
+no-prior-construction ruling; the existing campaign-start gate still applies.
+GT1 stage-one convoy arrivals can then close only after all due Axis lanes are
+delivered, no units remain due, and the Commonwealth has skipped opening supply.
+The following stage-one fleet step applies the scenario's GT1 movement ban and
+undamaged starting state; later fleet operations remain unsupported.
+The first acting player can then decline reserve designation and enter its
+movement segment through the normal owner-action interface. Version-3 turns
+also let that player finish movement and advance to breakdown determination.
+The bounded no-breakdown successor supports either no movement or the exact
+4th Indian opening move; other movement histories remain blocked there.
+A [pinned historical map transcription](docs/specs/graziani-historical-map-transcription.md)
+now supplies the opening-road and Cairo-entry consistency checks, and resolves
+same-sheet contact geometry for map-bound source turns. Apart from the three
+verified C/D crossings below, remaining seam edges and grouped control are unadmitted.
+New source-turn checkpoints bind the pinned map identity and three provisionally
+approved C/D crossings; legacy turn records retain their original geometry
+and checkpoint version during replay. General cross-sheet movement remains blocked.
 Supported source setup choices can also be queried and submitted through the normal legal-action
 interface; the owning player receives its setup context and provisional rulings.
+The Commonwealth can assign the initial 1 RTR and 11 Hussars truck pools and
+choose their initial loads through this interface. Finishing with empty trucks
+clears their load-specific blocker; loaded-truck consumption and detachment
+remain unsupported. Other blockers still prevent source-turn start.
 The optional compact source checkpoint reduces new journal rows while retaining a
 requirement to replay the complete journal from genesis.
 Normal gameplay creation and journal replay can use a supplied, identity-checked Content 6

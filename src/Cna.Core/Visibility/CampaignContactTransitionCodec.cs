@@ -8,7 +8,10 @@ internal static class CampaignContactTransitionCodec
     public static byte[] SerializeCanonical(CampaignContactTransition value)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (value.ContractVersion != CampaignContactKnowledge.CurrentContractVersion
+        if ((value.ObserverKind == CampaignContactObserverKind.Formation && value.ContractVersion != CampaignContactKnowledge.CurrentContractVersion)
+            || (value.ObserverKind == CampaignContactObserverKind.IndependentCounter
+                && (value.ContractVersion != CampaignContactKnowledge.IndependentObserverContractVersion || value.Access != CampaignContactAccess.Observer))
+            || !Enum.IsDefined(value.ObserverKind)
             || !Enum.IsDefined(value.Side) || !Enum.IsDefined(value.Kind)
             || !Enum.IsDefined(value.Identification) || !Enum.IsDefined(value.Access)
             || value.AuthorityVersion < 1
@@ -33,7 +36,13 @@ internal static class CampaignContactTransitionCodec
             writer.WriteString("kind", Kind(value.Kind));
             writer.WriteString("contactHandle", value.ContactHandle);
             writer.WriteString("boundRepresentationId", value.BoundRepresentationId);
-            writer.WriteString("observerFormationId", value.ObserverFormationId);
+            if (value.ObserverKind == CampaignContactObserverKind.Formation)
+                writer.WriteString("observerFormationId", value.ObserverFormationId);
+            else
+            {
+                writer.WriteString("observerKind", "independent-counter");
+                writer.WriteString("observerId", value.ObserverFormationId);
+            }
             writer.WriteString("apparentLocationId", value.ApparentLocationId);
             writer.WriteString("identification", Identification(value.Identification));
             writer.WriteString("access", Access(value.Access));
@@ -47,10 +56,15 @@ internal static class CampaignContactTransitionCodec
     {
         using var document = JsonDocument.Parse(bytes.ToArray());
         var root = document.RootElement;
-        if (root.ValueKind != JsonValueKind.Object || root.EnumerateObject().Count() != 13)
-            throw new JsonException("Contact transition must have the exact version 1 shape.");
+        if (root.ValueKind != JsonValueKind.Object) throw new JsonException("Contact transition must be an object.");
+        var version = root.GetProperty("contractVersion").GetInt32();
+        var independent = version == CampaignContactKnowledge.IndependentObserverContractVersion;
+        if ((!independent && version != CampaignContactKnowledge.CurrentContractVersion)
+            || root.EnumerateObject().Count() != (independent ? 14 : 13)
+            || (independent && root.GetProperty("observerKind").GetString() != "independent-counter"))
+            throw new JsonException("Contact transition shape or observer kind is invalid.");
         var value = new CampaignContactTransition(
-            root.GetProperty("contractVersion").GetInt32(),
+            version,
             root.GetProperty("campaignId").GetString()!,
             ParseSide(root.GetProperty("side").GetString()),
             root.GetProperty("authorityVersion").GetInt64(),
@@ -59,10 +73,11 @@ internal static class CampaignContactTransitionCodec
             ParseKind(root.GetProperty("kind").GetString()),
             root.GetProperty("contactHandle").GetString()!,
             root.GetProperty("boundRepresentationId").GetString()!,
-            root.GetProperty("observerFormationId").GetString()!,
+            root.GetProperty(independent ? "observerId" : "observerFormationId").GetString()!,
             root.GetProperty("apparentLocationId").GetString()!,
             ParseIdentification(root.GetProperty("identification").GetString()),
-            ParseAccess(root.GetProperty("access").GetString()));
+            ParseAccess(root.GetProperty("access").GetString()),
+            independent ? CampaignContactObserverKind.IndependentCounter : CampaignContactObserverKind.Formation);
         if (!bytes.SequenceEqual(SerializeCanonical(value)))
             throw new JsonException("Contact transition is not canonical.");
         return value;

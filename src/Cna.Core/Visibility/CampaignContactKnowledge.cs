@@ -25,6 +25,12 @@ internal enum CampaignContactAccess
     Side,
 }
 
+internal enum CampaignContactObserverKind
+{
+    Formation,
+    IndependentCounter,
+}
+
 // Core emits these transitions from adjudicated sight, combat, and sharing events.
 // The bound representation is private authority data; only CampaignContactView leaves Core.
 internal sealed record CampaignContactTransition(
@@ -40,7 +46,8 @@ internal sealed record CampaignContactTransition(
     string ObserverFormationId,
     string ApparentLocationId,
     CampaignContactIdentification Identification,
-    CampaignContactAccess Access);
+    CampaignContactAccess Access,
+    CampaignContactObserverKind ObserverKind = CampaignContactObserverKind.Formation);
 
 internal sealed record CampaignContact(
     string Handle,
@@ -49,7 +56,8 @@ internal sealed record CampaignContact(
     string ApparentLocationId,
     CampaignContactIdentification Identification,
     CampaignContactAccess Access,
-    bool IsCurrent);
+    bool IsCurrent,
+    CampaignContactObserverKind ObserverKind = CampaignContactObserverKind.Formation);
 
 internal sealed record CampaignContactView(
     string Handle,
@@ -64,13 +72,17 @@ internal sealed record CampaignContactTargetCandidate(
     string ContactHandle,
     string ApparentLocationId);
 
+internal sealed record CampaignIndependentContactView(string Handle, string ObserverCounterId,
+    string ApparentLocationId, CampaignContactIdentification Identification, bool IsCurrent);
+
 internal sealed class CampaignContactKnowledge
 {
     public const int CurrentContractVersion = 1;
+    public const int IndependentObserverContractVersion = 2;
 
     private readonly Dictionary<string, CampaignContact> contacts = new(StringComparer.Ordinal);
     private readonly HashSet<(string SourceEventId, string ContactHandle)> appliedSources = [];
-    private readonly Dictionary<string, long> observerRevisions = new(StringComparer.Ordinal);
+    private readonly Dictionary<(CampaignContactObserverKind Kind, string Id), long> observerRevisions = [];
     private long sideSharedRevision;
 
     public CampaignContactKnowledge(string campaignId, LandSide side)
@@ -92,15 +104,43 @@ internal sealed class CampaignContactKnowledge
         var scope = SHA256.HashData(Encoding.UTF8.GetBytes(
             $"{CampaignId}\0{Side}\0{observerFormationId}"));
         var sequence = contacts.Values.Count(value =>
-            string.Equals(value.ObserverFormationId, observerFormationId, StringComparison.Ordinal)) + 1;
+            value.ObserverKind == CampaignContactObserverKind.Formation
+            && string.Equals(value.ObserverFormationId, observerFormationId, StringComparison.Ordinal)) + 1;
         return $"c-{Convert.ToHexString(scope.AsSpan(0, 6)).ToLowerInvariant()}-{sequence:D8}";
     }
 
     public long AudienceRevisionFor(string actingFormationId)
     {
         RequireId(actingFormationId);
-        observerRevisions.TryGetValue(actingFormationId, out var local);
+        observerRevisions.TryGetValue((CampaignContactObserverKind.Formation, actingFormationId), out var local);
         return checked(sideSharedRevision + local);
+    }
+
+    internal string NextIndependentCounterHandle(string counterId)
+    {
+        RequireId(counterId);
+        var scope = SHA256.HashData(Encoding.UTF8.GetBytes($"{CampaignId}\0{Side}\0independent-counter\0{counterId}"));
+        var sequence = contacts.Values.Count(value => value.ObserverKind == CampaignContactObserverKind.IndependentCounter
+            && value.ObserverFormationId == counterId) + 1;
+        return $"c-{Convert.ToHexString(scope.AsSpan(0, 6)).ToLowerInvariant()}-{sequence:D8}";
+    }
+
+    internal long AudienceRevisionForCounter(string counterId)
+    {
+        RequireId(counterId);
+        observerRevisions.TryGetValue((CampaignContactObserverKind.IndependentCounter, counterId), out var local);
+        // Independent source observers do not yet consume side-shared contacts.
+        return local;
+    }
+
+    internal IReadOnlyList<CampaignIndependentContactView> ObserveForCounter(string counterId)
+    {
+        RequireId(counterId);
+        return contacts.Values.Where(value => value.ObserverKind == CampaignContactObserverKind.IndependentCounter
+                && value.ObserverFormationId == counterId)
+            .OrderBy(value => value.Handle, StringComparer.Ordinal)
+            .Select(value => new CampaignIndependentContactView(value.Handle, counterId,
+                value.ApparentLocationId, value.Identification, value.IsCurrent)).ToArray();
     }
 
     internal CampaignContactKnowledge Copy()
@@ -119,16 +159,20 @@ internal sealed class CampaignContactKnowledge
     }
 
     internal CampaignContact? FindPrivateContact(string boundRepresentationId, string observerFormationId) =>
+        FindPrivateContact(boundRepresentationId, observerFormationId, CampaignContactObserverKind.Formation);
+
+    internal CampaignContact? FindPrivateContact(string boundRepresentationId, string observerId, CampaignContactObserverKind kind) =>
         contacts.Values.SingleOrDefault(contact =>
             string.Equals(contact.BoundRepresentationId, boundRepresentationId, StringComparison.Ordinal)
-            && string.Equals(contact.ObserverFormationId, observerFormationId, StringComparison.Ordinal));
+            && contact.ObserverKind == kind && string.Equals(contact.ObserverFormationId, observerId, StringComparison.Ordinal));
 
     public IReadOnlyList<CampaignContactView> ObserveFor(string actingFormationId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(actingFormationId);
         return contacts.Values
-            .Where(contact => contact.Access == CampaignContactAccess.Side
-                || string.Equals(contact.ObserverFormationId, actingFormationId, StringComparison.Ordinal))
+            .Where(contact => contact.ObserverKind == CampaignContactObserverKind.Formation
+                && (contact.Access == CampaignContactAccess.Side
+                    || string.Equals(contact.ObserverFormationId, actingFormationId, StringComparison.Ordinal)))
             .OrderBy(contact => contact.Handle, StringComparer.Ordinal)
             .Select(contact => new CampaignContactView(contact.Handle, contact.ObserverFormationId,
                 contact.ApparentLocationId, contact.Identification, contact.Access, contact.IsCurrent))
@@ -150,6 +194,7 @@ internal sealed class CampaignContactKnowledge
         ArgumentException.ThrowIfNullOrWhiteSpace(contactHandle);
         if (!contacts.TryGetValue(contactHandle, out var contact)
             || !contact.IsCurrent
+            || contact.ObserverKind != CampaignContactObserverKind.Formation
             || (contact.Access != CampaignContactAccess.Side
                 && !string.Equals(contact.ObserverFormationId, actingFormationId, StringComparison.Ordinal)))
         {
@@ -162,7 +207,10 @@ internal sealed class CampaignContactKnowledge
     public void Apply(CampaignContactTransition transition)
     {
         ArgumentNullException.ThrowIfNull(transition);
-        if (transition.ContractVersion != CurrentContractVersion
+        if ((transition.ObserverKind == CampaignContactObserverKind.Formation && transition.ContractVersion != CurrentContractVersion)
+            || (transition.ObserverKind == CampaignContactObserverKind.IndependentCounter
+                && (transition.ContractVersion != IndependentObserverContractVersion || transition.Access != CampaignContactAccess.Observer))
+            || !Enum.IsDefined(transition.ObserverKind)
             || !string.Equals(transition.CampaignId, CampaignId, StringComparison.Ordinal)
             || transition.Side != Side
             || transition.AuthorityVersion < 1
@@ -188,14 +236,16 @@ internal sealed class CampaignContactKnowledge
         if (transition.Kind == CampaignContactTransitionKind.Observed)
         {
             if (exists || !string.Equals(transition.ContactHandle,
-                NextHandle(transition.ObserverFormationId), StringComparison.Ordinal))
+                transition.ObserverKind == CampaignContactObserverKind.Formation
+                    ? NextHandle(transition.ObserverFormationId) : NextIndependentCounterHandle(transition.ObserverFormationId), StringComparison.Ordinal))
                 throw new ArgumentException("New contact must use next side-scoped handle.", nameof(transition));
-            if (FindPrivateContact(transition.BoundRepresentationId, transition.ObserverFormationId) is not null)
+            if (FindPrivateContact(transition.BoundRepresentationId, transition.ObserverFormationId, transition.ObserverKind) is not null)
                 throw new ArgumentException("Observer already has a handle for this private contact.", nameof(transition));
         }
         else if (!exists
             || !string.Equals(prior!.BoundRepresentationId, transition.BoundRepresentationId, StringComparison.Ordinal)
-            || !string.Equals(prior.ObserverFormationId, transition.ObserverFormationId, StringComparison.Ordinal))
+            || !string.Equals(prior.ObserverFormationId, transition.ObserverFormationId, StringComparison.Ordinal)
+            || prior.ObserverKind != transition.ObserverKind)
         {
             throw new ArgumentException("Contact transition does not match its private binding and observer.", nameof(transition));
         }
@@ -218,7 +268,7 @@ internal sealed class CampaignContactKnowledge
             CampaignContactTransitionKind.Lost => prior! with { IsCurrent = false },
             _ => new CampaignContact(transition.ContactHandle, transition.BoundRepresentationId,
                 transition.ObserverFormationId, transition.ApparentLocationId,
-                transition.Identification, transition.Access, true),
+                transition.Identification, transition.Access, true, transition.ObserverKind),
         };
         if (prior is null || Visible(prior) != Visible(next))
         {
@@ -227,9 +277,9 @@ internal sealed class CampaignContactKnowledge
                 sideSharedRevision = checked(sideSharedRevision + 1);
             else
             {
-                IncrementObserver(next.ObserverFormationId);
+                IncrementObserver(next.ObserverKind, next.ObserverFormationId);
                 if (prior is not null && prior.ObserverFormationId != next.ObserverFormationId)
-                    IncrementObserver(prior.ObserverFormationId);
+                    IncrementObserver(prior.ObserverKind, prior.ObserverFormationId);
             }
         }
         contacts[transition.ContactHandle] = next;
@@ -241,10 +291,10 @@ internal sealed class CampaignContactKnowledge
         contact.Handle, contact.ObserverFormationId, contact.ApparentLocationId,
         contact.Identification, contact.Access, contact.IsCurrent);
 
-    private void IncrementObserver(string observerFormationId)
+    private void IncrementObserver(CampaignContactObserverKind kind, string observerId)
     {
-        observerRevisions.TryGetValue(observerFormationId, out var prior);
-        observerRevisions[observerFormationId] = checked(prior + 1);
+        observerRevisions.TryGetValue((kind, observerId), out var prior);
+        observerRevisions[(kind, observerId)] = checked(prior + 1);
     }
 
     private static void RequireId(string value)

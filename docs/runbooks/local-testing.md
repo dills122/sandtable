@@ -75,6 +75,22 @@ multiple lanes across separate machines, so CI wall times are not laptop
 estimates, and chunking does not reduce total work when all chunks are selected.
 Do not launch many shard processes against the same build output concurrently.
 
+## Graziani source setup soak
+
+For a longer, opt-in real-source determinism probe, run:
+
+```sh
+SANDTABLE_GRAZIANI_SOAK=1 dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --filter-class '*GrazianiSourceAuthorityTests*'
+```
+
+In addition to the ordinary source-authority checks, this executes fixed seeds
+104, 345 and 1979 for 32 alternating Axis/Commonwealth actions each. It repeats
+each sequence from the same source state, checks canonical checkpoints, RNG,
+pending arrivals and grouped formations, probes rejected stale and forged
+submissions for no state changes, and reconstructs both histories. Failures
+include the seed and step. This is a setup soak, not playable GT1 or arrival
+execution; its extra runtime is excluded from ordinary CI timing weights.
+
 CI's Linux resource supervision, exhaustive aggregate, private Python proofs and
 exact-head admission remain separate. The local receipt explicitly identifies a
 selected local run; it is not a CI coverage certificate. Existing Python Combat

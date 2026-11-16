@@ -13,6 +13,7 @@ public static class CampaignLegalActionSerializer
         {
             CampaignLegalActionSet.PregamePolicyId => CampaignPregameLegalActionSerializer.Serialize(actionSet),
             CampaignLegalActionSet.SourceSetupPolicyId => CampaignSourceSetupActionSerializer.Serialize(actionSet),
+            CampaignLegalActionSet.SourceTurnPolicyId => CampaignSourceSetupActionSerializer.Serialize(actionSet),
             _ => CampaignObservationV7LegalActionSerializer.Serialize(actionSet),
         };
     }
@@ -26,6 +27,7 @@ public static class CampaignLegalActionSerializer
             {
                 CampaignLegalActionSet.PregamePolicyId => CampaignPregameLegalActionSerializer.DeserializeCanonical(utf8Json),
                 CampaignLegalActionSet.SourceSetupPolicyId => CampaignSourceSetupActionSerializer.DeserializeCanonical(utf8Json),
+                CampaignLegalActionSet.SourceTurnPolicyId => CampaignSourceSetupActionSerializer.DeserializeCanonical(utf8Json),
                 _ => CampaignObservationV7LegalActionSerializer.DeserializeCanonical(utf8Json),
             };
         }

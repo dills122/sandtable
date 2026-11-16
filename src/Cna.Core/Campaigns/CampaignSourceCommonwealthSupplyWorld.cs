@@ -76,6 +76,22 @@ internal sealed class CampaignSourceCommonwealthSupplyWorld
         return new CampaignSourceCommonwealthSupplyWorld(next, placements.Append(new(placementId, locationId)), dummyDecision);
     }
 
+    // Runtime spending is applied to the retained counter, never regenerated
+    // from the setup anchor. Route and carried-load priority are adjudicated by
+    // the source turn authority before invoking this transition.
+    internal CampaignSourceCommonwealthSupplyWorld SpendFuel(string unitId, string locationId, int points)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(points, 1);
+        var unit = units.SingleOrDefault(value => value.Id == unitId)
+            ?? throw new InvalidOperationException("Supply counter is absent.");
+        if (unit.IsDummy || unit.LocationId != locationId || unit.Fuel < points)
+            throw new InvalidOperationException("Selected supply counter cannot pay this fuel expenditure.");
+        var remaining = unit.Fuel - points;
+        return new CampaignSourceCommonwealthSupplyWorld(units.Where(value => value.Id != unitId
+                || value.Ammo != 0 || remaining != 0).Select(value => value.Id == unitId
+                ? value with { Fuel = remaining } : value), placements, dummyDecision);
+    }
+
     internal IReadOnlyList<string> ValidDummyDestinations()
     {
         if (dummyDecision is not null) return [];

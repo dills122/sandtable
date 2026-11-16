@@ -182,6 +182,7 @@
     { "name": "Cna.Core.Actions.CampaignLegalActionSet", "declaredMembers": ["ContractVersion", "PolicyId", "CampaignId", "StateVersion", "RulesetHash", "PositionId", "Audience", "Candidates"] },
     { "name": "Cna.Core.Actions.CampaignActionCandidate", "declaredMembers": ["ContractVersion", "ActionId", "Kind", "OperationStage"] },
     { "name": "Cna.Core.Actions.CampaignSourceSetupAction", "declaredMembers": ["ChoiceJson", "Family"] },
+    { "name": "Cna.Core.Actions.CampaignSourceTurnAction", "declaredMembers": ["Delta", "Destination", "Lane", "Stage"] },
     { "name": "Cna.Core.Actions.CampaignActionAudience", "declaredMembers": [], "enumValues": ["Axis", "Commonwealth", "System"] },
     { "name": "Cna.Core.Actions.ActFirstAction", "declaredMembers": [] },
     { "name": "Cna.Core.Actions.ActLastAction", "declaredMembers": [] },

@@ -348,7 +348,7 @@ class CombinedConservationTests(unittest.TestCase):
             data = json.loads(original)
             if kind == 'missing': path.unlink()
             elif kind == 'aborted': data['abort_reason'] = '4GiB exceeded'
-            elif kind == 'over-limit': data['kernel_children_peak_rss_bytes'] = 4 * 2**30 + 1
+            elif kind == 'over-limit': data['kernel_children_peak_rss_bytes'] = 5 * 2**30 + 1
             elif kind == 'stale': data['binding'] = dict(data['binding'], run_id='999')
             else:
                 status_path = self.root / 'r02-groups' / 'support-contract' / 'status.json'; status = json.loads(status_path.read_text()); status['started_utc'] = '2026-10-15T20:00:00+00:00'; status_path.write_text(json.dumps(status))

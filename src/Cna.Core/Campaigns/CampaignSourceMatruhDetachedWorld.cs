@@ -33,7 +33,7 @@ internal sealed class CampaignSourceMatruhDetachedWorld
         var corps = state.AxisCorpsArtilleryWorld ?? throw new InvalidOperationException("Source corps world missing.");
         var maletti = state.CertifiedMalettiWorld;
         var prior = state.World;
-        if (prior.ContentIdentity != (state.CwFreeGunsWorld?.Content.Identity ?? state.CwPriorityWorld?.Content.Identity
+        if (prior.ContentIdentity != (state.CwFreeGunsWorld?.CwFrontlineContent?.Identity ?? state.CwFreeGunsWorld?.MotorMachineGunContent?.Identity ?? state.CwFreeGunsWorld?.GarrisonRemainderContent?.Identity ?? state.CwFreeGunsWorld?.MinorGarrisonContent?.Identity ?? state.CwFreeGunsWorld?.Content.Identity ?? state.CwPriorityWorld?.Content.Identity
             ?? maletti?.Content.Identity ?? corps.Content.Identity)
             || prior.World.Elements.Any(value => value.ElementId == id)
             || prior.PendingArrivals.Any(group => group.ElementIds.Contains(id, StringComparer.Ordinal)))
