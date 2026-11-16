@@ -475,7 +475,7 @@ internal sealed class CampaignSourceTurnAuthority
             writer.WriteString("positionId", Position.PositionId);
             writer.WriteNumber("gameTurn", Position.GameTurn);
             writer.WriteNumber("operationStage", Position.OperationStage);
-            writer.WriteString("initiativeHolder", InitiativeHolder is null ? null : "axis");
+            writer.WriteString("initiativeHolder", InitiativeHolder switch { LandSide.Axis => "axis", LandSide.Commonwealth => "commonwealth", _ => null });
             writer.WriteString("gt3SupplyPlanHash", Gt3Supply?.Hash());
             writer.WriteString("gt5SupplyPlanHash", Gt5Supply?.Hash());
             writer.WriteNumber("tacticalShippingDeclinedMask", TacticalShippingDeclinedMask);
