@@ -29,6 +29,20 @@ public sealed class GrazianiSourceSetupPackArtifactTests
         var matruhGroup = ContentSourceMatruhGroupedPackArtifact.Create(fourthIndian);
         var malettiGrouped = ContentSourceMalettiGroupedPackArtifact.Create(matruhGroup);
         var libyanGrouped = ContentSourceLibyanGroupedPackArtifact.Create(malettiGrouped);
+        var italianGrouped = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyanGrouped);
+        var seventhGrouped = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italianGrouped);
+        var sixteenthGrouped = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventhGrouped);
+        var catanzaroGrouped = ContentSourceCatanzaroGroupedPackArtifact.Create(sixteenthGrouped);
+        Assert.Equal(ContentSourceCatanzaroGroupedPackArtifact.ContentHash, catanzaroGrouped.Hash());
+        Assert.Equal(catanzaroGrouped.Identity, ContentSourceCatanzaroGroupedPackArtifact.Read(catanzaroGrouped.CanonicalBytes).Identity);
+        Assert.Equal(ContentSourceSeventhArmoredGroupedPackArtifact.ContentHash, seventhGrouped.Hash());
+        Assert.Equal(seventhGrouped.Identity, ContentSourceSeventhArmoredGroupedPackArtifact.Read(seventhGrouped.CanonicalBytes).Identity);
+        var definition = Encoding.UTF8.GetString(CampaignSourceSeventhArmoredGroupedDefinition.SerializeCanonical());
+        Assert.Contains("\"capabilityPointAllowance\":25", definition);
+        Assert.Contains("\"componentId\":\"8-hussars.a10-cruiser\",\"toe\":7", definition);
+        var alteredSeventh = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(seventhGrouped.CanonicalBytes)
+            .Replace("sandtable.source-seventh-armored-grouped.v1", "sandtable.source-seventh-armored-grouped.v2", StringComparison.Ordinal));
+        Assert.ThrowsAny<Exception>(() => ContentSourceSeventhArmoredGroupedPackArtifact.Read(alteredSeventh));
         Assert.Equal(ContentSourceLibyanGroupedPackArtifact.ContentHash, libyanGrouped.Hash());
         Assert.Equal(libyanGrouped.Identity, ContentSourceLibyanGroupedPackArtifact.Read(libyanGrouped.CanonicalBytes).Identity);
         var alteredLibyan = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(libyanGrouped.CanonicalBytes)

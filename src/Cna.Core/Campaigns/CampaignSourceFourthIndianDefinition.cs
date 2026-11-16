@@ -51,7 +51,14 @@ internal sealed class CampaignSourceFourthIndianDefinition
         var hasMaletti = world.Groups.Any(value => value.GroupId == "maletti-division");
         var hasLibyan = world.Groups.Any(value => value.GroupId == "1-libyan-division");
         var hasItalian = world.Groups.Any(value => value.GroupId == CampaignSourceCireneMarmaricaGroupedDefinition.CireneId);
-        if ((hasMaletti && !hasMatruh) || (hasLibyan && !hasMaletti) || (hasItalian && !hasLibyan) || world.Groups.Count != (hasItalian ? 7 : hasLibyan ? 5 : hasMaletti ? 3 : hasMatruh ? 2 : 1) || group is null || group.SideId != "commonwealth"
+        var hasSeventh = world.Groups.Any(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        var hasSixteenth = world.Groups.Any(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        var hasCatanzaro = world.Groups.Any(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        var hasAustralian = world.Groups.Any(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
+        var hasFirstCcnn = world.Groups.Any(value => value.GroupId == CampaignSourceCcnnBatch.FirstId);
+        var hasFourthCcnn = world.Groups.Any(value => value.GroupId == CampaignSourceCcnnBatch.FourthId);
+        var hasAresca = world.Groups.Any(value => value.GroupId == CampaignSourceArescaGroupedDefinition.GroupId);
+        if (hasFirstCcnn != hasFourthCcnn || (hasAresca && !hasFirstCcnn) || (hasFirstCcnn && !hasCatanzaro) || (hasAustralian && !hasCatanzaro) || (hasCatanzaro && !hasSixteenth) || (hasSixteenth && !hasSeventh) || (hasMaletti && !hasMatruh) || (hasLibyan && !hasMaletti) || (hasItalian && !hasLibyan) || (hasSeventh && !hasItalian) || world.Groups.Count != (hasFirstCcnn ? 12 + (hasAustralian ? 1 : 0) + (hasAresca ? 1 : 0) : hasAustralian ? 11 : hasCatanzaro ? 10 : hasSixteenth ? 9 : hasSeventh ? 8 : hasItalian ? 7 : hasLibyan ? 5 : hasMaletti ? 3 : hasMatruh ? 2 : 1) || group is null || group.SideId != "commonwealth"
             || group.RootId != "4-indian-division-hq" || group.LocationId != "d3615"
             || group.StackValue != (group.DispositionConfirmed ? (int?)5 : null) || group.MotorPool != 22
             || (!group.DispositionConfirmed && group.Members.Any(member => member.AssignedMotorPoints != 0))
@@ -66,7 +73,7 @@ internal sealed class CampaignSourceFourthIndianDefinition
                 && member.CapabilityPointAllowance == source.CapabilityPoints
                 && member.CapabilityPointsExpended == world.Prior.Initialization.CapabilityPointsExpended
                 && member.CohesionLevel == world.Prior.Initialization.CohesionLevel))
-            || world.ContentHash != (hasItalian ? Cna.Core.Content.ContentSourceCireneMarmaricaGroupedPackArtifact.ContentHash : hasLibyan ? Cna.Core.Content.ContentSourceLibyanGroupedPackArtifact.ContentHash : hasMaletti ? Cna.Core.Content.ContentSourceMalettiGroupedPackArtifact.ContentHash : hasMatruh ? Cna.Core.Content.ContentSourceMatruhGroupedPackArtifact.ContentHash : Cna.Core.Content.ContentSourceFourthIndianPackArtifact.ContentHash))
+            || world.ContentHash != (world.Groups.Any(value => value.GroupId == CampaignSourceCcnnBatch.FirstId) ? Cna.Core.Content.ContentSourceCcnnBatchPackArtifact.HashFor(world.Groups.Any(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId), world.Groups.Any(value => value.GroupId == CampaignSourceArescaGroupedDefinition.GroupId)) : world.Groups.Any(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId) ? Cna.Core.Content.ContentSourceSixthAustralianGroupedPackArtifact.ContentHash : hasCatanzaro ? Cna.Core.Content.ContentSourceCatanzaroGroupedPackArtifact.ContentHash : hasSixteenth ? Cna.Core.Content.ContentSourceSixteenthBrigadeGroupedPackArtifact.ContentHash : hasSeventh ? Cna.Core.Content.ContentSourceSeventhArmoredGroupedPackArtifact.ContentHash : hasItalian ? Cna.Core.Content.ContentSourceCireneMarmaricaGroupedPackArtifact.ContentHash : hasLibyan ? Cna.Core.Content.ContentSourceLibyanGroupedPackArtifact.ContentHash : hasMaletti ? Cna.Core.Content.ContentSourceMalettiGroupedPackArtifact.ContentHash : hasMatruh ? Cna.Core.Content.ContentSourceMatruhGroupedPackArtifact.ContentHash : Cna.Core.Content.ContentSourceFourthIndianPackArtifact.ContentHash))
             throw new InvalidOperationException("Fourth Indian grouped world differs from pinned source definition.");
     }
     internal static byte[] SerializeCanonical()

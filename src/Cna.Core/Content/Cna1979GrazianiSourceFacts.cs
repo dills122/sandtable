@@ -521,8 +521,8 @@ public static class Cna1979GrazianiSourceFacts
             [new ContentInitialComponentToe(component.ComponentId, 9, component.Origin)]);
     }
 
-    // The OA notes that one company of LX(L) is attached to Maletti. Its
-    // remaining strength and exact placement are not inferred in this subset.
+    // Aresca retains XXI(L); LXII(L), LXIII(L), and I(M) begin attached
+    // elsewhere. The partially detached LX(L) belongs to Tripoli instead.
     public static ContentInitialGroup ArescaTankRegimentInitialCandidate { get; } = new(
         "aresca-tank-regiment-source-candidate", "axis", "c3919",
         ["aresca-tank-regiment-hq", "xxi-libyan-light-tank"],
