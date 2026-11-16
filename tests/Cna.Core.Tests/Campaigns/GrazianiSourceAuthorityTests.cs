@@ -261,6 +261,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(JsonValueKind.Null, world.RootElement.GetProperty("units").EnumerateArray()
             .Single(x => x.GetProperty("id").GetString() == "axis-derna-1").GetProperty("ammo").ValueKind);
         var cwSession = second.SuccessorSession!;
+        Assert.Equal(CampaignSourceAuthorityState.ContractVersion, cwSession.SourceAuthority!.ProfileVersion);
         Assert.True(CampaignExercises.IsSourceSetupSeat(cwSession, CampaignActionAudience.Axis));
         Assert.True(CampaignExercises.IsSourceSetupSeat(cwSession, CampaignActionAudience.Commonwealth));
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceCommonwealthSupplyDraft(cwSession, CampaignActionAudience.Axis));
@@ -566,6 +567,7 @@ public sealed class GrazianiSourceAuthorityTests
             september = CampaignExercises.SubmitSourceSeptemberSupply(september, Submission(september, finish, CampaignActionAudience.Axis)).SuccessorSession!;
         }
         Assert.Null(september.SourceAuthority!.SeptemberPlans!.NextTargetGameTurn);
+        Assert.Equal(38, september.SourceAuthority.ProfileVersion);
         var retainedGt3 = CampaignSourceGt1SupplyPlanning.Create(september.SourceAuthority, september.SourceAuthority.RandomState);
         Assert.Equal(september.SourceAuthority.SeptemberPlans.Entries.Single(value => value.TargetGameTurn == 3).Die, retainedGt3.Die);
         Assert.True(retainedGt3.CarriedPlanFinished);
@@ -987,6 +989,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(rngBeforeGt2, directV12.SourceAuthority.RandomState);
         Assert.Equal(worldBeforeGt2, directV12.SourceAuthority.World.ContentIdentity);
         directV12 = CampaignExercises.AdmitSourceCwPriorityCatalog(directV12).SuccessorSession!;
+        Assert.Equal(28, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         directV12 = CampaignExercises.PromoteSourceCwPriorityWorld(directV12).SuccessorSession!;
         Assert.Equal(29, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(22, directV12.SourceAuthority!.World.World.Elements.Count);
@@ -1004,6 +1007,7 @@ public sealed class GrazianiSourceAuthorityTests
         frenchFirst = CampaignExercises.AdmitSourceCwPriorityCatalog(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.PromoteSourceCwPriorityWorld(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.AdmitSourceCwFreeGuns(frenchFirst).SuccessorSession!;
+        Assert.Equal(31, frenchFirst.SourceAuthority!.ProfileVersion);
         var freeGunIds = frenchFirst.SourceAuthority!.CwFreeGuns!.PendingIds.ToArray();
         var gunCairoHex = seed == 14 ? "e1730" : "e1830";
         foreach (var id in freeGunIds)
@@ -1015,6 +1019,7 @@ public sealed class GrazianiSourceAuthorityTests
                 Submission(frenchFirst, placeGun, CampaignActionAudience.Commonwealth)).SuccessorSession!;
             frenchFirst = CampaignExercises.PromoteSourceCwFreeGunsWorld(frenchFirst).SuccessorSession!;
         }
+        Assert.Equal(32, frenchFirst.SourceAuthority!.ProfileVersion);
         _ = ContentSourceFourthIndianPackArtifact.Create(frenchFirst.SourceAuthority!.CwFreeGunsWorld!.Content);
         var indianResult = CampaignExercises.AdmitSourceFourthIndianWorld(frenchFirst);
         Assert.True(indianResult.IsAccepted);
@@ -1483,6 +1488,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.True(indian.SourceAuthority!.GroupedWorld!.Groups.Single().DispositionConfirmed);
         Assert.Equal(5, indian.SourceAuthority.GroupedWorld.StackAt("commonwealth", "d3615", _ => null));
         Assert.Equal(11, indian.SourceAuthority.Battlefield!.Entries.Count(value => value.LocationId == "d3615" && value.AuthorityStatus == "source-fourth-indian-grouped"));
+        Assert.Equal(34, indian.SourceAuthority.ProfileVersion);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, CampaignExercises.Submit(indian, confirmCommand).RejectionReason);
         Assert.True(CampaignExercises.Reconstruct(indian).IsVerified);
         indian = CampaignExercises.SubmitSourceFourthIndian(indian,
@@ -1530,18 +1536,21 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(2, matruhBeforeDetach.SourceAuthority!.GroupedWorld!.Groups.Count);
         Assert.Equal(0, matruhBeforeDetach.SourceAuthority.GroupedWorld.StackAt("commonwealth", "d3714", _ => null));
         Assert.Equal(6, matruhBeforeDetach.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "matruh-garrison").Members.Count);
+        Assert.Equal(35, matruhBeforeDetach.SourceAuthority.ProfileVersion);
         var activeMaletti = CampaignExercises.SubmitSourceAxisPriority(matruhBeforeDetach,
             Submission(matruhBeforeDetach, axisLift, CampaignActionAudience.Axis)).SuccessorSession!;
         activeMaletti = CampaignExercises.AdmitSourceMalettiGroupedWorld(activeMaletti).SuccessorSession!;
         Assert.Equal(3, activeMaletti.SourceAuthority!.GroupedWorld!.Groups.Count);
         Assert.Equal(30, activeMaletti.SourceAuthority.GroupedWorld.RemainingMotorPoints("maletti-division"));
         Assert.Equal(5, activeMaletti.SourceAuthority.GroupedWorld.ExternalReservations.Single(value => value.GroupId == "maletti-division").AssignedMotorPoints);
+        Assert.Equal(36, activeMaletti.SourceAuthority.ProfileVersion);
         Assert.True(CampaignExercises.Reconstruct(activeMaletti).IsVerified);
         var libyanAdmission = CampaignExercises.AdmitSourceLibyanGroupedWorld(activeMaletti);
         Assert.True(libyanAdmission.IsAccepted);
         var libyanProposed = libyanAdmission.SuccessorSession!;
         Assert.Equal(5, libyanProposed.SourceAuthority!.GroupedWorld!.Groups.Count);
         Assert.Equal(22, libyanProposed.SourceAuthority.Battlefield!.Entries.Count(value => value.AuthorityStatus == "source-libyan-proposed"));
+        Assert.Equal(37, libyanProposed.SourceAuthority.ProfileVersion);
         var secondArtillery = libyanProposed.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "2-libyan-division")
             .Members.Single(value => value.ElementId == "2-libyan-artillery");
         Assert.Equal("75-27-gun", secondArtillery.ComponentType);
@@ -1577,6 +1586,7 @@ public sealed class GrazianiSourceAuthorityTests
         var italianProposed = italianAdmission.SuccessorSession!;
         Assert.Equal(7, italianProposed.SourceAuthority!.GroupedWorld!.Groups.Count);
         Assert.Equal(29, italianProposed.SourceAuthority.Battlefield!.Entries.Count(value => value.AuthorityStatus == "source-italian-division-proposed"));
+        Assert.Equal(39, italianProposed.SourceAuthority.ProfileVersion);
         var italianChoices = CampaignExercises.Query(italianProposed, CampaignActionAudience.Axis).ActionSet!.Candidates
             .OfType<CampaignSourceSetupAction>().Where(value => value.Family == "italian-division-disposition").ToArray();
         Assert.Equal(2, italianChoices.Length);
@@ -1603,6 +1613,7 @@ public sealed class GrazianiSourceAuthorityTests
         var seventh = seventhProposed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "7-armored-division");
         Assert.Equal(7, seventh.Members.Count); Assert.Null(seventh.StackValue); Assert.False(seventh.DispositionConfirmed);
         Assert.Equal(10, seventh.MotorPool);
+        Assert.Equal(40, seventhProposed.SourceAuthority!.ProfileVersion);
         var seventhChoice = CampaignExercises.Query(seventhProposed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
             .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "seventh-armored-disposition");
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.Submit(seventhProposed,
@@ -1663,6 +1674,7 @@ public sealed class GrazianiSourceAuthorityTests
         var sixteenthCommand = Submission(sixteenthProposed, sixteenthChoice.ActionId, CampaignActionAudience.Commonwealth);
         var sixteenthConfirmed = CampaignExercises.Submit(sixteenthProposed, sixteenthCommand).SuccessorSession!;
         Assert.Equal(2, sixteenthConfirmed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == sixteenth.GroupId).StackValue);
+        Assert.Equal(41, sixteenthConfirmed.SourceAuthority.ProfileVersion);
         var playableWorld = CampaignSourcePlayableWorld.Create(sixteenthConfirmed.SourceAuthority);
         var mapBoundWorld = CampaignSourcePlayableWorld.Create(sixteenthConfirmed.SourceAuthority, mapIdentityBound: true);
         var cdWorld = CampaignSourcePlayableWorld.Create(sixteenthConfirmed.SourceAuthority, mapIdentityBound: true, cdSeamBound: true);
@@ -1898,6 +1910,7 @@ public sealed class GrazianiSourceAuthorityTests
             Submission(catanzaroProposed, catanzaroChoice.ActionId, CampaignActionAudience.Commonwealth)).RejectionReason);
         var catanzaroCommand = Submission(catanzaroProposed, catanzaroChoice.ActionId, CampaignActionAudience.Axis);
         var catanzaroConfirmed = CampaignExercises.Submit(catanzaroProposed, catanzaroCommand).SuccessorSession!;
+        Assert.Equal(42, catanzaroConfirmed.SourceAuthority!.ProfileVersion);
         var axisFinish = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Axis).ActionSet!.Candidates
             .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
         var axisFinished = CampaignExercises.Submit(catanzaroConfirmed,
@@ -1941,6 +1954,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cavalry = australian.Members.Single(value => value.ElementId == "6-australian-divisional-cavalry");
         Assert.Equal(8, cavalry.ComponentToe); Assert.Equal(45, cavalry.CapabilityPointAllowance);
         Assert.Equal(catanzaroConfirmed.SourceAuthority!.RandomState, australianSession.SourceAuthority.RandomState);
+        Assert.Equal(45, australianSession.SourceAuthority.ProfileVersion);
         Assert.True(CampaignExercises.Reconstruct(australianSession).IsVerified);
         var axisBatchChoice = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Axis).ActionSet!.Candidates
             .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "ccnn-batch-disposition");
@@ -2104,6 +2118,7 @@ public sealed class GrazianiSourceAuthorityTests
         }
         var ccnnFirst = CampaignExercises.Submit(catanzaroConfirmed,
             Submission(catanzaroConfirmed, axisBatchChoice.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(47, ccnnFirst.SourceAuthority!.ProfileVersion);
         var australianAfterCcnn = CampaignExercises.Query(ccnnFirst, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
             .OfType<CampaignSourceSetupAction>().Where(value => value.Family == "sixth-australian-placement").ToArray();
         Assert.Equal(choicesBefore, australianAfterCcnn.Select(value => value.ChoiceJson).Order(StringComparer.Ordinal).ToArray());
@@ -2113,6 +2128,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(australianFirst.SourceAuthority!.GroupedWorld!.ContentHash, ccnnThenAustralian.SourceAuthority!.GroupedWorld!.ContentHash);
         Assert.Equal(australianFirst.SourceAuthority.GroupedWorld.Hash(), ccnnThenAustralian.SourceAuthority.GroupedWorld.Hash());
         Assert.Equal(australianFirst.SourceAuthority.Battlefield!.Hash(), ccnnThenAustralian.SourceAuthority.Battlefield!.Hash());
+        Assert.Equal(49, ccnnThenAustralian.SourceAuthority.ProfileVersion);
         Assert.Equal(14, australianFirst.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "1-ccnn-division").Members.Count);
         Assert.Equal(12, australianFirst.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "4-ccnn-division").Members.Count);
         var ccnnUnits = australianFirst.SourceAuthority.GroupedWorld.Groups.Where(value => value.GroupId is "1-ccnn-division" or "4-ccnn-division")
