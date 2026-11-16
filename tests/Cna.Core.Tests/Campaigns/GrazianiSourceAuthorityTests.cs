@@ -1958,6 +1958,23 @@ public sealed class GrazianiSourceAuthorityTests
             fullyMotorized = adjustment.SuccessorSession!;
         }
         var motorizedWorld = CampaignSourcePlayableWorld.Create(fullyMotorized.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        Assert.Contains("seventh-armored-shell-stack-correction-required", motorizedWorld.ReadinessBlockers());
+        Assert.Contains("owner-setup-finalization-incomplete", motorizedWorld.ReadinessBlockers());
+        Assert.Contains("central-india-horse-training-state-unresolved", motorizedWorld.ReadinessBlockers());
+        var axisHorseApproved = Act(fullyMotorized, CampaignActionAudience.Axis, "central-india-horse-ruling", "approve");
+        var cwHorseApproved = Act(axisHorseApproved, CampaignActionAudience.Commonwealth, "central-india-horse-ruling", "approve");
+        Assert.Equal(3, cwHorseApproved.SourceAuthority!.HorseRulingVotes);
+        var horseStageOneDeclined = Act(cwHorseApproved, CampaignActionAudience.Commonwealth, "central-india-horse-stage-one", "decline-stage1");
+        Assert.True(horseStageOneDeclined.SourceAuthority!.HorseStageOneResolved);
+        var shellCorrected = CampaignExercises.CorrectSourceSeventhShell(horseStageOneDeclined).SuccessorSession!;
+        Assert.True(shellCorrected.SourceAuthority!.IsSeventhShellCorrected);
+        var axisFinalizedForReadiness = Act(shellCorrected, CampaignActionAudience.Axis, "owner-finalization", "finish");
+        var bothFinalizedForReadiness = Act(axisFinalizedForReadiness, CampaignActionAudience.Commonwealth, "owner-finalization", "finish");
+        Assert.Equal(3, bothFinalizedForReadiness.SourceAuthority!.FinalizedOwners);
+        var readyWorld = CampaignSourcePlayableWorld.Create(bothFinalizedForReadiness.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        Assert.DoesNotContain("seventh-armored-shell-stack-correction-required", readyWorld.ReadinessBlockers());
+        Assert.DoesNotContain("owner-setup-finalization-incomplete", readyWorld.ReadinessBlockers());
+        Assert.DoesNotContain("central-india-horse-training-state-unresolved", readyWorld.ReadinessBlockers());
         var openingGroup = motorizedWorld.GroupedWorld.Groups.Single(value => value.GroupId == CampaignSourceFourthIndianMovement.GroupId);
         Assert.True(CampaignSourceFourthIndianMovement.IsOpeningFormation(openingGroup));
         var openingMoved = motorizedWorld.GroupedWorld.MoveFormation(openingGroup.GroupId, CampaignSourceFourthIndianRoad.Destination,
@@ -2401,5 +2418,14 @@ public sealed class GrazianiSourceAuthorityTests
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
         return new(CampaignActionSubmission.CurrentContractVersion, checkpoint.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, audience, actionId);
+    }
+
+    private static ExerciseSession Act(ExerciseSession session, CampaignActionAudience audience, string family, string kind)
+    {
+        var candidate = CampaignExercises.Query(session, audience).ActionSet!.Candidates.OfType<CampaignSourceSetupAction>()
+            .Single(value => value.Family == family && JsonDocument.Parse(value.ChoiceJson).RootElement.GetProperty("kind").GetString() == kind);
+        var result = CampaignExercises.Submit(session, Submission(session, candidate.ActionId, audience));
+        Assert.True(result.IsAccepted);
+        return result.SuccessorSession!;
     }
 }
