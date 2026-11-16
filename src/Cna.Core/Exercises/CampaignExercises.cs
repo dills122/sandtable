@@ -548,8 +548,11 @@ public static class CampaignExercises
             || session.SourceTurn is not null || session.SourceAuthority is not { } source)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         CampaignSourceTurnAuthority turn;
-        try { turn = CampaignSourceTurnAuthority.Start(source, legacy: contractVersion == CampaignSourceTurnAuthority.ContractVersion,
-            cdSeam: contractVersion == CampaignSourceTurnAuthority.CdSeamContractVersion); }
+        try
+        {
+            turn = CampaignSourceTurnAuthority.Start(source, legacy: contractVersion == CampaignSourceTurnAuthority.ContractVersion,
+            cdSeam: contractVersion == CampaignSourceTurnAuthority.CdSeamContractVersion);
+        }
         catch (Exception error) when (error is InvalidOperationException or ArgumentException)
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
         var bytes = turn.SerializeEvent("source-turn-started", CampaignSourceTurnAuthority.StartActionId,
@@ -7054,8 +7057,12 @@ public static class CampaignExercises
                     if (eventType == "source-gt1-first-movement-finished")
                     {
                         var actor = document.RootElement.GetProperty("actor").GetString();
-                        var side = actor switch { "axis" => LandSide.Axis, "commonwealth" => LandSide.Commonwealth,
-                            _ => throw new InvalidOperationException("Invalid movement owner.") };
+                        var side = actor switch
+                        {
+                            "axis" => LandSide.Axis,
+                            "commonwealth" => LandSide.Commonwealth,
+                            _ => throw new InvalidOperationException("Invalid movement owner.")
+                        };
                         var finishActionId = CampaignSourceTurnAction.FinishFirstMovement(sourceTurn.StateVersion).ActionId;
                         var finished = sourceTurn.FinishGt1FirstMovement(side);
                         if (!record.AsSpan().SequenceEqual(finished.SerializeEvent(eventType, finishActionId,
@@ -7067,8 +7074,12 @@ public static class CampaignExercises
                     if (eventType == "source-gt1-first-reserves-declined")
                     {
                         var actor = document.RootElement.GetProperty("actor").GetString();
-                        var side = actor switch { "axis" => LandSide.Axis, "commonwealth" => LandSide.Commonwealth,
-                            _ => throw new InvalidOperationException("Invalid reserve owner.") };
+                        var side = actor switch
+                        {
+                            "axis" => LandSide.Axis,
+                            "commonwealth" => LandSide.Commonwealth,
+                            _ => throw new InvalidOperationException("Invalid reserve owner.")
+                        };
                         var reserveActionId = CampaignSourceTurnAction.DeclineFirstReserves(sourceTurn.StateVersion).ActionId;
                         var declined = sourceTurn.DeclineGt1FirstReserves(side);
                         if (!record.AsSpan().SequenceEqual(declined.SerializeEvent(eventType, reserveActionId,
