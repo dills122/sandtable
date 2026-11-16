@@ -243,7 +243,7 @@ internal sealed class CampaignSourceBattlefield
         var before = prior.Groups.Single(value => value.GroupId == groupId);
         var after = successor.Groups.Single(value => value.GroupId == groupId);
         var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        if (!successor.Moved || before.SideId != after.SideId || before.LocationId == after.LocationId
+        if (!successor.MovedGroupIds.Contains(groupId) || before.SideId != after.SideId || before.LocationId == after.LocationId
             || !after.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids)
             || !successor.Groups.Where(value => value.GroupId != groupId).SequenceEqual(prior.Groups.Where(value => value.GroupId != groupId))
             || !successor.Detached.SequenceEqual(prior.Detached)

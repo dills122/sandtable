@@ -197,4 +197,30 @@ public sealed class CampaignGroupedWorldTests
         Assert.Equal(world.Hash(), assigned.AssignMotorization(group.GroupId, "central-india-horse", -6).Hash());
         Assert.Throws<ArgumentException>(() => CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group, group]));
     }
+
+    [Fact]
+    public void MovedGroupIdsTracksOnlyTheFormationThatActuallyMoved()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId,
+            new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None));
+        var groupA = new CampaignGroupedFormation("group-a", "commonwealth", "group-a-hq", "d3615", null, 10,
+        [
+            new CampaignGroupedMember("group-a-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ]);
+        var groupB = new CampaignGroupedFormation("group-b", "commonwealth", "group-b-hq", "d3714", null, 10,
+        [
+            new CampaignGroupedMember("group-b-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ]);
+        var world = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [groupA, groupB]);
+        Assert.Empty(world.MovedGroupIds);
+        var costs = new Dictionary<string, CapabilityPointAmount> { ["group-a-hq"] = new CapabilityPointAmount(1, 1) };
+        var moved = world.MoveFormation("group-a", "d3616", costs, 0, 1, 1);
+        // Only the formation that actually moved is tracked; an untouched sibling
+        // formation's own location-coherence checks must stay fully enforced.
+        Assert.Single(moved.MovedGroupIds);
+        Assert.Contains("group-a", moved.MovedGroupIds);
+        Assert.DoesNotContain("group-b", moved.MovedGroupIds);
+        Assert.Equal("d3714", moved.Groups.Single(value => value.GroupId == "group-b").LocationId);
+    }
 }
