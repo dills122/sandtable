@@ -38,7 +38,8 @@ internal sealed class CampaignSourceTurnAuthority
         int voluntaryOrganizationDeclinedMask = 0, CampaignSourceTrainingLedger? training = null,
         CampaignSourceGt1AxisArrival? axisArrival = null, CampaignSourceCommonwealthSupplyWorld? commonwealthSupply = null,
         (int GameTurn, int OperationStage)? fourthIndianPaidStage = null, bool? horseTrainingActive = null,
-        CampaignSourceGt1BenghaziArrival? benghaziArrival = null, CampaignSourceGt1MultiArrival? multiArrival = null)
+        CampaignSourceGt1BenghaziArrival? benghaziArrival = null, CampaignSourceGt1MultiArrival? multiArrival = null,
+        CampaignSourceCombatObligationLedger? combatObligations = null)
     {
         World = world;
         StateVersion = stateVersion;
@@ -58,6 +59,7 @@ internal sealed class CampaignSourceTurnAuthority
         HorseTrainingActive = horseTrainingActive;
         BenghaziArrival = benghaziArrival ?? CampaignSourceGt1BenghaziArrival.Create(world.Source, AxisArrival);
         MultiArrival = multiArrival;
+        CombatObligations = combatObligations;
     }
 
     internal CampaignSourcePlayableWorld World { get; }
@@ -76,6 +78,9 @@ internal sealed class CampaignSourceTurnAuthority
     internal CampaignSourceGt1AxisArrival AxisArrival { get; }
     internal CampaignSourceGt1BenghaziArrival BenghaziArrival { get; }
     internal CampaignSourceGt1MultiArrival? MultiArrival { get; }
+    // Non-null only while the combat segment created it is still open for
+    // the current phasing side (see EnterCombatSegment/CompleteCombatSegment).
+    internal CampaignSourceCombatObligationLedger? CombatObligations { get; }
     internal CampaignSourceCommonwealthSupplyWorld CommonwealthSupply { get; }
     internal (int GameTurn, int OperationStage)? FourthIndianPaidStage { get; }
     // Null means initial training status remains unknown. A move interrupts
@@ -443,6 +448,72 @@ internal sealed class CampaignSourceTurnAuthority
 
     internal string PolishActionId(string destination) => new CampaignSourceTurnAction(StateVersion, destination).ActionId;
 
+    // Land 60-combat.md:22-24 / 50-stacking-and-zoc.md:241-273 (compulsory
+    // combat obligation ledger). Only the one Combat position other source
+    // transitions in this class already reach (first-breakdown completion
+    // lands exactly here) can open obligation tracking; this attaches the
+    // ledger to the current position without otherwise advancing it, the
+    // same way e.g. DeclineVoluntaryOrganization can leave Position in
+    // place pending further resolution.
+    internal CampaignSourceTurnAuthority EnterCombatSegment()
+    {
+        if (Position.GameTurn != 1 || Position.OperationStage != 1 || Position.SegmentId != LandSegmentIds.Combat
+            || Position.StepId != LandStepIds.PositionDetermination || CombatObligations is not null)
+            throw new InvalidOperationException("Combat-segment obligation tracking is unavailable.");
+        var phasingSide = ResolvePhasingSide();
+        var enemySide = Opposite(phasingSide);
+        var obligated = CampaignSourceCombatObligations.TryDeriveObligatedLocationIds(World,
+            CampaignSourceCombatObligations.SideId(phasingSide), CampaignSourceCombatObligations.SideId(enemySide))
+            ?? throw new InvalidOperationException("Combat obligations cannot be derived from indeterminate ZOC sourcing.");
+        var ledger = CampaignSourceCombatObligationLedger.Create(phasingSide, Position.GameTurn, Position.OperationStage, obligated);
+        return WithCombatObligations(ledger);
+    }
+
+    internal CampaignSourceTurnAuthority ResolveCombatObligationAttack(string locationId) =>
+        WithCombatObligations(RequireCombatObligations().ResolveAttack(locationId));
+
+    internal CampaignSourceTurnAuthority ExemptCombatObligation(string locationId, CampaignSourceCombatObligationExemptionReason reason) =>
+        WithCombatObligations(RequireCombatObligations().ApplyExemption(locationId, reason));
+
+    internal CampaignSourceTurnAuthority RetreatCombatObligation(string locationId) =>
+        WithCombatObligations(RequireCombatObligations().ResolveRetreat(locationId));
+
+    private CampaignSourceCombatObligationLedger RequireCombatObligations() =>
+        CombatObligations ?? throw new InvalidOperationException("Combat obligations are unavailable.");
+
+    private CampaignSourceTurnAuthority WithCombatObligations(CampaignSourceCombatObligationLedger? updated) =>
+        new(World, checked(StateVersion + 1), Position, RandomState, InitiativeHolder, Gt3Supply, Gt5Supply,
+            TacticalShippingDeclinedMask, StageOneFirstSide, StageOneWeather, VoluntaryOrganizationDeclinedMask,
+            Training, AxisArrival, CommonwealthSupply, FourthIndianPaidStage, HorseTrainingActive, BenghaziArrival,
+            MultiArrival, updated);
+
+    // The completion gate: cannot complete while any obligation for the
+    // phasing side remains open. Position is deliberately left where it is
+    // rather than advanced to ReserveRelease - the intervening
+    // Barrage/RetreatBeforeAssault/ForceAssignment/AntiArmor/CloseAssault
+    // steps (and their position materialization) are not implemented
+    // anywhere in this codebase yet, and inventing that advancement is out
+    // of this ledger's scope, the same way barrage/close-assault resolution
+    // itself is. A future session wiring real combat resolution should
+    // extend this to also advance Position once those steps exist.
+    internal CampaignSourceTurnAuthority CompleteCombatSegment()
+    {
+        if (CombatObligations is null || Position.SegmentId != LandSegmentIds.Combat)
+            throw new InvalidOperationException("Combat-segment completion is unavailable.");
+        if (CombatObligations.HasOpenObligations)
+            throw new InvalidOperationException("Open combat obligations remain for the phasing side.");
+        return WithCombatObligations(null);
+    }
+
+    private LandSide ResolvePhasingSide() => Position.ActorRole switch
+    {
+        LandActorRole.FirstActingSide => StageOneFirstSide ?? throw new InvalidOperationException("Stage-one acting order is unavailable."),
+        LandActorRole.SecondActingSide => Opposite(StageOneFirstSide ?? throw new InvalidOperationException("Stage-one acting order is unavailable.")),
+        _ => throw new InvalidOperationException("Combat segment requires a first- or second-acting side position."),
+    };
+
+    private static LandSide Opposite(LandSide side) => side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
+
     internal byte[] SerializeCheckpoint()
     {
         using var stream = new MemoryStream();
@@ -485,6 +556,7 @@ internal sealed class CampaignSourceTurnAuthority
             writer.WriteString("gt1BenghaziArrivalHash", BenghaziArrival.Hash());
             if (MultiArrival is not null) writer.WriteString("gt1MultiArrivalHash", MultiArrival.Hash());
             writer.WriteString("commonwealthSupplyHash", CommonwealthSupply.Hash());
+            writer.WriteString("combatObligationsHash", CombatObligations?.Hash());
             if (HorseTrainingActive is bool horseTraining) writer.WriteBoolean("horseTrainingActive", horseTraining); else writer.WriteNull("horseTrainingActive");
             if (FourthIndianPaidStage is { } paidStage)
             {
