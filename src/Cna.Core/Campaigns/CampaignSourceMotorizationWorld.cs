@@ -14,24 +14,28 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceMotorizationWorld
 {
     internal const string PolicyId = "graziani.initial-motorization.curated-sites.v1";
+    internal const string GiarabubPolicyId = "graziani.initial-motorization.curated-sites.v2";
     private static readonly int[] AmountSteps = [1, 5, 10, 25, 50];
     private static readonly string[] CairoSites = ["e1730", "e1829", "e1830", "e1930", "e1931"];
     private static readonly string[] AlexandriaSites = ["e3613", "e3714"];
     private static readonly string[] CommonwealthMapSites = ["c4131", "d3714"];
     private static readonly string[] AxisLibyaSites = ["c4507", "c4707"];
+    private static readonly string[] AxisLibyaGiarabubSites = ["c1014", "c4507", "c4707"];
     private readonly ReadOnlyCollection<CampaignSourceMotorPool> pools;
     private readonly ReadOnlyCollection<CampaignSourceMotorAllocation> allocations;
 
     private CampaignSourceMotorizationWorld(LandSide side, IEnumerable<CampaignSourceMotorPool> pools,
-        IEnumerable<CampaignSourceMotorAllocation> allocations)
+        IEnumerable<CampaignSourceMotorAllocation> allocations, bool giarabubPlacementAdmitted = false)
     {
         Side = side;
+        GiarabubPlacementAdmitted = giarabubPlacementAdmitted;
         this.pools = Array.AsReadOnly(pools.OrderBy(value => value.Id, StringComparer.Ordinal).ToArray());
         this.allocations = Array.AsReadOnly(allocations.OrderBy(value => value.PoolId, StringComparer.Ordinal)
             .ThenBy(value => value.LocationId, StringComparer.Ordinal).ToArray());
     }
 
     internal LandSide Side { get; }
+    internal bool GiarabubPlacementAdmitted { get; }
     internal IReadOnlyList<CampaignSourceMotorPool> Pools => pools;
     internal IReadOnlyList<CampaignSourceMotorAllocation> Allocations => allocations;
 
@@ -84,7 +88,8 @@ internal sealed class CampaignSourceMotorizationWorld
         // cities under §59.44; other legal positions are intentionally omitted.
         return poolId switch
         {
-            "axis-libya-unattached" when Side == LandSide.Axis => Array.AsReadOnly(AxisLibyaSites),
+            "axis-libya-unattached" when Side == LandSide.Axis => Array.AsReadOnly(
+                GiarabubPlacementAdmitted ? AxisLibyaGiarabubSites : AxisLibyaSites),
             "cw-cairo-unattached" when Side == LandSide.Commonwealth => Array.AsReadOnly(CairoSites),
             "cw-alexandria-unattached" when Side == LandSide.Commonwealth => Array.AsReadOnly(AlexandriaSites),
             "cw-any-map-unattached" when Side == LandSide.Commonwealth => Array.AsReadOnly(CommonwealthMapSites),
@@ -117,7 +122,14 @@ internal sealed class CampaignSourceMotorizationWorld
         var previous = allocations.SingleOrDefault(value => value.PoolId == poolId && value.LocationId == locationId)?.Points ?? 0;
         var quantity = checked(previous + delta);
         if (quantity > 0) next.Add(new(poolId, locationId, quantity));
-        return new CampaignSourceMotorizationWorld(Side, pools, next);
+        return new CampaignSourceMotorizationWorld(Side, pools, next, GiarabubPlacementAdmitted);
+    }
+
+    internal CampaignSourceMotorizationWorld AdmitGiarabubPlacement()
+    {
+        if (Side != LandSide.Axis || GiarabubPlacementAdmitted)
+            throw new InvalidOperationException("Giarabub placement policy is unavailable.");
+        return new CampaignSourceMotorizationWorld(Side, pools, allocations, true);
     }
 
     internal byte[] SerializeCanonical()
@@ -127,7 +139,7 @@ internal sealed class CampaignSourceMotorizationWorld
         {
             writer.WriteStartObject();
             writer.WriteNumber("contractVersion", 1);
-            writer.WriteString("policyId", PolicyId);
+            writer.WriteString("policyId", GiarabubPlacementAdmitted ? GiarabubPolicyId : PolicyId);
             writer.WriteString("side", CampaignSnapshotSerializer.FormatSide(Side));
             writer.WriteString("scenarioSourceHash", "sha256:fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66");
             writer.WriteString("mapSourceHash", "sha256:8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030");

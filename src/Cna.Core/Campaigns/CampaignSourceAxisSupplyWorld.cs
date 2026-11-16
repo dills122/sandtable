@@ -27,13 +27,16 @@ internal sealed class CampaignSourceAxisSupplyWorld
     private readonly ReadOnlyCollection<CampaignSourceSupplyUnit> units;
     private readonly ReadOnlyCollection<CampaignSourceSupplyDump> dumps;
     private readonly ReadOnlyCollection<CampaignSourceDummyDecision> dummyDecisions;
+    private readonly bool benghaziRulingApplied;
 
     private CampaignSourceAxisSupplyWorld(IEnumerable<CampaignSourceSupplyUnit> units,
-        IEnumerable<CampaignSourceSupplyDump> dumps, IEnumerable<CampaignSourceDummyDecision> dummyDecisions)
+        IEnumerable<CampaignSourceSupplyDump> dumps, IEnumerable<CampaignSourceDummyDecision> dummyDecisions,
+        bool benghaziRulingApplied = false)
     {
         this.units = Array.AsReadOnly(units.OrderBy(value => value.Id, StringComparer.Ordinal).ToArray());
         this.dumps = Array.AsReadOnly(dumps.OrderBy(value => value.DumpId, StringComparer.Ordinal).ToArray());
         this.dummyDecisions = Array.AsReadOnly(dummyDecisions.OrderBy(value => value.Id, StringComparer.Ordinal).ToArray());
+        this.benghaziRulingApplied = benghaziRulingApplied;
     }
 
     internal IReadOnlyList<CampaignSourceSupplyUnit> Units => units;
@@ -78,7 +81,52 @@ internal sealed class CampaignSourceAxisSupplyWorld
             throw new InvalidOperationException("Unavailable Axis setup dump or unsupported destination.");
         var next = units.ToList();
         Add(next, dumpId, locationId, 3, 40, 50);
-        return new CampaignSourceAxisSupplyWorld(next, dumps.Append(new(dumpId, locationId)), dummyDecisions);
+        return new CampaignSourceAxisSupplyWorld(next, dumps.Append(new(dumpId, locationId)), dummyDecisions, benghaziRulingApplied);
+    }
+
+    // GT1 Op1 lane 2 reaches the Tripoli holding box. The caller must first
+    // adjudicate the announced convoy and the Commonwealth attack choice.
+    internal CampaignSourceAxisSupplyWorld ReceiveGt1TripoliSupply(int count)
+    {
+        if (count is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(count));
+        var ids = Enumerable.Range(1, count).Select(index => $"axis-gt1-op1-lane2-{index}").ToArray();
+        if (units.Any(value => ids.Contains(value.Id, StringComparer.Ordinal)))
+            throw new InvalidOperationException("The GT1 lane 2 supply has already arrived.");
+        var arrivals = ids.Select(id => new CampaignSourceSupplyUnit(id, "box.tripoli", 40, 60));
+        return new CampaignSourceAxisSupplyWorld(units.Concat(arrivals), dumps, dummyDecisions, benghaziRulingApplied);
+    }
+
+    // GT1 Op1 lane 6 only. Abstract Axis convoys have no tonnage limit;
+    // the ordinary five-counter major-city stacking limit still applies.
+    internal bool CanReceiveGt1TobrukSupply(int count) => count is >= 1 and <= 3
+        && units.Count(value => value.LocationId == "c4807") + count <= 5
+        && Enumerable.Range(1, count).All(index => units.All(value => value.Id != $"axis-gt1-op1-lane6-{index}"));
+
+    internal CampaignSourceAxisSupplyWorld ReceiveGt1TobrukSupply(int count)
+    {
+        if (!CanReceiveGt1TobrukSupply(count))
+            throw new InvalidOperationException("Tobruk convoy exceeds supported city stacking or has already arrived.");
+        var arrivals = Enumerable.Range(1, count).Select(index => new CampaignSourceSupplyUnit($"axis-gt1-op1-lane6-{index}", "c4807", 40, 60));
+        return new CampaignSourceAxisSupplyWorld(units.Concat(arrivals), dumps, dummyDecisions, benghaziRulingApplied);
+    }
+
+    // RUL-GRA-05 explicitly adopts the original map/summary's A4827 for
+    // Benghazi while retaining the conflicting scenario B4827 in source.
+    // This runtime successor counts the existing city counter, not a copy.
+    internal CampaignSourceAxisSupplyWorld ReceiveGt1BenghaziSupply(int count)
+    {
+        if (count is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(count));
+        var original = units.SingleOrDefault(value => value.Id == "axis-benghazi-1")
+            ?? throw new InvalidOperationException("Original Benghazi source supply is missing.");
+        if (original.LocationId != (benghaziRulingApplied ? "a4827" : "b4827"))
+            throw new InvalidOperationException("Benghazi source supply differs from its recorded ruling.");
+        var ids = Enumerable.Range(1, count).Select(index => $"axis-gt1-op1-lane3-{index}").ToArray();
+        if (units.Any(value => ids.Contains(value.Id, StringComparer.Ordinal))
+            || units.Count(value => value.LocationId == "a4827") + (benghaziRulingApplied ? 0 : 1) + count > 5)
+            throw new InvalidOperationException("Benghazi arrival is duplicated or exceeds major-city supply capacity.");
+        var relocated = units.Select(value => value.Id == original.Id ? value with { LocationId = "a4827" } : value);
+        var arrivals = ids.Select(id => new CampaignSourceSupplyUnit(id, "a4827", 40, 60));
+        return new CampaignSourceAxisSupplyWorld(relocated.Concat(arrivals), dumps, dummyDecisions, true);
     }
 
     internal IReadOnlyList<string> ValidDummyDestinations(string dummyId)
@@ -98,7 +146,7 @@ internal sealed class CampaignSourceAxisSupplyWorld
         if (locationId is not null)
             for (var index = 1; index <= 3; index++)
                 next.Add(new CampaignSourceSupplyUnit($"{dummyId}-{index}", locationId, null, 0, true));
-        return new CampaignSourceAxisSupplyWorld(next, dumps, dummyDecisions.Append(new(dummyId, locationId)));
+        return new CampaignSourceAxisSupplyWorld(next, dumps, dummyDecisions.Append(new(dummyId, locationId)), benghaziRulingApplied);
     }
 
     internal byte[] SerializeCanonical()
@@ -107,7 +155,7 @@ internal sealed class CampaignSourceAxisSupplyWorld
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", ContractVersion);
+            writer.WriteNumber("contractVersion", benghaziRulingApplied ? 2 : ContractVersion);
             writer.WriteString("policyId", PolicyId);
             writer.WriteBoolean("siteCoverageComplete", false);
             writer.WriteString("otherMapHexCapacityPolicy", "provisional-three-land-units");
@@ -121,7 +169,8 @@ internal sealed class CampaignSourceAxisSupplyWorld
             foreach (var position in CommonwealthMapCPositions) writer.WriteStringValue(position);
             writer.WriteEndArray();
             writer.WriteNumber("minimumMapCEnemyDistanceLowerBound", 5);
-            writer.WriteString("benghaziCoordinateStatus", "scenario-b4827-map-a4827-unresolved");
+            writer.WriteString("benghaziCoordinateStatus", benghaziRulingApplied
+                ? "rul-gra-05-provisional-scenario-b4827-map-a4827" : "scenario-b4827-map-a4827-unresolved");
             // Scenario specifically provides two groups of three optional
             // dummies; no choice is made and the general dummy rule remains open.
             writer.WriteNumber("scenarioDummyGroupsUnresolved", PendingDummyIds.Count);

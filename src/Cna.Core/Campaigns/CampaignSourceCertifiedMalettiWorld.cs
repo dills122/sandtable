@@ -31,7 +31,7 @@ internal sealed class CampaignSourceCertifiedMalettiWorld
             throw new InvalidOperationException("Certified Maletti source placement is inconsistent.");
         var basis = state.AxisCorpsArtilleryWorld ?? throw new InvalidOperationException("Source corps world is missing.");
         var prior = state.World;
-        if (prior.ContentIdentity != (state.CwFreeGunsWorld?.Content.Identity ?? state.CwPriorityWorld?.Content.Identity
+        if (prior.ContentIdentity != (state.CwFreeGunsWorld?.CwFrontlineContent?.Identity ?? state.CwFreeGunsWorld?.MotorMachineGunContent?.Identity ?? state.CwFreeGunsWorld?.GarrisonRemainderContent?.Identity ?? state.CwFreeGunsWorld?.MinorGarrisonContent?.Identity ?? state.CwFreeGunsWorld?.Content.Identity ?? state.CwPriorityWorld?.Content.Identity
                 ?? state.MatruhDetachedWorld?.Content.Identity ?? basis.Content.Identity)
             || prior.World.Elements.Any(value => value.ElementId == id)
             || prior.PendingArrivals.Any(group => group.ElementIds.Contains(id, StringComparer.Ordinal)))

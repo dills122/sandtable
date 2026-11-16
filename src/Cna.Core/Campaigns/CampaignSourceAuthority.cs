@@ -1,5 +1,7 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Cna.Core.Actions;
 using Cna.Core.Content;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
@@ -24,6 +26,7 @@ internal sealed class CampaignSourceAuthorityState
     internal const int LocalMapWorldContractVersion = 15;
     internal const int ExpandedIndependentWorldContractVersion = 16;
     internal const int AttachedInitialLoadsContractVersion = 17;
+    internal const int FrontlineAttachedInitialLoadsEventContractVersion = 64;
     internal const int InitialWrecksContractVersion = 18;
     internal const int AxisFreeSetupContractVersion = 19;
     internal const int AxisFreeWorldContractVersion = 20;
@@ -69,7 +72,7 @@ internal sealed class CampaignSourceAuthorityState
         CampaignSourceAxisGarrisonForces? axisGarrisons, CampaignSourceBattlefield? battlefield,
         CampaignSourceCairoInitialSetup? cairoSetup, CampaignSourceCairoActiveWorld? cairoWorld,
         CampaignSourceMalettiActiveWorld? malettiWorld, CampaignSourceIndependentActiveWorld? independentWorld,
-        CampaignSourceLocalMapWorld? localMapWorld, long stateVersion, CampaignSourceExpandedIndependentWorld? expandedIndependentWorld = null, CampaignSourceAttachedInitialLoads? attachedInitialLoads = null, CampaignSourceInitialWrecks? initialWrecks = null, CampaignSourceAxisFreeArtillery? axisFreeArtillery = null, CampaignSourceAxisFreeArtilleryWorld? axisFreeArtilleryWorld = null, CampaignSourceAxisCorpsArtillery? axisCorpsArtillery = null, CampaignSourceAxisCorpsArtilleryWorld? axisCorpsArtilleryWorld = null, CampaignSourceMalettiHierarchy? malettiHierarchy = null, CampaignSourceCertifiedMalettiWorld? certifiedMalettiWorld = null, CampaignSourceMatruhFormation? matruhFormation = null, CampaignSourceMatruhDetachedWorld? matruhDetachedWorld = null, CampaignSourceGt2ConvoyCorrection? gt2Correction = null, CampaignSourceCwPriorityCatalog? cwPriorityCatalog = null, CampaignSourceCwPriorityWorld? cwPriorityWorld = null, bool compactCheckpoint = false, CampaignSourceUnattachedCargo? axisUnattachedCargo = null, CampaignSourceUnattachedCargo? commonwealthUnattachedCargo = null, CampaignSourceCwFreeGuns? cwFreeGuns = null, CampaignSourceCwFreeGunsWorld? cwFreeGunsWorld = null, CampaignGroupedWorld? groupedWorld = null, CampaignSourceSeptemberConvoyPlans? septemberPlans = null)
+          CampaignSourceLocalMapWorld? localMapWorld, long stateVersion, CampaignSourceExpandedIndependentWorld? expandedIndependentWorld = null, CampaignSourceAttachedInitialLoads? attachedInitialLoads = null, CampaignSourceInitialWrecks? initialWrecks = null, CampaignSourceAxisFreeArtillery? axisFreeArtillery = null, CampaignSourceAxisFreeArtilleryWorld? axisFreeArtilleryWorld = null, CampaignSourceAxisCorpsArtillery? axisCorpsArtillery = null, CampaignSourceAxisCorpsArtilleryWorld? axisCorpsArtilleryWorld = null, CampaignSourceMalettiHierarchy? malettiHierarchy = null, CampaignSourceCertifiedMalettiWorld? certifiedMalettiWorld = null, CampaignSourceMatruhFormation? matruhFormation = null, CampaignSourceMatruhDetachedWorld? matruhDetachedWorld = null, CampaignSourceGt2ConvoyCorrection? gt2Correction = null, CampaignSourceCwPriorityCatalog? cwPriorityCatalog = null, CampaignSourceCwPriorityWorld? cwPriorityWorld = null, bool compactCheckpoint = false, CampaignSourceUnattachedCargo? axisUnattachedCargo = null, CampaignSourceUnattachedCargo? commonwealthUnattachedCargo = null, CampaignSourceCwFreeGuns? cwFreeGuns = null, CampaignSourceCwFreeGunsWorld? cwFreeGunsWorld = null, CampaignGroupedWorld? groupedWorld = null, CampaignSourceSeptemberConvoyPlans? septemberPlans = null, int finalizedOwners = 0, bool finalizationVersion = false, int horseRulingVotes = 0, bool horseStageOneNoTraining = false, bool horseRulingVersion = false)
     {
         Pregame = pregame;
         ConvoyPlan = convoyPlan;
@@ -159,6 +162,12 @@ internal sealed class CampaignSourceAuthorityState
         CompactCheckpoint = compactCheckpoint;
         AxisUnattachedCargo = axisUnattachedCargo;
         CommonwealthUnattachedCargo = commonwealthUnattachedCargo;
+        // Scenario 60.31 deploys Axis forces outside Cairo and Helwan.
+        // This setup-only invariant makes Australian setup sites public-safe:
+        // no hidden Axis unit can occupy one of these sites before GT1.
+        if (Battlefield is not null && Battlefield.Entries.Any(entry => entry.SideId == "axis"
+            && entry.LocationId is not null && CampaignSourceSixthAustralianGroupedDefinition.Locations.Contains(entry.LocationId, StringComparer.Ordinal)))
+            throw new InvalidOperationException("Axis source setup cannot occupy Cairo or Helwan.");
         if (cwFreeGunsWorld is not null && cwFreeGuns is null) throw new ArgumentException("CW free guns world requires setup.");
         CwFreeGuns = cwFreeGuns;
         CwFreeGunsWorld = cwFreeGunsWorld;
@@ -170,6 +179,14 @@ internal sealed class CampaignSourceAuthorityState
             GroupedWorld = groupedWorld.Rebind(World, scenarioStart.GameTurn, scenarioStart.OperationStage);
         }
         StateVersion = stateVersion;
+        if (finalizedOwners is < 0 or > 3) throw new ArgumentOutOfRangeException(nameof(finalizedOwners));
+        if (!finalizationVersion && finalizedOwners != 0) throw new ArgumentException("Owner mask requires finalization checkpoint version.");
+        FinalizedOwners = finalizedOwners;
+        FinalizationVersion = finalizationVersion;
+        if (horseRulingVotes is < 0 or > 3) throw new ArgumentOutOfRangeException(nameof(horseRulingVotes));
+        HorseRulingVotes = horseRulingVotes;
+        HorseStageOneNoTraining = horseStageOneNoTraining;
+        HorseRulingVersion = horseRulingVersion;
         // Later setup actions must not invalidate either retained, owner-selected
         // source stack proof. Unsupported new occupants fail closed here.
         MalettiHierarchy?.Validate(this);
@@ -203,6 +220,45 @@ internal sealed class CampaignSourceAuthorityState
                 CampaignSourceCireneMarmaricaGroupedDefinition.Validate(this, GroupedWorld);
                 groupedBattlefield.ValidateItalianDivisions(GroupedWorld);
             }
+            if (IsSeventhArmoredGrouped)
+            {
+                CampaignSourceSeventhArmoredGroupedDefinition.Validate(this, GroupedWorld);
+                groupedBattlefield.ValidateSeventhArmored(GroupedWorld);
+            }
+            if (IsSixteenthBrigadeGrouped)
+            {
+                CampaignSourceSixteenthBrigadeGroupedDefinition.Validate(this, GroupedWorld);
+                groupedBattlefield.ValidateSixteenthBrigade(GroupedWorld);
+            }
+            if (IsCatanzaroGrouped)
+            {
+                CampaignSourceCatanzaroGroupedDefinition.Validate(this, GroupedWorld);
+                groupedBattlefield.ValidateCatanzaro(GroupedWorld);
+            }
+            if (IsSixthAustralianGrouped)
+            {
+                CampaignSourceSixthAustralianGroupedDefinition.Validate(this, GroupedWorld);
+                var australian = GroupedWorld.Groups.Single(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
+                if (australian.Members.Any(member => !groupedBattlefield.Entries.Any(entry => entry.ElementId == member.ElementId
+                    && entry.SideId == "commonwealth" && entry.LocationId == australian.LocationId && entry.AuthorityStatus == "source-australian-grouped")))
+                    throw new InvalidOperationException("Australian battlefield index differs from grouped world.");
+            }
+            if (IsCcnnBatchGrouped)
+            {
+                CampaignSourceCcnnBatch.Validate(this, GroupedWorld);
+                foreach (var group in GroupedWorld.Groups.Where(value => value.GroupId is CampaignSourceCcnnBatch.FirstId or CampaignSourceCcnnBatch.FourthId))
+                    if (group.Members.Any(member => !groupedBattlefield.Entries.Any(entry => entry.ElementId == member.ElementId
+                        && entry.SideId == "axis" && entry.LocationId == group.LocationId && entry.AuthorityStatus == "source-ccnn-grouped")))
+                        throw new InvalidOperationException("CCNN battlefield index differs from grouped world.");
+            }
+            if (IsArescaGrouped)
+            {
+                CampaignSourceArescaGroupedDefinition.Validate(this, GroupedWorld);
+                var aresca = GroupedWorld.Groups.Single(value => value.GroupId == CampaignSourceArescaGroupedDefinition.GroupId);
+                if (aresca.Members.Any(member => !groupedBattlefield.Entries.Any(entry => entry.ElementId == member.ElementId
+                    && entry.SideId == "axis" && entry.LocationId == aresca.LocationId && entry.AuthorityStatus == "source-aresca-grouped")))
+                    throw new InvalidOperationException("Aresca battlefield index differs from grouped world.");
+            }
         }
         if (GroupedWorld is not null && (CommonwealthMotorization.Remaining(CampaignSourceFourthIndianDefinition.PoolId) != 22
             || AttachedInitialLoads is null || AttachedInitialLoads.Reserved(CampaignSourceFourthIndianDefinition.PoolId) != 0))
@@ -224,6 +280,119 @@ internal sealed class CampaignSourceAuthorityState
     internal CampaignSourceOpeningConvoyPlan OpeningConvoyPlan { get; }
     internal CampaignSourceCommonwealthSupplyPlans? CommonwealthSupplyPlans { get; }
     internal CampaignSourceSeptemberConvoyPlans? SeptemberPlans { get; }
+    internal int FinalizedOwners { get; }
+    internal bool FinalizationVersion { get; }
+    internal const string HorseRulingId = "graziani.central-india-horse.oa-note-c-untrained.v1";
+    internal int HorseRulingVotes { get; }
+    internal bool HorseStageOneNoTraining { get; }
+    internal bool HorseRulingVersion { get; }
+    internal bool HasHorseRulingVote(CampaignActionAudience audience) => audience switch
+    {
+        CampaignActionAudience.Axis => (HorseRulingVotes & 1) != 0,
+        CampaignActionAudience.Commonwealth => (HorseRulingVotes & 2) != 0,
+        _ => false,
+    };
+    internal bool HorseStageOneResolved => HorseRulingVotes == 3 && HorseStageOneNoTraining;
+
+    internal bool IsOwnerFinalized(CampaignActionAudience audience) => audience switch
+    {
+        CampaignActionAudience.Axis => (FinalizedOwners & 1) != 0,
+        CampaignActionAudience.Commonwealth => (FinalizedOwners & 2) != 0,
+        _ => false,
+    };
+
+    internal static string SetupFinalizationActionId(CampaignActionAudience audience, bool finish) =>
+        CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes(
+            $"graziani.setup.owner-finalization.v1\0{audience}\0{finish}"));
+
+    internal CampaignSourceAuthorityState SetOwnerFinalization(CampaignActionAudience audience, bool finish)
+    {
+        var flag = audience switch
+        {
+            CampaignActionAudience.Axis => 1,
+            CampaignActionAudience.Commonwealth => 2,
+            _ => throw new InvalidOperationException("Only an owner may finalize setup."),
+        };
+        if (IsOwnerFinalized(audience) == finish)
+            throw new InvalidOperationException("Setup finalization has already been recorded.");
+        var next = finish ? FinalizedOwners | flag : FinalizedOwners & ~flag;
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan,
+            CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization,
+            AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld,
+            IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld,
+            AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery,
+            AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
+            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo,
+            CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, SeptemberPlans, next, true, HorseRulingVotes, HorseStageOneNoTraining, HorseRulingVersion);
+    }
+
+    internal static string HorseSetupActionId(CampaignActionAudience audience, string kind) =>
+        CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes($"graziani.horse.setup.v1\0{audience}\0{kind}"));
+
+    internal CampaignSourceAuthorityState SetHorseSetupDecision(CampaignActionAudience audience, string kind)
+    {
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth) || IsOwnerFinalized(audience))
+            throw new InvalidOperationException("Horse setup decision requires an editable owner.");
+        var votes = HorseRulingVotes;
+        var noTraining = HorseStageOneNoTraining;
+        var bit = audience == CampaignActionAudience.Axis ? 1 : 2;
+        switch (kind)
+        {
+            case "approve" when (votes & bit) == 0: votes |= bit; break;
+            case "withdraw" when (votes & bit) != 0: votes &= ~bit; break;
+            case "decline-stage1" when audience == CampaignActionAudience.Commonwealth && !noTraining: noTraining = true; break;
+            case "reopen-stage1" when audience == CampaignActionAudience.Commonwealth && noTraining: noTraining = false; break;
+            default: throw new InvalidOperationException("Horse setup decision is unavailable.");
+        }
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan,
+            CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization,
+            AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld,
+            IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld,
+            AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery,
+            AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
+            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo,
+            CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, SeptemberPlans,
+            FinalizedOwners, FinalizationVersion, votes, noTraining, true);
+    }
+
+    internal byte[] SerializeHorseSetupEvent(CampaignSourceAuthorityState successor, CampaignActionAudience audience, string kind)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("eventType", "source-horse-setup-decision"); writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion); writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteNumber("stateVersion", successor.StateVersion); writer.WriteString("actionId", HorseSetupActionId(audience, kind));
+            writer.WriteString("actor", audience == CampaignActionAudience.Axis ? "axis" : "commonwealth");
+            writer.WriteString("kind", kind); writer.WriteString("rulingId", HorseRulingId);
+            writer.WriteString("checkpointHash", CampaignPregameSourceCreation.Digest(successor.SerializeCheckpoint())); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal byte[] SerializeSetupFinalizationEvent(CampaignSourceAuthorityState successor,
+        CampaignActionAudience audience, bool finish)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("eventType", "source-owner-setup-finalization-changed");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", SetupFinalizationActionId(audience, finish));
+            writer.WriteString("actor", audience == CampaignActionAudience.Axis ? "axis" : "commonwealth");
+            writer.WriteBoolean("finished", finish);
+            writer.WriteNumber("stateVersion", successor.StateVersion);
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
     internal CampaignSourceAxisSupplementalForces? AxisSupplement { get; }
     internal CampaignSourceAutoblindaSetup? Autoblinda { get; }
     internal CampaignSourceCommonwealthSupplementalForces? CommonwealthSupplement { get; }
@@ -251,13 +420,39 @@ internal sealed class CampaignSourceAuthorityState
     internal CampaignSourceCwPriorityCatalog? CwPriorityCatalog { get; }
     internal CampaignSourceCwPriorityWorld? CwPriorityWorld { get; }
     internal bool CompactCheckpoint { get; }
-    internal int ProfileVersion => CompactCheckpoint ? CompactCheckpointContractVersion : LegacyProfileVersion;
+    internal const int FinalizedLegacyCheckpointContractVersion = 43;
+    internal const int FinalizedCompactCheckpointContractVersion = 44;
+    internal const int AustralianCompactCheckpointContractVersion = 46;
+    internal const int CcnnCompactCheckpointContractVersion = 48;
+    internal const int CombinedCompactCheckpointContractVersion = 50;
+    internal const int ShellCorrectedLegacyCheckpointContractVersion = 51;
+    internal const int ShellCorrectedCompactCheckpointContractVersion = 52;
+    internal const int ShellCorrectedFinalizedLegacyCheckpointContractVersion = 53;
+    internal const int ShellCorrectedFinalizedCompactCheckpointContractVersion = 54;
+    internal const int ArescaCompactCheckpointContractVersion = 56;
+    internal const int CombinedArescaCompactCheckpointContractVersion = 58;
+    internal const int HorseRulingCheckpointContractVersion = 59;
+    internal const int AxisMinorGarrisonsCheckpointContractVersion = 60;
+    internal const int AxisGarrisonRemainderCheckpointContractVersion = 61;
+    internal const int GiarabubMotorMachineGunCheckpointContractVersion = 62;
+    internal const int CwFrontlineCheckpointContractVersion = 63;
+    internal int ProfileVersion => CwFreeGunsWorld?.CwFrontlineContent is not null
+        ? CwFrontlineCheckpointContractVersion : CwFreeGunsWorld?.MotorMachineGunContent is not null
+        ? GiarabubMotorMachineGunCheckpointContractVersion : CwFreeGunsWorld?.GarrisonRemainderContent is not null
+        ? AxisGarrisonRemainderCheckpointContractVersion : CwFreeGunsWorld?.MinorGarrisonContent is not null
+        ? AxisMinorGarrisonsCheckpointContractVersion : HorseRulingVersion ? HorseRulingCheckpointContractVersion : BaseProfileVersion;
+    private int BaseProfileVersion => FinalizationVersion
+        ? IsSeventhShellCorrected
+            ? CompactCheckpoint ? ShellCorrectedFinalizedCompactCheckpointContractVersion : ShellCorrectedFinalizedLegacyCheckpointContractVersion
+            : CompactCheckpoint ? FinalizedCompactCheckpointContractVersion : FinalizedLegacyCheckpointContractVersion
+        : CompactCheckpoint ? (IsSeventhShellCorrected ? ShellCorrectedCompactCheckpointContractVersion : IsArescaGrouped ? (IsSixthAustralianGrouped ? CombinedArescaCompactCheckpointContractVersion : ArescaCompactCheckpointContractVersion) : IsCcnnBatchGrouped ? (IsSixthAustralianGrouped ? CombinedCompactCheckpointContractVersion : CcnnCompactCheckpointContractVersion) : IsSixthAustralianGrouped ? AustralianCompactCheckpointContractVersion : CompactCheckpointContractVersion) : LegacyProfileVersion;
     internal CampaignSourceUnattachedCargo? AxisUnattachedCargo { get; }
     internal CampaignSourceUnattachedCargo? CommonwealthUnattachedCargo { get; }
     internal CampaignSourceCwFreeGuns? CwFreeGuns { get; }
     internal CampaignSourceCwFreeGunsWorld? CwFreeGunsWorld { get; }
     internal CampaignGroupedWorld? GroupedWorld { get; }
-    private int LegacyProfileVersion => IsItalianDivisionsGrouped ? 39 : SeptemberPlans is not null ? 38 : IsLibyanGrouped ? 37 : IsMalettiGrouped ? 36 : GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceMatruhGroupedDefinition.GroupId) == true ? 35 : GroupedWorld is not null ? 34 : AxisUnattachedCargo is not null || CommonwealthUnattachedCargo is not null ? UnattachedCargoContractVersion
+    private int LegacyProfileVersion => IsSeventhShellCorrected ? ShellCorrectedLegacyCheckpointContractVersion : UnderlyingLegacyProfileVersion;
+    private int UnderlyingLegacyProfileVersion => IsArescaGrouped ? (IsSixthAustralianGrouped ? 57 : 55) : IsCcnnBatchGrouped ? (IsSixthAustralianGrouped ? 49 : 47) : IsSixthAustralianGrouped ? 45 : IsCatanzaroGrouped ? 42 : IsSixteenthBrigadeGrouped ? 41 : IsSeventhArmoredGrouped ? 40 : IsItalianDivisionsGrouped ? 39 : SeptemberPlans is not null ? 38 : IsLibyanGrouped ? 37 : IsMalettiGrouped ? 36 : GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceMatruhGroupedDefinition.GroupId) == true ? 35 : GroupedWorld is not null ? 34 : AxisUnattachedCargo is not null || CommonwealthUnattachedCargo is not null ? UnattachedCargoContractVersion
         : CwFreeGunsWorld is not null ? CwFreeGunsWorldContractVersion
         : CwFreeGuns is not null ? CwFreeGunsContractVersion
         : CwPriorityWorld is not null ? CwPriorityWorldContractVersion
@@ -447,24 +642,57 @@ internal sealed class CampaignSourceAuthorityState
     }
 
     internal CampaignSourceAuthorityState PlaceDump(string dumpId, string locationId) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld.Place(dumpId, locationId), CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+        new(Pregame, ConvoyPlan, AxisSupplyWorld.Place(dumpId, locationId), CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
 
     internal CampaignSourceAuthorityState PlaceCommonwealthSupply(string placementId, string locationId) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld.Place(placementId, locationId), AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld.Place(placementId, locationId), AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
 
     internal CampaignSourceAuthorityState DecideDummy(bool axis, string dummyId, string? locationId) => axis
         ? new(Pregame, ConvoyPlan, AxisSupplyWorld.DecideDummy(dummyId, locationId), CommonwealthSupplyWorld,
-            AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans)
+            AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion)
         : dummyId == "cw-dummy-1"
             ? new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld.DecideDummy(locationId),
-                AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans)
+                AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion)
             : throw new InvalidOperationException("Unknown Commonwealth dummy group.");
+
+    internal static readonly string AdmitGiarabubMotorPlacementPolicyActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.giarabub-motor-placement-policy.admit.v2"));
+
+    internal bool CanAdmitGiarabubMotorPlacementPolicy => !AxisMotorization.GiarabubPlacementAdmitted
+        && AxisUnattachedCargo is null && !IsOwnerFinalized(CampaignActionAudience.Axis);
+
+    internal CampaignSourceAuthorityState AdmitGiarabubMotorPlacementPolicy()
+    {
+        if (!CanAdmitGiarabubMotorPlacementPolicy)
+            throw new InvalidOperationException("Giarabub motor placement policy is unavailable.");
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
+            AxisMotorization.AdmitGiarabubPlacement(), CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+    }
+
+    internal byte[] SerializeGiarabubMotorPlacementPolicyEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", 2);
+            writer.WriteString("eventType", "source-giarabub-motor-placement-policy-admitted");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", AdmitGiarabubMotorPlacementPolicyActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("axisMotorizationHash", successor.AxisMotorization.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
 
     internal CampaignSourceAuthorityState AdjustMotorization(bool axis, string poolId, string locationId, int delta) => axis
         ? new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
-            AxisMotorization.Assign(poolId, locationId, delta), CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans)
+            AxisMotorization.Assign(poolId, locationId, delta), CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion)
         : new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
-            AxisMotorization, CommonwealthMotorization.Assign(poolId, locationId, delta), OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisMotorization, CommonwealthMotorization.Assign(poolId, locationId, delta), OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
 
     internal CampaignSourceAuthorityState ApplyOpeningConvoyChoice(string kind, int lane, int stage, int delta)
     {
@@ -477,7 +705,7 @@ internal sealed class CampaignSourceAuthorityState
         };
         var cwPlans = plan.IsFinished ? CampaignSourceCommonwealthSupplyPlans.Create(plan) : null;
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, plan, cwPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, plan, cwPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static string OpeningConvoyActionId(string kind, int lane, int stage, int delta) =>
@@ -524,7 +752,7 @@ internal sealed class CampaignSourceAuthorityState
         };
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, next, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld,
-            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal CampaignSourceAuthorityState ApplySeptemberSupplyChoice(string kind, int targetTurn, int lane, int stage, int delta)
@@ -539,7 +767,7 @@ internal sealed class CampaignSourceAuthorityState
         };
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld,
-            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: next);
+            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: next, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static string SeptemberSupplyActionId(string kind, int targetTurn, int lane, int stage, int delta) =>
@@ -580,7 +808,7 @@ internal sealed class CampaignSourceAuthorityState
         var supplement = CampaignSourceAxisSupplementalForces.Create(Pregame, AxisInitialForces);
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            supplement, CampaignSourceAutoblindaSetup.Create(supplement), null, null, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            supplement, CampaignSourceAutoblindaSetup.Create(supplement), null, null, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal CampaignSourceAuthorityState ApplyAutoblindaChoice(string kind, string target)
@@ -595,7 +823,7 @@ internal sealed class CampaignSourceAuthorityState
         };
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, next, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisSupplement, next, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static readonly string AdmitCommonwealthSupplementActionId = CampaignPregameSourceCreation.Digest(
@@ -608,7 +836,7 @@ internal sealed class CampaignSourceAuthorityState
         var supplement = CampaignSourceCommonwealthSupplementalForces.Create(Pregame, CommonwealthInitialForces);
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, supplement, null, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisSupplement, Autoblinda, supplement, null, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeCommonwealthSupplementEvent(CampaignSourceAuthorityState successor)
@@ -643,7 +871,7 @@ internal sealed class CampaignSourceAuthorityState
         var priority = CampaignSourcePriorityMotorization.Create(CommonwealthSupplement, CommonwealthMotorization);
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, priority, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisSupplement, Autoblinda, CommonwealthSupplement, priority, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializePriorityMotorizationAdmission(CampaignSourceAuthorityState successor)
@@ -675,7 +903,7 @@ internal sealed class CampaignSourceAuthorityState
         var next = priority.Adjust(elementId, delta, CommonwealthMotorization);
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, next, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisSupplement, Autoblinda, CommonwealthSupplement, next, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static string PriorityMotorizationActionId(string elementId, int delta) =>
@@ -713,7 +941,7 @@ internal sealed class CampaignSourceAuthorityState
         var priority = CampaignSourceAxisPriorityMotorization.Create(AxisSupplement, AxisMotorization);
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, priority, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, priority, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeAxisPriorityAdmission(CampaignSourceAuthorityState successor)
@@ -752,7 +980,7 @@ internal sealed class CampaignSourceAuthorityState
         var grouped = IsMalettiGrouped && kind == "adjust" ? GroupedWorld!.AssignMotorization(CampaignSourceMalettiGroupedDefinition.GroupId, elementId, delta) : GroupedWorld;
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, next, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, grouped, septemberPlans: SeptemberPlans);
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, next, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, grouped, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static string AxisPriorityActionId(string kind, string elementId, int delta) =>
@@ -793,7 +1021,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, garrisons, null, null, null, null, null, null,
-            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeAxisGarrisonsAdmission(CampaignSourceAuthorityState successor)
@@ -828,7 +1056,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            battlefield, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeBattlefieldAdmission(CampaignSourceAuthorityState successor)
@@ -864,7 +1092,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, cairo, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            battlefield, cairo, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeCairoSetupAdmission(CampaignSourceAuthorityState successor)
@@ -897,7 +1125,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, cairo, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            battlefield, cairo, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static string CairoPlacementActionId(string elementId, string locationId) =>
@@ -936,7 +1164,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, world, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            Battlefield, CairoSetup, world, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeCairoWorldAdmission(CampaignSourceAuthorityState successor)
@@ -976,7 +1204,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, active, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            battlefield, CairoSetup, CairoWorld, active, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeMalettiPromotion(CampaignSourceAuthorityState successor)
@@ -1022,7 +1250,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             battlefield, CairoSetup, CairoWorld, MalettiWorld, active,
-            LocalMapWorld is null ? null : CampaignSourceLocalMapWorld.Rebind(LocalMapWorld, active), checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            LocalMapWorld is null ? null : CampaignSourceLocalMapWorld.Rebind(LocalMapWorld, active), checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeIndependentPromotion(CampaignSourceAuthorityState successor)
@@ -1102,13 +1330,128 @@ internal sealed class CampaignSourceAuthorityState
         var active = CampaignSourceCwFreeGunsWorld.Create(this);
         return WithCwFreeGuns(CwFreeGuns!, Battlefield!.PromoteCwFreeGuns(CwFreeGuns!, World, active.World), active);
     }
+    internal static readonly string ActivateAxisMinorGarrisonsActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.axis-minor-garrisons.activate.v1"));
+    internal static readonly string ActivateAxisGarrisonRemainderActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.axis-garrison-remainder.activate.v1"));
+    internal static readonly string ActivateGiarabubMotorMachineGunActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.giarabub-motor-mg.activate.v1"));
+    internal static readonly string ActivateCwFrontlineActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.cw-frontline.activate.v1"));
+    internal bool CanActivateCwFrontline => CwFreeGunsWorld is
+    { MotorMachineGunContent: not null, CwFrontlineContent: null }
+        && GroupedWorld is not null && CommonwealthSupplement is not null && Battlefield is not null
+        && CompactCheckpoint && FinalizedOwners == 0;
+    internal CampaignSourceAuthorityState ActivateCwFrontline()
+    {
+        if (!CanActivateCwFrontline) throw new InvalidOperationException("CW frontline activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateCwFrontline(CommonwealthSupplement!, Battlefield!, CommonwealthMotorization);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateCwFrontline(World, active.World), active);
+    }
+    internal byte[] SerializeCwFrontlineEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", CwFrontlineCheckpointContractVersion);
+            writer.WriteString("eventType", "source-cw-frontline-activated");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateCwFrontlineActionId); writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.CwFrontlineContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanActivateGiarabubMotorMachineGun => CwFreeGunsWorld is
+    { GarrisonRemainderContent: not null, MotorMachineGunContent: null }
+        && GroupedWorld is not null && AxisGarrisons is not null && Battlefield is not null
+        && CompactCheckpoint && FinalizedOwners == 0;
+    internal CampaignSourceAuthorityState ActivateGiarabubMotorMachineGun()
+    {
+        if (!CanActivateGiarabubMotorMachineGun) throw new InvalidOperationException("Motor MG setup activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateGiarabubMotorMachineGun(AxisGarrisons!, Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateGiarabubMotorMachineGun(World, active.World), active);
+    }
+    internal byte[] SerializeGiarabubMotorMachineGunEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", GiarabubMotorMachineGunCheckpointContractVersion);
+            writer.WriteString("eventType", "source-giarabub-motor-machine-gun-activated");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateGiarabubMotorMachineGunActionId); writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.MotorMachineGunContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanActivateAxisGarrisonRemainder => CwFreeGunsWorld is
+    { MinorGarrisonContent: not null, GarrisonRemainderContent: null }
+        && GroupedWorld is not null && AxisGarrisons is not null && Battlefield is not null
+        && CompactCheckpoint && FinalizedOwners == 0;
+    internal CampaignSourceAuthorityState ActivateAxisGarrisonRemainder()
+    {
+        if (!CanActivateAxisGarrisonRemainder) throw new InvalidOperationException("Garrison remainder activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateGarrisonRemainder(AxisGarrisons!, Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateAxisGarrisonRemainder(World, active.World), active);
+    }
+    internal byte[] SerializeAxisGarrisonRemainderEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", AxisGarrisonRemainderCheckpointContractVersion);
+            writer.WriteString("eventType", "source-axis-garrison-remainder-activated");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateAxisGarrisonRemainderActionId); writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.GarrisonRemainderContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanActivateAxisMinorGarrisons => CwFreeGunsWorld is { MinorGarrisonContent: null }
+        && GroupedWorld is not null && AxisGarrisons is not null && Battlefield is not null
+        && CwFreeGuns is { PendingIds.Count: 0 } && !CanPromoteCwFreeGunsWorld && FinalizedOwners == 0;
+    internal CampaignSourceAuthorityState ActivateAxisMinorGarrisons()
+    {
+        if (!CanActivateAxisMinorGarrisons) throw new InvalidOperationException("Minor garrison activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateMinorGarrisons(AxisGarrisons!, Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateAxisMinorGarrisons(World, active.World), active);
+    }
+    internal byte[] SerializeAxisMinorGarrisonsEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", AxisMinorGarrisonsCheckpointContractVersion);
+            writer.WriteString("eventType", "source-axis-minor-garrisons-activated");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateAxisMinorGarrisonsActionId); writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.MinorGarrisonContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
     private CampaignSourceAuthorityState WithCwFreeGuns(CampaignSourceCwFreeGuns setup, CampaignSourceBattlefield battlefield, CampaignSourceCwFreeGunsWorld? active) =>
         new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization,
             OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization,
             AxisGarrisons, battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld,
             AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy,
             CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint,
-            AxisUnattachedCargo, CommonwealthUnattachedCargo, setup, active, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisUnattachedCargo, CommonwealthUnattachedCargo, setup, active, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeCwFreeGunsEvent(CampaignSourceAuthorityState successor, string? kind = null, string? id = null, string? location = null)
     {
         using var stream = new MemoryStream();
@@ -1175,14 +1518,14 @@ internal sealed class CampaignSourceAuthorityState
         if (delta is not (-1 or 1)) throw new InvalidOperationException("Unsupported motor adjustment.");
         return WithGroupedWorld(world.AssignMotorization("4-indian-division", id, delta));
     }
-    private CampaignSourceAuthorityState WithGroupedWorld(CampaignGroupedWorld world, CampaignSourceBattlefield? battlefield = null) =>
+    private CampaignSourceAuthorityState WithGroupedWorld(CampaignGroupedWorld world, CampaignSourceBattlefield? battlefield = null, int? finalizedOwners = null) =>
         new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
             AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda,
             CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, battlefield ?? Battlefield, CairoSetup, CairoWorld,
             MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads,
             InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy,
             CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint,
-            AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, world, septemberPlans: SeptemberPlans);
+            AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, world, septemberPlans: SeptemberPlans, finalizedOwners: finalizedOwners ?? FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeFourthIndianEvent(CampaignSourceAuthorityState successor, string? id = null, int delta = 0, bool confirm = false)
     {
         using var stream = new MemoryStream();
@@ -1350,6 +1693,284 @@ internal sealed class CampaignSourceAuthorityState
         }
         return stream.ToArray();
     }
+    internal static readonly string AdmitSeventhArmoredActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.seventh-armored-grouped.admit.v1"));
+    internal static readonly string ConfirmSeventhArmoredActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.seventh-armored.confirm.v1"));
+    internal bool IsSeventhArmoredGrouped => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId) == true;
+    internal bool IsSeventhShellCorrected => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId
+        && value.DispositionConfirmed && value.StackValue == 3) == true;
+    internal bool CanCorrectSeventhShell => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId
+        && value.DispositionConfirmed && value.StackValue == 5) == true;
+    internal static readonly string CorrectSeventhShellActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.seventh-armored.shell-stack-correction.v1"));
+    internal CampaignSourceAuthorityState CorrectSeventhShell()
+    {
+        if (!CanCorrectSeventhShell) throw new InvalidOperationException("Seventh Armored shell correction unavailable.");
+        // Changed CW stacking requires that owner to re-finalize; Axis remains private and unchanged.
+        return WithGroupedWorld(GroupedWorld!.CorrectSeventhArmoredShellStack(), finalizedOwners: FinalizedOwners & ~2);
+    }
+    internal byte[] SerializeSeventhShellCorrection(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1); writer.WriteString("eventType", "source-seventh-shell-stack-corrected");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", CorrectSeventhShellActionId); writer.WriteString("actor", "system");
+            writer.WriteString("source", "common-charts:9.4");
+            writer.WriteString("sourceHash", "sha256:51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0");
+            writer.WriteNumber("priorStack", 5); writer.WriteNumber("correctedStack", 3);
+            writer.WriteBoolean("commonwealthFinalizationCleared", IsOwnerFinalized(CampaignActionAudience.Commonwealth));
+            writer.WriteString("worldHash", successor.GroupedWorld!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanAdmitSeventhArmored => IsItalianDivisionsGrouped && !IsSeventhArmoredGrouped && Battlefield is not null && CwFreeGunsWorld is not null;
+    internal CampaignSourceAuthorityState AdmitSeventhArmoredGroupedWorld()
+    {
+        if (!CanAdmitSeventhArmored) throw new InvalidOperationException("Seventh Armored grouped world prerequisites are incomplete.");
+        var fourth = ContentSourceFourthIndianPackArtifact.Create(CwFreeGunsWorld!.Content);
+        var matruh = ContentSourceMatruhGroupedPackArtifact.Create(fourth);
+        var maletti = ContentSourceMalettiGroupedPackArtifact.Create(matruh);
+        var libyan = ContentSourceLibyanGroupedPackArtifact.Create(maletti);
+        var italian = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyan);
+        var content = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italian);
+        _ = ContentSourceSeventhArmoredGroupedPackArtifact.Read(content.CanonicalBytes);
+        var world = GroupedWorld!.AddFormation(content.Hash(), CampaignSourceSeventhArmoredGroupedDefinition.Create(this));
+        return WithGroupedWorld(world, Battlefield!.ProposeSeventhArmored(world));
+    }
+    internal CampaignSourceAuthorityState ConfirmSeventhArmored()
+    {
+        var prior = GroupedWorld ?? throw new InvalidOperationException("Seventh Armored grouped world unavailable.");
+        if (!IsSeventhArmoredGrouped) throw new InvalidOperationException("Seventh Armored grouped world unavailable.");
+        var next = prior.ConfirmDisposition(CampaignSourceSeventhArmoredGroupedDefinition.GroupId, 5);
+        return WithGroupedWorld(next, Battlefield!.ConfirmSeventhArmored(prior, next));
+    }
+    internal byte[] SerializeSeventhArmoredGroupedEvent(CampaignSourceAuthorityState successor, bool confirm)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 40);
+            writer.WriteString("eventType", confirm ? "source-seventh-armored-disposition-confirmed" : "source-seventh-armored-grouped-world-admitted");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", confirm ? ConfirmSeventhArmoredActionId : AdmitSeventhArmoredActionId);
+            writer.WriteString("actor", confirm ? "commonwealth" : "system");
+            writer.WriteString("worldHash", successor.GroupedWorld!.Hash()); writer.WriteString("contentHash", successor.GroupedWorld.ContentHash);
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal static readonly string AdmitSixteenthBrigadeActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.sixteenth-brigade-grouped.admit.v1"));
+    internal static readonly string ConfirmSixteenthBrigadeActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.sixteenth-brigade.confirm.v1"));
+    internal bool IsSixteenthBrigadeGrouped => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId) == true;
+    internal bool CanAdmitSixteenthBrigade => IsSeventhArmoredGrouped && !IsSixteenthBrigadeGrouped && Battlefield is not null && CwFreeGunsWorld is not null;
+    internal CampaignSourceAuthorityState AdmitSixteenthBrigadeGroupedWorld()
+    {
+        if (!CanAdmitSixteenthBrigade) throw new InvalidOperationException("Sixteenth Brigade grouped world prerequisites are incomplete.");
+        var fourth = ContentSourceFourthIndianPackArtifact.Create(CwFreeGunsWorld!.Content);
+        var matruh = ContentSourceMatruhGroupedPackArtifact.Create(fourth);
+        var maletti = ContentSourceMalettiGroupedPackArtifact.Create(matruh);
+        var libyan = ContentSourceLibyanGroupedPackArtifact.Create(maletti);
+        var italian = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyan);
+        var seventh = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italian);
+        var content = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventh);
+        _ = ContentSourceSixteenthBrigadeGroupedPackArtifact.Read(content.CanonicalBytes);
+        var world = GroupedWorld!.AddFormation(content.Hash(), CampaignSourceSixteenthBrigadeGroupedDefinition.Create(this));
+        return WithGroupedWorld(world, Battlefield!.ProposeSixteenthBrigade(world));
+    }
+    internal CampaignSourceAuthorityState ConfirmSixteenthBrigade()
+    {
+        var prior = GroupedWorld ?? throw new InvalidOperationException("Sixteenth Brigade grouped world unavailable.");
+        if (!IsSixteenthBrigadeGrouped) throw new InvalidOperationException("Sixteenth Brigade grouped world unavailable.");
+        var next = prior.ConfirmDisposition(CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId, 2);
+        return WithGroupedWorld(next, Battlefield!.ConfirmSixteenthBrigade(prior, next));
+    }
+    internal byte[] SerializeSixteenthBrigadeGroupedEvent(CampaignSourceAuthorityState successor, bool confirm)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 41);
+            writer.WriteString("eventType", confirm ? "source-sixteenth-brigade-disposition-confirmed" : "source-sixteenth-brigade-grouped-world-admitted");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", confirm ? ConfirmSixteenthBrigadeActionId : AdmitSixteenthBrigadeActionId);
+            writer.WriteString("actor", confirm ? "commonwealth" : "system");
+            writer.WriteString("worldHash", successor.GroupedWorld!.Hash()); writer.WriteString("contentHash", successor.GroupedWorld.ContentHash);
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal static readonly string AdmitCatanzaroActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.catanzaro-grouped.admit.v1"));
+    internal static readonly string ConfirmCatanzaroActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.catanzaro.confirm.v1"));
+    internal bool IsCatanzaroGrouped => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId) == true;
+    internal bool IsSixthAustralianGrouped => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId) == true;
+    internal bool IsCcnnBatchGrouped => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceCcnnBatch.FirstId) == true;
+    internal bool IsArescaGrouped => GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceArescaGroupedDefinition.GroupId) == true;
+    internal bool CanAdmitAresca => IsCcnnBatchGrouped && !IsArescaGrouped && !IsOwnerFinalized(CampaignActionAudience.Axis)
+        && AxisSupplement is not null && AxisMotorization.Remaining(CampaignSourceArescaGroupedDefinition.PoolId) == 10;
+    internal static readonly string ArescaActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.aresca.accept.v1"));
+    internal CampaignSourceAuthorityState AdmitAresca()
+    {
+        if (!CanAdmitAresca) throw new InvalidOperationException("Aresca setup is unavailable.");
+        var fourth = ContentSourceFourthIndianPackArtifact.Create(CwFreeGunsWorld!.Content);
+        var matruh = ContentSourceMatruhGroupedPackArtifact.Create(fourth);
+        var maletti = ContentSourceMalettiGroupedPackArtifact.Create(matruh);
+        var libyan = ContentSourceLibyanGroupedPackArtifact.Create(maletti);
+        var italian = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyan);
+        var seventh = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italian);
+        var sixteenth = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventh);
+        var catanzaro = ContentSourceCatanzaroGroupedPackArtifact.Create(sixteenth);
+        var content = ContentSourceCcnnBatchPackArtifact.Create(catanzaro, IsSixthAustralianGrouped, true);
+        _ = ContentSourceCcnnBatchPackArtifact.Read(content.CanonicalBytes);
+        var world = GroupedWorld!.AddFormation(content.Hash(), CampaignSourceArescaGroupedDefinition.Create(this));
+        return WithGroupedWorld(world, Battlefield!.AdmitAresca(world));
+    }
+    internal byte[] SerializeAresca(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("eventType", "source-aresca-admitted"); writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion); writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ArescaActionId); writer.WriteString("actor", "axis");
+            writer.WriteString("worldHash", successor.GroupedWorld!.Hash()); writer.WriteString("contentHash", successor.GroupedWorld.ContentHash);
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanAdmitCcnnBatch => IsCatanzaroGrouped && !IsCcnnBatchGrouped && !IsOwnerFinalized(CampaignActionAudience.Axis)
+        && AxisSupplement is not null && AxisMotorization.Remaining("axis-c4218-attached") == 35
+        && AxisMotorization.Remaining("axis-c4507-attached") == 35;
+    internal static readonly string CcnnBatchActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.ccnn-batch.accept.v1"));
+    internal CampaignSourceAuthorityState AdmitCcnnBatch()
+    {
+        if (!CanAdmitCcnnBatch) throw new InvalidOperationException("CCNN setup is unavailable.");
+        var fourth = ContentSourceFourthIndianPackArtifact.Create(CwFreeGunsWorld!.Content);
+        var matruh = ContentSourceMatruhGroupedPackArtifact.Create(fourth);
+        var maletti = ContentSourceMalettiGroupedPackArtifact.Create(matruh);
+        var libyan = ContentSourceLibyanGroupedPackArtifact.Create(maletti);
+        var italian = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyan);
+        var seventh = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italian);
+        var sixteenth = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventh);
+        var catanzaro = ContentSourceCatanzaroGroupedPackArtifact.Create(sixteenth);
+        var content = ContentSourceCcnnBatchPackArtifact.Create(catanzaro, IsSixthAustralianGrouped);
+        _ = ContentSourceCcnnBatchPackArtifact.Read(content.CanonicalBytes);
+        var world = GroupedWorld!;
+        foreach (var formation in CampaignSourceCcnnBatch.Create(this)) world = world.AddFormation(content.Hash(), formation);
+        return WithGroupedWorld(world, Battlefield!.AdmitCcnnBatch(world));
+    }
+    internal byte[] SerializeCcnnBatch(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("eventType", "source-ccnn-batch-admitted"); writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion); writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", CcnnBatchActionId); writer.WriteString("actor", "axis");
+            writer.WriteString("worldHash", successor.GroupedWorld!.Hash()); writer.WriteString("contentHash", successor.GroupedWorld.ContentHash);
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanPlaceSixthAustralian => IsCatanzaroGrouped && !IsSixthAustralianGrouped
+        && !IsOwnerFinalized(CampaignActionAudience.Commonwealth);
+    internal static string SixthAustralianActionId(string location) =>
+        CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.sixth-australian.place.v1:" + location));
+    internal bool CanPlaceSixthAustralianAt(string location)
+    {
+        if (!CanPlaceSixthAustralian || !CampaignSourceSixthAustralianGroupedDefinition.Locations.Contains(location, StringComparer.Ordinal))
+            return false;
+        var world = GroupedWorld!;
+        var battlefield = Battlefield!;
+        var occupants = world.OccupantsAt(location);
+        var representedIds = occupants.SelectMany(value => value.Formation?.Members.Select(member => member.ElementId)
+            ?? (value.Detached is not null ? [value.Detached.Member.ElementId] : value.Independent!.BoundElementIds)).ToHashSet(StringComparer.Ordinal);
+        return !battlefield.Entries.Any(value => value.LocationId == location
+                && (value.SideId != "commonwealth" || !representedIds.Contains(value.ElementId)))
+            && !occupants.Any(value => value.Formation is { StackValue: null }
+                || value.Independent is { BoundElementIds.Count: not 1 }
+                || (value.Independent is not null && !CampaignSourceCairoInitialSetup.Units.Any(unit => unit.ElementId == value.Independent.BoundElementIds[0])
+                    && !CampaignSourceCwFreeGuns.Units.Any(unit => unit.ElementId == value.Independent.BoundElementIds[0])))
+            && occupants.Sum(value => value.Formation?.StackValue ?? value.Detached?.StackValue ?? 1) + 5 <= (location == "e1430" ? 5 : 8);
+    }
+    internal CampaignSourceAuthorityState PlaceSixthAustralian(string location)
+    {
+        if (!CanPlaceSixthAustralianAt(location))
+            throw new InvalidOperationException("Australian source placement requires known compatible stacking.");
+        var world = GroupedWorld!;
+        var battlefield = Battlefield!;
+        var fourth = ContentSourceFourthIndianPackArtifact.Create(CwFreeGunsWorld!.Content);
+        var matruh = ContentSourceMatruhGroupedPackArtifact.Create(fourth);
+        var maletti = ContentSourceMalettiGroupedPackArtifact.Create(matruh);
+        var libyan = ContentSourceLibyanGroupedPackArtifact.Create(maletti);
+        var italian = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyan);
+        var seventh = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italian);
+        var sixteenth = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventh);
+        var catanzaro = ContentSourceCatanzaroGroupedPackArtifact.Create(sixteenth);
+        var hash = IsCcnnBatchGrouped ? ContentSourceCcnnBatchPackArtifact.Create(catanzaro, true, IsArescaGrouped).Hash()
+            : ContentSourceSixthAustralianGroupedPackArtifact.Create(catanzaro).Hash();
+        var next = world.AddFormation(hash, CampaignSourceSixthAustralianGroupedDefinition.Create(this, location));
+        return WithGroupedWorld(next, battlefield.AddSixthAustralian(next, location));
+    }
+    internal byte[] SerializeSixthAustralianPlacement(CampaignSourceAuthorityState successor, string location)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("eventType", "source-sixth-australian-placed");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", SixthAustralianActionId(location)); writer.WriteString("actor", "commonwealth");
+            writer.WriteString("locationId", location); writer.WriteString("worldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("contentHash", successor.GroupedWorld.ContentHash);
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+    internal bool CanAdmitCatanzaro => IsSixteenthBrigadeGrouped && !IsCatanzaroGrouped && Battlefield is not null && CwFreeGunsWorld is not null;
+    internal CampaignSourceAuthorityState AdmitCatanzaroGroupedWorld()
+    {
+        if (!CanAdmitCatanzaro) throw new InvalidOperationException("Catanzaro grouped world prerequisites are incomplete.");
+        var fourth = ContentSourceFourthIndianPackArtifact.Create(CwFreeGunsWorld!.Content);
+        var matruh = ContentSourceMatruhGroupedPackArtifact.Create(fourth);
+        var maletti = ContentSourceMalettiGroupedPackArtifact.Create(matruh);
+        var libyan = ContentSourceLibyanGroupedPackArtifact.Create(maletti);
+        var italian = ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyan);
+        var seventh = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italian);
+        var sixteenth = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventh);
+        var content = ContentSourceCatanzaroGroupedPackArtifact.Create(sixteenth);
+        _ = ContentSourceCatanzaroGroupedPackArtifact.Read(content.CanonicalBytes);
+        var world = GroupedWorld!.AddFormation(content.Hash(), CampaignSourceCatanzaroGroupedDefinition.Create(this));
+        return WithGroupedWorld(world, Battlefield!.ProposeCatanzaro(world));
+    }
+    internal CampaignSourceAuthorityState ConfirmCatanzaro()
+    {
+        var prior = GroupedWorld ?? throw new InvalidOperationException("Catanzaro grouped world unavailable.");
+        if (!IsCatanzaroGrouped) throw new InvalidOperationException("Catanzaro grouped world unavailable.");
+        var next = prior.ConfirmDisposition(CampaignSourceCatanzaroGroupedDefinition.GroupId, 5);
+        return WithGroupedWorld(next, Battlefield!.ConfirmCatanzaro(prior, next));
+    }
+    internal byte[] SerializeCatanzaroGroupedEvent(CampaignSourceAuthorityState successor, bool confirm)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 42);
+            writer.WriteString("eventType", confirm ? "source-catanzaro-disposition-confirmed" : "source-catanzaro-grouped-world-admitted");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", confirm ? ConfirmCatanzaroActionId : AdmitCatanzaroActionId);
+            writer.WriteString("actor", confirm ? "axis" : "system");
+            writer.WriteString("worldHash", successor.GroupedWorld!.Hash()); writer.WriteString("contentHash", successor.GroupedWorld.ContentHash);
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
     internal CampaignSourceAuthorityState ApplyUnattachedCargo(bool axis, string kind, string? location, int delta)
     {
         var current = axis ? AxisUnattachedCargo : CommonwealthUnattachedCargo;
@@ -1367,7 +1988,7 @@ internal sealed class CampaignSourceAuthorityState
             ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
             AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
             Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint,
-            axis ? next : AxisUnattachedCargo, axis ? CommonwealthUnattachedCargo : next, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            axis ? next : AxisUnattachedCargo, axis ? CommonwealthUnattachedCargo : next, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeUnattachedCargoEvent(CampaignSourceAuthorityState successor, bool axis, string kind, string? location, int delta)
     {
@@ -1393,7 +2014,7 @@ internal sealed class CampaignSourceAuthorityState
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
             ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
             AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, true, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, true, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeCompactCheckpointEvent(CampaignSourceAuthorityState successor)
     {
@@ -1427,7 +2048,7 @@ internal sealed class CampaignSourceAuthorityState
             battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
             ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
             AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, active, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            Gt2Correction, CwPriorityCatalog, active, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeCwPriorityWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -1466,7 +2087,7 @@ internal sealed class CampaignSourceAuthorityState
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
             ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
             AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, catalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            Gt2Correction, catalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeCwPriorityCatalogEvent(CampaignSourceAuthorityState successor, string? id = null, int delta = 0)
     {
         using var stream = new MemoryStream();
@@ -1509,7 +2130,7 @@ internal sealed class CampaignSourceAuthorityState
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
             ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeGt2CorrectionEvent(CampaignSourceAuthorityState successor, string? kind = null, int lane = 0, int stage = 0, int delta = 0)
     {
         using var stream = new MemoryStream();
@@ -1546,7 +2167,7 @@ internal sealed class CampaignSourceAuthorityState
             AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, active, Gt2Correction, CwPriorityCatalog,
             CwPriorityWorld is null || CwFreeGunsWorld is not null ? CwPriorityWorld : CampaignSourceCwPriorityWorld.Rebind(CwPriorityWorld, active),
             CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns,
-            CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active), GroupedWorld, septemberPlans: SeptemberPlans);
+            CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active), GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeMatruhDetachedWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -1606,7 +2227,7 @@ internal sealed class CampaignSourceAuthorityState
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
             ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, group, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, groupedWorld ?? GroupedWorld, septemberPlans: SeptemberPlans);
+            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, group, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, groupedWorld ?? GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeMatruhFormationEvent(CampaignSourceAuthorityState successor, string? kind = null, string? id = null)
     {
         using var stream = new MemoryStream();
@@ -1645,7 +2266,7 @@ internal sealed class CampaignSourceAuthorityState
             MatruhDetachedWorld is null || CwPriorityWorld is not null ? MatruhDetachedWorld : CampaignSourceMatruhDetachedWorld.Rebind(MatruhDetachedWorld, active),
             Gt2Correction, CwPriorityCatalog, CwPriorityWorld is null || CwFreeGunsWorld is not null ? CwPriorityWorld : CampaignSourceCwPriorityWorld.Rebind(CwPriorityWorld, active),
             CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns,
-            CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active), GroupedWorld, septemberPlans: SeptemberPlans);
+            CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active), GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeCertifiedMalettiWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -1708,7 +2329,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, priority, AxisGarrisons,
             battlefield ?? Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, hierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, grouped ?? GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, hierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, grouped ?? GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeMalettiHierarchyEvent(CampaignSourceAuthorityState successor, string? kind = null, string? id = null)
     {
         using var stream = new MemoryStream();
@@ -1743,7 +2364,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, active, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, active, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeAxisCorpsWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -1783,7 +2404,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, setup, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, setup, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeAxisCorpsSetupEvent(CampaignSourceAuthorityState successor, string? id = null, string? locationId = null)
     {
         using var stream = new MemoryStream();
@@ -1817,7 +2438,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, active, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, active, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
     internal byte[] SerializeAxisFreeWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -1856,7 +2477,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, setup, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, setup, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeAxisFreeSetupEvent(CampaignSourceAuthorityState successor, string? id = null, string? locationId = null)
     {
         using var stream = new MemoryStream();
@@ -1890,7 +2511,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, wrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, AttachedInitialLoads, wrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     internal byte[] SerializeInitialWreckEvent(CampaignSourceAuthorityState successor, string? id = null, string? locationId = null)
     {
         using var stream = new MemoryStream();
@@ -1919,7 +2540,7 @@ internal sealed class CampaignSourceAuthorityState
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, CampaignSourceAttachedInitialLoads.Create(), septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, CampaignSourceAttachedInitialLoads.Create(), septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal static string AttachedInitialLoadsActionId(string kind, string elementId) =>
@@ -1928,6 +2549,16 @@ internal sealed class CampaignSourceAuthorityState
     internal CampaignSourceAuthorityState ApplyAttachedInitialLoads(string kind, string elementId)
     {
         var loads = AttachedInitialLoads ?? throw new InvalidOperationException("Initial loads are not admitted.");
+        if (!kind.StartsWith("frontline-", StringComparison.Ordinal)
+            && !CampaignSourcePriorityMotorization.Targets.Any(value => value.ElementId == elementId))
+            throw new InvalidOperationException("Initial load target is unavailable.");
+        if (kind.StartsWith("frontline-", StringComparison.Ordinal)
+            && (IsOwnerFinalized(CampaignActionAudience.Commonwealth) || CwFreeGunsWorld?.CwFrontlineContent is null
+                || (kind != "frontline-reopen" && loads.FrontlineFinished)
+                || (kind is not ("frontline-finish" or "frontline-reopen")
+                    && !CampaignSourceAttachedInitialLoads.FrontlineTargets.Any(value => value.ElementId == elementId))
+                || (kind is "frontline-finish" or "frontline-reopen") && elementId != "frontline"))
+            throw new InvalidOperationException("Frontline load choice is unavailable.");
         var next = kind switch
         {
             "attach" => loads.Attach(elementId, PriorityMotorization!, CommonwealthMotorization),
@@ -1935,13 +2566,21 @@ internal sealed class CampaignSourceAuthorityState
             "ammo" or "fuel" => loads.Load(elementId, kind),
             "unload-ammo" => loads.ClearLoad(elementId, "ammo"),
             "unload-fuel" => loads.ClearLoad(elementId, "fuel"),
+            "frontline-attach" => loads.AttachFrontline(elementId, CommonwealthMotorization),
+            "frontline-detach" => loads.Detach(elementId),
+            "frontline-ammo" => loads.Load(elementId, "ammo"),
+            "frontline-fuel" => loads.Load(elementId, "fuel"),
+            "frontline-unload-ammo" => loads.ClearLoad(elementId, "ammo"),
+            "frontline-unload-fuel" => loads.ClearLoad(elementId, "fuel"),
+            "frontline-finish" => loads.FinishFrontline(CommonwealthMotorization),
+            "frontline-reopen" => loads.ReopenFrontline(),
             _ => throw new InvalidOperationException("Unknown initial load choice."),
         };
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, next, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            ExpandedIndependentWorld, next, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeAttachedInitialLoadsEvent(CampaignSourceAuthorityState successor, string? kind = null, string? elementId = null)
@@ -1950,14 +2589,17 @@ internal sealed class CampaignSourceAuthorityState
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", AttachedInitialLoadsContractVersion);
-            writer.WriteString("eventType", kind is null ? "source-attached-initial-loads-admitted" : "source-attached-initial-loads-changed");
+            var frontline = kind?.StartsWith("frontline-", StringComparison.Ordinal) == true;
+            writer.WriteNumber("contractVersion", frontline ? FrontlineAttachedInitialLoadsEventContractVersion : AttachedInitialLoadsContractVersion);
+            writer.WriteString("eventType", frontline ? "source-frontline-initial-loads-changed"
+                : kind is null ? "source-attached-initial-loads-admitted" : "source-attached-initial-loads-changed");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
             writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
             writer.WriteString("actionId", kind is null ? AdmitAttachedInitialLoadsActionId : AttachedInitialLoadsActionId(kind, elementId!));
             writer.WriteString("actor", kind is null ? "system" : "commonwealth");
             if (kind is not null) { writer.WriteString("kind", kind); writer.WriteString("elementId", elementId); }
+            if (frontline) writer.WriteString("frontlinePolicyId", CampaignSourceAttachedInitialLoads.FrontlinePolicyId);
             writer.WriteString("attachedInitialLoadsHash", successor.AttachedInitialLoads!.Hash());
             writer.WriteString("attachedInitialLoadsProfileHash", successor.AttachedInitialLoadsProfileHash);
             writer.WriteEndObject();
@@ -1982,7 +2624,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), active, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), active, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeExpandedIndependentPromotion(CampaignSourceAuthorityState successor)
@@ -2017,7 +2659,7 @@ internal sealed class CampaignSourceAuthorityState
         return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
             AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, map, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans);
+            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, map, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
     }
 
     internal byte[] SerializeLocalMapAdmission(CampaignSourceAuthorityState successor)
@@ -2249,21 +2891,110 @@ internal sealed class CampaignSourceAuthorityState
         return stream.ToArray();
     }
 
-    internal byte[] SerializeCheckpoint() => CompactCheckpoint ? SerializeCompactCheckpoint() : SerializeLegacyCheckpoint();
+    internal byte[] SerializeCheckpoint()
+    {
+        var baseline = SerializeBeforeCwFrontlineCheckpoint();
+        if (CwFreeGunsWorld?.CwFrontlineContent is not { } content) return baseline;
+        if (!CompactCheckpoint) throw new InvalidOperationException("CW frontline requires compact checkpoint replay.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", CwFrontlineCheckpointContractVersion);
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("status", "setup-in-progress"); writer.WriteBase64String("baseCheckpoint", baseline);
+            writer.WriteString("cwFrontlineContentHash", content.Identity.Hash);
+            writer.WriteString("nativeWorldHash", CwFreeGunsWorld.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    private byte[] SerializeBeforeCwFrontlineCheckpoint()
+    {
+        var baseline = SerializeBeforeMotorMachineGunCheckpoint();
+        if (CwFreeGunsWorld?.MotorMachineGunContent is not { } content) return baseline;
+        if (!CompactCheckpoint) throw new InvalidOperationException("Motor MG requires compact checkpoint replay.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", GiarabubMotorMachineGunCheckpointContractVersion);
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("status", "setup-in-progress"); writer.WriteBase64String("baseCheckpoint", baseline);
+            writer.WriteString("motorMachineGunContentHash", content.Identity.Hash);
+            writer.WriteString("nativeWorldHash", CwFreeGunsWorld.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    private byte[] SerializeBeforeMotorMachineGunCheckpoint()
+    {
+        var baseline = SerializeBeforeGarrisonRemainderCheckpoint();
+        if (CwFreeGunsWorld?.GarrisonRemainderContent is not { } content) return baseline;
+        if (!CompactCheckpoint) throw new InvalidOperationException("Garrison remainder requires compact checkpoint replay.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", AxisGarrisonRemainderCheckpointContractVersion);
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("status", "setup-in-progress"); writer.WriteBase64String("baseCheckpoint", baseline);
+            writer.WriteString("garrisonRemainderContentHash", content.Identity.Hash);
+            writer.WriteString("nativeWorldHash", CwFreeGunsWorld.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    private byte[] SerializeBeforeGarrisonRemainderCheckpoint()
+    {
+        var baseline = SerializeBeforeMinorGarrisonsCheckpoint();
+        if (CwFreeGunsWorld?.MinorGarrisonContent is not { } content) return baseline;
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", AxisMinorGarrisonsCheckpointContractVersion);
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("status", "setup-in-progress"); writer.WriteBase64String("baseCheckpoint", baseline);
+            writer.WriteString("minorGarrisonContentHash", content.Identity.Hash);
+            // Compact checkpoints are reconstructed from the complete event
+            // journal, which re-creates and validates this canonical content.
+            // Embedding its entire predecessor chain defeats that contract.
+            if (!CompactCheckpoint) writer.WriteBase64String("minorGarrisonContent", content.CanonicalBytes);
+            writer.WriteString("nativeWorldHash", CwFreeGunsWorld.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    private byte[] SerializeBeforeMinorGarrisonsCheckpoint()
+    {
+        var baseline = CompactCheckpoint ? SerializeCompactCheckpoint() : SerializeLegacyCheckpoint();
+        if (!HorseRulingVersion) return baseline;
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", HorseRulingCheckpointContractVersion);
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("status", "setup-in-progress"); writer.WriteNumber("baseProfileVersion", BaseProfileVersion);
+            writer.WriteBase64String("baseCheckpoint", baseline); writer.WriteString("rulingId", HorseRulingId);
+            writer.WriteNumber("rulingVotes", HorseRulingVotes); writer.WriteBoolean("stageOneNoTraining", HorseStageOneNoTraining);
+            writer.WriteNull("priorTrainingProgress"); writer.WriteNull("priorTrainingActive"); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
 
     private byte[] SerializeCompactCheckpoint()
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject(); writer.WriteNumber("contractVersion", CompactCheckpointContractVersion);
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", BaseProfileVersion);
             writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
             writer.WriteString("rulesetHash", Request.RulesetHash); writer.WriteString("setupHash", Request.SetupHash);
             writer.WriteString("authoritySetupHash", AuthoritySetupHash); writer.WriteString("positionId", SetupPositionId);
             writer.WriteString("status", "setup-in-progress"); writer.WriteNull("gameClock");
+            if (FinalizationVersion) writer.WriteNumber("finalizedOwners", FinalizedOwners);
             writer.WriteString("reconstruction", "retained-genesis-and-complete-event-journal-required");
-            writer.WriteNumber("legacyProjectionVersion", LegacyProfileVersion);
-            writer.WriteString("legacyProjectionHash", CampaignPregameSourceCreation.Digest(SerializeLegacyCheckpoint()));
+            writer.WriteNumber("legacyProjectionVersion", FinalizationVersion
+                ? (IsSeventhShellCorrected ? ShellCorrectedFinalizedLegacyCheckpointContractVersion : FinalizedLegacyCheckpointContractVersion)
+                : LegacyProfileVersion);
+            writer.WriteString("legacyProjectionHash", DigestLegacyCheckpoint());
             writer.WriteString("activeContentHash", GroupedWorld?.ContentHash ?? World.ContentIdentity.Hash);
             writer.WriteString("activeWorldHash", GroupedWorld?.Hash() ?? CwFreeGunsWorld?.Hash() ?? CwPriorityWorld?.Hash() ?? MatruhDetachedWorld?.Hash()
                 ?? CertifiedMalettiWorld?.Hash() ?? AxisCorpsArtilleryWorld?.Hash() ?? AxisFreeArtilleryWorld?.Hash()
@@ -2277,13 +3008,37 @@ internal sealed class CampaignSourceAuthorityState
         return stream.ToArray();
     }
 
-    private byte[] SerializeLegacyCheckpoint()
+    internal byte[] SerializeLegacyCheckpoint()
     {
         using var stream = new MemoryStream();
+        WriteLegacyCheckpoint(stream);
+        return stream.ToArray();
+    }
+
+    internal string DigestLegacyCheckpoint()
+    {
+        using var hash = SHA256.Create();
+        using var sink = new CryptoStream(Stream.Null, hash, CryptoStreamMode.Write, leaveOpen: true);
+        WriteLegacyCheckpoint(sink);
+        sink.FlushFinalBlock();
+        return "sha256:" + Convert.ToHexStringLower(hash.Hash!);
+    }
+
+    private void WriteLegacyCheckpoint(Stream stream)
+    {
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", LegacyProfileVersion);
+            writer.WriteNumber("contractVersion", FinalizationVersion
+                ? (IsSeventhShellCorrected ? ShellCorrectedFinalizedLegacyCheckpointContractVersion : FinalizedLegacyCheckpointContractVersion)
+                : LegacyProfileVersion);
+            if (FinalizationVersion) writer.WriteNumber("baseProfileVersion", LegacyProfileVersion);
+            if (IsSeventhShellCorrected)
+            {
+                writer.WriteNumber("uncorrectedProfileVersion", UnderlyingLegacyProfileVersion);
+                writer.WriteString("seventhArmoredShellCorrection", "common-charts:9.4:division-shell-stack-3.v1");
+                writer.WriteString("seventhArmoredShellCorrectionSourceHash", "sha256:51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0");
+            }
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("stateVersion", StateVersion);
             writer.WriteString("rulesetHash", Request.RulesetHash);
@@ -2294,6 +3049,7 @@ internal sealed class CampaignSourceAuthorityState
             writer.WriteString("positionId", SetupPositionId);
             writer.WriteString("status", "setup-in-progress");
             writer.WriteNull("gameClock");
+            if (FinalizationVersion) writer.WriteNumber("finalizedOwners", FinalizedOwners);
             writer.WriteBase64String("pregameCheckpointBase64", Pregame.SerializeCheckpoint());
             writer.WriteBase64String("convoyPlanBase64", ConvoyPlan.SerializeCanonical());
             writer.WriteBase64String("axisSupplyWorldBase64", AxisSupplyWorld.SerializeCanonical());
@@ -2468,9 +3224,14 @@ internal sealed class CampaignSourceAuthorityState
                 var malettiContent = IsMalettiGrouped ? ContentSourceMalettiGroupedPackArtifact.Create(matruhContent!) : null;
                 var libyanContent = IsLibyanGrouped ? ContentSourceLibyanGroupedPackArtifact.Create(malettiContent!) : null;
                 var italianContent = IsItalianDivisionsGrouped ? ContentSourceCireneMarmaricaGroupedPackArtifact.Create(libyanContent!) : null;
-                var hash = italianContent?.Hash() ?? libyanContent?.Hash() ?? malettiContent?.Hash() ?? matruhContent?.Hash() ?? fourthContent.Hash();
+                var seventhContent = IsSeventhArmoredGrouped ? ContentSourceSeventhArmoredGroupedPackArtifact.Create(italianContent!) : null;
+                var sixteenthContent = IsSixteenthBrigadeGrouped ? ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(seventhContent!) : null;
+                var catanzaroContent = IsCatanzaroGrouped ? ContentSourceCatanzaroGroupedPackArtifact.Create(sixteenthContent!) : null;
+                var australianContent = IsSixthAustralianGrouped && !IsCcnnBatchGrouped ? ContentSourceSixthAustralianGroupedPackArtifact.Create(catanzaroContent!) : null;
+                var ccnnContent = IsCcnnBatchGrouped ? ContentSourceCcnnBatchPackArtifact.Create(catanzaroContent!, IsSixthAustralianGrouped, IsArescaGrouped) : null;
+                var hash = ccnnContent?.Hash() ?? australianContent?.Hash() ?? catanzaroContent?.Hash() ?? sixteenthContent?.Hash() ?? seventhContent?.Hash() ?? italianContent?.Hash() ?? libyanContent?.Hash() ?? malettiContent?.Hash() ?? matruhContent?.Hash() ?? fourthContent.Hash();
                 if (hash != GroupedWorld.ContentHash) throw new InvalidOperationException("Grouped source content identity differs.");
-                writer.WriteString("groupedWorldContentHash", hash); writer.WriteBase64String("groupedWorldContent", italianContent?.CanonicalBytes ?? libyanContent?.CanonicalBytes ?? malettiContent?.CanonicalBytes ?? matruhContent?.CanonicalBytes ?? fourthContent.CanonicalBytes);
+                writer.WriteString("groupedWorldContentHash", hash); writer.WriteBase64String("groupedWorldContent", ccnnContent?.CanonicalBytes ?? australianContent?.CanonicalBytes ?? catanzaroContent?.CanonicalBytes ?? sixteenthContent?.CanonicalBytes ?? seventhContent?.CanonicalBytes ?? italianContent?.CanonicalBytes ?? libyanContent?.CanonicalBytes ?? malettiContent?.CanonicalBytes ?? matruhContent?.CanonicalBytes ?? fourthContent.CanonicalBytes);
                 writer.WriteBase64String("groupedWorld", GroupedWorld.SerializeCanonical());
             }
             if (CwFreeGuns is not null)
@@ -2484,6 +3245,5 @@ internal sealed class CampaignSourceAuthorityState
             }
             writer.WriteEndObject();
         }
-        return stream.ToArray();
     }
 }
