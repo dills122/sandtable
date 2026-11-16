@@ -25,7 +25,8 @@ internal sealed record CampaignWorldOccupant(CampaignMapRepresentationState? Ind
 internal sealed class CampaignGroupedFormation
 {
     internal CampaignGroupedFormation(string groupId, string sideId, string rootId, string locationId, int? stackValue,
-        int motorPool, IEnumerable<CampaignGroupedMember> members, bool dispositionConfirmed = true)
+        int motorPool, IEnumerable<CampaignGroupedMember> members, bool dispositionConfirmed = true,
+        bool usesRetainedMembers = false, bool motorPoolKnown = true)
     {
         GroupId = ContentContractGuards.RequireStableId(groupId, nameof(groupId));
         SideId = ContentContractGuards.RequireStableId(sideId, nameof(sideId));
@@ -34,7 +35,9 @@ internal sealed class CampaignGroupedFormation
         if (stackValue < 0 || motorPool < 0) throw new ArgumentOutOfRangeException(nameof(stackValue));
         StackValue = stackValue;
         MotorPool = motorPool;
+        MotorPoolKnown = motorPoolKnown;
         DispositionConfirmed = dispositionConfirmed;
+        UsesRetainedMembers = usesRetainedMembers;
         var values = ContentContractGuards.CopyValues(members, nameof(members))
             .Select(value => value with
             {
@@ -79,7 +82,8 @@ internal sealed class CampaignGroupedFormation
             }
             if (cursor.ElementId != rootId) throw new ArgumentException("Member is outside the root hierarchy.", nameof(members));
         }
-        if (values.Sum(value => value.AssignedMotorPoints) > motorPool)
+        if ((!motorPoolKnown && (motorPool != 0 || values.Any(value => value.AssignedMotorPoints != 0)))
+            || values.Sum(value => value.AssignedMotorPoints) > motorPool)
             throw new ArgumentException("Motor reservations exceed their pool.", nameof(members));
         Members = Array.AsReadOnly(values);
     }
@@ -90,7 +94,11 @@ internal sealed class CampaignGroupedFormation
     internal string LocationId { get; }
     internal int? StackValue { get; }
     internal int MotorPool { get; }
+    // Unknown source quantities cannot be used as an empty available pool.
+    internal bool MotorPoolKnown { get; }
     internal bool DispositionConfirmed { get; }
+    // The World8 elements retain their provenance; this formation replaces only their map counters.
+    internal bool UsesRetainedMembers { get; }
     internal IReadOnlyList<CampaignGroupedMember> Members { get; }
 }
 
@@ -100,20 +108,43 @@ internal sealed class CampaignGroupedWorld
     private static readonly SearchValues<char> HashCharacters = SearchValues.Create("0123456789abcdef");
     private CampaignGroupedWorld(CampaignWorldSnapshotV8 prior, string contentHash, IEnumerable<CampaignGroupedFormation> groups,
         IEnumerable<CampaignDetachedGroupedMember>? detached = null,
-        IEnumerable<CampaignGroupedExternalReservation>? externalReservations = null)
+        IEnumerable<CampaignGroupedExternalReservation>? externalReservations = null, bool moved = false)
     {
         Prior = prior ?? throw new ArgumentNullException(nameof(prior));
         if (contentHash is null || !contentHash.StartsWith("sha256:", StringComparison.Ordinal) || contentHash.Length != 71
             || contentHash.AsSpan(7).ContainsAnyExcept(HashCharacters))
             throw new ArgumentException("A source content hash is required.", nameof(contentHash));
         ContentHash = contentHash;
+        Moved = moved;
         var values = ContentContractGuards.CopyValues(groups, nameof(groups)).OrderBy(value => value.GroupId, StringComparer.Ordinal).ToArray();
         var ids = values.SelectMany(value => value.Members.Select(member => member.ElementId)).ToArray();
         if (values.Select(value => value.GroupId).Distinct(StringComparer.Ordinal).Count() != values.Length
             || ids.Distinct(StringComparer.Ordinal).Count() != ids.Length
-            || ids.Intersect(prior.World.Elements.Select(value => value.ElementId), StringComparer.Ordinal).Any()
+            || values.Where(value => !value.UsesRetainedMembers).SelectMany(value => value.Members)
+                .Select(value => value.ElementId).Intersect(prior.World.Elements.Select(value => value.ElementId), StringComparer.Ordinal).Any()
             || ids.Intersect(prior.PendingArrivals.SelectMany(value => value.ElementIds), StringComparer.Ordinal).Any())
             throw new ArgumentException("Grouped members must be unique and absent from the retained world and arrivals.", nameof(groups));
+        foreach (var group in values.Where(value => value.UsesRetainedMembers))
+            foreach (var member in group.Members)
+            {
+                var element = prior.World.Elements.SingleOrDefault(value => value.ElementId == member.ElementId);
+                var representations = prior.World.Representations.Where(value => value.BoundElementIds.Contains(member.ElementId)).ToArray();
+                var components = member.ComponentType is null ? []
+                    : new[] { new CampaignGroupedComponent(member.ComponentType, member.ComponentToe!.Value) }
+                        .Concat(member.AdditionalComponents ?? []).ToArray();
+                if (element is null || element.CurrentLocationId != group.LocationId
+                    || element.ReserveStatus != prior.Initialization.ReserveStatus
+                    || element.OperationalState.CapabilityPointsExpended != member.CapabilityPointsExpended
+                    || element.OperationalState.CohesionLevel != member.CohesionLevel
+                    || element.OperationalState.VehicleBreakdownState is not null || element.OperationalState.MovementEnded is not null
+                    || representations.Length != 1 || representations[0].CurrentLocationId != group.LocationId
+                    || !representations[0].BoundElementIds.SequenceEqual([member.ElementId])
+                    || representations[0].BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                    || element.Components.Count != components.Length
+                    || components.Any(component => !element.Components.Any(value => value.ComponentId == member.ElementId + "." + component.ComponentType
+                        && value.CurrentToe == component.Toe)))
+                    throw new ArgumentException("Retained group members must exactly match their World8 state and counters.", nameof(groups));
+            }
         Groups = Array.AsReadOnly(values);
         var independent = ContentContractGuards.CopyValues(detached ?? [], nameof(detached))
             .Select(value => value with
@@ -132,7 +163,7 @@ internal sealed class CampaignGroupedWorld
             || independentIds.Intersect(prior.PendingArrivals.SelectMany(value => value.ElementIds), StringComparer.Ordinal).Any()
             || independent.Any(value => value.StackValue < 0 || value.Member.ParentId is not null
                 || !values.Any(group => group.GroupId == value.GroupId
-                    && group.SideId == value.SideId && group.LocationId == value.LocationId)))
+                    && group.SideId == value.SideId && (moved || group.LocationId == value.LocationId))))
             throw new ArgumentException("Detached members must be unique independent occupants of their source formation.", nameof(detached));
         foreach (var value in independent)
         {
@@ -163,10 +194,12 @@ internal sealed class CampaignGroupedWorld
         if (external.Select(value => value.ElementId).Distinct(StringComparer.Ordinal).Count() != external.Length
             || external.Any(value => value.InfantryToe < 0 || value.AssignedMotorPoints < 0
                 || value.AssignedMotorPoints > value.InfantryToe || !values.Any(group => group.GroupId == value.GroupId
-                    && prior.World.Elements.Count(element => element.ElementId == value.ElementId && element.CurrentLocationId == group.LocationId
+                    && prior.World.Elements.Count(element => element.ElementId == value.ElementId && (moved || element.CurrentLocationId == group.LocationId)
                         && element.Components.Count == 1 && element.Components[0].ComponentId == value.ElementId + ".infantry"
                         && element.Components[0].CurrentToe == value.InfantryToe) == 1
-                    && prior.World.Representations.Count(representation => representation.CurrentLocationId == group.LocationId
+                    && prior.World.Representations.Count(representation => (moved
+                            ? prior.World.Elements.Any(element => element.ElementId == value.ElementId && element.CurrentLocationId == representation.CurrentLocationId)
+                            : representation.CurrentLocationId == group.LocationId)
                         && representation.BindingKind == CampaignMapRepresentationBindingKind.IndependentElement
                         && representation.BoundElementIds.SequenceEqual([value.ElementId])) == 1)))
             throw new ArgumentException("External reservations require unique active independent units and known capacity.", nameof(externalReservations));
@@ -182,6 +215,7 @@ internal sealed class CampaignGroupedWorld
 
     internal CampaignWorldSnapshotV8 Prior { get; }
     internal string ContentHash { get; }
+    internal bool Moved { get; }
     internal IReadOnlyList<CampaignGroupedFormation> Groups { get; }
     internal IReadOnlyList<CampaignDetachedGroupedMember> Detached { get; }
     internal IReadOnlyList<CampaignGroupedExternalReservation> ExternalReservations { get; }
@@ -190,15 +224,45 @@ internal sealed class CampaignGroupedWorld
         IEnumerable<CampaignGroupedExternalReservation>? externalReservations = null) => new(prior, contentHash, groups, detached, externalReservations);
 
     internal CampaignGroupedWorld AddFormation(string successorContentHash, CampaignGroupedFormation formation,
-        CampaignDetachedGroupedMember? detached = null, CampaignGroupedExternalReservation? externalReservation = null) =>
-        new(Prior, successorContentHash, Groups.Append(formation), detached is null ? Detached : Detached.Append(detached),
-            externalReservation is null ? ExternalReservations : ExternalReservations.Append(externalReservation));
+        CampaignDetachedGroupedMember? detached = null, CampaignGroupedExternalReservation? externalReservation = null)
+    {
+        if (detached is not null && (detached.GroupId != formation.GroupId || detached.LocationId != formation.LocationId))
+            throw new InvalidOperationException("New detached members must start at their formation's location.");
+        if (externalReservation is not null && (externalReservation.GroupId != formation.GroupId
+            || Prior.World.Elements.All(value => value.ElementId != externalReservation.ElementId
+                || value.CurrentLocationId != formation.LocationId)))
+            throw new InvalidOperationException("New external reservations must start at their formation's location.");
+        return new(Prior, successorContentHash, Groups.Append(formation), detached is null ? Detached : Detached.Append(detached),
+            externalReservation is null ? ExternalReservations : ExternalReservations.Append(externalReservation), Moved);
+    }
+
+    // Arrival promotes one retained scheduled group atomically, preserving all existing world state.
+    internal CampaignGroupedWorld ArriveRetainedFormation(CampaignWorldSnapshotV8 successor,
+        CampaignGroupedFormation formation, string pendingGroupId)
+    {
+        ArgumentNullException.ThrowIfNull(successor);
+        ArgumentNullException.ThrowIfNull(formation);
+        var pending = Prior.PendingArrivals.Single(value => value.GroupId == pendingGroupId);
+        var ids = pending.ElementIds.Order(StringComparer.Ordinal).ToArray();
+        if (!formation.UsesRetainedMembers || formation.SideId != pending.SideId
+            || !formation.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || successor.ContentIdentity != Prior.ContentIdentity || successor.ScenarioId != Prior.ScenarioId
+            || successor.Initialization != Prior.Initialization
+            || !successor.PendingArrivals.SequenceEqual(Prior.PendingArrivals.Where(value => value.GroupId != pendingGroupId))
+            || !Prior.World.Elements.All(successor.World.Elements.Contains)
+            || !Prior.World.Representations.All(successor.World.Representations.Contains)
+            || !Prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !successor.World.Elements.Except(Prior.World.Elements).Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || successor.World.Representations.Except(Prior.World.Representations).Count() != ids.Length)
+            throw new InvalidOperationException("Arrival must preserve its predecessor and materialize exactly the pending formation.");
+        return new(successor, ContentHash, Groups.Append(formation), Detached, ExternalReservations, Moved);
+    }
 
     internal CampaignGroupedWorld DetachMember(string groupId, string elementId, int stackValue, int? remainingGroupStackValue)
     {
         var group = Groups.Single(value => value.GroupId == groupId);
         var member = group.Members.Single(value => value.ElementId == elementId);
-        if (!group.DispositionConfirmed || member.ParentId is null || member.AssignedMotorPoints != 0
+        if (group.UsesRetainedMembers || !group.DispositionConfirmed || member.ParentId is null || member.AssignedMotorPoints != 0
             || group.Members.Any(value => value.ParentId == elementId))
             throw new InvalidOperationException("Detachment requires a confirmed, unreserved leaf member.");
         var replacement = new CampaignGroupedFormation(group.GroupId, group.SideId, group.RootId, group.LocationId,
@@ -206,7 +270,7 @@ internal sealed class CampaignGroupedWorld
         var individual = new CampaignDetachedGroupedMember(groupId, group.SideId, group.LocationId, stackValue,
             member with { ParentId = null });
         return new(Prior, ContentHash, Groups.Select(value => value.GroupId == groupId ? replacement : value),
-            Detached.Append(individual), ExternalReservations);
+            Detached.Append(individual), ExternalReservations, Moved);
     }
 
     internal CampaignGroupedWorld Rebind(CampaignWorldSnapshotV8 successor, int ledgerGameTurn, int ledgerOperationStage)
@@ -257,7 +321,7 @@ internal sealed class CampaignGroupedWorld
                 value.Member.InfantryToe ?? throw new InvalidOperationException("Promoted priority infantry capacity is unknown."),
                 value.Member.AssignedMotorPoints));
         return new(successor, ContentHash, Groups, Detached.Where(value => !promoted.Contains(value.Member.ElementId)),
-            ExternalReservations.Concat(newExternal));
+            ExternalReservations.Concat(newExternal), Moved);
     }
 
     internal CampaignGroupedWorld ConfirmDisposition(string groupId, int? confirmedStackValue)
@@ -265,13 +329,72 @@ internal sealed class CampaignGroupedWorld
         var group = Groups.Single(value => value.GroupId == groupId);
         if (group.DispositionConfirmed) throw new InvalidOperationException("Formation disposition already confirmed.");
         var confirmed = new CampaignGroupedFormation(group.GroupId, group.SideId, group.RootId, group.LocationId,
-            confirmedStackValue, group.MotorPool, group.Members, true);
-        return new(Prior, ContentHash, Groups.Select(value => value.GroupId == groupId ? confirmed : value), Detached, ExternalReservations);
+            confirmedStackValue, group.MotorPool, group.Members, true, group.UsesRetainedMembers, group.MotorPoolKnown);
+        return new(Prior, ContentHash, Groups.Select(value => value.GroupId == groupId ? confirmed : value), Detached, ExternalReservations, Moved);
+    }
+
+    // Versioned source correction; all represented units and prior content
+    // remain intact. The source authority journals and authenticates it.
+    internal CampaignGroupedWorld CorrectSeventhArmoredShellStack()
+    {
+        var group = Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        if (!group.DispositionConfirmed || group.StackValue != 5) throw new InvalidOperationException("Legacy shell correction is unavailable.");
+        var corrected = new CampaignGroupedFormation(group.GroupId, group.SideId, group.RootId, group.LocationId,
+            3, group.MotorPool, group.Members, true, group.UsesRetainedMembers, group.MotorPoolKnown);
+        return new(Prior, ContentHash, Groups.Select(value => value.GroupId == group.GroupId ? corrected : value), Detached, ExternalReservations, Moved);
+    }
+
+    // World mutation only: the source turn authority must first adjudicate route,
+    // stack value, fuel, transport and owner, then journal this successor atomically.
+    internal CampaignGroupedWorld MoveFormation(string groupId, string destination,
+        IReadOnlyDictionary<string, CapabilityPointAmount> costs, int destinationStackValue, int gameTurn, int operationStage)
+    {
+        ArgumentNullException.ThrowIfNull(costs);
+        ContentContractGuards.RequireStableId(destination, nameof(destination));
+        ArgumentOutOfRangeException.ThrowIfNegative(destinationStackValue);
+        ArgumentOutOfRangeException.ThrowIfLessThan(gameTurn, 1);
+        if (operationStage is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(operationStage));
+        var group = Groups.Single(value => value.GroupId == groupId);
+        if (!group.DispositionConfirmed || destination == group.LocationId
+            || costs.Count != group.Members.Count
+            || group.Members.Any(member => !costs.TryGetValue(member.ElementId, out var cost)
+                || cost is null || cost <= new CapabilityPointAmount(0, 1)
+                || member.CapabilityPointAllowance is not int allowance
+                || member.CapabilityPointsExpended + cost > new CapabilityPointAmount(allowance, 1)))
+            throw new InvalidOperationException("Formation movement exceeds its known capability or lacks a confirmed disposition.");
+        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        if (group.UsesRetainedMembers && Prior.World.Elements.Where(value => ids.Contains(value.ElementId))
+            .Any(value => value.OperationalState.LedgerGameTurn != gameTurn
+                || value.OperationalState.LedgerOperationStage != operationStage
+                || value.OperationalState.MovementEnded is not null))
+            throw new InvalidOperationException("Retained members require an open matching movement ledger.");
+        var members = group.Members.Select(value => value with
+        { CapabilityPointsExpended = value.CapabilityPointsExpended + costs[value.ElementId] }).ToArray();
+        var replacement = new CampaignGroupedFormation(group.GroupId, group.SideId, group.RootId, destination,
+            destinationStackValue, group.MotorPool, members, true, group.UsesRetainedMembers, group.MotorPoolKnown);
+        var world6 = Prior.World;
+        if (group.UsesRetainedMembers)
+        {
+            world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
+                world6.Elements.Select(value => !ids.Contains(value.ElementId) ? value :
+                    new CampaignElementStateV5(value.ElementId, destination, value.ReserveStatus,
+                        new CampaignElementOperationalStateV5(gameTurn, operationStage,
+                            value.OperationalState.CapabilityPointsExpended + costs[value.ElementId], value.OperationalState.CohesionLevel,
+                            value.OperationalState.VehicleBreakdownState, value.OperationalState.MovementEnded), value.Components)),
+                world6.Representations.Select(value => !ids.Contains(value.BoundElementIds[0]) ? value :
+                    new CampaignMapRepresentationState(value.RepresentationId, destination, value.BindingKind, value.BoundElementIds)),
+                world6.BrokenVehicleLots);
+        }
+        var world8 = new CampaignWorldSnapshotV8(Prior.ContentIdentity, Prior.ScenarioId, Prior.Initialization,
+            world6, Prior.PendingArrivals);
+        return new(world8, ContentHash, Groups.Select(value => value.GroupId == groupId ? replacement : value),
+            Detached, ExternalReservations, true);
     }
 
     internal int RemainingMotorPoints(string groupId)
     {
         var group = Groups.Single(value => value.GroupId == groupId);
+        if (!group.MotorPoolKnown) throw new InvalidOperationException("Formation motor pool is not established.");
         return checked(group.MotorPool - group.Members.Sum(value => value.AssignedMotorPoints)
             - Detached.Where(value => value.GroupId == groupId).Sum(value => value.Member.AssignedMotorPoints)
             - ExternalReservations.Where(value => value.GroupId == groupId).Sum(value => value.AssignedMotorPoints));
@@ -281,6 +404,7 @@ internal sealed class CampaignGroupedWorld
     {
         ArgumentOutOfRangeException.ThrowIfZero(delta);
         var group = Groups.Single(value => value.GroupId == groupId);
+        if (!group.MotorPoolKnown) throw new InvalidOperationException("Formation motor pool is not established.");
         if (!group.DispositionConfirmed) throw new InvalidOperationException("Formation disposition requires owner confirmation.");
         var member = group.Members.SingleOrDefault(value => value.ElementId == elementId);
         if (member is null)
@@ -288,25 +412,31 @@ internal sealed class CampaignGroupedWorld
             var detached = Detached.SingleOrDefault(value => value.GroupId == groupId && value.Member.ElementId == elementId);
             if (detached is not null)
             {
+                if (detached.LocationId != group.LocationId)
+                    throw new InvalidOperationException("Remote motorization transfers are unavailable.");
                 if (delta > 0 && !detached.Member.HistoricalMotorPriority)
                     throw new InvalidOperationException("Global historical motorization priority remains unresolved.");
                 var updatedDetached = detached with { Member = detached.Member with { AssignedMotorPoints = checked(detached.Member.AssignedMotorPoints + delta) } };
-                return new(Prior, ContentHash, Groups, Detached.Select(value => value == detached ? updatedDetached : value), ExternalReservations);
+                return new(Prior, ContentHash, Groups, Detached.Select(value => value == detached ? updatedDetached : value), ExternalReservations, Moved);
             }
             var external = ExternalReservations.Single(value => value.GroupId == groupId && value.ElementId == elementId);
+            if (Prior.World.Elements.Single(value => value.ElementId == elementId).CurrentLocationId != group.LocationId)
+                throw new InvalidOperationException("Remote motorization transfers are unavailable.");
             var updatedExternal = external with { AssignedMotorPoints = checked(external.AssignedMotorPoints + delta) };
-            return new(Prior, ContentHash, Groups, Detached, ExternalReservations.Select(value => value == external ? updatedExternal : value));
+            return new(Prior, ContentHash, Groups, Detached, ExternalReservations.Select(value => value == external ? updatedExternal : value), Moved);
         }
         if (delta > 0 && !member.HistoricalMotorPriority)
             throw new InvalidOperationException("Global historical motorization priority remains unresolved.");
         var updated = member with { AssignedMotorPoints = checked(member.AssignedMotorPoints + delta) };
         var replacement = new CampaignGroupedFormation(group.GroupId, group.SideId, group.RootId, group.LocationId,
-            group.StackValue, group.MotorPool, group.Members.Select(value => value.ElementId == elementId ? updated : value), group.DispositionConfirmed);
-        return new(Prior, ContentHash, Groups.Select(value => value.GroupId == groupId ? replacement : value), Detached, ExternalReservations);
+            group.StackValue, group.MotorPool, group.Members.Select(value => value.ElementId == elementId ? updated : value), group.DispositionConfirmed, group.UsesRetainedMembers, group.MotorPoolKnown);
+        return new(Prior, ContentHash, Groups.Select(value => value.GroupId == groupId ? replacement : value), Detached, ExternalReservations, Moved);
     }
 
     internal IReadOnlyList<CampaignWorldOccupant> OccupantsAt(string locationId) => Array.AsReadOnly(
-        Prior.World.Representations.Where(value => value.CurrentLocationId == locationId)
+        Prior.World.Representations.Where(value => value.CurrentLocationId == locationId
+            && !Groups.Any(group => group.UsesRetainedMembers
+                && group.Members.Any(member => value.BoundElementIds.Contains(member.ElementId))))
             .Select(value => new CampaignWorldOccupant(value, null))
             .Concat(Groups.Where(value => value.LocationId == locationId)
                 .Select(value => new CampaignWorldOccupant(null, value)))
@@ -338,7 +468,8 @@ internal sealed class CampaignGroupedWorld
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 9); writer.WriteString("contentHash", ContentHash);
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", Moved ? 11 : Groups.Any(group => !group.MotorPoolKnown) ? 10 : 9);
+            writer.WriteString("contentHash", ContentHash);
             writer.WriteString("priorContentHash", Prior.ContentIdentity.Hash); writer.WriteString("scenarioId", Prior.ScenarioId);
             writer.WriteStartObject("initialization");
             writer.WriteNumber("expendedNumerator", Prior.Initialization.CapabilityPointsExpended.Numerator);
@@ -360,7 +491,10 @@ internal sealed class CampaignGroupedWorld
             {
                 writer.WriteStartObject(); writer.WriteString("groupId", group.GroupId); writer.WriteString("sideId", group.SideId); writer.WriteString("rootId", group.RootId);
                 writer.WriteString("locationId", group.LocationId); if (group.StackValue is int stack) writer.WriteNumber("stackValue", stack); else writer.WriteNull("stackValue");
-                writer.WriteNumber("motorPool", group.MotorPool); writer.WriteBoolean("dispositionConfirmed", group.DispositionConfirmed); writer.WriteStartArray("members");
+                if (group.MotorPoolKnown) writer.WriteNumber("motorPool", group.MotorPool); else writer.WriteNull("motorPool");
+                writer.WriteBoolean("dispositionConfirmed", group.DispositionConfirmed);
+                if (group.UsesRetainedMembers) writer.WriteBoolean("usesRetainedMembers", true);
+                writer.WriteStartArray("members");
                 foreach (var member in group.Members)
                 {
                     writer.WriteStartObject(); writer.WriteString("elementId", member.ElementId);

@@ -64,6 +64,14 @@ public sealed class CampaignGroupedWorldTests
         var detached = world.DetachMember(group.GroupId, id, 1, null).AssignMotorization(group.GroupId, id, 5);
         Assert.Equal(30, detached.RemainingMotorPoints(group.GroupId));
         Assert.Equal(5, Assert.Single(detached.Detached).Member.AssignedMotorPoints);
+        var movementCosts = detached.Groups.Single().Members.ToDictionary(value => value.ElementId,
+            value => new CapabilityPointAmount(1, 1), StringComparer.Ordinal);
+        var moved = detached.MoveFormation(group.GroupId, "c3618", movementCosts, 4, 1, 1);
+        Assert.Equal("c3617", Assert.Single(moved.Detached).LocationId);
+        Assert.Equal("c3618", Assert.Single(moved.Groups).LocationId);
+        Assert.Equal(30, moved.RemainingMotorPoints(group.GroupId));
+        Assert.Throws<InvalidOperationException>(() => moved.AssignMotorization(group.GroupId, id, -1));
+        Assert.Equal("c3617", Assert.Single(detached.Groups).LocationId);
         var element = new CampaignElementStateV5(id, "c3617", CampaignElementReserveStatus.None,
             new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null),
             [new CampaignComponentToeState(id + ".infantry", 5, ContentSourceCertifiedMalettiPackArtifact.Origin)]);
@@ -76,6 +84,10 @@ public sealed class CampaignGroupedWorldTests
         Assert.Empty(promoted.Detached);
         Assert.Equal(5, Assert.Single(promoted.ExternalReservations).AssignedMotorPoints);
         Assert.Equal(30, promoted.RemainingMotorPoints(group.GroupId));
+        var movedPromoted = promoted.MoveFormation(group.GroupId, "c3618", movementCosts, 4, 1, 1);
+        Assert.Equal("c3617", movedPromoted.Prior.World.Elements.Single(value => value.ElementId == id).CurrentLocationId);
+        Assert.Equal(30, movedPromoted.RemainingMotorPoints(group.GroupId));
+        Assert.Throws<InvalidOperationException>(() => movedPromoted.AssignMotorization(group.GroupId, id, -1));
         var imported = CampaignGroupedWorld.Create(next8, CampaignSourceFourthIndianDefinition.Hash(), detached.Groups,
             externalReservations: [new CampaignGroupedExternalReservation(group.GroupId, id, 5, 5)]);
         Assert.Equal(30, imported.RemainingMotorPoints(group.GroupId));
