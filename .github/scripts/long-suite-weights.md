@@ -641,3 +641,49 @@ Core DLL SHA-256 `0b05432f945a16040965b764c31587ba8608538ce6d2cd3a82dd7d3b936339
 and shared XML SHA-256 `b08cbbf18d95840bd5072c846c454034599dee5449c115fc76c21bd2398f2de6`.
 Command: `dotnet /private/tmp/graziani-core-policy-test-capture/Cna.Core.Tests.dll --filter-method '*AxisFinalizesRealSupplyPlanAndReplaysWithoutStartingGame*' --report-xunit-xml --results-directory /private/tmp/graziani-core-policy-timing --no-ansi --progress off`.
 This local capture is not hosted CI evidence.
+
+The grouped-ZOC session (November 16, 2026) adds four new `Cna.Core.Tests`
+classes with no prior measured rows — `CampaignSourceGroupedZocTests`,
+`Cna1979HistoricalMapTests`, `CampaignSourceSeamCandidateTests`, and
+`CampaignSourceTrainingLedgerTests` (28 rows total) — plus `classes` entries
+(one ordinary suite part each) for three classes whose row weights a prior
+session had already measured but never registered in `classes`:
+`GrazianiAustralianBaselineTests`, `GrazianiHorseSetupTests`, and
+`GrazianiRetainedFormationTests`. All seven now have both `rows` and
+`classes` entries, resolving the `prepare` job's "Unknown/missing measured
+row" failure. Weights are observed from a passing local macOS arm64 .NET 10
+Release MTP XML run on 2026-11-16. This is scheduling evidence only; hosted
+CI remains the acceptance gate.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `CampaignSourceSeamCandidateTests.PrintedDistanceTriangleRetainsAllElevenDisagreements` | `81ac57d15537` | 15 |
+| `CampaignSourceSeamCandidateTests.CandidateNeverCertifiesSectionAliasOrAdjacency` | `9845e823bc96` | 2 |
+| `CampaignSourceTrainingLedgerTests.AustralianScenarioDoesNotInventUnstatedTrainingProgress` | `6731b281a066` | 9 |
+| `CampaignSourceTrainingLedgerTests.SixQualifyingStagesRaiseMoraleAndInterruptionDoesNotCount` | `dd8162034619` | 1 |
+| `CampaignSourceGroupedZocTests.SixteenthBrigadeThreeRiflBattalionsGiveASoundThirtySixPointLowerBound` | `948a3d113721` | 12 |
+| `CampaignSourceGroupedZocTests.DetachedSingleBattalionBelowStackingThresholdIsKnownNotQualified` | `ab5733afe5fd` | 5 |
+| `CampaignSourceGroupedZocTests.UnconfirmedDispositionIsIndeterminate` | `bfaf988a0c12` | 1 |
+| `CampaignSourceGroupedZocTests.FourthIndianDivisionRosterIsFullyKnownAndQualifiesWithoutSubstitutingTheArtillery` | `1616c936eef5` | 1 |
+| `CampaignSourceGroupedZocTests.CatanzaroInfantryAndMachineGunUseTheirCitedAxisRatingsNotTheCommonwealthDefault` | `74725741a8cc` | 1 |
+| `CampaignSourceGroupedZocTests.SeventhArmoredArmorUnitsUseTheirOwnWeaponsRatingNotABlanketArmorValue` | `95289fd1cfd9` | 1 |
+| `CampaignSourceGroupedZocTests.MismatchedMemberCohesionIsIndeterminate` | `24293225da7c` | 1 |
+| `CampaignSourceGroupedZocTests.UnrecognizedComponentsBelowTheFloorAreIndeterminateNotZero` | `05c3828b33fd` | 1 |
+| `CampaignSourceGroupedZocTests.FourthIndianAtD3615ProjectsZocOntoARealEnterablePassThroughNeighbor` | `466334e89eeb` | 62 |
+| `Cna1979HistoricalMapTests.ApprovedCdCrossingUsesVerifiedTrackAndKeepsOtherSeamsUnknown` | `58301ffefe68` | 45 |
+| `Cna1979HistoricalMapTests.AlteredMapBytesAreRejectedBeforeParsing` | `f7b620576266` | 1 |
+| `Cna1979HistoricalMapTests.OpeningMoveAndSupplyTraceUseNormalRoadTable` | `6a3ffc786b60` | 1 |
+| `Cna1979HistoricalMapTests.SourceMovementContactUsesSameSheetGeometry` | `e82f6233e3ae` | 4 |
+| `Cna1979HistoricalMapTests.GridMatchesPreviouslyScannedMapCNeighborhoods` | `f46d82f12d8e` | 7 |
+| `Cna1979HistoricalMapTests.HostReplaySelectsLegacySourceTurnOnlyForVersionOne(version: 3, legacy: False)` | `ec0a831b238a` | 3 |
+| `Cna1979HistoricalMapTests.HostReplaySelectsLegacySourceTurnOnlyForVersionOne(version: 99, legacy: False)` | `ddca05b4aed7` | 1 |
+| `Cna1979HistoricalMapTests.HostReplaySelectsLegacySourceTurnOnlyForVersionOne(version: 2, legacy: False)` | `eccb556e8f51` | 1 |
+| `Cna1979HistoricalMapTests.HostReplaySelectsLegacySourceTurnOnlyForVersionOne(version: 1, legacy: True)` | `8a69df6c1a33` | 1 |
+| `Cna1979HistoricalMapTests.SourceContactProjectionObservesNewlyKnownSameSheetNeighbor` | `f7c6c935235d` | 1 |
+| `Cna1979HistoricalMapTests.UnknownHexesAndUncertifiedSeamsDoNotBecomeClearEdges` | `63463657ab8e` | 1 |
+| `Cna1979HistoricalMapTests.PolishArrivalEntryAreaMatchesThePinnedCairoCityTerrain` | `7b9cd3e180dd` | 1 |
+| `Cna1979HistoricalMapTests.SlopeRetainsHigherHexInBothDirections` | `28a0bbbbbe87` | 1 |
+| `Cna1979HistoricalMapTests.SourceContactsResolveSameSheetGridWithoutAssumingCrossSheetSeams` | `a73f8faee6fe` | 1 |
+| `Cna1979HistoricalMapTests.PinnedMapContainsSourceCheckedMatruhRoadAndTerrain` | `85ac9739a6c4` | 1 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --filter-class Cna.Core.Tests.Campaigns.GrazianiAustralianBaselineTests --filter-class Cna.Core.Tests.Campaigns.GrazianiHorseSetupTests --filter-class Cna.Core.Tests.Campaigns.GrazianiRetainedFormationTests --filter-class Cna.Core.Tests.CampaignSourceSeamCandidateTests --filter-class Cna.Core.Tests.CampaignSourceTrainingLedgerTests --report-xunit-xml --results-directory /private/tmp/claude-501/sandtable-weights-timing`. Result: 34 passed, 0 failed, 0 skipped. Verified against a full local Release `--list-tests` discovery that all seven classes' rows and class entries now resolve with no missing/extra entries for these classes specifically (an unrelated, pre-existing set of randomized mutation-theory rows elsewhere in the suite differs between local and CI-fixture-pinned discovery, as expected, and is untouched by this change).
