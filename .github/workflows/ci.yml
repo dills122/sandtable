@@ -534,8 +534,10 @@ jobs:
     # (avg ~961KB checkpoint blob/step, one 10MB) on every write, an O(n^2) cost
     # inherent to the replay-verification design. It is excluded here (not a
     # regression, still runs nightly in orleans-slow.yml) so PR CI isn't gated on
-    # it; the remaining 267 rows measure ~13m29s locally.
-    timeout-minutes: 25
+    # it; the remaining 267 rows measure ~13m29s locally but still timed out at
+    # 20m on the CI runner (process-spawn-heavy crash/recovery tests are slower
+    # there than on a local Apple Silicon Mac) - give it real margin instead.
+    timeout-minutes: 35
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -551,7 +553,7 @@ jobs:
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
       - name: Run and verify Orleans host rows
-        timeout-minutes: 20
+        timeout-minutes: 30
         shell: bash
         run: |
           mkdir -p artifacts/orleans-results
