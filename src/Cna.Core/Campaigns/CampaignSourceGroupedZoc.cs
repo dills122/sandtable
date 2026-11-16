@@ -195,6 +195,19 @@ internal static class CampaignSourceGroupedZoc
             Cna1979Combat.CombatUnitClassificationId, stackValue, cohesionLevels[0], defense, true));
     }
 
+    // Enforces, rather than assumes, the uniform-cohesion precondition this
+    // module relies on. CanDeriveForSide/EvaluateFormationSource already
+    // check this before a formation is treated as a ZOC source; this throws
+    // instead of silently reading one unrepresentative member's level for a
+    // caller that reaches a formation directly without going through them.
+    private static int UniformCohesion(IReadOnlyList<CampaignGroupedMember> members)
+    {
+        var levels = members.Select(value => value.CohesionLevel).Distinct().ToArray();
+        if (levels.Length != 1)
+            throw new InvalidOperationException("A formation's members must share one cohesion level to derive ZOC.");
+        return levels[0];
+    }
+
     internal static ZocSourceQualificationResult? EvaluateDetachedSource(CampaignDetachedGroupedMember detached)
     {
         ArgumentNullException.ThrowIfNull(detached);
@@ -295,7 +308,7 @@ internal static class CampaignSourceGroupedZoc
             list.Add(new(stackValue, cohesion, defense));
         }
         foreach (var group in grouped.Groups.Where(value => value.SideId == sideId))
-            Add(group.LocationId, group.StackValue!.Value, group.Members[0].CohesionLevel,
+            Add(group.LocationId, group.StackValue!.Value, UniformCohesion(group.Members),
                 EstimateRawDefenseLowerBound(group.GroupId, group.Members));
         foreach (var detached in grouped.Detached.Where(value => value.SideId == sideId))
             Add(detached.LocationId, detached.StackValue, detached.Member.CohesionLevel,

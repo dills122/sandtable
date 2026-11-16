@@ -151,6 +151,28 @@ public sealed class CampaignSourceGroupedZocTests
     }
 
     [Fact]
+    public void TryDeriveControlledLocationIdsRejectsMismatchedCohesionRatherThanGuessing()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId,
+            new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None));
+        CampaignGroupedMember[] members =
+        [
+            new("mismatched-group-hq", null, null, 0, false, "3-7-howitzer", 3, 30, CapabilityPointAmount.Zero, 1),
+            new("mismatched-group-battalion", "mismatched-group-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+        ];
+        var group = new CampaignGroupedFormation("mismatched-group", "commonwealth",
+            "mismatched-group-hq", "e1829", 2, 20, members, dispositionConfirmed: true);
+        var grouped = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group]);
+        // CanDeriveForSide/EvaluateFormationSource both treat mismatched member
+        // cohesion as indeterminate; a caller reaching this lower-level overload
+        // directly, bypassing that check, must get an explicit error instead of
+        // a silent guess from one unrepresentative member's level.
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignSourceGroupedZoc.TryDeriveControlledLocationIds(grouped, cdSeamBound: false, "commonwealth"));
+    }
+
+    [Fact]
     public void FourthIndianAtD3615ProjectsZocOntoARealEnterablePassThroughNeighbor()
     {
         var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
