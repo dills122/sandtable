@@ -57,6 +57,21 @@ public sealed class UserSpaceDisclosureManifestV2Tests
         Assert.DoesNotContain("randomSeed", json);
         Assert.DoesNotContain("randomCursor", json);
         Assert.DoesNotContain("sourceSnapshot", json);
+
+        // The type closure records source-turn candidates; it does not allow
+        // their owner-private scheduling fields through either observation policy.
+        var schedule = Cna1979LandSequenceV4.CreateTurn(1)
+            .Single(value => value.PhaseId == LandPhaseIds.NavalConvoySchedule);
+        var privateChoice = CampaignSourceTurnAction.AdjustGt3Supply(1, 2, 1, 1);
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("private-pregame", 1, hash,
+            schedule.PositionId, CampaignActionAudience.Axis, [privateChoice]));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("private-pregame", 1,
+            Cna1979Ruleset.HistoricalManifestV8.Hash, schedule.PositionId,
+            CampaignActionAudience.Axis, [privateChoice], CampaignLegalActionSet.HistoricalPolicyIdV2));
+        var privateSet = new CampaignLegalActionSet("private-pregame", 1, hash,
+            schedule.PositionId, CampaignActionAudience.Axis, [privateChoice], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Throws<ArgumentException>(() => CampaignObservationV6LegalActionSerializer.Serialize(privateSet));
+        Assert.Throws<ArgumentException>(() => CampaignObservationV7LegalActionSerializer.Serialize(privateSet));
     }
 
     [Fact]

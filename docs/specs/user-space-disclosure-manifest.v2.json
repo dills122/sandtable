@@ -574,6 +574,10 @@
       "declaredMembers": ["ChoiceJson", "Family"]
     },
     {
+      "name": "Cna.Core.Actions.CampaignSourceTurnAction",
+      "declaredMembers": ["Delta", "Destination", "Lane", "Stage"]
+    },
+    {
       "name": "Cna.Core.Actions.DeclineRetreatBeforeAssaultAction",
       "declaredMembers": ["ElementId"]
     },

@@ -50,6 +50,58 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(checked(priorVersion + 1));
     }
 
+    // Source-turn events that do not move units preserve existing contacts.
+    // Movement must derive fresh contacts through its own adjudication path.
+    internal CampaignContactJournal AdvanceSourceTurnNonMovement(string campaignId, long priorVersion, long nextVersion)
+    {
+        if (campaignId != CampaignId || priorVersion != AuthorityVersion || priorVersion < 1
+            || nextVersion != checked(priorVersion + 1))
+            throw new InvalidOperationException("Invalid source-turn contact authority.");
+        return AtAuthorityVersion(nextVersion);
+    }
+
+    internal CampaignContactJournal AppendSourceTurnStart(CampaignSourceTurnAuthority started)
+    {
+        ArgumentNullException.ThrowIfNull(started);
+        if (CampaignId != started.Source.Request.CampaignId || AuthorityVersion != started.Source.StateVersion
+            || started.StateVersion != checked(AuthorityVersion + 1) || records.Length != 0)
+            throw new InvalidOperationException("Source contact creation does not bind the pregame authority.");
+        return ApplySources(
+            CampaignSourceInitialContacts.Derive(started.World, started.StateVersion, axis),
+            CampaignSourceInitialContacts.Derive(started.World, started.StateVersion, commonwealth))
+            .AtAuthorityVersion(started.StateVersion);
+    }
+
+    // Arrival may expose opposing contacts to both owners. Re-derive rather than
+    // treating it as non-movement, preserving all prior contacts and handles.
+    internal CampaignContactJournal AppendSourcePolishArrival(CampaignSourceTurnAuthority before,
+        CampaignSourceTurnAuthority after)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        if (before.Source.Request.CampaignId != CampaignId || after.Source.Request.CampaignId != CampaignId
+            || before.StateVersion != AuthorityVersion || after.StateVersion != checked(before.StateVersion + 1))
+            throw new InvalidOperationException("Arrival contact source does not bind the accepted turn.");
+        return ApplySources(
+            CampaignSourcePolishArrivalContacts.Derive(before.World, after.World, after.StateVersion, axis),
+            CampaignSourcePolishArrivalContacts.Derive(before.World, after.World, after.StateVersion, commonwealth))
+            .AtAuthorityVersion(after.StateVersion);
+    }
+
+    internal CampaignContactJournal AppendSourceMovement(CampaignSourceTurnAuthority before,
+        CampaignSourceTurnAuthority after, string movedRepresentationId)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        if (before.Source.Request.CampaignId != CampaignId || after.Source.Request.CampaignId != CampaignId
+            || before.StateVersion != AuthorityVersion || after.StateVersion != checked(before.StateVersion + 1))
+            throw new InvalidOperationException("Movement contacts do not bind the accepted source turn.");
+        return ApplySources(
+            CampaignSourceMovementContacts.Derive(before.World, after.World, movedRepresentationId, after.StateVersion, axis),
+            CampaignSourceMovementContacts.Derive(before.World, after.World, movedRepresentationId, after.StateVersion, commonwealth))
+            .AtAuthorityVersion(after.StateVersion);
+    }
+
     public static CampaignContactJournal Initialize(CampaignSnapshotV11 created,
         CampaignContentContext context)
     {
@@ -519,6 +571,14 @@ internal sealed class CampaignContactJournal
 
     public byte[] ObserveCanonical(LandSide side, string actingFormationId) =>
         ObserveFor(side, actingFormationId).SerializeCanonical();
+
+    internal byte[] ObserveSourceCounter(CampaignSourceTurnAuthority turn, LandSide side, string counterId)
+    {
+        ArgumentNullException.ThrowIfNull(turn);
+        if (turn.Source.Request.CampaignId != CampaignId || turn.StateVersion != AuthorityVersion)
+            throw new InvalidOperationException("Counter observation differs from the retained source turn.");
+        return CampaignIndependentContactObservationV2.Project(turn.World, Knowledge(side), counterId).SerializeCanonical();
+    }
 
     public IReadOnlyList<CampaignContactTargetCandidate> CurrentTargetsFor(
         LandSide side, string actingFormationId) => Knowledge(side).CurrentTargetsFor(actingFormationId);

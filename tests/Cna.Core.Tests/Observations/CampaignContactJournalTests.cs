@@ -23,6 +23,14 @@ public sealed class CampaignContactJournalTests
         var replayed = CampaignContactJournal.Replay(prior, context, [moved], committed.Records);
 
         Assert.True(committed.Records.Count > initial.Records.Count);
+        var preserved = committed.AdvanceSourceTurnNonMovement(committed.CampaignId,
+            committed.AuthorityVersion, committed.AuthorityVersion + 1);
+        Assert.Equal(committed.Records, preserved.Records);
+        Assert.Equal(committed.AuthorityVersion + 1, preserved.AuthorityVersion);
+        Assert.Throws<InvalidOperationException>(() => committed.AdvanceSourceTurnNonMovement(
+            "other-campaign", committed.AuthorityVersion, committed.AuthorityVersion + 1));
+        Assert.Throws<InvalidOperationException>(() => committed.AdvanceSourceTurnNonMovement(
+            committed.CampaignId, committed.AuthorityVersion, committed.AuthorityVersion + 2));
         Assert.Equal(committed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"),
             replayed.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
         var reacting = Assert.Single(moved.OpenedReactionWindow!.FrozenOpportunities);
