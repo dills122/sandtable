@@ -528,8 +528,12 @@ jobs:
     needs: prepare
     runs-on: ubuntu-24.04
     # Full Host suite exceeded 20m with repeated crash/recovery proofs (PR336).
-    # Keep a bounded test window plus setup/evidence-upload headroom.
-    timeout-minutes: 30
+    # GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame
+    # alone measures ~29m43s locally: it submits 144 steps to one campaign, and
+    # CampaignDurableAuthorityJournal.Load replays the full accepted_steps history
+    # (avg ~961KB checkpoint blob/step, one 10MB) on every write, an O(n^2) cost
+    # inherent to the replay-verification design. Not a hang; give it real headroom.
+    timeout-minutes: 45
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -545,7 +549,7 @@ jobs:
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
       - name: Run and verify Orleans host rows
-        timeout-minutes: 25
+        timeout-minutes: 40
         shell: bash
         run: |
           mkdir -p artifacts/orleans-results
