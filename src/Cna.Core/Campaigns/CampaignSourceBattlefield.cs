@@ -46,6 +46,217 @@ internal sealed class CampaignSourceBattlefield
     internal IReadOnlyList<CampaignSourceBattlefieldEntry> Entries => entries;
     internal IReadOnlyList<CampaignSourcePendingGroup> Pending => pending;
 
+    internal CampaignSourceBattlefield ActivateCwFrontline(CampaignWorldSnapshotV8 prior, CampaignWorldSnapshotV8 successor)
+    {
+        var units = ContentSourceCwFrontlineArtifact.Units;
+        var ids = units.Select(value => value.Id).ToHashSet(StringComparer.Ordinal);
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("CW frontline differs from predecessor.");
+        foreach (var unit in units)
+        {
+            var entry = entries.Single(value => value.ElementId == unit.Id);
+            var element = successor.World.Elements.Single(value => value.ElementId == unit.Id);
+            var rep = successor.World.Representations.Single(value => value.BoundElementIds.Contains(unit.Id));
+            if (entry.SideId != "commonwealth" || entry.LocationId != unit.Location || entry.AuthorityStatus != "source-evidence"
+                || element.CurrentLocationId != unit.Location || rep.CurrentLocationId != unit.Location
+                || rep.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement || !rep.BoundElementIds.SequenceEqual([unit.Id]))
+                throw new InvalidOperationException("CW frontline differs from source evidence.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-cw-frontline-active-initial-loads-unresolved" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateGiarabubMotorMachineGun(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var id = ContentSourceGiarabubMotorMachineGunArtifact.ElementId;
+        var location = ContentSourceGiarabubMotorMachineGunArtifact.LocationId;
+        var entry = entries.Single(value => value.ElementId == id);
+        var element = successor.World.Elements.Single(value => value.ElementId == id);
+        var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(id));
+        if (entry is not { SideId: "axis", AuthorityStatus: "source-evidence" } || entry.LocationId != location
+            || element.CurrentLocationId != location || representation.CurrentLocationId != location
+            || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+            || !representation.BoundElementIds.SequenceEqual([id])
+            || !prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).SequenceEqual([id]))
+            throw new InvalidOperationException("Motor MG world differs from source evidence or its predecessor.");
+        return new CampaignSourceBattlefield(entries.Select(value => value.ElementId == id
+            ? value with { AuthorityStatus = "source-axis-hh-active-motorization-unresolved" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateAxisGarrisonRemainder(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var units = ContentSourceAxisGarrisonRemainderPackArtifact.Units;
+        var ids = units.Select(value => value.Id).ToHashSet(StringComparer.Ordinal);
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("Garrison remainder does not preserve its predecessor.");
+        foreach (var unit in units)
+        {
+            var entry = entries.Single(value => value.ElementId == unit.Id);
+            var element = successor.World.Elements.Single(value => value.ElementId == unit.Id);
+            var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(unit.Id));
+            if (entry.SideId != "axis" || entry.LocationId != unit.Location || entry.AuthorityStatus != "source-evidence"
+                || element.CurrentLocationId != unit.Location || representation.CurrentLocationId != unit.Location
+                || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || !representation.BoundElementIds.SequenceEqual([unit.Id]))
+                throw new InvalidOperationException("Garrison remainder differs from its retained source entry.");
+        }
+        var removed = ContentSourceAxisGarrisonRemainderPackArtifact.RemovedAntiAirIds.ToHashSet(StringComparer.Ordinal);
+        if (removed.Any(id => entries.Single(value => value.ElementId == id) is not
+            { SideId: "axis", AuthorityStatus: "source-evidence" }
+                || prior.World.Elements.Any(value => value.ElementId == id)
+                || successor.World.Elements.Any(value => value.ElementId == id)))
+            throw new InvalidOperationException("Abstractly removed AA differs from source evidence or is active.");
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId)
+            ? entry with { AuthorityStatus = "source-axis-garrison-remainder-active" }
+            : removed.Contains(entry.ElementId) ? entry with { AuthorityStatus = "source-land-only-aa-removed" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateAxisMinorGarrisons(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var units = ContentSourceAxisMinorGarrisonsPackArtifact.Units;
+        var ids = units.Select(value => value.Id).ToHashSet(StringComparer.Ordinal);
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("Minor garrison world does not preserve its predecessor.");
+        foreach (var unit in units)
+        {
+            var entry = entries.Single(value => value.ElementId == unit.Id);
+            var element = successor.World.Elements.Single(value => value.ElementId == unit.Id);
+            var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(unit.Id));
+            if (entry.SideId != "axis" || entry.LocationId != unit.Location || entry.AuthorityStatus != "source-evidence"
+                || element.CurrentLocationId != unit.Location || representation.CurrentLocationId != unit.Location
+                || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || !representation.BoundElementIds.SequenceEqual([unit.Id]))
+                throw new InvalidOperationException("Minor garrison differs from its retained source entry.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId)
+            ? entry with { AuthorityStatus = "source-axis-minor-active" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield AdmitAresca(CampaignGroupedWorld world)
+    {
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceArescaGroupedDefinition.GroupId);
+        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        if (ids.Count != 2 || ids.Any(id => !entries.Any(entry => entry.ElementId == id && entry.SideId == "axis"
+                && entry.LocationId == CampaignSourceArescaGroupedDefinition.LocationId && entry.AuthorityStatus == "source-evidence")))
+            throw new InvalidOperationException("Aresca source evidence differs from grouped units.");
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId)
+                ? entry with { AuthorityStatus = "source-aresca-grouped" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield AdmitCcnnBatch(CampaignGroupedWorld world)
+    {
+        var groups = world.Groups.Where(value => value.GroupId is CampaignSourceCcnnBatch.FirstId or CampaignSourceCcnnBatch.FourthId).ToArray();
+        if (groups.Length != 2) throw new InvalidOperationException("Both CCNN groups are required.");
+        var ids = groups.SelectMany(group => group.Members.Select(member => (member.ElementId, group.LocationId))).ToArray();
+        if (ids.Any(item => !entries.Any(entry => entry.ElementId == item.ElementId && entry.SideId == "axis"
+                && entry.LocationId == item.LocationId && entry.AuthorityStatus == "source-evidence")))
+            throw new InvalidOperationException("CCNN source evidence differs from grouped units.");
+        var idSet = ids.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(entry => idSet.Contains(entry.ElementId)
+                ? entry with { AuthorityStatus = "source-ccnn-grouped" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield AddSixthAustralian(CampaignGroupedWorld world, string location)
+    {
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
+        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        if (group.SideId != "commonwealth" || group.LocationId != location || group.StackValue != 5
+            || ids.Count != 10 || entries.Any(value => ids.Contains(value.ElementId))
+            || pending.Any(value => value.ElementIds.Any(ids.Contains)))
+            throw new InvalidOperationException("Australian formation conflicts with source battlefield.");
+        var added = ids.Select(id => new CampaignSourceBattlefieldEntry(id, "commonwealth", location, "source-australian-grouped"));
+        return new CampaignSourceBattlefield(entries.Concat(added), pending, cairoSetupIncluded, cairoSetupOriginHash,
+            axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ArriveRetainedFormation(CampaignGroupedWorld prior,
+        CampaignGroupedWorld successor, string pendingGroupId, string locationId)
+    {
+        ArgumentNullException.ThrowIfNull(prior);
+        ArgumentNullException.ThrowIfNull(successor);
+        var group = pending.Single(value => value.GroupId == pendingGroupId);
+        var scheduled = prior.Prior.PendingArrivals.Single(value => value.GroupId == pendingGroupId);
+        var actual = successor.Groups.Single(value => value.GroupId == pendingGroupId);
+        var ids = group.ElementIds.Order(StringComparer.Ordinal).ToArray();
+        if (group.SideId != scheduled.SideId || group.GameTurn != scheduled.Arrival.GameTurn
+            || group.OperationStage != scheduled.Arrival.OperationStage || group.EntryAreaId != scheduled.EntryAreaId
+            || !ids.SequenceEqual(scheduled.ElementIds.Order(StringComparer.Ordinal))
+            || actual.SideId != group.SideId || actual.LocationId != locationId
+            || !actual.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || successor.ContentHash != prior.ContentHash
+            || !successor.Groups.Where(value => value.GroupId != pendingGroupId).SequenceEqual(prior.Groups)
+            || !successor.Detached.SequenceEqual(prior.Detached)
+            || !successor.ExternalReservations.SequenceEqual(prior.ExternalReservations)
+            || !prior.Prior.World.Elements.All(successor.Prior.World.Elements.Contains)
+            || !prior.Prior.World.Representations.All(successor.Prior.World.Representations.Contains)
+            || !prior.Prior.World.BrokenVehicleLots.SequenceEqual(successor.Prior.World.BrokenVehicleLots)
+            || !successor.Prior.PendingArrivals.SequenceEqual(prior.Prior.PendingArrivals.Where(value => value.GroupId != pendingGroupId))
+            || entries.Any(value => ids.Contains(value.ElementId, StringComparer.Ordinal))
+            || successor.Prior.PendingArrivals.Any(value => value.GroupId == pendingGroupId))
+            throw new InvalidOperationException("Arrival must match the retained battlefield and scheduled group.");
+        var added = ids.Select(id => new CampaignSourceBattlefieldEntry(id, group.SideId, locationId, "world8-arrival"));
+        return new CampaignSourceBattlefield(entries.Concat(added), pending.Where(value => value.GroupId != pendingGroupId),
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    // Called only after movement authority has validated path and payment. The
+    // moved group's entries follow its counter; detached members stay behind.
+    internal CampaignSourceBattlefield MoveFormation(CampaignGroupedWorld prior, CampaignGroupedWorld successor, string groupId)
+    {
+        ArgumentNullException.ThrowIfNull(prior);
+        ArgumentNullException.ThrowIfNull(successor);
+        var before = prior.Groups.Single(value => value.GroupId == groupId);
+        var after = successor.Groups.Single(value => value.GroupId == groupId);
+        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        if (!successor.Moved || before.SideId != after.SideId || before.LocationId == after.LocationId
+            || !after.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids)
+            || !successor.Groups.Where(value => value.GroupId != groupId).SequenceEqual(prior.Groups.Where(value => value.GroupId != groupId))
+            || !successor.Detached.SequenceEqual(prior.Detached)
+            || !successor.ExternalReservations.SequenceEqual(prior.ExternalReservations)
+            || !successor.Prior.PendingArrivals.SequenceEqual(prior.Prior.PendingArrivals)
+            || ids.Any(id => entries.Count(value => value.ElementId == id && value.SideId == before.SideId
+                && value.LocationId == before.LocationId) != 1))
+            throw new InvalidOperationException("Movement successor does not match the retained battlefield.");
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+                ? value with { LocationId = after.LocationId } : value), pending, cairoSetupIncluded, cairoSetupOriginHash,
+            axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
     // The setup policy is source-bound separately; its unit IDs are added as
     // unplaced evidence and cannot be mistaken for active battlefield pieces.
     internal CampaignSourceBattlefield AddCairoSetup(CampaignSourceCairoInitialSetup setup)
@@ -547,6 +758,170 @@ internal sealed class CampaignSourceBattlefield
             || occupants.Any(value => value.SideId != "axis" || value.AuthorityStatus != status)
             || effective.Count != 1 || effective[0].Formation?.GroupId != groupId)
             throw new InvalidOperationException("Libyan grouped world differs from retained battlefield occupancy.");
+    }
+
+    internal CampaignSourceBattlefield ProposeCatanzaro(CampaignGroupedWorld world)
+    {
+        RequireCatanzaro(world, "source-evidence");
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        if (group.DispositionConfirmed) throw new InvalidOperationException("Catanzaro must first be proposed.");
+        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-catanzaro-proposed" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ConfirmCatanzaro(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld)
+    {
+        RequireCatanzaro(priorWorld, "source-catanzaro-proposed");
+        var before = priorWorld.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        var after = nextWorld.Groups.Single(value => value.GroupId == before.GroupId);
+        if (before.DispositionConfirmed || !after.DispositionConfirmed || before.StackValue is not null || after.StackValue != 5
+            || priorWorld.Prior != nextWorld.Prior || priorWorld.ContentHash != nextWorld.ContentHash
+            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
+            || before.MotorPool != after.MotorPool || !SameGroupedMembers(before.Members, after.Members)
+            || !priorWorld.Groups.Where(value => value.GroupId != before.GroupId).SequenceEqual(nextWorld.Groups.Where(value => value.GroupId != before.GroupId))
+            || !priorWorld.Detached.SequenceEqual(nextWorld.Detached) || !priorWorld.ExternalReservations.SequenceEqual(nextWorld.ExternalReservations))
+            throw new InvalidOperationException("Catanzaro confirmation changed its proposed world.");
+        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-catanzaro-grouped" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal void ValidateCatanzaro(CampaignGroupedWorld world)
+    {
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        RequireCatanzaro(world, group.DispositionConfirmed ? "source-catanzaro-grouped" : "source-catanzaro-proposed");
+    }
+
+    private void RequireCatanzaro(CampaignGroupedWorld world, string status)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        var source = Cna1979GrazianiSourceFacts.CatanzaroInitialChartCandidate;
+        var ids = source.ElementIds.Order(StringComparer.Ordinal).ToArray();
+        var group = world.Groups.SingleOrDefault(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
+        var occupants = entries.Where(value => value.LocationId == source.LocationId).ToArray();
+        var effective = world.OccupantsAt(source.LocationId);
+        if (group is null || group.SideId != "axis" || group.RootId != CampaignSourceCatanzaroGroupedDefinition.RootId
+            || group.LocationId != source.LocationId || group.MotorPool != 35 || group.StackValue != (group.DispositionConfirmed ? 5 : null)
+            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || occupants.Length != ids.Length || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || occupants.Any(value => value.SideId != "axis" || value.AuthorityStatus != status)
+            || effective.Count != 1 || effective[0].Formation?.GroupId != group.GroupId)
+            throw new InvalidOperationException("Catanzaro grouped world differs from retained battlefield occupancy.");
+    }
+
+    internal CampaignSourceBattlefield ProposeSeventhArmored(CampaignGroupedWorld world)
+    {
+        RequireSeventhArmored(world, "source-evidence");
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        if (group.DispositionConfirmed) throw new InvalidOperationException("Seventh Armored must first be proposed.");
+        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-seventh-armored-proposed" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ConfirmSeventhArmored(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld)
+    {
+        RequireSeventhArmored(priorWorld, "source-seventh-armored-proposed");
+        var before = priorWorld.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        var after = nextWorld.Groups.Single(value => value.GroupId == before.GroupId);
+        if (before.DispositionConfirmed || !after.DispositionConfirmed || before.StackValue is not null || after.StackValue != 5
+            || priorWorld.Prior != nextWorld.Prior || priorWorld.ContentHash != nextWorld.ContentHash
+            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
+            || before.MotorPool != after.MotorPool || !SameGroupedMembers(before.Members, after.Members)
+            || !priorWorld.Groups.Where(value => value.GroupId != before.GroupId).SequenceEqual(nextWorld.Groups.Where(value => value.GroupId != before.GroupId))
+            || !priorWorld.Detached.SequenceEqual(nextWorld.Detached) || !priorWorld.ExternalReservations.SequenceEqual(nextWorld.ExternalReservations))
+            throw new InvalidOperationException("Seventh Armored confirmation changed its proposed world.");
+        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-seventh-armored-grouped" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal void ValidateSeventhArmored(CampaignGroupedWorld world)
+    {
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        RequireSeventhArmored(world, group.DispositionConfirmed ? "source-seventh-armored-grouped" : "source-seventh-armored-proposed");
+    }
+
+    private void RequireSeventhArmored(CampaignGroupedWorld world, string status)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        var source = Cna1979GrazianiSourceFacts.SeventhArmoredDivisionInitialCandidate;
+        var ids = source.ElementIds.Order(StringComparer.Ordinal).ToArray();
+        var group = world.Groups.SingleOrDefault(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
+        var occupants = entries.Where(value => value.LocationId == source.LocationId).ToArray();
+        var effective = world.OccupantsAt(source.LocationId);
+        if (group is null || group.SideId != "commonwealth" || group.RootId != CampaignSourceSeventhArmoredGroupedDefinition.RootId
+            || group.LocationId != source.LocationId || group.MotorPool != 10
+            || (group.DispositionConfirmed ? group.StackValue is not (3 or 5) : group.StackValue is not null)
+            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || occupants.Length != ids.Length || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || occupants.Any(value => value.SideId != "commonwealth" || value.AuthorityStatus != status)
+            || effective.Count != 1 || effective[0].Formation?.GroupId != group.GroupId)
+            throw new InvalidOperationException("Seventh Armored grouped world differs from retained battlefield occupancy.");
+    }
+
+    internal CampaignSourceBattlefield ProposeSixteenthBrigade(CampaignGroupedWorld world)
+    {
+        RequireSixteenthBrigade(world, "world8-initial");
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        if (group.DispositionConfirmed) throw new InvalidOperationException("Sixteenth Brigade must first be proposed.");
+        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-sixteenth-brigade-proposed" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ConfirmSixteenthBrigade(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld)
+    {
+        RequireSixteenthBrigade(priorWorld, "source-sixteenth-brigade-proposed");
+        var before = priorWorld.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        var after = nextWorld.Groups.Single(value => value.GroupId == before.GroupId);
+        if (before.DispositionConfirmed || !after.DispositionConfirmed || before.StackValue is not null || after.StackValue != 2
+            || priorWorld.Prior != nextWorld.Prior || priorWorld.ContentHash != nextWorld.ContentHash
+            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
+            || before.MotorPool != after.MotorPool || !SameGroupedMembers(before.Members, after.Members)
+            || !priorWorld.Groups.Where(value => value.GroupId != before.GroupId).SequenceEqual(nextWorld.Groups.Where(value => value.GroupId != before.GroupId))
+            || !priorWorld.Detached.SequenceEqual(nextWorld.Detached) || !priorWorld.ExternalReservations.SequenceEqual(nextWorld.ExternalReservations))
+            throw new InvalidOperationException("Sixteenth Brigade confirmation changed its proposed world.");
+        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
+        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
+            ? value with { AuthorityStatus = "source-sixteenth-brigade-grouped" } : value), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
+            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal void ValidateSixteenthBrigade(CampaignGroupedWorld world)
+    {
+        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        RequireSixteenthBrigade(world, group.DispositionConfirmed ? "source-sixteenth-brigade-grouped" : "source-sixteenth-brigade-proposed");
+    }
+
+    private void RequireSixteenthBrigade(CampaignGroupedWorld world, string status)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        var source = Cna1979GrazianiSourceFacts.SixteenthInfantryBrigadeInitialCandidate;
+        var ids = source.ElementIds.Order(StringComparer.Ordinal).ToArray();
+        var group = world.Groups.SingleOrDefault(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
+        var occupants = entries.Where(value => ids.Contains(value.ElementId, StringComparer.Ordinal)).ToArray();
+        var effective = world.OccupantsAt(source.LocationId);
+        if (group is null || group.SideId != "commonwealth" || group.RootId != CampaignSourceSixteenthBrigadeGroupedDefinition.RootId
+            || group.LocationId != source.LocationId || group.MotorPool != 20 || group.StackValue != (group.DispositionConfirmed ? 2 : null)
+            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || occupants.Length != ids.Length || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
+            || occupants.Any(value => value.SideId != "commonwealth" || value.LocationId != source.LocationId || value.AuthorityStatus != status)
+            || effective.Count(value => value.Formation?.GroupId == group.GroupId) != 1
+            || effective.Any(value => value.Independent?.BoundElementIds.Any(id => ids.Contains(id, StringComparer.Ordinal)) == true))
+            throw new InvalidOperationException("Sixteenth Brigade grouped world differs from retained battlefield occupancy.");
     }
 
     internal CampaignSourceBattlefield ProposeItalianDivisions(CampaignGroupedWorld world)
