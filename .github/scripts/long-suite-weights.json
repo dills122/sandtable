@@ -4368,7 +4368,8 @@
     "a73f8faee6fe37cb7ed8f3767f3b6c30f0e059f5584b25f3a1ef3553087eb5ab": 1,
     "85ac9739a6c463cc856ab9cd5c3798db661d449233a302bc313e90ba211abe7c": 1,
     "81ac57d15537cd8d884c3782416561c9aa15a2aa5d10c78890f0689d86a8b49c": 15,
-    "9845e823bc96200173b1f6e2eaed0997f451b8ad5426f5c5f6dae55d86a3c575": 2
+    "9845e823bc96200173b1f6e2eaed0997f451b8ad5426f5c5f6dae55d86a3c575": 2,
+    "3b432ebd46c8933df9e5b654c188b2727bed863d7ee9de9964a4d8e6b24e1edf": 2
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4718,7 +4719,8 @@
     "a73f8faee6fe37cb7ed8f3767f3b6c30f0e059f5584b25f3a1ef3553087eb5ab": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
     "85ac9739a6c463cc856ab9cd5c3798db661d449233a302bc313e90ba211abe7c": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
     "81ac57d15537cd8d884c3782416561c9aa15a2aa5d10c78890f0689d86a8b49c": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
-    "9845e823bc96200173b1f6e2eaed0997f451b8ad5426f5c5f6dae55d86a3c575": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration"
+    "9845e823bc96200173b1f6e2eaed0997f451b8ad5426f5c5f6dae55d86a3c575": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
+    "3b432ebd46c8933df9e5b654c188b2727bed863d7ee9de9964a4d8e6b24e1edf": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",
