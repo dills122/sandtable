@@ -283,6 +283,9 @@ internal sealed class CampaignGroupedWorld
         if (ledgerOperationStage is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(ledgerOperationStage));
         var newRepresentations = successor.World.Representations.Except(Prior.World.Representations).ToArray();
         var promoted = new HashSet<string>(StringComparer.Ordinal);
+        var admittedIndependent = new HashSet<string>(StringComparer.Ordinal);
+        var memberIds = Groups.SelectMany(group => group.Members).Select(member => member.ElementId)
+            .ToHashSet(StringComparer.Ordinal);
         foreach (var representation in newRepresentations.Where(value => Groups.Any(group => group.LocationId == value.CurrentLocationId)))
         {
             if (representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
@@ -290,8 +293,20 @@ internal sealed class CampaignGroupedWorld
                 throw new InvalidOperationException("An added group-location counter must represent a detached member.");
             var id = representation.BoundElementIds[0];
             var detached = Detached.SingleOrDefault(value => value.Member.ElementId == id
-                && value.LocationId == representation.CurrentLocationId)
-                ?? throw new InvalidOperationException("An added group-location counter is not a retained detached member.");
+                && value.LocationId == representation.CurrentLocationId);
+            if (detached is null)
+            {
+                // A brand-new, unrelated independent unit legitimately sharing a
+                // group's hex (e.g. a freshly activated minor-garrison, CW-frontline,
+                // or Giarabub motor-MG element) rather than a promoted detached
+                // member. It has no bookkeeping here to reconcile; it simply
+                // becomes a plain independent occupant of that location.
+                if (memberIds.Contains(id) || Detached.Any(value => value.Member.ElementId == id))
+                    throw new InvalidOperationException("An added group-location counter collides with an existing formation member.");
+                if (!admittedIndependent.Add(id))
+                    throw new InvalidOperationException("An added group-location counter duplicates another new independent unit.");
+                continue;
+            }
             var element = successor.World.Elements.SingleOrDefault(value => value.ElementId == id)
                 ?? throw new InvalidOperationException("Detached member state is missing.");
             if (!promoted.Add(id) || element.CurrentLocationId != detached.LocationId
@@ -315,7 +330,7 @@ internal sealed class CampaignGroupedWorld
             || !Prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
             || successor.World.Elements.Except(Prior.World.Elements)
                 .Any(value => Groups.Any(group => group.LocationId == value.CurrentLocationId)
-                    && !promoted.Contains(value.ElementId))
+                    && !promoted.Contains(value.ElementId) && !admittedIndependent.Contains(value.ElementId))
             || Detached.Any(value => successor.World.Elements.Any(element => element.ElementId == value.Member.ElementId)
                 && !promoted.Contains(value.Member.ElementId)))
             throw new InvalidOperationException("Grouped world rebind must preserve its predecessor and occupied group locations.");

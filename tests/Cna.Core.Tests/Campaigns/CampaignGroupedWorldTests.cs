@@ -223,4 +223,40 @@ public sealed class CampaignGroupedWorldTests
         Assert.DoesNotContain("group-b", moved.MovedGroupIds);
         Assert.Equal("d3714", moved.Groups.Single(value => value.GroupId == "group-b").LocationId);
     }
+
+    [Fact]
+    public void RebindAdmitsANewUnrelatedIndependentUnitSharingAGroupsHex()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var initialization = new CampaignWorldV8Initialization(CapabilityPointAmount.Zero, 0, CampaignElementReserveStatus.None);
+        var prior = CampaignWorldV8Factory.CreateInitial(artifact, Cna1979GrazianiCairoSourceExcerpt.ScenarioId, initialization);
+        var group = new CampaignGroupedFormation("group-a", "commonwealth", "group-a-hq", "d3615", null, 10,
+        [
+            new CampaignGroupedMember("group-a-hq", null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+        ]);
+        var world = CampaignGroupedWorld.Create(prior, CampaignSourceFourthIndianDefinition.Hash(), [group]);
+        var newElement = new CampaignElementStateV5("new-independent-unit", "d3615", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null), []);
+        var newRepresentation = new CampaignMapRepresentationState("new-rep.new-independent-unit", "d3615",
+            CampaignMapRepresentationBindingKind.IndependentElement, [newElement.ElementId]);
+        var successor6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(newElement),
+            prior.World.Representations.Append(newRepresentation), prior.World.BrokenVehicleLots);
+        var successor8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, successor6, prior.PendingArrivals);
+        // A freshly activated, unrelated independent unit (e.g. a minor garrison
+        // or CW-frontline element) may legitimately land on a hex a grouped
+        // formation already occupies; Rebind must admit it, not reject it as an
+        // invalid detached-member promotion.
+        var rebound = world.Rebind(successor8, 1, 1);
+        Assert.Equal(2, rebound.OccupantsAt("d3615").Count);
+        Assert.Empty(rebound.Detached);
+        Assert.Same(group, Assert.Single(rebound.Groups));
+        var colliding = new CampaignMapRepresentationState("colliding-rep", "d3615",
+            CampaignMapRepresentationBindingKind.IndependentElement, ["group-a-hq"]);
+        var collidingElement = new CampaignElementStateV5("group-a-hq", "d3615", CampaignElementReserveStatus.None,
+            new CampaignElementOperationalStateV5(1, 1, CapabilityPointAmount.Zero, 0, null, null), []);
+        var collidingSuccessor6 = new CampaignWorldSnapshotV6(6, prior.World.Elements.Append(collidingElement),
+            prior.World.Representations.Append(colliding), prior.World.BrokenVehicleLots);
+        var collidingSuccessor8 = new CampaignWorldSnapshotV8(prior.ContentIdentity, prior.ScenarioId, initialization, collidingSuccessor6, prior.PendingArrivals);
+        Assert.Throws<InvalidOperationException>(() => world.Rebind(collidingSuccessor8, 1, 1));
+    }
 }
