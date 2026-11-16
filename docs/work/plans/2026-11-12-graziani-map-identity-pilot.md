@@ -103,6 +103,35 @@ orientation, stagger and source corrections before selecting behavior.
 This is an investigation target, not a completed seam mapping or an adopted
 land/sea correction.
 
+### Independent C/D sheet-edge check
+
+The retained original scan (map PDF SHA-256
+`8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`,
+pages 3 and 4) was re-rendered and visually compared on November 15. Map C
+prints an `xx34` edge row, while map D prints an `xx01` edge row. At the
+visible C3534/D3501 pair, the track and escarpment align; C3934/D3901 also
+show a matching diagonal track at the edge. These observations independently
+support an overlapping 34/01 interpretation and the 33-column candidate,
+but conflict with Land §4.1's literal `01xx`/`39xx` wording. They do not
+verify every edge, settle the 11 chart differences, or authorize an alias.
+
+The imported transcription omits the C `xx34` edge IDs rather than storing
+them as separate cells. The provisional 33-column C/D alignment is approved.
+Source-turn contract 3 admits only the checked track crossings C3533–D3501
+and C4033–D3901 and unfinished railway crossing C3633–D3601, with matching
+feature records on both sheet edges. The unfinished railway is not a usable
+rail route. Its policy identity is bound
+into the turn checkpoint. Other crossings, printed overlap aliases and grouped
+ZOC remain unavailable. Missing C `xx34` IDs do not mean the printed hexes do
+not exist.
+
+The same visual pass found a track-junction alignment at the A sheet edge
+near 3233 and B3201. The A edge cell is partial, so its label is not
+independently established. At the B3134/C3101 candidate pair the track bend
+also aligns, although both labels are partly obscured by the track. These
+checks support further review of the 34/01 overlap hypothesis for A/B and
+B/C, but do not certify those aliases or establish a map-wide policy.
+
 ## Related initial-supply locations
 
 Scenario §60.92 names Tobruk, Bardia, Benghazi, Derna, Tripoli box, two
@@ -157,3 +186,32 @@ mechanic treats the edge identically. See register row ML-03.
 Map extent, total location and edge counts, rights, distances and full six-turn
 reachability remain unknown. Unverified data must not be presented as a completed
 historical map or used to claim victory or supply routes work.
+
+## Full distance-chart comparison
+
+A later single-reader transcription compared all 190 pairs in the original
+Air/Logistics §37.42 triangle with a 33-column section translation and the
+odd-row grid visible on the scans. It matched 179 pairs, including every
+same-section pair, and disagreed with 11 cross-section pairs:
+
+| First | Second | Printed | Candidate |
+| --- | --- | ---: | ---: |
+| B5925 | A1816 | 61 | 62 |
+| C2803 | A1816 | 57 | 58 |
+| C4807 | A1816 | 71 | 72 |
+| C4321 | A2629 | 67 | 66 |
+| C4321 | A4130 | 59 | 58 |
+| D2903 | A4130 | 77 | 78 |
+| D2903 | B5504 | 80 | 78 |
+| E3613 | C2803 | 79 | 80 |
+| E2418 | A4130 | 130 | 129 |
+| E2418 | C1014 | 76 | 77 |
+| E1829 | C2803 | 98 | 97 |
+
+The chart describes terrain-independent shortest hex distances, including
+hypothetical sea-grid crossings. This comparison does not establish a legal
+movement path, control, terrain, or even a definitive alias. Land §4.1's
+39xx/01xx wording and the chart discrepancies remain unresolved. The runtime
+candidate records its source hashes and version; it is used only as a
+conservative veto on a contact-separation claim, never to assert an alias or
+adjacency. Source gameplay remains blocked on cross-map seam certification.

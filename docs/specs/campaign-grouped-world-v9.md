@@ -47,3 +47,25 @@ detached or promoted. An independently represented priority member's reservation
 is retained separately from its World8 counter; source admission and replay must
 bind it to the exact selected unit and the earlier reservation ledger. Empty external
 reservation arrays are omitted to preserve earlier bytes.
+
+The source-turn successor uses grouped-world serialization version 10 when a
+formation's motor pool is unknown. It writes `motorPool: null` rather than
+inventing a zero-truck pool, and rejects motor reservations until a source-bound
+quantity is established. Groups with known pools continue to use version 9 and
+retain their existing bytes. A version 10 retained-member formation overlays
+its existing World8 element records and counts as one counter; an atomic arrival
+adds exactly the scheduled members, removes that group from both pending
+indexes, and preserves all other World8 elements, counters, lots and arrivals.
+The Polish brigade's eight source members use its printed 3-stack group value;
+its chart does not specify an attached truck pool. These state transitions do
+not by themselves admit a playable game or establish owner-safe visibility.
+
+Version 11 records a formation movement successor. It moves retained World8
+members and their representations with their formation and debits each member's
+adjudicated capability cost. Detached and promoted counters stay at their
+previous locations and keep their motor reservations. Transfers between a
+formation and remote detached or promoted members are rejected. Earlier v9/v10
+states retain their canonical bytes. This is a world mutation, not a legal
+movement action: source turn authority still must establish phase, terrain,
+occupancy, stack value, fuel, transport and contact projection, and journal the
+world and battlefield changes together.

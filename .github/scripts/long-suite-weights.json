@@ -680,6 +680,9 @@
     "Cna.Core.Tests.Campaigns.GrazianiPregameSupplyTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Campaigns.GrazianiRetainedFormationTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Campaigns.GrazianiSourceAuthorityTests": {
       "parts": 1
     },
@@ -754,9 +757,16 @@
     },
     "Cna.Core.Tests.Campaigns.CampaignSourceIssuedActionBindingTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.GrazianiAustralianBaselineTests": {
+      "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.GrazianiHorseSetupTests": {
+      "parts": 1
     }
   },
   "rows": {
+    "afec9a1b16072e3f0e10c4b755410d3c7c0fed49683d1ebf97481b61bba47c25": 10,
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": 1,
     "0034e47ea93a919147b432ee92586edf86dbd386acee1691d3541c9f6e1fdeec": 1,
     "0037961eec9321de687cb959a3d2919a768913cf6c5be6d88eb2fae1fd89870c": 1,
@@ -3615,6 +3625,7 @@
     "dc18bb46dba09521a36b65cd0f1b7520c5c2d7f30b79ec378912a7df3917bead": 1,
     "dc19c60a7e763a9ca65ce37330c1b4960e6f1747e084121750b25b6cc1cda88c": 17336,
     "dc4507bf3c77e5cea6aa13ba43e82b41edcb9cdb5af98663ec58aabad845b238": 1793,
+    "dc60686d42d669ff9e9a6fea218660c6c81ff4079e2c6976a68320b5840da8b9": 97,
     "dc6b46d21f3f693b69761e585e4ccc6c3126f2ab39b4f3b6a98a0b6cf136532f": 8413,
     "dc98cdd7706dc054a4693759282681b5acc2d38950a2f57497c7b8296fda2d39": 9899,
     "dcc01db74386f4cd163c77f3b1c606c22d3ad8e86b93e27e73556452da23c2c2": 1,
@@ -4191,7 +4202,7 @@
     "75d87f85a286e2643d92d97d36bd7399890138993d493ca7797ef05ef1a8fcd9": 1,
     "76255e4f0ea19fcbce9a0d897cd2c91a3c37519d2e546d9006ce5c3f2b6ad03d": 3,
     "7a0bc3107a22ad448a773c28941b465afa05f21191fd1c3c60f931b1f0c495cb": 1,
-    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": 63337,
+    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": 157163,
     "7b7ef6fd729b956936a24915113caa7b603e0445cad5d91ce40fae70352aa807": 1,
     "7d31d515076963ebf18ea76fe64edd1777c8835845a0922f8d40aa4e540020be": 1,
     "7d34c27b783847a8fa5393f8d98b36647b2b89619dc4e5430b03554cf52ebce1": 2,
@@ -4207,7 +4218,7 @@
     "8cb904ab1edc93029f4befcf16416f1898da5c71ce1eacc6368cffb7066641bc": 2,
     "8cd0f05e40de0672608bb4fb55c2c0dfa1138897af410b7461e883276effd532": 1,
     "8cf5e1585b69ae05fa189b8dd889f73a999a4dd4f43666c5a9d18a1fbe7b30b9": 1,
-    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": 24540,
+    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": 104903,
     "8e0f23b659b34cd027a989616e65262690e7573a67878b50b8ff8b6c10d2f344": 1,
     "8e313f2a49c202241ad33773a2f9d069a51482c26bc15da9193605b1d4998b35": 1,
     "9023157ab2a92117e2dfbaee3a9aa950e3d6793acd29abee0d7d74a4b492eaf2": 4,
@@ -4312,7 +4323,12 @@
     "ff0bf65ab225d6fc5d05fd2e388fca3441a0b3faf1a26932938cd8754e8f1414": 5,
     "ffb67eda40d75380a578e7544f56a8e39b081f39f17d28038103a32f3ab6cedb": 1,
     "fffdb75b618065ecf4c02e0d4ac9a0dbd0f836f9d2f7a77bad5020e0ba253e94": 3,
-    "9635b4f72447ff408187b854b120f4ac1396557c847edac2080c0d4133d532b7": 11
+    "9635b4f72447ff408187b854b120f4ac1396557c847edac2080c0d4133d532b7": 11,
+    "c9baa6808753aa89be7bf8ffb7270231afb608dcbd41935ac09a0354903d5dad": 25,
+    "acca13cead37e2d227771f93e0992cfb60323725c198bf715da95f94747569bb": 3,
+    "ee4fd62c2b95340f99c97f678b8f32dcd2720148d581fb2b6ba0938e9b486d53": 1,
+    "d6388333e7441c6d09f1ed417929e465a69c49dc70537deea5ba677f71cdfa8d": 296,
+    "7971c6f0d761b46385c91789a5db27944fb8758a0444f0052d67d763adb8e915": 121
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4507,7 +4523,7 @@
     "75d87f85a286e2643d92d97d36bd7399890138993d493ca7797ef05ef1a8fcd9": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "76255e4f0ea19fcbce9a0d897cd2c91a3c37519d2e546d9006ce5c3f2b6ad03d": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "7a0bc3107a22ad448a773c28941b465afa05f21191fd1c3c60f931b1f0c495cb": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
-    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration",
+    "7a1fb0272a61572cde2270476c855b901dd58d877f8c3e6488633cf747e8c083": "Graziani v63 hash-cache, local macOS arm64 .NET 10 Release MTP XML 2026-11-15 under concurrent load; no hosted CI evidence",
     "7b7ef6fd729b956936a24915113caa7b603e0445cad5d91ce40fae70352aa807": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "7d31d515076963ebf18ea76fe64edd1777c8835845a0922f8d40aa4e540020be": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "7d34c27b783847a8fa5393f8d98b36647b2b89619dc4e5430b03554cf52ebce1": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
@@ -4523,7 +4539,7 @@
     "8cb904ab1edc93029f4befcf16416f1898da5c71ce1eacc6368cffb7066641bc": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "8cd0f05e40de0672608bb4fb55c2c0dfa1138897af410b7461e883276effd532": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "8cf5e1585b69ae05fa189b8dd889f73a999a4dd4f43666c5a9d18a1fbe7b30b9": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
-    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration",
+    "8d72e2f0723c7d2d45ac667dcca0139281ce46660e43f387f75432bd80bd6d0b": "Graziani v63 hash-cache, local macOS arm64 .NET 10 Release MTP XML 2026-11-15 under concurrent load; no hosted CI evidence",
     "8e0f23b659b34cd027a989616e65262690e7573a67878b50b8ff8b6c10d2f344": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "8e313f2a49c202241ad33773a2f9d069a51482c26bc15da9193605b1d4998b35": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "9023157ab2a92117e2dfbaee3a9aa950e3d6793acd29abee0d7d74a4b492eaf2": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
@@ -4628,7 +4644,12 @@
     "ff0bf65ab225d6fc5d05fd2e388fca3441a0b3faf1a26932938cd8754e8f1414": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "ffb67eda40d75380a578e7544f56a8e39b081f39f17d28038103a32f3ab6cedb": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
     "fffdb75b618065ecf4c02e0d4ac9a0dbd0f836f9d2f7a77bad5020e0ba253e94": "PR 345: local macOS arm64 .NET 10 Release MTP XML, 2 collection threads; pending hosted calibration",
-    "9635b4f72447ff408187b854b120f4ac1396557c847edac2080c0d4133d532b7": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration"
+    "9635b4f72447ff408187b854b120f4ac1396557c847edac2080c0d4133d532b7": "Graziani stress session: local macOS arm64 .NET 10 Release MTP XML, default tests; pending hosted calibration",
+    "c9baa6808753aa89be7bf8ffb7270231afb608dcbd41935ac09a0354903d5dad": "Graziani Australian consensus: local macOS arm64 .NET 10 Release MTP XML, concurrent work; pending hosted calibration",
+    "acca13cead37e2d227771f93e0992cfb60323725c198bf715da95f94747569bb": "Graziani Australian consensus: local macOS arm64 .NET 10 Release MTP XML, concurrent work; pending hosted calibration",
+    "ee4fd62c2b95340f99c97f678b8f32dcd2720148d581fb2b6ba0938e9b486d53": "Graziani Australian consensus: local macOS arm64 .NET 10 Release MTP XML, concurrent work; pending hosted calibration",
+    "d6388333e7441c6d09f1ed417929e465a69c49dc70537deea5ba677f71cdfa8d": "Graziani Horse setup: local macOS arm64 .NET 10 Release MTP XML, concurrent work; pending hosted calibration",
+    "7971c6f0d761b46385c91789a5db27944fb8758a0444f0052d67d763adb8e915": "Graziani Horse setup: local macOS arm64 .NET 10 Release MTP XML, concurrent work; pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",

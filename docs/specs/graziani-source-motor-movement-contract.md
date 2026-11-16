@@ -32,9 +32,11 @@ loaded points also retain the rule's detachment restriction. The event must debi
 the actual selected source and carried load atomically, without regenerating initial
 stocks from the pregame ledger on later moves.
 
-The present source world has no replay-derived game clock, complete map/control,
-general operational transport or mutable runtime stock. Existing setup cargo and
-motor reservations are not evidence that a movement or supply trace is legal.
+The source-turn authority has a replay-derived clock and a bounded movement
+successor with mutable supply, but source setup cannot yet start that clock:
+map/control, general operational transport and other readiness requirements
+remain incomplete. Setup cargo and motor reservations alone are not evidence
+that a movement or supply trace is legal.
 
 For a future real-state test, original Map D (maps PDF page 4, SHA-256
 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`)
@@ -44,3 +46,43 @@ the terrain chart §8.37 charges a motorized unit half a CP per road hex.
 A medium-truck trace over those two edges would therefore cost one CP before
 checking current ZOC and any applicable restrictions. This is source geometry,
 not proof that a live campaign has an eligible supply unit or an open route.
+
+For contact projection, the Air/Logistics Land Distance Chart §37.42 says
+equally numbered hexes in adjacent sections are 33 hexes apart. This slice
+uses that statement only for C3615/D3615, C3714/D3714 and C3715/D3715,
+whose cells are independently visible on the source maps. Separately, the chart
+prints 66 hexes from Derna B5925 to
+Matruh D3714. The original Map D shows the D3714–D3715–D3615 path, at most
+two hex steps, so the triangle inequality proves those three cells are more
+than one hex from B5925. These are distance proofs, not seam-edge or legal movement proofs.
+The chart also puts Tobruk C4807 45 hexes from Matruh D3714; Map C shows
+the C4407–C4807 run, at most five steps using the conservative coordinate
+bound. Subtracting that and the two-step Map D path still leaves more than
+one hex. An anchor whose printed distance conflicts with the candidate is
+not used. No unlisted cross-section coordinate is treated as an alias.
+
+The one supported opening candidate is narrower than general movement. Scenario
+§60.31 places Axis land units initially on maps A–C, in off-map boxes, or in
+Libya. The original Map C shows the Libya/Egypt boundary and the C/D join;
+Map D shows D3615, D3715 and D3714 well inside Egypt. The source transition
+requires the Commonwealth first acting slot of GT1 Op1 and the exact retained
+initial grouped and battlefield hashes, excluding any prior land-world
+successor. GT1 Axis naval arrivals do not put Axis combat counters in these
+hexes. However, section identity and cross-map separation remain unresolved;
+the route cannot yet be certified free of an Axis ZOC from those facts. The
+player-facing offer and execution stay blocked until a source-backed seam
+certificate and contact projection make both legality and acceptance safe.
+
+For this intact fourth-Indian roster, the motorized infantry's six assigned
+abstract points and the towed artillery require one fuel point each under
+§32.24. Empty attached motorization points require none. Land §32.55 exempts
+abstract motorization points from breakdown; §21.0 excludes the vehicles
+assigned abstractly to gun units, and §21.11 identifies the remaining
+breakdown-eligible vehicle classes. The bounded roster contains no tank,
+armored reconnaissance or self-propelled gun cohort. Other changes to that
+roster or transport/load state fall outside this supported transition.
+
+The opening transition requires all six horse motor points. A zero-point
+allocation would leave enough of this formation's pool unused to motorize that
+historically motorized unit, so it must not be offered as an opening move while
+the Land §32.54 priority is unresolved. Partial assignments remain unsupported.
