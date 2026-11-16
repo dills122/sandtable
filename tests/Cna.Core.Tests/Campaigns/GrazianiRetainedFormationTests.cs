@@ -120,12 +120,16 @@ public sealed class GrazianiRetainedFormationTests
         var cityHexes = artifact.Definition.LegacyDefinition.Locations
             .Where(value => value.TerrainId == Cna1979SourceContentVocabulary.MajorCityTerrainId)
             .Select(value => value.LocationId).ToHashSet(StringComparer.Ordinal);
-        Assert.Equal("e1829", Assert.Single(CampaignSourcePolishArrival.OwnerKnownDestinations(confirmed, entries, arrivalPosition, true, cityHexes)));
+        // e1829 has a known friendly occupant; the other four Cairo hexes are
+        // known-empty (stack 0), which is also a legal destination under §4.46a.
+        Assert.Equal(["e1730", "e1829", "e1830", "e1930", "e1931"],
+            CampaignSourcePolishArrival.OwnerKnownDestinations(confirmed, entries, arrivalPosition, true, cityHexes));
         Assert.Equal(CampaignSourcePolishArrival.OwnerKnownDestinations(confirmed, entries, arrivalPosition, true, cityHexes),
             CampaignSourcePolishArrival.OwnerKnownDestinations(hidden, entries.Append(unresolvedEnemy), arrivalPosition, true, cityHexes));
         Assert.Empty(CampaignSourcePolishArrival.OwnerKnownDestinations(confirmed, entries, arrivalPosition, false, cityHexes));
         cityHexes.Remove("e1829");
-        Assert.Empty(CampaignSourcePolishArrival.OwnerKnownDestinations(confirmed, entries, arrivalPosition, true, cityHexes));
+        Assert.Equal(["e1730", "e1830", "e1930", "e1931"],
+            CampaignSourcePolishArrival.OwnerKnownDestinations(confirmed, entries, arrivalPosition, true, cityHexes));
 
         // Adjacent source counters create observer-scoped contacts for both
         // sides, without changing a retained unrelated contact.

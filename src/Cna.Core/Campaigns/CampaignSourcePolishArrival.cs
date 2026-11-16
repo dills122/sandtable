@@ -109,7 +109,9 @@ internal static class CampaignSourcePolishArrival
         {
             if (!knownCityHexes.Contains(location)) return false;
             var stack = OwnerKnownStackAt(grouped, owned, location);
-            return stack is > 0 && stack + BrigadeStack <= CityStackLimit;
+            // A known-empty hex (stack == 0) is a legal destination under §4.46a too;
+            // only an unknown stack (null) must exclude the hex, not a known-zero one.
+            return stack is int knownStack && knownStack + BrigadeStack <= CityStackLimit;
         }).ToArray());
     }
 
