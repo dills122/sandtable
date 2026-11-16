@@ -9,20 +9,25 @@ public sealed class ExerciseSession
     private readonly CampaignSnapshotV11? currentSnapshot;
     private readonly CampaignContentContext? context;
     private readonly byte[][]? pregameHistory;
+    private readonly CampaignSourceAuthorityState? sourceAuthorityState;
 
     internal ExerciseSession(CampaignPregameSourceState pregame, CampaignContactJournal? contacts = null,
-        IEnumerable<byte[]>? history = null, CampaignSourceAuthorityState? sourceAuthority = null)
+        IEnumerable<byte[]>? history = null, CampaignSourceAuthorityState? sourceAuthority = null,
+        CampaignSourceTurnAuthority? sourceTurn = null)
     {
         Pregame = pregame ?? throw new ArgumentNullException(nameof(pregame));
         if (sourceAuthority is not null && sourceAuthority.Pregame != pregame)
             throw new ArgumentException("Source authority must bind the retained pre-game state.", nameof(sourceAuthority));
-        SourceAuthority = sourceAuthority;
+        sourceAuthorityState = sourceAuthority;
+        if (sourceTurn is not null && !ReferenceEquals(sourceTurn.Source, sourceAuthority))
+            throw new ArgumentException("Source turn must retain its source setup authority.", nameof(sourceTurn));
+        SourceTurn = sourceTurn;
         pregameHistory = (history ?? [pregame.SerializeGenesis()]).Select(value => value.ToArray()).ToArray();
         CurrentHistory = ImmutableList<object>.Empty;
         CurrentContacts = contacts ?? CampaignContactJournal.InitializePregameSource(pregame.Request.CampaignId);
         if (CurrentContacts.CampaignId != pregame.Request.CampaignId
-            || CurrentContacts.AuthorityVersion != (sourceAuthority?.StateVersion ?? pregame.StateVersion)
-            || CurrentContacts.Records.Count != 0)
+            || CurrentContacts.AuthorityVersion != (sourceTurn?.StateVersion ?? sourceAuthority?.StateVersion ?? pregame.StateVersion)
+            || (sourceTurn is null && CurrentContacts.Records.Count != 0))
             throw new ArgumentException("Pre-game contacts do not match authority.", nameof(contacts));
         CurrentCombatRetreatMoves = [];
         CurrentCombatForceSeals = [];
@@ -726,7 +731,8 @@ public sealed class ExerciseSession
             repeatAssaultBaseContacts: CurrentRepeatAssaultBaseContacts,
             repeatAssaultEvents: CurrentRepeatAssaultEvents.Append(campaignEvent));
     internal CampaignPregameSourceState? Pregame { get; }
-    internal CampaignSourceAuthorityState? SourceAuthority { get; }
+    internal CampaignSourceAuthorityState? SourceAuthority => SourceTurn is null ? sourceAuthorityState : null;
+    internal CampaignSourceTurnAuthority? SourceTurn { get; }
     internal IReadOnlyList<byte[]> PregameHistory => Array.AsReadOnly(
         (pregameHistory ?? throw new InvalidOperationException("Session has no pre-game history."))
             .Select(value => value.ToArray()).ToArray());

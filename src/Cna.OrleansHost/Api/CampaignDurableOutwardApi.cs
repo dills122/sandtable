@@ -245,6 +245,174 @@ internal static class CampaignDurableOutwardApi
                     context.Request.Headers["X-Sandtable-Operator"].ToString());
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
+        api.MapPost("/{campaignId}/source-italian-divisions-grouped-world", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var admitted = journal.AdmitSourceItalianDivisionsGroupedWorld(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
+            }));
+        api.MapPost("/{campaignId}/source-seventh-armored-grouped-world", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var admitted = journal.AdmitSourceSeventhArmoredGroupedWorld(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
+            }));
+        api.MapPost("/{campaignId}/source-sixteenth-brigade-grouped-world", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var admitted = journal.AdmitSourceSixteenthBrigadeGroupedWorld(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
+            }));
+        api.MapPost("/{campaignId}/source-catanzaro-grouped-world", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var admitted = journal.AdmitSourceCatanzaroGroupedWorld(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
+            }));
+        api.MapPost("/{campaignId}/source-turn/start", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var started = journal.StartSourceTurn(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, started });
+            }));
+        api.MapPost("/{campaignId}/source-turn/initiative", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var resolved = journal.ResolveSourceInitiative(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, resolved });
+            }));
+        api.MapPost("/{campaignId}/source-turn/complete-gt1-scheduling", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var completed = journal.CompleteSourceGt1Scheduling(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, completed });
+            }));
+        api.MapPost("/{campaignId}/source-turn/complete-gt1-organization", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var completed = journal.CompleteSourceGt1Organization(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, completed });
+            }));
+        api.MapPost("/{campaignId}/source-turn/complete-gt1-stage1-arrivals", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var completed = journal.CompleteSourceGt1StageOneArrivals(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, completed });
+            }));
+        api.MapPost("/{campaignId}/source-turn/complete-gt1-stage1-fleet", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var completed = journal.CompleteSourceGt1StageOneFleet(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, completed });
+            }));
+        api.MapPost("/{campaignId}/source-turn/complete-gt1-first-breakdown", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var completed = journal.CompleteSourceGt1FirstBreakdown(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, completed });
+            }));
+        api.MapPost("/{campaignId}/source-turn/gt1-weather", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var resolved = journal.ResolveSourceGt1Weather(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, resolved });
+            }));
+        api.MapPost("/{campaignId}/source-turn/gt1-lane2", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var announced = journal.AnnounceSourceGt1Lane2(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, announced });
+            }));
+        api.MapPost("/{campaignId}/source-turn/gt1-lane3", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var announced = journal.AnnounceSourceGt1Lane3(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, announced });
+            }));
+        api.MapPost("/{campaignId}/source-seventh-shell-correction", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var corrected = journal.CorrectSourceSeventhShell(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, corrected });
+            }));
+        api.MapPost("/{campaignId}/source-axis-minor-garrisons-activation", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var activated = journal.ActivateSourceAxisMinorGarrisons(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-axis-garrison-remainder-activation", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var activated = journal.ActivateSourceAxisGarrisonRemainder(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-giarabub-motor-machine-gun-activation", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var activated = journal.ActivateSourceGiarabubMotorMachineGun(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-cw-frontline-activation", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var activated = journal.ActivateSourceCwFrontline(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-giarabub-motor-placement-policy", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var admitted = journal.AdmitSourceGiarabubMotorPlacementPolicy(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted });
+            }));
+        api.MapPost("/{campaignId}/source-turn/gt1-multiple-lanes", (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
+            {
+                RequireOperator(context, journal);
+                var announced = journal.AnnounceSourceGt1MultiLanes(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, announced });
+            }));
         api.MapPost("/{campaignId}/source-matruh-formation", (HttpContext context,
             CampaignDurableAuthorityJournal journal, string campaignId) => ExecuteSync(() =>
             {
@@ -470,6 +638,18 @@ internal static class CampaignDurableOutwardApi
                         credential.ExpiresUnixMs,
                     }
                 });
+            }));
+        api.MapPost("/{campaignId}/source-counter-contacts", async (HttpContext context,
+            CampaignDurableAuthorityJournal journal, string campaignId) =>
+            await Execute(context, async () =>
+            {
+                using var document = await ReadBody(context);
+                var root = document.RootElement;
+                RequireShape(root, "contractVersion", "credential", "counterId");
+                RequireVersion(root);
+                var credential = Credential(root.GetProperty("credential"), campaignId);
+                var observation = journal.QuerySourceCounterContacts(credential, String(root, "counterId"));
+                return Results.Json(new { contractVersion = 2, campaignId, observationBase64 = Convert.ToBase64String(observation) });
             }));
         api.MapPost("/{campaignId}/openings", async (HttpContext context,
             CampaignDurableAuthorityJournal journal, string campaignId) =>

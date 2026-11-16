@@ -3,13 +3,18 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Tests.Campaigns;
 
 public sealed class GrazianiSourceAuthorityTests
 {
+    private static readonly string[] ExpectedGarrisonRemainderIds =
+        ["giarabub-antitank", "giarabub-artillery", "giarabub-infantry", "giarabub-machine-gun",
+            "soluch-antitank-company", "soluch-artillery-regiment"];
     [Theory]
     [InlineData(0UL, 3, 1)]
     [InlineData(14UL, 0, 0)]
@@ -23,6 +28,65 @@ public sealed class GrazianiSourceAuthorityTests
             CampaignPregameSourceCreation.CalculateSetupHash(artifact.Identity, initialization),
             artifact.Identity.PackId, artifact.Identity.Hash, Cna1979GrazianiCairoSourceExcerpt.ScenarioId);
         var session = CampaignExercises.Begin(request, artifact, initialization).Session!;
+        var polishActionPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 3
+            && value.PhaseId == LandPhaseIds.NavalConvoyArrival && value.SegmentId is null);
+        var polishAction = new CampaignSourceTurnAction(17, "e1730");
+        var polishSet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            polishActionPosition.PositionId, CampaignActionAudience.Commonwealth, [polishAction], CampaignLegalActionSet.SourceTurnPolicyId);
+        var polishBytes = CampaignLegalActionSerializer.Serialize(polishSet);
+        Assert.Equal(polishSet, CampaignLegalActionSerializer.DeserializeCanonical(polishBytes));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            polishActionPosition.PositionId, CampaignActionAudience.Axis, [polishAction], CampaignLegalActionSet.SourceTurnPolicyId));
+        var arrivalPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.NavalConvoyArrival && value.SegmentId is null);
+        var declineAttack = CampaignSourceTurnAction.DeclineGt1Lane2Attack(17);
+        var arrivalSet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            arrivalPosition.PositionId, CampaignActionAudience.Commonwealth, [declineAttack], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(arrivalSet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(arrivalSet)));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            arrivalPosition.PositionId, CampaignActionAudience.Axis, [declineAttack], CampaignLegalActionSet.SourceTurnPolicyId));
+        var convoyPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.PhaseId == LandPhaseIds.NavalConvoySchedule);
+        var convoyRoll = CampaignSourceTurnAction.RollGt3Supply(17);
+        var convoySet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            convoyPosition.PositionId, CampaignActionAudience.Axis, [convoyRoll], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(convoySet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(convoySet)));
+        var convoyChoices = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            convoyPosition.PositionId, CampaignActionAudience.Axis,
+            [CampaignSourceTurnAction.AdjustGt3Supply(17, 2, 1, 1), CampaignSourceTurnAction.FinishGt3Supply(17)], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(convoyChoices, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(convoyChoices)));
+        var cwRoll = CampaignSourceTurnAction.RollGt5Supply(17);
+        var cwConvoySet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            convoyPosition.PositionId, CampaignActionAudience.Commonwealth, [cwRoll], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(cwConvoySet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(cwConvoySet)));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            convoyPosition.PositionId, CampaignActionAudience.Axis, [cwRoll], CampaignLegalActionSet.SourceTurnPolicyId));
+        var shippingPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.PhaseId == LandPhaseIds.TacticalShipping);
+        var shippingSet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            shippingPosition.PositionId, CampaignActionAudience.Commonwealth, [CampaignSourceTurnAction.DeclineTacticalShipping(17)], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(shippingSet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(shippingSet)));
+        var declarationPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 1 && value.PhaseId == LandPhaseIds.InitiativeDeclaration);
+        var declarationSet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            declarationPosition.PositionId, CampaignActionAudience.Axis, [CampaignSourceTurnAction.ActFirst(17), CampaignSourceTurnAction.ActLast(17)], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(declarationSet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(declarationSet)));
+        var organizationPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 1 && value.PhaseId == LandPhaseIds.Organization);
+        var organizationSet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            organizationPosition.PositionId, CampaignActionAudience.Commonwealth, [CampaignSourceTurnAction.DeclineVoluntaryOrganization(17)], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(organizationSet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(organizationSet)));
+        var interruptTraining = CampaignSourceTurnAction.InterruptSixthAustralianTraining(17);
+        var trainingSet = new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            organizationPosition.PositionId, CampaignActionAudience.Commonwealth, [interruptTraining], CampaignLegalActionSet.SourceTurnPolicyId);
+        Assert.Equal(trainingSet, CampaignLegalActionSerializer.DeserializeCanonical(CampaignLegalActionSerializer.Serialize(trainingSet)));
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            organizationPosition.PositionId, CampaignActionAudience.Axis, [interruptTraining], CampaignLegalActionSet.SourceTurnPolicyId));
+        var unknownTraining = CampaignSourceTrainingLedger.CreateSixthAustralian();
+        var interruptedTraining = unknownTraining.Interrupt();
+        Assert.True(interruptedTraining.Interrupted);
+        Assert.Null(interruptedTraining.CurrentMorale);
+        Assert.Null(interruptedTraining.QualifyingStages);
+        Assert.NotEqual(unknownTraining.Hash(), interruptedTraining.Hash());
+        Assert.Throws<InvalidOperationException>(() => interruptedTraining.Interrupt());
+        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet(request.CampaignId, 17, request.RulesetHash,
+            convoyPosition.PositionId, CampaignActionAudience.Commonwealth, [convoyRoll], CampaignLegalActionSet.SourceTurnPolicyId));
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryPregameAxisSupplyFinishDraft(session, CampaignActionAudience.Axis));
         var finishBeforeRoll = Submission(session, CampaignSourceAuthorityState.FinishActionId, CampaignActionAudience.Axis);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -47,8 +111,76 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.True(accepted.IsAccepted);
         var next = accepted.SuccessorSession!;
         Assert.True(CampaignExercises.Reconstruct(next).IsVerified);
+        var giarabubAction = CampaignSourceAuthorityState.MotorizationActionId(true, "axis-libya-unattached", "c1014", 1);
+        var oldAxisMotorHash = next.SourceAuthority!.AxisMotorization.Hash();
+        var oldAxisChoices = CampaignExercises.QuerySourceMotorizationDraft(next, CampaignActionAudience.Axis);
+        Assert.DoesNotContain(giarabubAction, oldAxisChoices.PrivateActionIds);
+        var admittedPolicy = CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(next).SuccessorSession!;
+        Assert.True(CampaignExercises.IsSourceGiarabubMotorPlacementPolicyAdmitted(admittedPolicy));
+        Assert.NotEqual(oldAxisMotorHash, admittedPolicy.SourceAuthority!.AxisMotorization.Hash());
+        Assert.Equal(oldAxisMotorHash, next.SourceAuthority.AxisMotorization.Hash());
+        Assert.DoesNotContain(giarabubAction, CampaignExercises.QuerySourceMotorizationDraft(next, CampaignActionAudience.Axis).PrivateActionIds);
+        Assert.Contains(giarabubAction, CampaignExercises.QuerySourceMotorizationDraft(admittedPolicy, CampaignActionAudience.Axis).PrivateActionIds);
+        Assert.DoesNotContain(giarabubAction, CampaignExercises.QuerySourceMotorizationDraft(admittedPolicy, CampaignActionAudience.Commonwealth).PrivateActionIds);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.AdjustSourceMotorization(admittedPolicy,
+            Submission(admittedPolicy, giarabubAction, CampaignActionAudience.Commonwealth)).RejectionReason);
+        var placedMotor = CampaignExercises.AdjustSourceMotorization(admittedPolicy,
+            Submission(admittedPolicy, giarabubAction, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(124, placedMotor.SourceAuthority!.AxisMotorization.Remaining("axis-libya-unattached"));
+        Assert.Contains(placedMotor.SourceAuthority.AxisMotorization.Allocations,
+            value => value.PoolId == "axis-libya-unattached" && value.LocationId == "c1014" && value.Points == 1);
+        Assert.True(CampaignExercises.Reconstruct(placedMotor).IsVerified);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(placedMotor).RejectionReason);
+        var cwBeforeFinish = CampaignExercises.QuerySourceActionsDraft(next, CampaignActionAudience.Commonwealth);
+        var finishOwner = CampaignExercises.Query(next, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var ownerFinished = CampaignExercises.Submit(next, Submission(next, finishOwner.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(1, ownerFinished.SourceAuthority!.FinalizedOwners);
+        Assert.Equal(CampaignSourceAuthorityState.FinalizedLegacyCheckpointContractVersion, CampaignExercises.QueryCheckpoint(ownerFinished).ContractVersion);
+        Assert.Equal(next.SourceAuthority!.RandomState, ownerFinished.SourceAuthority.RandomState);
+        Assert.Equal(next.SourceAuthority.World.PendingArrivals, ownerFinished.SourceAuthority.World.PendingArrivals);
+        Assert.Equal(cwBeforeFinish.VisibleBytes, CampaignExercises.QuerySourceActionsDraft(ownerFinished, CampaignActionAudience.Commonwealth).VisibleBytes);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.PlaceSourceAxisDump(ownerFinished,
+            Submission(ownerFinished, CampaignSourceAuthorityState.DumpActionId("axis-dump-1", "c4507"), CampaignActionAudience.Axis)).RejectionReason);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority, CampaignExercises.AdmitSourceCompactCheckpoint(ownerFinished).RejectionReason);
+        var cwWhileAxisFinished = CampaignExercises.PlaceSourceCommonwealthSupply(ownerFinished,
+            Submission(ownerFinished, CampaignSourceAuthorityState.CommonwealthSupplyActionId("cw-dump-1", "d3612"), CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(1, cwWhileAxisFinished.SourceAuthority!.FinalizedOwners);
+        var finishCw = CampaignExercises.Query(cwWhileAxisFinished, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var bothFinished = CampaignExercises.Submit(cwWhileAxisFinished, Submission(cwWhileAxisFinished, finishCw.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(3, bothFinished.SourceAuthority!.FinalizedOwners);
+        Assert.True(CampaignExercises.Reconstruct(bothFinished).IsVerified);
+        var reopenAxis = CampaignExercises.Query(bothFinished, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var reopenedAxis = CampaignExercises.Submit(bothFinished, Submission(bothFinished, reopenAxis.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(2, reopenedAxis.SourceAuthority!.FinalizedOwners);
+        Assert.True(CampaignExercises.Reconstruct(reopenedAxis).IsVerified);
+        var reopenCw = CampaignExercises.Query(reopenedAxis, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var reopenedBoth = CampaignExercises.Submit(reopenedAxis, Submission(reopenedAxis, reopenCw.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(0, reopenedBoth.SourceAuthority!.FinalizedOwners);
+        Assert.Equal(CampaignSourceAuthorityState.FinalizedLegacyCheckpointContractVersion, CampaignExercises.QueryCheckpoint(reopenedBoth).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(reopenedBoth).IsVerified);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.PlaceSourceCommonwealthSupply(reopenedAxis,
+            Submission(reopenedAxis, CampaignSourceAuthorityState.CommonwealthSupplyActionId("cw-cairo-1", "e1730"), CampaignActionAudience.Commonwealth)).RejectionReason);
+        var lockedCwView = CampaignExercises.QuerySourceActionsDraft(reopenedAxis, CampaignActionAudience.Commonwealth).VisibleBytes;
+        var changedAxis = CampaignExercises.PlaceSourceAxisDump(reopenedAxis,
+            Submission(reopenedAxis, CampaignSourceAuthorityState.DumpActionId("axis-dump-1", "c4507"), CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(2, changedAxis.SourceAuthority!.FinalizedOwners);
+        Assert.Equal(lockedCwView, CampaignExercises.QuerySourceActionsDraft(changedAxis, CampaignActionAudience.Commonwealth).VisibleBytes);
+        Assert.True(CampaignExercises.Reconstruct(changedAxis).IsVerified);
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourcePolishArrivalDraft(next, CampaignActionAudience.Commonwealth));
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignExercises.SubmitSourcePolishArrival(next, Submission(next, roll.ActionId, CampaignActionAudience.Commonwealth)).RejectionReason);
         var earlyCompact = CampaignExercises.AdmitSourceCompactCheckpoint(next).SuccessorSession!;
         Assert.Equal(30, CampaignExercises.QueryCheckpoint(earlyCompact).ContractVersion);
+        var compactFinish = CampaignExercises.Query(earlyCompact, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var finalizedCompact = CampaignExercises.Submit(earlyCompact, Submission(earlyCompact, compactFinish.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(CampaignSourceAuthorityState.FinalizedCompactCheckpointContractVersion, CampaignExercises.QueryCheckpoint(finalizedCompact).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(finalizedCompact).IsVerified);
         var earlyDump = CampaignSourceAuthorityState.DumpActionId("axis-dump-1", "c4507");
         earlyCompact = CampaignExercises.PlaceSourceAxisDump(earlyCompact,
             Submission(earlyCompact, earlyDump, CampaignActionAudience.Axis)).SuccessorSession!;
@@ -183,6 +315,121 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(expectedGt1.State.NextByteCursor, cwSession.SourceAuthority.RandomState.NextByteCursor);
         if (cwSession.SourceAuthority.OpeningConvoyPlan.MaximumSupply > 0)
         {
+            // Real source lane 3 under disclosed provisional Benghazi ruling.
+            // This branches the same rolled plan; it does not advance a game.
+            var lane3Add = CampaignSourceAuthorityState.OpeningConvoyActionId("adjust", 3, 1, 1);
+            var lane3Session = CampaignExercises.SubmitSourceAxisGt1Supply(cwSession,
+                Submission(cwSession, lane3Add, CampaignActionAudience.Axis)).SuccessorSession!;
+            var lane3Finish = CampaignSourceAuthorityState.OpeningConvoyActionId("finish", 0, 0, 0);
+            lane3Session = CampaignExercises.SubmitSourceAxisGt1Supply(lane3Session,
+                Submission(lane3Session, lane3Finish, CampaignActionAudience.Axis)).SuccessorSession!;
+            var lane3Source = lane3Session.SourceAuthority!;
+            var axisBefore = CampaignSourceGt1AxisArrival.Create(lane3Source);
+            var benghazi = CampaignSourceGt1BenghaziArrival.Create(lane3Source, axisBefore);
+            Assert.True(benghazi.CanAnnounce);
+            var announced = benghazi.Announce(lane3Source, axisBefore);
+            var (delivered, axisAfter) = announced.DeclineAttackAndDeliver(lane3Source, axisBefore);
+            Assert.True(delivered.Delivered);
+            Assert.Equal("b4827", Assert.Single(lane3Source.AxisSupplyWorld.Units,
+                value => value.Id == "axis-benghazi-1").LocationId);
+            Assert.Equal("a4827", Assert.Single(axisAfter.Supply.Units,
+                value => value.Id == "axis-benghazi-1").LocationId);
+            var landed = Assert.Single(axisAfter.Supply.Units, value => value.Id == "axis-gt1-op1-lane3-1");
+            Assert.Equal("a4827", landed.LocationId);
+            Assert.Equal(40, landed.Ammo);
+            Assert.Equal(60, landed.Fuel);
+            Assert.Equal(2, axisAfter.Supply.Units.Count(value => value.LocationId == "a4827"));
+            Assert.False(axisAfter.HasOtherStageOneLanes);
+            Assert.Throws<InvalidOperationException>(() => announced.DeclineAttackAndDeliver(lane3Source, axisAfter));
+            var (replayedBenghazi, replayedAxis) = benghazi.Announce(lane3Source, axisBefore)
+                .DeclineAttackAndDeliver(lane3Source, axisBefore);
+            Assert.Equal(delivered.Hash(), replayedBenghazi.Hash());
+            Assert.Equal(axisAfter.Hash(), replayedAxis.Hash());
+            using var landedJson = JsonDocument.Parse(axisAfter.Supply.SerializeCanonical());
+            Assert.Equal(2, landedJson.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.Contains("rul-gra-05-provisional", landedJson.RootElement.GetProperty("benghaziCoordinateStatus").GetString()!);
+            if (cwSession.SourceAuthority.OpeningConvoyPlan.MaximumSupply >= 2)
+            {
+                var mixed = CampaignExercises.SubmitSourceAxisGt1Supply(cwSession,
+                    Submission(cwSession, lane3Add, CampaignActionAudience.Axis)).SuccessorSession!;
+                var lane2Add = CampaignSourceAuthorityState.OpeningConvoyActionId("adjust", 2, 1, 1);
+                mixed = CampaignExercises.SubmitSourceAxisGt1Supply(mixed,
+                    Submission(mixed, lane2Add, CampaignActionAudience.Axis)).SuccessorSession!;
+                mixed = CampaignExercises.SubmitSourceAxisGt1Supply(mixed,
+                    Submission(mixed, lane3Finish, CampaignActionAudience.Axis)).SuccessorSession!;
+                var mixedSource = mixed.SourceAuthority!;
+                var mixedAxis = CampaignSourceGt1AxisArrival.Create(mixedSource);
+                Assert.False(mixedAxis.CanAnnounce);
+                Assert.False(CampaignSourceGt1BenghaziArrival.Create(mixedSource, mixedAxis).CanAnnounce);
+                Assert.Throws<InvalidOperationException>(() => mixedAxis.DeliverSoleBenghaziLane(mixedSource, 1));
+                var multi = CampaignSourceGt1MultiArrival.Announce(mixedSource, mixedAxis);
+                Assert.Collection(multi.Lanes, value => Assert.Equal(2, value), value => Assert.Equal(3, value));
+                var (firstThree, axisThree) = multi.DeclineAndDeliver(mixedSource, mixedAxis, 3);
+                var (threeThenTwo, axisThreeThenTwo) = firstThree.DeclineAndDeliver(mixedSource, axisThree, 2);
+                var (firstTwo, axisTwo) = multi.DeclineAndDeliver(mixedSource, mixedAxis, 2);
+                var (twoThenThree, axisTwoThenThree) = firstTwo.DeclineAndDeliver(mixedSource, axisTwo, 3);
+                Assert.True(threeThenTwo.IsDelivered(2));
+                Assert.True(threeThenTwo.IsDelivered(3));
+                Assert.Equal(axisThreeThenTwo.Supply.Hash(), axisTwoThenThree.Supply.Hash());
+                Assert.Equal(threeThenTwo.Hash(), twoThenThree.Hash());
+                Assert.Equal("box.tripoli", Assert.Single(axisThreeThenTwo.Supply.Units,
+                    value => value.Id == "axis-gt1-op1-lane2-1").LocationId);
+                Assert.Equal("a4827", Assert.Single(axisThreeThenTwo.Supply.Units,
+                    value => value.Id == "axis-gt1-op1-lane3-1").LocationId);
+                Assert.Throws<InvalidOperationException>(() => threeThenTwo.DeclineAndDeliver(mixedSource, axisThreeThenTwo, 3));
+                Assert.DoesNotContain(mixedSource.AxisSupplyWorld.Units, value => value.Id == "axis-gt1-op1-lane3-1");
+                if (cwSession.SourceAuthority.OpeningConvoyPlan.MaximumSupply >= 3)
+                {
+                    var triple = CampaignExercises.SubmitSourceAxisGt1Supply(cwSession,
+                        Submission(cwSession, lane3Add, CampaignActionAudience.Axis)).SuccessorSession!;
+                    triple = CampaignExercises.SubmitSourceAxisGt1Supply(triple,
+                        Submission(triple, lane2Add, CampaignActionAudience.Axis)).SuccessorSession!;
+                    var lane6Add = CampaignSourceAuthorityState.OpeningConvoyActionId("adjust", 6, 1, 1);
+                    triple = CampaignExercises.SubmitSourceAxisGt1Supply(triple,
+                        Submission(triple, lane6Add, CampaignActionAudience.Axis)).SuccessorSession!;
+                    triple = CampaignExercises.SubmitSourceAxisGt1Supply(triple,
+                        Submission(triple, lane3Finish, CampaignActionAudience.Axis)).SuccessorSession!;
+                    var tripleSource = triple.SourceAuthority!;
+                    var tripleAxis = CampaignSourceGt1AxisArrival.Create(tripleSource);
+                    var tripleMulti = CampaignSourceGt1MultiArrival.Announce(tripleSource, tripleAxis);
+                    var (tripleTwo, tripleAfterTwo) = tripleMulti.DeclineAndDeliver(tripleSource, tripleAxis, 2);
+                    var (tripleThree, tripleAfterThree) = tripleTwo.DeclineAndDeliver(tripleSource, tripleAfterTwo, 3);
+                    Assert.True(tripleThree.IsDue(6));
+                    Assert.False(tripleThree.IsDelivered(6));
+                    Assert.True(tripleThree.CanDecline(6));
+                    var (tripleSix, tripleAfterSix) = tripleThree.DeclineAndDeliver(tripleSource, tripleAfterThree, 6);
+                    Assert.True(tripleSix.Lane6Declined);
+                    Assert.True(tripleSix.IsDelivered(6));
+                    Assert.Equal("c4807", Assert.Single(tripleAfterSix.Supply.Units,
+                        value => value.Id == "axis-gt1-op1-lane6-1").LocationId);
+                    Assert.Throws<InvalidOperationException>(() => tripleSix.DeclineAndDeliver(tripleSource, tripleAfterSix, 6));
+                    (bool CanDecline, bool AttackDeclined)? oneBefore = null, oneAfter = null, threeBefore = null, threeAfter = null;
+                    for (var amount = 1; amount <= 3; amount++)
+                    {
+                        var tobruk = cwSession;
+                        for (var n = 0; n < amount; n++)
+                            tobruk = CampaignExercises.SubmitSourceAxisGt1Supply(tobruk,
+                                Submission(tobruk, lane6Add, CampaignActionAudience.Axis)).SuccessorSession!;
+                        tobruk = CampaignExercises.SubmitSourceAxisGt1Supply(tobruk,
+                            Submission(tobruk, lane3Finish, CampaignActionAudience.Axis)).SuccessorSession!;
+                        var tobrukSource = tobruk.SourceAuthority!;
+                        var tobrukAxis = CampaignSourceGt1AxisArrival.Create(tobrukSource);
+                        var tobrukAnnounced = CampaignSourceGt1MultiArrival.Announce(tobrukSource, tobrukAxis);
+                        var (tobrukDeclined, tobrukAfter) = tobrukAnnounced.DeclineAndDeliver(tobrukSource, tobrukAxis, 6);
+                        if (amount == 1) { oneBefore = tobrukAnnounced.Lane6CommonwealthCut(); oneAfter = tobrukDeclined.Lane6CommonwealthCut(); }
+                        if (amount == 3) { threeBefore = tobrukAnnounced.Lane6CommonwealthCut(); threeAfter = tobrukDeclined.Lane6CommonwealthCut(); }
+                        Assert.True(tobrukDeclined.Lane6Declined);
+                        Assert.False(tobrukDeclined.CanDecline(6));
+                        Assert.Equal(amount <= 2, tobrukDeclined.IsDelivered(6));
+                        Assert.Equal(3 + (amount <= 2 ? amount : 0),
+                            tobrukAfter.Supply.Units.Count(value => value.LocationId == "c4807"));
+                        if (amount == 3) Assert.Equal(tobrukAxis.Supply.Hash(), tobrukAfter.Supply.Hash());
+                        Assert.Equal(3, tobrukSource.AxisSupplyWorld.Units.Count(value => value.LocationId == "c4807"));
+                    }
+                    Assert.Equal(oneBefore, threeBefore);
+                    Assert.Equal(oneAfter, threeAfter);
+                }
+            }
             var gt1Add = CampaignSourceAuthorityState.OpeningConvoyActionId("adjust", 2, 1, 1);
             cwSession = CampaignExercises.SubmitSourceAxisGt1Supply(cwSession, Submission(cwSession, gt1Add, CampaignActionAudience.Axis)).SuccessorSession!;
             Assert.Single(cwSession.SourceAuthority!.OpeningConvoyPlan.Allocations());
@@ -190,6 +437,29 @@ public sealed class GrazianiSourceAuthorityTests
         var gt1Finish = CampaignSourceAuthorityState.OpeningConvoyActionId("finish", 0, 0, 0);
         cwSession = CampaignExercises.SubmitSourceAxisGt1Supply(cwSession, Submission(cwSession, gt1Finish, CampaignActionAudience.Axis)).SuccessorSession!;
         Assert.True(cwSession.SourceAuthority!.OpeningConvoyPlan.IsFinished);
+        var pendingTripoli = CampaignSourceGt1AxisArrival.Create(cwSession.SourceAuthority!);
+        var sourceSupplyHash = cwSession.SourceAuthority!.AxisSupplyWorld.Hash();
+        if (cwSession.SourceAuthority.OpeningConvoyPlan.MaximumSupply > 0)
+        {
+            Assert.True(pendingTripoli.CanAnnounce);
+            var announcedTripoli = pendingTripoli.Announce();
+            Assert.True(announcedTripoli.Announced);
+            Assert.False(announcedTripoli.Delivered);
+            var deliveredTripoli = announcedTripoli.DeclineAttackAndDeliver();
+            var deliveredUnit = Assert.Single(deliveredTripoli.Supply.Units, unit => unit.Id == "axis-gt1-op1-lane2-1");
+            Assert.Equal("box.tripoli", deliveredUnit.LocationId);
+            Assert.Equal(40, deliveredUnit.Ammo);
+            Assert.Equal(60, deliveredUnit.Fuel);
+            Assert.Equal(sourceSupplyHash, cwSession.SourceAuthority.AxisSupplyWorld.Hash());
+            Assert.NotEqual(pendingTripoli.Hash(), deliveredTripoli.Hash());
+            Assert.Throws<InvalidOperationException>(() => deliveredTripoli.DeclineAttackAndDeliver());
+        }
+        else
+        {
+            Assert.False(pendingTripoli.CanAnnounce);
+            Assert.Throws<InvalidOperationException>(() => pendingTripoli.Announce());
+        }
+
         Assert.Empty(CampaignExercises.QuerySourceAxisGt1SupplyDraft(cwSession, CampaignActionAudience.Axis).PrivateActionIds);
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
         var skipCwGt1 = CampaignSourceAuthorityState.CommonwealthSupplyPlanActionId("skip", 1);
@@ -216,6 +486,51 @@ public sealed class GrazianiSourceAuthorityTests
             Assert.Equal(expected.State.NextByteCursor, cwSession.SourceAuthority.RandomState.NextByteCursor);
         }
         Assert.Empty(CampaignExercises.QuerySourceCommonwealthSupplyPlanDraft(cwSession, CampaignActionAudience.Commonwealth).PrivateActionIds);
+        Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
+        var gt1Plan = CampaignSourceGt1SupplyPlanning.Create(cwSession.SourceAuthority!, cwSession.SourceAuthority!.RandomState);
+        var gt5 = CampaignSourceGt1CommonwealthSupplyPlanning.Create();
+        var expectedGt5 = SandtableRandom.RollD6(gt1Plan.RandomState);
+        var rolledGt5 = gt5.Roll(gt1Plan.RandomState);
+        Assert.Equal(expectedGt5.Value, rolledGt5.Plan.Die);
+        Assert.Equal((expectedGt5.Value + 1) / 2, rolledGt5.Plan.Units);
+        Assert.Equal(expectedGt5.State, rolledGt5.Random);
+        Assert.Throws<InvalidOperationException>(() => rolledGt5.Plan.Roll(rolledGt5.Random));
+        Assert.Equal(expectedGt5.State, gt1Plan.WithRandomState(rolledGt5.Random).RandomState);
+        var expectedGt3 = SandtableRandom.RollD6(gt1Plan.RandomState);
+        var rolledGt3 = gt1Plan.Roll();
+        Assert.Equal(expectedGt3.Value, rolledGt3.Die);
+        Assert.Equal(expectedGt3.Value switch { 1 => 0, <= 3 => 1, <= 5 => 2, _ => 3 }, rolledGt3.Maximum);
+        Assert.Equal(expectedGt3.State, rolledGt3.RandomState);
+        Assert.Throws<InvalidOperationException>(() => rolledGt3.Roll());
+        Assert.Empty(rolledGt3.ValidDeltas(1, 1));
+        Assert.Empty(rolledGt3.ValidDeltas(2, 4));
+        if (rolledGt3.Maximum > 0)
+        {
+            var assigned = rolledGt3.Adjust(2, 1, 1);
+            Assert.Equal(1, assigned.QuantityAt(2, 1));
+            Assert.Equal(rolledGt3.RandomState, assigned.RandomState);
+            Assert.Equal(0, assigned.Adjust(2, 1, -1).QuantityAt(2, 1));
+            for (var unit = 1; unit < rolledGt3.Maximum; unit++) assigned = assigned.Adjust(2, 1, 1);
+            Assert.DoesNotContain(1, assigned.ValidDeltas(2, 1));
+            Assert.DoesNotContain(1, assigned.ValidDeltas(3, 2));
+            Assert.Throws<InvalidOperationException>(() => assigned.Adjust(3, 2, 1));
+        }
+        var finishedGt3 = rolledGt3.Finish();
+        Assert.True(finishedGt3.Finished);
+        Assert.Empty(finishedGt3.ValidDeltas(2, 1));
+        // Each owner's roll may happen first; the shared stream must advance
+        // once per roll without rewriting an already-finished Axis plan.
+        var axisFirstPlan = gt1Plan.Roll().Finish();
+        var axisFirstHash = axisFirstPlan.Hash();
+        var cwAfterAxis = CampaignSourceGt1CommonwealthSupplyPlanning.Create().Roll(axisFirstPlan.RandomState);
+        Assert.Equal(axisFirstHash, axisFirstPlan.Hash());
+        var cwRollFirst = CampaignSourceGt1CommonwealthSupplyPlanning.Create().Roll(gt1Plan.RandomState);
+        var axisAfterCw = gt1Plan.WithRandomState(cwRollFirst.Random).Roll().Finish();
+        Assert.Equal(axisFirstPlan.Die, cwRollFirst.Plan.Die);
+        Assert.Equal(cwAfterAxis.Plan.Die, axisAfterCw.Die);
+        Assert.Equal(cwAfterAxis.Random, axisAfterCw.RandomState);
+        Assert.Throws<InvalidOperationException>(() => axisAfterCw.Roll());
+        Assert.Throws<InvalidOperationException>(() => cwAfterAxis.Plan.Roll(cwAfterAxis.Random));
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
         // Exercise the real prestart September plans on an independent branch of the retained source session.
         var september = cwSession;
@@ -251,6 +566,11 @@ public sealed class GrazianiSourceAuthorityTests
             september = CampaignExercises.SubmitSourceSeptemberSupply(september, Submission(september, finish, CampaignActionAudience.Axis)).SuccessorSession!;
         }
         Assert.Null(september.SourceAuthority!.SeptemberPlans!.NextTargetGameTurn);
+        var retainedGt3 = CampaignSourceGt1SupplyPlanning.Create(september.SourceAuthority, september.SourceAuthority.RandomState);
+        Assert.Equal(september.SourceAuthority.SeptemberPlans.Entries.Single(value => value.TargetGameTurn == 3).Die, retainedGt3.Die);
+        Assert.True(retainedGt3.CarriedPlanFinished);
+        Assert.Equal(september.SourceAuthority.SeptemberPlans.Entries.Single(value => value.TargetGameTurn == 3).Allocations[0], retainedGt3.QuantityAt(2, 1));
+        Assert.Throws<InvalidOperationException>(() => retainedGt3.Roll());
         var septemberHash = september.SourceAuthority.SeptemberPlans.Hash();
         september = CampaignExercises.AdmitSourceAxisSupplement(september).SuccessorSession!;
         Assert.Equal(septemberHash, september.SourceAuthority!.SeptemberPlans!.Hash());
@@ -426,6 +746,14 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority, CampaignExercises.AdmitSourceCairoWorld(cwSession).RejectionReason);
         var directV12 = cwSession;
         Assert.True(CampaignExercises.CanPromoteSourceIndependent(directV12));
+        var lockBeforePromotion = CampaignExercises.Query(directV12, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var lockedBeforePromotion = CampaignExercises.Submit(directV12,
+            Submission(directV12, lockBeforePromotion.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignExercises.PromoteSourceIndependent(lockedBeforePromotion).RejectionReason);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignExercises.ReplaySourceIndependentPromotion(lockedBeforePromotion).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceIndependent(directV12).SuccessorSession!;
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(10, directV12.SourceAuthority!.World.World.Elements.Count);
@@ -587,6 +915,13 @@ public sealed class GrazianiSourceAuthorityTests
             value => value.ElementId == targetAxis && value.AuthorityStatus == "source-certified-maletti-active");
         Assert.False(CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(directV12));
         var axisLift = CampaignSourceAuthorityState.AxisPriorityActionId("adjust", targetAxis, 5);
+        var lockBeforeLift = CampaignExercises.Query(directV12, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var lockedBeforeLift = CampaignExercises.Submit(directV12,
+            Submission(directV12, lockBeforeLift.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
+            CampaignExercises.SubmitSourceAxisPriority(lockedBeforeLift,
+                Submission(lockedBeforeLift, axisLift, CampaignActionAudience.Axis)).RejectionReason);
         directV12 = CampaignExercises.SubmitSourceAxisPriority(directV12,
             Submission(directV12, axisLift, CampaignActionAudience.Axis)).SuccessorSession!;
         Assert.Equal(5, directV12.SourceAuthority!.AxisPriorityMotorization!.AssignedPoints(targetAxis));
@@ -670,9 +1005,10 @@ public sealed class GrazianiSourceAuthorityTests
         frenchFirst = CampaignExercises.PromoteSourceCwPriorityWorld(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.AdmitSourceCwFreeGuns(frenchFirst).SuccessorSession!;
         var freeGunIds = frenchFirst.SourceAuthority!.CwFreeGuns!.PendingIds.ToArray();
+        var gunCairoHex = seed == 14 ? "e1730" : "e1830";
         foreach (var id in freeGunIds)
         {
-            var placeGun = CampaignSourceAuthorityState.CwFreeGunPlacementActionId(id, chosenCairoHex);
+            var placeGun = CampaignSourceAuthorityState.CwFreeGunPlacementActionId(id, gunCairoHex);
             Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
                 CampaignExercises.PlaceSourceCwFreeGun(frenchFirst, Submission(frenchFirst, placeGun, CampaignActionAudience.Axis)).RejectionReason);
             frenchFirst = CampaignExercises.PlaceSourceCwFreeGun(frenchFirst,
@@ -684,6 +1020,434 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.True(indianResult.IsAccepted);
         var indian = indianResult.SuccessorSession!;
         var grouped = indian.SourceAuthority!.GroupedWorld!;
+        Assert.Equal(CampaignPregameSourceCreation.Digest(indian.SourceAuthority.SerializeLegacyCheckpoint()),
+            indian.SourceAuthority.DigestLegacyCheckpoint());
+        var beforeMinor = indian.SourceAuthority.SerializeCheckpoint();
+        var pendingBeforeMinor = indian.SourceAuthority.World.PendingArrivals;
+        var randomBeforeMinor = indian.SourceAuthority.RandomState;
+        var minorResult = CampaignExercises.ActivateSourceAxisMinorGarrisons(indian);
+        Assert.True(minorResult.IsAccepted);
+        var minor = minorResult.SuccessorSession!;
+        Assert.Equal(CampaignPregameSourceCreation.Digest(minor.SourceAuthority!.CwFreeGunsWorld!.SerializeCanonical()),
+            minor.SourceAuthority.CwFreeGunsWorld.Hash());
+        Assert.Equal(CampaignPregameSourceCreation.Digest(minor.SourceAuthority!.SerializeLegacyCheckpoint()),
+            minor.SourceAuthority.DigestLegacyCheckpoint());
+        Assert.Equal(beforeMinor, indian.SourceAuthority.SerializeCheckpoint());
+        Assert.Equal(CampaignSourceAuthorityState.AxisMinorGarrisonsCheckpointContractVersion, minor.SourceAuthority!.ProfileVersion);
+        Assert.Equal(randomBeforeMinor, minor.SourceAuthority.RandomState);
+        Assert.Equal(pendingBeforeMinor, minor.SourceAuthority.World.PendingArrivals);
+        Assert.Equal(grouped.ContentHash, minor.SourceAuthority.GroupedWorld!.ContentHash);
+        Assert.Equal(grouped.Groups.Count, minor.SourceAuthority.GroupedWorld.Groups.Count);
+        Assert.Equal(0, ContentSourceAxisMinorGarrisonsPackArtifact.StackAt("fort-maddalena-garrison", "c3019"));
+        Assert.Equal(1, ContentSourceAxisMinorGarrisonsPackArtifact.StackAt("fort-maddalena-garrison", "c3020"));
+        Assert.Equal(0, ContentSourceAxisMinorGarrisonsPackArtifact.StackAt("mechili-garrison", "b4921"));
+        Assert.Equal(1, ContentSourceAxisMinorGarrisonsPackArtifact.StackAt("mechili-garrison", "b4922"));
+        foreach (var unit in ContentSourceAxisMinorGarrisonsPackArtifact.Units)
+        {
+            Assert.Equal(0, ContentSourceAxisMinorGarrisonsPackArtifact.StackAt(unit.Id, unit.Location));
+            var element = Assert.Single(minor.SourceAuthority.World.World.Elements, value => value.ElementId == unit.Id);
+            Assert.Equal(unit.Location, element.CurrentLocationId);
+            Assert.Equal(unit.Toe, Assert.Single(element.Components).CurrentToe);
+            Assert.Single(minor.SourceAuthority.World.World.Representations, value =>
+                value.BindingKind == CampaignMapRepresentationBindingKind.IndependentElement
+                && value.CurrentLocationId == unit.Location && value.BoundElementIds.SequenceEqual([unit.Id]));
+            Assert.Contains(minor.SourceAuthority.Battlefield!.Entries, value => value.ElementId == unit.Id
+                && value.AuthorityStatus == "source-axis-minor-active");
+        }
+        // Use the actual activated counters, not source-evidence-only RTR or
+        // Hussars. The two observers are independent counters, not formations.
+        var minorContactWorld = CampaignSourcePlayableWorld.Create(minor.SourceAuthority);
+        var activePair = CampaignSourcePolishArrivalContacts.EffectiveCounters(minorContactWorld)
+            .Where(value => value.RepresentationId is "axis-minor.scheferzen-garrison" or "independent-setup.2-rifle-brigade")
+            .ToArray();
+        Assert.Equal(2, activePair.Length);
+        Assert.All(activePair, value => Assert.Equal(CampaignContactObserverKind.IndependentCounter, value.ObserverKind));
+        var pairAxis = new CampaignContactKnowledge(minor.SourceAuthority.Request.CampaignId, LandSide.Axis);
+        var pairCw = new CampaignContactKnowledge(minor.SourceAuthority.Request.CampaignId, LandSide.Commonwealth);
+        var axisPairContact = Assert.Single(CampaignSourceInitialContacts.DeriveCounters(activePair, 1, pairAxis));
+        var cwPairContact = Assert.Single(CampaignSourceInitialContacts.DeriveCounters(activePair, 1, pairCw));
+        Assert.Equal(CampaignContactKnowledge.IndependentObserverContractVersion, axisPairContact.ContractVersion);
+        Assert.Equal(CampaignContactKnowledge.IndependentObserverContractVersion, cwPairContact.ContractVersion);
+        var axisPairBytes = CampaignContactTransitionCodec.SerializeCanonical(axisPairContact);
+        Assert.Equal(axisPairContact, CampaignContactTransitionCodec.DeserializeCanonical(axisPairBytes));
+        Assert.Equal(axisPairBytes, CampaignContactTransitionCodec.SerializeCanonical(Assert.Single(
+            CampaignSourceInitialContacts.DeriveCounters(activePair, 1,
+                new CampaignContactKnowledge(minor.SourceAuthority.Request.CampaignId, LandSide.Axis)))));
+        pairAxis.Apply(axisPairContact);
+        pairCw.Apply(cwPairContact);
+        Assert.Empty(pairAxis.ObserveFor(axisPairContact.ObserverFormationId));
+        var ownCounterView = CampaignIndependentContactObservationV2.Project(minorContactWorld, pairAxis,
+            "axis-minor.scheferzen-garrison");
+        Assert.Single(ownCounterView.Contacts);
+        Assert.DoesNotContain("independent-setup.2-rifle-brigade", System.Text.Encoding.UTF8.GetString(ownCounterView.SerializeCanonical()));
+        Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(minorContactWorld,
+            pairCw, "axis-minor.scheferzen-garrison"));
+        var repeatedPairContact = Assert.Single(CampaignSourceInitialContacts.DeriveCounters(activePair, 2, pairAxis));
+        Assert.Equal(axisPairContact.ContactHandle, repeatedPairContact.ContactHandle);
+        Assert.True(CampaignExercises.Reconstruct(minor).IsVerified);
+        var compactMinorResult = CampaignExercises.AdmitSourceCompactCheckpoint(minor);
+        Assert.True(compactMinorResult.IsAccepted);
+        var compactMinor = compactMinorResult.SuccessorSession!;
+        var compactMinorBytes = compactMinor.SourceAuthority!.SerializeCheckpoint();
+        using (var compactMinorJson = JsonDocument.Parse(compactMinorBytes))
+        {
+            var baseBytes = compactMinorJson.RootElement.GetProperty("baseCheckpoint").GetBytesFromBase64();
+            var artifactBytes = compactMinor.SourceAuthority.CwFreeGunsWorld!.MinorGarrisonContent!.CanonicalBytes;
+            Console.WriteLine($"minor checkpoint bytes: compact={compactMinorBytes.Length}, base={baseBytes.Length}, artifact={artifactBytes.Length}");
+            Assert.True(compactMinorBytes.Length < 16_384, $"Compact minor checkpoint was {compactMinorBytes.Length} bytes; base {baseBytes.Length}, artifact {artifactBytes.Length}.");
+            Assert.False(compactMinorJson.RootElement.TryGetProperty("minorGarrisonContent", out _));
+            Assert.Equal(compactMinor.SourceAuthority.World.ContentIdentity.Hash,
+                compactMinorJson.RootElement.GetProperty("minorGarrisonContentHash").GetString());
+        }
+        Assert.True(CampaignExercises.Reconstruct(compactMinor).IsVerified);
+        Assert.False(CampaignExercises.ActivateSourceAxisGarrisonRemainder(minor).IsAccepted);
+        var oldMinorCheckpoint = compactMinor.SourceAuthority.SerializeCheckpoint();
+        var remainderResult = CampaignExercises.ActivateSourceAxisGarrisonRemainder(compactMinor);
+        Assert.True(remainderResult.IsAccepted);
+        var remainder = remainderResult.SuccessorSession!;
+        Assert.Equal(CampaignPregameSourceCreation.Digest(remainder.SourceAuthority!.CwFreeGunsWorld!.SerializeCanonical()),
+            remainder.SourceAuthority.CwFreeGunsWorld.Hash());
+        Console.WriteLine($"garrison remainder content hash: {remainder.SourceAuthority!.World.ContentIdentity.Hash}");
+        if (seed == 14)
+            Assert.Equal(CampaignPregameSourceCreation.Digest(remainder.SourceAuthority.SerializeLegacyCheckpoint()),
+                remainder.SourceAuthority.DigestLegacyCheckpoint());
+        var remainderCheckpointBytes = remainder.SourceAuthority!.SerializeCheckpoint();
+        Assert.True(remainderCheckpointBytes.Length < 24 * 1024 * 1024,
+            $"Legacy garrison remainder checkpoint was {remainderCheckpointBytes.Length} bytes.");
+        Assert.Equal(oldMinorCheckpoint, compactMinor.SourceAuthority.SerializeCheckpoint());
+        Assert.Equal(CampaignSourceAuthorityState.AxisGarrisonRemainderCheckpointContractVersion, remainder.SourceAuthority.ProfileVersion);
+        Assert.Equal(ContentSourceAxisGarrisonRemainderPackArtifact.ContentHash, remainder.SourceAuthority.World.ContentIdentity.Hash);
+        Assert.Equal(minor.SourceAuthority.RandomState, remainder.SourceAuthority.RandomState);
+        Assert.Equal(minor.SourceAuthority.World.PendingArrivals, remainder.SourceAuthority.World.PendingArrivals);
+        Assert.Equal(minor.SourceAuthority.GroupedWorld!.ContentHash, remainder.SourceAuthority.GroupedWorld!.ContentHash);
+        Assert.Equal(ExpectedGarrisonRemainderIds,
+            ContentSourceAxisGarrisonRemainderPackArtifact.Units.Select(value => value.Id).Order(StringComparer.Ordinal));
+        foreach (var unit in ContentSourceAxisGarrisonRemainderPackArtifact.Units)
+        {
+            var element = Assert.Single(remainder.SourceAuthority.World.World.Elements, value => value.ElementId == unit.Id);
+            var sourceComponent = ContentSourceAxisGarrisonRemainderPackArtifact.Facts(unit.Id).Components.Single();
+            Assert.Equal(unit.Location, element.CurrentLocationId);
+            Assert.Equal(unit.Toe, Assert.Single(element.Components).CurrentToe);
+            Assert.Equal(sourceComponent.ComponentId, element.Components[0].ComponentId);
+            Assert.Equal(0, ContentSourceAxisGarrisonRemainderPackArtifact.StackAt(unit.Id, unit.Location));
+            Assert.Single(remainder.SourceAuthority.World.World.Representations, value =>
+                value.BindingKind == CampaignMapRepresentationBindingKind.IndependentElement
+                && value.CurrentLocationId == unit.Location && value.BoundElementIds.SequenceEqual([unit.Id]));
+            Assert.Contains(remainder.SourceAuthority.Battlefield!.Entries, value => value.ElementId == unit.Id
+                && value.AuthorityStatus == "source-axis-garrison-remainder-active");
+        }
+        var remainderContactWorld = CampaignSourcePlayableWorld.Create(remainder.SourceAuthority);
+        var remainderCounters = CampaignSourcePolishArrivalContacts.EffectiveCounters(remainderContactWorld);
+        var remainderAxisKnowledge = new CampaignContactKnowledge(remainder.SourceAuthority.Request.CampaignId, LandSide.Axis);
+        var remainderCwKnowledge = new CampaignContactKnowledge(remainder.SourceAuthority.Request.CampaignId, LandSide.Commonwealth);
+        // Both counters come from the admitted source world. The chart proves
+        // Soluch and Matruh are separated without inferring a playable seam.
+        var soluchAndIndian = remainderCounters.Where(value => value.RepresentationId is
+            "axis-garrison.soluch-antitank-company" or "4-indian-division").ToArray();
+        Assert.Equal(2, soluchAndIndian.Length);
+        Assert.Empty(CampaignSourceInitialContacts.DeriveCounters(soluchAndIndian, 1, remainderAxisKnowledge));
+        Assert.Empty(CampaignSourceInitialContacts.DeriveCounters(soluchAndIndian, 1, remainderCwKnowledge));
+        Assert.Equal(6, ContentSourceAxisGarrisonRemainderPackArtifact.Units.Count);
+        foreach (var removedId in ContentSourceAxisGarrisonRemainderPackArtifact.RemovedAntiAirIds)
+        {
+            var observerId = "axis-garrison." + removedId;
+            Assert.DoesNotContain(remainderCounters, value => value.RepresentationId == observerId);
+            Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(remainderContactWorld, remainderAxisKnowledge, observerId));
+        }
+        foreach (var unit in ContentSourceAxisGarrisonRemainderPackArtifact.Units)
+        {
+            var id = "axis-garrison." + unit.Id;
+            var counter = Assert.Single(remainderCounters, value => value.RepresentationId == id);
+            Assert.Equal(CampaignContactObserverKind.IndependentCounter, counter.ObserverKind);
+            Assert.Equal(id, counter.ObserverFormationId);
+            Assert.Empty(CampaignIndependentContactObservationV2.Project(remainderContactWorld, remainderAxisKnowledge, id).Contacts);
+            Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(remainderContactWorld, remainderCwKnowledge, id));
+            Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(minorContactWorld, pairAxis, id));
+        }
+        Assert.Equal(1, ContentSourceAxisGarrisonRemainderPackArtifact.StackAt("soluch-artillery-regiment", "a4131"));
+        Assert.Equal(1, ContentSourceAxisGarrisonRemainderPackArtifact.StackAt("giarabub-machine-gun", "c1015"));
+        Assert.DoesNotContain(remainder.SourceAuthority.World.World.Elements, value => value.ElementId == "giarabub-motor-machine-gun");
+        Assert.Contains(remainder.SourceAuthority.Battlefield!.Entries, value => value.ElementId == "giarabub-motor-machine-gun"
+            && value.AuthorityStatus == "source-evidence");
+        foreach (var id in ContentSourceAxisGarrisonRemainderPackArtifact.RemovedAntiAirIds)
+        {
+            Assert.DoesNotContain(remainder.SourceAuthority.World.World.Elements, value => value.ElementId == id);
+            Assert.DoesNotContain(remainder.SourceAuthority.World.World.Representations, value => value.BoundElementIds.Contains(id));
+            var removedEntry = Assert.Single(remainder.SourceAuthority.Battlefield!.Entries, value => value.ElementId == id
+                && value.AuthorityStatus == "source-land-only-aa-removed");
+            Assert.DoesNotContain(CampaignSourcePlayableWorld.Create(remainder.SourceAuthority).UnresolvedAt(removedEntry.LocationId!),
+                value => value.ElementId == id);
+        }
+        using (var contentDocument = JsonDocument.Parse(remainder.SourceAuthority.CwFreeGunsWorld!.GarrisonRemainderContent!.CanonicalBytes))
+        {
+            var removedIds = contentDocument.RootElement.GetProperty("removedAntiAirUnits").EnumerateArray()
+                .Select(value => value.GetString()!).ToArray();
+            Assert.Equal(ContentSourceAxisGarrisonRemainderPackArtifact.RemovedAntiAirIds, removedIds);
+            Assert.Equal("land:32.83(1)-italian-uu-removed-from-play", contentDocument.RootElement.GetProperty("antiAirTreatment").GetString());
+        }
+        Assert.True(CampaignExercises.Reconstruct(remainder).IsVerified);
+        var remainderHistory = remainder.PregameHistory.Select(value => value.ToArray()).ToArray();
+        using (var remainderEvent = JsonDocument.Parse(remainderHistory[^1]))
+        {
+            var worldHash = remainderEvent.RootElement.GetProperty("worldHash").GetString()!;
+            var changedHash = worldHash[..^1] + (worldHash[^1] == '0' ? '1' : '0');
+            remainderHistory[^1] = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(remainderHistory[^1])
+                .Replace(worldHash, changedHash, StringComparison.Ordinal));
+        }
+        var tamperedRemainder = new ExerciseSession(remainder.Pregame!, remainder.CurrentContacts,
+            remainderHistory, remainder.SourceAuthority);
+        Assert.False(CampaignExercises.Reconstruct(tamperedRemainder).IsVerified);
+        Assert.False(CampaignExercises.ActivateSourceAxisGarrisonRemainder(remainder).IsAccepted);
+        var compactRemainder = remainder;
+        var compactRemainderBytes = compactRemainder.SourceAuthority!.SerializeCheckpoint();
+        using (var remainderCheckpoint = JsonDocument.Parse(compactRemainderBytes))
+        {
+            Assert.True(compactRemainderBytes.Length < 16_384, $"Compact remainder checkpoint was {compactRemainderBytes.Length} bytes.");
+            Assert.False(remainderCheckpoint.RootElement.TryGetProperty("garrisonRemainderContent", out _));
+            Assert.Equal(compactRemainder.SourceAuthority.World.ContentIdentity.Hash,
+                remainderCheckpoint.RootElement.GetProperty("garrisonRemainderContentHash").GetString());
+        }
+        Assert.True(CampaignExercises.Reconstruct(compactRemainder).IsVerified);
+        var priorRemainderCheckpoint = remainder.SourceAuthority.SerializeCheckpoint();
+        var priorAxisMotorization = remainder.SourceAuthority.AxisMotorization.Hash();
+        var motorMgResult = CampaignExercises.ActivateSourceGiarabubMotorMachineGun(remainder);
+        Assert.True(motorMgResult.IsAccepted);
+        var motorMg = motorMgResult.SuccessorSession!;
+        Assert.Equal(CampaignPregameSourceCreation.Digest(motorMg.SourceAuthority!.CwFreeGunsWorld!.SerializeCanonical()),
+            motorMg.SourceAuthority.CwFreeGunsWorld.Hash());
+        Assert.Equal(priorRemainderCheckpoint, remainder.SourceAuthority.SerializeCheckpoint());
+        Assert.Equal(CampaignSourceAuthorityState.GiarabubMotorMachineGunCheckpointContractVersion, motorMg.SourceAuthority!.ProfileVersion);
+        Assert.Equal(priorAxisMotorization, motorMg.SourceAuthority.AxisMotorization.Hash());
+        Assert.Equal(remainder.SourceAuthority.RandomState, motorMg.SourceAuthority.RandomState);
+        Assert.Equal(remainder.SourceAuthority.World.PendingArrivals, motorMg.SourceAuthority.World.PendingArrivals);
+        var motorMgElement = Assert.Single(motorMg.SourceAuthority.World.World.Elements,
+            value => value.ElementId == ContentSourceGiarabubMotorMachineGunArtifact.ElementId);
+        Assert.Equal("c1014", motorMgElement.CurrentLocationId);
+        Assert.Equal(1, Assert.Single(motorMgElement.Components).CurrentToe);
+        Assert.Single(motorMg.SourceAuthority.World.World.Representations, value =>
+            value.RepresentationId == "axis-garrison.giarabub-motor-machine-gun"
+            && value.BindingKind == CampaignMapRepresentationBindingKind.IndependentElement);
+        var motorMgContent = motorMg.SourceAuthority.CwFreeGunsWorld!.MotorMachineGunContent!;
+        Console.WriteLine($"giarabub motor MG content hash: {motorMgContent.Identity.Hash}");
+        Assert.Equal(ContentSourceGiarabubMotorMachineGunArtifact.ContentHash, motorMgContent.Identity.Hash);
+        using (var document = JsonDocument.Parse(motorMgContent.CanonicalBytes))
+        {
+            var root = document.RootElement;
+            Assert.Equal("8+", root.GetProperty("printedCapabilityPoints").GetString());
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("effectiveCapabilityPoints").ValueKind);
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("mobilityId").ValueKind);
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("motorPoolId").ValueKind);
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("assignedMotorPoints").ValueKind);
+        }
+        var motorMgWorld = CampaignSourcePlayableWorld.Create(motorMg.SourceAuthority);
+        Assert.Contains("giarabub-motor-mg-historical-motorization-priority-unresolved", motorMgWorld.ReadinessBlockers());
+        Assert.Contains("giarabub-motor-mg-capability-and-mobility-unresolved", motorMgWorld.ReadinessBlockers());
+        var motorMgCounter = Assert.Single(CampaignSourcePolishArrivalContacts.EffectiveCounters(motorMgWorld),
+            value => value.RepresentationId == "axis-garrison.giarabub-motor-machine-gun");
+        Assert.Equal(CampaignContactObserverKind.IndependentCounter, motorMgCounter.ObserverKind);
+        Assert.Equal(motorMgCounter.RepresentationId, motorMgCounter.ObserverFormationId);
+        var motorMgAxisKnowledge = new CampaignContactKnowledge(motorMg.SourceAuthority.Request.CampaignId, LandSide.Axis);
+        var motorMgCwKnowledge = new CampaignContactKnowledge(motorMg.SourceAuthority.Request.CampaignId, LandSide.Commonwealth);
+        Assert.Empty(CampaignIndependentContactObservationV2.Project(motorMgWorld, motorMgAxisKnowledge, motorMgCounter.RepresentationId).Contacts);
+        Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(motorMgWorld, motorMgCwKnowledge, motorMgCounter.RepresentationId));
+        Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(remainderContactWorld, motorMgAxisKnowledge, motorMgCounter.RepresentationId));
+        var motorAndIndian = CampaignSourcePolishArrivalContacts.EffectiveCounters(motorMgWorld)
+            .Where(value => value.RepresentationId is "axis-garrison.giarabub-motor-machine-gun" or "4-indian-division").ToArray();
+        Assert.Equal(2, motorAndIndian.Length);
+        Assert.Empty(CampaignSourceInitialContacts.DeriveCounters(motorAndIndian, 1, motorMgAxisKnowledge));
+        // Exercise the verified Giarabub hexside using the real counters; this
+        // hypothetical position is not an admitted campaign move.
+        var adjacentIndian = motorAndIndian.Single(value => value.RepresentationId == "4-indian-division") with { LocationId = "c1015" };
+        var motorContact = Assert.Single(CampaignSourceInitialContacts.DeriveCounters([motorMgCounter, adjacentIndian], 1, motorMgAxisKnowledge));
+        Assert.Equal(CampaignContactObserverKind.IndependentCounter, motorContact.ObserverKind);
+        Assert.Equal(motorMgCounter.RepresentationId, motorContact.ObserverFormationId);
+        Assert.False(motorMgWorld.IsGameplayReady);
+        Assert.False(CampaignExercises.StartSourceTurn(motorMg).IsAccepted);
+        Assert.True(CampaignExercises.Reconstruct(motorMg).IsVerified);
+        Assert.False(CampaignExercises.ActivateSourceGiarabubMotorMachineGun(motorMg).IsAccepted);
+        var motorMgCheckpoint = motorMg.SourceAuthority.SerializeCheckpoint();
+        Assert.True(motorMgCheckpoint.Length < 16_384, $"Compact motor MG checkpoint was {motorMgCheckpoint.Length} bytes.");
+        using (var document = JsonDocument.Parse(motorMgCheckpoint))
+            Assert.Equal(motorMgContent.Identity.Hash, document.RootElement.GetProperty("motorMachineGunContentHash").GetString());
+        var cwFrontlineResult = CampaignExercises.ActivateSourceCwFrontline(motorMg);
+        Assert.True(cwFrontlineResult.IsAccepted);
+        var cwFrontline = cwFrontlineResult.SuccessorSession!;
+        var cwAuthority = cwFrontline.SourceAuthority!;
+        if (seed == 14)
+        {
+            var loads = cwFrontline;
+            Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceAttachedInitialLoadsDraft(loads, CampaignActionAudience.Axis));
+            using (var opening = JsonDocument.Parse(CampaignExercises.QuerySourceAttachedInitialLoadsDraft(loads, CampaignActionAudience.Commonwealth).VisibleBytes))
+            {
+                Assert.Equal(2, opening.RootElement.GetProperty("contractVersion").GetInt32());
+                Assert.Contains(opening.RootElement.GetProperty("frontlinePools").EnumerateArray(), value =>
+                    value.GetProperty("elementId").GetString() == "1-rtr" && value.GetProperty("totalPoints").GetInt32() == 5);
+            }
+            Assert.False(CampaignExercises.SubmitSourceAttachedInitialLoads(loads,
+                Submission(loads, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-finish", "frontline"),
+                    CampaignActionAudience.Commonwealth)).IsAccepted);
+            foreach (var (id, count) in new[] { ("1-rtr", 5), ("11-hussars", 3) })
+                for (var i = 0; i < count; i++)
+                    loads = CampaignExercises.SubmitSourceAttachedInitialLoads(loads,
+                        Submission(loads, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-attach", id),
+                            CampaignActionAudience.Commonwealth)).SuccessorSession!;
+            var attachOverflow = CampaignExercises.SubmitSourceAttachedInitialLoads(loads,
+                Submission(loads, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-attach", "1-rtr"),
+                    CampaignActionAudience.Commonwealth));
+            Assert.False(attachOverflow.IsAccepted);
+            var emptyFinished = CampaignExercises.SubmitSourceAttachedInitialLoads(loads,
+                Submission(loads, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-finish", "frontline"),
+                    CampaignActionAudience.Commonwealth)).SuccessorSession!;
+            Assert.DoesNotContain("cw-frontline-initial-loads-unresolved",
+                CampaignSourcePlayableWorld.Create(emptyFinished.SourceAuthority!).ReadinessBlockers());
+            Assert.False(CampaignExercises.StartSourceTurn(emptyFinished).IsAccepted);
+            Assert.True(CampaignExercises.Reconstruct(emptyFinished).IsVerified);
+            var reopenedEmpty = CampaignExercises.SubmitSourceAttachedInitialLoads(emptyFinished,
+                Submission(emptyFinished, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-reopen", "frontline"),
+                    CampaignActionAudience.Commonwealth)).SuccessorSession!;
+            Assert.Contains("cw-frontline-initial-loads-unresolved",
+                CampaignSourcePlayableWorld.Create(reopenedEmpty.SourceAuthority!).ReadinessBlockers());
+            foreach (var (kind, id) in new[] { ("frontline-ammo", "1-rtr"), ("frontline-fuel", "11-hussars"), ("frontline-finish", "frontline") })
+                loads = CampaignExercises.SubmitSourceAttachedInitialLoads(loads,
+                    Submission(loads, CampaignSourceAuthorityState.AttachedInitialLoadsActionId(kind, id),
+                        CampaignActionAudience.Commonwealth)).SuccessorSession!;
+            var loadState = loads.SourceAuthority!.AttachedInitialLoads!;
+            Assert.True(loadState.FrontlineFinished);
+            Assert.Equal(5, loadState.Attached("1-rtr"));
+            Assert.Equal(3, loadState.Attached("11-hussars"));
+            Assert.Equal(1, Assert.Single(loadState.Targets, value => value.ElementId == "1-rtr").AmmoPoints);
+            Assert.Equal(1, Assert.Single(loadState.Targets, value => value.ElementId == "11-hussars").FuelPoints);
+            Assert.Contains("cw-frontline-initial-loads-unresolved", CampaignSourcePlayableWorld.Create(loads.SourceAuthority).ReadinessBlockers());
+            Assert.False(CampaignExercises.SubmitSourceAttachedInitialLoads(loads,
+                Submission(loads, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-ammo", "1-rtr"),
+                    CampaignActionAudience.Commonwealth)).IsAccepted);
+            Assert.True(CampaignExercises.Reconstruct(loads).IsVerified);
+        }
+        Assert.True(CampaignExercises.IsSourceCwFrontlineActivated(cwFrontline));
+        Assert.Equal(motorMgCheckpoint, motorMg.SourceAuthority.SerializeCheckpoint());
+        Assert.Equal(CampaignSourceAuthorityState.CwFrontlineCheckpointContractVersion, cwAuthority.ProfileVersion);
+        Assert.Equal(motorMg.SourceAuthority.CommonwealthMotorization.Hash(), cwAuthority.CommonwealthMotorization.Hash());
+        Assert.Equal(motorMg.SourceAuthority.AxisMotorization.Hash(), cwAuthority.AxisMotorization.Hash());
+        Assert.Equal(motorMg.SourceAuthority.RandomState, cwAuthority.RandomState);
+        Assert.Equal(motorMg.SourceAuthority.World.PendingArrivals, cwAuthority.World.PendingArrivals);
+        foreach (var unit in ContentSourceCwFrontlineArtifact.Units)
+        {
+            var element = Assert.Single(cwAuthority.World.World.Elements, value => value.ElementId == unit.Id);
+            Assert.Equal(unit.Location, element.CurrentLocationId);
+            Assert.Equal(unit.Toe, Assert.Single(element.Components).CurrentToe);
+            Assert.Single(cwAuthority.World.World.Representations, value => value.RepresentationId == "cw-frontline." + unit.Id
+                && value.BindingKind == CampaignMapRepresentationBindingKind.IndependentElement);
+            Assert.Contains(cwAuthority.Battlefield!.Entries, value => value.ElementId == unit.Id
+                && value.AuthorityStatus == "source-cw-frontline-active-initial-loads-unresolved");
+        }
+        var cwNativeWorld = cwAuthority.CwFreeGunsWorld!;
+        var freshHashWorld = remainder.SourceAuthority.CwFreeGunsWorld!.ActivateGiarabubMotorMachineGun(
+            remainder.SourceAuthority.AxisGarrisons!, remainder.SourceAuthority.Battlefield!);
+        var canonicalWorldHash = CampaignPregameSourceCreation.Digest(freshHashWorld.SerializeCanonical());
+        var concurrentWorldHashes = new string[8];
+        Parallel.For(0, concurrentWorldHashes.Length, index => concurrentWorldHashes[index] = freshHashWorld.Hash());
+        Assert.All(concurrentWorldHashes, hash => Assert.Equal(canonicalWorldHash, hash));
+        var cwContent = cwNativeWorld.CwFrontlineContent!;
+        var cwContactWorld = CampaignSourcePlayableWorld.Create(cwAuthority);
+        var cwEffectiveCounters = CampaignSourcePolishArrivalContacts.EffectiveCounters(cwContactWorld);
+        foreach (var (cwId, axisId) in new[]
+        {
+            ("cw-frontline.1-rtr", "axis-minor.scheferzen-garrison"),
+            ("cw-frontline.11-hussars", "axis-minor.fort-maddalena-garrison"),
+        })
+        {
+            var actualPair = cwEffectiveCounters.Where(value => value.RepresentationId == cwId || value.RepresentationId == axisId).ToArray();
+            Assert.Equal(2, actualPair.Length);
+            Assert.All(actualPair, value => Assert.Equal(CampaignContactObserverKind.IndependentCounter, value.ObserverKind));
+            var cwKnowledge = new CampaignContactKnowledge(cwAuthority.Request.CampaignId, LandSide.Commonwealth);
+            var axisKnowledge = new CampaignContactKnowledge(cwAuthority.Request.CampaignId, LandSide.Axis);
+            var cwContact = Assert.Single(CampaignSourceInitialContacts.DeriveCounters(actualPair, 1, cwKnowledge));
+            var axisContact = Assert.Single(CampaignSourceInitialContacts.DeriveCounters(actualPair, 1, axisKnowledge));
+            Assert.Equal(cwId, cwContact.ObserverFormationId);
+            Assert.Equal(axisId, axisContact.ObserverFormationId);
+            var serialized = CampaignContactTransitionCodec.SerializeCanonical(cwContact);
+            Assert.Equal(cwContact, CampaignContactTransitionCodec.DeserializeCanonical(serialized));
+            Assert.Equal(serialized, CampaignContactTransitionCodec.SerializeCanonical(Assert.Single(
+                CampaignSourceInitialContacts.DeriveCounters(actualPair, 1,
+                    new CampaignContactKnowledge(cwAuthority.Request.CampaignId, LandSide.Commonwealth)))));
+            cwKnowledge.Apply(cwContact);
+            axisKnowledge.Apply(axisContact);
+            var cwView = CampaignIndependentContactObservationV2.Project(cwContactWorld, cwKnowledge, cwId);
+            Assert.Single(cwView.Contacts);
+            Assert.DoesNotContain(axisId, System.Text.Encoding.UTF8.GetString(cwView.SerializeCanonical()));
+            Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(cwContactWorld, axisKnowledge, cwId));
+            Assert.Throws<InvalidOperationException>(() => CampaignIndependentContactObservationV2.Project(
+                CampaignSourcePlayableWorld.Create(motorMg.SourceAuthority), cwKnowledge, cwId));
+            Assert.Equal(cwContact.ContactHandle, Assert.Single(CampaignSourceInitialContacts.DeriveCounters(actualPair, 2, cwKnowledge)).ContactHandle);
+        }
+        Assert.Equal(ContentSourceCwFrontlineArtifact.ContentHash, cwContent.Identity.Hash);
+        Assert.Equal(cwContent.Identity, ContentSourceCwFrontlineArtifact.Read(cwContent.CanonicalBytes).Identity);
+        if (seed == 14)
+        {
+            var changedMotor = motorMgContent.CanonicalBytes;
+            var motorFormat = changedMotor.AsSpan().IndexOf("sandtable.source-giarabub-motor-mg.v1"u8);
+            Assert.True(motorFormat >= 0);
+            changedMotor[motorFormat] = (byte)'X';
+            Assert.Throws<InvalidOperationException>(() => ContentSourceGiarabubMotorMachineGunArtifact.Read(changedMotor));
+            var changedFrontline = cwContent.CanonicalBytes;
+            var frontlineFormat = changedFrontline.AsSpan().IndexOf("sandtable.source-cw-frontline.v1"u8);
+            Assert.True(frontlineFormat >= 0);
+            changedFrontline[frontlineFormat] = (byte)'X';
+            Assert.Throws<InvalidOperationException>(() => ContentSourceCwFrontlineArtifact.Read(changedFrontline));
+        }
+        using (var document = JsonDocument.Parse(cwContent.CanonicalBytes))
+            foreach (var unit in document.RootElement.GetProperty("units").EnumerateArray())
+            {
+                if (unit.GetProperty("elementId").GetString() == "11-hussars")
+                    Assert.Equal(1, unit.GetProperty("chartArmorRating").GetInt32());
+                Assert.Equal(JsonValueKind.Null, unit.GetProperty("initialCargo").ValueKind);
+                Assert.Equal(JsonValueKind.Null, unit.GetProperty("parentFormationId").ValueKind);
+            }
+        Assert.Contains("cw-frontline-initial-loads-unresolved", CampaignSourcePlayableWorld.Create(cwAuthority).ReadinessBlockers());
+        Assert.False(CampaignExercises.StartSourceTurn(cwFrontline).IsAccepted);
+        Assert.False(CampaignExercises.ActivateSourceCwFrontline(cwFrontline).IsAccepted);
+        var cwCheckpoint = cwAuthority.SerializeCheckpoint();
+        Assert.True(cwCheckpoint.Length < 16_384, $"Compact CW frontline checkpoint was {cwCheckpoint.Length} bytes.");
+        using (var document = JsonDocument.Parse(cwCheckpoint))
+            Assert.Equal(cwContent.Identity.Hash, document.RootElement.GetProperty("cwFrontlineContentHash").GetString());
+        Assert.True(CampaignExercises.Reconstruct(cwFrontline).IsVerified);
+        var cwHistory = cwFrontline.PregameHistory.Select(value => value.ToArray()).ToArray();
+        using (var document = JsonDocument.Parse(cwHistory[^1]))
+        {
+            var hash = document.RootElement.GetProperty("worldHash").GetString()!;
+            var changed = hash[..^1] + (hash[^1] == '0' ? '1' : '0');
+            cwHistory[^1] = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(cwHistory[^1])
+                .Replace(hash, changed, StringComparison.Ordinal));
+        }
+        Assert.False(CampaignExercises.Reconstruct(new ExerciseSession(cwFrontline.Pregame!, cwFrontline.CurrentContacts,
+            cwHistory, cwFrontline.SourceAuthority)).IsVerified);
+        var motorMgHistory = motorMg.PregameHistory.Select(value => value.ToArray()).ToArray();
+        using (var document = JsonDocument.Parse(motorMgHistory[^1]))
+        {
+            var hash = document.RootElement.GetProperty("worldHash").GetString()!;
+            var changed = hash[..^1] + (hash[^1] == '0' ? '1' : '0');
+            motorMgHistory[^1] = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(motorMgHistory[^1])
+                .Replace(hash, changed, StringComparison.Ordinal));
+        }
+        Assert.False(CampaignExercises.Reconstruct(new ExerciseSession(motorMg.Pregame!, motorMg.CurrentContacts,
+            motorMgHistory, motorMg.SourceAuthority)).IsVerified);
+        var minorHistory = minor.PregameHistory.Select(value => value.ToArray()).ToArray();
+        using (var eventDocument = JsonDocument.Parse(minorHistory[^1]))
+        {
+            var worldHash = eventDocument.RootElement.GetProperty("worldHash").GetString()!;
+            var changedHash = worldHash[..^1] + (worldHash[^1] == '0' ? '1' : '0');
+            minorHistory[^1] = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(minorHistory[^1])
+                .Replace(worldHash, changedHash, StringComparison.Ordinal));
+        }
+        var tamperedMinor = new ExerciseSession(minor.Pregame!, minor.CurrentContacts, minorHistory, minor.SourceAuthority);
+        Assert.False(CampaignExercises.Reconstruct(tamperedMinor).IsVerified);
+        Assert.False(CampaignExercises.ActivateSourceAxisMinorGarrisons(minor).IsAccepted);
+        var minorFinish = CampaignExercises.Query(minor, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var minorFinished = CampaignExercises.Submit(minor,
+            Submission(minor, minorFinish.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.True(CampaignExercises.Reconstruct(minorFinished).IsVerified);
+        Assert.Equal(minor.SourceAuthority.World.ContentIdentity, minorFinished.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(ContentSourceFourthIndianPackArtifact.ContentHash, grouped.ContentHash);
         Assert.Equal(11, grouped.Groups.Single().Members.Count);
         var originalGroup = grouped.Groups.Single();
@@ -728,6 +1492,28 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.SubmitSourceFourthIndian(indian,
             Submission(indian, footAction, CampaignActionAudience.Commonwealth)).RejectionReason);
         Assert.True(CampaignExercises.Reconstruct(indian).IsVerified);
+        var minorBeforePromotions = CampaignExercises.ActivateSourceAxisMinorGarrisons(indian).SuccessorSession!;
+        minorBeforePromotions = CampaignExercises.AdmitSourceCompactCheckpoint(minorBeforePromotions).SuccessorSession!;
+        minorBeforePromotions = CampaignExercises.ActivateSourceAxisGarrisonRemainder(minorBeforePromotions).SuccessorSession!;
+        minorBeforePromotions = CampaignExercises.ActivateSourceGiarabubMotorMachineGun(minorBeforePromotions).SuccessorSession!;
+        var minorIdentity = minorBeforePromotions.SourceAuthority!.World.ContentIdentity;
+        minorBeforePromotions = CampaignExercises.SubmitSourceMalettiHierarchy(minorBeforePromotions,
+            Submission(minorBeforePromotions, certifiedDetach, CampaignActionAudience.Axis)).SuccessorSession!;
+        var minorMaletti = CampaignExercises.PromoteSourceCertifiedMalettiWorld(minorBeforePromotions);
+        Assert.True(minorMaletti.IsAccepted);
+        minorBeforePromotions = minorMaletti.SuccessorSession!;
+        minorBeforePromotions = CampaignExercises.AdmitSourceMatruhFormation(minorBeforePromotions).SuccessorSession!;
+        minorBeforePromotions = CampaignExercises.SubmitSourceMatruhFormation(minorBeforePromotions,
+            Submission(minorBeforePromotions, matruhConfirm, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        minorBeforePromotions = CampaignExercises.SubmitSourceMatruhFormation(minorBeforePromotions,
+            Submission(minorBeforePromotions, matruhDetach, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        var minorMatruh = CampaignExercises.PromoteSourceMatruhDetachedWorld(minorBeforePromotions);
+        Assert.True(minorMatruh.IsAccepted);
+        minorBeforePromotions = minorMatruh.SuccessorSession!;
+        Assert.Equal(minorIdentity, minorBeforePromotions.SourceAuthority!.World.ContentIdentity);
+        Assert.All(ContentSourceAxisMinorGarrisonsPackArtifact.Units, unit =>
+            Assert.Contains(minorBeforePromotions.SourceAuthority.World.World.Elements, element => element.ElementId == unit.Id));
+        Assert.True(CampaignExercises.Reconstruct(minorBeforePromotions).IsVerified);
         var indianWithoutMalettiDetachment = indian;
         indian = CampaignExercises.SubmitSourceMalettiHierarchy(indian,
             Submission(indian, certifiedDetach, CampaignActionAudience.Axis)).SuccessorSession!;
@@ -809,6 +1595,572 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(5, italianConfirmed.SourceAuthority.GroupedWorld!.StackAt("axis", "c4120", _ => null));
         Assert.Equal(5, italianConfirmed.SourceAuthority.GroupedWorld.StackAt("axis", "c3918", _ => null));
         Assert.True(CampaignExercises.Reconstruct(italianConfirmed).IsVerified);
+        var seventhDirect = italianConfirmed.SourceAuthority.AdmitSeventhArmoredGroupedWorld();
+        Assert.NotNull(seventhDirect.GroupedWorld);
+        var seventhResult = CampaignExercises.AdmitSourceSeventhArmoredGroupedWorld(italianConfirmed);
+        Assert.True(seventhResult.IsAccepted);
+        var seventhProposed = seventhResult.SuccessorSession!;
+        var seventh = seventhProposed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "7-armored-division");
+        Assert.Equal(7, seventh.Members.Count); Assert.Null(seventh.StackValue); Assert.False(seventh.DispositionConfirmed);
+        Assert.Equal(10, seventh.MotorPool);
+        var seventhChoice = CampaignExercises.Query(seventhProposed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "seventh-armored-disposition");
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.Submit(seventhProposed,
+            Submission(seventhProposed, seventhChoice.ActionId, CampaignActionAudience.Axis)).RejectionReason);
+        var seventhCommand = Submission(seventhProposed, seventhChoice.ActionId, CampaignActionAudience.Commonwealth);
+        var seventhConfirmedResult = CampaignExercises.Submit(seventhProposed, seventhCommand);
+        Assert.True(seventhConfirmedResult.IsAccepted);
+        var seventhConfirmed = seventhConfirmedResult.SuccessorSession!;
+        Assert.Equal(5, seventhConfirmed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "7-armored-division").StackValue);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, CampaignExercises.Submit(seventhConfirmed, seventhCommand).RejectionReason);
+        Assert.Equal(italianConfirmed.SourceAuthority.World.PendingArrivals, seventhConfirmed.SourceAuthority.World.PendingArrivals);
+        Assert.True(CampaignExercises.Reconstruct(seventhConfirmed).IsVerified);
+        var legacySeventhCheckpoint = seventhConfirmed.SourceAuthority.SerializeCheckpoint();
+        var correctedSeventh = CampaignExercises.CorrectSourceSeventhShell(seventhConfirmed).SuccessorSession!;
+        Assert.Equal(3, correctedSeventh.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "7-armored-division").StackValue);
+        Assert.Equal(CampaignSourceAuthorityState.ShellCorrectedLegacyCheckpointContractVersion, correctedSeventh.SourceAuthority.ProfileVersion);
+        Assert.Equal(legacySeventhCheckpoint, seventhConfirmed.SourceAuthority.SerializeCheckpoint());
+        Assert.Equal(seventhConfirmed.SourceAuthority.RandomState, correctedSeventh.SourceAuthority.RandomState);
+        Assert.Contains("common-charts-9.4-division-shell-stacks-three", System.Text.Encoding.UTF8.GetString(
+            CampaignExercises.QuerySourceSeventhArmoredDraft(correctedSeventh, CampaignActionAudience.Commonwealth).VisibleBytes));
+        Assert.True(CampaignExercises.Reconstruct(correctedSeventh).IsVerified);
+        Assert.False(CampaignExercises.CorrectSourceSeventhShell(correctedSeventh).IsAccepted);
+        var compactBeforeShell = CampaignExercises.AdmitSourceCompactCheckpoint(seventhConfirmed).SuccessorSession!;
+        var compactAxisFinish = CampaignExercises.Query(compactBeforeShell, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var compactAxisFinished = CampaignExercises.Submit(compactBeforeShell,
+            Submission(compactBeforeShell, compactAxisFinish.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        var compactCwFinish = CampaignExercises.Query(compactAxisFinished, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var compactBothFinished = CampaignExercises.Submit(compactAxisFinished,
+            Submission(compactAxisFinished, compactCwFinish.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        var compactCorrected = CampaignExercises.CorrectSourceSeventhShell(compactBothFinished).SuccessorSession!;
+        Assert.Equal(1, compactCorrected.SourceAuthority!.FinalizedOwners);
+        Assert.Equal(CampaignSourceAuthorityState.ShellCorrectedFinalizedCompactCheckpointContractVersion, compactCorrected.SourceAuthority.ProfileVersion);
+        Assert.True(CampaignExercises.Reconstruct(compactCorrected).IsVerified);
+        var compactAxisReopen = CampaignExercises.Query(compactCorrected, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var compactReopened = CampaignExercises.Submit(compactCorrected,
+            Submission(compactCorrected, compactAxisReopen.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(0, compactReopened.SourceAuthority!.FinalizedOwners);
+        Assert.Equal(CampaignSourceAuthorityState.ShellCorrectedFinalizedCompactCheckpointContractVersion, compactReopened.SourceAuthority.ProfileVersion);
+        Assert.True(CampaignExercises.Reconstruct(compactReopened).IsVerified);
+        var sixteenthBasis = ContentSourceSeventhArmoredGroupedPackArtifact.Create(italianContent);
+        var sixteenthContent = ContentSourceSixteenthBrigadeGroupedPackArtifact.Create(sixteenthBasis);
+        Assert.Equal(ContentSourceSixteenthBrigadeGroupedPackArtifact.ContentHash, sixteenthContent.Hash());
+        var sixteenthResult = CampaignExercises.AdmitSourceSixteenthBrigadeGroupedWorld(seventhConfirmed);
+        Assert.True(sixteenthResult.IsAccepted);
+        var sixteenthProposed = sixteenthResult.SuccessorSession!;
+        var sourceWorld = sixteenthProposed.SourceAuthority!.GroupedWorld!;
+        var sixteenth = sourceWorld.Groups.Single(value => value.GroupId == "16-infantry-brigade");
+        Assert.Equal(4, sixteenth.Members.Count); Assert.Null(sixteenth.StackValue); Assert.True(sixteenth.UsesRetainedMembers);
+        Assert.Equal(4, sourceWorld.Prior.World.Elements.Count(value => sixteenth.Members.Any(member => member.ElementId == value.ElementId)));
+        Assert.Single(sourceWorld.OccupantsAt("e1829"), value => value.Formation?.GroupId == sixteenth.GroupId);
+        var sixteenthChoice = CampaignExercises.Query(sixteenthProposed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "sixteenth-brigade-disposition");
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.Submit(sixteenthProposed,
+            Submission(sixteenthProposed, sixteenthChoice.ActionId, CampaignActionAudience.Axis)).RejectionReason);
+        var sixteenthCommand = Submission(sixteenthProposed, sixteenthChoice.ActionId, CampaignActionAudience.Commonwealth);
+        var sixteenthConfirmed = CampaignExercises.Submit(sixteenthProposed, sixteenthCommand).SuccessorSession!;
+        Assert.Equal(2, sixteenthConfirmed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == sixteenth.GroupId).StackValue);
+        var playableWorld = CampaignSourcePlayableWorld.Create(sixteenthConfirmed.SourceAuthority);
+        var mapBoundWorld = CampaignSourcePlayableWorld.Create(sixteenthConfirmed.SourceAuthority, mapIdentityBound: true);
+        var cdWorld = CampaignSourcePlayableWorld.Create(sixteenthConfirmed.SourceAuthority, mapIdentityBound: true, cdSeamBound: true);
+        Assert.True(mapBoundWorld.MapIdentityBound);
+        Assert.True(mapBoundWorld.WithWorld(mapBoundWorld.GroupedWorld, mapBoundWorld.Battlefield).MapIdentityBound);
+        Assert.False(playableWorld.MapIdentityBound);
+        // Test the wire contract on the retained historical world without
+        // claiming that the still-gated campaign can start yet.
+        var turnConstructor = typeof(CampaignSourceTurnAuthority).GetConstructors(
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Single();
+        CampaignSourceTurnAuthority ContractTurn(CampaignSourcePlayableWorld world, LandSequencePosition? testPosition = null,
+            int? organizationMask = null, CampaignSourceTrainingLedger? training = null,
+            CampaignSourceGt1AxisArrival? axisArrival = null, LandSide? firstSide = null,
+            (int GameTurn, int OperationStage)? paidStage = null)
+        {
+            var args = turnConstructor.GetParameters().Select(parameter => parameter.Name == "position" && testPosition is not null
+                ? testPosition : parameter.Name == "voluntaryOrganizationDeclinedMask" && organizationMask is not null
+                ? organizationMask : parameter.Name == "training" && training is not null ? training
+                : parameter.Name == "axisArrival" && axisArrival is not null ? axisArrival
+                : parameter.Name == "fourthIndianPaidStage" && paidStage is not null ? paidStage
+                : parameter.Name == "stageOneFirstSide" && firstSide is not null ? firstSide : parameter.HasDefaultValue
+                ? parameter.DefaultValue : parameter.Name switch
+                {
+                    "world" => world,
+                    "stateVersion" => world.Source.StateVersion + 1,
+                    "position" => Cna1979LandSequenceV4.CreateTurn(1)[0],
+                    "randomState" => world.RandomState,
+                    "initiative" => null,
+                    _ => throw new InvalidOperationException("Unexpected source-turn constructor parameter."),
+                }).ToArray();
+            return (CampaignSourceTurnAuthority)turnConstructor.Invoke(args);
+        }
+        var mapTurn = ContractTurn(mapBoundWorld);
+        var cdTurn = ContractTurn(cdWorld);
+        Assert.Equal(3, new ExerciseCheckpoint(cdTurn).ContractVersion);
+        Assert.True(cdWorld.WithWorld(cdWorld.GroupedWorld, cdWorld.Battlefield).CdSeamBound);
+        using (var cdCheckpoint = JsonDocument.Parse(cdTurn.SerializeCheckpoint()))
+        {
+            Assert.Equal(3, cdCheckpoint.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.Equal(Cna1979HistoricalMap.CdSeamPolicyHash,
+                cdCheckpoint.RootElement.GetProperty("historicalMap").GetProperty("cdSeamPolicyHash").GetString());
+        }
+        var legacyTurn = ContractTurn(playableWorld);
+        var turnContacts = sixteenthConfirmed.CurrentContacts.AdvancePregameSource(mapTurn.Source.StateVersion);
+        var turnSession = new ExerciseSession(mapTurn.Source.Pregame, turnContacts,
+            sixteenthConfirmed.PregameHistory, mapTurn.Source, mapTurn);
+        var initiativeResult = CampaignExercises.ResolveSourceInitiative(turnSession);
+        Assert.True(initiativeResult.IsAccepted);
+        Assert.Equal(initiativeResult.SuccessorSession!.SourceTurn!.Position.PositionId,
+            initiativeResult.Evidence!.Receipt.ResultingPositionId);
+        Assert.Equal(CampaignSourceTurnAuthority.InitiativeActionId, initiativeResult.Evidence.Receipt.ActionId);
+        var organizationCut = Cna1979LandSequenceV4.CreateTurn(1).Single(value =>
+            value.OperationStage == 1 && value.PhaseId == LandPhaseIds.Organization);
+        var interrupted = CampaignSourceTrainingLedger.CreateSixthAustralian().Interrupt();
+        var waitingOrganization = ContractTurn(mapBoundWorld, organizationCut, 1, interrupted);
+        Assert.Throws<InvalidOperationException>(() => waitingOrganization.CompleteGt1Organization());
+        Assert.Throws<InvalidOperationException>(() => ContractTurn(mapBoundWorld, organizationCut, 3).CompleteGt1Organization());
+        var readyOrganization = ContractTurn(mapBoundWorld, organizationCut, 3, interrupted);
+        var completedOrganization = readyOrganization.CompleteGt1Organization();
+        Assert.Equal(Cna1979LandSequenceV4.GetNext(organizationCut), completedOrganization.Position);
+        Assert.Same(readyOrganization.Training, completedOrganization.Training);
+        Assert.Equal(readyOrganization.RandomState, completedOrganization.RandomState);
+        Assert.Same(readyOrganization.World, completedOrganization.World);
+        Assert.Equal(readyOrganization.StateVersion + 1, completedOrganization.StateVersion);
+        Assert.Throws<InvalidOperationException>(() => completedOrganization.CompleteGt1Organization());
+        // Exercise the real source session transition on retained historical
+        // setup without claiming that the campaign-start gate has opened.
+        var organizationContacts = sixteenthConfirmed.CurrentContacts.AdvancePregameSource(readyOrganization.Source.StateVersion);
+        var organizationSession = new ExerciseSession(readyOrganization.Source.Pregame, organizationContacts,
+            sixteenthConfirmed.PregameHistory, readyOrganization.Source, readyOrganization);
+        var organizationResult = CampaignExercises.CompleteSourceGt1Organization(organizationSession);
+        Assert.True(organizationResult.IsAccepted);
+        Assert.Equal(completedOrganization.Position.PositionId, organizationResult.Evidence!.Receipt.ResultingPositionId);
+        Assert.True(CampaignExercises.IsSourceGt1OrganizationCompleted(organizationResult.SuccessorSession!));
+        Assert.Equal(completedOrganization.Position, organizationResult.SuccessorSession!.SourceTurn!.Position);
+        var organizationCommand = CampaignHostAdapter.SourceTurnSystemCommand(organizationSession, organizationResult);
+        var organizationStep = new CampaignHostAcceptedStep(
+            CampaignActionSubmissionSerializer.SerializeCanonical(organizationCommand), organizationResult.Evidence!.EventRecords,
+            CampaignActionAcceptanceReceiptSerializer.Serialize(organizationResult.Evidence.Receipt),
+            organizationResult.Evidence.SnapshotCheckpoint, CampaignHostAcceptedStep.SourceGt1OrganizationCompleteKind);
+        Assert.Equal(CampaignHostAcceptedStep.SourceGt1OrganizationCompleteContractVersion, organizationStep.ContractVersion);
+        using (var organizationEvent = JsonDocument.Parse(Assert.Single(organizationResult.Evidence!.EventRecords)))
+        {
+            Assert.Equal("source-gt1-organization-completed", organizationEvent.RootElement.GetProperty("eventType").GetString());
+            Assert.Equal(CampaignSourceTurnAuthority.CompleteGt1OrganizationActionId, organizationEvent.RootElement.GetProperty("actionId").GetString());
+        }
+        Assert.Equal(2, new ExerciseCheckpoint(mapTurn).ContractVersion);
+        Assert.Equal(1, new ExerciseCheckpoint(legacyTurn).ContractVersion);
+        using (var boundCheckpoint = System.Text.Json.JsonDocument.Parse(mapTurn.SerializeCheckpoint()))
+        using (var legacyCheckpoint = System.Text.Json.JsonDocument.Parse(legacyTurn.SerializeCheckpoint()))
+        {
+            Assert.Equal(2, boundCheckpoint.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.Equal(Cna1979HistoricalMap.HexHash, boundCheckpoint.RootElement.GetProperty("historicalMap").GetProperty("hexSha256").GetString());
+            Assert.Equal(Cna1979HistoricalMap.EdgeHash, boundCheckpoint.RootElement.GetProperty("historicalMap").GetProperty("hexsideSha256").GetString());
+            Assert.Equal(1, legacyCheckpoint.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.False(legacyCheckpoint.RootElement.TryGetProperty("historicalMap", out _));
+        }
+        using (var boundEvent = System.Text.Json.JsonDocument.Parse(mapTurn.SerializeEvent("source-turn-started",
+                   CampaignSourceTurnAuthority.StartActionId, mapBoundWorld.Source.StateVersion,
+                   mapBoundWorld.Source.SerializeCheckpoint())))
+        {
+            Assert.Equal(2, boundEvent.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.Equal(CampaignPregameSourceCreation.Digest(mapTurn.SerializeCheckpoint()),
+                boundEvent.RootElement.GetProperty("checkpointHash").GetString());
+        }
+        using (var legacyEvent = System.Text.Json.JsonDocument.Parse(legacyTurn.SerializeEvent("source-turn-started",
+                   CampaignSourceTurnAuthority.StartActionId, playableWorld.Source.StateVersion,
+                   playableWorld.Source.SerializeCheckpoint())))
+            Assert.Equal(1, legacyEvent.RootElement.GetProperty("contractVersion").GetInt32());
+        Assert.True(mapTurn.ResolveInitiative().World.MapIdentityBound);
+        Assert.Same(sixteenthConfirmed.SourceAuthority.GroupedWorld, playableWorld.GroupedWorld);
+        Assert.Equal(sixteenthConfirmed.SourceAuthority.RandomState, playableWorld.RandomState);
+        Assert.Equal(sixteenthConfirmed.SourceAuthority.World.PendingArrivals, playableWorld.World8.PendingArrivals);
+        foreach (var entry in playableWorld.Battlefield.Entries.Where(value => value.LocationId is { Length: 5 }
+                     && value.LocationId[0] is >= 'a' and <= 'e' && value.LocationId.Skip(1).All(char.IsAsciiDigit)))
+            Assert.NotNull(Cna1979HistoricalMap.Instance.HexAt(entry.LocationId!));
+        foreach (var location in Cna1979GrazianiSourceFacts.CairoEntryArea.LocationIds)
+            Assert.Equal(Cna1979SourceContentVocabulary.MajorCityTerrainId, playableWorld.KnownTerrainAt(location));
+        var polishArrivalPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 3
+            && value.PhaseId == LandPhaseIds.NavalConvoyArrival && value.SegmentId is null);
+        Assert.Contains("e1829", CampaignSourcePolishArrival.ValidDestinations(playableWorld, polishArrivalPosition));
+        Assert.Null(playableWorld.KnownTerrainAt("e1932"));
+        Assert.Single(playableWorld.OccupantsAt("e1829"), value => value.Formation?.GroupId == sixteenth.GroupId);
+        Assert.DoesNotContain(playableWorld.UnresolvedAt("e1829"), value => sixteenth.Members.Any(member => member.ElementId == value.ElementId));
+        Assert.False(playableWorld.IsGameplayReady);
+        Assert.Contains("battlefield-incomplete", playableWorld.ReadinessBlockers());
+        Assert.Contains("control-incomplete", playableWorld.ReadinessBlockers());
+        Assert.Contains("map-incomplete", playableWorld.ReadinessBlockers());
+        Assert.Same(playableWorld.GroupedWorld, playableWorld.WithWorld(playableWorld.GroupedWorld, playableWorld.Battlefield).GroupedWorld);
+        var sourceSupply = playableWorld.Source.CommonwealthSupplyWorld;
+        CampaignSourceFourthIndianRoad.RequirePinnedSource(playableWorld);
+        Assert.Equal(new CapabilityPointAmount(1, 1), CampaignSourceFourthIndianRoad.Cost(false));
+        Assert.Equal(new CapabilityPointAmount(1, 2), CampaignSourceFourthIndianRoad.Cost(true));
+        Assert.Equal(new CapabilityPointAmount(1, 1), CampaignSourceFourthIndianRoad.SupplyTraceCost);
+        var paidSupply = sourceSupply.SpendFuel("cw-matruh-1", "d3714", 2);
+        Assert.Equal(60, Assert.Single(sourceSupply.Units, value => value.Id == "cw-matruh-1").Fuel);
+        Assert.Equal(58, Assert.Single(paidSupply.Units, value => value.Id == "cw-matruh-1").Fuel);
+        Assert.Throws<InvalidOperationException>(() => sourceSupply.SpendFuel("cw-matruh-1", "d3615", 2));
+        Assert.Throws<InvalidOperationException>(() => sourceSupply.SpendFuel("cw-matruh-1", "d3714", 61));
+        Assert.Throws<InvalidOperationException>(() => sourceSupply.SpendFuel("not-a-counter", "d3714", 2));
+        var movementCatalog = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 1
+            && value.ActorRole == LandActorRole.FirstActingSide && value.SegmentId == LandSegmentIds.Movement);
+        var movementPosition = new LandSequencePosition(movementCatalog.ContractVersion, movementCatalog.PositionId,
+            movementCatalog.GameTurn, movementCatalog.OperationStage, movementCatalog.StageId, movementCatalog.PhaseId,
+            movementCatalog.SegmentId, movementCatalog.StepId, movementCatalog.ActorRole, LandSide.Commonwealth, movementCatalog.Sources);
+        var season = Cna1979Weather.GetSeason(1);
+        var normalRoll = Enumerable.Range(11, 56).First(value => value % 10 is >= 1 and <= 6
+            && value / 10 is >= 1 and <= 6 && Cna1979Weather.GetKind(season, value) == WeatherKind.Normal);
+        var normalWeather = new CampaignOperationStageWeather(1, 1, 1, LandSide.Axis, season,
+            normalRoll / 10, normalRoll % 10, WeatherKind.Normal, WeatherScope.None, null, [], 0, 0, 0);
+        Assert.Throws<InvalidOperationException>(() => CampaignSourceFourthIndianMovement.Apply(playableWorld,
+            sourceSupply, null, movementPosition, normalWeather, "cw-matruh-1"));
+        Assert.Equal(60, Assert.Single(sourceSupply.Units, value => value.Id == "cw-matruh-1").Fuel);
+        // Exercise the source-bound mutation and contact projection directly;
+        // source readiness still prevents this from becoming a playable move.
+        var fourth = Assert.Single(playableWorld.GroupedWorld.Groups,
+            value => value.GroupId == CampaignSourceFourthIndianMovement.GroupId);
+        var fourthCosts = fourth.Members.ToDictionary(value => value.ElementId,
+            value => new CapabilityPointAmount(1, 1), StringComparer.Ordinal);
+        var movedFourth = playableWorld.GroupedWorld.MoveFormation(fourth.GroupId, "d3715", fourthCosts, 5, 1, 1);
+        var movedBattlefield = playableWorld.Battlefield.MoveFormation(playableWorld.GroupedWorld, movedFourth, fourth.GroupId);
+        var movedWorld = playableWorld.WithWorld(movedFourth, movedBattlefield);
+        Assert.True(mapBoundWorld.WithWorld(movedFourth, movedBattlefield).MapIdentityBound);
+        var unknownMove = playableWorld.GroupedWorld.MoveFormation(fourth.GroupId, "c9999", fourthCosts, 5, 1, 1);
+        var unknownBattlefield = playableWorld.Battlefield.MoveFormation(playableWorld.GroupedWorld, unknownMove, fourth.GroupId);
+        Assert.Contains(unknownBattlefield.Entries, entry => entry.LocationId == "c9999");
+        Assert.Throws<InvalidOperationException>(() => CampaignSourcePlayableWorld.RequireKnownMapLocations(
+            unknownBattlefield.Entries.Select(entry => entry.LocationId)));
+        Assert.Throws<InvalidOperationException>(() => mapBoundWorld.WithWorld(unknownMove, unknownBattlefield));
+        Assert.All(fourth.Members, member => Assert.Equal("d3715",
+            Assert.Single(movedWorld.Battlefield.Entries, entry => entry.ElementId == member.ElementId).LocationId));
+        Assert.All(fourth.Members, member => Assert.Equal("d3615",
+            Assert.Single(playableWorld.Battlefield.Entries, entry => entry.ElementId == member.ElementId).LocationId));
+        var polishPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 3
+            && value.PhaseId == LandPhaseIds.NavalConvoyArrival && value.SegmentId is null);
+        Assert.Throws<InvalidOperationException>(() => CampaignSourcePolishArrival.Apply(playableWorld,
+            polishPosition, LandSide.Commonwealth, "e1730"));
+        Assert.Equal(sixteenthConfirmed.SourceAuthority.World.PendingArrivals, playableWorld.World8.PendingArrivals);
+        Assert.Equal(sixteenthConfirmed.SourceAuthority.RandomState, playableWorld.RandomState);
+        var polishGrouped = CampaignSourcePolishArrival.Materialize(playableWorld.GroupedWorld, playableWorld.Source.Content, "e1829");
+        var polishBattlefield = playableWorld.Battlefield.ArriveRetainedFormation(playableWorld.GroupedWorld,
+            polishGrouped, CampaignSourcePolishArrival.GroupId, "e1829");
+        var polishSuccessor = playableWorld.WithWorld(polishGrouped, polishBattlefield);
+        var mapBoundPolishSuccessor = mapBoundWorld.WithWorld(polishGrouped, polishBattlefield);
+        Assert.True(mapBoundPolishSuccessor.MapIdentityBound);
+        Assert.Empty(CampaignSourcePolishArrivalContacts.Derive(mapBoundWorld, mapBoundPolishSuccessor,
+            mapBoundWorld.Source.StateVersion + 1, new CampaignContactKnowledge(mapBoundWorld.Source.Request.CampaignId, LandSide.Axis)));
+        Assert.Empty(CampaignSourcePolishArrivalContacts.Derive(mapBoundWorld, mapBoundPolishSuccessor,
+            mapBoundWorld.Source.StateVersion + 1, new CampaignContactKnowledge(mapBoundWorld.Source.Request.CampaignId, LandSide.Commonwealth)));
+        Assert.DoesNotContain(polishSuccessor.World8.PendingArrivals, value => value.GroupId == CampaignSourcePolishArrival.GroupId);
+        Assert.DoesNotContain(polishSuccessor.Battlefield.Pending, value => value.GroupId == CampaignSourcePolishArrival.GroupId);
+        Assert.Contains(polishSuccessor.World8.PendingArrivals, value => value.GroupId == Cna1979GrazianiSourceFacts.SeventhIndianBrigadeArrival.GroupId);
+        Assert.Equal(8, polishSuccessor.World8.World.Elements.Count(value => Cna1979GrazianiSourceFacts.PolishBrigadeArrival.ElementIds.Contains(value.ElementId)));
+        Assert.Equal(playableWorld.RandomState, polishSuccessor.RandomState);
+        Assert.False(polishSuccessor.IsGameplayReady);
+        Assert.Contains(playableWorld.World8.PendingArrivals, value => value.GroupId == CampaignSourcePolishArrival.GroupId);
+        Assert.Empty(CampaignSourcePolishArrivalContacts.Derive(playableWorld, polishSuccessor,
+            playableWorld.Source.StateVersion + 1, new CampaignContactKnowledge(playableWorld.Source.Request.CampaignId, LandSide.Axis)));
+        Assert.Empty(CampaignSourcePolishArrivalContacts.Derive(playableWorld, polishSuccessor,
+            playableWorld.Source.StateVersion + 1, new CampaignContactKnowledge(playableWorld.Source.Request.CampaignId, LandSide.Commonwealth)));
+        var begunEarlyPlan = CampaignExercises.SubmitSourceSeptemberSupply(sixteenthConfirmed,
+            Submission(sixteenthConfirmed, CampaignSourceAuthorityState.SeptemberSupplyActionId("begin", 0, 0, 0, 0), CampaignActionAudience.Axis)).SuccessorSession!;
+        var rolledEarlyPlan = CampaignExercises.SubmitSourceSeptemberSupply(begunEarlyPlan,
+            Submission(begunEarlyPlan, CampaignSourceAuthorityState.SeptemberSupplyActionId("roll", 3, 0, 0, 0), CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Contains("axis-prestart-supply-plan-incomplete", CampaignSourcePlayableWorld.Create(rolledEarlyPlan.SourceAuthority!).ReadinessBlockers());
+        var finishedEarlyPlan = CampaignExercises.SubmitSourceSeptemberSupply(rolledEarlyPlan,
+            Submission(rolledEarlyPlan, CampaignSourceAuthorityState.SeptemberSupplyActionId("finish", 3, 0, 0, 0), CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.DoesNotContain("axis-prestart-supply-plan-incomplete", CampaignSourcePlayableWorld.Create(finishedEarlyPlan.SourceAuthority!).ReadinessBlockers());
+        Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, CampaignExercises.Submit(sixteenthConfirmed, sixteenthCommand).RejectionReason);
+        Assert.Equal(seventhConfirmed.SourceAuthority.World.PendingArrivals, sixteenthConfirmed.SourceAuthority.World.PendingArrivals);
+        Assert.True(CampaignExercises.Reconstruct(sixteenthConfirmed).IsVerified);
+        var sixteenthHistory = sixteenthConfirmed.PregameHistory.Select(value => value.ToArray()).ToArray();
+        var sixteenthEvent = System.Text.Encoding.UTF8.GetString(sixteenthHistory[^1]);
+        using (var eventDocument = System.Text.Json.JsonDocument.Parse(sixteenthHistory[^1]))
+        {
+            var worldHash = eventDocument.RootElement.GetProperty("worldHash").GetString()!;
+            var alteredHash = worldHash[..^1] + (worldHash[^1] == '0' ? '1' : '0');
+            sixteenthHistory[^1] = System.Text.Encoding.UTF8.GetBytes(sixteenthEvent.Replace(worldHash, alteredHash, StringComparison.Ordinal));
+        }
+        var tamperedSixteenth = new ExerciseSession(sixteenthConfirmed.Pregame!, sixteenthConfirmed.CurrentContacts,
+            sixteenthHistory, sixteenthConfirmed.SourceAuthority);
+        Assert.False(CampaignExercises.Reconstruct(tamperedSixteenth).IsVerified);
+        var catanzaroResult = CampaignExercises.AdmitSourceCatanzaroGroupedWorld(sixteenthConfirmed);
+        Assert.True(catanzaroResult.IsAccepted);
+        var catanzaroProposed = catanzaroResult.SuccessorSession!;
+        var catanzaro = catanzaroProposed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "catanzaro-division");
+        Assert.Equal(13, catanzaro.Members.Count);
+        Assert.Null(catanzaro.StackValue);
+        Assert.Equal(35, catanzaro.MotorPool);
+        var catanzaroChoice = CampaignExercises.Query(catanzaroProposed, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "catanzaro-disposition");
+        Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal, CampaignExercises.Submit(catanzaroProposed,
+            Submission(catanzaroProposed, catanzaroChoice.ActionId, CampaignActionAudience.Commonwealth)).RejectionReason);
+        var catanzaroCommand = Submission(catanzaroProposed, catanzaroChoice.ActionId, CampaignActionAudience.Axis);
+        var catanzaroConfirmed = CampaignExercises.Submit(catanzaroProposed, catanzaroCommand).SuccessorSession!;
+        var axisFinish = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var axisFinished = CampaignExercises.Submit(catanzaroConfirmed,
+            Submission(catanzaroConfirmed, axisFinish.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        var cwFinishAfterAxis = CampaignExercises.Query(axisFinished, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var bothFinishedBeforeCorrection = CampaignExercises.Submit(axisFinished,
+            Submission(axisFinished, cwFinishAfterAxis.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(3, bothFinishedBeforeCorrection.SourceAuthority!.FinalizedOwners);
+        var correctedFinalized = CampaignExercises.CorrectSourceSeventhShell(bothFinishedBeforeCorrection).SuccessorSession!;
+        Assert.Equal(1, correctedFinalized.SourceAuthority!.FinalizedOwners);
+        Assert.Equal(CampaignSourceAuthorityState.ShellCorrectedFinalizedLegacyCheckpointContractVersion, correctedFinalized.SourceAuthority.ProfileVersion);
+        Assert.True(CampaignExercises.Reconstruct(correctedFinalized).IsVerified);
+        var choicesBefore = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Where(value => value.Family == "sixth-australian-placement")
+            .Select(value => value.ChoiceJson).Order(StringComparer.Ordinal).ToArray();
+        var choicesAfter = CampaignExercises.Query(axisFinished, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Where(value => value.Family == "sixth-australian-placement")
+            .Select(value => value.ChoiceJson).Order(StringComparer.Ordinal).ToArray();
+        Assert.Equal(choicesBefore, choicesAfter);
+        var australianChoice = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "sixth-australian-placement"
+                && value.SourceActionId == CampaignSourceAuthorityState.SixthAustralianActionId("e1829"));
+        Assert.DoesNotContain(CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>(), value => value.Family == "sixth-australian-placement"
+                && value.SourceActionId == CampaignSourceAuthorityState.SixthAustralianActionId(chosenCairoHex));
+        var australianSession = CampaignExercises.Submit(catanzaroConfirmed,
+            Submission(catanzaroConfirmed, australianChoice.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        var australian = australianSession.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "6th-australian-division");
+        Assert.Equal(10, australian.Members.Count);
+        Assert.Equal(5, australian.StackValue);
+        Assert.False(australian.MotorPoolKnown);
+        var australianInfantry = australian.Members.Where(value => value.ComponentType == "infantry").ToArray();
+        Assert.Equal(6, australianInfantry.Length);
+        Assert.All(australianInfantry, value => { Assert.Equal(6, value.ComponentToe); Assert.Equal(10, value.CapabilityPointAllowance); });
+        foreach (var id in new[] { "16-australian-infantry-brigade-hq", "17-australian-infantry-brigade-hq" })
+        {
+            var headquarters = australian.Members.Single(value => value.ElementId == id);
+            Assert.Equal(1, headquarters.ComponentToe); Assert.Equal(20, headquarters.CapabilityPointAllowance);
+        }
+        var cavalry = australian.Members.Single(value => value.ElementId == "6-australian-divisional-cavalry");
+        Assert.Equal(8, cavalry.ComponentToe); Assert.Equal(45, cavalry.CapabilityPointAllowance);
+        Assert.Equal(catanzaroConfirmed.SourceAuthority!.RandomState, australianSession.SourceAuthority.RandomState);
+        Assert.True(CampaignExercises.Reconstruct(australianSession).IsVerified);
+        var axisBatchChoice = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "ccnn-batch-disposition");
+        var afterAustralianAxisChoice = CampaignExercises.Query(australianSession, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "ccnn-batch-disposition");
+        Assert.Equal(axisBatchChoice.ChoiceJson, afterAustralianAxisChoice.ChoiceJson);
+        var australianFirst = CampaignExercises.Submit(australianSession,
+            Submission(australianSession, afterAustralianAxisChoice.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        var fullyMotorized = australianFirst;
+        for (var index = 0; index < 5; index++)
+        {
+            var adjustment = CampaignExercises.SubmitSourceFourthIndian(fullyMotorized,
+                Submission(fullyMotorized, priorityAction, CampaignActionAudience.Commonwealth));
+            Assert.True(adjustment.IsAccepted);
+            fullyMotorized = adjustment.SuccessorSession!;
+        }
+        var motorizedWorld = CampaignSourcePlayableWorld.Create(fullyMotorized.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        var openingGroup = motorizedWorld.GroupedWorld.Groups.Single(value => value.GroupId == CampaignSourceFourthIndianMovement.GroupId);
+        Assert.True(CampaignSourceFourthIndianMovement.IsOpeningFormation(openingGroup));
+        var openingMoved = motorizedWorld.GroupedWorld.MoveFormation(openingGroup.GroupId, CampaignSourceFourthIndianRoad.Destination,
+            CampaignSourceFourthIndianMovement.OpeningCosts(openingGroup), CampaignSourceFourthIndianRoad.RoadStackLimit, 1, 1);
+        var openingBattlefield = motorizedWorld.Battlefield.MoveFormation(motorizedWorld.GroupedWorld, openingMoved, openingGroup.GroupId);
+        var openingWorld = motorizedWorld.WithWorld(openingMoved, openingBattlefield);
+        var breakdownPosition = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 1
+            && value.ActorRole == LandActorRole.FirstActingSide && value.SegmentId == LandSegmentIds.BreakdownDetermination);
+        var movedBreakdown = ContractTurn(openingWorld, breakdownPosition, 3, interrupted,
+            firstSide: LandSide.Commonwealth, paidStage: (1, 1));
+        var afterMovedBreakdown = movedBreakdown.CompleteGt1FirstBreakdown();
+        Assert.Equal(LandStepIds.PositionDetermination, afterMovedBreakdown.Position.StepId);
+        Assert.Same(openingWorld, afterMovedBreakdown.World);
+        var unexpectedMove = motorizedWorld.GroupedWorld.MoveFormation(openingGroup.GroupId, "d3716",
+            CampaignSourceFourthIndianMovement.OpeningCosts(openingGroup), CampaignSourceFourthIndianRoad.RoadStackLimit, 1, 1);
+        var unexpectedBattlefield = motorizedWorld.Battlefield.MoveFormation(motorizedWorld.GroupedWorld, unexpectedMove, openingGroup.GroupId);
+        var unexpectedWorld = motorizedWorld.WithWorld(unexpectedMove, unexpectedBattlefield);
+        Assert.Throws<InvalidOperationException>(() => ContractTurn(unexpectedWorld, breakdownPosition, 3, interrupted,
+            firstSide: LandSide.Commonwealth, paidStage: (1, 1)).CompleteGt1FirstBreakdown());
+        // Exercise the Organization choices against the retained real
+        // Australian formation; turn start itself remains readiness-gated.
+        var australianWorld = CampaignSourcePlayableWorld.Create(australianFirst.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        var australianTurn = ContractTurn(australianWorld, organizationCut);
+        var australianContacts = australianFirst.CurrentContacts.AdvancePregameSource(australianTurn.Source.StateVersion);
+        var australianOrganization = new ExerciseSession(australianTurn.Source.Pregame, australianContacts,
+            australianFirst.PregameHistory, australianTurn.Source, australianTurn);
+        var beforeInterrupt = CampaignExercises.Query(australianOrganization, CampaignActionAudience.Commonwealth).ActionSet!.Candidates;
+        Assert.DoesNotContain(beforeInterrupt, action => action.Kind == "source-voluntary-organization-decline");
+        var interrupt = Assert.Single(beforeInterrupt, action => action.Kind == "source-sixth-australian-training-interrupt");
+        var afterInterrupt = CampaignExercises.Submit(australianOrganization,
+            Submission(australianOrganization, interrupt.ActionId, CampaignActionAudience.Commonwealth));
+        Assert.True(afterInterrupt.IsAccepted);
+        Assert.True(afterInterrupt.SuccessorSession!.SourceTurn!.Training.Interrupted);
+        Assert.Contains(CampaignExercises.Query(afterInterrupt.SuccessorSession, CampaignActionAudience.Commonwealth).ActionSet!.Candidates,
+            action => action.Kind == "source-voluntary-organization-decline");
+        var cwDecline = CampaignExercises.Query(afterInterrupt.SuccessorSession, CampaignActionAudience.Commonwealth)
+            .ActionSet!.Candidates.Single(action => action.Kind == "source-voluntary-organization-decline");
+        var cwFinished = CampaignExercises.Submit(afterInterrupt.SuccessorSession,
+            Submission(afterInterrupt.SuccessorSession, cwDecline.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.False(CampaignExercises.CompleteSourceGt1Organization(cwFinished).IsAccepted);
+        var axisDecline = CampaignExercises.Query(cwFinished, CampaignActionAudience.Axis)
+            .ActionSet!.Candidates.Single(action => action.Kind == "source-voluntary-organization-decline");
+        var bothOrganizationOwnersFinished = CampaignExercises.Submit(cwFinished,
+            Submission(cwFinished, axisDecline.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        var completedRealOrganization = CampaignExercises.CompleteSourceGt1Organization(bothOrganizationOwnersFinished);
+        Assert.True(completedRealOrganization.IsAccepted);
+        Assert.Equal(Cna1979LandSequenceV4.GetNext(organizationCut), completedRealOrganization.SuccessorSession!.SourceTurn!.Position);
+        Assert.True(completedRealOrganization.SuccessorSession.SourceTurn.Training.Interrupted);
+        var stageOneArrival = Cna1979LandSequenceV4.CreateTurn(1).Single(value => value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.NavalConvoyArrival && value.SegmentId is null);
+        var arrivalTurn = ContractTurn(australianWorld, stageOneArrival, 3, interrupted, firstSide: LandSide.Commonwealth);
+        var dueStageOne = arrivalTurn.Source.OpeningConvoyPlan.Allocations().Where(value => value.OperationStage == 1).ToArray();
+        if (dueStageOne.Length != 0)
+        {
+            Assert.Throws<InvalidOperationException>(() => arrivalTurn.CompleteGt1StageOneArrivals());
+            if (dueStageOne.Length == 1 && dueStageOne[0].Lane == 2)
+            {
+                var deliveredAxis = CampaignSourceGt1AxisArrival.Create(arrivalTurn.Source).Announce().DeclineAttackAndDeliver();
+                var deliveredTurn = ContractTurn(australianWorld, stageOneArrival, 3, interrupted, deliveredAxis);
+                var afterDelivery = deliveredTurn.CompleteGt1StageOneArrivals();
+                Assert.Equal(Cna1979LandSequenceV4.GetNext(stageOneArrival), afterDelivery.Position);
+                Assert.Equal(deliveredAxis.Supply.Hash(), afterDelivery.AxisArrival.Supply.Hash());
+            }
+        }
+        else
+        {
+            var arrivalContacts = australianFirst.CurrentContacts.AdvancePregameSource(arrivalTurn.Source.StateVersion);
+            var arrivalSession = new ExerciseSession(arrivalTurn.Source.Pregame, arrivalContacts,
+                australianFirst.PregameHistory, arrivalTurn.Source, arrivalTurn);
+            var arrivalComplete = CampaignExercises.CompleteSourceGt1StageOneArrivals(arrivalSession);
+            Assert.True(arrivalComplete.IsAccepted);
+            Assert.Equal(Cna1979LandSequenceV4.GetNext(stageOneArrival), arrivalComplete.SuccessorSession!.SourceTurn!.Position);
+            Assert.Equal(arrivalComplete.SuccessorSession.SourceTurn.Position.PositionId, arrivalComplete.Evidence!.Receipt.ResultingPositionId);
+            Assert.True(CampaignExercises.IsSourceGt1StageOneArrivalsCompleted(arrivalComplete.SuccessorSession));
+            var arrivalCommand = CampaignHostAdapter.SourceTurnSystemCommand(arrivalSession, arrivalComplete);
+            var arrivalStep = new CampaignHostAcceptedStep(CampaignActionSubmissionSerializer.SerializeCanonical(arrivalCommand),
+                arrivalComplete.Evidence.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(arrivalComplete.Evidence.Receipt),
+                arrivalComplete.Evidence.SnapshotCheckpoint, CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteKind);
+            Assert.Equal(CampaignHostAcceptedStep.SourceGt1ArrivalsCompleteContractVersion, arrivalStep.ContractVersion);
+            var fleet = CampaignExercises.CompleteSourceGt1StageOneFleet(arrivalComplete.SuccessorSession);
+            Assert.True(fleet.IsAccepted);
+            var repairPosition = Cna1979LandSequenceV4.GetNext(arrivalComplete.SuccessorSession.SourceTurn.Position);
+            Assert.Equal(LandSegmentIds.FleetRepair, repairPosition.SegmentId);
+            Assert.Equal(Cna1979LandSequenceV4.GetNext(repairPosition), fleet.SuccessorSession!.SourceTurn!.Position);
+            Assert.Equal(fleet.SuccessorSession.SourceTurn.Position.PositionId, fleet.Evidence!.Receipt.ResultingPositionId);
+            Assert.True(CampaignExercises.IsSourceGt1StageOneFleetCompleted(fleet.SuccessorSession));
+            Assert.False(CampaignExercises.CompleteSourceGt1StageOneFleet(fleet.SuccessorSession).IsAccepted);
+            var firstReserveSession = fleet.SuccessorSession;
+            Assert.Empty(CampaignExercises.Query(firstReserveSession, CampaignActionAudience.Axis).ActionSet!.Candidates);
+            var reserveChoice = Assert.Single(CampaignExercises.Query(firstReserveSession, CampaignActionAudience.Commonwealth).ActionSet!.Candidates,
+                value => value.Kind == "source-stage1-first-reserves-decline");
+            var visibleReserves = CampaignExercises.QuerySourceActionsDraft(firstReserveSession, CampaignActionAudience.Commonwealth);
+            Assert.True(CampaignHostAdapter.MatchesIssuedSourceAction(firstReserveSession.SourceTurn!.StateVersion,
+                visibleReserves.VisibleBytes, 0, reserveChoice.ActionId));
+            var noReserves = CampaignExercises.Submit(firstReserveSession,
+                Submission(firstReserveSession, reserveChoice.ActionId, CampaignActionAudience.Commonwealth));
+            Assert.True(noReserves.IsAccepted);
+            Assert.Equal(LandSegmentIds.Movement, noReserves.SuccessorSession!.SourceTurn!.Position.SegmentId);
+            Assert.Equal(LandSide.Commonwealth, noReserves.SuccessorSession.SourceTurn.Position.ActiveSide);
+            Assert.Equal(noReserves.SuccessorSession.SourceTurn.Position.PositionId, noReserves.Evidence!.Receipt.ResultingPositionId);
+            var movementSession = noReserves.SuccessorSession;
+            Assert.Empty(CampaignExercises.Query(movementSession, CampaignActionAudience.Axis).ActionSet!.Candidates);
+            var finish = Assert.Single(CampaignExercises.Query(movementSession, CampaignActionAudience.Commonwealth).ActionSet!.Candidates,
+                value => value.Kind == "source-stage1-first-movement-finish");
+            var movementDraft = CampaignExercises.QuerySourceActionsDraft(movementSession, CampaignActionAudience.Commonwealth);
+            Assert.True(CampaignHostAdapter.MatchesIssuedSourceAction(movementSession.SourceTurn!.StateVersion,
+                movementDraft.VisibleBytes, 0, finish.ActionId));
+            var movementFinished = CampaignExercises.Submit(movementSession,
+                Submission(movementSession, finish.ActionId, CampaignActionAudience.Commonwealth));
+            Assert.True(movementFinished.IsAccepted);
+            Assert.Equal(LandSegmentIds.BreakdownDetermination, movementFinished.SuccessorSession!.SourceTurn!.Position.SegmentId);
+            Assert.Same(movementSession.SourceTurn.World, movementFinished.SuccessorSession.SourceTurn.World);
+            Assert.Same(movementSession.SourceTurn.CommonwealthSupply, movementFinished.SuccessorSession.SourceTurn.CommonwealthSupply);
+            Assert.Equal(movementFinished.SuccessorSession.SourceTurn.Position.PositionId, movementFinished.Evidence!.Receipt.ResultingPositionId);
+            var breakdownFinished = CampaignExercises.CompleteSourceGt1FirstBreakdown(movementFinished.SuccessorSession);
+            Assert.True(breakdownFinished.IsAccepted);
+            Assert.Equal(LandSegmentIds.Combat, breakdownFinished.SuccessorSession!.SourceTurn!.Position.SegmentId);
+            Assert.Equal(LandStepIds.PositionDetermination, breakdownFinished.SuccessorSession.SourceTurn.Position.StepId);
+            Assert.Equal(movementFinished.SuccessorSession.SourceTurn.RandomState, breakdownFinished.SuccessorSession.SourceTurn.RandomState);
+            Assert.Same(movementFinished.SuccessorSession.SourceTurn.World, breakdownFinished.SuccessorSession.SourceTurn.World);
+            Assert.True(CampaignExercises.IsSourceGt1FirstBreakdownCompleted(breakdownFinished.SuccessorSession));
+            var breakdownCommand = CampaignHostAdapter.SourceTurnSystemCommand(movementFinished.SuccessorSession, breakdownFinished);
+            var breakdownStep = new CampaignHostAcceptedStep(CampaignActionSubmissionSerializer.SerializeCanonical(breakdownCommand),
+                breakdownFinished.Evidence!.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(breakdownFinished.Evidence.Receipt),
+                breakdownFinished.Evidence.SnapshotCheckpoint, CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind);
+            Assert.Equal(CampaignHostAcceptedStep.SourceGt1BreakdownCompleteContractVersion, breakdownStep.ContractVersion);
+        }
+        var ccnnFirst = CampaignExercises.Submit(catanzaroConfirmed,
+            Submission(catanzaroConfirmed, axisBatchChoice.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        var australianAfterCcnn = CampaignExercises.Query(ccnnFirst, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Where(value => value.Family == "sixth-australian-placement").ToArray();
+        Assert.Equal(choicesBefore, australianAfterCcnn.Select(value => value.ChoiceJson).Order(StringComparer.Ordinal).ToArray());
+        var sameAustralianChoice = australianAfterCcnn.Single(value => value.SourceActionId == CampaignSourceAuthorityState.SixthAustralianActionId("e1829"));
+        var ccnnThenAustralian = CampaignExercises.Submit(ccnnFirst,
+            Submission(ccnnFirst, sameAustralianChoice.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(australianFirst.SourceAuthority!.GroupedWorld!.ContentHash, ccnnThenAustralian.SourceAuthority!.GroupedWorld!.ContentHash);
+        Assert.Equal(australianFirst.SourceAuthority.GroupedWorld.Hash(), ccnnThenAustralian.SourceAuthority.GroupedWorld.Hash());
+        Assert.Equal(australianFirst.SourceAuthority.Battlefield!.Hash(), ccnnThenAustralian.SourceAuthority.Battlefield!.Hash());
+        Assert.Equal(14, australianFirst.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "1-ccnn-division").Members.Count);
+        Assert.Equal(12, australianFirst.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "4-ccnn-division").Members.Count);
+        var ccnnUnits = australianFirst.SourceAuthority.GroupedWorld.Groups.Where(value => value.GroupId is "1-ccnn-division" or "4-ccnn-division")
+            .SelectMany(value => value.Members).ToArray();
+        Assert.All(ccnnUnits.Where(value => value.ElementId.EndsWith("-ccnn-infantry", StringComparison.Ordinal)),
+            value => { Assert.Equal(5, value.InfantryToe); Assert.Equal(10, value.CapabilityPointAllowance); });
+        Assert.Equal(20, ccnnUnits.Single(value => value.ElementId == "1-ccnn-hq").CapabilityPointAllowance);
+        Assert.Equal(30, ccnnUnits.Single(value => value.ElementId == "4-ccnn-hq").CapabilityPointAllowance);
+        Assert.Equal(30, ccnnUnits.Single(value => value.ElementId == "i-medium-tank").CapabilityPointAllowance);
+        Assert.True(CampaignExercises.Reconstruct(australianFirst).IsVerified);
+        Assert.True(CampaignExercises.Reconstruct(ccnnThenAustralian).IsVerified);
+        var arescaChoiceBefore = CampaignExercises.Query(ccnnFirst, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "aresca-disposition");
+        var arescaChoiceAfter = CampaignExercises.Query(australianFirst, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "aresca-disposition");
+        Assert.Equal(arescaChoiceBefore.ChoiceJson, arescaChoiceAfter.ChoiceJson);
+        var arescaFirst = CampaignExercises.Submit(ccnnFirst,
+            Submission(ccnnFirst, arescaChoiceBefore.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(55, arescaFirst.SourceAuthority!.ProfileVersion);
+        var ausAfterAresca = CampaignExercises.Query(arescaFirst, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Where(value => value.Family == "sixth-australian-placement").ToArray();
+        Assert.Equal(choicesBefore, ausAfterAresca.Select(value => value.ChoiceJson).Order(StringComparer.Ordinal).ToArray());
+        var ausArescaChoice = ausAfterAresca.Single(value => value.SourceActionId == CampaignSourceAuthorityState.SixthAustralianActionId("e1829"));
+        var arescaThenAustralian = CampaignExercises.Submit(arescaFirst,
+            Submission(arescaFirst, ausArescaChoice.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        var australianThenAresca = CampaignExercises.Submit(australianFirst,
+            Submission(australianFirst, arescaChoiceAfter.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(57, australianThenAresca.SourceAuthority!.ProfileVersion);
+        var aresca = australianThenAresca.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "aresca-tank-regiment");
+        Assert.Equal(1, aresca.StackValue); Assert.Equal(10, aresca.MotorPool);
+        Assert.Equal(1, aresca.Members.Single(value => value.ElementId == "aresca-tank-regiment-hq").ComponentToe);
+        Assert.Equal(9, aresca.Members.Single(value => value.ElementId == "xxi-libyan-light-tank").ComponentToe);
+        Assert.Equal(australianThenAresca.SourceAuthority.GroupedWorld.Hash(), arescaThenAustralian.SourceAuthority!.GroupedWorld!.Hash());
+        Assert.Equal(australianThenAresca.SourceAuthority.Battlefield!.Hash(), arescaThenAustralian.SourceAuthority.Battlefield!.Hash());
+        Assert.True(CampaignExercises.Reconstruct(australianThenAresca).IsVerified);
+        Assert.True(CampaignExercises.Reconstruct(arescaThenAustralian).IsVerified);
+        var correctedCcnn = CampaignExercises.CorrectSourceSeventhShell(australianFirst).SuccessorSession!;
+        var correctedArescaChoice = CampaignExercises.Query(correctedCcnn, CampaignActionAudience.Axis).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "aresca-disposition");
+        var correctedAresca = CampaignExercises.Submit(correctedCcnn,
+            Submission(correctedCcnn, correctedArescaChoice.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.Equal(3, correctedAresca.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == "7-armored-division").StackValue);
+        Assert.Equal(1, correctedAresca.SourceAuthority.GroupedWorld.Groups.Single(value => value.GroupId == "aresca-tank-regiment").StackValue);
+        Assert.Equal(CampaignSourceAuthorityState.ShellCorrectedLegacyCheckpointContractVersion, correctedAresca.SourceAuthority.ProfileVersion);
+        Assert.True(CampaignExercises.Reconstruct(correctedAresca).IsVerified);
+        var gunSiteChoice = CampaignExercises.Query(catanzaroConfirmed, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "sixth-australian-placement"
+                && value.SourceActionId == CampaignSourceAuthorityState.SixthAustralianActionId(gunCairoHex));
+        var australianWithGuns = CampaignExercises.Submit(catanzaroConfirmed,
+            Submission(catanzaroConfirmed, gunSiteChoice.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(3, australianWithGuns.SourceAuthority!.Battlefield!.Entries.Count(value => value.LocationId == gunCairoHex
+            && freeGunIds.Contains(value.ElementId)));
+        Assert.Equal(5, australianWithGuns.SourceAuthority.GroupedWorld!.Groups.Single(value => value.GroupId == australian.GroupId).StackValue);
+        Assert.True(CampaignExercises.Reconstruct(australianWithGuns).IsVerified);
+        Assert.Equal(5, catanzaroConfirmed.SourceAuthority!.GroupedWorld!.Groups.Single(value => value.GroupId == catanzaro.GroupId).StackValue);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, CampaignExercises.Submit(catanzaroConfirmed, catanzaroCommand).RejectionReason);
+        Assert.Equal(sixteenthConfirmed.SourceAuthority.World.PendingArrivals, catanzaroConfirmed.SourceAuthority.World.PendingArrivals);
+        Assert.True(CampaignExercises.Reconstruct(catanzaroConfirmed).IsVerified);
+        var beforeTurn = CampaignExercises.QuerySourceActionsDraft(catanzaroConfirmed, CampaignActionAudience.Axis);
+        Assert.False(CampaignExercises.IsSourceTurnStarted(catanzaroConfirmed));
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            CampaignExercises.StartSourceTurn(catanzaroConfirmed).RejectionReason);
+        Assert.Equal(beforeTurn.VisibleBytes,
+            CampaignExercises.QuerySourceActionsDraft(catanzaroConfirmed, CampaignActionAudience.Axis).VisibleBytes);
+        Assert.True(CampaignExercises.Reconstruct(catanzaroConfirmed).IsVerified);
         if (seed == 0)
         {
             // Stress the unified legal-action contract after real grouped admissions.

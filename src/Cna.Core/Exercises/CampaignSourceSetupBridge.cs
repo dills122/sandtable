@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Rules;
 
 namespace Cna.Core.Exercises;
 
@@ -8,6 +9,121 @@ namespace Cna.Core.Exercises;
 // Only the requesting side's existing visible choices enter this bridge.
 internal static class CampaignSourceSetupBridge
 {
+    internal static CampaignLegalActionQueryResult QueryTurn(ExerciseSession session, CampaignActionAudience audience)
+    {
+        if (session.SourceTurn is not { } turn) return CampaignLegalActionQueryResult.Rejected(CampaignLegalActionQueryRejectionReason.InvalidState);
+        if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
+            return CampaignLegalActionQueryResult.Rejected(CampaignLegalActionQueryRejectionReason.InvalidAudience);
+        var position = turn.Position;
+        if (position.GameTurn == 1 && position.PhaseId == LandPhaseIds.NavalConvoySchedule)
+        {
+            var scheduling = new List<CampaignActionCandidate>();
+            if (audience == CampaignActionAudience.Axis && turn.Gt3Supply is { Finished: false } plan)
+            {
+                if (plan.Die is null) scheduling.Add(CampaignSourceTurnAction.RollGt3Supply(turn.StateVersion));
+                else
+                {
+                    foreach (var lane in new[] { 2, 3, 6 })
+                        for (var stage = 1; stage <= 3; stage++)
+                            foreach (var delta in plan.ValidDeltas(lane, stage))
+                                scheduling.Add(CampaignSourceTurnAction.AdjustGt3Supply(turn.StateVersion, lane, stage, delta));
+                    scheduling.Add(CampaignSourceTurnAction.FinishGt3Supply(turn.StateVersion));
+                }
+            }
+            if (audience == CampaignActionAudience.Commonwealth && turn.Gt5Supply is { Die: null })
+                scheduling.Add(CampaignSourceTurnAction.RollGt5Supply(turn.StateVersion));
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, scheduling, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn == 1 && position.PhaseId == LandPhaseIds.TacticalShipping)
+        {
+            var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+            CampaignActionCandidate[] options = turn.HasDeclinedTacticalShipping(side)
+                ? [] : [CampaignSourceTurnAction.DeclineTacticalShipping(turn.StateVersion)];
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, options, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn == 1 && position.OperationStage == 1 && position.PhaseId == LandPhaseIds.InitiativeDeclaration)
+        {
+            CampaignActionCandidate[] options = audience == CampaignActionAudience.Axis
+                ? [CampaignSourceTurnAction.ActFirst(turn.StateVersion), CampaignSourceTurnAction.ActLast(turn.StateVersion)] : [];
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, options, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn == 1 && position.OperationStage == 1 && position.PhaseId == LandPhaseIds.Organization)
+        {
+            var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+            var options = new List<CampaignActionCandidate>();
+            if (!turn.HasDeclinedVoluntaryOrganization(side))
+            {
+                // The bounded completion path cannot yet advance ongoing
+                // Australian training. Interrupt it before the Commonwealth
+                // closes its voluntary Organization choices.
+                if (audience != CampaignActionAudience.Commonwealth || turn.Training.Interrupted)
+                    options.Add(CampaignSourceTurnAction.DeclineVoluntaryOrganization(turn.StateVersion));
+                if (audience == CampaignActionAudience.Commonwealth && !turn.Training.Interrupted
+                    && turn.World.GroupedWorld.Groups.Any(group => group.GroupId == CampaignSourceTrainingLedger.FormationId))
+                    options.Add(CampaignSourceTurnAction.InterruptSixthAustralianTraining(turn.StateVersion));
+            }
+            if (turn.Training.LastRecordedStage == 0
+                && (turn.Training.InitialRuling is null || turn.Training.InitialRuling == CampaignSourceTrainingLedger.ProvisionalBaselineId)
+                && turn.World.GroupedWorld.Groups.Any(group => group.GroupId == CampaignSourceTrainingLedger.FormationId))
+            {
+                var voted = turn.Training.HasBaselineVote(audience == CampaignActionAudience.Axis);
+                options.Add(voted ? CampaignSourceTurnAction.WithdrawSixthAustralianBaseline(turn.StateVersion)
+                    : CampaignSourceTurnAction.ApproveSixthAustralianBaseline(turn.StateVersion));
+            }
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, options, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn == 1 && position.OperationStage == 1 && position.PhaseId == LandPhaseIds.ReserveDesignation
+            && position.ActorRole == LandActorRole.FirstActingSide)
+        {
+            var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+            CampaignActionCandidate[] options = turn.StageOneFirstSide == side
+                && turn.World.World8.World.Elements.All(value => value.ReserveStatus == CampaignElementReserveStatus.None)
+                ? [CampaignSourceTurnAction.DeclineFirstReserves(turn.StateVersion)] : [];
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, options, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn == 1 && position.OperationStage == 1 && position.SegmentId == LandSegmentIds.Movement
+            && position.ActorRole == LandActorRole.FirstActingSide && position.ActiveSide is { } active
+            && (active == LandSide.Commonwealth || turn.World.CdSeamBound))
+        {
+            var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+            var choices = active == LandSide.Commonwealth && audience == CampaignActionAudience.Commonwealth && turn.StageOneWeather is not null
+                ? CampaignSourceFourthIndianMovement.ValidSupplyChoices(turn.World, turn.CommonwealthSupply,
+                    turn.FourthIndianPaidStage, position, turn.StageOneMovementWeather()) : [];
+            var options = choices.Select(id => (CampaignActionCandidate)CampaignSourceTurnAction.MoveFourthIndianOpening(turn.StateVersion, id)).ToList();
+            if (turn.World.CdSeamBound && active == side && turn.StageOneFirstSide == side)
+                options.Add(CampaignSourceTurnAction.FinishFirstMovement(turn.StateVersion));
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, options, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn == 1 && position.OperationStage == 1 && position.PhaseId == LandPhaseIds.NavalConvoyArrival && position.SegmentId is null)
+        {
+            var options = new List<CampaignActionCandidate>();
+            if (audience == CampaignActionAudience.Commonwealth)
+            {
+                if (turn.MultiArrival?.CanDecline(2) == true) options.Add(CampaignSourceTurnAction.DeclineGt1Lane2Attack(turn.StateVersion));
+                if (turn.MultiArrival?.CanDecline(3) == true) options.Add(CampaignSourceTurnAction.DeclineGt1Lane3Attack(turn.StateVersion));
+                if (turn.MultiArrival?.Lane6CommonwealthCut().CanDecline == true) options.Add(CampaignSourceTurnAction.DeclineGt1Lane6Attack(turn.StateVersion));
+                if (turn.AxisArrival is { Announced: true, Delivered: false }) options.Add(CampaignSourceTurnAction.DeclineGt1Lane2Attack(turn.StateVersion));
+                if (turn.BenghaziArrival is { Announced: true, Delivered: false }) options.Add(CampaignSourceTurnAction.DeclineGt1Lane3Attack(turn.StateVersion));
+            }
+            return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+                turn.Source.Request.RulesetHash, position.PositionId, audience, options, CampaignLegalActionSet.SourceTurnPolicyId));
+        }
+        if (position.GameTurn != 1 || position.OperationStage != 3 || position.PhaseId != LandPhaseIds.NavalConvoyArrival || position.SegmentId is not null)
+            return CampaignLegalActionQueryResult.Rejected(CampaignLegalActionQueryRejectionReason.InvalidState);
+        var candidates = audience == CampaignActionAudience.Commonwealth
+            ? CampaignSourcePolishArrival.ValidDestinations(turn.World, position)
+                .Select(destination => (CampaignActionCandidate)new CampaignSourceTurnAction(turn.StateVersion, destination)).ToArray()
+            : [];
+        return CampaignLegalActionQueryResult.Success(new CampaignLegalActionSet(turn.Source.Request.CampaignId, turn.StateVersion,
+            turn.Source.Request.RulesetHash, position.PositionId, audience, candidates, CampaignLegalActionSet.SourceTurnPolicyId));
+    }
+
     internal static CampaignLegalActionQueryResult Query(ExerciseSession session, CampaignActionAudience audience)
     {
         if (session.SourceAuthority is not { } authority) return CampaignLegalActionQueryResult.Rejected(CampaignLegalActionQueryRejectionReason.InvalidState);
@@ -31,6 +147,24 @@ internal static class CampaignSourceSetupBridge
         if (audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth)) throw new InvalidOperationException("Source audience invalid.");
         var drafts = new List<(string Family, CampaignPregameAxisDraft Draft)>();
         void Add(string family, CampaignPregameAxisDraft draft) => drafts.Add((family, draft));
+        var finished = authority.IsOwnerFinalized(audience);
+        using (var stream = new MemoryStream())
+        {
+            using (var writer = new Utf8JsonWriter(stream))
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("ownSetupFinalized", finished);
+                writer.WriteStartArray("choices");
+                writer.WriteStartObject(); writer.WriteString("kind", finished ? "reopen" : "finish"); writer.WriteEndObject();
+                writer.WriteEndArray(); writer.WriteEndObject();
+            }
+            Add("owner-finalization", new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(),
+                [CampaignSourceAuthorityState.SetupFinalizationActionId(audience, !finished)]));
+        }
+        if (finished) return drafts.AsReadOnly();
+        Add("central-india-horse-ruling", CampaignExercises.QuerySourceHorseSetupDraft(session, audience, false));
+        if (audience == CampaignActionAudience.Commonwealth)
+            Add("central-india-horse-stage-one", CampaignExercises.QuerySourceHorseSetupDraft(session, audience, true));
         var axis = audience == CampaignActionAudience.Axis;
         Add("dummy", CampaignExercises.QuerySourceDummyDraft(session, audience));
         Add("motorization", CampaignExercises.QuerySourceMotorizationDraft(session, audience));
@@ -48,6 +182,9 @@ internal static class CampaignSourceSetupBridge
             if (authority.Gt2Correction is not null) Add("axis-gt2-correction", CampaignExercises.QuerySourceGt2CorrectionDraft(session, audience));
             if (authority.IsLibyanGrouped) Add("libyan-disposition", CampaignExercises.QuerySourceLibyanDraft(session, audience));
             if (authority.IsItalianDivisionsGrouped) Add("italian-division-disposition", CampaignExercises.QuerySourceItalianDivisionsDraft(session, audience));
+            if (authority.IsCatanzaroGrouped) Add("catanzaro-disposition", CampaignExercises.QuerySourceCatanzaroDraft(session, audience));
+            if (authority.CanAdmitCcnnBatch) Add("ccnn-batch-disposition", CampaignExercises.QuerySourceCcnnBatchDraft(session, audience));
+            if (authority.CanAdmitAresca) Add("aresca-disposition", CampaignExercises.QuerySourceArescaDraft(session, audience));
         }
         else
         {
@@ -61,6 +198,9 @@ internal static class CampaignSourceSetupBridge
             if (authority.CwPriorityCatalog is not null) Add("cw-priority-catalog", CampaignExercises.QuerySourceCwPriorityCatalogDraft(session, audience));
             if (authority.CwFreeGuns is not null) Add("cw-free-guns", CampaignExercises.QuerySourceCwFreeGunsDraft(session, audience));
             if (authority.GroupedWorld is not null) Add("fourth-indian-motorization", CampaignExercises.QuerySourceFourthIndianDraft(session, audience));
+            if (authority.IsSeventhArmoredGrouped) Add("seventh-armored-disposition", CampaignExercises.QuerySourceSeventhArmoredDraft(session, audience));
+            if (authority.IsSixteenthBrigadeGrouped) Add("sixteenth-brigade-disposition", CampaignExercises.QuerySourceSixteenthBrigadeDraft(session, audience));
+            if (authority.CanPlaceSixthAustralian) Add("sixth-australian-placement", CampaignExercises.QuerySourceSixthAustralianDraft(session, audience));
         }
         return drafts.OrderBy(value => value.Family, StringComparer.Ordinal).ToArray();
     }
@@ -78,6 +218,8 @@ internal static class CampaignSourceSetupBridge
         var inner = submission with { ActionId = action.SourceActionId };
         var result = action.Family switch
         {
+            "owner-finalization" => CampaignExercises.SubmitSourceOwnerFinalization(session, inner),
+            "central-india-horse-ruling" or "central-india-horse-stage-one" => CampaignExercises.SubmitSourceHorseSetup(session, inner),
             "dummy" => CampaignExercises.DecideSourceDummy(session, inner),
             "motorization" => CampaignExercises.AdjustSourceMotorization(session, inner),
             "unattached-cargo" => CampaignExercises.SubmitSourceUnattachedCargo(session, inner),
@@ -102,6 +244,12 @@ internal static class CampaignSourceSetupBridge
             "cw-priority-catalog" => CampaignExercises.SubmitSourceCwPriorityCatalog(session, inner),
             "cw-free-guns" => CampaignExercises.PlaceSourceCwFreeGun(session, inner),
             "fourth-indian-motorization" => CampaignExercises.SubmitSourceFourthIndian(session, inner),
+            "seventh-armored-disposition" => CampaignExercises.SubmitSourceSeventhArmored(session, inner),
+            "catanzaro-disposition" => CampaignExercises.SubmitSourceCatanzaro(session, inner),
+            "ccnn-batch-disposition" => CampaignExercises.SubmitSourceCcnnBatch(session, inner),
+            "aresca-disposition" => CampaignExercises.SubmitSourceAresca(session, inner),
+            "sixteenth-brigade-disposition" => CampaignExercises.SubmitSourceSixteenthBrigade(session, inner),
+            "sixth-australian-placement" => CampaignExercises.SubmitSourceSixthAustralian(session, inner),
             _ => ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal),
         };
         if (!result.IsAccepted) return result;
