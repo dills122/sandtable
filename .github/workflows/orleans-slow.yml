@@ -1,0 +1,53 @@
+name: Orleans slow replay soak
+
+on:
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
+
+jobs:
+  orleans-slow:
+    runs-on: ubuntu-24.04
+    # GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame
+    # is excluded from the per-push orleans job in ci.yml because it alone takes
+    # ~29m43s (144 steps replayed against one campaign; CampaignDurableAuthorityJournal.Load
+    # re-reads the full accepted_steps history, avg ~961KB checkpoint blob/step, on every
+    # write - an O(n^2) replay cost). Run it here on a schedule instead, so it still gets
+    # exercised without gating every PR's CI turnaround.
+    timeout-minutes: 45
+    steps:
+      - name: Check out main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Restore and build Orleans host tests
+        run: |
+          dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
+          dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
+      - name: Run the excluded slow replay test
+        timeout-minutes: 40
+        shell: bash
+        run: |
+          mkdir -p artifacts/orleans-slow-results
+          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-slow-results --filter-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" 2>&1 | tee artifacts/orleans-slow-results/console.log
+      - name: Retain slow replay test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: orleans-slow-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/orleans-slow-results
+          if-no-files-found: error
+          retention-days: 14
