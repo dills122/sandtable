@@ -47,13 +47,7 @@ internal sealed record CampaignContactObservationV1(
                 writer.WriteString("handle", contact.Handle);
                 writer.WriteString("observerFormationId", contact.ObserverFormationId);
                 writer.WriteString("apparentLocationId", contact.ApparentLocationId);
-                writer.WriteString("identification", contact.Identification switch
-                {
-                    CampaignContactIdentification.Presence => "presence",
-                    CampaignContactIdentification.FormationType => "formation-type",
-                    CampaignContactIdentification.Identified => "identified",
-                    _ => throw new InvalidOperationException("Unknown contact identification."),
-                });
+                writer.WriteString("identification", CampaignContactTransitionCodec.Identification(contact.Identification));
                 writer.WriteString("access", contact.Access == CampaignContactAccess.Side ? "side" : "observer");
                 writer.WriteBoolean("isCurrent", contact.IsCurrent);
                 writer.WriteEndObject();
