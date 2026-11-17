@@ -436,50 +436,99 @@ internal sealed class CampaignSourceAuthorityState
     internal const int AxisGarrisonRemainderCheckpointContractVersion = 61;
     internal const int GiarabubMotorMachineGunCheckpointContractVersion = 62;
     internal const int CwFrontlineCheckpointContractVersion = 63;
-    internal int ProfileVersion => CwFreeGunsWorld?.CwFrontlineContent is not null
-        ? CwFrontlineCheckpointContractVersion : CwFreeGunsWorld?.MotorMachineGunContent is not null
-        ? GiarabubMotorMachineGunCheckpointContractVersion : CwFreeGunsWorld?.GarrisonRemainderContent is not null
-        ? AxisGarrisonRemainderCheckpointContractVersion : CwFreeGunsWorld?.MinorGarrisonContent is not null
-        ? AxisMinorGarrisonsCheckpointContractVersion : HorseRulingVersion ? HorseRulingCheckpointContractVersion : BaseProfileVersion;
-    private int BaseProfileVersion => FinalizationVersion
-        ? IsSeventhShellCorrected
-            ? CompactCheckpoint ? ShellCorrectedFinalizedCompactCheckpointContractVersion : ShellCorrectedFinalizedLegacyCheckpointContractVersion
-            : CompactCheckpoint ? FinalizedCompactCheckpointContractVersion : FinalizedLegacyCheckpointContractVersion
-        : CompactCheckpoint ? (IsSeventhShellCorrected ? ShellCorrectedCompactCheckpointContractVersion : IsArescaGrouped ? (IsSixthAustralianGrouped ? CombinedArescaCompactCheckpointContractVersion : ArescaCompactCheckpointContractVersion) : IsCcnnBatchGrouped ? (IsSixthAustralianGrouped ? CombinedCompactCheckpointContractVersion : CcnnCompactCheckpointContractVersion) : IsSixthAustralianGrouped ? AustralianCompactCheckpointContractVersion : CompactCheckpointContractVersion) : LegacyProfileVersion;
+    // ProfileVersion / BaseProfileVersion / LegacyProfileVersion / UnderlyingLegacyProfileVersion
+    // pick the on-wire checkpoint contract version (a persisted/replayed value) from an
+    // ORDERED table of (predicate, version) rules, first match wins. This replaces what was
+    // a long chain of nested ternaries; the rule order below is IDENTICAL to that chain's
+    // evaluation order and must stay that way - do not reorder without re-running the
+    // characterization coverage in GrazianiSourceAuthorityTests.
+    private static int FirstMatch(CampaignSourceAuthorityState state,
+        (Func<CampaignSourceAuthorityState, bool> When, int Version)[] rules, int fallback)
+    {
+        foreach (var rule in rules)
+            if (rule.When(state)) return rule.Version;
+        return fallback;
+    }
+    private static readonly (Func<CampaignSourceAuthorityState, bool> When, int Version)[] ProfileVersionRules =
+    [
+        (state => state.CwFreeGunsWorld?.CwFrontlineContent is not null, CwFrontlineCheckpointContractVersion),
+        (state => state.CwFreeGunsWorld?.MotorMachineGunContent is not null, GiarabubMotorMachineGunCheckpointContractVersion),
+        (state => state.CwFreeGunsWorld?.GarrisonRemainderContent is not null, AxisGarrisonRemainderCheckpointContractVersion),
+        (state => state.CwFreeGunsWorld?.MinorGarrisonContent is not null, AxisMinorGarrisonsCheckpointContractVersion),
+        (state => state.HorseRulingVersion, HorseRulingCheckpointContractVersion),
+    ];
+    internal int ProfileVersion => FirstMatch(this, ProfileVersionRules, BaseProfileVersion);
+    private static readonly (Func<CampaignSourceAuthorityState, bool> When, int Version)[] BaseProfileVersionRules =
+    [
+        (state => state.FinalizationVersion && state.IsSeventhShellCorrected && state.CompactCheckpoint, ShellCorrectedFinalizedCompactCheckpointContractVersion),
+        (state => state.FinalizationVersion && state.IsSeventhShellCorrected, ShellCorrectedFinalizedLegacyCheckpointContractVersion),
+        (state => state.FinalizationVersion && state.CompactCheckpoint, FinalizedCompactCheckpointContractVersion),
+        (state => state.FinalizationVersion, FinalizedLegacyCheckpointContractVersion),
+        (state => state.CompactCheckpoint && state.IsSeventhShellCorrected, ShellCorrectedCompactCheckpointContractVersion),
+        (state => state.CompactCheckpoint && state.IsArescaGrouped && state.IsSixthAustralianGrouped, CombinedArescaCompactCheckpointContractVersion),
+        (state => state.CompactCheckpoint && state.IsArescaGrouped, ArescaCompactCheckpointContractVersion),
+        (state => state.CompactCheckpoint && state.IsCcnnBatchGrouped && state.IsSixthAustralianGrouped, CombinedCompactCheckpointContractVersion),
+        (state => state.CompactCheckpoint && state.IsCcnnBatchGrouped, CcnnCompactCheckpointContractVersion),
+        (state => state.CompactCheckpoint && state.IsSixthAustralianGrouped, AustralianCompactCheckpointContractVersion),
+        (state => state.CompactCheckpoint, CompactCheckpointContractVersion),
+    ];
+    private int BaseProfileVersion => FirstMatch(this, BaseProfileVersionRules, LegacyProfileVersion);
     internal CampaignSourceUnattachedCargo? AxisUnattachedCargo { get; }
     internal CampaignSourceUnattachedCargo? CommonwealthUnattachedCargo { get; }
     internal CampaignSourceCwFreeGuns? CwFreeGuns { get; }
     internal CampaignSourceCwFreeGunsWorld? CwFreeGunsWorld { get; }
     internal CampaignGroupedWorld? GroupedWorld { get; }
-    private int LegacyProfileVersion => IsSeventhShellCorrected ? ShellCorrectedLegacyCheckpointContractVersion : UnderlyingLegacyProfileVersion;
-    private int UnderlyingLegacyProfileVersion => IsArescaGrouped ? (IsSixthAustralianGrouped ? 57 : 55) : IsCcnnBatchGrouped ? (IsSixthAustralianGrouped ? 49 : 47) : IsSixthAustralianGrouped ? 45 : IsCatanzaroGrouped ? 42 : IsSixteenthBrigadeGrouped ? 41 : IsSeventhArmoredGrouped ? 40 : IsItalianDivisionsGrouped ? 39 : SeptemberPlans is not null ? 38 : IsLibyanGrouped ? 37 : IsMalettiGrouped ? 36 : GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceMatruhGroupedDefinition.GroupId) == true ? 35 : GroupedWorld is not null ? 34 : AxisUnattachedCargo is not null || CommonwealthUnattachedCargo is not null ? UnattachedCargoContractVersion
-        : CwFreeGunsWorld is not null ? CwFreeGunsWorldContractVersion
-        : CwFreeGuns is not null ? CwFreeGunsContractVersion
-        : CwPriorityWorld is not null ? CwPriorityWorldContractVersion
-        : CwPriorityCatalog is not null ? CwPriorityCatalogContractVersion
-        : Gt2Correction is not null ? Gt2CorrectionContractVersion
-        : MatruhDetachedWorld is not null ? MatruhDetachedWorldContractVersion
-        : MatruhFormation is not null ? MatruhFormationContractVersion
-        : CertifiedMalettiWorld is not null ? CertifiedMalettiWorldContractVersion
-        : MalettiHierarchy is not null ? MalettiHierarchyContractVersion
-        : AxisCorpsArtilleryWorld is not null ? AxisCorpsWorldContractVersion
-        : AxisCorpsArtillery is not null ? AxisCorpsSetupContractVersion
-        : AxisFreeArtilleryWorld is not null ? AxisFreeWorldContractVersion
-        : AxisFreeArtillery is not null ? AxisFreeSetupContractVersion
-        : InitialWrecks is not null ? InitialWrecksContractVersion
-        : AttachedInitialLoads is not null ? AttachedInitialLoadsContractVersion
-        : ExpandedIndependentWorld is not null ? ExpandedIndependentWorldContractVersion
-        : LocalMapWorld is not null ? LocalMapWorldContractVersion
-        : IndependentWorld is not null ? IndependentWorldContractVersion
-        : MalettiWorld is not null ? MalettiWorldContractVersion
-        : CairoWorld is not null ? CairoWorldContractVersion
-        : CairoSetup is not null ? CairoSetupContractVersion
-        : Battlefield is not null ? BattlefieldContractVersion
-        : AxisGarrisons is not null ? AxisGarrisonsContractVersion
-        : AxisPriorityMotorization is not null ? AxisPriorityMotorizationContractVersion
-        : PriorityMotorization is not null ? PriorityMotorizationContractVersion
-        : CommonwealthSupplement is not null ? CommonwealthSupplementalContractVersion
-        : AxisSupplement is null ? ContractVersion : SupplementalContractVersion;
+    private static readonly (Func<CampaignSourceAuthorityState, bool> When, int Version)[] LegacyProfileVersionRules =
+    [
+        (state => state.IsSeventhShellCorrected, ShellCorrectedLegacyCheckpointContractVersion),
+    ];
+    private int LegacyProfileVersion => FirstMatch(this, LegacyProfileVersionRules, UnderlyingLegacyProfileVersion);
+    private static readonly (Func<CampaignSourceAuthorityState, bool> When, int Version)[] UnderlyingLegacyProfileVersionRules =
+    [
+        (state => state.IsArescaGrouped && state.IsSixthAustralianGrouped, 57),
+        (state => state.IsArescaGrouped, 55),
+        (state => state.IsCcnnBatchGrouped && state.IsSixthAustralianGrouped, 49),
+        (state => state.IsCcnnBatchGrouped, 47),
+        (state => state.IsSixthAustralianGrouped, 45),
+        (state => state.IsCatanzaroGrouped, 42),
+        (state => state.IsSixteenthBrigadeGrouped, 41),
+        (state => state.IsSeventhArmoredGrouped, 40),
+        (state => state.IsItalianDivisionsGrouped, 39),
+        (state => state.SeptemberPlans is not null, 38),
+        (state => state.IsLibyanGrouped, 37),
+        (state => state.IsMalettiGrouped, 36),
+        (state => state.GroupedWorld?.Groups.Any(value => value.GroupId == CampaignSourceMatruhGroupedDefinition.GroupId) == true, 35),
+        (state => state.GroupedWorld is not null, 34),
+        (state => state.AxisUnattachedCargo is not null || state.CommonwealthUnattachedCargo is not null, UnattachedCargoContractVersion),
+        (state => state.CwFreeGunsWorld is not null, CwFreeGunsWorldContractVersion),
+        (state => state.CwFreeGuns is not null, CwFreeGunsContractVersion),
+        (state => state.CwPriorityWorld is not null, CwPriorityWorldContractVersion),
+        (state => state.CwPriorityCatalog is not null, CwPriorityCatalogContractVersion),
+        (state => state.Gt2Correction is not null, Gt2CorrectionContractVersion),
+        (state => state.MatruhDetachedWorld is not null, MatruhDetachedWorldContractVersion),
+        (state => state.MatruhFormation is not null, MatruhFormationContractVersion),
+        (state => state.CertifiedMalettiWorld is not null, CertifiedMalettiWorldContractVersion),
+        (state => state.MalettiHierarchy is not null, MalettiHierarchyContractVersion),
+        (state => state.AxisCorpsArtilleryWorld is not null, AxisCorpsWorldContractVersion),
+        (state => state.AxisCorpsArtillery is not null, AxisCorpsSetupContractVersion),
+        (state => state.AxisFreeArtilleryWorld is not null, AxisFreeWorldContractVersion),
+        (state => state.AxisFreeArtillery is not null, AxisFreeSetupContractVersion),
+        (state => state.InitialWrecks is not null, InitialWrecksContractVersion),
+        (state => state.AttachedInitialLoads is not null, AttachedInitialLoadsContractVersion),
+        (state => state.ExpandedIndependentWorld is not null, ExpandedIndependentWorldContractVersion),
+        (state => state.LocalMapWorld is not null, LocalMapWorldContractVersion),
+        (state => state.IndependentWorld is not null, IndependentWorldContractVersion),
+        (state => state.MalettiWorld is not null, MalettiWorldContractVersion),
+        (state => state.CairoWorld is not null, CairoWorldContractVersion),
+        (state => state.CairoSetup is not null, CairoSetupContractVersion),
+        (state => state.Battlefield is not null, BattlefieldContractVersion),
+        (state => state.AxisGarrisons is not null, AxisGarrisonsContractVersion),
+        (state => state.AxisPriorityMotorization is not null, AxisPriorityMotorizationContractVersion),
+        (state => state.PriorityMotorization is not null, PriorityMotorizationContractVersion),
+        (state => state.CommonwealthSupplement is not null, CommonwealthSupplementalContractVersion),
+        (state => state.AxisSupplement is not null, SupplementalContractVersion),
+    ];
+    private int UnderlyingLegacyProfileVersion => FirstMatch(this, UnderlyingLegacyProfileVersionRules, ContractVersion);
     internal string SupplementalProfileHash => AxisSupplement is null
         ? throw new InvalidOperationException("Source supplement is not admitted.")
         : CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes(AuthoritySetupHash + "\0"
