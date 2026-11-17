@@ -778,6 +778,9 @@
     },
     "Cna.Core.Tests.Campaigns.CampaignSourceCombatObligationLedgerTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.CampaignSourcePolishArrivalContactsTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4382,7 +4385,9 @@
     "8b8ddf715819ac035e586e1351848ce211e8e09f137efaed0299135deda580e0": 1,
     "d178d56c59efa2db5e416f63fdd2707da347e95e50317511cbeb2ee6a9f7f79c": 98,
     "b2cc54f60043178e73d738069ca046c33c3b84b6d02b89a1c136c190231a1e38": 1,
-    "0061ab6e4a8d1b3295136498a12d1702a8e85d154fd506895bc39d13b157f32e": 1
+    "0061ab6e4a8d1b3295136498a12d1702a8e85d154fd506895bc39d13b157f32e": 1,
+    "7ad58b93c41f7f69eb86ae6db1729c5e95140852f2026af9ce2445d5c71b5fc7": 35,
+    "85c0a9caf77637d68f05585594890dc33924bcc6ba373a964359d7ce87b275b5": 1
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",

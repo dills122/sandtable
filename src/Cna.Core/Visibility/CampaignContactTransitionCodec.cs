@@ -115,7 +115,10 @@ internal static class CampaignContactTransitionCodec
         _ => throw new JsonException("Unknown contact transition."),
     };
 
-    private static string Identification(CampaignContactIdentification value) => value switch
+    // Internal (not private): the sole encoder for this enum - also used by
+    // CampaignContactObservationV1 and CampaignIndependentContactObservationV2
+    // so the wire string for each identification level exists in one place.
+    internal static string Identification(CampaignContactIdentification value) => value switch
     {
         CampaignContactIdentification.Presence => "presence",
         CampaignContactIdentification.FormationType => "formation-type",

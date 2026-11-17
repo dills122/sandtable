@@ -40,13 +40,7 @@ internal sealed record CampaignIndependentContactObservationV2(string CampaignId
             {
                 writer.WriteStartObject(); writer.WriteString("handle", contact.Handle);
                 writer.WriteString("apparentLocationId", contact.ApparentLocationId);
-                writer.WriteString("identification", contact.Identification switch
-                {
-                    CampaignContactIdentification.Presence => "presence",
-                    CampaignContactIdentification.FormationType => "formation-type",
-                    CampaignContactIdentification.Identified => "identified",
-                    _ => throw new InvalidOperationException("Unknown contact identification."),
-                });
+                writer.WriteString("identification", CampaignContactTransitionCodec.Identification(contact.Identification));
                 writer.WriteBoolean("isCurrent", contact.IsCurrent); writer.WriteEndObject();
             }
             writer.WriteEndArray(); writer.WriteEndObject();
