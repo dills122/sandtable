@@ -164,14 +164,25 @@ assignment timing" with a supporting citation, or a scoped exception —
 precise enough to resolve the `scenario-23-70-vs-oa-note-f-conflict` tag
 already sitting on both units in `CampaignSourceMatruhFormation.cs`.
 
+## Task F — a chart distance connecting Soluch/Mechili to the forward CW hexes
+
+**New (2026-11-17), discovered while fixing `source-initial-contacts-unavailable` (PR #371).** `CampaignSourceInitialContacts.TryAdjacent` has no geometry rule proving separation between the rear-area Axis anchors Soluch (`a4130`) and Mechili (`b4921`) and seven forward Commonwealth hexes this session's admitted content occupies: `c3520`, `c3020`, `c3721`, `c3922`, `c3926`, `c4131`, `c3320`. Confirmed: both `a4130` and `b4921` are already 2 of `CampaignSourceSeamCandidate`'s 20 named §37.42 chart anchors (so a published Soluch/Mechili-to-anchor distance exists somewhere), but none of the project's existing cited in-section paths (`TobrukPathSources`, `CairoPathUpper`, `MatruhPathUpper`, the C3320/C3617 neighbor tables) reach that hex cluster, and `Cna1979HistoricalMap`'s edge graph is explicitly same-map-sheet-only.
+
+**What's needed:** a real, citable published distance (or in-section path) connecting Soluch or Mechili — or any of the other 18 named §37.42 anchors — to one of the 7 forward hexes above, following the same discipline already used elsewhere in `CampaignSourceInitialContacts.cs` (`TryAxisToMatruhBound`, `TryChartAnchorToCairoBound`, etc.): these functions only ever prove *separation* from a cited published distance exceeding the adjacency threshold, never adjacency itself from an uncited guess.
+
+**Where to look:** the Air/Logistics §37.42 distance chart (same source already cited throughout this file — `CampaignSourceSeamCandidate`'s existing anchors came from it) for any printed distance between Soluch/Mechili/another named anchor and the c35/c30/c37/c39/c41/c33-prefixed hex range. If the chart simply doesn't cover this pairing, that's a legitimate answer too — report the gap plainly rather than estimate one.
+
+**Deliverable:** either a real cited distance/path (precise enough to add a new `TryXToYBound`-style function following the existing pattern), or an explicit confirmation that the source doesn't connect these locations at all — which would mean `source-initial-contacts-unavailable` and the axis side of `source-grouped-movement-domain-incomplete`-adjacent checks stay open pending a different approach, not a research gap waiting to be filled.
+
 ## Handoff notes
 
-- Tasks A, B, D, and E share chart-lookup method with the now-finished
+- Tasks A, B, D, E, and F share chart-lookup method with the now-finished
   Australian ratings work — if those chart pages are already open, cheap
   to batch with Task A/B/D/E's lookups.
 - Task C is a judgment call on text already in hand (scenario rules + OA
   note `f`'s wording) — no new scan should be needed.
-- None of A/B/C/D/E block each other; hand off in any order.
+- None of A/B/C/D/E/F block each other; hand off in any order.
+- **`source-initial-contacts-unavailable` is partially resolved already** (PR #371) — the commonwealth-side classification gap is fixed; only Task F's axis-side geometry gap remains between this blocker and clearing.
 - **Tasks A, B, and D together are the real path to closing
   `source-grouped-movement-domain-incomplete`**, per PR #361's traced
   root cause (2026-11-17): `CanDeriveForSide` fails for both sides purely
