@@ -775,6 +775,9 @@
     },
     "Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignSourceCombatObligationLedgerTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4373,7 +4376,13 @@
     "39a544baecc726452838da5122dc4fd2ebce7b3592a2adb2580b79c8b57904d8": 3,
     "2567812b477341139c606de08636d063c4ce8790f942802a4f32f2b9330c66d6": 4,
     "8c4692a45d9d705eb3a88f975ddd57558a83c999cf50a7f7653640a098c7a7d1": 2,
-    "33ef744d79696d8ec0e6bb803e6a0198f79c47086fada7568d9fb34a8bc25aeb": 64
+    "33ef744d79696d8ec0e6bb803e6a0198f79c47086fada7568d9fb34a8bc25aeb": 64,
+    "b83c68856397ca4a716cfec4d52fa7ead39c120fda5ca482701967abbb6598d5": 8,
+    "c2fbfb10caec4cc69570667bb15b5de333c623611a5f44250694daa41d5f6ca7": 5,
+    "8b8ddf715819ac035e586e1351848ce211e8e09f137efaed0299135deda580e0": 1,
+    "d178d56c59efa2db5e416f63fdd2707da347e95e50317511cbeb2ee6a9f7f79c": 98,
+    "b2cc54f60043178e73d738069ca046c33c3b84b6d02b89a1c136c190231a1e38": 1,
+    "0061ab6e4a8d1b3295136498a12d1702a8e85d154fd506895bc39d13b157f32e": 1
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
