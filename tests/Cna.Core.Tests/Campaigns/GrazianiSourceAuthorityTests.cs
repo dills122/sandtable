@@ -8609,10 +8609,10 @@ public sealed class GrazianiSourceAuthorityTests
     // IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
     // below (see that test for what it combines and why). Extracted, byte-
     // for-byte, out of that test's own setup so
-    // DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps can reuse
-    // the exact same chained scenario - the one that actually reaches the
-    // three known rating-table gaps - without duplicating ~2000 lines of
-    // setup or re-deriving a cheaper fixture that might not reach them.
+    // DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian
+    // can reuse the exact same chained scenario - the one that actually
+    // reaches the known rating-table gaps - without duplicating ~2000 lines
+    // of setup or re-deriving a cheaper fixture that might not reach them.
     private static CampaignSourcePlayableWorld BuildFullyChainedCombinedWorldForBothSides()
     {
         var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
@@ -10756,13 +10756,16 @@ public sealed class GrazianiSourceAuthorityTests
     // useful, not just non-empty: against the exact same fully-chained
     // fixture as IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
     // above - where source-grouped-movement-domain-incomplete is still
-    // present - it must name all three real causes this session had to
-    // hand-trace with a throwaway diagnostic (walking EvaluateFormationSource/
+    // present - it must name the real causes this session had to hand-trace
+    // with a throwaway diagnostic (walking EvaluateFormationSource/
     // EvaluateDetachedSource per group/side, then reverting it) before this
-    // method existed: Aresca's CV33 component, the 6th Australian Division,
-    // and the Matruh Garrison.
+    // method existed: Aresca's CV33 component and the Matruh Garrison. The
+    // 6th Australian Division was a third such cause; its real close-assault
+    // ratings (Commonwealth OA PDF p.13, chart 4.46a PDF pp.22-23) are now
+    // wired into CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating, so
+    // it must no longer appear here for either side.
     [Fact]
-    public void DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps()
+    public void DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian()
     {
         var combinedWorld = BuildFullyChainedCombinedWorldForBothSides();
         // Guard: fail loudly here, not silently, if this fixture's known
@@ -10780,15 +10783,15 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Contains(CampaignSourceArescaGroupedDefinition.BattalionId, aresca.Reason);
         Assert.Contains("close-assault rating", aresca.Reason);
 
-        var sixthAustralian = Assert.Single(commonwealthUnresolved,
-            value => value.SourceId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
-        Assert.Equal(CampaignSourceGroupedZoc.ZocUnresolvedSourceKind.FormationNotDeterminate, sixthAustralian.Kind);
-        Assert.Contains("close-assault rating", sixthAustralian.Reason);
-
         var matruhGarrison = Assert.Single(commonwealthUnresolved,
             value => value.SourceId == CampaignSourceMatruhGroupedDefinition.GroupId);
         Assert.Equal(CampaignSourceGroupedZoc.ZocUnresolvedSourceKind.FormationNotDeterminate, matruhGarrison.Kind);
         Assert.Contains("close-assault rating", matruhGarrison.Reason);
+
+        // The 6th Australian Division's ratings are now cited and wired in,
+        // so it must not appear as an unresolved source on either side.
+        Assert.DoesNotContain(axisUnresolved, value => value.SourceId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
+        Assert.DoesNotContain(commonwealthUnresolved, value => value.SourceId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
     }
 
     private static CampaignActionSubmission Submission(ExerciseSession session, string actionId, CampaignActionAudience audience)
