@@ -11,6 +11,7 @@ builder.Services.AddSingleton<LocalSessionStore>();
 builder.Services.AddSingleton<LocalCampaignCreationStore>();
 builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
 builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
+builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
 builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
 var campaignJournalPath = builder.Configuration["CampaignJournal:Path"];
 if (!string.IsNullOrWhiteSpace(campaignJournalPath))
