@@ -107,6 +107,39 @@ or a sourced statement that CV33 light tanks are not assigned a
 close-assault rating at all (if that's what the source actually says) —
 either answer resolves this gap, a guess does not.
 
+## Task E — Giarabub motor-machine-gun: double-check the "no pool" finding
+
+**New (2026-11-17).** This is a verification task, not a fresh lookup — the
+codebase already states a conclusion
+(`src/Cna.Core/Content/ContentSourceGiarabubMotorMachineGunArtifact.cs:6-7,43`):
+"Source's 8+ marks historical motorization; the scenario does not identify
+an assigned motor pool or an effective current allowance" —
+`historicalMotorizationPriority` is recorded as `"unresolved-no-scenario-pool"`,
+and `mobilityId`/`motorPoolId`/`assignedMotorPoints` are all `null` by design.
+This predates this session's research effort entirely (from commit `21c6cba7`)
+and was never covered by the Nov 16 research doc's citation list.
+
+**What's needed:** confirm this conclusion still holds, rather than build
+anything on an unchecked finding from a prior session. The element's own
+citation list is: `scenario:59.63a,60.31`; `axis-charts:oa-giarabub-p14,4.46b`;
+`air:counter-section-2-p40`; `land:4.23,9.16a,32.54`.
+
+**Where to look:** re-check those exact citations, specifically for any
+motor-pool assignment or mobility classification for the Giarabub motor-MG
+element that the original pass might have missed — the `air:` and `land:`
+citations in particular (counter-section-2-p40, 9.16a, 32.54) weren't the
+primary focus of any research doc so far and are worth a fresh look.
+
+**Deliverable:** either a real motor-pool ID / mobility classification /
+capability-point value with citation (if one genuinely exists and was
+missed), or an explicit confirmation that the "unresolved-no-scenario-pool"
+finding is correct and the source genuinely provides nothing further — both
+are useful answers. A ruling action to formally accept the "unresolved"
+state (mirroring the Central India Horse / `battlefieldComplete` pattern) is
+being built in parallel and isn't blocked on this task's outcome — if real
+data turns up here, that becomes a follow-up fix to the ruling's accepted
+value, not wasted work either way.
+
 ## Task C — Matruh: Essex/Durham assigned-parent chronology ruling
 
 This one's a decision, not a fact-lookup — flagged but not settled in the
@@ -133,12 +166,12 @@ already sitting on both units in `CampaignSourceMatruhFormation.cs`.
 
 ## Handoff notes
 
-- Tasks A, B, and D share chart-lookup method with the now-finished
+- Tasks A, B, D, and E share chart-lookup method with the now-finished
   Australian ratings work — if those chart pages are already open, cheap
-  to batch with Task A/B/D's lookups.
+  to batch with Task A/B/D/E's lookups.
 - Task C is a judgment call on text already in hand (scenario rules + OA
   note `f`'s wording) — no new scan should be needed.
-- None of A/B/C/D block each other; hand off in any order.
+- None of A/B/C/D/E block each other; hand off in any order.
 - **Tasks A, B, and D together are the real path to closing
   `source-grouped-movement-domain-incomplete`**, per PR #361's traced
   root cause (2026-11-17): `CanDeriveForSide` fails for both sides purely
