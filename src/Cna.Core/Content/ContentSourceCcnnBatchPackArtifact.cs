@@ -8,10 +8,10 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCcnnBatchPackArtifact
 {
     internal const string FormatId = "sandtable.source-grouped-extensions.v1";
-    internal const string CcnnHash = "sha256:24a0eb68bfe9d3fe77af383822b80c12e6d602d958df1400c0a1f62a3bd5efe8";
-    internal const string CombinedHash = "sha256:842044d8d54f0ef5cf87a40f13de1d5268f4aa21dda45e9dd734afd49ef0149d";
-    internal const string CcnnArescaHash = "sha256:9f7d8c4112bafebc88013be990cfbf53c8b02a5f77c5380aea738d1454721110";
-    internal const string CombinedArescaHash = "sha256:11ab37b81dcd3d9749b34889f95da0b4e585d4f2aa264a52ee0d34e80b4e0f34";
+    internal const string CcnnHash = "sha256:7ba942011641992303537e680d68fe0f2fbb1fa6b431d9525100705941a1077a";
+    internal const string CombinedHash = "sha256:eafd1ad9b045123f73a1770975a9b73bff966814294ae377a4a8cf56792b8156";
+    internal const string CcnnArescaHash = "sha256:862ab1eece703a94a428dd7b0e23259741b351c7e6616cbcc2dadebf4cba5e74";
+    internal const string CombinedArescaHash = "sha256:eb9be2f8b4648b8a47dab8c7bdc2a62b2de8029ce8b58f67c06f61e645cb9639";
     private readonly byte[] bytes;
     private ContentSourceCcnnBatchPackArtifact(byte[] bytes) => this.bytes = bytes;
     internal byte[] CanonicalBytes => bytes.ToArray();

@@ -21,6 +21,8 @@ internal static class CampaignSourceGroupedZoc
         new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-70-infantry-p9");
     private static readonly RuleReference CommonwealthOaAustralianP13 =
         new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-australian-p13");
+    private static readonly RuleReference CommonwealthOaBritishP11 =
+        new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-british-p11");
     private static readonly RuleReference AxisChart446b =
         new(Cna1979GrazianiSourceFacts.AxisChartsSourceId, "4.46b");
     private static readonly RuleReference CommonwealthOa7ArmoredP6 =
@@ -131,6 +133,26 @@ internal static class CampaignSourceGroupedZoc
             {
                 rating = 3;
                 sources = [CommonwealthChart446a, CommonwealthOaAustralianP13];
+                return true;
+            }
+        }
+        // Matruh Garrison: Essex/Durham are identified on OA p.9 (70th
+        // Infantry Division, 23rd Brigade note); South Staffordshires/Buffs/
+        // Hampshire are identified on OA p.11 (Unassigned British Infantry-
+        // type Units). Chart 4.46a gives each its own close-assault rating -
+        // Essex/Durham at 2, the other three at 1 - not a shared value.
+        if (groupId == CampaignSourceMatruhGroupedDefinition.GroupId && componentType == "infantry" && toe == 6)
+        {
+            if (elementId is "1-essex" or "1-durham-light-infantry")
+            {
+                rating = 2;
+                sources = [CommonwealthChart446a, CommonwealthOa70InfantryP9];
+                return true;
+            }
+            if (elementId is "1-south-staffordshires" or "1-buffs" or "1-hampshire")
+            {
+                rating = 1;
+                sources = [CommonwealthChart446a, CommonwealthOaBritishP11];
                 return true;
             }
         }

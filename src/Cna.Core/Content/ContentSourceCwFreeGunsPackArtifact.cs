@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwFreeGunsPackArtifact
 {
     internal const string FormatId = "sandtable.source-cw-free-guns.v1";
-    internal const string ContentHash = "sha256:339693201cb9258db465e41c9c48cd3c56fdd2229a517e033204a5a9fac62bb5";
+    internal const string ContentHash = "sha256:30a32f07f1041733fd7e4aeabd2e8573757a88f776afb90f621642d81ee4844f";
     private readonly byte[] bytes;
     private ContentSourceCwFreeGunsPackArtifact(ContentSourceCwPriorityPackArtifact basis, byte[] bytes)
     {

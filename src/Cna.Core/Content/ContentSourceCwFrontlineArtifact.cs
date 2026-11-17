@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwFrontlineArtifact
 {
     internal const string FormatId = "sandtable.source-cw-frontline.v1";
-    internal const string ContentHash = "sha256:940853399267eb37d97c052c512fe668b6d281b953a25afb53fa5fc07ec66185";
+    internal const string ContentHash = "sha256:b2df0175613642aed5b770c2de2fa86b3599550e03ad38b2e3eb3924003af495";
     private readonly byte[] bytes;
     private ContentSourceCwFrontlineArtifact(ContentSourceGiarabubMotorMachineGunArtifact basis, byte[] bytes)
     {

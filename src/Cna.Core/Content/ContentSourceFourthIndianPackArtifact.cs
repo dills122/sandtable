@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceFourthIndianPackArtifact
 {
     internal const string FormatId = "sandtable.source-fourth-indian.v1";
-    internal const string ContentHash = "sha256:fc9b4cf8587f954a987def041c6138a457300300189c2af641bc6e2fd8d4c869";
+    internal const string ContentHash = "sha256:b7a1ce7c8cbb933de7fdc65986f75ae1c3070bc10aab69fd06c880726fc75f22";
     private readonly byte[] bytes;
     private ContentSourceFourthIndianPackArtifact(ContentSourceCwFreeGunsPackArtifact basis, byte[] bytes)
     {

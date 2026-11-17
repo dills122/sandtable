@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceLibyanGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-libyan-grouped.v1";
-    internal const string ContentHash = "sha256:206abadd895a3c867e35897897aa42c0cdb2fd8894b621005fe69dd3f1735676";
+    internal const string ContentHash = "sha256:6e21e1a588f75f2560de7ff6171e33f52c1a987b33d203db03713dc44f9f5e11";
     private readonly byte[] bytes;
     private ContentSourceLibyanGroupedPackArtifact(ContentSourceMalettiGroupedPackArtifact basis, byte[] bytes)
     {

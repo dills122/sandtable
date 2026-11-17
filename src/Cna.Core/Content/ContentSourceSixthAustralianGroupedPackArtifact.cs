@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceSixthAustralianGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-sixth-australian-grouped.v1";
-    internal const string ContentHash = "sha256:896b00d665b19b696011757e91232d1beafc484f463908d3ddb1dbe74aaeb655";
+    internal const string ContentHash = "sha256:e46f74a1a1cb6b8da6c6e8164272aee92ae267a3df70f405c74891e37a2241f5";
     private readonly byte[] bytes;
     private ContentSourceSixthAustralianGroupedPackArtifact(ContentSourceCatanzaroGroupedPackArtifact basis, byte[] bytes)
     {
