@@ -10566,7 +10566,21 @@ public sealed class GrazianiSourceAuthorityTests
         var withAresca = CampaignExercises.SubmitSourceAresca(activated,
             Submission(activated, CampaignSourceAuthorityState.ArescaActionId, CampaignActionAudience.Axis)).SuccessorSession!;
 
-        var axisHorseApproved = Act(withAresca, CampaignActionAudience.Axis, "central-india-horse-ruling", "approve");
+        // Both giarabub-motor-mg-* blockers are present before the ruling is
+        // submitted, and the ruling action is only offered once the content
+        // exists (it was activated earlier in this chain, at ActivateSourceGiarabubMotorMachineGun above).
+        var beforeMotorMgRulingBlockers = CampaignSourcePlayableWorld.Create(withAresca.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true).ReadinessBlockers();
+        Assert.Contains("giarabub-motor-mg-historical-motorization-priority-unresolved", beforeMotorMgRulingBlockers);
+        Assert.Contains("giarabub-motor-mg-capability-and-mobility-unresolved", beforeMotorMgRulingBlockers);
+        Assert.True(withAresca.SourceAuthority!.CanAcceptGiarabubMotorMgRuling);
+        var motorMgRulingAccepted = Act(withAresca, CampaignActionAudience.Axis, "giarabub-motor-mg-ruling", "approve");
+        Assert.True(motorMgRulingAccepted.SourceAuthority!.CwFreeGunsWorld!.MotorMachineGunRulingAccepted);
+        Assert.False(motorMgRulingAccepted.SourceAuthority!.CanAcceptGiarabubMotorMgRuling);
+        var afterMotorMgRulingBlockers = CampaignSourcePlayableWorld.Create(motorMgRulingAccepted.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true).ReadinessBlockers();
+        Assert.DoesNotContain("giarabub-motor-mg-historical-motorization-priority-unresolved", afterMotorMgRulingBlockers);
+        Assert.DoesNotContain("giarabub-motor-mg-capability-and-mobility-unresolved", afterMotorMgRulingBlockers);
+
+        var axisHorseApproved = Act(motorMgRulingAccepted, CampaignActionAudience.Axis, "central-india-horse-ruling", "approve");
         var cwHorseApproved = Act(axisHorseApproved, CampaignActionAudience.Commonwealth, "central-india-horse-ruling", "approve");
         Assert.Equal(3, cwHorseApproved.SourceAuthority!.HorseRulingVotes);
         var horseStageOneDeclined = Act(cwHorseApproved, CampaignActionAudience.Commonwealth, "central-india-horse-stage-one", "decline-stage1");
@@ -10611,14 +10625,12 @@ public sealed class GrazianiSourceAuthorityTests
         // combinedWorld.ReadinessBlockers())) diagnostic, per this project's own
         // documented technique, run through `just test-method core
         // '*IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers*'`
-        // and then removed) to now be exactly these 7, one fewer than the 8 this
-        // fixture originally landed with (cw-frontline-initial-loads-unresolved
-        // cleared - see below):
-        //   battlefield-incomplete, control-incomplete,
-        //   giarabub-motor-mg-historical-motorization-priority-unresolved,
-        //   giarabub-motor-mg-capability-and-mobility-unresolved, ccnn-characteristics-incomplete,
+        // and then removed) to now be exactly these 5, three fewer than the 8 this
+        // fixture originally landed with (cw-frontline-initial-loads-unresolved and
+        // both giarabub-motor-mg-* blockers cleared - see below):
+        //   battlefield-incomplete, control-incomplete, ccnn-characteristics-incomplete,
         //   source-initial-contacts-unavailable, source-grouped-movement-domain-incomplete
-        // 4 of the original 8 pre-this-PR blockers cleared: owner-setup-finalization-incomplete,
+        // 6 of the original 8 pre-this-PR blockers cleared: owner-setup-finalization-incomplete,
         // seventh-armored-shell-stack-correction-required, central-india-horse-
         // training-state-unresolved (each already individually proven; this is the
         // first fixture to chain them with the admitted-content clusters before the
@@ -10639,20 +10651,26 @@ public sealed class GrazianiSourceAuthorityTests
         // already admitted/promoted earlier in this chain's own shared setup, so no
         // extra promotion call was needed.
         // giarabub-motor-mg-historical-motorization-priority-unresolved and
-        // giarabub-motor-mg-capability-and-mobility-unresolved remain a genuine,
-        // separate gap, NOT closed here: activating the Giarabub Motor Machine Gun
-        // is required (not redundant) to represent the "giarabub-motor-machine-gun"
-        // roster element for forces-incomplete (that element's Battlefield entry has
-        // no other action that gives it a LocationId - it is not covered by the
-        // Giarabub cluster activation from PR #352, which activates a disjoint set
-        // of roster elements: giarabub-infantry, giarabub-machine-gun, etc., not
+        // giarabub-motor-mg-capability-and-mobility-unresolved are now cleared too
+        // (see beforeMotorMgRulingBlockers/afterMotorMgRulingBlockers above):
+        // activating the Giarabub Motor Machine Gun was already required (not
+        // redundant) to represent the "giarabub-motor-machine-gun" roster element
+        // for forces-incomplete (that element's Battlefield entry has no other
+        // action that gives it a LocationId - it is not covered by the Giarabub
+        // cluster activation from PR #352, which activates a disjoint set of
+        // roster elements: giarabub-infantry, giarabub-machine-gun, etc., not
         // giarabub-motor-machine-gun itself), and that activation unconditionally
         // adds both giarabub-motor-mg-* blockers once CwFreeGunsWorld.MotorMachineGunContent
-        // is non-null. CampaignSourcePlayableWorld.ReadinessBlockers() has no
-        // clearing path for either blocker at all yet (confirmed via grep: no
-        // HistoricalMotorizationPriority/CapabilityAndMobility resolution method
-        // exists anywhere in the codebase) - building one is a real, separate
-        // implementation gap needing its own scoped task.
+        // is non-null. This is not a missing-mechanism gap, though: the content
+        // artifact (ContentSourceGiarabubMotorMachineGunArtifact) already states the
+        // answer at creation - the source identifies historical motorization
+        // priority for this element but no assigned motor pool or effective
+        // current allowance. Nobody had built the action that formally accepts
+        // that already-documented finding as the terminal, resolved state; the new
+        // Axis-only "giarabub-motor-mg-ruling"/"approve" action
+        // (CampaignSourceCwFreeGunsWorld.AcceptMotorMachineGunRuling) does exactly
+        // that, and both blockers clear together once it is submitted, since they
+        // are two facets of the same underlying no-scenario-pool fact.
         // source-initial-contacts-unavailable also remains a genuine, separate gap,
         // NOT closed here (see the comment above combinedWorld): CampaignSourcePolishArrivalContacts.EffectiveCounters
         // has no "independent" classification case for several of this chain's
@@ -10668,14 +10686,14 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.DoesNotContain("central-india-horse-training-state-unresolved", finalBlockers);
         Assert.DoesNotContain("forces-incomplete", finalBlockers);
         Assert.DoesNotContain("cw-frontline-initial-loads-unresolved", finalBlockers);
+        Assert.DoesNotContain("giarabub-motor-mg-historical-motorization-priority-unresolved", finalBlockers);
+        Assert.DoesNotContain("giarabub-motor-mg-capability-and-mobility-unresolved", finalBlockers);
         Assert.Contains("ccnn-characteristics-incomplete", finalBlockers);
         Assert.Contains("battlefield-incomplete", finalBlockers);
         Assert.Contains("control-incomplete", finalBlockers);
         Assert.Contains("source-grouped-movement-domain-incomplete", finalBlockers);
-        Assert.Contains("giarabub-motor-mg-historical-motorization-priority-unresolved", finalBlockers);
-        Assert.Contains("giarabub-motor-mg-capability-and-mobility-unresolved", finalBlockers);
         Assert.Contains("source-initial-contacts-unavailable", finalBlockers);
-        Assert.Equal(7, finalBlockers.Count);
+        Assert.Equal(5, finalBlockers.Count);
     }
 
     private static CampaignActionSubmission Submission(ExerciseSession session, string actionId, CampaignActionAudience audience)

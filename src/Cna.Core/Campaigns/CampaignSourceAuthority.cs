@@ -1441,6 +1441,38 @@ internal sealed class CampaignSourceAuthorityState
         }
         return stream.ToArray();
     }
+    internal static readonly string GiarabubMotorMgRulingActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.giarabub-motor-mg-ruling.approve.v1"));
+    // Axis-only, single acceptance (no Commonwealth vote: this element has no
+    // Commonwealth-visible consequence modeled anywhere) of the finding
+    // ContentSourceGiarabubMotorMachineGunArtifact already states at creation:
+    // the source identifies historical motorization priority but no assigned
+    // motor pool or effective current allowance for this element. Available
+    // only once the content exists and only before Axis finalizes setup.
+    internal bool CanAcceptGiarabubMotorMgRuling => CwFreeGunsWorld is { MotorMachineGunContent: not null, MotorMachineGunRulingAccepted: false }
+        && !IsOwnerFinalized(CampaignActionAudience.Axis);
+    internal CampaignSourceAuthorityState AcceptGiarabubMotorMgRuling()
+    {
+        if (!CanAcceptGiarabubMotorMgRuling) throw new InvalidOperationException("Motor MG ruling is unavailable.");
+        var active = CwFreeGunsWorld!.AcceptMotorMachineGunRuling();
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!, active);
+    }
+    internal byte[] SerializeGiarabubMotorMgRulingEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", GiarabubMotorMachineGunCheckpointContractVersion);
+            writer.WriteString("eventType", "source-giarabub-motor-mg-ruling-accepted");
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", GiarabubMotorMgRulingActionId); writer.WriteString("actor", "axis");
+            writer.WriteString("rulingId", CampaignSourceCwFreeGunsWorld.MotorMachineGunRulingId);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld!.Hash());
+            writer.WriteNumber("stateVersion", successor.StateVersion); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
     internal bool CanActivateAxisGarrisonRemainder => CwFreeGunsWorld is
     { MinorGarrisonContent: not null, GarrisonRemainderContent: null }
         && GroupedWorld is not null && AxisGarrisons is not null && Battlefield is not null

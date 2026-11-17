@@ -167,7 +167,11 @@ internal sealed class CampaignSourcePlayableWorld
                 || loads.Targets.Any(value => CampaignSourceAttachedInitialLoads.FrontlineTargets.Any(target => target.ElementId == value.ElementId)
                     && (value.AmmoPoints != 0 || value.FuelPoints != 0))))
             blockers.Add("cw-frontline-initial-loads-unresolved");
-        if (Source.CwFreeGunsWorld?.MotorMachineGunContent is not null)
+        // Cleared by the formal ruling (CampaignSourceCwFreeGunsWorld.AcceptMotorMachineGunRuling):
+        // the source content already states no scenario motor pool or effective
+        // allowance exists for this element, and both blockers are two facets of
+        // that same underlying fact, so they clear together once accepted.
+        if (Source.CwFreeGunsWorld is { MotorMachineGunContent: not null, MotorMachineGunRulingAccepted: false })
         {
             blockers.Add("giarabub-motor-mg-historical-motorization-priority-unresolved");
             blockers.Add("giarabub-motor-mg-capability-and-mobility-unresolved");
