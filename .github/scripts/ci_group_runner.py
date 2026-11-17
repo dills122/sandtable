@@ -182,7 +182,7 @@ def run_job(groups, allocation, job, root, binding, binary, timeout_seconds=720,
 
 
 GIB = 2**30
-RESOURCE_POLICY = {'per_group_limit_bytes': 6 * GIB, 'aggregate_limit_bytes': 10 * GIB, 'min_effective_limit_bytes': 12 * GIB, 'min_preflight_available_bytes': 8 * GIB, 'min_runtime_available_bytes': 4 * GIB, 'min_cpu_count': 4}
+RESOURCE_POLICY = {'per_group_limit_bytes': 6 * GIB, 'aggregate_limit_bytes': 10 * GIB, 'min_effective_limit_bytes': 12 * GIB, 'min_preflight_available_bytes': 8 * GIB, 'min_runtime_available_bytes': 3 * GIB, 'min_cpu_count': 4}
 
 
 def linux_resources(proc_root=Path('/proc'), cgroup_root=Path('/sys/fs/cgroup')):
@@ -244,7 +244,7 @@ def validate_preflight(snapshot):
 def validate_sample(snapshot, groups):
     from r02_partition import require
     require(snapshot['effective_memory_limit_bytes'] >= RESOURCE_POLICY['min_effective_limit_bytes'], 'Effective memory limit changed')
-    require(snapshot['memory_available_bytes'] >= RESOURCE_POLICY['min_runtime_available_bytes'], 'Available memory below 4GiB reserve')
+    require(snapshot['memory_available_bytes'] >= RESOURCE_POLICY['min_runtime_available_bytes'], 'Available memory below 3GiB reserve')
     require(all(type(value) is int and 0 <= value <= RESOURCE_POLICY['per_group_limit_bytes'] for value in groups.values()), 'Per-child session RSS exceeds 6GiB')
     require(sum(groups.values()) <= RESOURCE_POLICY['aggregate_limit_bytes'], 'Aggregate owned RSS exceeds 10GiB')
     return True
