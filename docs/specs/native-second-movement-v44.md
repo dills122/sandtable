@@ -24,8 +24,14 @@ the pinned sequence and verifies those fields and the unchanged contact cut.
 The retained V41–V45 successor chain is verified oldest-first without recursive
 calls, so its length does not consume one call-stack frame per event. The full
 event-stream hash is still computed at the requested head.
-Second-side Reaction, Breakdown and Combat remain unimplemented; those cuts
-reject rather than invent outcomes.
+**Update (2026-11-17):** this line is stale. Breakdown (V46,
+`CampaignNativeSecondBreakdownV46.cs`) is now implemented and tested
+end-to-end through `CampaignHostAdapter`; its successor position lands in the
+existing Combat engine's `PositionDetermination` step, confirming Combat is a
+hand-off, not a separate mechanism to build. The one genuine remaining gap:
+no event yet resolves or waives a Reaction window opened by a second-side
+move, so V46 rejects while one is pending — that specific case, and separately
+vehicle-cohort breakdown accounting, are the real unimplemented cuts.
 
 The normal Host authenticates an owner opening for the acting element and
 persists command, event, receipt, checkpoint and contacts atomically in the
