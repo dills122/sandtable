@@ -726,3 +726,33 @@ local scheduling observation, not hosted CI acceptance.
 | `SoluchToBardiaPublishedDistanceConflictIsStillPresent` | `afd05140cc91` | 1 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --report-xunit-xml --results-directory /private/tmp/claude-501/-Users-dsteele--claude-spares-spare-AJorff/f16846dd-f774-47ef-a30e-399495b4cd3b/scratchpad/hmtest-timing`. Result: 30 passed, 0 failed, 0 skipped (the class's existing rows plus these 15 new ones). All 15 new row hashes are recorded in `provisional_rows` pending hosted calibration; the existing class entry (`parts: 1`) is unchanged.
+
+## 6th Australian Division real close-assault ratings (PR #381, November 17, 2026)
+
+Commonwealth OA PDF p.13 (6th Australian Division) and chart §4.46a (pp.22-23)
+are now wired into `CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`
+for the six 16th/17th Brigade battalions, both brigade HQ organic-antitank
+components, and the divisional cavalry's reconnaissance component. Ten new
+`CampaignSourceGroupedZocTests` rows prove the per-element ratings and the
+full-roster defense estimate directly. `GrazianiSourceAuthorityTests`'s
+existing `DescribeUnresolvedSources...` proof test is renamed to
+`DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian`
+(same row count, one renamed identity) because 6th Australian no longer
+appears as an unresolved rating gap; Aresca's CV33 component and Matruh
+Garrison (open in PR #378 at the time of this change) still correctly do.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-1-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `2cc3e7d0cb7c` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-2-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `4a5d33bb35cb` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-3-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `6da01d9be88f` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-5-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `25d9cb46ce48` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-6-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `baa0281506a5` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-7-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `5d6b82b94d60` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "16-australian-infantry-brigade-hq", componentType: "organic-antitank", toe: 1, expectedRating: 1)` | `aeb9bf257db8` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "17-australian-infantry-brigade-hq", componentType: "organic-antitank", toe: 1, expectedRating: 1)` | `b90ce75908ec` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "6-australian-divisional-cavalry", componentType: "reconnaissance", toe: 8, expectedRating: 3)` | `2db69ad346db` | 1 |
+| `SixthAustralianDivisionFullRosterHasAFullyKnownDefenseEstimateAndQualifies` | `23f0322e8a89` | 1 |
+| `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian` (renamed; replaces `DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps`) | `fea12c04e0e9` | 74792 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr381-weights-timing` and `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian*" --report-xunit-xml --results-directory /private/tmp/sandtable-pr381-weights-timing2`. Result: 20 passed / 1 passed, 0 failed, 0 skipped. Exact display names (and the stale pre-rename row to delete) confirmed via the real `dotnet test --list-tests --pre-enumerate-theories on` discovery command, not guessed from XML-report escaping. This is scheduling evidence only; hosted CI remains the acceptance gate.
