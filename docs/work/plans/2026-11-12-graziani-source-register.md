@@ -4,6 +4,10 @@
 preserves additional attributed readings and the 11 distance-chart cells. This
 does not certify seam topology, blind independence, or scenario admission.
 
+**Victory supply follow-up:** [Land-only source review](2026-11-16-graziani-victory-supply-source-review.md)
+compares competing interpretations for LA-05 and VI-01–06. Motorization and a
+Truck Convoy phase persist in §32; the victory-route policy remains unresolved.
+
 **Status:** initial research register, not an accepted scenario contract or
 MVP-GATE-01 freeze. Baseline `0f8a828a`; scope limited to the rows below.
 A [fresh-context double entry](graziani-source-review/review-disposition.md)

@@ -1,5 +1,9 @@
 # Graziani Land-only logistics: source crosswalk and proof obligations
 
+**November 16 follow-up:** [victory-supply source review](2026-11-16-graziani-victory-supply-source-review.md)
+records the continuing Truck Convoy phase and distinguishes it from both local
+supply draw and a proposed end-to-end victory trace. The interpretation remains open.
+
 **Status:** research crosswalk; no runtime contract, adopted victory-supply ruling,
 or full six-turn reachability claim. Original [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf)
 pp. 43–45 and [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf)

@@ -1,5 +1,9 @@
 # Graziani six-turn victory evidence and contract questions
 
+**November 16 follow-up:** the [victory-supply source review](2026-11-16-graziani-victory-supply-source-review.md)
+separates local draw, retained motorization/convoy phases, hypothetical routes,
+actual shipment and unresolved policy choices. No new ruling was admitted.
+
 **Status:** one-reader transcription and analysis for contract design, not an
 accepted rule or scenario fixture. Original scenario p. 28 §60.81 was visually
 checked; [RUL-GRA-02](2026-11-12-graziani-ruling-decisions.md) selects that
