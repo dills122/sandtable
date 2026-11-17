@@ -33,6 +33,30 @@ internal static class CampaignSourceInitialContacts
         ["d3615"] = 2,
         ["d3612"] = 4,
     };
+    // Real same-sheet shortest-path distances from Ft. Maddalena C3019 (a
+    // named Air/Logistics 37.42 chart anchor) to every other Map C hex,
+    // computed once from Cna1979HistoricalMap's own transcribed hexes and
+    // hexsides (BFS over NeighborsOf) - not a hand count off a map image and
+    // not an invented figure. Used by TrySoluchMechiliToFtMaddalenaBound.
+    private static readonly Lazy<Dictionary<string, int>> FtMaddalenaMapDistances = new(() =>
+    {
+        var map = Cna1979HistoricalMap.Instance;
+        var distances = new Dictionary<string, int>(StringComparer.Ordinal) { ["c3019"] = 0 };
+        if (map.TerrainAt("c3019") is null) return distances;
+        var queue = new Queue<string>();
+        queue.Enqueue("c3019");
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var next in map.NeighborsOf(current))
+            {
+                if (distances.ContainsKey(next)) continue;
+                distances[next] = distances[current] + 1;
+                queue.Enqueue(next);
+            }
+        }
+        return distances;
+    });
     internal static bool CanProject(CampaignSourcePlayableWorld world)
     {
         ArgumentNullException.ThrowIfNull(world);
@@ -144,7 +168,9 @@ internal static class CampaignSourceInitialContacts
             || TryElGreinToCairoBound(first, second) || TryElGreinToCairoBound(second, first)
             || TryScheferzenToCairoBound(first, second) || TryScheferzenToCairoBound(second, first)
             || TryAxisToMatruhBound(first, second) || TryAxisToMatruhBound(second, first)
-            || TryTobrukToCairoBound(first, second) || TryTobrukToCairoBound(second, first))
+            || TryTobrukToCairoBound(first, second) || TryTobrukToCairoBound(second, first)
+            || (useHistoricalMap && (TrySoluchMechiliToFtMaddalenaBound(first, second)
+                || TrySoluchMechiliToFtMaddalenaBound(second, first))))
         {
             adjacent = false;
             return true;
@@ -312,5 +338,23 @@ internal static class CampaignSourceInitialContacts
             || CampaignSourceSeamCandidate.Classify(anchorLocation, "d3714").PublishedDistanceConflict)
             return false;
         return anchor - axisSteps - matruhSteps > 1;
+    }
+
+    // Soluch A4130 and Mechili B4921 are named Air/Logistics 37.42 chart
+    // anchors with a published distance to Ft. Maddalena C3019 (also a named
+    // anchor): 61 and 41 hexes respectively, both free of the seam
+    // candidate's own printed/candidate conflict flag. The local leg from
+    // C3019 to the forward hex is the real same-sheet graph distance from
+    // Cna1979HistoricalMap's own transcribed hexes/hexsides (FtMaddalenaMapDistances),
+    // not a hand-counted or invented figure. (a4130,c4321) has a published-
+    // distance conflict - Bardia is deliberately not used as an alternate anchor here.
+    private static bool TrySoluchMechiliToFtMaddalenaBound(string axisLocation, string forwardLocation)
+    {
+        if (axisLocation is not ("a4130" or "b4921")) return false;
+        if (!CampaignSourceSeamCandidate.TryPublishedDistance(axisLocation, "c3019", out var anchor)
+            || CampaignSourceSeamCandidate.Classify(axisLocation, "c3019").PublishedDistanceConflict)
+            return false;
+        if (!FtMaddalenaMapDistances.Value.TryGetValue(forwardLocation, out var localSteps)) return false;
+        return anchor - localSteps > 1;
     }
 }
