@@ -12,27 +12,26 @@ internal sealed record CampaignSourceContactCounter(string RepresentationId, str
 // from the Map E scan (PDF p.5, sha256:8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030).
 internal static class CampaignSourcePolishArrivalContacts
 {
-    private static readonly Dictionary<string, string[]> Neighbors = new(StringComparer.Ordinal)
-    {
-        ["e1730"] = ["e1629", "e1630", "e1729", "e1731", "e1829", "e1830"],
-        ["e1829"] = ["e1729", "e1730", "e1828", "e1830", "e1929", "e1930"],
-        ["e1830"] = ["e1730", "e1731", "e1829", "e1831", "e1930", "e1931"],
-        ["e1930"] = ["e1829", "e1830", "e1929", "e1931", "e2029", "e2030"],
-        ["e1931"] = ["e1830", "e1831", "e1930", "e1932", "e2030", "e2031"],
-    };
+    // The arrival hex and its immediate historical neighborhood (the only
+    // locations the Map E geometry needs to resolve for this event). Neighbor
+    // sets themselves come from Cna1979HistoricalMap.NeighborsOf, not a
+    // second hand-copy of that transcription - verified byte-identical to
+    // the map for all five of these hexes before this table was retired.
+    private static readonly string[] KnownArrivalHexes =
+        ["e1730", "e1829", "e1830", "e1930", "e1931"];
 
     internal static bool TryCairoAdjacent(string first, string second, out bool adjacent)
     {
-        if (Neighbors.TryGetValue(first, out var firstNeighbors))
+        if (KnownArrivalHexes.Contains(first, StringComparer.Ordinal))
         {
             if (second.Length != 5 || second[0] != 'e') { adjacent = false; return false; }
-            adjacent = first == second || firstNeighbors.Contains(second, StringComparer.Ordinal);
+            adjacent = first == second || Cna1979HistoricalMap.Instance.NeighborsOf(first).Contains(second, StringComparer.Ordinal);
             return true;
         }
-        if (Neighbors.TryGetValue(second, out var secondNeighbors))
+        if (KnownArrivalHexes.Contains(second, StringComparer.Ordinal))
         {
             if (first.Length != 5 || first[0] != 'e') { adjacent = false; return false; }
-            adjacent = first == second || secondNeighbors.Contains(first, StringComparer.Ordinal);
+            adjacent = first == second || Cna1979HistoricalMap.Instance.NeighborsOf(second).Contains(first, StringComparer.Ordinal);
             return true;
         }
         adjacent = false;
@@ -56,7 +55,7 @@ internal static class CampaignSourcePolishArrivalContacts
             || !before.World8.World.Representations.All(after.World8.World.Representations.Contains))
             throw new InvalidOperationException("Arrival contact source does not match its prior authority.");
         var arrival = after.GroupedWorld.Groups.Single(value => value.GroupId == CampaignSourcePolishArrival.GroupId);
-        if (arrival.SideId != "commonwealth" || !Neighbors.ContainsKey(arrival.LocationId))
+        if (arrival.SideId != "commonwealth" || !KnownArrivalHexes.Contains(arrival.LocationId, StringComparer.Ordinal))
             throw new InvalidOperationException("Arrival contact geometry is unavailable.");
         var counters = EffectiveCounters(after);
         return DeriveCounters(counters, arrival.GroupId, arrival.LocationId, version, knowledge, before.MapIdentityBound, before.CdSeamBound);
@@ -68,7 +67,7 @@ internal static class CampaignSourcePolishArrivalContacts
     {
         ArgumentNullException.ThrowIfNull(counters);
         ArgumentNullException.ThrowIfNull(knowledge);
-        if (version < 2 || !Neighbors.ContainsKey(arrivalLocation)
+        if (version < 2 || !KnownArrivalHexes.Contains(arrivalLocation, StringComparer.Ordinal)
             || counters.Any(value => value.SideId is not ("axis" or "commonwealth")
                 || string.IsNullOrWhiteSpace(value.RepresentationId) || string.IsNullOrWhiteSpace(value.LocationId))
             || counters.Select(value => value.RepresentationId).Distinct(StringComparer.Ordinal).Count() != counters.Count)
