@@ -1,5 +1,10 @@
 # Initial truck rows: double-entry packet
 
+**November 16 recheck:** [reading B](reading-b.json) and its [raw comparison](comparison-b.json)
+match all 96 recorded fields. The reader had prior planning context, so this is
+not a blind independent entry; all 32 locator-wording differences and the
+independent-review gate remain open. See the [research disposition](../2026-11-16-graziani-seam-supply-review.md#supply-and-truck-row-comparisons).
+
 **Status:** existing researcher's first entry and blind template; no independent
 reading. The 32 source rows cover explicitly quantified first-line truck rows in
 §§60.31/60.41 and all seven initial second/third-line pools in §§60.33/60.43.

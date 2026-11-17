@@ -1,5 +1,10 @@
 # Initial supply double-entry packet
 
+**November 16 recheck:** [reading B](reading-b.json) and its [raw comparison](comparison-b.json)
+match all 50 recorded fields. The reader had prior planning context, so this is
+not a blind independent entry; all 15 locator-wording differences and the
+independent-review gate remain open. See the [research disposition](../2026-11-16-graziani-seam-supply-review.md#supply-and-truck-row-comparisons).
+
 **Status:** first entry and blind template; independent entry not yet done. This
 packet covers 13 fixed §60.92(B–C) supply rows and two grouped printed
 placement/dummy statements. It does not cover trucks, optional loads, map
@@ -32,4 +37,5 @@ python3 -B docs/work/plans/graziani-source-review/compare_readings.py \
 Retain both entries, all differences and a reasoned, source-specific disposition.
 A zero-issue comparison alone does not prove independence, source truth, rights,
 legal placement or acceptance of a ruling. Different locator wording is reported
-for separate review, not silently normalized. No second entry has been made here.
+for separate review, not silently normalized. Reading B is a contextual recheck;
+a blind independent entry is still required.

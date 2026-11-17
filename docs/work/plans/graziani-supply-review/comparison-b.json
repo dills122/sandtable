@@ -1,0 +1,254 @@
+{
+  "scope": "graziani-initial-supply-v1",
+  "manifest_sha256": "ecce73c5d78509379bd9b9130af5728de7e9f2a6cf4e542b9c4d475e9f486297",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-source-review-2026-11-16-nonblind-context"
+  ],
+  "expected_rows": 15,
+  "evidence": [
+    {
+      "row": "axis-tobruk",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.92, axis-tobruk",
+        "Scenario PDF p. 4, printed p. 28, §60.92B, axis-tobruk"
+      ]
+    },
+    {
+      "row": "axis-bardia",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.92, axis-bardia",
+        "Scenario PDF p. 4, printed p. 28, §60.92B, axis-bardia"
+      ]
+    },
+    {
+      "row": "axis-benghazi",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.92, axis-benghazi",
+        "Scenario PDF p. 4, printed p. 28, §60.92B, axis-benghazi"
+      ]
+    },
+    {
+      "row": "axis-derna",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-derna",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-derna"
+      ]
+    },
+    {
+      "row": "axis-tripoli",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-tripoli",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-tripoli"
+      ]
+    },
+    {
+      "row": "axis-dump-1",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-1",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-dump-1"
+      ]
+    },
+    {
+      "row": "axis-dump-2",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-2",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-dump-2"
+      ]
+    },
+    {
+      "row": "axis-c0716",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-c0716",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-c0716"
+      ]
+    },
+    {
+      "row": "cw-mersa-matruh",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-mersa-matruh",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-mersa-matruh"
+      ]
+    },
+    {
+      "row": "cw-sidi-barrani",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-sidi-barrani",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-sidi-barrani"
+      ]
+    },
+    {
+      "row": "cw-dump-1",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-dump-1",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-dump-1"
+      ]
+    },
+    {
+      "row": "cw-alexandria",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-alexandria",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-alexandria"
+      ]
+    },
+    {
+      "row": "cw-cairo",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-cairo",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-cairo"
+      ]
+    },
+    {
+      "row": "axis-dummy-and-placement",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-dummy-and-placement",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, dump footnote and dummy paragraph"
+      ]
+    },
+    {
+      "row": "cw-dummy-and-placement",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-dummy-and-placement",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, dump footnote and dummy paragraph"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "axis-tobruk",
+      "locators": [
+        "printed p. 28, §60.92, axis-tobruk",
+        "Scenario PDF p. 4, printed p. 28, §60.92B, axis-tobruk"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-bardia",
+      "locators": [
+        "printed p. 28, §60.92, axis-bardia",
+        "Scenario PDF p. 4, printed p. 28, §60.92B, axis-bardia"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-benghazi",
+      "locators": [
+        "printed p. 28, §60.92, axis-benghazi",
+        "Scenario PDF p. 4, printed p. 28, §60.92B, axis-benghazi"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-derna",
+      "locators": [
+        "printed p. 29, §60.92, axis-derna",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-derna"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-tripoli",
+      "locators": [
+        "printed p. 29, §60.92, axis-tripoli",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-tripoli"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-dump-1",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-1",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-dump-1"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-dump-2",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-2",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-dump-2"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-c0716",
+      "locators": [
+        "printed p. 29, §60.92, axis-c0716",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, axis-c0716"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-mersa-matruh",
+      "locators": [
+        "printed p. 29, §60.92, cw-mersa-matruh",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-mersa-matruh"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-sidi-barrani",
+      "locators": [
+        "printed p. 29, §60.92, cw-sidi-barrani",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-sidi-barrani"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-dump-1",
+      "locators": [
+        "printed p. 29, §60.92, cw-dump-1",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-dump-1"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-alexandria",
+      "locators": [
+        "printed p. 29, §60.92, cw-alexandria",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-alexandria"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-cairo",
+      "locators": [
+        "printed p. 29, §60.92, cw-cairo",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, cw-cairo"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-dummy-and-placement",
+      "locators": [
+        "printed p. 29, §60.92, axis-dummy-and-placement",
+        "Scenario PDF p. 5, printed p. 29, §60.92B, dump footnote and dummy paragraph"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-dummy-and-placement",
+      "locators": [
+        "printed p. 29, §60.92, cw-dummy-and-placement",
+        "Scenario PDF p. 5, printed p. 29, §60.92C, dump footnote and dummy paragraph"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

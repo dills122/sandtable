@@ -10,6 +10,8 @@ made after this document was requested.
 
 **Source research update:** [Graziani source-material research handoff](2026-11-16-graziani-source-material-research.md) supersedes this session's missing-source and Matruh identity assumptions. Australian ratings and partial CCNN characteristics are now transcribed; scenario lists both Essex and Durham. Research findings are not yet implemented, and the blocker diagnostic below has not been rerun.
 
+**Map and setup review:** [seam, supply and truck recheck](2026-11-16-graziani-seam-supply-review.md) records the 11 printed distance discrepancies and source-row comparisons. No new seam is certified; blind independent setup review remains open.
+
 ## What changed this session (for context)
 
 `CampaignSourcePlayableWorld.ReadinessBlockers()` previously added three of

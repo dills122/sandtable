@@ -1,0 +1,526 @@
+{
+  "scope": "graziani-initial-trucks-v1",
+  "manifest_sha256": "5ebdd70270e13e5f65a28e6b02698d311a80c8b003d1ea4dd2fb821cd3925be6",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-source-review-2026-11-16-nonblind-context"
+  ],
+  "expected_rows": 32,
+  "evidence": [
+    {
+      "row": "axis-first-c4218",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4218",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4218"
+      ]
+    },
+    {
+      "row": "axis-first-c4120",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4120",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4120"
+      ]
+    },
+    {
+      "row": "axis-first-c4020",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4020",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4020"
+      ]
+    },
+    {
+      "row": "axis-first-c3920",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3920",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3920"
+      ]
+    },
+    {
+      "row": "axis-first-c3919",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3919",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3919"
+      ]
+    },
+    {
+      "row": "axis-first-c3918",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3918",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3918"
+      ]
+    },
+    {
+      "row": "axis-first-c3617",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3617",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3617"
+      ]
+    },
+    {
+      "row": "axis-first-c4707",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4707",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4707"
+      ]
+    },
+    {
+      "row": "axis-first-c4507",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4507",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4507"
+      ]
+    },
+    {
+      "row": "axis-first-bardia",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-bardia",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-bardia"
+      ]
+    },
+    {
+      "row": "axis-first-tobruk",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-tobruk",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-tobruk"
+      ]
+    },
+    {
+      "row": "axis-first-barce",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-barce",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-barce"
+      ]
+    },
+    {
+      "row": "axis-first-near-c0716",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-near-c0716",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-near-c0716"
+      ]
+    },
+    {
+      "row": "cw-first-c4131",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c4131",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c4131"
+      ]
+    },
+    {
+      "row": "cw-first-c3926",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3926",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3926"
+      ]
+    },
+    {
+      "row": "cw-first-c3922",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3922",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3922"
+      ]
+    },
+    {
+      "row": "cw-first-c3721",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3721",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3721"
+      ]
+    },
+    {
+      "row": "cw-first-c3520",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3520",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3520"
+      ]
+    },
+    {
+      "row": "cw-first-c3320",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3320",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3320"
+      ]
+    },
+    {
+      "row": "cw-first-c3020",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3020",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3020"
+      ]
+    },
+    {
+      "row": "cw-first-d3714",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-d3714",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-d3714"
+      ]
+    },
+    {
+      "row": "cw-first-d3612",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-d3612",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-d3612"
+      ]
+    },
+    {
+      "row": "cw-first-d3615",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-d3615",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-d3615"
+      ]
+    },
+    {
+      "row": "cw-first-e1829",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-e1829",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-e1829"
+      ]
+    },
+    {
+      "row": "cw-first-alexandria",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-alexandria",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-alexandria"
+      ]
+    },
+    {
+      "row": "pool-axis-tripoli",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.33, pool-axis-tripoli",
+        "Scenario PDF p. 3, printed p. 27, §60.33, pool-axis-tripoli"
+      ]
+    },
+    {
+      "row": "pool-axis-libya",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.33, pool-axis-libya",
+        "Scenario PDF p. 3, printed p. 27, §60.33, pool-axis-libya"
+      ]
+    },
+    {
+      "row": "pool-axis-air",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.33, pool-axis-air",
+        "Scenario PDF p. 3, printed p. 27, §60.33, pool-axis-air"
+      ]
+    },
+    {
+      "row": "pool-cw-cairo",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-cairo",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-cairo"
+      ]
+    },
+    {
+      "row": "pool-cw-alexandria",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-alexandria",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-alexandria"
+      ]
+    },
+    {
+      "row": "pool-cw-maps",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-maps",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-maps"
+      ]
+    },
+    {
+      "row": "pool-cw-air",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-air",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-air"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c4218",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4218",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4218"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c4120",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4120",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4120"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c4020",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4020",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4020"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c3920",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3920",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3920"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c3919",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3919",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3919"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c3918",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3918",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3918"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c3617",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c3617",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c3617"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c4707",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4707",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4707"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-c4507",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-c4507",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-c4507"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-bardia",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-bardia",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-bardia"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-tobruk",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-tobruk",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-tobruk"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-barce",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-barce",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-barce"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-first-near-c0716",
+      "locators": [
+        "printed p. 27, §60.31, axis-first-near-c0716",
+        "Scenario PDF p. 3, printed p. 27, §60.31, axis-first-near-c0716"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c4131",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c4131",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c4131"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c3926",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3926",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3926"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c3922",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3922",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3922"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c3721",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3721",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3721"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c3520",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3520",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3520"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c3320",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3320",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3320"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-c3020",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-c3020",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-c3020"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-d3714",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-d3714",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-d3714"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-d3612",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-d3612",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-d3612"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-d3615",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-d3615",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-d3615"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-e1829",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-e1829",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-e1829"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-first-alexandria",
+      "locators": [
+        "printed p. 27, §60.41, cw-first-alexandria",
+        "Scenario PDF p. 3, printed p. 27, §60.41, cw-first-alexandria"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-axis-tripoli",
+      "locators": [
+        "printed p. 27, §60.33, pool-axis-tripoli",
+        "Scenario PDF p. 3, printed p. 27, §60.33, pool-axis-tripoli"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-axis-libya",
+      "locators": [
+        "printed p. 27, §60.33, pool-axis-libya",
+        "Scenario PDF p. 3, printed p. 27, §60.33, pool-axis-libya"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-axis-air",
+      "locators": [
+        "printed p. 27, §60.33, pool-axis-air",
+        "Scenario PDF p. 3, printed p. 27, §60.33, pool-axis-air"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-cw-cairo",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-cairo",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-cairo"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-cw-alexandria",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-alexandria",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-alexandria"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-cw-maps",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-maps",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-maps"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "pool-cw-air",
+      "locators": [
+        "printed p. 27, §60.43, pool-cw-air",
+        "Scenario PDF p. 3, printed p. 27, §60.43, pool-cw-air"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

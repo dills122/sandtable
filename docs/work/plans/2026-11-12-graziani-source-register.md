@@ -1,5 +1,9 @@
 # Graziani source register: six-turn scenario obligations
 
+**November 16 follow-up:** [seam, supply and truck source recheck](2026-11-16-graziani-seam-supply-review.md)
+preserves additional attributed readings and the 11 distance-chart cells. This
+does not certify seam topology, blind independence, or scenario admission.
+
 **Status:** initial research register, not an accepted scenario contract or
 MVP-GATE-01 freeze. Baseline `0f8a828a`; scope limited to the rows below.
 A [fresh-context double entry](graziani-source-review/review-disposition.md)
