@@ -321,7 +321,15 @@ class WorkflowDeadlineTests(unittest.TestCase):
     def test_dedicated_suites_keep_fifteen_minute_deadlines(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
         leaf = text.split('  tests:', 1)[1].split('  verify:', 1)[0]
-        shards = {value.strip() for value in re.search(r'shard: \[(.+)\]', leaf).group(1).split(',')}
+        # The matrix now sources its shard list from prepare's trigger-scoped
+        # output rather than a literal array (see prepare's "Determine
+        # per-trigger shard scope" step); the full (push) shard set there is
+        # still every long-*/fast-*/r02-*/exercise/contracts job.
+        self.assertIn('shard: ${{ fromJSON(needs.prepare.outputs.shards) }}', leaf)
+        prepare = text.split('  prepare:', 1)[1].split('  tests:', 1)[0]
+        shard_lists = re.findall(r"shards=(\[.*?\])'", prepare)
+        self.assertEqual(2, len(shard_lists), 'Expected one pull_request and one push shard list in prepare')
+        shards = set(json.loads(shard_lists[-1]))
         expected = {f'long-{index:02}' for index in range(1, 9)} | {f'fast-{index:02}' for index in range(1, 5)} | {'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts'}
         self.assertEqual(shards, expected)
         self.assertEqual(re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1), '15')

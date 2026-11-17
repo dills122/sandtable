@@ -16,7 +16,9 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
   DOTNET_NOLOGO: "1"
   TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
-  P01_PROOF_SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  # orleans and the p01-* proof families (and their proof-source-SHA handling)
+  # moved to .github/workflows/ci-nightly-heavy.yml (schedule-only); nothing
+  # in this file needs P01_PROOF_SOURCE_SHA any more.
 
 jobs:
   format:
@@ -50,6 +52,9 @@ jobs:
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    outputs:
+      shards: ${{ steps.scope.outputs.shards }}
+      excluded_shards: ${{ steps.scope.outputs.excluded_shards }}
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -62,6 +67,23 @@ jobs:
           global-json-file: global.json
       - name: Report selected SDK
         run: dotnet --version
+      - name: Determine per-trigger shard scope
+        id: scope
+        # pull_request: fast path (fast-*/r02-*/exercise/contracts only).
+        # push (to main): full suite, exactly as today, nothing excluded.
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            {
+              echo 'shards=["r02-1","r02-2","r02-3","fast-01","fast-02","fast-03","fast-04","exercise","contracts"]'
+              echo 'excluded_shards=long-01,long-02,long-03,long-04,long-05,long-06,long-07,long-08'
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo 'shards=["long-01","long-02","long-03","long-04","long-05","long-06","long-07","long-08","r02-1","r02-2","r02-3","fast-01","fast-02","fast-03","fast-04","exercise","contracts"]'
+              echo 'excluded_shards='
+            } >> "$GITHUB_OUTPUT"
+          fi
       - name: Create evidence directory
         run: mkdir -p artifacts/ci
       - name: Restore
@@ -100,7 +122,7 @@ jobs:
       fail-fast: false
       max-parallel: 17
       matrix:
-        shard: [long-01, long-02, long-03, long-04, long-05, long-06, long-07, long-08, r02-1, r02-2, r02-3, fast-01, fast-02, fast-03, fast-04, exercise, contracts]
+        shard: ${{ fromJSON(needs.prepare.outputs.shards) }}
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -137,439 +159,8 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  p01-paid-fresh-shard:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        pair: [0, 1]
-    steps:
-      - name: Check out exact proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Rehydrate eleven authentic paid roots in fresh processes
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/p01-all44-fresh
-          for proof_shard in "$((2 * PROOF_PAIR))" "$((2 * PROOF_PAIR + 1))"; do
-            python3 -B docs/specs/verify-combat-p01-paid-all44-fresh-v1.py \
-              --jobs 4 --shard "$proof_shard" --tested-sha "$TESTED_SHA" \
-              > "artifacts/p01-all44-fresh/shard-${proof_shard}.json"
-          done
-        env:
-          PROOF_PAIR: ${{ matrix.pair }}
-          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head fresh-process shard
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-paid-fresh-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-pair-${{ matrix.pair }}
-          path: artifacts/p01-all44-fresh/shard-*.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-rba-decline-fresh-shard:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        pair: [0, 1]
-    steps:
-      - name: Check out exact private proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Require exact private proof source SHA
-        run: test "$(git rev-parse HEAD)" = "$PROOF_SHA"
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Cold-read eleven RBA-open cuts through Force Assignment
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/p01-rba-decline-fresh
-          for proof_shard in "$((2 * PROOF_PAIR))" "$((2 * PROOF_PAIR + 1))"; do
-            python3 -B docs/specs/verify-combat-p01-all44-rba-decline-fresh-v1.py \
-              --jobs 4 --shard "$proof_shard" --tested-sha "$PROOF_SHA" \
-              > "artifacts/p01-rba-decline-fresh/shard-${proof_shard}.json"
-          done
-        env:
-          PROOF_PAIR: ${{ matrix.pair }}
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head RBA-decline shard
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-rba-decline-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-pair-${{ matrix.pair }}
-          path: artifacts/p01-rba-decline-fresh/shard-*.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-rba-decline-fresh-aggregate:
-    needs: p01-rba-decline-fresh-shard
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Check out exact private proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Require exact private proof source SHA
-        run: test "$(git rev-parse HEAD)" = "$PROOF_SHA"
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Download all same-attempt private shards
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          pattern: p01-rba-decline-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
-          path: artifacts/p01-rba-decline-fresh
-          merge-multiple: true
-      - name: Reject forged identity, deadline, files, retry and skipped completion
-        run: python3 -B docs/specs/test-combat-p01-all44-rba-decline-fresh-v1.py
-      - name: Require frozen all-44 same-SHA aggregate
-        run: |
-          python3 -B docs/specs/verify-combat-p01-all44-rba-decline-fresh-v1.py \
-            --tested-sha "$PROOF_SHA" \
-            --combine artifacts/p01-rba-decline-fresh/shard-{0,1,2,3}.json \
-            > artifacts/p01-rba-decline-fresh/aggregate.json
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head private aggregate
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-rba-decline-aggregate-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
-          path: artifacts/p01-rba-decline-fresh/aggregate.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-rba-cancel-fresh-shard:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        pair: [0, 1]
-    steps:
-      - name: Check out exact private proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Require exact private proof source SHA
-        run: test "$(git rev-parse HEAD)" = "$PROOF_SHA"
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Cold-read eleven RBA-open cuts through Reserve Release
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/p01-rba-cancel-fresh
-          for proof_shard in "$((2 * PROOF_PAIR))" "$((2 * PROOF_PAIR + 1))"; do
-            python3 -B docs/specs/verify-combat-p01-all44-rba-cancel-fresh-v1.py \
-              --jobs 4 --shard "$proof_shard" --tested-sha "$PROOF_SHA" \
-              > "artifacts/p01-rba-cancel-fresh/shard-${proof_shard}.json"
-          done
-        env:
-          PROOF_PAIR: ${{ matrix.pair }}
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head RBA-cancel shard
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-rba-cancel-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-pair-${{ matrix.pair }}
-          path: artifacts/p01-rba-cancel-fresh/shard-*.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-rba-cancel-fresh-aggregate:
-    needs: p01-rba-cancel-fresh-shard
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Check out exact private proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Require exact private proof source SHA
-        run: test "$(git rev-parse HEAD)" = "$PROOF_SHA"
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Download all same-attempt private shards
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          pattern: p01-rba-cancel-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
-          path: artifacts/p01-rba-cancel-fresh
-          merge-multiple: true
-      - name: Reject forged identity, clock, files, retry and skipped receipt
-        run: python3 -B docs/specs/test-combat-p01-all44-rba-cancel-fresh-v1.py
-      - name: Require frozen all-44 same-SHA aggregate
-        run: |
-          python3 -B docs/specs/verify-combat-p01-all44-rba-cancel-fresh-v1.py \
-            --tested-sha "$PROOF_SHA" \
-            --combine artifacts/p01-rba-cancel-fresh/shard-{0,1,2,3}.json \
-            > artifacts/p01-rba-cancel-fresh/aggregate.json
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head private aggregate
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-rba-cancel-aggregate-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
-          path: artifacts/p01-rba-cancel-fresh/aggregate.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-force-seal-fresh:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out exact proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Require exact proof source SHA
-        run: test "$(git rev-parse HEAD)" = "$PROOF_SHA"
-        env:
-          PROOF_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Check first-owner Force Assignment cold readback and negatives
-        run: |
-          mkdir -p artifacts/p01-force-seal-fresh
-          python3 -B docs/specs/test-combat-p01-force-seal-fresh-v1.py \
-            2>&1 | tee artifacts/p01-force-seal-fresh/tests.txt
-        shell: bash
-      - name: Require frozen two-root Force Assignment output
-        run: |
-          python3 -B docs/specs/verify-combat-p01-force-seal-fresh-v1.py --ci \
-            > artifacts/p01-force-seal-fresh/summary.json
-      - name: Retain exact-head Force Assignment proof
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-force-seal-fresh-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
-          path: artifacts/p01-force-seal-fresh
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-paid-fresh-aggregate:
-    needs: p01-paid-fresh-shard
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Check out exact proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Download all current-attempt fresh-process shards
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          pattern: p01-paid-fresh-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
-          path: artifacts/p01-all44-fresh
-          merge-multiple: true
-      - name: Exercise physical-cut and shard negatives
-        run: python3 -B docs/specs/test-combat-p01-paid-all44-fresh-v1.py
-      - name: Require complete 44-root fresh-process matrix
-        run: |
-          python3 -B docs/specs/verify-combat-p01-paid-all44-fresh-v1.py \
-            --tested-sha "$TESTED_SHA" \
-            --combine artifacts/p01-all44-fresh/shard-{0,1,2,3}.json \
-            > artifacts/p01-all44-fresh/aggregate.json
-        env:
-          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head aggregate
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-paid-fresh-aggregate-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
-          path: artifacts/p01-all44-fresh/aggregate.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-absent-shard:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [0, 1, 2, 3]
-    steps:
-      - name: Check out exact private proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Regenerate and replay 75 reviewed original R03 roots
-        run: |
-          mkdir -p artifacts/p01-absent
-          python3 -B docs/specs/verify-combat-p01-absent-matrix-v1.py \
-            --generated-shard "$PROOF_SHARD" --tested-sha "$TESTED_SHA" \
-            > "artifacts/p01-absent/shard-${PROOF_SHARD}.json"
-        env:
-          PROOF_SHARD: ${{ matrix.shard }}
-          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head physical absence shard
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-absent-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
-          path: artifacts/p01-absent/shard-${{ matrix.shard }}.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-absent-aggregate:
-    needs: p01-absent-shard
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Check out exact private proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Download all current-attempt absence shards
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          pattern: p01-absent-shard-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
-          path: artifacts/p01-absent
-          merge-multiple: true
-      - name: Exercise selected and explicit-RBA absence negatives
-        run: python3 -B docs/specs/test-combat-p01-absent-matrix-v1.py
-      - name: Require all 300 regenerated rows and frozen aggregate
-        run: |
-          python3 -B docs/specs/verify-combat-p01-absent-matrix-v1.py \
-            --tested-sha "$TESTED_SHA" \
-            --combine-shards artifacts/p01-absent/shard-{0,1,2,3}.json \
-            > artifacts/p01-absent/aggregate.json
-        env:
-          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head absence aggregate
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-absent-aggregate-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
-          path: artifacts/p01-absent/aggregate.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-all-prefix-reject-shard:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [0, 1, 2, 3]
-    steps:
-      - name: Check out exact proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Reject all original ancestor prefixes for 75 pinned roots
-        run: |
-          mkdir -p artifacts/p01-all-prefix-reject
-          python3 -B docs/specs/verify-combat-p01-all-prefix-reject-v1.py \
-            --shard "$PROOF_SHARD" --tested-sha "$TESTED_SHA" \
-            > "artifacts/p01-all-prefix-reject/shard-${PROOF_SHARD}.json"
-        env:
-          PROOF_SHARD: ${{ matrix.shard }}
-          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head terminal-Source rejection shard
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-all-prefix-reject-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
-          path: artifacts/p01-all-prefix-reject/shard-${{ matrix.shard }}.json
-          if-no-files-found: error
-          retention-days: 14
-
-  p01-all-prefix-reject-aggregate:
-    needs: p01-all-prefix-reject-shard
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Check out exact proof source SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
-          persist-credentials: false
-      - name: Download all current-attempt terminal-Source shards
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          pattern: p01-all-prefix-reject-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}-*
-          path: artifacts/p01-all-prefix-reject
-          merge-multiple: true
-      - name: Check fail-sensitive pin, cut, and artifact negatives
-        run: python3 -B docs/specs/test-combat-p01-all-prefix-reject-v1.py
-      - name: Require ordered 12,116-cut complete rejection matrix
-        run: |
-          python3 -B docs/specs/verify-combat-p01-all-prefix-reject-v1.py \
-            --tested-sha "$TESTED_SHA" \
-            --combine artifacts/p01-all-prefix-reject/shard-{0,1,2,3}.json \
-            > artifacts/p01-all-prefix-reject/aggregate.json
-        env:
-          TESTED_SHA: ${{ env.P01_PROOF_SOURCE_SHA }}
-      - name: Retain exact-head terminal-Source rejection aggregate
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: p01-all-prefix-reject-aggregate-${{ env.P01_PROOF_SOURCE_SHA }}-${{ github.run_attempt }}
-          path: artifacts/p01-all-prefix-reject/aggregate.json
-          if-no-files-found: error
-          retention-days: 14
-
-  orleans:
-    needs: prepare
-    runs-on: ubuntu-24.04
-    # Full Host suite exceeded 20m with repeated crash/recovery proofs (PR336).
-    # GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame
-    # alone measures ~29m43s locally: it submits 144 steps to one campaign, and
-    # CampaignDurableAuthorityJournal.Load replays the full accepted_steps history
-    # (avg ~961KB checkpoint blob/step, one 10MB) on every write, an O(n^2) cost
-    # inherent to the replay-verification design. It is excluded here (not a
-    # regression, still runs nightly in orleans-slow.yml) so PR CI isn't gated on
-    # it; the remaining 267 rows measure ~13m29s locally but still timed out at
-    # 20m on the CI runner (process-spawn-heavy crash/recovery tests are slower
-    # there than on a local Apple Silicon Mac) - give it real margin instead.
-    timeout-minutes: 35
-    steps:
-      - name: Check out tested event SHA
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.sha }}
-          persist-credentials: false
-      - name: Set up .NET
-        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
-        with:
-          global-json-file: global.json
-      - name: Restore and build Orleans host tests
-        run: |
-          dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
-          dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
-      - name: Run and verify Orleans host rows
-        timeout-minutes: 30
-        shell: bash
-        run: |
-          mkdir -p artifacts/orleans-results
-          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" 2>&1 | tee artifacts/orleans-results/console.log
-          python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
-      - name: Retain Orleans test results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: orleans-${{ github.sha }}-${{ github.run_attempt }}
-          path: artifacts/orleans-results
-          if-no-files-found: error
-          retention-days: 14
-
   verify:
-    needs: [prepare, tests, format, orleans, p01-paid-fresh-aggregate, p01-rba-decline-fresh-aggregate, p01-rba-cancel-fresh-aggregate, p01-force-seal-fresh, p01-absent-aggregate, p01-all-prefix-reject-aggregate]
+    needs: [prepare, tests, format]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -594,11 +185,12 @@ jobs:
           merge-multiple: true
       - name: Require successful processes and complete exact-head coverage
         if: ${{ always() }}
-        run: python3 .github/scripts/long_suite_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        run: python3 .github/scripts/long_suite_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --exclude-shards "$EXCLUDE_SHARDS"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           NEEDS_JSON: ${{ toJSON(needs) }}
+          EXCLUDE_SHARDS: ${{ needs.prepare.outputs.excluded_shards }}
       - name: Retain aggregate evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

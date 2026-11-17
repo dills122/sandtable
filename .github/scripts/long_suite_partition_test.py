@@ -95,13 +95,11 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual('collections', command[command.index('--parallel') + 1])
             self.assertEqual('4', command[command.index('--max-threads') + 1])
 
-    def test_formatting_and_p01_proofs_remain_in_required_dependency_closure(self):
-        required = (
-            'prepare', 'tests', 'format', 'orleans',
-            'p01-paid-fresh-aggregate', 'p01-rba-decline-fresh-aggregate',
-            'p01-rba-cancel-fresh-aggregate', 'p01-force-seal-fresh',
-            'p01-absent-aggregate', 'p01-all-prefix-reject-aggregate',
-        )
+    def test_formatting_remains_in_required_dependency_closure(self):
+        # orleans and the p01-* proof families run nightly only (see
+        # ci-nightly-heavy.yml) and are never part of this dependency closure
+        # on pull_request or push.
+        required = ('prepare', 'tests', 'format')
         good = {key: {'result': 'success'} for key in required}
         suites.validate_dependencies(good)
         for key in good:
@@ -111,6 +109,9 @@ class EvidenceTests(unittest.TestCase):
         for missing in required:
             with self.subTest(missing=missing), self.assertRaises(ValueError):
                 suites.validate_dependencies({key: value for key, value in good.items() if key != missing})
+        for extra in ('orleans', 'p01-paid-fresh-aggregate'):
+            with self.subTest(extra=extra), self.assertRaises(ValueError):
+                suites.validate_dependencies(dict(good, **{extra: {'result': 'success'}}))
 
 
 import r02_partition_test as prior_tests
@@ -176,13 +177,6 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
         import r02_partition as r02
         from ci_group_runner import RESOURCE_POLICY
         self.needs['format'] = {'result': 'success'}
-        self.needs['orleans'] = {'result': 'success'}
-        for job in (
-            'p01-paid-fresh-aggregate', 'p01-rba-decline-fresh-aggregate',
-            'p01-rba-cancel-fresh-aggregate', 'p01-force-seal-fresh',
-            'p01-absent-aggregate', 'p01-all-prefix-reject-aggregate',
-        ):
-            self.needs[job] = {'result': 'success'}
         core = self.proof['legacy_core_rows']
         classes = sorted({row[1].rsplit('.', 1)[0] for row in core})
         self.weights = {'schema_version': 1, 'classes': {}, 'rows': {suites.row_key(row): 1000 for row in core}}
@@ -204,8 +198,8 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
             evidence = {'schema_version': 1, 'job': job, 'binding': self.binding, 'policy': dict(RESOURCE_POLICY), 'phase_preflights': [snapshot], 'peak_group_rss_bytes': groups, 'peak_aggregate_rss_bytes': 4096, 'min_available_bytes': 12 * 2**30, 'sample_count': 10, 'abort_reason': None, 'kernel_children_peak_rss_bytes': 2048, 'kernel_peak_kind': 'job-wide completed-children maximum; not per-child attribution', 'complete': True, 'elapsed_seconds': 3}
             (self.root / (job + '-resource.json')).write_text(json.dumps(evidence))
 
-    def check(self):
-        return suites.verify_all(self.suite_proof, self.weights, self.proof, self.fixture, self.inventory, self.root, self.needs, self.binding)
+    def check(self, excluded_shards=frozenset()):
+        return suites.verify_all(self.suite_proof, self.weights, self.proof, self.fixture, self.inventory, self.root, self.needs, self.binding, excluded_shards)
 
     def test_missing_support_xml_or_old_process_fails_combined_gate(self):
         support = self.root / 'r02-groups' / 'support-contract' / 'results' / 'report.xml'
@@ -228,6 +222,49 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
     def test_foreign_root_xml_cannot_hide_outside_supported_process_results(self):
         (self.root / 'foreign.xml').write_text('<assemblies/>')
         with self.assertRaises(ValueError): self.check()
+
+    def test_unscoped_call_matches_omitted_default_exactly(self):
+        # (a) The push-to-main path (no --exclude-shards) must be byte-for-byte
+        # today's behaviour: passing an explicit empty scope equals omitting it.
+        explicit = self.check(frozenset())
+        default = suites.verify_all(self.suite_proof, self.weights, self.proof, self.fixture, self.inventory, self.root, self.needs, self.binding)
+        self.assertEqual(explicit, default)
+        self.assertEqual(explicit['excluded_shards'], [])
+
+    def test_pr_scope_excludes_long_rows_without_failing_closed(self):
+        # (b) Narrowing the expected-row set to drop a long-* job's rows (as
+        # pull_request verify does) must not fail closed just because that
+        # job's evidence was never produced.
+        import shutil
+        plan = self.suite_proof['plan']
+        self.assertEqual({'long-01'}, {entry['job'] for entry in plan['groups'].values()} - {'fast-01', 'fast-02', 'fast-03', 'fast-04'})
+        for group, entry in plan['groups'].items():
+            if entry['job'] == 'long-01': shutil.rmtree(self.root / 'long-groups' / group)
+        (self.root / 'long-01-resource.json').unlink()
+        result = self.check(frozenset({'long-01'}))
+        self.assertEqual(result['excluded_shards'], ['long-01'])
+        self.assertNotIn('long-01', result['resource_jobs'])
+        self.assertIn('fast-01', result['resource_jobs'])
+
+    def test_pr_scope_still_fails_closed_for_in_scope_missing_row(self):
+        # (c) Scoping must not become toothless for the rows that remain in
+        # scope: a missing fast-* row still fails closed even with long-01
+        # excluded.
+        import shutil
+        plan = self.suite_proof['plan']
+        for group, entry in plan['groups'].items():
+            if entry['job'] == 'long-01': shutil.rmtree(self.root / 'long-groups' / group)
+        (self.root / 'long-01-resource.json').unlink()
+        status = self.root / 'long-groups' / 'fast-01' / 'status.json'
+        original = status.read_bytes(); status.unlink()
+        with self.assertRaises(ValueError): self.check(frozenset({'long-01'}))
+        status.write_bytes(original)
+        self.assertEqual(self.check(frozenset({'long-01'}))['excluded_shards'], ['long-01'])
+
+    def test_only_long_jobs_may_ever_be_excluded(self):
+        for bad in (frozenset({'fast-01'}), frozenset({'orleans'}), frozenset({'r02-1'}), frozenset({'exercise'}), frozenset({'contracts'})):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                self.check(bad)
 
 
 
@@ -280,30 +317,81 @@ class FixturePathAliasTests(unittest.TestCase):
                         case.doCleanups()
 
 
+class CommandLineTests(unittest.TestCase):
+    def test_help_exposes_shard_scoping(self):
+        import subprocess
+        import sys
+        result = subprocess.run([sys.executable, str(Path(__file__).with_name('long_suite_partition.py')), '--help'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0)
+        for flag in ('discover', 'execute', 'verify', '--exclude-shards'):
+            self.assertIn(flag, result.stdout)
+
+    def test_exclude_shards_rejected_outside_verify_mode(self):
+        import subprocess
+        import sys
+        result = subprocess.run([sys.executable, str(Path(__file__).with_name('long_suite_partition.py')), 'discover', '--sha', 'd' * 40, '--exclude-shards', 'long-01'], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('only applies to verify mode', result.stderr + result.stdout)
+
+
 class WorkflowTests(unittest.TestCase):
-    def test_finite_matrix_and_parallel_format_are_in_the_required_gate(self):
+    def test_tiered_shard_scope_matches_pr_and_push_expectations(self):
+        import json
         import re
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
-        matrix = re.search(r'shard: \[(.*?)\]', text)[1]
-        actual = {value.strip() for value in matrix.split(',')}
-        self.assertEqual(set(suites.LONG_JOBS + suites.FAST_JOBS) | {'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts'}, actual)
+        # The "if pull_request / else" scope step writes the pull_request
+        # (narrowed) branch textually first, the push (full/default) branch
+        # second.
+        shard_matches = re.findall(r"shards=(\[.*?\])'", text)
+        excluded_matches = re.findall(r"excluded_shards=(.*?)'", text)
+        self.assertEqual(2, len(shard_matches), 'Expected exactly one pull_request and one push shard list')
+        self.assertEqual(2, len(excluded_matches), 'Expected exactly one pull_request and one push excluded-shard list')
+        pr_set, full_set = set(json.loads(shard_matches[0])), set(json.loads(shard_matches[1]))
+        pr_excluded, full_excluded = excluded_matches[0], excluded_matches[1]
+        self.assertEqual(set(suites.LONG_JOBS + suites.FAST_JOBS) | {'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts'}, full_set)
+        self.assertEqual(set(suites.FAST_JOBS) | {'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts'}, pr_set)
+        self.assertFalse(pr_set & set(suites.LONG_JOBS))
+        self.assertEqual('', full_excluded)
+        self.assertEqual(set(suites.LONG_JOBS), set(pr_excluded.split(',')))
+        # The tests matrix now sources its shard list from prepare's output,
+        # not a literal array, so both triggers share one job definition.
+        self.assertIn("shard: ${{ fromJSON(needs.prepare.outputs.shards) }}", text)
         self.assertIn('max-parallel: 17', text)
-        self.assertIn(
-            'needs: [prepare, tests, format, orleans, p01-paid-fresh-aggregate, '
-            'p01-rba-decline-fresh-aggregate, p01-rba-cancel-fresh-aggregate, '
-            'p01-force-seal-fresh, p01-absent-aggregate, '
-            'p01-all-prefix-reject-aggregate]', text,
-        )
-        orleans_job = text.split('  orleans:', 1)[1].split('  verify:', 1)[0]
-        self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', orleans_job)
-        self.assertIn('python3 .github/scripts/verify_orleans_results.py', orleans_job)
-        self.assertNotIn('continue-on-error', orleans_job)
+        # orleans and p01-* are gone from ci.yml's dependency closure entirely
+        # (they run nightly only - see ci-nightly-heavy.yml), on every trigger.
+        self.assertIn('needs: [prepare, tests, format]', text)
+        self.assertNotIn('\n  orleans:', text)
+        self.assertNotIn('\n  p01-', text)
+        self.assertIn('--exclude-shards "$EXCLUDE_SHARDS"', text)
+        self.assertIn('EXCLUDE_SHARDS: ${{ needs.prepare.outputs.excluded_shards }}', text)
         self.assertNotIn('Verify formatting', text.split('  prepare:', 1)[1].split('  tests:', 1)[0])
         format_job = text.split('  format:', 1)[1].split('  prepare:', 1)[0]
         self.assertIn('dotnet format Sandtable.slnx --verify-no-changes --no-restore', format_job)
         self.assertNotIn('continue-on-error', format_job)
         for mode in ('discover', 'execute', 'verify'):
             self.assertIn('python3 .github/scripts/long_suite_partition.py ' + mode, text)
+
+    def test_nightly_heavy_workflow_carries_orleans_and_every_p01_family_unmodified(self):
+        text = (Path(__file__).parents[1] / 'workflows' / 'ci-nightly-heavy.yml').read_text()
+        trigger = text.split('\non:\n', 1)[1].split('\njobs:', 1)[0]
+        self.assertIn('schedule:', trigger)
+        self.assertIn('cron:', trigger)
+        self.assertNotIn('pull_request', trigger)
+        self.assertNotIn('push:', trigger)
+        self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', text)
+        self.assertIn('python3 .github/scripts/verify_orleans_results.py', text)
+        self.assertIn('--filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame"', text)
+        self.assertNotIn('continue-on-error', text)
+        for job in (
+            'p01-paid-fresh-shard', 'p01-paid-fresh-aggregate',
+            'p01-rba-decline-fresh-shard', 'p01-rba-decline-fresh-aggregate',
+            'p01-rba-cancel-fresh-shard', 'p01-rba-cancel-fresh-aggregate',
+            'p01-force-seal-fresh', 'p01-absent-shard', 'p01-absent-aggregate',
+            'p01-all-prefix-reject-shard', 'p01-all-prefix-reject-aggregate',
+            'orleans',
+        ):
+            self.assertIn('\n  ' + job + ':', text)
+        self.assertNotIn('needs: prepare', text)
 
 
 if __name__ == '__main__':
