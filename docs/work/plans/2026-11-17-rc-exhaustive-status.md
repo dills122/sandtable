@@ -11,6 +11,11 @@ and everything traced/fixed/discovered in this session. Status labels:
 **Open** (not meaningfully started), **Blocked** (needs a human decision or
 source material, not more engineering time).
 
+**Note (2026-11-17, later in the same session):** this snapshot predates
+[the engine capability deep audit](2026-11-17-engine-capability-deep-audit.md),
+which went further than this doc's synthesis into the code itself. See
+section 10 below for what it changed or added.
+
 This doc is a snapshot. The underlying checklist/roadmap docs remain
 authoritative for gate definitions; this one is for seeing the whole board
 at once.
@@ -45,7 +50,7 @@ one retained genuine history is exercised, broader gate still open.
 | `MVP-GATE-02` content admission | Versioned, stable-ID content with no dangling references, provenance/rights accepted | **Partial** | Large jump this session: **57 elements admitted** across PRs [#352](https://github.com/dills122/sandtable/pull/352) (Giarabub, 13), [#355](https://github.com/dills122/sandtable/pull/355) (Tobruk/Bardia, 28), [#359](https://github.com/dills122/sandtable/pull/359) (Category B + Aresca, 14), each as standalone proven fixtures. 3 genuine fact gaps remain, handed to codex: CCNN 1st-HQ weapon ID, Matruh's 5 units' real combat ratings, Essex/Durham assignment-chronology ruling ([handoff doc](2026-11-17-graziani-source-material-research-tasks.md)). Provenance/rights posture for the source PDFs still undecided. |
 | `MVP-GATE-03` six-turn authority | Every reachable mechanic/victory rule executes deterministically, zero silent approximation | **Partial** | This is the engine's `ReadinessBlockers()` gate. Admission work (above) is all proven in isolated fixtures, not yet wired into one continuous setup path — [PR #361](https://github.com/dills122/sandtable/pull/361) (in flight) does that wiring and cleared 4 of the original 8 blockers, but surfaced **4 different new ones**: a real missing-mechanism gap (Giarabub motor-MG has 2 blockers with zero clearing action anywhere in the code — not yet confirmed whether activating motor-MG was even necessary for this fixture), plus 2 likely-pure-wiring gaps (`cw-frontline-initial-loads-unresolved`, `source-initial-contacts-unavailable`) currently being traced/fixed. `source-grouped-movement-domain-incomplete` did **not** clear as hypothesized — root cause still unknown. All being worked right now (background agent + CI fix in flight). |
 | `MVP-GATE-04` durable local lifecycle | Create/checkpoint/stop/resume/recover, no model/I/O in authoritative turns | **Partial** | Bounded journal implemented (per checklist). This session confirmed (via dedicated investigation) the Orleans journal's O(n²) replay-cost scaling issue is **not safely fixable** without real architectural investment — a known risk for long campaigns, not a blocker for RC itself, but worth tracking. |
-| `MVP-GATE-05` Maproom/hot-seat | Two seats inspect/choose/confirm/submit/hand off privately, no model | **Open** | Foundation/read preview only; no work this session. The dependency findings above (26 dev-toolchain vulns) are relevant here before this becomes player-facing, though they don't affect the shipped app itself. |
+| `MVP-GATE-05` Maproom/hot-seat | Two seats inspect/choose/confirm/submit/hand off privately, no model | **Open** | Foundation/read preview only; no work this session. The dependency findings above (26 dev-toolchain vulns) are relevant here before this becomes player-facing, though they don't affect the shipped app itself. **See section 10 — the deep audit found this status description itself is understated.** |
 | `MVP-GATE-06` full playthrough | Two independent complete six-turn games, save/resume, correct victory, seed reproduction | **Open** | Not demonstrated; no work this session. |
 | `MVP-GATE-07` delivery | Approved distribution/rights, CI-built package, fresh-machine smoke | **Open** | Not started; no work this session. |
 
@@ -97,6 +102,37 @@ vehicle-cohort breakdown accounting. Both are small, scoped, not urgent.
 - `battlefieldComplete`/`controlCertified` — ruling already made: stay `false` until the 5-step source-control-map work is complete. Not an open question anymore.
 - `ccnn-characteristics-incomplete` — down to one specific fact (the weapon ID above), already in codex's queue.
 
+## 10. What the deep audit added (see the full doc for detail/citations)
+
+A follow-up pass went into the code itself rather than re-synthesizing this
+doc's own sources, and found:
+
+- **Maproom's `MVP-GATE-05` status above is understated.** Real workspace,
+  action-flow/draft, order-workflow, and map-camera code exists, plus 6
+  Playwright e2e specs with accessibility checks — this is well past
+  "foundation/read preview."
+- **A specific, real `MVP-GATE-05` gap, not previously named anywhere:** the
+  roadmap's Sprint 8 seat-handoff privacy requirement (invalidate drafts,
+  DOM, storage, worker state, late responses on every local seat handoff)
+  has exactly one partial implementation found (`clearAudience()`, two call
+  sites) and zero dedicated test coverage.
+- **Missing from tracking, likely non-blocking:** the Orleans Host has no
+  production clustering provider configured and fails loudly (by design)
+  outside a single dev machine — real, but probably fine given the roadmap's
+  explicitly local-only RC scope. Worth one line wherever `MVP-GATE-07`'s
+  delivery scope is tracked.
+- Confirmed the two duplication findings from the earlier PR #347 review are
+  fully closed (merged via #349) — not re-flagging them.
+- Confirmed zero skipped tests anywhere in the suite.
+- A few already-tracked provisional-policy markers in the supply/convoy
+  layer were traced to their exact serialized form in code, including one
+  well-handled example (the Benghazi `a4827`/`b4827` location-identity
+  conflict) worth knowing about by name rather than rediscovering later.
+
+See [the full audit](2026-11-17-engine-capability-deep-audit.md) for
+per-subsystem detail, citations, and three concrete bounded next-step
+candidates.
+
 ## Honest bottom line
 
 `MVP-GATE-03` (six-turn authority) is the gate getting the most direct
@@ -107,6 +143,7 @@ proofs are combined) should be expected to repeat at least once more before
 this gate closes. `MVP-GATE-01` and `02` have a lot of real research
 completed (most of it just never reached code), now queued with codex.
 `MVP-GATE-04` through `07` have seen no engineering time this session and
-remain exactly where the Oct 24 checklist left them. No fabricated calendar
-estimate follows from this — per this project's own stated position, an
-invented date is worse than an honest "not yet measured."
+remain exactly where the Oct 24 checklist left them, except for the two
+corrections in section 10 above. No fabricated calendar estimate follows
+from this — per this project's own stated position, an invented date is
+worse than an honest "not yet measured."
