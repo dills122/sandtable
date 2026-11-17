@@ -61,12 +61,10 @@ def validate_plan(plan, rows, weights):
 
 def validate_dependencies(needs):
     from test_partition import require
-    required = {
-        'prepare', 'tests', 'format', 'orleans',
-        'p01-paid-fresh-aggregate', 'p01-rba-decline-fresh-aggregate',
-        'p01-rba-cancel-fresh-aggregate', 'p01-force-seal-fresh',
-        'p01-absent-aggregate', 'p01-all-prefix-reject-aggregate',
-    }
+    # orleans and the p01-* proof families run on a nightly schedule only
+    # (see .github/workflows/ci-nightly-heavy.yml); they are not part of the
+    # pull_request/push dependency closure on either trigger.
+    required = {'prepare', 'tests', 'format'}
     require(set(needs) == required and all(needs[key]['result'] == 'success' for key in needs), 'Failed/cancelled/skipped/missing required dependency')
     return True
 
@@ -208,13 +206,19 @@ def verify_suite_resources(plan, directory, binding, job):
     return evidence
 
 
-def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, needs, binding):
+def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, needs, binding, excluded_shards=frozenset()):
     from pathlib import Path
     import xml.etree.ElementTree as ET
     import r02_partition as r02
     import test_partition as legacy
     from test_partition import require, unique, report_rows
     try:
+        excluded_shards = frozenset(excluded_shards)
+        # Additive, default-preserving PR scoping: callers that pass nothing
+        # (the push-to-main path) get byte-for-byte today's full-coverage
+        # check. Only long-* jobs may ever be excluded here - fast-*, r02-*,
+        # exercise and contracts stay required on every trigger.
+        require(excluded_shards <= set(LONG_JOBS), 'Only long-* shards may be excluded from required coverage')
         validate_dependencies(needs)
         r02.load_proof(r02_proof, fixture, binding)
         legacy.load_partition(inventory, binding['tested_sha'], binding['sdk'], binding['run_attempt'])
@@ -222,10 +226,12 @@ def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, n
         plan = suite_proof['plan']; root = Path(directory)
         legacy_core = unique([row for key in legacy.CORE_SHARDS for row in inventory['shards'][key]['rows']], 'Prepared legacy Core rows')
         require(legacy_core == unique(r02_proof['legacy_core_rows'], 'Prepared old/new Core boundary'), 'Prepared discovery disagreement')
-        r02.check_group_directories(root / 'long-groups', {'groups': plan['groups']})
+        included_groups = {group: entry for group, entry in plan['groups'].items() if entry['job'] not in excluded_shards}
+        excluded_rows = unique([row for entry in plan['groups'].values() if entry['job'] in excluded_shards for row in entry['rows']], 'Excluded long-suite rows') if excluded_shards else set()
+        r02.check_group_directories(root / 'long-groups', {'groups': included_groups})
         r02.check_group_directories(root / 'r02-groups', {'groups': r02_proof['groups']})
         executed, process_keys, report_directories = set(), set(), []
-        for groups, subdirectory, checker in ((plan['groups'], 'long-groups', lambda group, entry, path: verify_process(group, entry, path, binding, plan_digest(plan))), (r02_proof['groups'], 'r02-groups', lambda group, entry, path: r02.verify_child(group, entry, path, binding))):
+        for groups, subdirectory, checker in ((included_groups, 'long-groups', lambda group, entry, path: verify_process(group, entry, path, binding, plan_digest(plan))), (r02_proof['groups'], 'r02-groups', lambda group, entry, path: r02.verify_child(group, entry, path, binding))):
             for group, entry in groups.items():
                 child_root = root / subdirectory / group
                 actual = checker(group, entry, child_root)
@@ -236,9 +242,9 @@ def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, n
                 require(key not in process_keys, 'Duplicate attributed execution process')
                 process_keys.add(key)
         resources = {}
-        for job in sorted({entry['job'] for entry in plan['groups'].values()}): resources[job] = verify_suite_resources(plan, root, binding, job)
+        for job in sorted({entry['job'] for entry in plan['groups'].values()} - excluded_shards): resources[job] = verify_suite_resources(plan, root, binding, job)
         for job in ('r02-1', 'r02-2', 'r02-3'): resources[job] = r02.verify_job_resources(r02_proof, root, binding, job)
-        require(executed == unique(r02_proof['full_core_rows'], 'Complete prepared Core rows'), 'Incomplete full Core execution')
+        require(executed | excluded_rows == unique(r02_proof['full_core_rows'], 'Complete prepared Core rows'), 'Incomplete full Core execution')
         for shard in ('exercise', 'contracts'):
             entry = inventory['shards'][shard]; module = legacy.MODULES[shard]; child_root = root / shard
             status = json.loads((child_root / 'status.json').read_text())
@@ -248,12 +254,12 @@ def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, n
             actual = report_rows(child_root, module)
             require(actual == unique(entry['rows'], shard + ' prepared rows') and not executed & actual, 'Missing/extra/overlapping module rows')
             executed |= actual; report_directories.append(child_root)
-        expected = unique([row for entry in inventory['shards'].values() for row in entry['rows']] + [row for entry in r02_proof['groups'].values() for row in entry['rows']], 'Complete prepared solution rows')
+        expected = unique([row for entry in inventory['shards'].values() for row in entry['rows']] + [row for entry in r02_proof['groups'].values() for row in entry['rows']], 'Complete prepared solution rows') - excluded_rows
         require(executed == expected, 'Missing/extra full solution execution')
         expected_reports = {path for child_root in report_directories for path in (child_root / 'results').iterdir()}
         actual_reports = {path for path in root.rglob('*') if path.suffix.lower() == '.xml'}
         require(actual_reports == expected_reports, 'Unexpected XML outside supported process report layout')
-        return {'total_rows': len(executed), 'legacy_core_rows': len(legacy_core), 'r02_rows': sum(len(entry['rows']) for entry in r02_proof['groups'].values()), 'long_suite_processes': len(plan['groups']), 'r02_child_processes': len(r02_proof['groups']), 'legacy_module_processes': 2, 'execution_processes': len(process_keys) + 2, 'xml_reports': len(expected_reports), 'row_identity_sha256': r02.fingerprint(sorted(executed)), 'semantic_counts': r02.semantic_manifest(fixture)['counts'], 'suite_plan_sha256': plan_digest(plan), 'resource_jobs': sorted(resources)}
+        return {'total_rows': len(executed), 'legacy_core_rows': len(legacy_core), 'r02_rows': sum(len(entry['rows']) for entry in r02_proof['groups'].values()), 'long_suite_processes': len(included_groups), 'r02_child_processes': len(r02_proof['groups']), 'legacy_module_processes': 2, 'execution_processes': len(process_keys) + 2, 'xml_reports': len(expected_reports), 'row_identity_sha256': r02.fingerprint(sorted(executed)), 'semantic_counts': r02.semantic_manifest(fixture)['counts'], 'suite_plan_sha256': plan_digest(plan), 'resource_jobs': sorted(resources), 'excluded_shards': sorted(excluded_shards)}
     except (KeyError, TypeError, OSError, ET.ParseError, json.JSONDecodeError) as error:
         raise ValueError('Missing/malformed complete suite evidence: ' + str(error)) from error
 
@@ -282,7 +288,11 @@ def main():
     parser.add_argument('--directory', default='artifacts/ci')
     parser.add_argument('--inventory', default='artifacts/partition-proof/inventory.json')
     parser.add_argument('--shard', choices=JOBS)
+    parser.add_argument('--exclude-shards', default='', help='Comma-separated long-* job names to drop from required coverage (verify mode only; PR-scoped tiers).')
     args = parser.parse_args()
+    excluded_shards = frozenset(value for value in args.exclude_shards.split(',') if value)
+    require(args.mode == 'verify' or not excluded_shards, '--exclude-shards only applies to verify mode')
+    require(excluded_shards <= set(LONG_JOBS), 'Only long-* shards may be excluded from required coverage')
     require(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == args.sha, 'Checkout differs from tested event SHA')
     require(subprocess.run(['git', 'diff', '--quiet', 'HEAD'], check=False).returncode == 0, 'Dirty tracked source cannot supply exact-head evidence')
     for path in (args.fixture, args.weights): subprocess.run(['git', 'ls-files', '--error-unmatch', path], stdout=subprocess.DEVNULL, check=True)
@@ -300,7 +310,7 @@ def main():
     if args.mode == 'verify':
         deferred = json.loads((root / 'deferred.json').read_text())
         binding = r02.binding_for(args.fixture, args.sha, inventory['sdk'], args.attempt, deferred['fingerprints'], args.run_id)
-        result = verify_all(suite_proof, weights, proof, fixture, inventory, root, json.loads(os.environ['NEEDS_JSON']), binding)
+        result = verify_all(suite_proof, weights, proof, fixture, inventory, root, json.loads(os.environ['NEEDS_JSON']), binding, excluded_shards)
         (root / 'suite-verification.json').write_text(json.dumps(result, indent=2) + '\n'); print(result)
         return
     require(args.shard is not None, 'Suite required')
