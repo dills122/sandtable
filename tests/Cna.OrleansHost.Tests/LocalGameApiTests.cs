@@ -130,6 +130,7 @@ public sealed class LocalGameApiTests
         builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
         var reader = new HeldPrivateCutReader();
         builder.Services.AddSingleton<ITemporaryPrivateCutReader>(reader);
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
         await using var app = builder.Build();
         app.MapLocalGameApi();
         await app.StartAsync(TestContext.Current.CancellationToken);
@@ -168,6 +169,7 @@ public sealed class LocalGameApiTests
         builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
         builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
         builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
         builder.Host.UseOrleans(silo => silo.UseTemporaryCampaignDevelopmentSilo(FreePort()));
         await using var app = builder.Build();
         app.MapLocalGameApi();
@@ -268,6 +270,7 @@ public sealed class LocalGameApiTests
         builder.Services.AddSingleton<LocalSessionStore>();
         builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
         builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
         builder.Host.UseOrleans(silo => silo.UseTemporaryCampaignDevelopmentSilo(FreePort()));
         await using var app = builder.Build();
         app.MapLocalGameApi();
@@ -358,6 +361,7 @@ public sealed class LocalGameApiTests
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
         await using var app = builder.Build();
         app.MapLocalGameApi();
         await app.StartAsync(TestContext.Current.CancellationToken);
@@ -481,6 +485,193 @@ public sealed class LocalGameApiTests
                 (await Send(client, Bootstrap(client))).StatusCode);
         }
         finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task SubmittedOutwardActionIsAcceptedAndReceiptIsRetrievableByRequestId()
+    {
+        await using var fixture = await ActionFixture.CreateAsync();
+        try
+        {
+            var cut = await fixture.ReadAxisCutAsync();
+            var requestId = Guid.NewGuid().ToString("D");
+            var submit = await Send(fixture.Client, fixture.SubmitAction(requestId,
+                cut.PositionId, cut.Actions[0].OutwardActionId, cut.ActionSetToken));
+            Assert.Equal(HttpStatusCode.OK, submit.StatusCode);
+            var receiptJson = await submit.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            using var receipt = JsonDocument.Parse(receiptJson);
+            Assert.Equal("accepted", receipt.RootElement.GetProperty("status").GetString());
+            Assert.Equal("none", receipt.RootElement.GetProperty("reason").GetString());
+            Assert.Equal("host-rsh-001", receipt.RootElement.GetProperty("campaignId").GetString());
+            Assert.Equal(requestId, receipt.RootElement.GetProperty("requestId").GetString());
+            var audienceRevision = receipt.RootElement.GetProperty("audienceRevision").GetString();
+            Assert.False(string.IsNullOrEmpty(audienceRevision));
+
+            // The receipt is retrievable by requestId via the separate lookup route.
+            var looked = await Send(fixture.Client,
+                Get($"/api/v1/campaigns/host-rsh-001/receipts/{requestId}", fixture.AxisCookie));
+            Assert.Equal(HttpStatusCode.OK, looked.StatusCode);
+            Assert.Equal(receiptJson,
+                await looked.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        }
+        finally { await fixture.StopAsync(); }
+    }
+
+    [Fact]
+    public async Task DuplicateSubmissionReplaysRetainedReceiptWithoutDoubleApplying()
+    {
+        await using var fixture = await ActionFixture.CreateAsync();
+        try
+        {
+            var cut = await fixture.ReadAxisCutAsync();
+            var requestId = Guid.NewGuid().ToString("D");
+            var request = fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, cut.ActionSetToken);
+            var first = await Send(fixture.Client, request);
+            Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+            var firstJson = await first.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+            // A lost-reply retry resubmits the exact same canonical request. The ingress's
+            // own requestId-keyed cache must replay the retained reply rather than resolving
+            // the (now stale) action-set token against the engine a second time.
+            var duplicate = fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, cut.ActionSetToken);
+            var second = await Send(fixture.Client, duplicate);
+            Assert.Equal(HttpStatusCode.OK, second.StatusCode);
+            var secondJson = await second.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            Assert.Equal(firstJson, secondJson);
+
+            // Proof the action did not double-apply: the committed audience revision the
+            // engine actually reached only advanced once.
+            var afterCut = await fixture.ReadAxisCutAsync();
+            Assert.Equal(cut.AudienceRevision + 1, afterCut.AudienceRevision);
+        }
+        finally { await fixture.StopAsync(); }
+    }
+
+    [Fact]
+    public async Task ChangedPayloadWithSameRequestIdIsConflictNotReapplied()
+    {
+        await using var fixture = await ActionFixture.CreateAsync();
+        try
+        {
+            var cut = await fixture.ReadAxisCutAsync();
+            var requestId = Guid.NewGuid().ToString("D");
+            var first = await Send(fixture.Client, fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, cut.ActionSetToken));
+            Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+
+            // Same requestId, but the action-set token no longer matches what was actually
+            // submitted: a changed canonical payload under reuse of the same request ID.
+            var changed = await Send(fixture.Client, fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, Guid.NewGuid().ToString("D")));
+            Assert.Equal(HttpStatusCode.Conflict, changed.StatusCode);
+            Assert.Contains("conflict",
+                await changed.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        }
+        finally { await fixture.StopAsync(); }
+    }
+
+    [Fact]
+    public async Task StaleActionSetTokenIsRejectedAsAReceiptNotAnHttpError()
+    {
+        await using var fixture = await ActionFixture.CreateAsync();
+        try
+        {
+            var cut = await fixture.ReadAxisCutAsync();
+            var requestId = Guid.NewGuid().ToString("D");
+            var response = await Send(fixture.Client, fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, Guid.NewGuid().ToString("D")));
+            // The submission was well formed and admitted; the outcome is a 200 rejected
+            // receipt (matching the openapi discriminated ActionReceipt), not an HTTP error.
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var receipt = JsonDocument.Parse(
+                await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+            Assert.Equal("rejected", receipt.RootElement.GetProperty("status").GetString());
+            Assert.Equal("stale-view", receipt.RootElement.GetProperty("reason").GetString());
+
+            // Nothing was committed by the rejected attempt.
+            var afterCut = await fixture.ReadAxisCutAsync();
+            Assert.Equal(cut.AudienceRevision, afterCut.AudienceRevision);
+        }
+        finally { await fixture.StopAsync(); }
+    }
+
+    [Fact]
+    public async Task SubmitAndReceiptEndpointsRejectMissingCsrfMalformedBodyAndUnknownSession()
+    {
+        await using var fixture = await ActionFixture.CreateAsync();
+        try
+        {
+            var cut = await fixture.ReadAxisCutAsync();
+            var requestId = Guid.NewGuid().ToString("D");
+
+            // Unknown/expired session.
+            var unknownCookie = "sandtable_session=" + Guid.NewGuid();
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(fixture.Client,
+                fixture.SubmitAction(requestId, cut.PositionId, cut.Actions[0].OutwardActionId,
+                    cut.ActionSetToken, cookie: unknownCookie))).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(fixture.Client,
+                Get($"/api/v1/campaigns/host-rsh-001/receipts/{requestId}", unknownCookie)))
+                .StatusCode);
+
+            // Missing/invalid CSRF (submit only; the receipt lookup is a GET with no CSRF).
+            var noCsrf = fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, cut.ActionSetToken);
+            noCsrf.Headers.Remove("X-Sandtable-CSRF");
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(fixture.Client, noCsrf)).StatusCode);
+            var badCsrf = fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, cut.ActionSetToken, csrf: "wrong");
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(fixture.Client, badCsrf)).StatusCode);
+
+            // Malformed JSON body (wrong shape).
+            var wrongShape = new HttpRequestMessage(HttpMethod.Post,
+                "/api/v1/campaigns/host-rsh-001/actions")
+            { Content = JsonContent.Create(new { contractVersion = 1 }) };
+            wrongShape.Headers.TryAddWithoutValidation("Cookie", fixture.AxisCookie);
+            wrongShape.Headers.TryAddWithoutValidation("X-Sandtable-CSRF", fixture.AxisCsrf);
+            Assert.Equal(HttpStatusCode.BadRequest, (await Send(fixture.Client, wrongShape)).StatusCode);
+
+            var wrongTypes = new HttpRequestMessage(HttpMethod.Post,
+                "/api/v1/campaigns/host-rsh-001/actions")
+            {
+                Content = JsonContent.Create(new
+                {
+                    contractVersion = 1,
+                    requestId,
+                    sessionGeneration = fixture.AxisGeneration,
+                    expectedPositionId = cut.PositionId,
+                    actionId = cut.Actions[0].OutwardActionId,
+                    actionContractVersion = "1",
+                    actionSetToken = cut.ActionSetToken,
+                }),
+            };
+            wrongTypes.Headers.TryAddWithoutValidation("Cookie", fixture.AxisCookie);
+            wrongTypes.Headers.TryAddWithoutValidation("X-Sandtable-CSRF", fixture.AxisCsrf);
+            Assert.Equal(HttpStatusCode.BadRequest, (await Send(fixture.Client, wrongTypes)).StatusCode);
+
+            var notJson = new HttpRequestMessage(HttpMethod.Post,
+                "/api/v1/campaigns/host-rsh-001/actions")
+            { Content = new StringContent("not-json", System.Text.Encoding.UTF8, "application/json") };
+            notJson.Headers.TryAddWithoutValidation("Cookie", fixture.AxisCookie);
+            notJson.Headers.TryAddWithoutValidation("X-Sandtable-CSRF", fixture.AxisCsrf);
+            Assert.Equal(HttpStatusCode.BadRequest, (await Send(fixture.Client, notJson)).StatusCode);
+
+            // Unknown requestId never recorded: 404 on lookup.
+            Assert.Equal(HttpStatusCode.NotFound, (await Send(fixture.Client,
+                Get($"/api/v1/campaigns/host-rsh-001/receipts/{Guid.NewGuid():D}",
+                    fixture.AxisCookie))).StatusCode);
+
+            // Wrong seat looking up another seat's receipt.
+            var accepted = await Send(fixture.Client, fixture.SubmitAction(requestId, cut.PositionId,
+                cut.Actions[0].OutwardActionId, cut.ActionSetToken));
+            Assert.Equal(HttpStatusCode.OK, accepted.StatusCode);
+            var commonwealthCookie = await fixture.EnterCommonwealthSeatAsync();
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(fixture.Client,
+                Get($"/api/v1/campaigns/host-rsh-001/receipts/{requestId}", commonwealthCookie)))
+                .StatusCode);
+        }
+        finally { await fixture.StopAsync(); }
     }
 
     [Fact]
@@ -618,5 +809,127 @@ public sealed class LocalGameApiTests
         using var listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         return ((IPEndPoint)listener.LocalEndpoint).Port;
+    }
+
+    // Shared setup for the submit/receipt route tests: a running host with a real Orleans
+    // silo, the fixture campaign advanced to its first human-actionable position, and one
+    // seated axis session. Reads the private side cut directly (bypassing the fixed-copy
+    // v1-only presentation in TemporaryPlayerViewProjection) to obtain a real actionSetToken
+    // and outward action handle, the same data a working GET .../view would eventually carry.
+    private sealed class ActionFixture : IAsyncDisposable
+    {
+        private const string CampaignId = "host-rsh-001";
+        private WebApplication app = null!;
+        private ITemporaryPrivateCutReader reader = null!;
+        internal HttpClient Client { get; private set; } = null!;
+        internal string AxisCookie { get; private set; } = null!;
+        internal string AxisCsrf { get; private set; } = null!;
+        internal string AxisGeneration { get; private set; } = null!;
+
+        internal static async Task<ActionFixture> CreateAsync()
+        {
+            var fixture = new ActionFixture();
+            var builder = WebApplication.CreateBuilder();
+            builder.Environment.EnvironmentName = "Development";
+            builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+            builder.Services.AddSingleton(TimeProvider.System);
+            builder.Services.AddSingleton<LocalSessionStore>();
+            builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+            builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
+            builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
+            builder.Host.UseOrleans(silo => silo.UseTemporaryCampaignDevelopmentSilo(FreePort()));
+            fixture.app = builder.Build();
+            fixture.app.MapLocalGameApi();
+            await fixture.app.StartAsync(TestContext.Current.CancellationToken);
+
+            var access = fixture.app.Services.GetRequiredService<TemporaryCampaignAccess>();
+            var grain = fixture.app.Services.GetRequiredService<IGrainFactory>()
+                .GetGrain<ITemporaryCampaignGrain>(CampaignId);
+            Assert.Equal(TemporaryCampaignStatus.Created,
+                (await grain.CreateAsync(access.Capability, "operator-test", "request-test")).Status);
+            Assert.Equal(TemporaryCampaignStatus.NeedsHuman,
+                (await grain.AdvanceSystemAsync(access.Capability, 32)).Status);
+
+            fixture.reader = fixture.app.Services.GetRequiredService<ITemporaryPrivateCutReader>();
+            var address = fixture.app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            fixture.Client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            var store = fixture.app.Services.GetRequiredService<LocalSessionStore>();
+
+            var bootstrap = await Send(fixture.Client, Bootstrap(fixture.Client));
+            var cookie = bootstrap.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var csrf = JsonDocument.Parse(await bootstrap.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken)).RootElement
+                .GetProperty("csrfToken").GetString()!;
+            var operatorId = store.Find(cookie.Split('=')[1])!.OperatorId;
+            var grants = store.IssueGrants(operatorId, CampaignId);
+            var entered = await Send(fixture.Client, Seat(CampaignId, cookie, csrf, grants.Axis));
+            Assert.Equal(HttpStatusCode.OK, entered.StatusCode);
+            fixture.AxisCookie = entered.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var enteredJson = JsonDocument.Parse(
+                await entered.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+            fixture.AxisGeneration = enteredJson.RootElement.GetProperty("sessionGeneration")
+                .GetString()!;
+            var seatedBootstrap = await Send(fixture.Client, Bootstrap(fixture.Client, fixture.AxisCookie));
+            fixture.AxisCsrf = JsonDocument.Parse(await seatedBootstrap.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken)).RootElement
+                .GetProperty("csrfToken").GetString()!;
+            return fixture;
+        }
+
+        internal async Task<TemporaryPrivateAudienceCut> ReadAxisCutAsync()
+        {
+            var reply = await reader.ReadAsync(CampaignId, CampaignActionAudience.Axis,
+                AxisGeneration);
+            Assert.Equal(TemporaryCampaignStatus.Current, reply.Status);
+            return reply.Cut!;
+        }
+
+        internal async Task<string> EnterCommonwealthSeatAsync()
+        {
+            var store = app.Services.GetRequiredService<LocalSessionStore>();
+            var bootstrap = await Send(Client, Bootstrap(Client));
+            var cookie = bootstrap.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var csrf = JsonDocument.Parse(await bootstrap.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken)).RootElement
+                .GetProperty("csrfToken").GetString()!;
+            var operatorId = store.Find(cookie.Split('=')[1])!.OperatorId;
+            var grants = store.IssueGrants(operatorId, CampaignId);
+            var entered = await Send(Client, Seat(CampaignId, cookie, csrf, grants.Commonwealth));
+            Assert.Equal(HttpStatusCode.OK, entered.StatusCode);
+            return entered.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+        }
+
+        internal HttpRequestMessage SubmitAction(string requestId, string expectedPositionId,
+            string actionId, string actionSetToken, string? cookie = null, string? csrf = null)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post,
+                $"/api/v1/campaigns/{CampaignId}/actions")
+            {
+                Content = JsonContent.Create(new
+                {
+                    contractVersion = 1,
+                    requestId,
+                    sessionGeneration = AxisGeneration,
+                    expectedPositionId,
+                    actionId,
+                    actionContractVersion = 1,
+                    actionSetToken,
+                }),
+            };
+            request.Headers.TryAddWithoutValidation("Cookie", cookie ?? AxisCookie);
+            request.Headers.TryAddWithoutValidation("X-Sandtable-CSRF", csrf ?? AxisCsrf);
+            return request;
+        }
+
+        internal async Task StopAsync() =>
+            await app.StopAsync(TestContext.Current.CancellationToken);
+
+        public async ValueTask DisposeAsync()
+        {
+            Client?.Dispose();
+            await app.DisposeAsync();
+        }
     }
 }

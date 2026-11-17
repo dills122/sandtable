@@ -181,7 +181,123 @@ internal static class LocalGameApi
                 ? ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable")
                 : Results.Json(view);
         });
+        api.MapPost("/campaigns/{campaignId}/actions", async (HttpContext context,
+            LocalSessionStore store, TemporaryOutwardActionIngress ingress, string campaignId) =>
+        {
+            var session = store.Find(context.Request.Cookies[Cookie]);
+            if (session is null) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+            if (!ValidCsrf(context, session)) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+            string? requestId;
+            string? sessionGeneration;
+            string? expectedPositionId;
+            string? actionId;
+            int actionContractVersion;
+            string? actionSetToken;
+            try
+            {
+                using var document = await JsonDocument.ParseAsync(context.Request.Body,
+                    cancellationToken: context.RequestAborted);
+                var root = document.RootElement;
+                if (root.ValueKind != JsonValueKind.Object || root.EnumerateObject().Count() != 7
+                    || !root.TryGetProperty("contractVersion", out var version)
+                    || version.ValueKind != JsonValueKind.Number || !version.TryGetInt32(out var v)
+                    || v != 1
+                    || !root.TryGetProperty("requestId", out var request)
+                    || request.ValueKind != JsonValueKind.String
+                    || !root.TryGetProperty("sessionGeneration", out var generation)
+                    || generation.ValueKind != JsonValueKind.String
+                    || !root.TryGetProperty("expectedPositionId", out var position)
+                    || position.ValueKind != JsonValueKind.String
+                    || !root.TryGetProperty("actionId", out var action)
+                    || action.ValueKind != JsonValueKind.String
+                    || !root.TryGetProperty("actionContractVersion", out var actionVersion)
+                    || actionVersion.ValueKind != JsonValueKind.Number
+                    || !actionVersion.TryGetInt32(out actionContractVersion)
+                    || !root.TryGetProperty("actionSetToken", out var token)
+                    || token.ValueKind != JsonValueKind.String)
+                    return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
+                requestId = request.GetString();
+                sessionGeneration = generation.GetString();
+                expectedPositionId = position.GetString();
+                actionId = action.GetString();
+                actionSetToken = token.GetString();
+            }
+            catch (JsonException)
+            {
+                return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
+            }
+            // The outward request's identity/binding (canonical GUID shape, session generation
+            // match, campaign/seat match) is validated by TemporaryOutwardActionBinding inside
+            // the ingress; a failure there surfaces back as Rejected("invalid-request") below.
+            var outward = new TemporaryOutwardActionRequest(1, campaignId, requestId!,
+                sessionGeneration!, expectedPositionId!, actionId!, actionContractVersion,
+                actionSetToken!);
+            var reply = await ingress.SubmitAsync(session.Token, outward);
+            return reply.Status switch
+            {
+                TemporaryCampaignStatus.Accepted =>
+                    Results.Json(AcceptedReceipt(campaignId, requestId!, reply.AudienceRevision!)),
+                TemporaryCampaignStatus.Rejected when reply.Reason == "invalid-request" =>
+                    ApiError(StatusCodes.Status400BadRequest, "invalid-request"),
+                TemporaryCampaignStatus.Rejected when reply.Reason == "unauthorized" =>
+                    ApiError(StatusCodes.Status403Forbidden, "forbidden"),
+                // invalid-action / stale-view / unsupported-phase: the submission itself was
+                // well formed and admitted, so the outcome is a 200 rejected receipt, not an
+                // HTTP error - matching the openapi contract's discriminated ActionReceipt.
+                TemporaryCampaignStatus.Rejected =>
+                    Results.Json(RejectedReceipt(campaignId, requestId!, reply.Reason)),
+                TemporaryCampaignStatus.Conflict =>
+                    ApiError(StatusCodes.Status409Conflict, "conflict"),
+                TemporaryCampaignStatus.Missing =>
+                    ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable"),
+                _ => ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable"),
+            };
+        });
+        api.MapGet("/campaigns/{campaignId}/receipts/{requestId}", async (HttpContext context,
+            TemporaryOutwardActionIngress ingress, string campaignId, string requestId) =>
+        {
+            var token = context.Request.Cookies[Cookie];
+            if (token is null) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+            var reply = await ingress.FindRequestAsync(token, campaignId, requestId);
+            return reply.Status switch
+            {
+                TemporaryCampaignStatus.Accepted =>
+                    Results.Json(AcceptedReceipt(campaignId, requestId, reply.AudienceRevision!)),
+                TemporaryCampaignStatus.Rejected when reply.Reason == "invalid-request" =>
+                    ApiError(StatusCodes.Status400BadRequest, "invalid-request"),
+                TemporaryCampaignStatus.Rejected when reply.Reason == "unauthorized" =>
+                    ApiError(StatusCodes.Status403Forbidden, "forbidden"),
+                TemporaryCampaignStatus.Rejected =>
+                    Results.Json(RejectedReceipt(campaignId, requestId, reply.Reason)),
+                TemporaryCampaignStatus.Conflict =>
+                    ApiError(StatusCodes.Status403Forbidden, "forbidden"),
+                TemporaryCampaignStatus.Missing =>
+                    ApiError(StatusCodes.Status404NotFound, "not-found"),
+                _ => ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable"),
+            };
+        });
     }
+
+    private static object AcceptedReceipt(string campaignId, string requestId,
+        string audienceRevision) => new
+        {
+            contractVersion = 1,
+            campaignId,
+            requestId,
+            status = "accepted",
+            reason = "none",
+            audienceRevision,
+        };
+
+    private static object RejectedReceipt(string campaignId, string requestId,
+        string reason) => new
+        {
+            contractVersion = 1,
+            campaignId,
+            requestId,
+            status = "rejected",
+            reason,
+        };
 
     private static bool IsLoopback(HttpContext context)
     {
