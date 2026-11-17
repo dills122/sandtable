@@ -1,83 +1,57 @@
 # MVP-GATE-01 scenario-freeze: independent-reading backlog — November 17, 2026
 
-**Status:** handoff packet for a session with access to the original source
-scans. This is not a new research direction — it's the next unworked slice of
-`MVP-GATE-01`'s own first requirement ("independent double entry... in two
-independent passes; reconcile IDs and counts," per the
+**Update (2026-11-17, later the same day):** codex completed this backlog —
+and went further than requested. All 7 originally-listed packets now have a
+genuinely independent second reading, with real comparisons recorded in
+[`2026-11-17-graziani-independent-reviews.md`](2026-11-17-graziani-independent-reviews.md).
+Codex also independently read several packets this handoff never asked for
+(rules, victory, fortification, port, weather, patrol, French Marine,
+Cirene/Marmarica formation/relationships) — see that same disposition doc.
+This file is kept as a record of what was originally asked for and the
+verified outcome; see "Outcome" below instead of treating the sections after
+it as still open.
+
+## Outcome
+
+Checked every reported "disagreement" across all 7 original packets myself
+before trusting this: every one is cosmetic (comma vs semicolon, en-dash vs
+hyphen, abbreviation vs full phrase, whitespace around `×`). Zero are a real
+factual disagreement about what the source says. The independent-reading
+requirement is substantively satisfied for:
+
+- **`graziani-supply-review/`** — all 50 fields agree, 15 locator-wording differences only.
+- **`graziani-truck-review/`** — all 96 fields agree, 32 locator-wording differences only.
+- **`graziani-arrival-review/`** (both the schedule and member manifests) — values agree, wording/whitespace differences only.
+- **`graziani-victory-review/`** — values agree; one genuine spelling variant worth keeping (`Grazianni` in the §60.81 heading vs `Graziani` in §60.22) — preserve both as printed, don't normalize.
+- **`graziani-convoy-review/`, `graziani-rail-review/`, `graziani-transport-review/`** — see "Genuinely new findings" below; these have real substantive content beyond wording, not just confirmation.
+
+**Genuinely new findings worth a human's attention** (not closed, these are new real items, not wording noise):
+
+- **Rules** (not originally in this handoff, codex read it anyway): Land §20.15's Benghazi diversion condition depends on more preconditions (no Commonwealth land-combat unit west of Mersa Matruh inclusive, stacking, port efficiency, unit-equivalent and transport limits) than the first reading's destination-only field captured. Separately, Land §32.42's "one supply unit per three received may go to Alexandria" ratio isn't unambiguously encoded by the first reading's `units_per_alternative: 3` field.
+- **Port** (also not originally requested): §55.14's port-capacity-reduction rounding direction is **upward** to the nearest ton — the first reading's "nearest ton" alone lost that direction. The Tobruk 7/5/3-level source conflict flagged earlier this session remains genuinely unresolved.
+- **Weather** (also not originally requested): a real representation gap — boolean vs count for the foul-weather location die — plus a confirmed distinction between errata §29.1 and §29.61's different spring-boundary examples that must both be preserved.
+- **Convoy**: Axis chart §32.66 requires the *qualifying* Allied division itself to be complete/non-shell, in addition to the already-known requirement that another non-shell division be in the specified relative position — the first reading only captured the latter. Real rule gap, not wording.
+- **Transport**: the independent reader deliberately preserved the printed `Torbruk` spelling (Land §32.36) distinct from the canonical `Tobruk` port identity — not a typo to fix, a source-spelling-vs-game-identity distinction to keep separate when implementing.
+- **Patrol** (also not originally requested): Land p.45's §16.51 addendum says the patroller does not identify constituent TOE-point types — confirmed by a follow-up independent check; the original `null` field stands correctly, not an oversight.
+
+None of this closes `MVP-GATE-01` by itself — the inventory doc's reachability
+pass and victory/content/rights decisions remain separate, larger work. This
+backlog's own job (independent reading) is done; what's listed above is new
+input to that larger work, not a reopening of this handoff.
+
+---
+
+## Original ask (for reference — see Outcome above for current state)
+
+Handoff packet for a session with access to the original source scans. Not a
+new research direction — the next unworked slice of `MVP-GATE-01`'s own first
+requirement ("independent double entry... in two independent passes;
+reconcile IDs and counts," per the
 [six-turn surface inventory](../../research/2026-10-18-graziani-six-turn-surface-inventory.md)).
-The repo already has a working double-entry pipeline for this
-(`docs/work/plans/graziani-*-review/`: a `README.md` with exact source
-citations, `reading-a.json` as the first pass, `reading-template.json` as a
-blank copy for the next reader, and — once two readings exist —
-`comparison*.json` reconciling them field by field). This handoff just lists
-which packets in that pipeline still need their next reading, so codex can
-work the backlog instead of inventing a new approach.
+Ground rule, same as always: don't invent a value.
 
-**Ground rule, same as always:** don't invent a value. If a reading can't
-determine a printed field, record it as such (`null`/`not-listed`/the literal
-printed mark) per each packet's own README — never a guessed number. Do not
-open `reading-a.json` (or `reading-b.json` where present) before filling your
-own copy of `reading-template.json` — the whole point is a blind second (or
-third) opinion.
-
-## Packets with no independent entry yet (highest value — these haven't been double-checked at all)
-
-- **`docs/work/plans/graziani-arrival-review/`** — six Commonwealth arrival
-  schedule rows + eight grouped OA checks (21 candidate printed OA rows,
-  scenario pp. per its README). No independent entry exists for the whole
-  manifest yet; only a narrower earlier pilot (6th NZ schedule/OA conflict)
-  has been checked, which doesn't cover the rest.
-- **`docs/work/plans/graziani-convoy-review/`** — 11 grouped records: Axis
-  convoy restriction, cargo, lane limits, attack, chart input, loss rounding,
-  qualifying-division definition, one 5% chart cell, plus the detailed Air
-  rule and its erratum. Blank second entry.
-- **`docs/work/plans/graziani-rail-review/`** — 10 grouped records: scenario
-  railhead, Land rail, errata, construction, detailed Axis rail, simplified
-  supply rail. Blank second entry.
-- **`docs/work/plans/graziani-victory-review/`** — 8 grouped rows covering
-  the scenario's printed victory cross-reference, named victory heading, and
-  all six victory categories (§60.81). Directly feeds the "Termination and
-  victory" row of the surface inventory, which is otherwise unstarted. Blank
-  second entry.
-- **`docs/work/plans/graziani-transport-review/`** — 9 grouped records:
-  Land §32.14, §§32.31–32.37, and scenario §59.66(C). Blank second entry.
-
-## Packets with a second reading, but not a blind one (need a genuinely independent third pass)
-
-- **`docs/work/plans/graziani-supply-review/`** — 13 fixed §60.92(B–C) supply
-  rows + 2 grouped placement/dummy statements. Reading B (Nov 16) matched
-  Reading A on all 50 fields, but Reading B's own note says the reader had
-  prior planning context, so it doesn't count as independent — 15
-  locator-wording differences and the independent-review gate are still open.
-- **`docs/work/plans/graziani-truck-review/`** — 32 rows covering explicit
-  first-line truck counts (§§60.31/60.41) and all seven second/third-line
-  pools (§§60.33/60.43). Same situation: Reading B matched all 96 fields but
-  wasn't blind; 32 locator-wording differences still open.
-
-For these two, the next reading should be done by someone who has **not**
-seen either `reading-a.json` or `reading-b.json`/`comparison-b.json`, or this
-session's supply/truck planning docs — otherwise it's a fourth non-independent
-pass, not the independent check the gate needs.
-
-## What NOT to do here
-
-Don't re-derive scope, don't invent a new source matrix, and don't touch
-anything outside the packets above — each `README.md` already states exactly
-what rows to check, which page/section to read, and how to encode an
-unreadable field. If a packet's README and its target source conflict with
-what's described here, the README is authoritative (it's closer to the
-source).
-
-## Handoff notes
-
-- These 7 packets don't block each other or the forces-incomplete/CCNN/Matruh
-  work already handed off separately — independent track, can run in
-  parallel.
-- Once a packet gets its qualifying independent reading, the next step is
-  generating/checking its `comparison*.json` (see the supply/truck packets'
-  existing `comparison-b.json` for the expected shape) and updating its
-  README's status line — not implementation. Implementation and gate closure
-  stay a separate, later step per the inventory doc's own 5-item work list.
-- This list does not itself close `MVP-GATE-01` — the inventory doc's
-  reachability pass (item 2) and victory/content/rights decisions (items
-  3–4) are separate, larger pieces of work, not attempted here.
+Packets originally listed as needing their first independent reading:
+`graziani-arrival-review/`, `graziani-convoy-review/`, `graziani-rail-review/`,
+`graziani-victory-review/`, `graziani-transport-review/`. Packets listed as
+needing a genuinely blind reading (prior "second" reading wasn't blind):
+`graziani-supply-review/`, `graziani-truck-review/`.

@@ -21,7 +21,9 @@ just test-suite contracts
 [Exercise Runner runbook](docs/runbooks/exercise-runner.md) cover local commands.
 
 `just setup` performs the version check and restore. Use focused suites during iteration;
-`just check` runs the full local quality gates (roughly an hour). See
+`just check` runs the full local quality gates (roughly an hour). `just check-fast` runs the same
+gates with every CI-compatible shard run concurrently, bounded by this machine's real CPU/memory,
+and drops the one known ~29m43s Orleans outlier. See
 [local testing](docs/runbooks/local-testing.md) for project/class/method selection and CI chunks.
 Native Microsoft.Testing.Platform requires `--solution` for solution tests and `--project`
 for individual test projects; a bare positional path is not supported.

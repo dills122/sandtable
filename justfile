@@ -29,6 +29,11 @@ format-check: restore
 
 check: format-check build boundary-check test
 
+# Same gates as `check`, but every CI-compatible shard runs concurrently
+# (bounded by real local CPU/memory), Orleans outlier excluded. See docs/runbooks/local-testing.md.
+check-fast: format-check build boundary-check
+    python3 .github/scripts/local_parallel_check.py
+
 # Focused local iteration (Release, build selected projects before testing).
 test-suites:
     python3 .github/scripts/local_tests.py list

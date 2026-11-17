@@ -10630,19 +10630,19 @@ public sealed class GrazianiSourceAuthorityTests
             Assert.Equal(CampaignContactObserverKind.IndependentCounter, value.ObserverKind);
             Assert.Equal(value.RepresentationId, value.ObserverFormationId);
         });
-        // Fix 1 alone does not clear source-initial-contacts-unavailable: the
-        // Commonwealth-side Derive now fails later, for a different and genuine
-        // reason (confirmed the same way) - "Source map adjacency is not
-        // established.", the Fix 2 gap below, which now also blocks the
-        // Commonwealth side (these counters, now identified, must resolve
-        // adjacency to the axis Soluch/Mechili counters below) exactly as it
-        // already blocked the Axis side before Fix 1. See the Fix 2 research-
-        // blocked note a few lines down for why that gap is not closed here.
+        // Fix 1 used to not be enough on its own to clear
+        // source-initial-contacts-unavailable: the Commonwealth-side Derive
+        // used to fail later, for a different and genuine reason - "Source
+        // map adjacency is not established." (Fix 2's gap: no geometry rule
+        // connected the rear-area axis anchors Soluch a4130/Mechili b4921 to
+        // the forward commonwealth hexes this chain admits). Fix 2 (this PR)
+        // closes that gap with a new bound function,
+        // CampaignSourceInitialContacts.TrySoluchMechiliToFtMaddalenaBound -
+        // see its own doc comment for the exact chart/map citations - so
+        // both sides' Derive now succeed outright.
         var diagId = combinedWorld.Source.Request.CampaignId;
-        Assert.Equal("Source map adjacency is not established.", Assert.Throws<InvalidOperationException>(() =>
-            CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Axis))).Message);
-        Assert.Equal("Source map adjacency is not established.", Assert.Throws<InvalidOperationException>(() =>
-            CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Commonwealth))).Message);
+        CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Axis));
+        CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Commonwealth));
         // source-grouped-movement-domain-incomplete root cause, traced (via a
         // temporary diagnostic walking CampaignSourceGroupedZoc.EvaluateFormationSource/
         // EvaluateDetachedSource per group/detached member per side, then removed):
@@ -10659,39 +10659,40 @@ public sealed class GrazianiSourceAuthorityTests
         // member component types. None of these three gaps are closeable without
         // inventing an uncited rating value, which this project's conventions
         // forbid; each needs its own researched chart citation, out of scope here.
-        // source-initial-contacts-unavailable is a genuine, separate gap (see PR
-        // description / final report). It has two independent causes, confirmed
-        // via CampaignSourceInitialContacts.Derive above. Fix 1 (this PR):
-        // CampaignSourcePolishArrivalContacts.EffectiveCounters used to leave the
-        // cw-attached-artillery/cw-priority/independent-setup commonwealth
-        // counters asserted above with a null ObserverFormationId; that
-        // classification gap is now closed (proven above). Fix 2 (NOT closed
-        // here, research-blocked): CampaignSourceInitialContacts.TryAdjacent has
-        // no geometry rule connecting rear-area axis locations (Soluch a4130,
-        // Mechili b4921) to the forward commonwealth positions this chain admits
-        // (c3520, c3020, c3721, c3922, c3926, c4131, c3320). None of the Air/
-        // Logistics §37.42 chart anchors (CampaignSourceSeamCandidate's
-        // TryPublishedDistance table - a4130 and b4921 are themselves two of its
-        // 20 named anchors) has any further cited in-section path reaching that
-        // hex cluster (TobrukPathSources/CairoPathUpper/MatruhPathUpper/
-        // C3320Neighbors/C3617Neighbors cover other, disjoint areas of Map C),
-        // and Cna1979HistoricalMap's edge graph is explicitly same-sheet-only, so
-        // no cited path exists either. Closing this needs a new, real chart or
-        // map citation for that specific anchor-to-hex distance, not a missing
-        // action call or an invented value; not attempted here per this task's
-        // remit. Because Fix 1 now gives these Commonwealth counters a real
-        // observer identity, Fix 2's gap blocks CanProject on BOTH sides (it
-        // already blocked Axis before Fix 1); the net blocker list is unchanged.
+        // source-initial-contacts-unavailable was a genuine gap with two
+        // independent causes (confirmed via CampaignSourceInitialContacts.Derive
+        // above). Fix 1 (PR #371): CampaignSourcePolishArrivalContacts.EffectiveCounters
+        // used to leave the cw-attached-artillery/cw-priority/independent-setup
+        // commonwealth counters asserted above with a null ObserverFormationId;
+        // that classification gap closed there. Fix 2 (this PR): CampaignSourceInitialContacts.
+        // TryAdjacent had no geometry rule connecting rear-area axis locations
+        // (Soluch a4130, Mechili b4921) to the forward commonwealth positions
+        // this chain admits (c3520, c3020, c3721, c3922, c3926, c4131, c3320).
+        // Task F's research (docs/work/plans/2026-11-17-graziani-distance-transcription.md,
+        // graziani-distance-independent.json) independently re-transcribed the
+        // full §37.42 chart with zero disagreements against the prior reading,
+        // confirming Soluch/Mechili's published distance to Ft. Maddalena C3019
+        // (also a named chart anchor): 61 and 41 hexes. The new
+        // TrySoluchMechiliToFtMaddalenaBound combines that published distance
+        // with the real same-sheet shortest-path distance from C3019 to each
+        // forward hex, computed directly from Cna1979HistoricalMap's own
+        // transcribed hexes/hexsides (not a hand count or an invented figure):
+        // c3520=5, c3020=1, c3721=7, c3922=9, c3926=11, c4131=17, c3320=3 - every
+        // remainder exceeds the adjacency threshold of 1. (Soluch, Bardia c4321)
+        // carries the seam candidate's own printed/candidate conflict flag, so
+        // Bardia is deliberately not used as an anchor for Soluch. Both gaps are
+        // now closed; source-initial-contacts-unavailable clears entirely.
 
         // Empirically observed (via a temporary Assert.Fail("DIAG:" + string.Join(",",
         // combinedWorld.ReadinessBlockers())) diagnostic, per this project's own
         // documented technique, run through `just test-method core
         // '*IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers*'`
-        // and then removed) to now be exactly these 5, three fewer than the 8 this
-        // fixture originally landed with (cw-frontline-initial-loads-unresolved and
-        // both giarabub-motor-mg-* blockers cleared - see below):
+        // and then removed) to now be exactly these 4, four fewer than the 8 this
+        // fixture originally landed with (cw-frontline-initial-loads-unresolved,
+        // both giarabub-motor-mg-* blockers, and source-initial-contacts-unavailable
+        // itself all cleared - see below):
         //   battlefield-incomplete, control-incomplete, ccnn-characteristics-incomplete,
-        //   source-initial-contacts-unavailable, source-grouped-movement-domain-incomplete
+        //   source-grouped-movement-domain-incomplete
         // 6 of the original 8 pre-this-PR blockers cleared: owner-setup-finalization-incomplete,
         // seventh-armored-shell-stack-correction-required, central-india-horse-
         // training-state-unresolved (each already individually proven; this is the
@@ -10733,17 +10734,9 @@ public sealed class GrazianiSourceAuthorityTests
         // (CampaignSourceCwFreeGunsWorld.AcceptMotorMachineGunRuling) does exactly
         // that, and both blockers clear together once it is submitted, since they
         // are two facets of the same underlying no-scenario-pool fact.
-        // source-initial-contacts-unavailable remains in the list, but for a
-        // different reason than it would have before this PR - see the comment
-        // above combinedWorld for the full Fix 1 / Fix 2 breakdown. Fix 1's
-        // classification gap (CampaignSourcePolishArrivalContacts.EffectiveCounters
-        // had no "independent" classification case for several of this chain's
-        // admitted/pre-existing commonwealth counters: cw-attached-artillery.*,
-        // independent-setup.*, cw-priority.*) is closed. Fix 2's map-adjacency gap
-        // (CampaignSourceInitialContacts.TryAdjacent has no geometry rule
-        // connecting rear-area axis locations Soluch a4130/Mechili b4921 to the
-        // forward commonwealth positions this chain admits) is research-blocked,
-        // not a missing action call - see Task F in the research handoff doc.
+        // source-initial-contacts-unavailable now clears entirely - see the
+        // comment above combinedWorld for the full Fix 1 (PR #371) / Fix 2
+        // (this PR) breakdown: both of its independent causes are closed.
         Assert.DoesNotContain("owner-setup-finalization-incomplete", finalBlockers);
         Assert.DoesNotContain("seventh-armored-shell-stack-correction-required", finalBlockers);
         Assert.DoesNotContain("central-india-horse-training-state-unresolved", finalBlockers);
@@ -10751,12 +10744,12 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.DoesNotContain("cw-frontline-initial-loads-unresolved", finalBlockers);
         Assert.DoesNotContain("giarabub-motor-mg-historical-motorization-priority-unresolved", finalBlockers);
         Assert.DoesNotContain("giarabub-motor-mg-capability-and-mobility-unresolved", finalBlockers);
+        Assert.DoesNotContain("source-initial-contacts-unavailable", finalBlockers);
         Assert.Contains("ccnn-characteristics-incomplete", finalBlockers);
         Assert.Contains("battlefield-incomplete", finalBlockers);
         Assert.Contains("control-incomplete", finalBlockers);
         Assert.Contains("source-grouped-movement-domain-incomplete", finalBlockers);
-        Assert.Contains("source-initial-contacts-unavailable", finalBlockers);
-        Assert.Equal(5, finalBlockers.Count);
+        Assert.Equal(4, finalBlockers.Count);
     }
 
     // Proves CampaignSourceGroupedZoc.DescribeUnresolvedSources is actually

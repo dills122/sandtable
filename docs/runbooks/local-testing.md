@@ -3,8 +3,30 @@
 Use the smallest relevant tests during development, then affected project suites
 and boundary checks before review. CI retains exhaustive row coverage; local
 selection is not a claim that every affected test was discovered automatically.
-`just check` remains the explicit full local .NET gate, roughly an hour on the
-current development machine. Do not rerun it after every bounded edit.
+
+`just check` remains the explicit full local .NET gate exactly as it always
+has: format, build, boundary tests, then `dotnet test --solution` as one flat
+process, roughly an hour on the current development machine (most of that is
+one ~29m43s Orleans outlier, see below). It is unchanged by `check-fast`
+below; existing references to it (README, CONTRIBUTING, AGENTS.md, prior
+research evidence) still mean exactly what they said.
+
+`just check-fast` runs the same prerequisite gates (format, build, boundary),
+then runs every CI-compatible shard - the same `fast-*`/`long-*`/`r02-*` Core
+chunks, plus `exercise`, `contracts` and the Orleans host suite - as
+concurrent local processes instead of one flat `dotnet test --solution`
+process, bounded by this machine's real CPU count and available memory (see
+`.github/scripts/local_parallel_check.py`; it adapts the same resource-guard
+pattern `.github/scripts/ci_group_runner.py` uses for CI, scaled to this
+machine rather than a CI-runner-sized assumption). It also drops the one
+~29m43s Orleans outlier
+(`Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame`),
+the same test and the same reasoning `ci-nightly-heavy.yml`'s `orleans` job
+already excludes it for. `check-fast` still runs every other row `just check`
+runs; it is a faster way to get the same coverage, not a smaller-coverage
+substitute - use `just check` instead when you specifically want that one
+outlier covered too, or a single flat process for simpler reproduction. Do
+not rerun either after every bounded edit.
 
 ## Commands
 
@@ -19,6 +41,8 @@ just test-method host '*InvalidForceProposalAtDeadlineCannotCancelCurrentRound*'
 just test-shard fast-01
 just test-shard long-03
 just test-shard r02-1
+just check-fast
+just check
 ```
 
 Patterns must be quoted against shell expansion. Names are xUnit class/method
@@ -70,10 +94,21 @@ selection for newly added tests until the reviewed CI manifest is updated.
 
 Shard preparation builds the solution and discovery helper. `--dry-run` for a
 shard still builds/discovers to print its actual commands; it never runs tests.
-Local groups execute sequentially to keep laptop CPU/memory bounded. CI runs
-multiple lanes across separate machines, so CI wall times are not laptop
-estimates, and chunking does not reduce total work when all chunks are selected.
-Do not launch many shard processes against the same build output concurrently.
+`just test-shard <shard>` runs one chunk sequentially, on demand, while you are
+iterating on a specific area. CI runs multiple lanes across separate machines,
+so CI wall times are not laptop estimates.
+
+`just check-fast` is the one exception to "do not launch many shard processes
+concurrently": it is exactly that, done deliberately and safely.
+`.github/scripts/local_parallel_check.py` plans every shard listed above as
+its own job, takes a real resource snapshot of this machine the same way
+`ci_group_runner.py` does for CI, and runs as many jobs at once as real spare
+CPU and memory support (one CPU and a fixed memory reserve are always held
+back for the host; each job is budgeted against the rest) - never a
+CI-runner-sized constant. It prints the snapshot and the chosen concurrency
+before starting, and `--dry-run` prints every planned job and command without
+running anything. Do not separately launch multiple `test-shard` invocations
+by hand against the same build output; use `check-fast` for that instead.
 
 ## Graziani source setup soak
 

@@ -735,3 +735,42 @@ Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --con
 `IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers`
 Theory (unmodified) were all re-run locally against the recomputed hashes and
 pass. This is scheduling evidence only; hosted CI remains the acceptance gate.
+
+## Task F: Soluch/Mechili-to-forward-hex adjacency bound (2026-11-17)
+
+Closes the axis-side geometry gap in `source-initial-contacts-unavailable`
+(Task F in `docs/work/plans/2026-11-17-graziani-source-material-research-tasks.md`):
+a new `CampaignSourceInitialContacts.TrySoluchMechiliToFtMaddalenaBound`
+combines the independently re-transcribed §37.42 chart's published
+Soluch/Mechili-to-Ft.Maddalena distance with the real same-sheet graph
+distance from `Cna1979HistoricalMap`'s own transcribed hexes/hexsides. 14
+new `Cna1979HistoricalMapTests.SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex`
+Theory rows (one per axis-anchor/forward-hex pair) and one new
+`SoluchToBardiaPublishedDistanceConflictIsStillPresent` row are added;
+all 15 are new row identities, no existing row hash changed. Existing
+`GrazianiSourceAuthorityTests.IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers`
+and `GrazianiRetainedFormationTests.CairoBrigadeUsesOneCounterAndRetainsOriginalWorld`
+keep their existing row identities (only their bodies/assertions changed to
+match the now-real result), so neither needed a new weight entry; both still
+measured well within their historical range in the same local run. This is a
+local scheduling observation, not hosted CI acceptance.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c3520")` | `8f6133beae6e` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c3020")` | `2c3a845ab756` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c3721")` | `f2be3a7162ee` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c3922")` | `b68e5cf01b80` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c3926")` | `ba489bc49614` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c4131")` | `b36cdfeca896` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "a4130", forwardLocation: "c3320")` | `056f0722646c` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c3520")` | `9b1bf9c52066` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c3020")` | `0d6179a3d853` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c3721")` | `4dc3b9de426e` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c3922")` | `a8e68fc971b0` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c3926")` | `4da599d293e7` | 9 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c4131")` | `895ec7b19241` | 1 |
+| `SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(axisLocation: "b4921", forwardLocation: "c3320")` | `3723f4000900` | 1 |
+| `SoluchToBardiaPublishedDistanceConflictIsStillPresent` | `afd05140cc91` | 1 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --report-xunit-xml --results-directory /private/tmp/claude-501/-Users-dsteele--claude-spares-spare-AJorff/f16846dd-f774-47ef-a30e-399495b4cd3b/scratchpad/hmtest-timing`. Result: 30 passed, 0 failed, 0 skipped (the class's existing rows plus these 15 new ones). All 15 new row hashes are recorded in `provisional_rows` pending hosted calibration; the existing class entry (`parts: 1`) is unchanged.

@@ -72,6 +72,7 @@ Do not introduce a microservice where a domain module is sufficient.
 - Format check: `dotnet format Sandtable.slnx --verify-no-changes --no-restore`
 - Run locally: `dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj`
 - Full local gate: `just check`
+- Same gate, concurrent shards and the known Orleans outlier excluded: `just check-fast`
 - Focused local suites: `just test-suite host` (also `core`, `runner`, `contracts`, `boundary`)
 - Class/method scope: `just test-class core '*CampaignContact*'`, `just test-method host '*ForceRound*'`
 - CI-compatible local chunk: `just test-shard fast-01`; list choices with `just test-suites`
