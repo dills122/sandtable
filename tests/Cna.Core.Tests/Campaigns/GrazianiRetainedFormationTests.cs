@@ -172,7 +172,14 @@ public sealed class GrazianiRetainedFormationTests
         Assert.False(crossMapAdjacent);
         Assert.False(CampaignSourceInitialContacts.TryAdjacent("c5915", "d2615", out _));
         Assert.False(CampaignSourceInitialContacts.TryAdjacent("e1829", "d5030", out _));
-        Assert.False(CampaignSourceInitialContacts.TryAdjacent("c3617", "b4921", out _));
+        // Previously unresolved (Task F's gap); now proven separated by
+        // CampaignSourceInitialContacts.TrySoluchMechiliToFtMaddalenaBound -
+        // Mechili B4921's published §37.42 distance to Ft. Maddalena C3019
+        // (41 hexes) exceeds C3617's real same-sheet graph distance from
+        // C3019 (computed from Cna1979HistoricalMap's own transcribed hexes/
+        // hexsides) by far more than the adjacency threshold of 1.
+        Assert.True(CampaignSourceInitialContacts.TryAdjacent("c3617", "b4921", out var c3617Mechili));
+        Assert.False(c3617Mechili);
         Assert.DoesNotContain("e1430", Cna1979GrazianiSourceFacts.CairoEntryArea.LocationIds);
         Assert.Equal(CampaignSourceSeamCertainty.ProvisionalNear,
             CampaignSourceSeamCandidate.Classify("b3939", "c3906").Certainty);

@@ -198,4 +198,53 @@ public sealed class Cna1979HistoricalMapTests
                 }
         }
     }
+
+    // Task F (axis-adjacency-distance): proves CampaignSourceInitialContacts.
+    // TryAdjacent now resolves (to not-adjacent) for the rear-area axis
+    // anchors Soluch A4130 and Mechili B4921 against all 7 forward
+    // commonwealth hexes this session's admitted content occupies, via the
+    // new TrySoluchMechiliToFtMaddalenaBound: Air/Logistics 37.42's published
+    // Soluch/Mechili-to-Ft.Maddalena (C3019) distance (61 / 41 hexes), minus
+    // the real same-sheet graph distance from C3019 to each forward hex
+    // (computed from Cna1979HistoricalMap's own transcribed hexes/hexsides,
+    // confirmed via a temporary diagnostic BFS, now removed, per this
+    // project's documented technique): c3520=5, c3020=1, c3721=7, c3922=9,
+    // c3926=11, c4131=17, c3320=3. Every remainder exceeds the adjacency
+    // threshold of 1.
+    [Theory]
+    [InlineData("a4130", "c3520")]
+    [InlineData("a4130", "c3020")]
+    [InlineData("a4130", "c3721")]
+    [InlineData("a4130", "c3922")]
+    [InlineData("a4130", "c3926")]
+    [InlineData("a4130", "c4131")]
+    [InlineData("a4130", "c3320")]
+    [InlineData("b4921", "c3520")]
+    [InlineData("b4921", "c3020")]
+    [InlineData("b4921", "c3721")]
+    [InlineData("b4921", "c3922")]
+    [InlineData("b4921", "c3926")]
+    [InlineData("b4921", "c4131")]
+    [InlineData("b4921", "c3320")]
+    public void SoluchAndMechiliAreProvenNotAdjacentToEveryAdmittedForwardHex(string axisLocation, string forwardLocation)
+    {
+        Assert.True(CampaignSourceInitialContacts.TryAdjacent(axisLocation, forwardLocation, out var adjacent));
+        Assert.False(adjacent);
+        Assert.True(CampaignSourceInitialContacts.TryAdjacent(forwardLocation, axisLocation, out var reverseAdjacent));
+        Assert.False(reverseAdjacent);
+    }
+
+    // The published-distance conflict flag on (a4130, c4321) is a real,
+    // separate gap this fix deliberately routes around (see
+    // TrySoluchMechiliToFtMaddalenaBound's comment) rather than silently
+    // relying on a disputed figure. This pins that the conflict is still
+    // present, so a future chart correction is noticed rather than assumed.
+    [Fact]
+    public void SoluchToBardiaPublishedDistanceConflictIsStillPresent()
+    {
+        Assert.True(CampaignSourceSeamCandidate.Classify("a4130", "c4321").PublishedDistanceConflict);
+        Assert.False(CampaignSourceSeamCandidate.Classify("b4921", "c4321").PublishedDistanceConflict);
+        Assert.False(CampaignSourceSeamCandidate.Classify("a4130", "c3019").PublishedDistanceConflict);
+        Assert.False(CampaignSourceSeamCandidate.Classify("b4921", "c3019").PublishedDistanceConflict);
+    }
 }
