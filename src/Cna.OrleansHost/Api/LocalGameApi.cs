@@ -9,9 +9,23 @@ internal static class LocalGameApi
     private const string Cookie = "sandtable_session";
     private const string CsrfHeader = "X-Sandtable-CSRF";
 
+    /// <summary>
+    /// Explicit deployment-posture config key. "Is the local game API enabled" and
+    /// "is it safe to expose this surface at all" are deliberately two independent
+    /// checks (see issue #366): <see cref="Microsoft.AspNetCore.Hosting.IHostEnvironment.IsDevelopment"/>
+    /// is ASP.NET's own environment flag and is easy to leave on by accident in a real
+    /// deployment, so it must not be the sole thing standing between this surface and a
+    /// real network. This key does not inherit from ASPNETCORE_ENVIRONMENT in any way -
+    /// it defaults to disabled and must be explicitly set to true (e.g. in
+    /// appsettings.Development.json) for a deployment the operator has actually
+    /// confirmed is a trusted local/loopback one.
+    /// </summary>
+    internal const string TrustedLocalDeploymentConfigKey = "LocalGameApi:TrustedLocalDeployment";
+
     internal static void MapLocalGameApi(this WebApplication app)
     {
         if (!app.Environment.IsDevelopment()) return;
+        if (!app.Configuration.GetValue<bool>(TrustedLocalDeploymentConfigKey)) return;
         app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/v1"), branch =>
             branch.Use(async (context, next) =>
             {
