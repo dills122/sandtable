@@ -48,7 +48,7 @@ one retained genuine history is exercised, broader gate still open.
 |---|---|---|---|
 | `MVP-GATE-01` scenario freeze | Exact six-turn/18-stage rules/content/source matrix, explicit unsupported-item count, accepted task graph | **Open** | Oct 18 inventory still stands as "initial inventory, reconciliation open." This session found real progress hiding in it: Cirene, Marmarica, and Catanzaro OA facts are already transcribed in `Cna1979GrazianiSourceFacts.cs`; Sirte is confirmed **out of scope** (arrives turn 10, beyond the 6-turn scenario) — not a gap. 7 double-entry review packets (`docs/work/plans/graziani-*-review/`) still need their next/first-blind reading; handed to codex this session ([handoff doc](2026-11-17-graziani-mvp-gate-01-research-handoff.md)). The 18-stage reachability pass itself hasn't started. |
 | `MVP-GATE-02` content admission | Versioned, stable-ID content with no dangling references, provenance/rights accepted | **Partial** | Large jump this session: **57 elements admitted** across PRs [#352](https://github.com/dills122/sandtable/pull/352) (Giarabub, 13), [#355](https://github.com/dills122/sandtable/pull/355) (Tobruk/Bardia, 28), [#359](https://github.com/dills122/sandtable/pull/359) (Category B + Aresca, 14), each as standalone proven fixtures. 3 genuine fact gaps remain, handed to codex: CCNN 1st-HQ weapon ID, Matruh's 5 units' real combat ratings, Essex/Durham assignment-chronology ruling ([handoff doc](2026-11-17-graziani-source-material-research-tasks.md)). Provenance/rights posture for the source PDFs still undecided. |
-| `MVP-GATE-03` six-turn authority | Every reachable mechanic/victory rule executes deterministically, zero silent approximation | **Partial** | This is the engine's `ReadinessBlockers()` gate. Admission work (above) is all proven in isolated fixtures, not yet wired into one continuous setup path — [PR #361](https://github.com/dills122/sandtable/pull/361) (in flight) does that wiring and cleared 4 of the original 8 blockers, but surfaced **4 different new ones**: a real missing-mechanism gap (Giarabub motor-MG has 2 blockers with zero clearing action anywhere in the code — not yet confirmed whether activating motor-MG was even necessary for this fixture), plus 2 likely-pure-wiring gaps (`cw-frontline-initial-loads-unresolved`, `source-initial-contacts-unavailable`) currently being traced/fixed. `source-grouped-movement-domain-incomplete` did **not** clear as hypothesized — root cause still unknown. All being worked right now (background agent + CI fix in flight). |
+| `MVP-GATE-03` six-turn authority | Every reachable mechanic/victory rule executes deterministically, zero silent approximation | **Partial** | This is the engine's `ReadinessBlockers()` gate. [PR #361](https://github.com/dills122/sandtable/pull/361) (in flight, CI pending on its latest push) wired every admitted cluster into one continuous setup path. Empirically-observed remaining count is now **7** (not 8, and not the earlier "4-of-8"/"different 8" framing — see §7 below for the final resolution of that churn). |
 | `MVP-GATE-04` durable local lifecycle | Create/checkpoint/stop/resume/recover, no model/I/O in authoritative turns | **Partial** | Bounded journal implemented (per checklist). This session confirmed (via dedicated investigation) the Orleans journal's O(n²) replay-cost scaling issue is **not safely fixable** without real architectural investment — a known risk for long campaigns, not a blocker for RC itself, but worth tracking. |
 | `MVP-GATE-05` Maproom/hot-seat | Two seats inspect/choose/confirm/submit/hand off privately, no model | **Open** | Foundation/read preview only; no work this session. The dependency findings above (26 dev-toolchain vulns) are relevant here before this becomes player-facing, though they don't affect the shipped app itself. **See section 10 — the deep audit found this status description itself is understated.** |
 | `MVP-GATE-06` full playthrough | Two independent complete six-turn games, save/resume, correct victory, seed reproduction | **Open** | Not demonstrated; no work this session. |
@@ -77,13 +77,14 @@ vehicle-cohort breakdown accounting. Both are small, scoped, not urgent.
 
 ## 6. In flight (not yet merged)
 
-- **[PR #361](https://github.com/dills122/sandtable/pull/361)** — integration fixture chaining every admitted cluster before owner finalization. Currently blocked on one CI failure (per-group RSS ceiling breach from the new heavy test, being isolated into its own group) and 3-4 blocker items being traced/fixed by a background agent.
+- **[PR #361](https://github.com/dills122/sandtable/pull/361)** — integration fixture chaining every admitted cluster before owner finalization. The CI RSS-ceiling failure is fixed (`GrazianiSourceAuthorityTests` split `parts: 2`→`3`, same precedent as commit 05f370bb); CI is re-running on the latest push. Final empirically-observed remaining-blocker count: **7** — `battlefield-incomplete`, `control-incomplete`, `ccnn-characteristics-incomplete`, `source-grouped-movement-domain-incomplete`, both `giarabub-motor-mg-*` blockers, and `source-initial-contacts-unavailable`. `cw-frontline-initial-loads-unresolved` is resolved (pure wiring, as expected).
 - **[PR #362](https://github.com/dills122/sandtable/pull/362)** — docs-only: RC checklist dependency-status correction, research-handoff docs, native-movement stale-doc fixes. No CI risk expected (docs-only).
 
 ## 7. New/unplanned work this session surfaced (not on any prior plan)
 
-- **Giarabub motor-MG's 2 readiness blockers have zero clearing mechanism anywhere in the code** — a real, newly-discovered implementation gap, not previously tracked. Needs a scoping decision once confirmed whether it's actually required for this integration path.
-- `source-grouped-movement-domain-incomplete`'s root cause is now **unknown** — the working hypothesis that it would clear as a side effect of `forces-incomplete` is settled false. Needs its own investigation.
+- **Giarabub motor-MG's 2 readiness blockers have zero clearing mechanism anywhere in the code — confirmed genuine, not optional.** PR #361's follow-up work confirmed the motor-MG roster element only ever gets a `LocationId` via `ActivateGiarabubMotorMachineGun` — skipping that activation would leave `forces-incomplete` open instead, so this isn't avoidable. Needs its own scoped task to design and build the missing resolution mechanism(s); not attempted.
+- **`source-initial-contacts-unavailable`'s root cause is now known — two independent, unrelated gaps**, neither a missing action call: (1) `CampaignSourcePolishArrivalContacts.EffectiveCounters` has no "independent" classification case for several commonwealth counters this chain exercises (`cw-attached-artillery.*`, `independent-setup.*`, `cw-priority.*`); (2) `CampaignSourceInitialContacts.TryAdjacent` has no map-adjacency rule connecting rear-area axis locations (Soluch `a4130`, Mechili `b4921`) to the forward commonwealth positions this chain admits. Both need new classification/geometry rules, not wiring.
+- **`source-grouped-movement-domain-incomplete`'s root cause is now known.** `CanDeriveForSide` fails for both sides for the same reason: `TryDefensiveCloseAssaultRating`'s hand-maintained table has zero entry for three formations — the Aresca Tank Regiment's CV33, the 6th Australian Division, and the Matruh Garrison. Two of three (Australian, Matruh) are already queued with codex (research-tasks.md Tasks A/B); the third (Aresca's CV33) is a brand-new Task D added to that same handoff. This blocker should close once all three land — not before.
 - Another round of the CI per-group-RSS whack-a-mole (same mechanism tuned twice earlier this session) — the new integration test's memory footprint pushed a shared process group over the 6GiB ceiling.
 - The dependency/Maproom gate's recorded status was **wrong** — corrected from "basically resolved" to the real split (prod clean / 26 dev-toolchain vulns open).
 - The native-movement chain's tracked status was **wrong** — corrected from "Reaction, Breakdown and Combat unimplemented" to "mostly done, one narrow gap."
@@ -92,7 +93,7 @@ vehicle-cohort breakdown accounting. Both are small, scoped, not urgent.
 
 ## 8. Research handed to codex (planned, external, not engineering time)
 
-- [`2026-11-17-graziani-source-material-research-tasks.md`](2026-11-17-graziani-source-material-research-tasks.md) (v2) — CCNN 1st-HQ weapon ID, Matruh's 5 units' real combat ratings, Essex/Durham assignment-chronology ruling.
+- [`2026-11-17-graziani-source-material-research-tasks.md`](2026-11-17-graziani-source-material-research-tasks.md) (v2) — CCNN 1st-HQ weapon ID, Matruh's 5 units' real combat ratings, Essex/Durham assignment-chronology ruling, and (added after PR #361's root-cause trace) the Aresca Tank Regiment's CV33 close-assault rating — the last 3 of these also directly gate `source-grouped-movement-domain-incomplete`'s closure.
 - [`2026-11-17-graziani-mvp-gate-01-research-handoff.md`](2026-11-17-graziani-mvp-gate-01-research-handoff.md) — 7 double-entry review packets (arrival/convoy/rail/victory/transport/supply/truck) still needing an independent reading.
 
 ## 9. Accepted risks / non-blockers (not on the critical path, don't re-litigate)
@@ -136,11 +137,14 @@ candidates.
 ## Honest bottom line
 
 `MVP-GATE-03` (six-turn authority) is the gate getting the most direct
-engineering attention right now and is genuinely closer than a week ago, but
-"4 of 8 blockers cleared" became "4 of a *different* 8" once the integration
-fixture ran for real — that pattern (new blockers appearing once separate
-proofs are combined) should be expected to repeat at least once more before
-this gate closes. `MVP-GATE-01` and `02` have a lot of real research
+engineering attention right now and is genuinely closer than a week ago.
+"4 of 8 blockers cleared" became "4 of a *different* 8," which then
+resolved to a real, fully-traced **7** once PR #361's follow-up work ran
+every remaining blocker to a concrete root cause — no more mystery items,
+just real remaining work: one genuine missing mechanism (motor-MG), two
+genuine missing rule gaps (initial-contacts' classification/geometry), and
+three missing chart citations (now all three queued, two with codex, one
+newly added). `MVP-GATE-01` and `02` have a lot of real research
 completed (most of it just never reached code), now queued with codex.
 `MVP-GATE-04` through `07` have seen no engineering time this session and
 remain exactly where the Oct 24 checklist left them, except for the two

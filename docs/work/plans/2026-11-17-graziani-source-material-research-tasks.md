@@ -84,6 +84,29 @@ and same chart section already used for the 6th Australian Division above.
 the 5 units, with citation, ready to replace the placeholder values in
 `CampaignSourceMatruhFormation.cs`.
 
+## Task D — Aresca Tank Regiment's CV33 close-assault rating
+
+**New (2026-11-17, discovered while tracing `source-grouped-movement-domain-incomplete`):**
+`CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`'s hand-maintained
+rating table has zero entry for `aresca-tank-regiment`'s CV33 light tank
+component. This is one of three formations found missing from that same
+table — the other two are the 6th Australian Division and the Matruh
+Garrison, both already covered by Task A/B above once their facts land.
+This is the one of the three with no existing research queued anywhere.
+
+**Where to look:** the Axis OA chart's Aresca/tank-regiment entry (same
+general area as the other Axis armor citations — check alongside the
+existing `oa-7-armored-p6`-style citations for the matching Italian-side
+page) and the unit-characteristics chart for the CV33's close-assault
+off/def values specifically — this is a light tank, so check whether it's
+even eligible for a close-assault rating at all per the source's own
+vehicle-classification rules, rather than assuming it must have one.
+
+**Deliverable:** either a real close-assault off/def rating with citation,
+or a sourced statement that CV33 light tanks are not assigned a
+close-assault rating at all (if that's what the source actually says) —
+either answer resolves this gap, a guess does not.
+
 ## Task C — Matruh: Essex/Durham assigned-parent chronology ruling
 
 This one's a decision, not a fact-lookup — flagged but not settled in the
@@ -110,12 +133,24 @@ already sitting on both units in `CampaignSourceMatruhFormation.cs`.
 
 ## Handoff notes
 
-- Tasks A and B share chart-lookup method with the now-finished Australian
-  ratings work — if those chart pages are already open, cheap to batch
-  with Task A/B's lookups.
+- Tasks A, B, and D share chart-lookup method with the now-finished
+  Australian ratings work — if those chart pages are already open, cheap
+  to batch with Task A/B/D's lookups.
 - Task C is a judgment call on text already in hand (scenario rules + OA
   note `f`'s wording) — no new scan should be needed.
-- None of A/B/C block each other; hand off in any order.
+- None of A/B/C/D block each other; hand off in any order.
+- **Tasks A, B, and D together are the real path to closing
+  `source-grouped-movement-domain-incomplete`**, per PR #361's traced
+  root cause (2026-11-17): `CanDeriveForSide` fails for both sides purely
+  because `TryDefensiveCloseAssaultRating` has no entry for the 6th
+  Australian Division, the Matruh Garrison, or the Aresca Tank Regiment's
+  CV33. Once B's Matruh ratings and D's Aresca rating land (A's CCNN
+  weapon ID doesn't feed this particular blocker — that one's purely
+  `ccnn-characteristics-incomplete`), re-run the integration fixture in
+  `GrazianiSourceAuthorityTests.cs`
+  (`IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers`)
+  to confirm this blocker actually clears — it depends on all three
+  formations getting real ratings, not just one.
 - Once any of these land, the next code step is the same as before:
   add the fact(s)/ruling to the relevant file and rerun the readiness
   diagnostic (`docs/work/plans/2026-11-16-graziani-readiness-and-combat-plan.md`
