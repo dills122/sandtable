@@ -21,7 +21,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceTobrukBardiaGarrisonPackArtifact
 {
     internal const string FormatId = "sandtable.source-tobruk-bardia-garrison.v1";
-    internal const string ContentHash = "sha256:e7578fbad7ea1e127507f470402327e4bc06a64d836920279d20de9d42b2b1ed";
+    internal const string ContentHash = "sha256:c5b8b7ab39b146025f347d06877325f822f1bec84e01efb4f47a3d2e0ac2548f";
     private readonly byte[] bytes;
 
     private ContentSourceTobrukBardiaGarrisonPackArtifact(ContentSourceCwFreeGunsPackArtifact basis, byte[] bytes)

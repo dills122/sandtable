@@ -20,7 +20,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwAttachedArtilleryPackArtifact
 {
     internal const string FormatId = "sandtable.source-cw-attached-artillery.v1";
-    internal const string ContentHash = "sha256:9d9ff9da4e8b4ea8d1bbe29b6b4db1461b8c142f7e90262d5e1a7d3412a8db68";
+    internal const string ContentHash = "sha256:01fbe0c7648a72ed7aa33a55cedb7f5dbef9f301595335ef3efafd4cc4f868ff";
     private readonly byte[] bytes;
 
     private ContentSourceCwAttachedArtilleryPackArtifact(ContentSourceCwFrontlineArtifact basis, byte[] bytes)

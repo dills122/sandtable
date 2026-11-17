@@ -688,6 +688,54 @@ CI remains the acceptance gate.
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --filter-class Cna.Core.Tests.Campaigns.GrazianiAustralianBaselineTests --filter-class Cna.Core.Tests.Campaigns.GrazianiHorseSetupTests --filter-class Cna.Core.Tests.Campaigns.GrazianiRetainedFormationTests --filter-class Cna.Core.Tests.CampaignSourceSeamCandidateTests --filter-class Cna.Core.Tests.CampaignSourceTrainingLedgerTests --report-xunit-xml --results-directory /private/tmp/claude-501/sandtable-weights-timing`. Result: 34 passed, 0 failed, 0 skipped. Verified against a full local Release `--list-tests` discovery that all seven classes' rows and class entries now resolve with no missing/extra entries for these classes specifically (an unrelated, pre-existing set of randomized mutation-theory rows elsewhere in the suite differs between local and CI-fixture-pinned discovery, as expected, and is untouched by this change).
 
+## Matruh Garrison real close-assault ratings and Essex/Durham ruling
+
+Real Commonwealth OA-cited close-assault ratings (OA PDF pp. 9/11, chart
+4.46a p.22) are now wired into `CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`
+for all five Matruh Garrison battalions, and `CampaignSourceMatruhFormation`'s
+Essex/Durham `AssignmentStatus`/`essexDurhamAssignment` fields now reflect the
+project's attachment-stands ruling instead of the old conflict marker. Six new
+`CampaignSourceGroupedZocTests` rows prove the per-element ratings and the
+formation-level estimate directly. `GrazianiSourceAuthorityTests`'s existing
+`DescribeUnresolvedSources...` proof test is renamed to
+`DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotMatruh` (same
+row count, one renamed identity) because Matruh no longer appears as an
+unresolved rating gap on either side; Aresca's CV33 component and the 6th
+Australian Division still correctly do.
+
+Because `CampaignSourceMatruhFormation.Members`' `AssignmentStatus` field is
+embedded directly in the canonical, pinned-hash bytes of
+`ContentSourceMatruhDetachedPackArtifact` and `ContentSourceMatruhGroupedPackArtifact`,
+changing it for Essex/Durham cascades through every downstream Graziani
+content-pack artifact that chains from them (`ContentSourceCwPriorityPackArtifact`,
+`ContentSourceCwFreeGunsPackArtifact`, and from there the Fourth Indian/Matruh/
+Maletti/Libyan/Cirene-Marmarica/Seventh Armored/Sixteenth Brigade/Catanzaro/
+Sixth Australian grouped packs, the four `ContentSourceCcnnBatchPackArtifact`
+flag-combination hashes, and the Tobruk-Bardia/Tripoli tank regiment/Axis
+garrison remainder/Giarabub/CW frontline/CW attached-artillery branches). All
+of these pinned `ContentHash`-style constants were recomputed and updated to
+match the new, correct canonical bytes; no CCNN/Sixth Australian/Aresca
+combat fact or rating was changed, only the derived SHA-256 fingerprint that
+necessarily shifts when upstream bytes change. New hashes were computed by
+independently reconstructing each gated layer's own byte-serialization code
+against plain `byte[]`/hash values in a throwaway test (never by weakening or
+bypassing any production pinned-hash guard), then deleted once applied.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-essex", expectedRating: 2)` | `fbf75c96ab74` | 10 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-durham-light-infantry", expectedRating: 2)` | `670097d9a277` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-south-staffordshires", expectedRating: 1)` | `631590c760c0` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-buffs", expectedRating: 1)` | `d8c08a2e9a9b` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-hampshire", expectedRating: 1)` | `d0692b8f407c` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonAllFiveBattalionsHaveAFullyKnownDefenseEstimateFromTheirRealCitedRatings` | `159bde80da2c` | 1 |
+| `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotMatruh` (renamed; replaces `DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps`) | `be6ff9260639` | 70334 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --report-xunit-xml --results-directory <local-dir>` and `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotMatruh*" --report-xunit-xml --results-directory <local-dir>`. Result: 16 passed / 1 passed, 0 failed, 0 skipped. The full content-pack chain test (`GrazianiSourceSetupPackArtifactTests`), the Tobruk/Bardia garrison test, the Axis garrison forces (Giarabub) test, and the pinned
+`IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers`
+Theory (unmodified) were all re-run locally against the recomputed hashes and
+pass. This is scheduling evidence only; hosted CI remains the acceptance gate.
+
 ## `CampaignSourceAuthorityState` record-with-expression refactor (PR #380, November 17, 2026)
 
 One new permanent row: `CampaignSourceAuthorityStateInvariantTests.ValidateInvariantsRejectsOutOfRangeFinalizedOwnersEvenThoughTheCopyConstructorCannot`, row key `f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a`. Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceAuthorityStateInvariantTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr380-weights-timing`. Result: 1 passed, 0 failed, 0 skipped; measured 102ms (XML `time="0.102"`). No other row changed; the PR's 45 call-site migrations and copy-constructor fix touch no other test row. Added to `rows` (102) and `classes` (`{"parts": 1}`); also recorded in `provisional_rows` as a local scheduling hint pending hosted CI calibration, per existing convention. Verified `discover` passes against this commit.
