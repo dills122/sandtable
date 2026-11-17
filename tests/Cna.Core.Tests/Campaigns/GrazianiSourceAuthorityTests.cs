@@ -10539,6 +10539,27 @@ public sealed class GrazianiSourceAuthorityTests
         activated = CampaignExercises.AdmitSourceCwAttachedArtillery(activated).SuccessorSession!;
         activated = CampaignExercises.ActivateSourceCwAttachedArtillery(activated).SuccessorSession!;
 
+        // Resolve cw-frontline-initial-loads-unresolved: AttachedInitialLoads and
+        // ExpandedIndependentWorld are already admitted/promoted earlier in this
+        // chain's shared setup (confirmed empirically - no Admit/Promote call is
+        // needed here). Fully attach both frontline pools using the same
+        // CampaignExercises action-submission pattern as the existing CW frontline
+        // proofs elsewhere in this file, then finish the frontline.
+        foreach (var frontlineId in new[] { "1-rtr", "11-hussars" })
+        {
+            ExerciseStepResult attachStep;
+            while ((attachStep = CampaignExercises.SubmitSourceAttachedInitialLoads(activated,
+                Submission(activated, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-attach", frontlineId),
+                    CampaignActionAudience.Commonwealth))).IsAccepted)
+                activated = attachStep.SuccessorSession!;
+        }
+        activated = CampaignExercises.SubmitSourceAttachedInitialLoads(activated,
+            Submission(activated, CampaignSourceAuthorityState.AttachedInitialLoadsActionId("frontline-finish", "frontline"),
+                CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.True(activated.SourceAuthority!.AttachedInitialLoads!.FrontlineFinished);
+        Assert.DoesNotContain("cw-frontline-initial-loads-unresolved",
+            CampaignSourcePlayableWorld.Create(activated.SourceAuthority, mapIdentityBound: true, cdSeamBound: true).ReadinessBlockers());
+
         var beforeArescaBlockers = CampaignSourcePlayableWorld.Create(activated.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true).ReadinessBlockers();
         Assert.Contains("forces-incomplete", beforeArescaBlockers);
         Assert.True(activated.SourceAuthority!.CanAdmitAresca);
@@ -10558,18 +10579,46 @@ public sealed class GrazianiSourceAuthorityTests
 
         var combinedWorld = CampaignSourcePlayableWorld.Create(bothFinalized.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
         var finalBlockers = combinedWorld.ReadinessBlockers();
+        // source-grouped-movement-domain-incomplete root cause, traced (via a
+        // temporary diagnostic walking CampaignSourceGroupedZoc.EvaluateFormationSource/
+        // EvaluateDetachedSource per group/detached member per side, then removed):
+        // CanDeriveForSide fails for BOTH sides, each for the same reason - a
+        // genuine missing-chart-citation gap, not a missing action call. Axis:
+        // the "aresca-tank-regiment" formation's CV33 light tank component
+        // (CampaignSourceArescaGroupedDefinition.BattalionId) has no Close Assault
+        // defensive rating entry anywhere in CampaignSourceGroupedZoc's hand-cited
+        // rating table (TryDefensiveCloseAssaultRating has no case for
+        // componentType "cv33" at all), so its defense estimate is unresolved
+        // (AllKnown=false, LowerBound=0). Commonwealth: the "6th-australian-division"
+        // and "matruh-garrison" formations are in the exact same position - neither
+        // groupId appears anywhere in that same rating table for any of their
+        // member component types. None of these three gaps are closeable without
+        // inventing an uncited rating value, which this project's conventions
+        // forbid; each needs its own researched chart citation, out of scope here.
+        // source-initial-contacts-unavailable is a genuine, separate gap (see PR
+        // description / final report): CampaignSourcePolishArrivalContacts.EffectiveCounters
+        // leaves many independent/attached/priority commonwealth counters with a
+        // null ObserverFormationId (no case recognizes them as "independent" nor
+        // are they grouped), and CampaignSourceInitialContacts.TryAdjacent has no
+        // geometry rule connecting rear-area axis locations (e.g. Soluch a4130,
+        // Mechili b4921) to the forward commonwealth positions this chain admits
+        // (c3520, c3020, c3721, c3922, c3926, c4131, c3320) - both failures make
+        // CanProject fail closed for one side or the other. Fixing either requires
+        // new classification/geometry rules, not a missing action call; not
+        // attempted here per this task's remit.
 
         // Empirically observed (via a temporary Assert.Fail("DIAG:" + string.Join(",",
         // combinedWorld.ReadinessBlockers())) diagnostic, per this project's own
         // documented technique, run through `just test-method core
         // '*IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers*'`
-        // and then removed) to be exactly these 8 - a different 8 than the ones
-        // confirmed present on main before this PR:
-        //   battlefield-incomplete, control-incomplete, cw-frontline-initial-loads-unresolved,
+        // and then removed) to now be exactly these 7, one fewer than the 8 this
+        // fixture originally landed with (cw-frontline-initial-loads-unresolved
+        // cleared - see below):
+        //   battlefield-incomplete, control-incomplete,
         //   giarabub-motor-mg-historical-motorization-priority-unresolved,
         //   giarabub-motor-mg-capability-and-mobility-unresolved, ccnn-characteristics-incomplete,
         //   source-initial-contacts-unavailable, source-grouped-movement-domain-incomplete
-        // 4 of the original 8 cleared: owner-setup-finalization-incomplete,
+        // 4 of the original 8 pre-this-PR blockers cleared: owner-setup-finalization-incomplete,
         // seventh-armored-shell-stack-correction-required, central-india-horse-
         // training-state-unresolved (each already individually proven; this is the
         // first fixture to chain them with the admitted-content clusters before the
@@ -10582,34 +10631,51 @@ public sealed class GrazianiSourceAuthorityTests
         // ccnn-characteristics-incomplete/battlefield-incomplete/control-incomplete
         // remain, as expected (out of scope: a real research gap and a pending
         // product decision, not code gaps).
-        // 4 blockers appear that are not among the original 8, as a direct, correctly-
-        // functioning side effect of admitting content this chain needed:
-        // activating the Giarabub Motor Machine Gun (required to represent the
-        // "giarabub-motor-machine-gun" roster element) unconditionally adds both
-        // giarabub-motor-mg-* blockers once CwFreeGunsWorld.MotorMachineGunContent is
-        // non-null - CampaignSourcePlayableWorld.ReadinessBlockers() has no clearing
-        // path for either at all yet, so these are a genuine, separate gap this PR
-        // does not attempt to close. Activating CW Frontline (Tobruk/Bardia's own
-        // required predecessor, same as the already-merged Giarabub/Category B
-        // proofs use) makes cw-frontline-initial-loads-unresolved live once
-        // CwFrontlineContent is set; resolving it means walking the attached-
-        // initial-loads action chain, which none of steps 1-7 in this PR's remit
-        // call for. source-initial-contacts-unavailable depends on setup (axis
-        // dumps, Commonwealth supply placement, convoy-plan finish, unattached
-        // cargo) this chain never touches either, for the same reason.
+        // cw-frontline-initial-loads-unresolved is now resolved above: it was pure
+        // wiring, exactly as scoped - CampaignSourceAttachedInitialLoads.FinishFrontline
+        // (via the existing frontline-attach/frontline-finish CampaignExercises
+        // action-submission pattern already proven elsewhere in this file) is all
+        // that was missing; AttachedInitialLoads and ExpandedIndependentWorld were
+        // already admitted/promoted earlier in this chain's own shared setup, so no
+        // extra promotion call was needed.
+        // giarabub-motor-mg-historical-motorization-priority-unresolved and
+        // giarabub-motor-mg-capability-and-mobility-unresolved remain a genuine,
+        // separate gap, NOT closed here: activating the Giarabub Motor Machine Gun
+        // is required (not redundant) to represent the "giarabub-motor-machine-gun"
+        // roster element for forces-incomplete (that element's Battlefield entry has
+        // no other action that gives it a LocationId - it is not covered by the
+        // Giarabub cluster activation from PR #352, which activates a disjoint set
+        // of roster elements: giarabub-infantry, giarabub-machine-gun, etc., not
+        // giarabub-motor-machine-gun itself), and that activation unconditionally
+        // adds both giarabub-motor-mg-* blockers once CwFreeGunsWorld.MotorMachineGunContent
+        // is non-null. CampaignSourcePlayableWorld.ReadinessBlockers() has no
+        // clearing path for either blocker at all yet (confirmed via grep: no
+        // HistoricalMotorizationPriority/CapabilityAndMobility resolution method
+        // exists anywhere in the codebase) - building one is a real, separate
+        // implementation gap needing its own scoped task.
+        // source-initial-contacts-unavailable also remains a genuine, separate gap,
+        // NOT closed here (see the comment above combinedWorld): CampaignSourcePolishArrivalContacts.EffectiveCounters
+        // has no "independent" classification case for several of this chain's
+        // admitted/pre-existing commonwealth counters (cw-attached-artillery.*,
+        // independent-setup.*, cw-priority.*), leaving them with a null
+        // ObserverFormationId, and CampaignSourceInitialContacts.TryAdjacent has no
+        // geometry rule connecting rear-area axis locations (Soluch a4130, Mechili
+        // b4921) to the forward commonwealth positions this chain admits. Tracing
+        // confirmed this is not a missing action call (unlike cw-frontline above) -
+        // it needs new classification and/or geometry rules.
         Assert.DoesNotContain("owner-setup-finalization-incomplete", finalBlockers);
         Assert.DoesNotContain("seventh-armored-shell-stack-correction-required", finalBlockers);
         Assert.DoesNotContain("central-india-horse-training-state-unresolved", finalBlockers);
         Assert.DoesNotContain("forces-incomplete", finalBlockers);
+        Assert.DoesNotContain("cw-frontline-initial-loads-unresolved", finalBlockers);
         Assert.Contains("ccnn-characteristics-incomplete", finalBlockers);
         Assert.Contains("battlefield-incomplete", finalBlockers);
         Assert.Contains("control-incomplete", finalBlockers);
         Assert.Contains("source-grouped-movement-domain-incomplete", finalBlockers);
-        Assert.Contains("cw-frontline-initial-loads-unresolved", finalBlockers);
         Assert.Contains("giarabub-motor-mg-historical-motorization-priority-unresolved", finalBlockers);
         Assert.Contains("giarabub-motor-mg-capability-and-mobility-unresolved", finalBlockers);
         Assert.Contains("source-initial-contacts-unavailable", finalBlockers);
-        Assert.Equal(8, finalBlockers.Count);
+        Assert.Equal(7, finalBlockers.Count);
     }
 
     private static CampaignActionSubmission Submission(ExerciseSession session, string actionId, CampaignActionAudience audience)

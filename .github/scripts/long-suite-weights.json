@@ -684,7 +684,7 @@
       "parts": 1
     },
     "Cna.Core.Tests.Campaigns.GrazianiSourceAuthorityTests": {
-      "parts": 2
+      "parts": 3
     },
     "Cna.Core.Tests.Campaigns.GrazianiSourceAutoblindaSetupTests": {
       "parts": 1
@@ -787,7 +787,7 @@
     }
   },
   "rows": {
-    "964f4111c4aac60c6e10deb32698c588c2ea0988bba5f4cf6b749d94d30db83a": 70310,
+    "964f4111c4aac60c6e10deb32698c588c2ea0988bba5f4cf6b749d94d30db83a": 70130,
     "afec9a1b16072e3f0e10c4b755410d3c7c0fed49683d1ebf97481b61bba47c25": 10,
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": 1,
     "0034e47ea93a919147b432ee92586edf86dbd386acee1691d3541c9f6e1fdeec": 1,
