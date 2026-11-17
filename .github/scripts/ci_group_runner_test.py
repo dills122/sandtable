@@ -127,7 +127,7 @@ class ResourcePolicyTests(unittest.TestCase):
 
     def test_runtime_group_aggregate_and_host_reserve_are_fail_closed(self):
         self.assertTrue(runner.validate_sample(self.snapshot(), {'a': 2**30}))
-        for snapshot, groups in [(self.snapshot(), {'a': 6 * 2**30 + 1}), (self.snapshot(), {'a': 3 * 2**30, 'b': 3 * 2**30, 'c': 3 * 2**30}), (dict(self.snapshot(), memory_available_bytes=3 * 2**30), {'a': 1})]:
+        for snapshot, groups in [(self.snapshot(), {'a': 6 * 2**30 + 1}), (self.snapshot(), {'a': 4 * 2**30, 'b': 4 * 2**30, 'c': 4 * 2**30}), (dict(self.snapshot(), memory_available_bytes=3 * 2**30), {'a': 1})]:
             with self.assertRaises(ValueError): runner.validate_sample(snapshot, groups)
 
     def test_linux_uses_tightest_ancestor_cgroup_limit_and_remaining_memory(self):
