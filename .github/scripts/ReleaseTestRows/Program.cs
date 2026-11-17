@@ -5,7 +5,7 @@ using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text.Json;
 
-const string SupportedRunnerVersion = "4.0.2";
+const string SupportedRunnerVersion = "4.0.3";
 
 // Read only the five reviewed data factories and two formatter controls. Never invoke test bodies
 // or delegates contained in rows. Names come from this host's compiled Release xUnit formatter.
