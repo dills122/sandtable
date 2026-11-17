@@ -15,6 +15,10 @@ See [local testing](docs/runbooks/local-testing.md).
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.
 
+The proposed [durable hosting architecture](docs/design/durable-orleans-campaign-hosting.md)
+keeps grains, journals, schedulers and outboxes as technical modules. Umpire retains adjudication,
+Chronicle history and Archives persistence; no new product names are introduced.
+
 ## Vocabulary
 
 | Sandtable name                  | Technical responsibility              | Why                                                                       |

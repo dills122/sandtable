@@ -41,6 +41,10 @@ Later releases can add the Air and Logistics Games, longer scenarios, the full 1
 remote multiplayer, and optional AI commanders. AI is intended to advise or play a side. It will not
 decide the rules or change campaign state on its own.
 
+The proposed [durable Orleans hosting plan](docs/work/plans/2026-10-24-orleans-hosting.md)
+records the path to multi-server campaigns and capacity benchmarks. Production hosting and
+capacity limits remain unimplemented.
+
 ## Tech stack
 
 **Simulation engine and backend.** C# on .NET 10, run locally through .NET Aspire. Campaign hosting
