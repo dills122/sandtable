@@ -1,0 +1,568 @@
+{
+  "scope": "graziani-axis-formations-members-v1",
+  "manifest_sha256": "4e6e607e52ceb484e89bdea2acdd7a0690bc6492b9d85b23697f9cafe9874e3b",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-axis-2026-11-17"
+  ],
+  "expected_rows": 29,
+  "evidence": [
+    {
+      "row": "cirene-hq",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-hq",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-hq row"
+      ]
+    },
+    {
+      "row": "cirene-157-hq",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-hq",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-hq row"
+      ]
+    },
+    {
+      "row": "cirene-157-i",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-i",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-i row"
+      ]
+    },
+    {
+      "row": "cirene-157-ii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-ii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-ii row"
+      ]
+    },
+    {
+      "row": "cirene-157-iii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-iii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-iii row"
+      ]
+    },
+    {
+      "row": "cirene-158-hq",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-hq",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-hq row"
+      ]
+    },
+    {
+      "row": "cirene-158-i",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-i",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-i row"
+      ]
+    },
+    {
+      "row": "cirene-158-ii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-ii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-ii row"
+      ]
+    },
+    {
+      "row": "cirene-158-iii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-iii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-iii row"
+      ]
+    },
+    {
+      "row": "cirene-mg",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-mg",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-mg row"
+      ]
+    },
+    {
+      "row": "cirene-at",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-at",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-at row"
+      ]
+    },
+    {
+      "row": "cirene-artillery",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-artillery",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-artillery row"
+      ]
+    },
+    {
+      "row": "cirene-engineer",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-engineer",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-engineer row"
+      ]
+    },
+    {
+      "row": "cirene-bersaglieri",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-bersaglieri",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-bersaglieri row"
+      ]
+    },
+    {
+      "row": "cirene-tank",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA cirene-tank",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-tank row; note a"
+      ]
+    },
+    {
+      "row": "marmarica-hq",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-hq",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-hq row"
+      ]
+    },
+    {
+      "row": "marmarica-115-hq",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-hq",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-hq row"
+      ]
+    },
+    {
+      "row": "marmarica-115-i",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-i",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-i row"
+      ]
+    },
+    {
+      "row": "marmarica-115-ii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-ii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-ii row"
+      ]
+    },
+    {
+      "row": "marmarica-115-iii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-iii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-iii row"
+      ]
+    },
+    {
+      "row": "marmarica-116-hq",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-hq",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-hq row"
+      ]
+    },
+    {
+      "row": "marmarica-116-i",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-i",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-i row"
+      ]
+    },
+    {
+      "row": "marmarica-116-ii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-ii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-ii row"
+      ]
+    },
+    {
+      "row": "marmarica-116-iii",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-iii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-iii row"
+      ]
+    },
+    {
+      "row": "marmarica-mg",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-mg",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-mg row"
+      ]
+    },
+    {
+      "row": "marmarica-at",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-at",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-at row"
+      ]
+    },
+    {
+      "row": "marmarica-artillery",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-artillery",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-artillery row"
+      ]
+    },
+    {
+      "row": "marmarica-engineer",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-engineer",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-engineer row"
+      ]
+    },
+    {
+      "row": "marmarica-tank",
+      "source": "errata",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-tank",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-tank row; note a"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "cirene-hq",
+      "locators": [
+        "errata PDF p. 4, OA cirene-hq",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-hq row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-157-hq",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-hq",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-hq row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-157-hq",
+      "field": "toe_mark",
+      "values": [
+        "1×65/17 Gun",
+        "1 × 65/17 Gun"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-157-i",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-i",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-i row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-157-ii",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-ii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-ii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-157-iii",
+      "locators": [
+        "errata PDF p. 4, OA cirene-157-iii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-iii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-158-hq",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-hq",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-hq row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-158-hq",
+      "field": "toe_mark",
+      "values": [
+        "1×65/17 Gun",
+        "1 × 65/17 Gun"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-158-i",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-i",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-i row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-158-ii",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-ii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-ii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-158-iii",
+      "locators": [
+        "errata PDF p. 4, OA cirene-158-iii",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-iii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-mg",
+      "locators": [
+        "errata PDF p. 4, OA cirene-mg",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-mg row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-at",
+      "locators": [
+        "errata PDF p. 4, OA cirene-at",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-at row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-at",
+      "field": "toe_mark",
+      "values": [
+        "2×47/32 Gun",
+        "2 × 47/32 Gun"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-artillery",
+      "locators": [
+        "errata PDF p. 4, OA cirene-artillery",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-artillery row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-artillery",
+      "field": "toe_mark",
+      "values": [
+        "6×75/18 Gun-Howitzer, 3×100/17 Howitzer, 3×Light AA",
+        "6 × 75/18 Gun-Howitzer, 3 × 100/17 Howitzer, 3 × Light AA"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-engineer",
+      "locators": [
+        "errata PDF p. 4, OA cirene-engineer",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-engineer row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-bersaglieri",
+      "locators": [
+        "errata PDF p. 4, OA cirene-bersaglieri",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-bersaglieri row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-tank",
+      "locators": [
+        "errata PDF p. 4, OA cirene-tank",
+        "errata PDF p. 4, 63rd Cirene Division OA, cirene-tank row; note a"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-tank",
+      "field": "initial_attachment",
+      "values": [
+        "63 Cirene",
+        "63rd Cirene"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-hq",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-hq",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-hq row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-115-hq",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-hq",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-hq row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marmarica-115-hq",
+      "field": "toe_mark",
+      "values": [
+        "1×65/17 Gun",
+        "1 × 65/17 Gun"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-115-i",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-i",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-i row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-115-ii",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-ii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-ii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-115-iii",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-115-iii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-iii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-116-hq",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-hq",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-hq row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marmarica-116-hq",
+      "field": "toe_mark",
+      "values": [
+        "1×65/17 Gun",
+        "1 × 65/17 Gun"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-116-i",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-i",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-i row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-116-ii",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-ii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-ii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-116-iii",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-116-iii",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-iii row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-mg",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-mg",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-mg row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-at",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-at",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-at row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marmarica-at",
+      "field": "toe_mark",
+      "values": [
+        "2×47/32 Gun",
+        "2 × 47/32 Gun"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-artillery",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-artillery",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-artillery row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marmarica-artillery",
+      "field": "toe_mark",
+      "values": [
+        "6×75/27 Gun, 3×105/28 Gun, 3×Light AA",
+        "6 × 75/27 Gun, 3 × 105/28 Gun, 3 × Light AA"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-engineer",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-engineer",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-engineer row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-tank",
+      "locators": [
+        "errata PDF p. 4, OA marmarica-tank",
+        "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-tank row; note a"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marmarica-tank",
+      "field": "initial_attachment",
+      "values": [
+        "62 Marmarica",
+        "62nd Marmarica"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

@@ -1,5 +1,11 @@
 # Six-turn Commonwealth arrivals: double-entry packet
 
+**November 17 independent review:** fresh [group](reading-independent.json)
+and [member](member-reading-independent.json) entries and their raw
+[group](comparison-independent.json) and [member](member-comparison-independent.json)
+comparisons are retained. See [disposition](../2026-11-17-graziani-independent-reviews.md)
+for locator and weapon-mark formatting differences and remaining scope.
+
 **Status:** one reading plus blind template; no independent entry for this whole
 manifest. It targets six schedule rows and eight grouped OA checks covering 21
 candidate printed OA rows. The earlier independent pilot already checked the

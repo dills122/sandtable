@@ -1,5 +1,10 @@
 # Initial supply double-entry packet
 
+**November 17 independent review:** [fresh entry](reading-independent.json)
+matches all 50 values; [raw comparison](comparison-independent.json) retains
+15 locator-wording differences. See [disposition](../2026-11-17-graziani-independent-reviews.md).
+The reader saw the README's disclosure of earlier agreement but not field values.
+
 **November 16 recheck:** [reading B](reading-b.json) and its [raw comparison](comparison-b.json)
 match all 50 recorded fields. The reader had prior planning context, so this is
 not a blind independent entry; all 15 locator-wording differences and the

@@ -1,5 +1,10 @@
 # Initial fortifications: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one reader and a blank second entry. Three grouped records cover the
 scenario's no-fortification statement and the general rule for major-city
 fortifications. They do not determine which provision takes precedence, whether

@@ -1,5 +1,11 @@
 # Cirene and Marmarica: OA-member review packet
 
+**November 17 independent review:** fresh [member](reading-independent.json)
+and [relationship](relationship-reading-independent.json) entries, plus raw
+[member](comparison-independent.json) and [relationship](relationship-comparison-independent.json)
+comparisons, are retained. See [disposition](../2026-11-17-graziani-independent-reviews.md)
+for locator, spacing and ordinal differences and remaining scope.
+
 **Status:** existing researcher's reading and blind template, not independent
 field-level verification or admitted content. The [bounded earlier review](../graziani-source-review/review-disposition.md)
 checked grouped formation row counts, deployed markers and tank notes; it did

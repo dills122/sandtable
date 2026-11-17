@@ -1,0 +1,262 @@
+{
+  "scope": "graziani-abstract-convoy-review-v1",
+  "manifest_sha256": "ba11367727c0498e1b86fa2063079663190bb9c440fcdf15015734145f164a9a",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-logistics-2026-11-17"
+  ],
+  "expected_rows": 11,
+  "evidence": [
+    {
+      "row": "scenario-60-37",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.37",
+        "Scenario book printed p. 27, §60.37"
+      ]
+    },
+    {
+      "row": "cargo-32-61",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.61",
+        "Land rules printed p. 44, §32.61"
+      ]
+    },
+    {
+      "row": "lane-limit-32-62",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.62",
+        "Land rules printed p. 44, §32.62"
+      ]
+    },
+    {
+      "row": "attack-32-63",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.63",
+        "Land rules printed p. 44, §32.63"
+      ]
+    },
+    {
+      "row": "lookup-32-64",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.64",
+        "Land rules printed p. 44, §32.64"
+      ]
+    },
+    {
+      "row": "loss-32-65a",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.65(A)",
+        "Land rules printed p. 44, §32.65A"
+      ]
+    },
+    {
+      "row": "loss-32-65b",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.65(B)",
+        "Land rules printed p. 44, §32.65B"
+      ]
+    },
+    {
+      "row": "qualification-32-66",
+      "source": "axis-charts",
+      "locators": [
+        "PDF p. 34, §32.66",
+        "Axis charts PDF p. 34, §32.66"
+      ]
+    },
+    {
+      "row": "bombardment-41-5",
+      "source": "common-charts",
+      "locators": [
+        "printed p. 12, §41.5, Axis Naval Convoys",
+        "Common charts printed p. 12, §41.5"
+      ]
+    },
+    {
+      "row": "air-loss-41-67",
+      "source": "air-rules",
+      "locators": [
+        "printed p. 12, §41.67",
+        "Air rules printed p. 12, §41.67"
+      ]
+    },
+    {
+      "row": "errata-loss-41-67",
+      "source": "errata",
+      "locators": [
+        "PDF p. 3, §41.67",
+        "Errata PDF p. 3, §41.67"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "scenario-60-37",
+      "locators": [
+        "printed p. 27, §60.37",
+        "Scenario book printed p. 27, §60.37"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "scenario-60-37",
+      "field": "permitted_lanes",
+      "values": [
+        "2; 3; 6",
+        "2, 3, 6"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cargo-32-61",
+      "locators": [
+        "printed p. 44, §32.61",
+        "Land rules printed p. 44, §32.61"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cargo-32-61",
+      "field": "included_categories",
+      "values": [
+        "supply units; motorization points; replacement points",
+        "Supply Units, Motorization Points, Replacement Points"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "lane-limit-32-62",
+      "locators": [
+        "printed p. 44, §32.62",
+        "Land rules printed p. 44, §32.62"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "attack-32-63",
+      "locators": [
+        "printed p. 44, §32.63",
+        "Land rules printed p. 44, §32.63"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "lookup-32-64",
+      "locators": [
+        "printed p. 44, §32.64",
+        "Land rules printed p. 44, §32.64"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "loss-32-65a",
+      "locators": [
+        "printed p. 44, §32.65(A)",
+        "Land rules printed p. 44, §32.65A"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "loss-32-65a",
+      "field": "ten_percent_applies_to",
+      "values": [
+        "motorization points; replacement points",
+        "Motorization Points and Replacement Points"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "loss-32-65b",
+      "locators": [
+        "printed p. 44, §32.65(B)",
+        "Land rules printed p. 44, §32.65B"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "loss-32-65b",
+      "field": "tank_and_gun_aggregation",
+      "values": [
+        "by nationality, not individual type",
+        "tanks and guns within each nationality, totals not individual types"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "qualification-32-66",
+      "locators": [
+        "PDF p. 34, §32.66",
+        "Axis charts PDF p. 34, §32.66"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "qualification-32-66",
+      "field": "qualification",
+      "values": [
+        "east of or same east-west hexrow as at least one other Allied non-shell division",
+        "complete Allied division east of or in same east-west hexrow as at least one other Allied non-shell division"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "bombardment-41-5",
+      "locators": [
+        "printed p. 12, §41.5, Axis Naval Convoys",
+        "Common charts printed p. 12, §41.5"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "bombardment-41-5",
+      "field": "bomb_points_column",
+      "values": [
+        "21–40",
+        "21-40"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "bombardment-41-5",
+      "field": "dice_range",
+      "values": [
+        "55–64",
+        "55-64"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "air-loss-41-67",
+      "locators": [
+        "printed p. 12, §41.67",
+        "Air rules printed p. 12, §41.67"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "air-loss-41-67",
+      "field": "tank_and_gun_groups",
+      "values": [
+        "by nationality",
+        "Italian tanks, German tanks, Italian guns, German guns"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "errata-loss-41-67",
+      "locators": [
+        "PDF p. 3, §41.67",
+        "Errata PDF p. 3, §41.67"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

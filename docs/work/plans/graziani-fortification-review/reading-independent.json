@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "scope": "graziani-fortification-review-v1",
+  "manifest_sha256": "b964869fb5297d757e9a1e9f854fdff8e072cca5fd418d07e0b88db498acb4d3",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5"
+  },
+  "reader_id": "codex-independent-source-review-2026-11-17",
+  "rows": [
+    {
+      "id": "scenario-60-7",
+      "locator": "Scenario printed p. 28 \u00a760.7",
+      "values": {
+        "initial_fortifications": "none"
+      }
+    },
+    {
+      "id": "city-fortification-25-11",
+      "locator": "Land compiled printed p. 38 \u00a725.0 general rule",
+      "values": {
+        "major_cities_considered_fortifications": true,
+        "non_city_fortifications_may_be_constructed": true
+      }
+    },
+    {
+      "id": "city-levels-25-12",
+      "locator": "Land compiled printed p. 38 \u00a725.12",
+      "values": {
+        "other_major_cities_level": 2,
+        "cairo_alexandria_level": 3,
+        "villages_are_fortifications": false
+      }
+    }
+  ]
+}

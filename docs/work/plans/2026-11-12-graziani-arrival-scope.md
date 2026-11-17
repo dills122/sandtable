@@ -139,7 +139,9 @@ allows movement in the arrival stage. §20.14 defaults Commonwealth
 reinforcements to Cairo with stated exceptions, while §20.13 treats arrived
 reinforcements normally. §60.47 flags training, and the source's arrival-stage
 movement does not waive any independently applicable training restriction.
-Check errata §8.86 and legal phase order together; use a versioned deployment
+Errata §8.86 corrects the original Tripoli/Tunisia arrival case; it is not
+direct blanket authority for Commonwealth Cairo arrivals. Check each relevant
+case and legal phase order together; use a versioned deployment
 choice and explicit capacity/stacking/training checks, not a blanket Cairo or
 movement exemption. A candidate schedule position alone does not prove every
 possible deployment choice or immediately legal action.
@@ -169,7 +171,9 @@ segment before Naval Convoy Arrival in an operation stage, while §20.43 says
 **replacement-point** training may include the stage of arrival. The latter is
 not automatically a rule for entire reinforcement units. Decide whether a later
 exception or a special record allows same-stage training, rather than starting
-training at an already-passed barrier. In the six-turn scenario this matters
+training at an already-passed barrier. [RUL-GRA-13](2026-11-12-graziani-ruling-decisions.md#rul-gra-13-arrival-and-training-order-planning-interpretation)
+now selects a bounded no-reopening interpretation for planning, while retaining
+the alternative and separate replacement-point exception. In the six-turn scenario this matters
 especially for the stage-3/turn-6 brigade: arrival is at the last stage, so a
 normal next-stage training action cannot occur inside the scenario. This is an
 ordering observation, not proof that the brigade needs morale training or that
@@ -183,8 +187,9 @@ it cannot move or fight on arrival.
 2. A row must expand to versioned formation/subunit identities, attachments,
    permissible deployment locations and side-safe choices. Each may introduce
    training or stacking obligations. Scenario setup, OA and errata must agree.
-3. §8.86's correction allows eligible reinforcements to move in their arrival stage;
-   verify exact constraints and avoid a blanket no-move rule. An arrival plus
+3. §20.12 allows reinforcements to move in their arrival stage; §8.86's
+   correction concerns the Tripoli/Tunisia case. Verify exact constraints and
+   avoid a blanket no-move rule. An arrival plus
    movement should replay and reject duplicate or stale submissions atomically.
 4. First-line truck data, §59.63 initial conversion and §60.92(A) arriving
    motorization are separate contexts. Work out how each listed group maps to the
@@ -192,6 +197,53 @@ it cannot move or fight on arrival.
 5. Cover both first/last player orders, all six listed positions, stacking and
    training blockers, no-arrival positions only where established, and privacy
    of unannounced opponent information. Source and contract must precede runtime.
+
+## French Motor Marine company characteristics
+
+November 17 same-stream source check: Commonwealth OA PDF p. 21 lists
+`1st Company, Fr Mtr Marine`, counter abbreviation `1`, ID `v`, strength `N`,
+and printed arrival `3/65`; note `a` calls it a company of the 1st Free French
+Motor Marine Battalion. September errata PDF p. 1, §4.44b item 3, changes
+the arrival marker to `D`. Commonwealth OA key p. 5 defines `N` as maximum
+strength and `D` as deployed at turn 1/stage 1. Chart §4.46a p. 22 gives
+`v` maximum TOE **1**, CPA **10+**, and close assault **1/1** per TOE point;
+the chart key on p. 23 explains `+` as historically supplied with sufficient
+trucks for motorization, not an unconditional motorized CPA. Scenario §60.41,
+PDF p. 3, places 1st Company French Motor Marines at `C3926` with two medium
+trucks. This is evidence supporting the existing same-unit setup interpretation,
+with an OA starting strength of one, subject to corrections and chosen setup.
+It does not settle the identity relationship to any later similarly named unit.
+Source hashes and the subsequently completed independent packet are in
+[marine review](graziani-marine-review/README.md).
+
+### Later similarly named French units: bounded source comparison
+
+The hash-matched Commonwealth OA PDF pp. 20–21 was visually rechecked. Its
+1st Free French Brigade sheet lists two distinct later rows: `1st Bn d'inf de
+marine`, abbreviation `1 Marine`, ID `r`, normal TOE, arrival `1/65`, with
+note `d` identifying it as Coloniale; and `1st Bn de fusiliers`, abbreviation
+`1 Fslrs`, ID `ff`, four Light AA, arrival `3/63`, with note `f` naming it
+the 1st battalion of fusiliers marine. The neighboring unassigned-allied
+sheet separately lists the initial `1st Company, Fr Mtr Marine`, abbreviation
+`1`, ID `v`, normal TOE, printed `3/65`, with note `a` calling it a company
+of the 1st Free French Motor Marine Battalion. September errata p. 1 §4.44b
+item 3 changes that company's arrival marker to `D`.
+
+These are distinct printed counter rows with different designations and IDs;
+the cited notes do not state a counter substitution, transfer, or lifecycle
+link between the initial company and either later unit. The latter two dates
+are beyond the six-turn scenario. Do not merge the records, infer independent
+historical organizations from naming alone, or create later lifecycle rules
+without further evidence. Source identity is SHA-256
+`f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981`
+for the Commonwealth charts and
+`5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`
+for the errata; these hashes establish byte identity, not rights or a separate
+edition. The pinned [Living Rules OA transcription](2026-11-17-graziani-living-rules-lead.md)
+provided leads for this direct source check, not independent primary evidence.
+An [independent chart and errata review](2026-11-17-graziani-marine-lifecycle-review.md)
+corroborates these bounded readings and finds no explicit lifecycle link on
+the inspected pages.
 
 ## Exit for this pilot
 

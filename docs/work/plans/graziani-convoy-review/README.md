@@ -1,5 +1,10 @@
 # Simplified Axis convoy: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one reader and a blank second entry. Eleven grouped records cover the
 initial scenario restriction, cargo, lane limits, attack, table input, loss
 rounding, qualifying-division definition, one 5% chart cell and the detailed

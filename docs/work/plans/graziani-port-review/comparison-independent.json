@@ -1,0 +1,153 @@
+{
+  "scope": "graziani-port-conflict-review-v1",
+  "manifest_sha256": "5e4b8e35d049b73a879fb0f05b1b14199aced89aa39db003762f567890a5abb4",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-source-review-2026-11-17"
+  ],
+  "expected_rows": 7,
+  "evidence": [
+    {
+      "row": "scenario-60-7",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.7",
+        "Scenario printed p. 28 §60.7"
+      ]
+    },
+    {
+      "row": "chart-55-3",
+      "source": "common-charts",
+      "locators": [
+        "printed p. 15, §55.3",
+        "Common charts printed p. 15 §55.3 Tobruk row and note"
+      ]
+    },
+    {
+      "row": "capacity-55-14",
+      "source": "air-rules",
+      "locators": [
+        "printed p. 23, §55.14",
+        "Air rules printed p. 23 §55.14"
+      ]
+    },
+    {
+      "row": "reinforcements-55-15",
+      "source": "air-rules",
+      "locators": [
+        "printed p. 23, §55.15",
+        "Air rules printed p. 23 §55.15"
+      ]
+    },
+    {
+      "row": "blockage-55-25",
+      "source": "air-rules",
+      "locators": [
+        "printed p. 24, §55.25",
+        "Air rules printed p. 24 §55.25"
+      ]
+    },
+    {
+      "row": "clearance-55-26",
+      "source": "air-rules",
+      "locators": [
+        "printed p. 24, §55.26",
+        "Air rules printed p. 24 §55.26"
+      ]
+    },
+    {
+      "row": "cw-sea-32-36",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.36",
+        "Land compiled printed p. 43 §32.36"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "scenario-60-7",
+      "locators": [
+        "printed p. 28, §60.7",
+        "Scenario printed p. 28 §60.7"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "chart-55-3",
+      "locators": [
+        "printed p. 15, §55.3",
+        "Common charts printed p. 15 §55.3 Tobruk row and note"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "capacity-55-14",
+      "locators": [
+        "printed p. 23, §55.14",
+        "Air rules printed p. 23 §55.14"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "capacity-55-14",
+      "field": "capacity_rounding",
+      "values": [
+        "nearest ton",
+        "upward to nearest ton"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "reinforcements-55-15",
+      "locators": [
+        "printed p. 23, §55.15",
+        "Air rules printed p. 23 §55.15"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "blockage-55-25",
+      "locators": [
+        "printed p. 24, §55.25",
+        "Air rules printed p. 24 §55.25"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "clearance-55-26",
+      "locators": [
+        "printed p. 24, §55.26",
+        "Air rules printed p. 24 §55.26"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "clearance-55-26",
+      "field": "eligible_unit",
+      "values": [
+        "friendly engineer battalion or CW HQ with engineering capability",
+        "friendly engineer battalion or Commonwealth HQ with engineering capability"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-sea-32-36",
+      "locators": [
+        "printed p. 43, §32.36",
+        "Land compiled printed p. 43 §32.36"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cw-sea-32-36",
+      "field": "ports",
+      "values": [
+        "Alexandria; Benghazi; Tobruk",
+        "Alexandria, Benghazi, Tobruk"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

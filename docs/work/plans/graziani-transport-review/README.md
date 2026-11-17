@@ -1,5 +1,10 @@
 # Abstract supply transport: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one-reader research and blank second entry, not accepted rules or a
 complete transport model. Nine grouped records cover §32.14 and §§32.31–32.37
 in the Land rules and §59.66(C) in the scenario book. Inspect the original cases

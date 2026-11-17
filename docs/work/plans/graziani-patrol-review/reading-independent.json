@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "scope": "graziani-patrol-fog-review-v1",
+  "manifest_sha256": "cb56a14f7ddafc0fe511d6493a2fb9a3233a0f6b1d11f93f07fc7b3d9d7d8dbd",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "codex-independent-weather-patrol-2026-11-17",
+  "rows": [
+    {
+      "id": "patrol-general",
+      "locator": "Land rules p. 26, \u00a716.0 general rule",
+      "values": {
+        "stage_condition": "No anti-armor or close assault combat has taken place in operations stage",
+        "source_units_physically_move": false
+      }
+    },
+    {
+      "id": "patrol-specific-16-21",
+      "locator": "Land rules p. 26, \u00a716.21",
+      "values": {
+        "phasing_player_condition": "Phasing player does not engage in anti-armor combat or close assault against any enemy units during operations stage",
+        "barrage_prevents_patrol_entirely": false,
+        "target_that_underwent_barrage_or_bombardment_prohibited": true
+      }
+    },
+    {
+      "id": "patrol-count-16-13-15",
+      "locator": "Land rules p. 26, \u00a7\u00a716.13-16.15",
+      "values": {
+        "maximum_points_from_one_hex": 2,
+        "maximum_points_per_target": 3,
+        "ineligible_cohesion": "-8 or worse"
+      }
+    },
+    {
+      "id": "patrol-weather-16-17",
+      "locator": "Land rules p. 26, \u00a716.17",
+      "values": {
+        "rainstorm_or_sandstorm_origin_or_target_prohibited": true
+      }
+    },
+    {
+      "id": "patrol-target-16-22",
+      "locator": "Land rules p. 26, \u00a716.22",
+      "values": {
+        "target_within_hexes": 5,
+        "enemy_occupied_target": true,
+        "path_passability_restrictions": "No terrain impassable to patrol units; no enemy-controlled or occupied hex except a hex in zone of control of unit being reconnoitered"
+      }
+    },
+    {
+      "id": "patrol-no-supply-32-25",
+      "locator": "Land rules p. 43, \u00a732.25",
+      "values": {
+        "patrolling_requires_supply_expenditure": false
+      }
+    },
+    {
+      "id": "patrol-survival-16-32",
+      "locator": "Land rules p. 26, \u00a716.32",
+      "values": {
+        "empty_of_combat_units_disclosed": true,
+        "survival_roll_when_no_combat_units": false
+      }
+    },
+    {
+      "id": "patrol-info-16-51",
+      "locator": "Land rules p. 27, \u00a716.51",
+      "values": {
+        "reported_fields": "historical designation; unit type; motorized status; TOE strength within two of actual strength",
+        "patroller_identifies_toe_point_types": null
+      }
+    },
+    {
+      "id": "patrol-eligibility-errata-16-11",
+      "locator": "Errata p. 2, \u00a716.11",
+      "values": {
+        "added_types": "Italian L/6; Commonwealth Stuarts; mechanized infantry (or Panzergrenadiers) of any side"
+      }
+    },
+    {
+      "id": "dummy-report-16-45",
+      "locator": "Land rules p. 27, \u00a716.45",
+      "values": {
+        "defender_may_choose_dummy_tank_designation_and_strength": true,
+        "patroller_knows_dummy_before_attack": false
+      }
+    }
+  ]
+}

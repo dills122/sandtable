@@ -24,6 +24,14 @@ the map's prior high-resolution seam crops were also reviewed. The [review
 status guide](2026-11-13-graziani-review-status.md#reacquiring-source-files)
 records reacquisition links.
 
+**November 17 follow-up:** the five-sheet PDF was reacquired from the original
+URL and its SHA-256 matched the value above. A same-stream visual recheck of
+Map A's Summary of Important Locations reads Benghazi `A4827`. The city/port
+symbol still obscures the underlying numbered hex in the inspected crop; this
+recheck supports the existing [working coordinate ruling](2026-11-12-graziani-ruling-decisions.md#rul-gra-05-benghazi-setup-coordinate-working-interpretation)
+but is not an independent reading, a new seam certification, or resolution of
+the conflicting scenario rows. The downloaded copy remains temporary.
+
 ## Map seam: bounded observations
 
 Land §4.1, printed p. 7, describes a section's `01xx` row over the preceding
@@ -40,6 +48,16 @@ Existing C/D edge evidence, including the three bounded admitted crossings, is
 recorded in the [map identity pilot](2026-11-12-graziani-map-identity-pilot.md#independent-cd-sheet-edge-check).
 This recheck does not extend them. Sheet-edge appearance, Land wording, grid
 stagger and chart distance still need reconciliation for each admitted join.
+
+**Additional B/C visual lead:** previously retained B/C edge crops show a
+Gazala-area `4934` partial edge cell with a coastal road reaching B's edge;
+the C `4901` edge area also shows a coastal road. The local orientation and feature
+continuity make this pair useful for a future seam reading, but `C4901` is
+partially cut by the image edge and similar coast/road patterns recur. This
+observation does not prove an alias, a traversable edge, or that either label
+is fully visible in both crops. The crops' derivation was not independently
+verified this session. Check neighboring labels and geometry directly on the
+hash-matched originals in a blind reading before accepting any relationship.
 
 ### Rechecked printed distance cells
 
@@ -77,6 +95,38 @@ Reconcile or explicitly block every mismatch and record the selected source
 hierarchy before extending coverage. Validate reciprocal neighbors, physical
 boundaries, feature continuity, ZOC, route legality and replay under a versioned
 content identity. No new seam or readiness flag is authorized by this packet.
+
+**November 17 calculation check:** using the existing 190-cell transcription,
+recomputed distances with axial/cube distance `(abs(dq)+abs(dr)+abs(dq+dr))/2`,
+testing uniform inter-sheet offsets 31–35 and both row-stagger conventions. The
+33-column, `(row + (row & 1))/2` convention reproduced 179/190 matches and the
+same 11 mismatches; every other tested combination matched at most 90/190.
+This is a calculation cross-check against the same transcription, not a blind
+source entry or proof that offsets outside this small family are impossible.
+It does not select a seam or adjudicate any printed mismatch.
+
+**Chart consistency check:** the original §37.42 chart (Air/Logistics
+PDF p. 25) defines each entry as a shortest hex distance, including hypothetical
+sea-grid crossings. It prints Barce `B5504`–Bir-el-Qatrani `D2903` as **80**,
+Barce–Tobruk `C4807` as **40**, and Tobruk–Bir-el-Qatrani as **38**. A
+single, consistent shortest-path metric must satisfy the triangle inequality,
+but `80 > 40 + 38`. Thus these three printed cells cannot all be distances in
+the same unweighted connected hex grid, regardless of the chosen section offset.
+This check does not identify which cell is wrong, prove a particular seam, or
+establish a legal movement route. A [fresh-context reader](2026-11-17-graziani-map-independent-review.md)
+subsequently transcribed the same three cells and chart footnote independently;
+errata review remains required. The reader also found B4827 inland without a
+visible Benghazi city/port mark, while Map A and the distance chart identify
+Benghazi as A4827. This supports review of the coordinate ruling but does not
+establish a legal seam. The reader recorded map and Air hashes without baselines
+in its supplied manifest; this session separately matched them to the hashes above.
+
+For triage, a script checked the existing 20-place, 190-cell transcription
+across all 1,140 unordered location triples and found 24 triangle-inequality
+violations. A [fresh-context full-chart entry](2026-11-17-graziani-distance-transcription.md)
+subsequently matched all 190 values and reproduced the 24 violations; the prior
+data and new reading are retained separately. Same-edition agreement is not a
+correction of any chart cell or proof of legal map geometry.
 
 ## Supply and truck row comparisons
 

@@ -1,5 +1,10 @@
 # Arrival, supply and repair: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one researcher reading and blind template, not an adopted ruling or
 independent review. Fifteen grouped rows bind the facts that drive the recent
 arrival/supply timing and repair decisions to three original source packages.

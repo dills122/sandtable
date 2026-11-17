@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-formations-members-v1",
+  "manifest_sha256": "4e6e607e52ceb484e89bdea2acdd7a0690bc6492b9d85b23697f9cafe9874e3b",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "codex-independent-axis-2026-11-17",
+  "rows": [
+    {
+      "id": "cirene-hq",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-hq row",
+      "values": {
+        "counter_abbreviation": "63 Cir",
+        "id_code": "b",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-hq",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-hq row",
+      "values": {
+        "counter_abbreviation": "157",
+        "id_code": "h",
+        "toe_mark": "1 × 65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-i",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-i row",
+      "values": {
+        "counter_abbreviation": "I/157",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-ii",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-ii row",
+      "values": {
+        "counter_abbreviation": "II/157",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-157-iii",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-157-iii row",
+      "values": {
+        "counter_abbreviation": "III/157",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-hq",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-hq row",
+      "values": {
+        "counter_abbreviation": "158",
+        "id_code": "h",
+        "toe_mark": "1 × 65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-i",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-i row",
+      "values": {
+        "counter_abbreviation": "I/158",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-ii",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-ii row",
+      "values": {
+        "counter_abbreviation": "II/158",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-158-iii",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-158-iii row",
+      "values": {
+        "counter_abbreviation": "III/158",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-mg",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-mg row",
+      "values": {
+        "counter_abbreviation": "63",
+        "id_code": "bb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-at",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-at row",
+      "values": {
+        "counter_abbreviation": "63",
+        "id_code": "rr",
+        "toe_mark": "2 × 47/32 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-artillery",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-artillery row",
+      "values": {
+        "counter_abbreviation": "45",
+        "id_code": "kk",
+        "toe_mark": "6 × 75/18 Gun-Howitzer, 3 × 100/17 Howitzer, 3 × Light AA",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-engineer",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-engineer row",
+      "values": {
+        "counter_abbreviation": "63",
+        "id_code": "bbb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-bersaglieri",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-bersaglieri row",
+      "values": {
+        "counter_abbreviation": "63 Brs",
+        "id_code": "aaa",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "cirene-tank",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, cirene-tank row; note a",
+      "values": {
+        "counter_abbreviation": "LXIII(L)",
+        "id_code": "not-listed",
+        "toe_mark": "not-listed",
+        "arrival_mark": "D",
+        "assigned_parent": "Libyan Tank Command",
+        "initial_attachment": "63rd Cirene"
+      }
+    },
+    {
+      "id": "marmarica-hq",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-hq row",
+      "values": {
+        "counter_abbreviation": "62 Mrm",
+        "id_code": "b",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-hq",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-hq row",
+      "values": {
+        "counter_abbreviation": "115",
+        "id_code": "h",
+        "toe_mark": "1 × 65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-i",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-i row",
+      "values": {
+        "counter_abbreviation": "I/115",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-ii",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-ii row",
+      "values": {
+        "counter_abbreviation": "II/115",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-115-iii",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-115-iii row",
+      "values": {
+        "counter_abbreviation": "III/115",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-hq",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-hq row",
+      "values": {
+        "counter_abbreviation": "116",
+        "id_code": "h",
+        "toe_mark": "1 × 65/17 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-i",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-i row",
+      "values": {
+        "counter_abbreviation": "I/116",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-ii",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-ii row",
+      "values": {
+        "counter_abbreviation": "II/116",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-116-iii",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-116-iii row",
+      "values": {
+        "counter_abbreviation": "III/116",
+        "id_code": "u",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-mg",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-mg row",
+      "values": {
+        "counter_abbreviation": "62",
+        "id_code": "bb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-at",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-at row",
+      "values": {
+        "counter_abbreviation": "62",
+        "id_code": "rr",
+        "toe_mark": "2 × 47/32 Gun",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-artillery",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-artillery row",
+      "values": {
+        "counter_abbreviation": "44",
+        "id_code": "kk",
+        "toe_mark": "6 × 75/27 Gun, 3 × 105/28 Gun, 3 × Light AA",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-engineer",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-engineer row",
+      "values": {
+        "counter_abbreviation": "62",
+        "id_code": "bbb",
+        "toe_mark": "N",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-tank",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, marmarica-tank row; note a",
+      "values": {
+        "counter_abbreviation": "LXII(L)",
+        "id_code": "not-listed",
+        "toe_mark": "not-listed",
+        "arrival_mark": "D",
+        "assigned_parent": "Libyan Tank Command",
+        "initial_attachment": "62nd Marmarica"
+      }
+    }
+  ]
+}

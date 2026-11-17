@@ -1,5 +1,10 @@
 # French Motor Marine company: blind source review
 
+**November 17 independent review:** [fresh entry](reading-independent.json)
+and [raw comparison](comparison-independent.json) are retained. See
+[disposition](../2026-11-17-graziani-independent-reviews.md) for differing
+locators, quote marks and deployment wording; later identity remains open.
+
 **Status:** one reader and a blank second entry. Four grouped records cover the
 company's original OA entry, its errata correction, the deployed-marker
 definition and the scenario setup entry. They do not establish that every

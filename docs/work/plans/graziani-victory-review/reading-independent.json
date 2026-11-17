@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "scope": "graziani-six-turn-victory-source-v1",
+  "manifest_sha256": "f81498e8a1e6715f25362426d55ac1974475d48a5ccf2d1bec4fa8f026f45b2d",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "reader_id": "codex-independent-source-review-2026-11-17",
+  "rows": [
+    {
+      "id": "scenario-cross-reference",
+      "locator": "Scenario printed p. 27 §60.22",
+      "values": {
+        "printed_victory_case": "60.71",
+        "final_turn": 6,
+        "final_stage": 3
+      }
+    },
+    {
+      "id": "victory-heading",
+      "locator": "Scenario printed p. 28 §60.81 heading",
+      "values": {
+        "scenario_name": "Grazianni’s Offensive"
+      }
+    },
+    {
+      "id": "italian-strategic",
+      "locator": "Scenario printed p. 28 §60.81 Italian Strategic",
+      "values": {
+        "take_hold": "either Alexandria or Cairo (any hex)",
+        "unit": "combat unit",
+        "supply": "by convoy from any hex on Game-Map D"
+      }
+    },
+    {
+      "id": "italian-decisive",
+      "locator": "Scenario printed p. 28 §60.81 Italian Decisive",
+      "values": {
+        "take_hold": "both Mersa Matruh and Siwa",
+        "unit": "any combat unit",
+        "supply": "by convoy from Tobruk"
+      }
+    },
+    {
+      "id": "italian-tactical",
+      "locator": "Scenario printed p. 28 §60.81 Italian Tactical",
+      "values": {
+        "take_hold": "Sidi Birani",
+        "retain": "Sollum (C4021), Fort Maddalena and Giarabub",
+        "supply": "in supply (as above, to Tobruk)"
+      }
+    },
+    {
+      "id": "commonwealth-tactical",
+      "locator": "Scenario printed p. 28 §60.81 Commonwealth Tactical",
+      "values": {
+        "take_hold": "Sollum, Halfaya Pass (C3922), and Siwa (C0127)",
+        "supply": "tracing supply by truck convoy back to Alexandria or Cairo"
+      }
+    },
+    {
+      "id": "commonwealth-decisive",
+      "locator": "Scenario printed p. 28 §60.81 Commonwealth Decisive",
+      "values": {
+        "take_hold": "Bardia, Fort Maddalena, Sidi Omar, Sollum and Siwa",
+        "supply": "supply as above"
+      }
+    },
+    {
+      "id": "commonwealth-strategic",
+      "locator": "Scenario printed p. 28 §60.81 Commonwealth Strategic",
+      "values": {
+        "take_hold": "Tobruk",
+        "supply": "supply as above"
+      }
+    }
+  ]
+}

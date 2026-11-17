@@ -1,0 +1,238 @@
+{
+  "scope": "graziani-cw-arrivals-six-turns-v1",
+  "manifest_sha256": "599826eba2cd920f2cae0061b7758786d394cdda2b95eab638dec6d27bcaa35f",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-blind-arrival-review-2026-11-17"
+  ],
+  "expected_rows": 14,
+  "evidence": [
+    {
+      "row": "schedule-polish",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 3, §4.43a, polish",
+        "PDF p. 3, §4.43a, GT 1 Polish Bde"
+      ]
+    },
+    {
+      "row": "schedule-rtr-and-nz-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 3, §4.43a, rtr-and-nz-artillery",
+        "PDF p. 3, §4.43a, GT 2 2 RTR, 7 RTR, 6th NZ Fld Arty Regt"
+      ]
+    },
+    {
+      "row": "schedule-indian-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 3, §4.43a, indian-artillery",
+        "PDF p. 3, §4.43a, GT 3 1 Fld Arty Regt [4 In]"
+      ]
+    },
+    {
+      "row": "schedule-hussars",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 3, §4.43a, hussars",
+        "PDF p. 3, §4.43a, GT 4 3rd Hussars"
+      ]
+    },
+    {
+      "row": "schedule-indian-brigade",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 3, §4.43a, indian-brigade",
+        "PDF p. 3, §4.43a, GT 5 7 in Bde [4 In]"
+      ]
+    },
+    {
+      "row": "schedule-nz-brigade",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 3, §4.43a, nz-brigade",
+        "PDF p. 3, §4.43a, GT 6 6NZ Bde"
+      ]
+    },
+    {
+      "row": "oa-polish",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA polish",
+        "PDF p. 21, Polish (Carpathian) Brigade, HQ through 1st Polish Artillery Regt"
+      ]
+    },
+    {
+      "row": "oa-2-rtr",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 11, OA 2-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 2nd Royal Tank Regt"
+      ]
+    },
+    {
+      "row": "oa-7-rtr",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 11, OA 7-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 7th Royal Tank Regt"
+      ]
+    },
+    {
+      "row": "oa-nz-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA nz-artillery",
+        "PDF p. 18, 2nd New Zealand Division, 6th NZ Field Artillery Regt"
+      ]
+    },
+    {
+      "row": "oa-indian-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA indian-artillery",
+        "PDF p. 15, 4th Indian Division, 1st Field Artillery Regt"
+      ]
+    },
+    {
+      "row": "oa-hussars",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 11, OA hussars",
+        "PDF p. 11, Unassigned Armor-Class Units, 3rd Kings Own Hussars"
+      ]
+    },
+    {
+      "row": "oa-indian-brigade",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA indian-brigade",
+        "PDF p. 15, 4th Indian Division, 7th Indian Bde HQ through 4/16 Punjab Regt"
+      ]
+    },
+    {
+      "row": "oa-nz-brigade",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA nz-brigade",
+        "PDF p. 18, 2nd New Zealand Division, 6th New Zealand Bde HQ through 26th NZ Bn"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "schedule-polish",
+      "locators": [
+        "PDF p. 3, §4.43a, polish",
+        "PDF p. 3, §4.43a, GT 1 Polish Bde"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "schedule-rtr-and-nz-artillery",
+      "locators": [
+        "PDF p. 3, §4.43a, rtr-and-nz-artillery",
+        "PDF p. 3, §4.43a, GT 2 2 RTR, 7 RTR, 6th NZ Fld Arty Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "schedule-indian-artillery",
+      "locators": [
+        "PDF p. 3, §4.43a, indian-artillery",
+        "PDF p. 3, §4.43a, GT 3 1 Fld Arty Regt [4 In]"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "schedule-hussars",
+      "locators": [
+        "PDF p. 3, §4.43a, hussars",
+        "PDF p. 3, §4.43a, GT 4 3rd Hussars"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "schedule-indian-brigade",
+      "locators": [
+        "PDF p. 3, §4.43a, indian-brigade",
+        "PDF p. 3, §4.43a, GT 5 7 in Bde [4 In]"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "schedule-nz-brigade",
+      "locators": [
+        "PDF p. 3, §4.43a, nz-brigade",
+        "PDF p. 3, §4.43a, GT 6 6NZ Bde"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-polish",
+      "locators": [
+        "PDF p. 21, OA polish",
+        "PDF p. 21, Polish (Carpathian) Brigade, HQ through 1st Polish Artillery Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-2-rtr",
+      "locators": [
+        "PDF p. 11, OA 2-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 2nd Royal Tank Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-7-rtr",
+      "locators": [
+        "PDF p. 11, OA 7-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 7th Royal Tank Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-nz-artillery",
+      "locators": [
+        "PDF p. 18, OA nz-artillery",
+        "PDF p. 18, 2nd New Zealand Division, 6th NZ Field Artillery Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-indian-artillery",
+      "locators": [
+        "PDF p. 15, OA indian-artillery",
+        "PDF p. 15, 4th Indian Division, 1st Field Artillery Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-hussars",
+      "locators": [
+        "PDF p. 11, OA hussars",
+        "PDF p. 11, Unassigned Armor-Class Units, 3rd Kings Own Hussars"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-indian-brigade",
+      "locators": [
+        "PDF p. 15, OA indian-brigade",
+        "PDF p. 15, 4th Indian Division, 7th Indian Bde HQ through 4/16 Punjab Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "oa-nz-brigade",
+      "locators": [
+        "PDF p. 18, OA nz-brigade",
+        "PDF p. 18, 2nd New Zealand Division, 6th New Zealand Bde HQ through 26th NZ Bn"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

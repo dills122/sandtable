@@ -1,0 +1,413 @@
+{
+  "scope": "graziani-cw-oa-members-v1",
+  "manifest_sha256": "dba41f612a9853273a3defd3d1b5a247e00c5dd7f787da6bcef9f974a95e6066",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-blind-arrival-review-2026-11-17"
+  ],
+  "expected_rows": 21,
+  "evidence": [
+    {
+      "row": "polish-hq",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-hq",
+        "PDF p. 21, Polish (Carpathian) Brigade, Polish Brigade HQ"
+      ]
+    },
+    {
+      "row": "polish-1-bn",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-1-bn",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Bn"
+      ]
+    },
+    {
+      "row": "polish-2-bn",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-2-bn",
+        "PDF p. 21, Polish (Carpathian) Brigade, 2nd Polish Bn"
+      ]
+    },
+    {
+      "row": "polish-3-bn",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-3-bn",
+        "PDF p. 21, Polish (Carpathian) Brigade, 3rd Polish Bn"
+      ]
+    },
+    {
+      "row": "polish-kopanski-mg",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-kopanski-mg",
+        "PDF p. 21, Polish (Carpathian) Brigade, Kopanski MG Coy"
+      ]
+    },
+    {
+      "row": "polish-cavalry",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-cavalry",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Cavalry Regt"
+      ]
+    },
+    {
+      "row": "polish-at",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-at",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Anti-tank Coy"
+      ]
+    },
+    {
+      "row": "polish-artillery",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, OA row polish-artillery",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Artillery Regt"
+      ]
+    },
+    {
+      "row": "2-rtr",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 11, OA row 2-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 2nd Royal Tank Regt"
+      ]
+    },
+    {
+      "row": "7-rtr",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 11, OA row 7-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 7th Royal Tank Regt"
+      ]
+    },
+    {
+      "row": "6-nz-field",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA row 6-nz-field",
+        "PDF p. 18, 2nd New Zealand Division, 6th NZ Field Artillery Regt"
+      ]
+    },
+    {
+      "row": "1-field-4-indian",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA row 1-field-4-indian",
+        "PDF p. 15, 4th Indian Division, 1st Field Artillery Regt"
+      ]
+    },
+    {
+      "row": "3-hussars",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 11, OA row 3-hussars",
+        "PDF p. 11, Unassigned Armor-Class Units, 3rd Kings Own Hussars"
+      ]
+    },
+    {
+      "row": "7-indian-hq",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA row 7-indian-hq",
+        "PDF p. 15, 4th Indian Division, 7th Indian Bde HQ"
+      ]
+    },
+    {
+      "row": "royal-sussex",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA row royal-sussex",
+        "PDF p. 15, 4th Indian Division, 1st Royal Sussex"
+      ]
+    },
+    {
+      "row": "4-11-sikhs",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA row 4-11-sikhs",
+        "PDF p. 15, 4th Indian Division, 4/11 Sikhs"
+      ]
+    },
+    {
+      "row": "4-16-punjab",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 15, OA row 4-16-punjab",
+        "PDF p. 15, 4th Indian Division, 4/16 Punjab Regt"
+      ]
+    },
+    {
+      "row": "6-nz-hq",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA row 6-nz-hq",
+        "PDF p. 18, 2nd New Zealand Division, 6th New Zealand Bde HQ"
+      ]
+    },
+    {
+      "row": "24-nz",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA row 24-nz",
+        "PDF p. 18, 2nd New Zealand Division, 24th NZ Bn"
+      ]
+    },
+    {
+      "row": "25-nz",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA row 25-nz",
+        "PDF p. 18, 2nd New Zealand Division, 25th NZ Bn"
+      ]
+    },
+    {
+      "row": "26-nz",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 18, OA row 26-nz",
+        "PDF p. 18, 2nd New Zealand Division, 26th NZ Bn"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "polish-hq",
+      "locators": [
+        "PDF p. 21, OA row polish-hq",
+        "PDF p. 21, Polish (Carpathian) Brigade, Polish Brigade HQ"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-1-bn",
+      "locators": [
+        "PDF p. 21, OA row polish-1-bn",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Bn"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-2-bn",
+      "locators": [
+        "PDF p. 21, OA row polish-2-bn",
+        "PDF p. 21, Polish (Carpathian) Brigade, 2nd Polish Bn"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-3-bn",
+      "locators": [
+        "PDF p. 21, OA row polish-3-bn",
+        "PDF p. 21, Polish (Carpathian) Brigade, 3rd Polish Bn"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-kopanski-mg",
+      "locators": [
+        "PDF p. 21, OA row polish-kopanski-mg",
+        "PDF p. 21, Polish (Carpathian) Brigade, Kopanski MG Coy"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-cavalry",
+      "locators": [
+        "PDF p. 21, OA row polish-cavalry",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Cavalry Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-at",
+      "locators": [
+        "PDF p. 21, OA row polish-at",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Anti-tank Coy"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "polish-at",
+      "field": "toe_mark",
+      "values": [
+        "1×2-pounder",
+        "1 × 2-pounder"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "polish-artillery",
+      "locators": [
+        "PDF p. 21, OA row polish-artillery",
+        "PDF p. 21, Polish (Carpathian) Brigade, 1st Polish Artillery Regt"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "polish-artillery",
+      "field": "toe_mark",
+      "values": [
+        "4×18-pounder",
+        "4 × 18-pounder"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "2-rtr",
+      "locators": [
+        "PDF p. 11, OA row 2-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 2nd Royal Tank Regt"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "2-rtr",
+      "field": "toe_mark",
+      "values": [
+        "10×A13 Cruiser",
+        "10 × A13 Cruiser"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "7-rtr",
+      "locators": [
+        "PDF p. 11, OA row 7-rtr",
+        "PDF p. 11, Unassigned Armor-Class Units, 7th Royal Tank Regt"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "7-rtr",
+      "field": "toe_mark",
+      "values": [
+        "10×Matilda",
+        "10 × Matilda"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "6-nz-field",
+      "locators": [
+        "PDF p. 18, OA row 6-nz-field",
+        "PDF p. 18, 2nd New Zealand Division, 6th NZ Field Artillery Regt"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "6-nz-field",
+      "field": "toe_mark",
+      "values": [
+        "6×18/25-pounder",
+        "6 × 18/25-pounder"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "1-field-4-indian",
+      "locators": [
+        "PDF p. 15, OA row 1-field-4-indian",
+        "PDF p. 15, 4th Indian Division, 1st Field Artillery Regt"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "1-field-4-indian",
+      "field": "toe_mark",
+      "values": [
+        "6×18/25-pounder",
+        "6 × 18/25-pounder"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "3-hussars",
+      "locators": [
+        "PDF p. 11, OA row 3-hussars",
+        "PDF p. 11, Unassigned Armor-Class Units, 3rd Kings Own Hussars"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "3-hussars",
+      "field": "toe_mark",
+      "values": [
+        "10×Mark VI Light",
+        "10 × Mark VI Light"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "7-indian-hq",
+      "locators": [
+        "PDF p. 15, OA row 7-indian-hq",
+        "PDF p. 15, 4th Indian Division, 7th Indian Bde HQ"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "royal-sussex",
+      "locators": [
+        "PDF p. 15, OA row royal-sussex",
+        "PDF p. 15, 4th Indian Division, 1st Royal Sussex"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "4-11-sikhs",
+      "locators": [
+        "PDF p. 15, OA row 4-11-sikhs",
+        "PDF p. 15, 4th Indian Division, 4/11 Sikhs"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "4-16-punjab",
+      "locators": [
+        "PDF p. 15, OA row 4-16-punjab",
+        "PDF p. 15, 4th Indian Division, 4/16 Punjab Regt"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "6-nz-hq",
+      "locators": [
+        "PDF p. 18, OA row 6-nz-hq",
+        "PDF p. 18, 2nd New Zealand Division, 6th New Zealand Bde HQ"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "24-nz",
+      "locators": [
+        "PDF p. 18, OA row 24-nz",
+        "PDF p. 18, 2nd New Zealand Division, 24th NZ Bn"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "25-nz",
+      "locators": [
+        "PDF p. 18, OA row 25-nz",
+        "PDF p. 18, 2nd New Zealand Division, 25th NZ Bn"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "26-nz",
+      "locators": [
+        "PDF p. 18, OA row 26-nz",
+        "PDF p. 18, 2nd New Zealand Division, 26th NZ Bn"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}
