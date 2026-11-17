@@ -16,7 +16,10 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         ContentSourceAxisGarrisonRemainderPackArtifact? garrisonRemainderContent = null,
         ContentSourceGiarabubMotorMachineGunArtifact? motorMachineGunContent = null,
         ContentSourceCwFrontlineArtifact? cwFrontlineContent = null,
-        ContentSourceTobrukBardiaGarrisonPackArtifact? tobrukBardiaGarrisonContent = null)
+        ContentSourceTobrukBardiaGarrisonPackArtifact? tobrukBardiaGarrisonContent = null,
+        ContentSourceBardiaGarrisonRemainderPackArtifact? bardiaGarrisonRemainderContent = null,
+        ContentSourceTripoliTankRegimentPackArtifact? tripoliTankRegimentContent = null,
+        ContentSourceCwAttachedArtilleryPackArtifact? cwAttachedArtilleryContent = null)
     {
         Content = content; World = world; PredecessorHash = predecessorHash; SetupHash = setupHash;
         cachedHash = new Lazy<string>(ComputeHash, LazyThreadSafetyMode.ExecutionAndPublication);
@@ -26,6 +29,9 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         MotorMachineGunContent = motorMachineGunContent;
         CwFrontlineContent = cwFrontlineContent;
         TobrukBardiaGarrisonContent = tobrukBardiaGarrisonContent;
+        BardiaGarrisonRemainderContent = bardiaGarrisonRemainderContent;
+        TripoliTankRegimentContent = tripoliTankRegimentContent;
+        CwAttachedArtilleryContent = cwAttachedArtilleryContent;
     }
     internal ContentSourceCwFreeGunsPackArtifact Content { get; }
     internal CampaignWorldSnapshotV8 World { get; }
@@ -37,6 +43,9 @@ internal sealed class CampaignSourceCwFreeGunsWorld
     internal ContentSourceGiarabubMotorMachineGunArtifact? MotorMachineGunContent { get; }
     internal ContentSourceCwFrontlineArtifact? CwFrontlineContent { get; }
     internal ContentSourceTobrukBardiaGarrisonPackArtifact? TobrukBardiaGarrisonContent { get; }
+    internal ContentSourceBardiaGarrisonRemainderPackArtifact? BardiaGarrisonRemainderContent { get; }
+    internal ContentSourceTripoliTankRegimentPackArtifact? TripoliTankRegimentContent { get; }
+    internal ContentSourceCwAttachedArtilleryPackArtifact? CwAttachedArtilleryContent { get; }
 
     internal CampaignSourceCwFreeGunsWorld ActivateCwFrontline(CampaignSourceCommonwealthSupplementalForces supplement,
         CampaignSourceBattlefield battlefield, CampaignSourceMotorizationWorld motorization)
@@ -73,7 +82,8 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             World.World.Elements.Concat(elements), World.World.Representations.Concat(reps), World.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, World.ScenarioId, init, world6, World.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, content, TobrukBardiaGarrisonContent);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, content, TobrukBardiaGarrisonContent,
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateGiarabubMotorMachineGun(CampaignSourceAxisGarrisonForces garrisons,
@@ -107,7 +117,8 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             World.World.Elements.Append(element), World.World.Representations.Append(rep), World.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, World.ScenarioId, init, world6, World.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, content, CwFrontlineContent, TobrukBardiaGarrisonContent);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, content, CwFrontlineContent, TobrukBardiaGarrisonContent,
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateGarrisonRemainder(CampaignSourceAxisGarrisonForces garrisons,
@@ -146,7 +157,8 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, content, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, content, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateMinorGarrisons(CampaignSourceAxisGarrisonForces garrisons,
@@ -185,7 +197,8 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, content, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, content, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateTobrukBardiaGarrison(CampaignSourceBattlefield battlefield)
@@ -221,7 +234,120 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, content);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, content,
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+    }
+
+    internal CampaignSourceCwFreeGunsWorld ActivateBardiaGarrisonRemainder(CampaignSourceBattlefield battlefield)
+    {
+        ArgumentNullException.ThrowIfNull(battlefield);
+        if (TobrukBardiaGarrisonContent is null || BardiaGarrisonRemainderContent is not null)
+            throw new InvalidOperationException("Bardia garrison remainder requires the admitted Tobruk/Bardia pack and no duplicate.");
+        var content = ContentSourceBardiaGarrisonRemainderPackArtifact.Create(TobrukBardiaGarrisonContent);
+        if (ContentSourceBardiaGarrisonRemainderPackArtifact.Read(content.CanonicalBytes).Identity != content.Identity)
+            throw new InvalidOperationException("Bardia garrison remainder content failed canonical validation.");
+        var prior = World;
+        var ids = ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds;
+        if (prior.World.Elements.Any(value => ids.Contains(value.ElementId, StringComparer.Ordinal))
+            || prior.PendingArrivals.Any(value => value.ElementIds.Any(ids.Contains)))
+            throw new InvalidOperationException("Bardia garrison remainder overlaps the native world or pending arrivals.");
+        var init = prior.Initialization;
+        var seeds = ContentSourceBardiaGarrisonRemainderPackArtifact.CreateToeSeeds(prior.ScenarioId)
+            .ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var elements = ids.Select(id =>
+        {
+            var entry = battlefield.Entries.Single(value => value.ElementId == id);
+            if (entry.SideId != "axis" || entry.LocationId != ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId
+                || entry.AuthorityStatus != "source-bardia-garrison-remainder-admitted")
+                throw new InvalidOperationException("Bardia garrison remainder differs from retained source evidence.");
+            var toe = seeds[id];
+            return new CampaignElementStateV5(id, ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId, init.ReserveStatus,
+                new CampaignElementOperationalStateV5(1, 1, init.CapabilityPointsExpended, init.CohesionLevel, null, null),
+                toe.InitialComponentToes.Select(component =>
+                    new CampaignComponentToeState(component.ComponentId, component.CurrentToe, component.Origin)));
+        }).ToArray();
+        var reps = ids.Select(id => new CampaignMapRepresentationState("bardia-garrison-remainder." + id,
+            ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId, CampaignMapRepresentationBindingKind.IndependentElement, [id]));
+        var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
+            prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
+        var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
+            content, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+    }
+
+    internal CampaignSourceCwFreeGunsWorld ActivateTripoliTankRegiment(CampaignSourceBattlefield battlefield)
+    {
+        ArgumentNullException.ThrowIfNull(battlefield);
+        if (TripoliTankRegimentContent is not null)
+            throw new InvalidOperationException("Tripoli tank regiment is already active.");
+        var content = ContentSourceTripoliTankRegimentPackArtifact.Create(Content);
+        if (ContentSourceTripoliTankRegimentPackArtifact.Read(content.CanonicalBytes).Identity != content.Identity)
+            throw new InvalidOperationException("Tripoli tank regiment content failed canonical validation.");
+        var prior = World;
+        var ids = ContentSourceTripoliTankRegimentPackArtifact.AllIds;
+        if (prior.World.Elements.Any(value => ids.Contains(value.ElementId, StringComparer.Ordinal))
+            || prior.PendingArrivals.Any(value => value.ElementIds.Any(ids.Contains)))
+            throw new InvalidOperationException("Tripoli tank regiment overlaps the native world or pending arrivals.");
+        var init = prior.Initialization;
+        var seeds = ContentSourceTripoliTankRegimentPackArtifact.CreateToeSeeds(prior.ScenarioId)
+            .ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var elements = ids.Select(id =>
+        {
+            var entry = battlefield.Entries.Single(value => value.ElementId == id);
+            if (entry.SideId != "axis" || entry.LocationId != ContentSourceTripoliTankRegimentPackArtifact.LocationId
+                || entry.AuthorityStatus != "source-tripoli-tank-regiment-admitted")
+                throw new InvalidOperationException("Tripoli tank regiment differs from retained source evidence.");
+            var toe = seeds[id];
+            return new CampaignElementStateV5(id, ContentSourceTripoliTankRegimentPackArtifact.LocationId, init.ReserveStatus,
+                new CampaignElementOperationalStateV5(1, 1, init.CapabilityPointsExpended, init.CohesionLevel, null, null),
+                toe.InitialComponentToes.Select(component =>
+                    new CampaignComponentToeState(component.ComponentId, component.CurrentToe, component.Origin)));
+        }).ToArray();
+        var reps = ids.Select(id => new CampaignMapRepresentationState("tripoli-tank-regiment." + id,
+            ContentSourceTripoliTankRegimentPackArtifact.LocationId, CampaignMapRepresentationBindingKind.IndependentElement, [id]));
+        var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
+            prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
+        var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
+            BardiaGarrisonRemainderContent, content, CwAttachedArtilleryContent);
+    }
+
+    internal CampaignSourceCwFreeGunsWorld ActivateCwAttachedArtillery(CampaignSourceBattlefield battlefield)
+    {
+        ArgumentNullException.ThrowIfNull(battlefield);
+        if (CwFrontlineContent is null || CwAttachedArtilleryContent is not null)
+            throw new InvalidOperationException("CW attached artillery requires the admitted CW frontline pack and no duplicate.");
+        var content = ContentSourceCwAttachedArtilleryPackArtifact.Create(CwFrontlineContent);
+        if (ContentSourceCwAttachedArtilleryPackArtifact.Read(content.CanonicalBytes).Identity != content.Identity)
+            throw new InvalidOperationException("CW attached artillery content failed canonical validation.");
+        var prior = World;
+        var ids = ContentSourceCwAttachedArtilleryPackArtifact.AllIds;
+        if (prior.World.Elements.Any(value => ids.Contains(value.ElementId, StringComparer.Ordinal))
+            || prior.PendingArrivals.Any(value => value.ElementIds.Any(ids.Contains)))
+            throw new InvalidOperationException("CW attached artillery overlaps the native world or pending arrivals.");
+        var init = prior.Initialization;
+        var seeds = ContentSourceCwAttachedArtilleryPackArtifact.CreateToeSeeds(prior.ScenarioId)
+            .ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var elements = ids.Select(id =>
+        {
+            var entry = battlefield.Entries.Single(value => value.ElementId == id);
+            var location = ContentSourceCwAttachedArtilleryPackArtifact.LocationOf(id);
+            if (entry.SideId != "commonwealth" || entry.LocationId != location
+                || entry.AuthorityStatus != "source-cw-attached-artillery-admitted")
+                throw new InvalidOperationException("CW attached artillery differs from retained source evidence.");
+            var toe = seeds[id];
+            return new CampaignElementStateV5(id, location, init.ReserveStatus,
+                new CampaignElementOperationalStateV5(1, 1, init.CapabilityPointsExpended, init.CohesionLevel, null, null),
+                toe.InitialComponentToes.Select(component =>
+                    new CampaignComponentToeState(component.ComponentId, component.CurrentToe, component.Origin)));
+        }).ToArray();
+        var reps = ids.Select(id => new CampaignMapRepresentationState("cw-attached-artillery." + id,
+            ContentSourceCwAttachedArtilleryPackArtifact.LocationOf(id), CampaignMapRepresentationBindingKind.IndependentElement, [id]));
+        var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
+            prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
+        var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, content);
     }
 
     internal static CampaignSourceCwFreeGunsWorld Create(CampaignSourceAuthorityState state)
@@ -288,9 +414,12 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             || !previous.World.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
             || !previous.World.PendingArrivals.SequenceEqual(successor.PendingArrivals))
             throw new InvalidOperationException("CW free-gun rebind must preserve its actual predecessor.");
-        var world = new CampaignWorldSnapshotV8(previous.TobrukBardiaGarrisonContent?.Identity ?? previous.CwFrontlineContent?.Identity ?? previous.MotorMachineGunContent?.Identity ?? previous.GarrisonRemainderContent?.Identity ?? previous.MinorGarrisonContent?.Identity ?? previous.Content.Identity, successor.ScenarioId, successor.Initialization,
+        var world = new CampaignWorldSnapshotV8(previous.CwAttachedArtilleryContent?.Identity ?? previous.TripoliTankRegimentContent?.Identity
+            ?? previous.BardiaGarrisonRemainderContent?.Identity ?? previous.TobrukBardiaGarrisonContent?.Identity ?? previous.CwFrontlineContent?.Identity
+            ?? previous.MotorMachineGunContent?.Identity ?? previous.GarrisonRemainderContent?.Identity ?? previous.MinorGarrisonContent?.Identity ?? previous.Content.Identity, successor.ScenarioId, successor.Initialization,
             successor.World, successor.PendingArrivals);
-        return new(previous.Content, world, previous.NewlyActivatedIds, successorHash, previous.SetupHash, previous.MinorGarrisonContent, previous.GarrisonRemainderContent, previous.MotorMachineGunContent, previous.CwFrontlineContent, previous.TobrukBardiaGarrisonContent);
+        return new(previous.Content, world, previous.NewlyActivatedIds, successorHash, previous.SetupHash, previous.MinorGarrisonContent, previous.GarrisonRemainderContent, previous.MotorMachineGunContent, previous.CwFrontlineContent, previous.TobrukBardiaGarrisonContent,
+            previous.BardiaGarrisonRemainderContent, previous.TripoliTankRegimentContent, previous.CwAttachedArtilleryContent);
     }
 
     internal byte[] SerializeCanonical()
@@ -330,6 +459,21 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             {
                 writer.WriteString("tobrukBardiaGarrisonContentHash", TobrukBardiaGarrisonContent.Identity.Hash);
                 writer.WriteBase64String("tobrukBardiaGarrisonContent", TobrukBardiaGarrisonContent.CanonicalBytes);
+            }
+            if (BardiaGarrisonRemainderContent is not null)
+            {
+                writer.WriteString("bardiaGarrisonRemainderContentHash", BardiaGarrisonRemainderContent.Identity.Hash);
+                writer.WriteBase64String("bardiaGarrisonRemainderContent", BardiaGarrisonRemainderContent.CanonicalBytes);
+            }
+            if (TripoliTankRegimentContent is not null)
+            {
+                writer.WriteString("tripoliTankRegimentContentHash", TripoliTankRegimentContent.Identity.Hash);
+                writer.WriteBase64String("tripoliTankRegimentContent", TripoliTankRegimentContent.CanonicalBytes);
+            }
+            if (CwAttachedArtilleryContent is not null)
+            {
+                writer.WriteString("cwAttachedArtilleryContentHash", CwAttachedArtilleryContent.Identity.Hash);
+                writer.WriteBase64String("cwAttachedArtilleryContent", CwAttachedArtilleryContent.CanonicalBytes);
             }
             writer.WriteBoolean("worldCoverageComplete", false); writer.WriteString("mobilityStatus", "unresolved-no-native-movement");
             writer.WriteStartArray("newlyActivatedIds"); foreach (var id in NewlyActivatedIds) writer.WriteStringValue(id); writer.WriteEndArray();

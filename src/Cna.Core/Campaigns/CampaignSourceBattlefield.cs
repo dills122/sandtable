@@ -259,6 +259,159 @@ internal sealed class CampaignSourceBattlefield
             matruhOriginHash, cwFreeGunsOriginHash);
     }
 
+    // The 5 Bardia elements ContentSourceTobrukBardiaGarrisonPackArtifact's
+    // "part 1" pack deliberately excluded (see its own comment and the
+    // AdmitSourceTobrukBardiaGarrison comment above). Same pure
+    // status-transition pattern: these entries already carry source-evidence
+    // from CampaignSourceAxisInitialForces, nothing new is added here.
+    internal CampaignSourceBattlefield AdmitSourceBardiaGarrisonRemainder()
+    {
+        var ids = ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds;
+        foreach (var id in ids)
+        {
+            var entry = entries.SingleOrDefault(value => value.ElementId == id);
+            if (entry is not { SideId: "axis", AuthorityStatus: "source-evidence" }
+                || entry.LocationId != ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId)
+                throw new InvalidOperationException("Bardia garrison remainder differs from its retained source evidence.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-bardia-garrison-remainder-admitted" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateSourceBardiaGarrisonRemainder(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var ids = ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds;
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("Bardia garrison remainder world does not preserve its predecessor.");
+        foreach (var id in ids)
+        {
+            var entry = entries.Single(value => value.ElementId == id);
+            var element = successor.World.Elements.Single(value => value.ElementId == id);
+            var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(id));
+            if (entry.SideId != "axis" || entry.LocationId != ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId
+                || entry.AuthorityStatus != "source-bardia-garrison-remainder-admitted"
+                || element.CurrentLocationId != ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId
+                || representation.CurrentLocationId != ContentSourceBardiaGarrisonRemainderPackArtifact.LocationId
+                || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || !representation.BoundElementIds.SequenceEqual([id]))
+                throw new InvalidOperationException("Bardia garrison remainder differs from its retained source entry.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-bardia-garrison-remainder-active" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    // Independent Tripoli Tank Regiment counters (distinct from the grouped
+    // Aresca regiment, which shares the same source OA page but a different
+    // location). Already carry source-evidence from CampaignSourceAxisSupplementalForces
+    // (Cna1979GrazianiSourceFacts.TripoliTankRegimentInitialSubset); nothing
+    // new is added here.
+    internal CampaignSourceBattlefield AdmitSourceTripoliTankRegiment()
+    {
+        var ids = ContentSourceTripoliTankRegimentPackArtifact.AllIds;
+        foreach (var id in ids)
+        {
+            var entry = entries.SingleOrDefault(value => value.ElementId == id);
+            if (entry is not { SideId: "axis", AuthorityStatus: "source-evidence" }
+                || entry.LocationId != ContentSourceTripoliTankRegimentPackArtifact.LocationId)
+                throw new InvalidOperationException("Tripoli tank regiment differs from its retained source evidence.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-tripoli-tank-regiment-admitted" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateSourceTripoliTankRegiment(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var ids = ContentSourceTripoliTankRegimentPackArtifact.AllIds;
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("Tripoli tank regiment world does not preserve its predecessor.");
+        foreach (var id in ids)
+        {
+            var entry = entries.Single(value => value.ElementId == id);
+            var element = successor.World.Elements.Single(value => value.ElementId == id);
+            var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(id));
+            if (entry.SideId != "axis" || entry.LocationId != ContentSourceTripoliTankRegimentPackArtifact.LocationId
+                || entry.AuthorityStatus != "source-tripoli-tank-regiment-admitted"
+                || element.CurrentLocationId != ContentSourceTripoliTankRegimentPackArtifact.LocationId
+                || representation.CurrentLocationId != ContentSourceTripoliTankRegimentPackArtifact.LocationId
+                || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || !representation.BoundElementIds.SequenceEqual([id]))
+                throw new InvalidOperationException("Tripoli tank regiment differs from its retained source entry.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-tripoli-tank-regiment-active" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    // Independent Commonwealth artillery/antitank counters attached to
+    // already-admitted independent infantry at the same source placements
+    // (see ContentSourceCwAttachedArtilleryPackArtifact's own comment).
+    // Already carry source-evidence from CampaignSourceCommonwealthSupplementalForces;
+    // nothing new is added here.
+    internal CampaignSourceBattlefield AdmitSourceCwAttachedArtillery()
+    {
+        var ids = ContentSourceCwAttachedArtilleryPackArtifact.AllIds;
+        foreach (var id in ids)
+        {
+            var entry = entries.SingleOrDefault(value => value.ElementId == id);
+            if (entry is not { SideId: "commonwealth", AuthorityStatus: "source-evidence" }
+                || entry.LocationId != ContentSourceCwAttachedArtilleryPackArtifact.LocationOf(id))
+                throw new InvalidOperationException("CW attached artillery differs from its retained source evidence.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-cw-attached-artillery-admitted" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateSourceCwAttachedArtillery(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var ids = ContentSourceCwAttachedArtilleryPackArtifact.AllIds;
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("CW attached artillery world does not preserve its predecessor.");
+        foreach (var id in ids)
+        {
+            var entry = entries.Single(value => value.ElementId == id);
+            var element = successor.World.Elements.Single(value => value.ElementId == id);
+            var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(id));
+            var location = ContentSourceCwAttachedArtilleryPackArtifact.LocationOf(id);
+            if (entry.SideId != "commonwealth" || entry.LocationId != location
+                || entry.AuthorityStatus != "source-cw-attached-artillery-admitted"
+                || element.CurrentLocationId != location || representation.CurrentLocationId != location
+                || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || !representation.BoundElementIds.SequenceEqual([id]))
+                throw new InvalidOperationException("CW attached artillery differs from its retained source entry.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-cw-attached-artillery-active" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
     internal CampaignSourceBattlefield ArriveRetainedFormation(CampaignGroupedWorld prior,
         CampaignGroupedWorld successor, string pendingGroupId, string locationId)
     {

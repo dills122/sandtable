@@ -1647,6 +1647,96 @@ public static class CampaignExercises
         return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
             [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
     }
+    public static bool IsSourceBardiaGarrisonRemainderActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.BardiaGarrisonRemainderContent is not null;
+    public static ExerciseStepResult AdmitSourceBardiaGarrisonRemainder(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanAdmitSourceBardiaGarrisonRemainder: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitSourceBardiaGarrisonRemainder(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceBardiaGarrisonRemainderAdmission(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitSourceBardiaGarrisonRemainderActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult ActivateSourceBardiaGarrisonRemainder(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateSourceBardiaGarrisonRemainder: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateSourceBardiaGarrisonRemainder(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceBardiaGarrisonRemainderEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateSourceBardiaGarrisonRemainderActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static bool IsSourceTripoliTankRegimentActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.TripoliTankRegimentContent is not null;
+    public static ExerciseStepResult AdmitSourceTripoliTankRegiment(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanAdmitSourceTripoliTankRegiment: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitSourceTripoliTankRegiment(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceTripoliTankRegimentAdmission(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitSourceTripoliTankRegimentActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult ActivateSourceTripoliTankRegiment(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateSourceTripoliTankRegiment: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateSourceTripoliTankRegiment(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceTripoliTankRegimentEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateSourceTripoliTankRegimentActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static bool IsSourceCwAttachedArtilleryActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.CwAttachedArtilleryContent is not null;
+    public static ExerciseStepResult AdmitSourceCwAttachedArtillery(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanAdmitSourceCwAttachedArtillery: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitSourceCwAttachedArtillery(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceCwAttachedArtilleryAdmission(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitSourceCwAttachedArtilleryActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult ActivateSourceCwAttachedArtillery(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateSourceCwAttachedArtillery: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateSourceCwAttachedArtillery(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceCwAttachedArtilleryEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateSourceCwAttachedArtilleryActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
     public static bool CanPromoteSourceCwFreeGunsWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteCwFreeGunsWorld == true;
     public static ExerciseStepResult AdmitSourceCwFreeGuns(ExerciseSession session) => ApplySourceCwFreeGunsSystem(session, false);
     public static ExerciseStepResult PromoteSourceCwFreeGunsWorld(ExerciseSession session) => ApplySourceCwFreeGunsSystem(session, true);

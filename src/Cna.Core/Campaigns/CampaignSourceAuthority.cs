@@ -1568,6 +1568,224 @@ internal sealed class CampaignSourceAuthorityState
         return stream.ToArray();
     }
 
+    internal static readonly string AdmitSourceBardiaGarrisonRemainderActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.bardia-garrison-remainder.admit.v1"));
+    internal static readonly string ActivateSourceBardiaGarrisonRemainderActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.bardia-garrison-remainder.activate.v1"));
+
+    // The 5 Bardia elements ContentSourceTobrukBardiaGarrisonPackArtifact's
+    // "part 1" pack deliberately left out (see its own comment); admitted the
+    // same two-phase way once the Tobruk/Bardia pack itself is active.
+    internal bool CanAdmitSourceBardiaGarrisonRemainder => Battlefield is not null
+        && CwFreeGunsWorld is { TobrukBardiaGarrisonContent: not null }
+        && ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+
+    internal CampaignSourceAuthorityState AdmitSourceBardiaGarrisonRemainder()
+    {
+        if (!CanAdmitSourceBardiaGarrisonRemainder) throw new InvalidOperationException("Bardia garrison remainder requires the admitted Tobruk/Bardia pack and no duplicate.");
+        var battlefield = Battlefield!.AdmitSourceBardiaGarrisonRemainder();
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
+            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+    }
+
+    internal byte[] SerializeSourceBardiaGarrisonRemainderAdmission(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-bardia-garrison-remainder-admitted");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", AdmitSourceBardiaGarrisonRemainderActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal bool CanActivateSourceBardiaGarrisonRemainder => CwFreeGunsWorld is { BardiaGarrisonRemainderContent: null }
+        && Battlefield is not null && ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-bardia-garrison-remainder-admitted"));
+
+    internal CampaignSourceAuthorityState ActivateSourceBardiaGarrisonRemainder()
+    {
+        if (!CanActivateSourceBardiaGarrisonRemainder) throw new InvalidOperationException("Bardia garrison remainder activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateBardiaGarrisonRemainder(Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateSourceBardiaGarrisonRemainder(World, active.World), active);
+    }
+
+    internal byte[] SerializeSourceBardiaGarrisonRemainderEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-bardia-garrison-remainder-activated");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateSourceBardiaGarrisonRemainderActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.BardiaGarrisonRemainderContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal static readonly string AdmitSourceTripoliTankRegimentActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.tripoli-tank-regiment.admit.v1"));
+    internal static readonly string ActivateSourceTripoliTankRegimentActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.tripoli-tank-regiment.activate.v1"));
+
+    // Independent Tripoli Tank Regiment counters (distinct from the grouped
+    // Aresca regiment). Admitted the same two-phase way as Tobruk/Bardia;
+    // does not require any other pack to be active first.
+    internal bool CanAdmitSourceTripoliTankRegiment => Battlefield is not null && AxisSupplement is not null
+        && ContentSourceTripoliTankRegimentPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+
+    internal CampaignSourceAuthorityState AdmitSourceTripoliTankRegiment()
+    {
+        if (!CanAdmitSourceTripoliTankRegiment) throw new InvalidOperationException("Tripoli tank regiment requires the prior source profile and no duplicate.");
+        var battlefield = Battlefield!.AdmitSourceTripoliTankRegiment();
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
+            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+    }
+
+    internal byte[] SerializeSourceTripoliTankRegimentAdmission(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-tripoli-tank-regiment-admitted");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", AdmitSourceTripoliTankRegimentActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal bool CanActivateSourceTripoliTankRegiment => CwFreeGunsWorld is { TripoliTankRegimentContent: null }
+        && Battlefield is not null && ContentSourceTripoliTankRegimentPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-tripoli-tank-regiment-admitted"));
+
+    internal CampaignSourceAuthorityState ActivateSourceTripoliTankRegiment()
+    {
+        if (!CanActivateSourceTripoliTankRegiment) throw new InvalidOperationException("Tripoli tank regiment activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateTripoliTankRegiment(Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateSourceTripoliTankRegiment(World, active.World), active);
+    }
+
+    internal byte[] SerializeSourceTripoliTankRegimentEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-tripoli-tank-regiment-activated");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateSourceTripoliTankRegimentActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.TripoliTankRegimentContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal static readonly string AdmitSourceCwAttachedArtilleryActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.cw-attached-artillery.admit.v1"));
+    internal static readonly string ActivateSourceCwAttachedArtilleryActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.cw-attached-artillery.activate.v1"));
+
+    // Independent Commonwealth artillery/antitank counters attached to
+    // already-admitted independent infantry at the same source placements;
+    // admitted the same two-phase way once the CW frontline pack is active.
+    internal bool CanAdmitSourceCwAttachedArtillery => Battlefield is not null
+        && CwFreeGunsWorld is { CwFrontlineContent: not null }
+        && ContentSourceCwAttachedArtilleryPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+
+    internal CampaignSourceAuthorityState AdmitSourceCwAttachedArtillery()
+    {
+        if (!CanAdmitSourceCwAttachedArtillery) throw new InvalidOperationException("CW attached artillery requires the admitted CW frontline pack and no duplicate.");
+        var battlefield = Battlefield!.AdmitSourceCwAttachedArtillery();
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
+            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+    }
+
+    internal byte[] SerializeSourceCwAttachedArtilleryAdmission(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-cw-attached-artillery-admitted");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", AdmitSourceCwAttachedArtilleryActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal bool CanActivateSourceCwAttachedArtillery => CwFreeGunsWorld is { CwAttachedArtilleryContent: null }
+        && Battlefield is not null && ContentSourceCwAttachedArtilleryPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-cw-attached-artillery-admitted"));
+
+    internal CampaignSourceAuthorityState ActivateSourceCwAttachedArtillery()
+    {
+        if (!CanActivateSourceCwAttachedArtillery) throw new InvalidOperationException("CW attached artillery activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateCwAttachedArtillery(Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateSourceCwAttachedArtillery(World, active.World), active);
+    }
+
+    internal byte[] SerializeSourceCwAttachedArtilleryEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-cw-attached-artillery-activated");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateSourceCwAttachedArtilleryActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.CwAttachedArtilleryContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
     private CampaignSourceAuthorityState WithCwFreeGuns(CampaignSourceCwFreeGuns setup, CampaignSourceBattlefield battlefield, CampaignSourceCwFreeGunsWorld? active) =>
         new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization,
             OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization,
