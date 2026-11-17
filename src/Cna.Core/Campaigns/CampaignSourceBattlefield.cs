@@ -203,6 +203,62 @@ internal sealed class CampaignSourceBattlefield
             axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
     }
 
+    // Independent (ungrouped) Tobruk/Bardia static-defense garrison counters.
+    // Unlike AddCwFreeGuns/AddSixthAustralian, these 28 elements do NOT need
+    // new entries here: CampaignSourceAxisInitialForces already names all of
+    // them (as part of its full 33-element Tobruk/Bardia chart groups) and
+    // Create() above already seeded their source-evidence entries from that
+    // same Forces list. What is actually missing is admission/activation of
+    // a 28-element World8-representable subset of that already-retained
+    // evidence (the other 5 - vec-machine-gun-battalion, 30-gaf-antitank-
+    // battalion, 8/9/10-gaf-artillery - stay out of this pack's scope). So
+    // Admit/Activate here are pure status transitions over existing entries,
+    // mirroring how PlaceCwFreeGun/PromoteCwFreeGuns retag rather than add.
+    internal CampaignSourceBattlefield AdmitSourceTobrukBardiaGarrison()
+    {
+        var ids = ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds;
+        foreach (var id in ids)
+        {
+            var entry = entries.SingleOrDefault(value => value.ElementId == id);
+            if (entry is not { SideId: "axis", AuthorityStatus: "source-evidence" }
+                || entry.LocationId != ContentSourceTobrukBardiaGarrisonPackArtifact.LocationOf(id))
+                throw new InvalidOperationException("Tobruk/Bardia garrison differs from its retained source evidence.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-tobruk-bardia-garrison-admitted" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
+    internal CampaignSourceBattlefield ActivateSourceTobrukBardiaGarrison(CampaignWorldSnapshotV8 prior,
+        CampaignWorldSnapshotV8 successor)
+    {
+        ArgumentNullException.ThrowIfNull(prior); ArgumentNullException.ThrowIfNull(successor);
+        var ids = ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds;
+        if (!prior.World.Elements.All(successor.World.Elements.Contains)
+            || !prior.World.Representations.All(successor.World.Representations.Contains)
+            || !prior.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
+            || !prior.PendingArrivals.SequenceEqual(successor.PendingArrivals)
+            || !successor.World.Elements.Except(prior.World.Elements).Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal).SetEquals(ids))
+            throw new InvalidOperationException("Tobruk/Bardia garrison world does not preserve its predecessor.");
+        foreach (var id in ids)
+        {
+            var entry = entries.Single(value => value.ElementId == id);
+            var element = successor.World.Elements.Single(value => value.ElementId == id);
+            var representation = successor.World.Representations.Single(value => value.BoundElementIds.Contains(id));
+            var location = ContentSourceTobrukBardiaGarrisonPackArtifact.LocationOf(id);
+            if (entry.SideId != "axis" || entry.LocationId != location || entry.AuthorityStatus != "source-tobruk-bardia-garrison-admitted"
+                || element.CurrentLocationId != location || representation.CurrentLocationId != location
+                || representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || !representation.BoundElementIds.SequenceEqual([id]))
+                throw new InvalidOperationException("Tobruk/Bardia garrison differs from its retained source entry.");
+        }
+        return new CampaignSourceBattlefield(entries.Select(entry => ids.Contains(entry.ElementId, StringComparer.Ordinal)
+            ? entry with { AuthorityStatus = "source-tobruk-bardia-garrison-active" } : entry), pending,
+            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash, axisCorpsArtilleryOriginHash,
+            matruhOriginHash, cwFreeGunsOriginHash);
+    }
+
     internal CampaignSourceBattlefield ArriveRetainedFormation(CampaignGroupedWorld prior,
         CampaignGroupedWorld successor, string pendingGroupId, string locationId)
     {

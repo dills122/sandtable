@@ -15,7 +15,8 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         ContentSourceAxisMinorGarrisonsPackArtifact? minorGarrisonContent = null,
         ContentSourceAxisGarrisonRemainderPackArtifact? garrisonRemainderContent = null,
         ContentSourceGiarabubMotorMachineGunArtifact? motorMachineGunContent = null,
-        ContentSourceCwFrontlineArtifact? cwFrontlineContent = null)
+        ContentSourceCwFrontlineArtifact? cwFrontlineContent = null,
+        ContentSourceTobrukBardiaGarrisonPackArtifact? tobrukBardiaGarrisonContent = null)
     {
         Content = content; World = world; PredecessorHash = predecessorHash; SetupHash = setupHash;
         cachedHash = new Lazy<string>(ComputeHash, LazyThreadSafetyMode.ExecutionAndPublication);
@@ -24,6 +25,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         GarrisonRemainderContent = garrisonRemainderContent;
         MotorMachineGunContent = motorMachineGunContent;
         CwFrontlineContent = cwFrontlineContent;
+        TobrukBardiaGarrisonContent = tobrukBardiaGarrisonContent;
     }
     internal ContentSourceCwFreeGunsPackArtifact Content { get; }
     internal CampaignWorldSnapshotV8 World { get; }
@@ -34,6 +36,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
     internal ContentSourceAxisGarrisonRemainderPackArtifact? GarrisonRemainderContent { get; }
     internal ContentSourceGiarabubMotorMachineGunArtifact? MotorMachineGunContent { get; }
     internal ContentSourceCwFrontlineArtifact? CwFrontlineContent { get; }
+    internal ContentSourceTobrukBardiaGarrisonPackArtifact? TobrukBardiaGarrisonContent { get; }
 
     internal CampaignSourceCwFreeGunsWorld ActivateCwFrontline(CampaignSourceCommonwealthSupplementalForces supplement,
         CampaignSourceBattlefield battlefield, CampaignSourceMotorizationWorld motorization)
@@ -70,7 +73,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             World.World.Elements.Concat(elements), World.World.Representations.Concat(reps), World.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, World.ScenarioId, init, world6, World.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, content);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, content, TobrukBardiaGarrisonContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateGiarabubMotorMachineGun(CampaignSourceAxisGarrisonForces garrisons,
@@ -104,7 +107,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             World.World.Elements.Append(element), World.World.Representations.Append(rep), World.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, World.ScenarioId, init, world6, World.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, content);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, content, CwFrontlineContent, TobrukBardiaGarrisonContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateGarrisonRemainder(CampaignSourceAxisGarrisonForces garrisons,
@@ -143,7 +146,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, content);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, content, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateMinorGarrisons(CampaignSourceAxisGarrisonForces garrisons,
@@ -182,7 +185,43 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
-        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, content);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, content, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent);
+    }
+
+    internal CampaignSourceCwFreeGunsWorld ActivateTobrukBardiaGarrison(CampaignSourceBattlefield battlefield)
+    {
+        ArgumentNullException.ThrowIfNull(battlefield);
+        if (TobrukBardiaGarrisonContent is not null)
+            throw new InvalidOperationException("Tobruk/Bardia garrison is already active.");
+        var content = ContentSourceTobrukBardiaGarrisonPackArtifact.Create(Content);
+        if (ContentSourceTobrukBardiaGarrisonPackArtifact.Read(content.CanonicalBytes).Identity != content.Identity)
+            throw new InvalidOperationException("Tobruk/Bardia garrison content failed canonical validation.");
+        var prior = World;
+        var ids = ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds;
+        if (prior.World.Elements.Any(value => ids.Contains(value.ElementId, StringComparer.Ordinal))
+            || prior.PendingArrivals.Any(value => value.ElementIds.Any(ids.Contains)))
+            throw new InvalidOperationException("Tobruk/Bardia garrison overlaps the native world or pending arrivals.");
+        var init = prior.Initialization;
+        var seeds = ContentSourceTobrukBardiaGarrisonPackArtifact.CreateToeSeeds(prior.ScenarioId)
+            .ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var elements = ids.Select(id =>
+        {
+            var entry = battlefield.Entries.Single(value => value.ElementId == id);
+            var location = ContentSourceTobrukBardiaGarrisonPackArtifact.LocationOf(id);
+            if (entry.SideId != "axis" || entry.LocationId != location || entry.AuthorityStatus != "source-tobruk-bardia-garrison-admitted")
+                throw new InvalidOperationException("Tobruk/Bardia garrison differs from retained source evidence.");
+            var toe = seeds[id];
+            return new CampaignElementStateV5(id, location, init.ReserveStatus,
+                new CampaignElementOperationalStateV5(1, 1, init.CapabilityPointsExpended, init.CohesionLevel, null, null),
+                toe.InitialComponentToes.Select(component =>
+                    new CampaignComponentToeState(component.ComponentId, component.CurrentToe, component.Origin)));
+        }).ToArray();
+        var reps = ids.Select(id => new CampaignMapRepresentationState("tobruk-bardia-garrison." + id,
+            ContentSourceTobrukBardiaGarrisonPackArtifact.LocationOf(id), CampaignMapRepresentationBindingKind.IndependentElement, [id]));
+        var world6 = new CampaignWorldSnapshotV6(CampaignWorldSnapshotV6.CurrentContractVersion,
+            prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
+        var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
+        return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, content);
     }
 
     internal static CampaignSourceCwFreeGunsWorld Create(CampaignSourceAuthorityState state)
@@ -249,9 +288,9 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             || !previous.World.World.BrokenVehicleLots.SequenceEqual(successor.World.BrokenVehicleLots)
             || !previous.World.PendingArrivals.SequenceEqual(successor.PendingArrivals))
             throw new InvalidOperationException("CW free-gun rebind must preserve its actual predecessor.");
-        var world = new CampaignWorldSnapshotV8(previous.CwFrontlineContent?.Identity ?? previous.MotorMachineGunContent?.Identity ?? previous.GarrisonRemainderContent?.Identity ?? previous.MinorGarrisonContent?.Identity ?? previous.Content.Identity, successor.ScenarioId, successor.Initialization,
+        var world = new CampaignWorldSnapshotV8(previous.TobrukBardiaGarrisonContent?.Identity ?? previous.CwFrontlineContent?.Identity ?? previous.MotorMachineGunContent?.Identity ?? previous.GarrisonRemainderContent?.Identity ?? previous.MinorGarrisonContent?.Identity ?? previous.Content.Identity, successor.ScenarioId, successor.Initialization,
             successor.World, successor.PendingArrivals);
-        return new(previous.Content, world, previous.NewlyActivatedIds, successorHash, previous.SetupHash, previous.MinorGarrisonContent, previous.GarrisonRemainderContent, previous.MotorMachineGunContent, previous.CwFrontlineContent);
+        return new(previous.Content, world, previous.NewlyActivatedIds, successorHash, previous.SetupHash, previous.MinorGarrisonContent, previous.GarrisonRemainderContent, previous.MotorMachineGunContent, previous.CwFrontlineContent, previous.TobrukBardiaGarrisonContent);
     }
 
     internal byte[] SerializeCanonical()
@@ -286,6 +325,11 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             {
                 writer.WriteString("cwFrontlineContentHash", CwFrontlineContent.Identity.Hash);
                 writer.WriteBase64String("cwFrontlineContent", CwFrontlineContent.CanonicalBytes);
+            }
+            if (TobrukBardiaGarrisonContent is not null)
+            {
+                writer.WriteString("tobrukBardiaGarrisonContentHash", TobrukBardiaGarrisonContent.Identity.Hash);
+                writer.WriteBase64String("tobrukBardiaGarrisonContent", TobrukBardiaGarrisonContent.CanonicalBytes);
             }
             writer.WriteBoolean("worldCoverageComplete", false); writer.WriteString("mobilityStatus", "unresolved-no-native-movement");
             writer.WriteStartArray("newlyActivatedIds"); foreach (var id in NewlyActivatedIds) writer.WriteStringValue(id); writer.WriteEndArray();
