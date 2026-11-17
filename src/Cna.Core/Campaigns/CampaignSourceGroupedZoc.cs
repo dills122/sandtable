@@ -36,6 +36,21 @@ internal static class CampaignSourceGroupedZoc
 
     internal readonly record struct DefenseEstimate(long LowerBound, bool AllKnown);
 
+    // What kind of thing DescribeUnresolvedSources is reporting as blocking
+    // (mirrors CanDeriveForSide's three checks, in order).
+    internal enum ZocUnresolvedSourceKind
+    {
+        FormationNotDeterminate,
+        DetachedMemberNotDeterminate,
+        IndependentElementCombatClassified,
+        IndependentElementMissingCombatFacts,
+    }
+
+    // One concrete, human-readable cause of source-grouped-movement-domain-
+    // incomplete for a side: what is blocking (SourceId - a group id or
+    // element id) and why (Reason).
+    internal readonly record struct ZocUnresolvedSource(ZocUnresolvedSourceKind Kind, string SourceId, string Reason);
+
     // Per-member defensive Close Assault rating for a named grouped
     // component, scoped to the chart cells actually verified against the
     // Commonwealth OA (see the agreed rulings this module implements). Any
@@ -250,6 +265,100 @@ internal static class CampaignSourceGroupedZoc
                 return false;
         }
         return true;
+    }
+
+    // Diagnostic counterpart to CanDeriveForSide: walks the exact same three
+    // checks (grouped formations, detached members, remaining independent
+    // elements) but never short-circuits on the first failure, so a caller
+    // gets every real blocker for the side in one pass instead of having to
+    // bisect with a throwaway diagnostic each time (see the hand-traced
+    // IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
+    // fixture, which needed exactly that before this method existed). Pure
+    // read-only query over existing state; CanDeriveForSide's own logic and
+    // short-circuit behavior are untouched.
+    internal static IReadOnlyList<ZocUnresolvedSource> DescribeUnresolvedSources(CampaignSourcePlayableWorld world, string sideId)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sideId);
+        var grouped = world.GroupedWorld;
+        var unresolved = new List<ZocUnresolvedSource>();
+        foreach (var group in grouped.Groups.Where(value => value.SideId == sideId))
+            if (DescribeUnresolvedFormation(group) is { } reason)
+                unresolved.Add(new ZocUnresolvedSource(ZocUnresolvedSourceKind.FormationNotDeterminate, group.GroupId, reason));
+        foreach (var detached in grouped.Detached.Where(value => value.SideId == sideId))
+            if (DescribeUnresolvedDetached(detached) is { } reason)
+                unresolved.Add(new ZocUnresolvedSource(ZocUnresolvedSourceKind.DetachedMemberNotDeterminate,
+                    detached.Member.ElementId, reason));
+        var claimed = grouped.Groups.SelectMany(value => value.Members.Select(member => member.ElementId))
+            .Concat(grouped.Detached.Select(value => value.Member.ElementId))
+            .ToHashSet(StringComparer.Ordinal);
+        var facts = world.Source.Content.Definition.ElementCombatFacts.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        var elements = world.Source.Content.Definition.LegacyDefinition.Elements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        foreach (var representation in grouped.Prior.World.Representations)
+        {
+            if (representation.BindingKind != CampaignMapRepresentationBindingKind.IndependentElement
+                || representation.BoundElementIds.Count != 1) continue;
+            var id = representation.BoundElementIds[0];
+            if (claimed.Contains(id) || !elements.TryGetValue(id, out var element) || element.SideId != sideId) continue;
+            if (!facts.TryGetValue(id, out var elementFacts))
+            {
+                unresolved.Add(new ZocUnresolvedSource(ZocUnresolvedSourceKind.IndependentElementMissingCombatFacts, id,
+                    $"no ElementCombatFacts entry for independently represented element '{id}'"));
+                continue;
+            }
+            var classification = Cna1979Combat.FindClassification(elementFacts.CombatClassificationId);
+            if (classification?.Kind is ZocCombatClassificationKind.CombatUnit or ZocCombatClassificationKind.Headquarters)
+                unresolved.Add(new ZocUnresolvedSource(ZocUnresolvedSourceKind.IndependentElementCombatClassified, id,
+                    $"independently represented element '{id}' is still combat-classified ({classification.Kind}) " +
+                    "and not yet grouped - this module does not derive ZOC for independent elements"));
+        }
+        return Array.AsReadOnly(unresolved.ToArray());
+    }
+
+    // Mirrors EvaluateFormationSource's preconditions but reports *why* a
+    // formation is indeterminate instead of just returning null. Returns
+    // null itself when the formation is actually determinate (qualified or
+    // not) - i.e. exactly when EvaluateFormationSource would be non-null.
+    private static string? DescribeUnresolvedFormation(CampaignGroupedFormation group)
+    {
+        if (!group.DispositionConfirmed) return "disposition not confirmed";
+        if (group.StackValue is null) return "stack value not confirmed";
+        var cohesionLevels = group.Members.Select(value => value.CohesionLevel).Distinct().ToArray();
+        if (cohesionLevels.Length != 1) return "inconsistent cohesion levels across members";
+        var estimate = EstimateRawDefenseLowerBound(group.GroupId, group.Members);
+        if (ResolveAgainstThreshold(estimate) is not null) return null;
+        return "defense lower bound unresolved below the 10-point threshold: " + DescribeUnratedMembers(group.GroupId, group.Members);
+    }
+
+    // Mirrors EvaluateDetachedSource's precondition for the same reason.
+    private static string? DescribeUnresolvedDetached(CampaignDetachedGroupedMember detached)
+    {
+        var estimate = EstimateRawDefenseLowerBound(detached.GroupId, [detached.Member]);
+        if (ResolveAgainstThreshold(estimate) is not null) return null;
+        return "defense lower bound unresolved below the 10-point threshold: "
+            + DescribeUnratedMembers(detached.GroupId, [detached.Member]);
+    }
+
+    // Names every member whose component(s) carry no entry in
+    // TryDefensiveCloseAssaultRating - the actual, per-member cause behind an
+    // AllKnown=false defense estimate - rather than only the aggregate bool.
+    private static string DescribeUnratedMembers(string groupId, IEnumerable<CampaignGroupedMember> members)
+    {
+        var parts = new List<string>();
+        foreach (var member in members)
+        {
+            if (member.AdditionalComponents is { Count: > 0 })
+            {
+                parts.Add($"element '{member.ElementId}' has additional components not represented in the lower bound");
+                continue;
+            }
+            if (member.ComponentType is not { } componentType || member.ComponentToe is not { } toe) continue;
+            if (!TryDefensiveCloseAssaultRating(groupId, member.ElementId, componentType, toe, out _, out _))
+                parts.Add($"no close-assault rating entry for element '{member.ElementId}' (component '{componentType}', toe {toe})");
+        }
+        return parts.Count == 0
+            ? "lower bound below threshold with no single unrated component (every known component already contributed)"
+            : string.Join("; ", parts);
     }
 
     private readonly record struct HexOccupant(int StackValue, int CohesionLevel, DefenseEstimate Defense);

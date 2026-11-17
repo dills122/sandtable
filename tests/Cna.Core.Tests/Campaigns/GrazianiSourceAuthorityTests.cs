@@ -8605,15 +8605,15 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.True(unrepresentedAfter.Count < unrepresentedBefore.Count);
     }
 
-    // Combines every proven admission/correction action from this session's 3
-    // PRs (#352 Giarabub, #355 Tobruk/Bardia, #359 Category B + Aresca
-    // sequencing) into one continuous sequence against the single most-advanced
-    // real fixture, instead of each living in its own standalone proof branch
-    // that is never exercised together with the others. See which of the 8
-    // readiness blockers confirmed present on main actually clear once all of
-    // them are chained before Axis/Commonwealth owner finalization.
-    [Fact]
-    public void IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers()
+    // Builds the single most-advanced real fixture used by
+    // IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
+    // below (see that test for what it combines and why). Extracted, byte-
+    // for-byte, out of that test's own setup so
+    // DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps can reuse
+    // the exact same chained scenario - the one that actually reaches the
+    // three known rating-table gaps - without duplicating ~2000 lines of
+    // setup or re-deriving a cheaper fixture that might not reach them.
+    private static CampaignSourcePlayableWorld BuildFullyChainedCombinedWorldForBothSides()
     {
         var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
         var initialization = new CampaignSourceInitialization(CapabilityPointAmount.Zero, 0);
@@ -10592,6 +10592,20 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(3, bothFinalized.SourceAuthority!.FinalizedOwners);
 
         var combinedWorld = CampaignSourcePlayableWorld.Create(bothFinalized.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        return combinedWorld;
+    }
+
+    // Combines every proven admission/correction action from this session's 3
+    // PRs (#352 Giarabub, #355 Tobruk/Bardia, #359 Category B + Aresca
+    // sequencing) into one continuous sequence against the single most-advanced
+    // real fixture, instead of each living in its own standalone proof branch
+    // that is never exercised together with the others. See which of the 8
+    // readiness blockers confirmed present on main actually clear once all of
+    // them are chained before Axis/Commonwealth owner finalization.
+    [Fact]
+    public void IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers()
+    {
+        var combinedWorld = BuildFullyChainedCombinedWorldForBothSides();
         var finalBlockers = combinedWorld.ReadinessBlockers();
         // source-grouped-movement-domain-incomplete root cause, traced (via a
         // temporary diagnostic walking CampaignSourceGroupedZoc.EvaluateFormationSource/
@@ -10694,6 +10708,45 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Contains("source-grouped-movement-domain-incomplete", finalBlockers);
         Assert.Contains("source-initial-contacts-unavailable", finalBlockers);
         Assert.Equal(5, finalBlockers.Count);
+    }
+
+    // Proves CampaignSourceGroupedZoc.DescribeUnresolvedSources is actually
+    // useful, not just non-empty: against the exact same fully-chained
+    // fixture as IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
+    // above - where source-grouped-movement-domain-incomplete is still
+    // present - it must name all three real causes this session had to
+    // hand-trace with a throwaway diagnostic (walking EvaluateFormationSource/
+    // EvaluateDetachedSource per group/side, then reverting it) before this
+    // method existed: Aresca's CV33 component, the 6th Australian Division,
+    // and the Matruh Garrison.
+    [Fact]
+    public void DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps()
+    {
+        var combinedWorld = BuildFullyChainedCombinedWorldForBothSides();
+        // Guard: fail loudly here, not silently, if this fixture's known
+        // blocker ever clears for an unrelated reason.
+        Assert.Contains("source-grouped-movement-domain-incomplete", combinedWorld.ReadinessBlockers());
+
+        var axisUnresolved = CampaignSourceGroupedZoc.DescribeUnresolvedSources(combinedWorld, "axis");
+        var commonwealthUnresolved = CampaignSourceGroupedZoc.DescribeUnresolvedSources(combinedWorld, "commonwealth");
+
+        var aresca = Assert.Single(axisUnresolved, value => value.SourceId == CampaignSourceArescaGroupedDefinition.GroupId);
+        Assert.Equal(CampaignSourceGroupedZoc.ZocUnresolvedSourceKind.FormationNotDeterminate, aresca.Kind);
+        // The specific, actionable detail this session had to dig for by
+        // hand: which element/component/toe has no cited rating.
+        Assert.Contains("cv33", aresca.Reason);
+        Assert.Contains(CampaignSourceArescaGroupedDefinition.BattalionId, aresca.Reason);
+        Assert.Contains("close-assault rating", aresca.Reason);
+
+        var sixthAustralian = Assert.Single(commonwealthUnresolved,
+            value => value.SourceId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);
+        Assert.Equal(CampaignSourceGroupedZoc.ZocUnresolvedSourceKind.FormationNotDeterminate, sixthAustralian.Kind);
+        Assert.Contains("close-assault rating", sixthAustralian.Reason);
+
+        var matruhGarrison = Assert.Single(commonwealthUnresolved,
+            value => value.SourceId == CampaignSourceMatruhGroupedDefinition.GroupId);
+        Assert.Equal(CampaignSourceGroupedZoc.ZocUnresolvedSourceKind.FormationNotDeterminate, matruhGarrison.Kind);
+        Assert.Contains("close-assault rating", matruhGarrison.Reason);
     }
 
     private static CampaignActionSubmission Submission(ExerciseSession session, string actionId, CampaignActionAudience audience)
