@@ -4394,7 +4394,8 @@
     "cd29ee700dbe5ddeec8d65c0ff72b116074231b75baa4c4fdbc14a7c723ea768": 6,
     "545d4c02e849fab1c95c6321691dae524c8c52ba2ec85a6e0dcf7d85d509e1e8": 105,
     "dd644f08f97013d8864783cbbafba91c3a9f2eb17e4d901fe0549ad0210cba63": 5,
-    "17b58381ae4f5431b76942419a4a2defcf92167caa0dea1b326f84b3c6cf5df2": 50
+    "17b58381ae4f5431b76942419a4a2defcf92167caa0dea1b326f84b3c6cf5df2": 50,
+    "899aa31fb78cd7f14ba96505542a2e8f55b30eadec710afc6b57ccdfa834ed2d": 56993
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
