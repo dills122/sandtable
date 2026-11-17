@@ -1,5 +1,10 @@
 # Rail rules: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one reader and a blank second entry. Ten grouped records cover
 scenario railhead, Land rail, errata, construction, detailed Axis rail and
 simplified supply rail. They do not decide Land-only applicability, resource

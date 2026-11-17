@@ -1,5 +1,14 @@
 # Graziani source-review packet status
 
+**November 17 independent follow-up:** all 17 packets now have attributed
+second entries when passed explicit `--reading` overrides. The [retained
+aggregate output](graziani-independent-review-status.json) exits 1 because
+raw locator and field differences remain, including one patrol unknown whose
+later independent addendum check is recorded separately. The [disposition](2026-11-17-graziani-independent-reviews.md)
+distinguishes source-significant omissions from formatting and does not claim
+all rulings, source coverage or rights are resolved. Default status-tool inputs
+still select blank templates for packets without `reading-b.json`.
+
 **November 16 follow-up:** [supply](graziani-supply-review/reading-b.json) and
 [trucks](graziani-truck-review/reading-b.json) now have attributed source
 rechecks. All 146 recorded fields match; 47 raw locator differences remain.

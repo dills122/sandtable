@@ -10,6 +10,12 @@ made after this document was requested.
 
 **Source research update:** [Graziani source-material research handoff](2026-11-16-graziani-source-material-research.md) supersedes this session's missing-source and Matruh identity assumptions. Australian ratings and partial CCNN characteristics are now transcribed; scenario lists both Essex and Durham. Research findings are not yet implemented, and the blocker diagnostic below has not been rerun.
 
+**November 17 update:** Matruh ratings and the scoped Essex/Durham attachment
+ruling are now recorded in that handoff. Initial assigned parent, owner setup
+choices, and the separate Buffs/Hampshire conflict remain open. The [remaining
+research queue](2026-11-17-graziani-remaining-source-research.md) records source
+availability and outstanding work.
+
 **Map and setup review:** [seam, supply and truck recheck](2026-11-16-graziani-seam-supply-review.md) records the 11 printed distance discrepancies and source-row comparisons. No new seam is certified; blind independent setup review remains open.
 
 ## What changed this session (for context)
@@ -352,8 +358,9 @@ invented for any entry below).
   See [full citations and qualifications](2026-11-16-graziani-source-material-research.md#1-6th-australian-division).
 - **Matruh:** scenario explicitly lists both Essex and Durham as attached,
   alongside South Staffordshires. OA note `f` raises a separate assigned-parent
-  chronology issue; errata separately assigns both Buffs and Hampshires to
-  Matruh. See [source comparison](2026-11-16-graziani-source-material-research.md#2-matruh-identity-and-relationships).
+  chronology issue, now ruled not to invalidate the source-listed attachment;
+  errata separately assigns both Buffs and Hampshires to Matruh. See
+  [source comparison](2026-11-16-graziani-source-material-research.md#2-matruh-identity-and-relationships).
   Do not conflate assignment, attachment, or source conflict with identity.
 - **Independent combat-classified elements** remain outside grouped ZOC
   derivation; `CanDeriveForSide` fails closed for them. Isolate their effect at
@@ -375,8 +382,9 @@ invented for any entry below).
    to gate the specific fixture a future session cares about — confirm this
    per-fixture, don't assume), add the Host-level end-to-end test for GT1
    progression and the Polish arrival described in §3's last paragraph.
-6. **Use the source research packet** for Australian ratings and partial CCNN
-   facts; preserve the unresolved Matruh relationship and 1st CCNN HQ gun
+6. **Use the source research packet** for Australian and Matruh ratings, the
+   scoped attachment ruling and partial CCNN facts; preserve remaining Matruh
+   relationship questions and the unresolved 1st CCNN HQ gun
    type. Keep both map/control flags false pending the five-step completeness
    work, and define their checks with that work.
 
@@ -385,7 +393,8 @@ invented for any entry below).
 - Determine the 1st CCNN division HQ's artillery type from authoritative source
   evidence; do not infer it from legion HQs. Preserve conditional engineer and
   4th HQ ratings.
-- Resolve Essex/Durham's initial assigned-parent chronology and the Matruh
+- Establish Essex/Durham's initial assigned parent if source evidence permits;
+  apply the attachment ruling while resolving remaining Matruh setup and
   assignment/attachment interactions, including the provisional Buffs/Hampshire
   errata exception, without dropping any scenario-listed units.
 - Define versioned battlefield coverage and territorial-control certification

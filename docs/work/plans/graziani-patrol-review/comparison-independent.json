@@ -1,0 +1,234 @@
+{
+  "scope": "graziani-patrol-fog-review-v1",
+  "manifest_sha256": "cb56a14f7ddafc0fe511d6493a2fb9a3233a0f6b1d11f93f07fc7b3d9d7d8dbd",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-weather-patrol-2026-11-17"
+  ],
+  "expected_rows": 10,
+  "evidence": [
+    {
+      "row": "patrol-general",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 26, §16.0 General Rule",
+        "Land rules p. 26, §16.0 general rule"
+      ]
+    },
+    {
+      "row": "patrol-specific-16-21",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 26, §16.21",
+        "Land rules p. 26, §16.21"
+      ]
+    },
+    {
+      "row": "patrol-count-16-13-15",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 26, §§16.13–16.15",
+        "Land rules p. 26, §§16.13-16.15"
+      ]
+    },
+    {
+      "row": "patrol-weather-16-17",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 26, §16.17",
+        "Land rules p. 26, §16.17"
+      ]
+    },
+    {
+      "row": "patrol-target-16-22",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 26, §16.22",
+        "Land rules p. 26, §16.22"
+      ]
+    },
+    {
+      "row": "patrol-no-supply-32-25",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.25",
+        "Land rules p. 43, §32.25"
+      ]
+    },
+    {
+      "row": "patrol-survival-16-32",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 26, §16.32",
+        "Land rules p. 26, §16.32"
+      ]
+    },
+    {
+      "row": "patrol-info-16-51",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 27, §16.51 and p. 45 addendum §16.51",
+        "Land rules p. 27, §16.51"
+      ]
+    },
+    {
+      "row": "patrol-eligibility-errata-16-11",
+      "source": "errata",
+      "locators": [
+        "PDF p. 2, §16.11",
+        "Errata p. 2, §16.11"
+      ]
+    },
+    {
+      "row": "dummy-report-16-45",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 27, §16.45",
+        "Land rules p. 27, §16.45"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "patrol-general",
+      "locators": [
+        "printed p. 26, §16.0 General Rule",
+        "Land rules p. 26, §16.0 general rule"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "patrol-general",
+      "field": "stage_condition",
+      "values": [
+        "no Anti-Armor or Close Assault combat has taken place",
+        "No anti-armor or close assault combat has taken place in operations stage"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-specific-16-21",
+      "locators": [
+        "printed p. 26, §16.21",
+        "Land rules p. 26, §16.21"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "patrol-specific-16-21",
+      "field": "phasing_player_condition",
+      "values": [
+        "no Anti-Armor or Close Assault against enemy units",
+        "Phasing player does not engage in anti-armor combat or close assault against any enemy units during operations stage"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-count-16-13-15",
+      "locators": [
+        "printed p. 26, §§16.13–16.15",
+        "Land rules p. 26, §§16.13-16.15"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "patrol-count-16-13-15",
+      "field": "ineligible_cohesion",
+      "values": [
+        "−8 or worse",
+        "-8 or worse"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-weather-16-17",
+      "locators": [
+        "printed p. 26, §16.17",
+        "Land rules p. 26, §16.17"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-target-16-22",
+      "locators": [
+        "printed p. 26, §16.22",
+        "Land rules p. 26, §16.22"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "patrol-target-16-22",
+      "field": "path_passability_restrictions",
+      "values": [
+        true,
+        "No terrain impassable to patrol units; no enemy-controlled or occupied hex except a hex in zone of control of unit being reconnoitered"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-no-supply-32-25",
+      "locators": [
+        "printed p. 43, §32.25",
+        "Land rules p. 43, §32.25"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-survival-16-32",
+      "locators": [
+        "printed p. 26, §16.32",
+        "Land rules p. 26, §16.32"
+      ]
+    },
+    {
+      "kind": "unknown",
+      "reader": "codex-independent-weather-patrol-2026-11-17",
+      "row": "patrol-info-16-51",
+      "field": "patroller_identifies_toe_point_types"
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-info-16-51",
+      "locators": [
+        "printed p. 27, §16.51 and p. 45 addendum §16.51",
+        "Land rules p. 27, §16.51"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "patrol-info-16-51",
+      "field": "reported_fields",
+      "values": [
+        "designation; unit type; motorized status; TOE strength within two",
+        "historical designation; unit type; motorized status; TOE strength within two of actual strength"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "patrol-eligibility-errata-16-11",
+      "locators": [
+        "PDF p. 2, §16.11",
+        "Errata p. 2, §16.11"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "patrol-eligibility-errata-16-11",
+      "field": "added_types",
+      "values": [
+        "Italian L/6; Commonwealth Stuart; mechanized infantry or Panzergrenadiers",
+        "Italian L/6; Commonwealth Stuarts; mechanized infantry (or Panzergrenadiers) of any side"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "dummy-report-16-45",
+      "locators": [
+        "printed p. 27, §16.45",
+        "Land rules p. 27, §16.45"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

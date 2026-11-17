@@ -1,0 +1,219 @@
+{
+  "scope": "graziani-rail-review-v1",
+  "manifest_sha256": "0933969aedbb35a12bfda48a9c907286a0cf15183ca6b7e8e42d71ffd14c78b6",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-logistics-2026-11-17"
+  ],
+  "expected_rows": 10,
+  "evidence": [
+    {
+      "row": "initial-rail-60-7",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.7",
+        "Scenario book printed p. 28, §60.7"
+      ]
+    },
+    {
+      "row": "rail-8-71",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 15, §8.71",
+        "Land rules printed p. 15, §8.71"
+      ]
+    },
+    {
+      "row": "axis-correction-8-71",
+      "source": "errata",
+      "locators": [
+        "PDF p. 1, §8.71",
+        "Errata PDF p. 1, §8.71"
+      ]
+    },
+    {
+      "row": "rail-8-72",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 15, §8.72",
+        "Land rules printed p. 15, §8.72"
+      ]
+    },
+    {
+      "row": "rail-8-73",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 15, §8.73",
+        "Land rules printed p. 15, §8.73"
+      ]
+    },
+    {
+      "row": "reorganization-8-73",
+      "source": "errata",
+      "locators": [
+        "PDF p. 1, §8.73",
+        "Errata PDF p. 1, §8.73"
+      ]
+    },
+    {
+      "row": "construction-24-61",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 37, §24.61",
+        "Land rules printed p. 37, §24.61"
+      ]
+    },
+    {
+      "row": "construction-24-62",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 37, §24.62",
+        "Land rules printed p. 37, §24.62"
+      ]
+    },
+    {
+      "row": "axis-rail-54-4",
+      "source": "air-rules",
+      "locators": [
+        "printed p. 23, §§54.41–54.43",
+        "Air and Logistics rules printed p. 23, §§54.4–54.46 (five or more contiguous hexes)"
+      ]
+    },
+    {
+      "row": "supply-rail-32-34",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.34",
+        "Land rules printed p. 43, §32.34"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "initial-rail-60-7",
+      "locators": [
+        "printed p. 28, §60.7",
+        "Scenario book printed p. 28, §60.7"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "initial-rail-60-7",
+      "field": "rail_ends_at",
+      "values": [
+        "Mersa Matruh",
+        "Mersa Matruh (D3714)"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "rail-8-71",
+      "locators": [
+        "printed p. 15, §8.71",
+        "Land rules printed p. 15, §8.71"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "rail-8-71",
+      "field": "usable_line",
+      "values": [
+        "Alexandria–Mersa Matruh",
+        "Alexandria-Mersa Matruh"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-correction-8-71",
+      "locators": [
+        "PDF p. 1, §8.71",
+        "Errata PDF p. 1, §8.71"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "axis-correction-8-71",
+      "field": "axis_rail_use_subject_to",
+      "values": [
+        "§54.4",
+        "section 54.4"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "rail-8-72",
+      "locators": [
+        "printed p. 15, §8.72",
+        "Land rules printed p. 15, §8.72"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "rail-8-73",
+      "locators": [
+        "printed p. 15, §8.73",
+        "Land rules printed p. 15, §8.73"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "reorganization-8-73",
+      "locators": [
+        "PDF p. 1, §8.73",
+        "Errata PDF p. 1, §8.73"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "construction-24-61",
+      "locators": [
+        "printed p. 37, §24.61",
+        "Land rules printed p. 37, §24.61"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "construction-24-61",
+      "field": "new_rail_builders",
+      "values": [
+        "10th and 13th NZ railroad construction companies",
+        "10th and 13th New Zealand railroad construction companies"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "construction-24-62",
+      "locators": [
+        "printed p. 37, §24.62",
+        "Land rules printed p. 37, §24.62"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-rail-54-4",
+      "locators": [
+        "printed p. 23, §§54.41–54.43",
+        "Air and Logistics rules printed p. 23, §§54.4–54.46 (five or more contiguous hexes)"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "supply-rail-32-34",
+      "locators": [
+        "printed p. 43, §32.34",
+        "Land rules printed p. 43, §32.34"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "supply-rail-32-34",
+      "field": "directions",
+      "values": [
+        "one",
+        "one direction"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

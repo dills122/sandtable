@@ -41,6 +41,31 @@ timing of the test; and what happens if no level or both sides' levels match.
 Capture each alternative and a versioned decision; do not substitute §32.16's
 nearby-supply test without a source-backed ruling.
 
+## Matruh supply-stacking interaction
+
+November 17 same-stream source check: scenario §60.92(C), PDF p. 5,
+explicitly places **five regular supply units** at Mersa Matruh `D3714`.
+The original map PDF p. 1, Summary of Important Locations, marks Mersa Matruh
+as a port and assigned-garrison site but **not** a major city. Land §32.14,
+printed p. 43, states five in a major city and three in another type of hex
+“off-map”; it also gives Tripoli/Tunisia boxes unlimited capacity. If the
+three-unit wording is interpreted as applying to ordinary on-map hexes,
+the explicit five-unit setup exceeds that general limit. Scenario §59.65,
+PDF p. 2, allows unavoidable initial supply-unit placement above stacking
+limits, prohibits further supply-unit stacking there, and requires normal
+limits after the distribution becomes compliant. These are source facts and a
+conditional interaction, not an adopted correction of §32.14 or proof that
+all dummy and subsequent placement cases are settled.
+
+Decision and tests: preserve five scenario-specified units at Matruh if that
+setup is admitted; separately choose and version the ordinary on-map limit,
+whether the scenario exception applies to the selected rule, and the state
+transition that restores compliance. Exercise five initially present, attempted
+sixth, reduction below/at limit, subsequent re-entry, dummy units and replay;
+do not mark the “off-map” ambiguity resolved just because this setup has a
+source-specific exception. Map and scenario hashes are in the
+[seam/source recheck](2026-11-16-graziani-seam-supply-review.md).
+
 ## Verification design
 
 For each future authority slice, freeze typed command/event/snapshot identities

@@ -1,0 +1,105 @@
+{
+  "scope": "graziani-axis-setup-relationships-v1",
+  "manifest_sha256": "c5a2b63bfdf8ce27d34851238ca964519148957c6c2c402caadccd5a4d0d5495",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-axis-2026-11-17"
+  ],
+  "expected_rows": 4,
+  "evidence": [
+    {
+      "row": "cirene-scenario",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, C4120",
+        "scenario printed p. 27, [60.31] Italian Initial Deployment, C4120 row"
+      ]
+    },
+    {
+      "row": "marmarica-scenario",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.31, C3918",
+        "scenario printed p. 27, [60.31] Italian Initial Deployment, C3918 row"
+      ]
+    },
+    {
+      "row": "cirene-tank-oa",
+      "source": "errata",
+      "locators": [
+        "PDF p. 4, Cirene OA tank row and note",
+        "errata PDF p. 4, 63rd Cirene Division OA, tank row and note a"
+      ]
+    },
+    {
+      "row": "marmarica-tank-oa",
+      "source": "errata",
+      "locators": [
+        "PDF p. 4, Marmarica OA tank row and note",
+        "errata PDF p. 4, 62nd Marmarica Division OA, tank row and note a"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "cirene-scenario",
+      "locators": [
+        "printed p. 27, §60.31, C4120",
+        "scenario printed p. 27, [60.31] Italian Initial Deployment, C4120 row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-scenario",
+      "field": "tank_mark",
+      "values": [
+        "LXIII(L)",
+        "LXIII (L)"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-scenario",
+      "locators": [
+        "printed p. 27, §60.31, C3918",
+        "scenario printed p. 27, [60.31] Italian Initial Deployment, C3918 row"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cirene-tank-oa",
+      "locators": [
+        "PDF p. 4, Cirene OA tank row and note",
+        "errata PDF p. 4, 63rd Cirene Division OA, tank row and note a"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cirene-tank-oa",
+      "field": "initial_attachment",
+      "values": [
+        "63 Cirene",
+        "63rd Cirene"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marmarica-tank-oa",
+      "locators": [
+        "PDF p. 4, Marmarica OA tank row and note",
+        "errata PDF p. 4, 62nd Marmarica Division OA, tank row and note a"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marmarica-tank-oa",
+      "field": "initial_attachment",
+      "values": [
+        "62 Marmarica",
+        "62nd Marmarica"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

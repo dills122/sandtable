@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "scope": "graziani-abstract-convoy-review-v1",
+  "manifest_sha256": "ba11367727c0498e1b86fa2063079663190bb9c440fcdf15015734145f164a9a",
+  "sources": {
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66",
+    "axis-charts": "9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca",
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "air-rules": "9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "reader_id": "codex-independent-logistics-2026-11-17",
+  "rows": [
+    {
+      "id": "scenario-60-37",
+      "locator": "Scenario book printed p. 27, \u00a760.37",
+      "values": {
+        "pre_start_planning_period": "remainder of September 1940",
+        "permitted_lanes": "2, 3, 6"
+      }
+    },
+    {
+      "id": "cargo-32-61",
+      "locator": "Land rules printed p. 44, \u00a732.61",
+      "values": {
+        "included_categories": "Supply Units, Motorization Points, Replacement Points",
+        "simplified_convoy_has_tonnage_limit": false,
+        "cargo_may_be_divided_between_available_lanes": true
+      }
+    },
+    {
+      "id": "lane-limit-32-62",
+      "locator": "Land rules printed p. 44, \u00a732.62",
+      "values": {
+        "supply_units_per_lane_per_naval_convoy_stage": 3,
+        "motorization_points_per_lane_per_naval_convoy_stage": 20,
+        "replacement_pool_chart_totals_apply_per_turn": true
+      }
+    },
+    {
+      "id": "attack-32-63",
+      "locator": "Land rules printed p. 44, \u00a732.63",
+      "values": {
+        "weather_limits_attack": false,
+        "axis_announces_lanes_used": true,
+        "attack_each_arriving_convoy_separately": true
+      }
+    },
+    {
+      "id": "lookup-32-64",
+      "locator": "Land rules printed p. 44, \u00a732.64",
+      "values": {
+        "bomb_points_depend_on_lane_and_qualifying_division": true,
+        "result_uses_two_sequential_dice": true,
+        "result_table": "Air Bombardment Combat Results Table"
+      }
+    },
+    {
+      "id": "loss-32-65a",
+      "locator": "Land rules printed p. 44, \u00a732.65A",
+      "values": {
+        "ten_percent_applies_to": "Motorization Points and Replacement Points",
+        "motorization_rounding": "down",
+        "replacement_rounding": "up"
+      }
+    },
+    {
+      "id": "loss-32-65b",
+      "locator": "Land rules printed p. 44, \u00a732.65B",
+      "values": {
+        "threshold_percent": 20,
+        "fraction_rounding": "down",
+        "minimum_loss_instruction_present": true,
+        "tank_and_gun_aggregation": "tanks and guns within each nationality, totals not individual types"
+      }
+    },
+    {
+      "id": "qualification-32-66",
+      "locator": "Axis charts PDF p. 34, \u00a732.66",
+      "values": {
+        "division_must_be_non_shell": true,
+        "qualification": "complete Allied division east of or in same east-west hexrow as at least one other Allied non-shell division",
+        "attacks_on_other_convoys_affect_attack_strength_or_results": false
+      }
+    },
+    {
+      "id": "bombardment-41-5",
+      "locator": "Common charts printed p. 12, \u00a741.5",
+      "values": {
+        "target": "Axis Naval Convoys",
+        "bomb_points_column": "21-40",
+        "dice_range": "55-64",
+        "result_percent": 5
+      }
+    },
+    {
+      "id": "air-loss-41-67",
+      "locator": "Air rules printed p. 12, \u00a741.67",
+      "values": {
+        "fractions_round": "up",
+        "tank_and_gun_groups": "Italian tanks, German tanks, Italian guns, German guns",
+        "applies_to_each_cargo_type": true
+      }
+    },
+    {
+      "id": "errata-loss-41-67",
+      "locator": "Errata PDF p. 3, \u00a741.67",
+      "values": {
+        "percentage_applies_to_each_cargo_type": true
+      }
+    }
+  ]
+}

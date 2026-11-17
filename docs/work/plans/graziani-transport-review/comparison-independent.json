@@ -1,0 +1,212 @@
+{
+  "scope": "graziani-abstract-supply-transport-v1",
+  "manifest_sha256": "516a61894013affb0ba37ee4f4e9de898163554c1f51df381c05d8d47b011cd5",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-logistics-2026-11-17"
+  ],
+  "expected_rows": 9,
+  "evidence": [
+    {
+      "row": "stacking-32-14",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.14",
+        "Land rules p. 43, §32.14"
+      ]
+    },
+    {
+      "row": "arrival-stage-32-31",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.31",
+        "Land rules p. 43, §32.31"
+      ]
+    },
+    {
+      "row": "motorization-32-32",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.32",
+        "Land rules p. 43, §32.32"
+      ]
+    },
+    {
+      "row": "motorization-32-33",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.33",
+        "Land rules p. 43, §32.33"
+      ]
+    },
+    {
+      "row": "cw-rail-32-34",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.34",
+        "Land rules p. 43, §32.34"
+      ]
+    },
+    {
+      "row": "axis-coastal-32-35",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.35",
+        "Land rules p. 43, §32.35"
+      ]
+    },
+    {
+      "row": "cw-sea-32-36",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.36",
+        "Land rules p. 43, §32.36"
+      ]
+    },
+    {
+      "row": "abstract-air-32-37",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.37",
+        "Land rules p. 43, §32.37"
+      ]
+    },
+    {
+      "row": "extra-supply-59-66c",
+      "source": "scenario",
+      "locators": [
+        "printed p. 26, §59.66(C)",
+        "Scenario book p. 26, §59.66(C)"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "stacking-32-14",
+      "locators": [
+        "printed p. 43, §32.14",
+        "Land rules p. 43, §32.14"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "arrival-stage-32-31",
+      "locators": [
+        "printed p. 43, §32.31",
+        "Land rules p. 43, §32.31"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "motorization-32-32",
+      "locators": [
+        "printed p. 43, §32.32",
+        "Land rules p. 43, §32.32"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "motorization-32-32",
+      "field": "attachment_phase",
+      "values": [
+        "Organization",
+        "Organization Phase of an OpStage"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "motorization-32-33",
+      "locators": [
+        "printed p. 43, §32.33",
+        "Land rules p. 43, §32.33"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "motorization-32-33",
+      "field": "owner_phase_choice",
+      "values": [
+        "Movement/Combat or Truck Convoy, not both",
+        "owning Player Movement/Combat Phase or Truck Convoy Phase, not both"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-rail-32-34",
+      "locators": [
+        "printed p. 43, §32.34",
+        "Land rules p. 43, §32.34"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cw-rail-32-34",
+      "field": "directions",
+      "values": [
+        "one",
+        "any one direction"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-coastal-32-35",
+      "locators": [
+        "printed p. 43, §32.35",
+        "Land rules p. 43, §32.35"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-sea-32-36",
+      "locators": [
+        "printed p. 43, §32.36",
+        "Land rules p. 43, §32.36"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cw-sea-32-36",
+      "field": "ports",
+      "values": [
+        "Alexandria; Benghazi; Tobruk",
+        "Alexandria, Benghazi, Torbruk"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cw-sea-32-36",
+      "field": "phase",
+      "values": [
+        "Naval Convoy Arrival",
+        "Naval Convoy Arrival Phase"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "abstract-air-32-37",
+      "locators": [
+        "printed p. 43, §32.37",
+        "Land rules p. 43, §32.37"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "abstract-air-32-37",
+      "field": "phase",
+      "values": [
+        "Organization",
+        "Organization Phase of an OpStage"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "extra-supply-59-66c",
+      "locators": [
+        "printed p. 26, §59.66(C)",
+        "Scenario book p. 26, §59.66(C)"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

@@ -1,0 +1,290 @@
+{
+  "scope": "graziani-arrival-supply-repair-rules-v1",
+  "manifest_sha256": "730059184af0b23f76508c3dc76ba3facafb234395c187c1625460bd26166689",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-source-review-2026-11-17"
+  ],
+  "expected_rows": 15,
+  "evidence": [
+    {
+      "row": "cw-reinforcement-destination",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 31, §20.14",
+        "Land compiled p. 31 §20.14"
+      ]
+    },
+    {
+      "row": "axis-reinforcement-destination",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 31, §20.15",
+        "Land compiled p. 31 §20.15"
+      ]
+    },
+    {
+      "row": "cw-replacement-scenario",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.47",
+        "Scenario printed p. 28 §60.47"
+      ]
+    },
+    {
+      "row": "supply-planning-lead",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.43",
+        "Land compiled p. 44 §32.43"
+      ]
+    },
+    {
+      "row": "axis-supply-table-period",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.44",
+        "Land compiled p. 44 §32.44"
+      ]
+    },
+    {
+      "row": "cw-supply-table-period",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 44, §32.45",
+        "Land compiled p. 44 §32.45"
+      ]
+    },
+    {
+      "row": "cw-supply-destination",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.42",
+        "Land compiled p. 43 §32.42"
+      ]
+    },
+    {
+      "row": "repair-availability",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 34, §22.13(b)",
+        "Land compiled p. 34 §22.13(b)"
+      ]
+    },
+    {
+      "row": "field-truck-cost",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 35, §22.23",
+        "Land compiled p. 35 §22.23"
+      ]
+    },
+    {
+      "row": "field-recce-cost",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 35, §22.24",
+        "Land compiled p. 35 §22.24"
+      ]
+    },
+    {
+      "row": "field-tank-cost",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 35, §22.26",
+        "Land compiled p. 35 §22.26"
+      ]
+    },
+    {
+      "row": "facility-repair-cost",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 35, §22.35",
+        "Land compiled p. 35 §22.35"
+      ]
+    },
+    {
+      "row": "destroyed-tank-cost",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 35, §22.42",
+        "Land compiled p. 35 §22.42"
+      ]
+    },
+    {
+      "row": "abstract-supply-replacement",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 43, §32.11",
+        "Land compiled p. 43 §32.11"
+      ]
+    },
+    {
+      "row": "repair-modifier-errata",
+      "source": "errata",
+      "locators": [
+        "PDF p. 2, §§22.34 and 22.8",
+        "Errata PDF p. 2 §§22.34 and 22.8"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "cw-reinforcement-destination",
+      "locators": [
+        "printed p. 31, §20.14",
+        "Land compiled p. 31 §20.14"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-reinforcement-destination",
+      "locators": [
+        "printed p. 31, §20.15",
+        "Land compiled p. 31 §20.15"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "axis-reinforcement-destination",
+      "field": "conditional_diversion",
+      "values": [
+        "Benghazi",
+        "Benghazi if no Commonwealth land combat units west of Mersa Matruh inclusive and stacking permits"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-replacement-scenario",
+      "locators": [
+        "printed p. 28, §60.47",
+        "Scenario printed p. 28 §60.47"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "supply-planning-lead",
+      "locators": [
+        "printed p. 44, §32.43",
+        "Land compiled p. 44 §32.43"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-supply-table-period",
+      "locators": [
+        "printed p. 44, §32.44",
+        "Land compiled p. 44 §32.44"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-supply-table-period",
+      "locators": [
+        "printed p. 44, §32.45",
+        "Land compiled p. 44 §32.45"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-supply-destination",
+      "locators": [
+        "printed p. 43, §32.42",
+        "Land compiled p. 43 §32.42"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "cw-supply-destination",
+      "field": "units_per_alternative",
+      "values": [
+        3,
+        "one for every three received"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "repair-availability",
+      "locators": [
+        "printed p. 34, §22.13(b)",
+        "Land compiled p. 34 §22.13(b)"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "field-truck-cost",
+      "locators": [
+        "printed p. 35, §22.23",
+        "Land compiled p. 35 §22.23"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "field-truck-cost",
+      "field": "supply_expenditure",
+      "values": [
+        "none",
+        0
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "field-recce-cost",
+      "locators": [
+        "printed p. 35, §22.24",
+        "Land compiled p. 35 §22.24"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "field-recce-cost",
+      "field": "supply_expenditure",
+      "values": [
+        "none",
+        0
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "field-tank-cost",
+      "locators": [
+        "printed p. 35, §22.26",
+        "Land compiled p. 35 §22.26"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "facility-repair-cost",
+      "locators": [
+        "printed p. 35, §22.35",
+        "Land compiled p. 35 §22.35"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "destroyed-tank-cost",
+      "locators": [
+        "printed p. 35, §22.42",
+        "Land compiled p. 35 §22.42"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "abstract-supply-replacement",
+      "locators": [
+        "printed p. 43, §32.11",
+        "Land compiled p. 43 §32.11"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "repair-modifier-errata",
+      "locators": [
+        "PDF p. 2, §§22.34 and 22.8",
+        "Errata PDF p. 2 §§22.34 and 22.8"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

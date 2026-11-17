@@ -1,5 +1,10 @@
 # Port conflict: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one source reader and a blank second entry. Seven grouped records
 cover the scenario's initial Tobruk value, the port chart, capacity example,
 scheduled-reinforcement exception, harbor blockage and clearance, and the

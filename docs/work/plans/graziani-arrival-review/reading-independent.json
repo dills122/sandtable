@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "scope": "graziani-cw-arrivals-six-turns-v1",
+  "manifest_sha256": "599826eba2cd920f2cae0061b7758786d394cdda2b95eab638dec6d27bcaa35f",
+  "sources": {
+    "commonwealth-charts": "f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981"
+  },
+  "reader_id": "codex-blind-arrival-review-2026-11-17",
+  "rows": [
+    {
+      "id": "schedule-polish",
+      "locator": "PDF p. 3, \u00a74.43a, GT 1 Polish Bde",
+      "values": {
+        "turn": 1,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-rtr-and-nz-artillery",
+      "locator": "PDF p. 3, \u00a74.43a, GT 2 2 RTR, 7 RTR, 6th NZ Fld Arty Regt",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-indian-artillery",
+      "locator": "PDF p. 3, \u00a74.43a, GT 3 1 Fld Arty Regt [4 In]",
+      "values": {
+        "turn": 3,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-hussars",
+      "locator": "PDF p. 3, \u00a74.43a, GT 4 3rd Hussars",
+      "values": {
+        "turn": 4,
+        "stage": 3,
+        "light": "not-listed",
+        "medium": "not-listed",
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-indian-brigade",
+      "locator": "PDF p. 3, \u00a74.43a, GT 5 7 in Bde [4 In]",
+      "values": {
+        "turn": 5,
+        "stage": 1,
+        "light": 5,
+        "medium": 20,
+        "heavy": "not-listed"
+      }
+    },
+    {
+      "id": "schedule-nz-brigade",
+      "locator": "PDF p. 3, \u00a74.43a, GT 6 6NZ Bde",
+      "values": {
+        "turn": 6,
+        "stage": 3,
+        "light": 25,
+        "medium": 85,
+        "heavy": 5
+      }
+    },
+    {
+      "id": "oa-polish",
+      "locator": "PDF p. 21, Polish (Carpathian) Brigade, HQ through 1st Polish Artillery Regt",
+      "values": {
+        "turn": 1,
+        "stage": 3,
+        "listed_rows": 8
+      }
+    },
+    {
+      "id": "oa-2-rtr",
+      "locator": "PDF p. 11, Unassigned Armor-Class Units, 2nd Royal Tank Regt",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-7-rtr",
+      "locator": "PDF p. 11, Unassigned Armor-Class Units, 7th Royal Tank Regt",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-nz-artillery",
+      "locator": "PDF p. 18, 2nd New Zealand Division, 6th NZ Field Artillery Regt",
+      "values": {
+        "turn": 2,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-indian-artillery",
+      "locator": "PDF p. 15, 4th Indian Division, 1st Field Artillery Regt",
+      "values": {
+        "turn": 3,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-hussars",
+      "locator": "PDF p. 11, Unassigned Armor-Class Units, 3rd Kings Own Hussars",
+      "values": {
+        "turn": 4,
+        "stage": 3,
+        "listed_rows": 1
+      }
+    },
+    {
+      "id": "oa-indian-brigade",
+      "locator": "PDF p. 15, 4th Indian Division, 7th Indian Bde HQ through 4/16 Punjab Regt",
+      "values": {
+        "turn": 5,
+        "stage": 1,
+        "listed_rows": 4
+      }
+    },
+    {
+      "id": "oa-nz-brigade",
+      "locator": "PDF p. 18, 2nd New Zealand Division, 6th New Zealand Bde HQ through 26th NZ Bn",
+      "values": {
+        "turn": 6,
+        "stage": 3,
+        "listed_rows": 4
+      }
+    }
+  ]
+}

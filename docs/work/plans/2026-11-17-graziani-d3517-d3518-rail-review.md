@@ -1,0 +1,9 @@
+# Independent source review: D3517 / D3518 road and railway
+
+**Disposition:** The scan supports both the road and railway crossings recorded on this side. Rail passes close to, but visibly above, the southern three-hex vertex. This verifies local markings only, not railway operation, full connectivity or movement legality.
+
+In the 800-dpi Map D crop, the printed `3518` lies to the right of the shared near-vertical grid side and the wider 500-dpi crop places `3517` to its left. The side extends approximately from `(380,250)` to `(380,540)`. Dark parallel road lines intersect the side above the lower endpoint, around y=405–455. The blue cross-tied railway centerline is visible on each side of the boundary near y=510, above the southern vertex. Its crossing is therefore better supported as D3517/D3518 than as either lower diagonal, notwithstanding the small separation and overprint.
+
+The pinned `D3517|D3518` entry contains `railroad` and `road`; both agree with these visible marks. Terrain, any additional side features, water/land passability and neighboring edges were not certified. Use the map key to identify the symbol and independently check scenario construction state, rail ownership, legal timing and route continuity before treating this line as usable.
+
+**Provenance:** [Original map PDF](https://spigames.net/PDFv10/CNA_Maps.pdf), PDF p. 4 and map key p. 1, SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; inspected `/private/tmp/graziani-mapcheck/d3517east800.png`, SHA-256 `a3ac860b6a24d16b754b0df7e029d860d694bbe45f387590cda368ad48309d7d`, and the prior 500-dpi wider crop. Pinned `hexsides.v1.json` SHA-256 `124e6f943930f4fa718eb04fa1dc86b6089582aebfaff8fcb83f98ab30d98e6c`. Same scan and crop as the candidate, read after it; independent recheck, not blind transcription or another edition. No map/runtime changes or gameplay tests.

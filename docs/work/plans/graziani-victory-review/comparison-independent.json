@@ -1,0 +1,259 @@
+{
+  "scope": "graziani-six-turn-victory-source-v1",
+  "manifest_sha256": "f81498e8a1e6715f25362426d55ac1974475d48a5ccf2d1bec4fa8f026f45b2d",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-source-review-2026-11-17"
+  ],
+  "expected_rows": 8,
+  "evidence": [
+    {
+      "row": "scenario-cross-reference",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.22",
+        "Scenario printed p. 27 §60.22"
+      ]
+    },
+    {
+      "row": "victory-heading",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 heading",
+        "Scenario printed p. 28 §60.81 heading"
+      ]
+    },
+    {
+      "row": "italian-strategic",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 Italian Strategic",
+        "Scenario printed p. 28 §60.81 Italian Strategic"
+      ]
+    },
+    {
+      "row": "italian-decisive",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 Italian Decisive",
+        "Scenario printed p. 28 §60.81 Italian Decisive"
+      ]
+    },
+    {
+      "row": "italian-tactical",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 Italian Tactical",
+        "Scenario printed p. 28 §60.81 Italian Tactical"
+      ]
+    },
+    {
+      "row": "commonwealth-tactical",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 Commonwealth Tactical",
+        "Scenario printed p. 28 §60.81 Commonwealth Tactical"
+      ]
+    },
+    {
+      "row": "commonwealth-decisive",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 Commonwealth Decisive",
+        "Scenario printed p. 28 §60.81 Commonwealth Decisive"
+      ]
+    },
+    {
+      "row": "commonwealth-strategic",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.81 Commonwealth Strategic",
+        "Scenario printed p. 28 §60.81 Commonwealth Strategic"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "scenario-cross-reference",
+      "locators": [
+        "printed p. 27, §60.22",
+        "Scenario printed p. 27 §60.22"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "victory-heading",
+      "locators": [
+        "printed p. 28, §60.81 heading",
+        "Scenario printed p. 28 §60.81 heading"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "victory-heading",
+      "field": "scenario_name",
+      "values": [
+        "Graziani’s Offensive",
+        "Grazianni’s Offensive"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "italian-strategic",
+      "locators": [
+        "printed p. 28, §60.81 Italian Strategic",
+        "Scenario printed p. 28 §60.81 Italian Strategic"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-strategic",
+      "field": "take_hold",
+      "values": [
+        "Alexandria or Cairo, any hex",
+        "either Alexandria or Cairo (any hex)"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-strategic",
+      "field": "supply",
+      "values": [
+        "convoy from any hex on map D",
+        "by convoy from any hex on Game-Map D"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "italian-decisive",
+      "locators": [
+        "printed p. 28, §60.81 Italian Decisive",
+        "Scenario printed p. 28 §60.81 Italian Decisive"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-decisive",
+      "field": "take_hold",
+      "values": [
+        "Mersa Matruh and Siwa",
+        "both Mersa Matruh and Siwa"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-decisive",
+      "field": "unit",
+      "values": [
+        "combat unit",
+        "any combat unit"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-decisive",
+      "field": "supply",
+      "values": [
+        "convoy from Tobruk",
+        "by convoy from Tobruk"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "italian-tactical",
+      "locators": [
+        "printed p. 28, §60.81 Italian Tactical",
+        "Scenario printed p. 28 §60.81 Italian Tactical"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-tactical",
+      "field": "retain",
+      "values": [
+        "Sollum; Fort Maddalena; Giarabub",
+        "Sollum (C4021), Fort Maddalena and Giarabub"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "italian-tactical",
+      "field": "supply",
+      "values": [
+        "in supply, as above, to Tobruk",
+        "in supply (as above, to Tobruk)"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "commonwealth-tactical",
+      "locators": [
+        "printed p. 28, §60.81 Commonwealth Tactical",
+        "Scenario printed p. 28 §60.81 Commonwealth Tactical"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "commonwealth-tactical",
+      "field": "take_hold",
+      "values": [
+        "Sollum; Halfaya Pass C3922; Siwa C0127",
+        "Sollum, Halfaya Pass (C3922), and Siwa (C0127)"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "commonwealth-tactical",
+      "field": "supply",
+      "values": [
+        "truck convoy back to Alexandria or Cairo",
+        "tracing supply by truck convoy back to Alexandria or Cairo"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "commonwealth-decisive",
+      "locators": [
+        "printed p. 28, §60.81 Commonwealth Decisive",
+        "Scenario printed p. 28 §60.81 Commonwealth Decisive"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "commonwealth-decisive",
+      "field": "take_hold",
+      "values": [
+        "Bardia; Fort Maddalena; Sidi Omar; Sollum; Siwa",
+        "Bardia, Fort Maddalena, Sidi Omar, Sollum and Siwa"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "commonwealth-decisive",
+      "field": "supply",
+      "values": [
+        "as above",
+        "supply as above"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "commonwealth-strategic",
+      "locators": [
+        "printed p. 28, §60.81 Commonwealth Strategic",
+        "Scenario printed p. 28 §60.81 Commonwealth Strategic"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "commonwealth-strategic",
+      "field": "supply",
+      "values": [
+        "as above",
+        "supply as above"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

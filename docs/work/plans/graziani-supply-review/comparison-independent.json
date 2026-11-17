@@ -1,0 +1,254 @@
+{
+  "scope": "graziani-initial-supply-v1",
+  "manifest_sha256": "ecce73c5d78509379bd9b9130af5728de7e9f2a6cf4e542b9c4d475e9f486297",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-fresh-source-reader-2026-11-17"
+  ],
+  "expected_rows": 15,
+  "evidence": [
+    {
+      "row": "axis-tobruk",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.92, axis-tobruk",
+        "printed p. 28 §60.92(B), Axis supply table, tobruk"
+      ]
+    },
+    {
+      "row": "axis-bardia",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.92, axis-bardia",
+        "printed p. 28 §60.92(B), Axis supply table, bardia"
+      ]
+    },
+    {
+      "row": "axis-benghazi",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.92, axis-benghazi",
+        "printed p. 28 §60.92(B), Axis supply table, benghazi"
+      ]
+    },
+    {
+      "row": "axis-derna",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-derna",
+        "printed p. 29 §60.92(B), Axis supply table, derna"
+      ]
+    },
+    {
+      "row": "axis-tripoli",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-tripoli",
+        "printed p. 29 §60.92(B), Axis supply table, tripoli"
+      ]
+    },
+    {
+      "row": "axis-dump-1",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-1",
+        "printed p. 29 §60.92(B), Axis supply table, dump-1"
+      ]
+    },
+    {
+      "row": "axis-dump-2",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-2",
+        "printed p. 29 §60.92(B), Axis supply table, dump-2"
+      ]
+    },
+    {
+      "row": "axis-c0716",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-c0716",
+        "printed p. 29 §60.92(B), Axis supply table, c0716"
+      ]
+    },
+    {
+      "row": "cw-mersa-matruh",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-mersa-matruh",
+        "printed p. 29 §60.92(C), Commonwealth supply mersa-matruh"
+      ]
+    },
+    {
+      "row": "cw-sidi-barrani",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-sidi-barrani",
+        "printed p. 29 §60.92(C), Commonwealth supply sidi-barrani"
+      ]
+    },
+    {
+      "row": "cw-dump-1",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-dump-1",
+        "printed p. 29 §60.92(C), Commonwealth supply dump-1"
+      ]
+    },
+    {
+      "row": "cw-alexandria",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-alexandria",
+        "printed p. 29 §60.92(C), Commonwealth supply alexandria"
+      ]
+    },
+    {
+      "row": "cw-cairo",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-cairo",
+        "printed p. 29 §60.92(C), Commonwealth supply cairo"
+      ]
+    },
+    {
+      "row": "axis-dummy-and-placement",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, axis-dummy-and-placement",
+        "printed p. 29 §60.92(B), dump footnote and dummy paragraph"
+      ]
+    },
+    {
+      "row": "cw-dummy-and-placement",
+      "source": "scenario",
+      "locators": [
+        "printed p. 29, §60.92, cw-dummy-and-placement",
+        "printed p. 29 §60.92(C), dump footnote and dummy paragraph"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "axis-tobruk",
+      "locators": [
+        "printed p. 28, §60.92, axis-tobruk",
+        "printed p. 28 §60.92(B), Axis supply table, tobruk"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-bardia",
+      "locators": [
+        "printed p. 28, §60.92, axis-bardia",
+        "printed p. 28 §60.92(B), Axis supply table, bardia"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-benghazi",
+      "locators": [
+        "printed p. 28, §60.92, axis-benghazi",
+        "printed p. 28 §60.92(B), Axis supply table, benghazi"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-derna",
+      "locators": [
+        "printed p. 29, §60.92, axis-derna",
+        "printed p. 29 §60.92(B), Axis supply table, derna"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-tripoli",
+      "locators": [
+        "printed p. 29, §60.92, axis-tripoli",
+        "printed p. 29 §60.92(B), Axis supply table, tripoli"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-dump-1",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-1",
+        "printed p. 29 §60.92(B), Axis supply table, dump-1"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-dump-2",
+      "locators": [
+        "printed p. 29, §60.92, axis-dump-2",
+        "printed p. 29 §60.92(B), Axis supply table, dump-2"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-c0716",
+      "locators": [
+        "printed p. 29, §60.92, axis-c0716",
+        "printed p. 29 §60.92(B), Axis supply table, c0716"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-mersa-matruh",
+      "locators": [
+        "printed p. 29, §60.92, cw-mersa-matruh",
+        "printed p. 29 §60.92(C), Commonwealth supply mersa-matruh"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-sidi-barrani",
+      "locators": [
+        "printed p. 29, §60.92, cw-sidi-barrani",
+        "printed p. 29 §60.92(C), Commonwealth supply sidi-barrani"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-dump-1",
+      "locators": [
+        "printed p. 29, §60.92, cw-dump-1",
+        "printed p. 29 §60.92(C), Commonwealth supply dump-1"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-alexandria",
+      "locators": [
+        "printed p. 29, §60.92, cw-alexandria",
+        "printed p. 29 §60.92(C), Commonwealth supply alexandria"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-cairo",
+      "locators": [
+        "printed p. 29, §60.92, cw-cairo",
+        "printed p. 29 §60.92(C), Commonwealth supply cairo"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "axis-dummy-and-placement",
+      "locators": [
+        "printed p. 29, §60.92, axis-dummy-and-placement",
+        "printed p. 29 §60.92(B), dump footnote and dummy paragraph"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "cw-dummy-and-placement",
+      "locators": [
+        "printed p. 29, §60.92, cw-dummy-and-placement",
+        "printed p. 29 §60.92(C), dump footnote and dummy paragraph"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

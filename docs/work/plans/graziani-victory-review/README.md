@@ -1,5 +1,10 @@
 # Six-turn victory: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** first-reader research and blind template, not an independently
 reviewed or accepted victory contract. Eight grouped rows target the scenario's
 printed cross-reference, named victory heading and six victory categories in

@@ -8,7 +8,27 @@ Original charts, errata, scenario start procedure, timing and rights still need
 independent review. This is a same-stream source check, not double entry.
 
 A [blind source-review packet](graziani-rules-review/README.md) now targets
-the relevant printed cases; its independent entry and ruling review remain open.
+the relevant printed cases; a [fresh-context entry and raw comparison](2026-11-17-graziani-independent-reviews.md#rules-victory-fortifications-ports-weather-and-patrol)
+are now available. Ruling review remains open.
+
+**Destination ratio:** Land §32.42, printed p. 43, specifies Cairo by default;
+if more than three Commonwealth supply units are received in a game-turn, one
+unit for every three received may be placed in Alexandria. The first review's
+`units_per_alternative: 3` field is ambiguous about numerator and denominator;
+the independent entry preserves the source ratio. Before implementation, model
+the strict `> 3` threshold, ratio and source-supported rounding separately;
+do not treat the field as an unconditional three units. Test 3, 4, 5, 6 and
+7 receipts, plus source-consistent remainder handling once decided.
+
+**Bounded arithmetic interpretation:** if “one for every three received” is
+read as complete groups of three, the optional Alexandria allowance is zero
+when the game-turn total is at most three, otherwise `floor(total / 3)`; at
+totals 3, 4, 5, 6 and 7 this yields caps 0, 1, 1, 2 and 2. This is a planning
+interpretation of whole units, not an explicit source rounding instruction.
+It does not decide how an arrival earlier in a game-turn may use an allowance
+whose final total depends on later receipts, whether plans expose that total,
+or whether placement can be deferred. Those timing and information questions
+remain open and must be versioned before implementation.
 
 ## Planning horizon
 

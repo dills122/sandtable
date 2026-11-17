@@ -1,0 +1,96 @@
+{
+  "scope": "graziani-french-marine-review-v1",
+  "manifest_sha256": "545e0ffc7e5c3431223fb8b5808afff9c94277bfc3e02d3014afaf1532b8d49d",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-blind-marine-review-2026-11-17"
+  ],
+  "expected_rows": 4,
+  "evidence": [
+    {
+      "row": "marine-oa",
+      "source": "commonwealth-charts",
+      "locators": [
+        "PDF p. 21, Unassigned Allied Units",
+        "PDF p. 21, Unassigned Allied Units, 1st Company, Fr Mtr Marine"
+      ]
+    },
+    {
+      "row": "marine-errata",
+      "source": "errata",
+      "locators": [
+        "PDF p. 1, §4.44b item 3",
+        "PDF p. 1, §4.44b, correction 3, French Motor Marine Company"
+      ]
+    },
+    {
+      "row": "deployed-marker",
+      "source": "land-rules",
+      "locators": [
+        "printed p. 10, §4.45 Arrives",
+        "PDF p. 10, §4.45, Arrives"
+      ]
+    },
+    {
+      "row": "marine-setup",
+      "source": "scenario",
+      "locators": [
+        "printed p. 27, §60.41",
+        "PDF p. 3 (printed p. 27), §60.41, C3926"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "marine-oa",
+      "locators": [
+        "PDF p. 21, Unassigned Allied Units",
+        "PDF p. 21, Unassigned Allied Units, 1st Company, Fr Mtr Marine"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "marine-oa",
+      "field": "counter_abbreviation",
+      "values": [
+        "1",
+        "“1”"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marine-errata",
+      "locators": [
+        "PDF p. 1, §4.44b item 3",
+        "PDF p. 1, §4.44b, correction 3, French Motor Marine Company"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "deployed-marker",
+      "locators": [
+        "printed p. 10, §4.45 Arrives",
+        "PDF p. 10, §4.45, Arrives"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "deployed-marker",
+      "field": "D_meaning",
+      "values": [
+        "deployed on map at first scenario start",
+        "Unit begins the first scenario already deployed on the map"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "marine-setup",
+      "locators": [
+        "printed p. 27, §60.41",
+        "PDF p. 3 (printed p. 27), §60.41, C3926"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

@@ -1,0 +1,62 @@
+{
+  "scope": "graziani-fortification-review-v1",
+  "manifest_sha256": "b964869fb5297d757e9a1e9f854fdff8e072cca5fd418d07e0b88db498acb4d3",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-source-review-2026-11-17"
+  ],
+  "expected_rows": 3,
+  "evidence": [
+    {
+      "row": "scenario-60-7",
+      "source": "scenario",
+      "locators": [
+        "printed p. 28, §60.7",
+        "Scenario printed p. 28 §60.7"
+      ]
+    },
+    {
+      "row": "city-fortification-25-11",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 38, §§25.0 and 25.11",
+        "Land compiled printed p. 38 §25.0 general rule"
+      ]
+    },
+    {
+      "row": "city-levels-25-12",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 38, §25.12",
+        "Land compiled printed p. 38 §25.12"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "scenario-60-7",
+      "locators": [
+        "printed p. 28, §60.7",
+        "Scenario printed p. 28 §60.7"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "city-fortification-25-11",
+      "locators": [
+        "printed p. 38, §§25.0 and 25.11",
+        "Land compiled printed p. 38 §25.0 general rule"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "city-levels-25-12",
+      "locators": [
+        "printed p. 38, §25.12",
+        "Land compiled printed p. 38 §25.12"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

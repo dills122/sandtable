@@ -1,5 +1,10 @@
 # Initial truck rows: double-entry packet
 
+**November 17 independent review:** [fresh entry](reading-independent.json)
+matches all 96 values; [raw comparison](comparison-independent.json) retains
+32 locator-wording differences. See [disposition](../2026-11-17-graziani-independent-reviews.md).
+The reader saw the README's disclosure of earlier agreement but not field values.
+
 **November 16 recheck:** [reading B](reading-b.json) and its [raw comparison](comparison-b.json)
 match all 96 recorded fields. The reader had prior planning context, so this is
 not a blind independent entry; all 32 locator-wording differences and the

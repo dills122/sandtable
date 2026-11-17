@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "scope": "graziani-axis-setup-relationships-v1",
+  "manifest_sha256": "c5a2b63bfdf8ce27d34851238ca964519148957c6c2c402caadccd5a4d0d5495",
+  "sources": {
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "scenario": "fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66"
+  },
+  "reader_id": "codex-independent-axis-2026-11-17",
+  "rows": [
+    {
+      "id": "cirene-scenario",
+      "locator": "scenario printed p. 27, [60.31] Italian Initial Deployment, C4120 row",
+      "values": {
+        "hex": "C4120",
+        "tank_mark": "LXIII (L)",
+        "parent_mark": "Ar/LTC"
+      }
+    },
+    {
+      "id": "marmarica-scenario",
+      "locator": "scenario printed p. 27, [60.31] Italian Initial Deployment, C3918 row",
+      "values": {
+        "hex": "C3918",
+        "tank_mark": "LXII(L)",
+        "parent_mark": "Ar/LTC"
+      }
+    },
+    {
+      "id": "cirene-tank-oa",
+      "locator": "errata PDF p. 4, 63rd Cirene Division OA, tank row and note a",
+      "values": {
+        "counter_abbreviation": "LXIII(L)",
+        "assigned_parent": "Libyan Tank Command",
+        "initial_attachment": "63rd Cirene",
+        "arrival_mark": "D"
+      }
+    },
+    {
+      "id": "marmarica-tank-oa",
+      "locator": "errata PDF p. 4, 62nd Marmarica Division OA, tank row and note a",
+      "values": {
+        "counter_abbreviation": "LXII(L)",
+        "assigned_parent": "Libyan Tank Command",
+        "initial_attachment": "62nd Marmarica",
+        "arrival_mark": "D"
+      }
+    }
+  ]
+}

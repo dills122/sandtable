@@ -8,6 +8,10 @@ organization chart PDF pp. 10–11, and [September errata](https://www.spigames.
 p. 1 §4.44b and p. 3 §60.31 were visually checked. [Source register](2026-11-12-graziani-source-register.md)
 tracks the larger admission and rights work.
 
+**November 17 planning follow-up:** [RUL-GRA-03](2026-11-12-graziani-ruling-decisions.md#rul-gra-03-matruh-initial-assignment-working-interpretation)
+now selects a scoped interpretation for capacity and initial reorganization;
+the alternatives and independent contract review remain open.
+
 A [field-level Axis formation packet](graziani-axis-formation-review/README.md)
 now covers the 29 candidate Cirene and Marmarica OA rows. Its first reading is
 same-stream source work; independent member-by-member entry remains outstanding.
@@ -56,6 +60,23 @@ The exact precedence of an explicit starting attachment, the default and this
 setup choice must be resolved before requiring all five named units to begin
 attached. Preserve source-stated relationships separately from any legal setup
 choice and validate the selected result.
+
+**November 17 chart recheck:** Commonwealth/common charts PDF p. 6, §19.5,
+prints a Matruh Garrison row for game turns 1–12: six units, no tank, one gun
+class. Its key defines a unit as a full-strength battalion- or company-equivalent
+counter; a chart modification permits two non-shell company-equivalents without
+using the maximum, subject to type restrictions. The three scenario-listed
+infantry battalions are attached but not assigned to Matruh; treating each as
+one full-strength battalion-equivalent uses three of six slots, conditional on
+the OA's starting strengths surviving scenario corrections and on no additional
+nested attachments. The OA's `N`/`D` marks give each battalion six starting
+TOE points; see the [source handoff](2026-11-16-graziani-source-material-research.md#matruh-combat-characteristics).
+The special free-company
+allowance does not make those battalions free. The chart does not itself decide
+whether Buffs and Hampshire are assigned under the erratum, attached at the final
+owner setup, or how the exception affects counting. This is a same-stream source
+recheck, not a blind review or admission ruling. Source copy SHA-256:
+`51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0`.
 
 September errata §19.5 explains that extra attachments are in addition to units
 normally assigned. The Matruh OA sheet says up to six units may be attached and

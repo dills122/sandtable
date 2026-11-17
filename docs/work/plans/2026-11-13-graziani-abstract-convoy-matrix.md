@@ -10,6 +10,12 @@ table and six-turn starting conditions remain open. The [common chart](https://s
 printed p. 12 (§41.5) was subsequently inspected for one result. See the broader
 [logistics crosswalk](2026-11-12-graziani-abstract-logistics-crosswalk.md).
 
+**Independent source follow-up:** [fresh reading and comparator](2026-11-17-graziani-independent-reviews.md#transport-convoy-and-rail)
+confirm that §32.66 requires the qualifying division itself to be non-shell,
+as well as another non-shell division at the stated relative position. The
+packet's first reading omitted the former qualifier from its abbreviated field;
+retain both. The broader table, minimum-loss and reachability questions remain.
+
 | Step | Observed source boundary | Contract and evidence needed |
 | --- | --- | --- |
 | Plan | §32.61 includes that turn's supply units, motorization and replacement points in Axis convoys; items may be divided among available lanes. It removes tonnage limits for this simplified convoy. Scenario §60.37 separately requires pre-start plans for the remainder of September and limits those plans to lanes 2, 3 and 6. | Authenticate carried-in plans, origin, arrival slot, private owner choice and later lane availability. Do not generalize the scenario's initial restriction to all future turns without source review, or apply no-tonnage language to unrelated transport. |

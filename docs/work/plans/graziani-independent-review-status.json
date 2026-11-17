@@ -1,0 +1,290 @@
+{
+  "packets": [
+    {
+      "packet": "pilot",
+      "scope": "graziani-matruh-nz-formations-v1",
+      "manifest_sha256": "970b59f00a107f75cb01dc3bd6d67b74effc112e96f61d343839927304df9705",
+      "reading_sha256": [
+        "a26a946fd8e20ca658ce09a93f9baf8db18d66e608c2cfa8d58443bf32359ba0",
+        "da4b798bf6bec38907407c721952b9acf0f88b673526b43cf0d97f5f64e73a41"
+      ],
+      "expected_rows": 11,
+      "expected_fields": 34,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "locator-difference": 11
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "supply",
+      "scope": "graziani-initial-supply-v1",
+      "manifest_sha256": "ecce73c5d78509379bd9b9130af5728de7e9f2a6cf4e542b9c4d475e9f486297",
+      "reading_sha256": [
+        "d5319534417158f0fedb9855f28b96dc7bb834ad077d21ec19bfdf983381ed7d",
+        "b7c4490123c811078ef4ba17f988af138b2cbf14ab03c663c4c92842a79f20ed"
+      ],
+      "expected_rows": 15,
+      "expected_fields": 50,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "locator-difference": 15
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "trucks",
+      "scope": "graziani-initial-trucks-v1",
+      "manifest_sha256": "5ebdd70270e13e5f65a28e6b02698d311a80c8b003d1ea4dd2fb821cd3925be6",
+      "reading_sha256": [
+        "47422decef68f8a0cf3ba9550acc3d83bc1d62c80900f3a78b32a44adb0ce6a3",
+        "38f922e60e974e882df7bde0c5ca88d08a764dde25d9a064f13385408b0ae971"
+      ],
+      "expected_rows": 32,
+      "expected_fields": 96,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "locator-difference": 32
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "arrival-groups",
+      "scope": "graziani-cw-arrivals-six-turns-v1",
+      "manifest_sha256": "599826eba2cd920f2cae0061b7758786d394cdda2b95eab638dec6d27bcaa35f",
+      "reading_sha256": [
+        "2f9516a30219bdd8b17c84d788b910bc1f59d06e9ec62619090053a9a103700d",
+        "c801b9d4efcf48b1386e80166027e0885858bc79bb01cbfe7574dce75d52cf67"
+      ],
+      "expected_rows": 14,
+      "expected_fields": 54,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "locator-difference": 14
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "arrival-members",
+      "scope": "graziani-cw-oa-members-v1",
+      "manifest_sha256": "dba41f612a9853273a3defd3d1b5a247e00c5dd7f787da6bcef9f974a95e6066",
+      "reading_sha256": [
+        "a78e86eb8e5c5e7044c3dea318a05ce302858be9f8b61ea7d8144c2f419300d4",
+        "dbb0f2b30d0757542558ebed792152c2556a0471d2ec8baa04f62bf6d222ded9"
+      ],
+      "expected_rows": 21,
+      "expected_fields": 84,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 7,
+        "locator-difference": 21
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "axis-members",
+      "scope": "graziani-axis-formations-members-v1",
+      "manifest_sha256": "4e6e607e52ceb484e89bdea2acdd7a0690bc6492b9d85b23697f9cafe9874e3b",
+      "reading_sha256": [
+        "750fc263d2aeab1f4b848e365a3560574e3bef082c03df372ce6f20e760656ad",
+        "fd6733b0276ad41651128eeafe1c364cac166c9b6909c19a7e8362949d02e8fc"
+      ],
+      "expected_rows": 29,
+      "expected_fields": 120,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 10,
+        "locator-difference": 29
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "axis-relationships",
+      "scope": "graziani-axis-setup-relationships-v1",
+      "manifest_sha256": "c5a2b63bfdf8ce27d34851238ca964519148957c6c2c402caadccd5a4d0d5495",
+      "reading_sha256": [
+        "eda380cecb1bdabeafeab89b7b0c4d8bb8974a2878af897ee6045bcd57a3e24e",
+        "dac5f6ed74ac2f6ab0b884c0e67616cc4ddbc70b0b7fc67844f4a4b08ee8fb5b"
+      ],
+      "expected_rows": 4,
+      "expected_fields": 14,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 3,
+        "locator-difference": 4
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "rules",
+      "scope": "graziani-arrival-supply-repair-rules-v1",
+      "manifest_sha256": "730059184af0b23f76508c3dc76ba3facafb234395c187c1625460bd26166689",
+      "reading_sha256": [
+        "0cfbc62f5351371f47b328242b0847a87526a4e59d2ea6ff3634cc418b4d1726",
+        "b35cf32f49a74ecee80f71350d5d5fa591028a80868d0c0764ade1f86884e5d0"
+      ],
+      "expected_rows": 15,
+      "expected_fields": 34,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 4,
+        "locator-difference": 15
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "transport",
+      "scope": "graziani-abstract-supply-transport-v1",
+      "manifest_sha256": "516a61894013affb0ba37ee4f4e9de898163554c1f51df381c05d8d47b011cd5",
+      "reading_sha256": [
+        "4d08c03d67065ba8a2d6255f8f18629f2a38864cb91b79529c7844b7e7ddc8f0",
+        "d8aa9594fb231e73d9768365808094031fe14d19433f574df0b207df25807890"
+      ],
+      "expected_rows": 9,
+      "expected_fields": 26,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 6,
+        "locator-difference": 9
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "convoys",
+      "scope": "graziani-abstract-convoy-review-v1",
+      "manifest_sha256": "ba11367727c0498e1b86fa2063079663190bb9c440fcdf15015734145f164a9a",
+      "reading_sha256": [
+        "7179b288e6fa9f9fbddbf64c3a65b405582860b6f72680c6c70264de37adceb9",
+        "6a4d5ca09c48b4b68e0b77ba4401e40b3a27dd6915c01c1eca3f061c0f1ce01b"
+      ],
+      "expected_rows": 11,
+      "expected_fields": 32,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 8,
+        "locator-difference": 11
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "fortifications",
+      "scope": "graziani-fortification-review-v1",
+      "manifest_sha256": "b964869fb5297d757e9a1e9f854fdff8e072cca5fd418d07e0b88db498acb4d3",
+      "reading_sha256": [
+        "d6e3630d3eb0ceb0cb2888f240d79dbd65e1c41fb5cb192a58f48f95ae21c878",
+        "514053b4a68258a775f092838cb775b795513b539aac1bc6d7f0bd01b24264d5"
+      ],
+      "expected_rows": 3,
+      "expected_fields": 6,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "locator-difference": 3
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "marine",
+      "scope": "graziani-french-marine-review-v1",
+      "manifest_sha256": "545e0ffc7e5c3431223fb8b5808afff9c94277bfc3e02d3014afaf1532b8d49d",
+      "reading_sha256": [
+        "c1e73dd17a3776d687f4f32a9339a5d750f0c6e77f3820c705093430eb207579",
+        "8d7325385d7306f6d181142f5555af61211919d518dd5b82b2ac16cde73d05fa"
+      ],
+      "expected_rows": 4,
+      "expected_fields": 10,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 2,
+        "locator-difference": 4
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "weather",
+      "scope": "graziani-weather-review-v1",
+      "manifest_sha256": "837170deba2ae443b2400676d466e82fbf19e79cb56332d2def96f9b9e189e68",
+      "reading_sha256": [
+        "c2fda99748d00eb6c74915df5815d222bee747f1b79b6b8c972e4d77d1e5fd2d",
+        "ff7d971abbda023ade29fb0fb6686faeae7b51b97f546b06ecd2c7a4905f0097"
+      ],
+      "expected_rows": 9,
+      "expected_fields": 23,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 8,
+        "locator-difference": 9
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "patrol",
+      "scope": "graziani-patrol-fog-review-v1",
+      "manifest_sha256": "cb56a14f7ddafc0fe511d6493a2fb9a3233a0f6b1d11f93f07fc7b3d9d7d8dbd",
+      "reading_sha256": [
+        "09f09d14c96eef77b483fd0ac2cc97e7235de132ffbb9e014c3bbe1db2bc0030",
+        "8d7a224b21b524654560536aa96dc0cfb7f923ca7e3cb18ea4ec219475ee695b"
+      ],
+      "expected_rows": 10,
+      "expected_fields": 20,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 6,
+        "locator-difference": 10,
+        "unknown": 1
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "rail",
+      "scope": "graziani-rail-review-v1",
+      "manifest_sha256": "0933969aedbb35a12bfda48a9c907286a0cf15183ca6b7e8e42d71ffd14c78b6",
+      "reading_sha256": [
+        "8bd7b4e81bbca46708fbb775db9b6eafe20942c5b00aae02b55fe0a5b5d6851b",
+        "4ced9c169f3d3452082c05b8843d0bd2ebac59cf4599c21836bef1ecf2064f4b"
+      ],
+      "expected_rows": 10,
+      "expected_fields": 24,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 5,
+        "locator-difference": 10
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "ports",
+      "scope": "graziani-port-conflict-review-v1",
+      "manifest_sha256": "5e4b8e35d049b73a879fb0f05b1b14199aced89aa39db003762f567890a5abb4",
+      "reading_sha256": [
+        "427dc40875c73a3a6aea713f36bdea8f7aca5f5f2d686e49e55505bc2b82d673",
+        "fddfcd65d4dfe8672be7faf74641d65c9571f76cdbaef2bbd005696a85b2cad9"
+      ],
+      "expected_rows": 7,
+      "expected_fields": 20,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 3,
+        "locator-difference": 7
+      },
+      "raw_comparison": "open"
+    },
+    {
+      "packet": "victory",
+      "scope": "graziani-six-turn-victory-source-v1",
+      "manifest_sha256": "f81498e8a1e6715f25362426d55ac1974475d48a5ccf2d1bec4fa8f026f45b2d",
+      "reading_sha256": [
+        "979b409cc9c0beb568c742fe13a4622f87e64f764ed204da5992b6fe99f07dc8",
+        "ddfdf6403427b4c6988dfb1411e38551f137de5a043b067f0fb609dd163f81ad"
+      ],
+      "expected_rows": 8,
+      "expected_fields": 19,
+      "second_entry": "attributed-reading",
+      "raw_issue_counts": {
+        "disagreement": 13,
+        "locator-difference": 8
+      },
+      "raw_comparison": "open"
+    }
+  ],
+  "note": "Raw comparison only. A supplied reader ID does not prove independence; open locator differences may have a separate human/agent disposition, and a clean comparison does not establish rights, source truth, complete scope or release acceptance."
+}

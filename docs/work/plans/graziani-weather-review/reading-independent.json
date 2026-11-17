@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "scope": "graziani-weather-review-v1",
+  "manifest_sha256": "837170deba2ae443b2400676d466e82fbf19e79cb56332d2def96f9b9e189e68",
+  "sources": {
+    "land-compiled": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+    "common-charts": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+    "errata": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+    "maps": "8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030"
+  },
+  "reader_id": "codex-independent-weather-patrol-2026-11-17",
+  "rows": [
+    {
+      "id": "scenario-calendar-map-d",
+      "locator": "Map D, Axis Game-Turn Record Track, turns 1-6",
+      "values": {
+        "turns_1_to_6": "September III; September IV; October I; October II; October III; October IV",
+        "scenario_ends_turn_6_stage_3": true
+      }
+    },
+    {
+      "id": "fall-season-29-1",
+      "locator": "Land rules p. 41, \u00a729.1",
+      "values": {
+        "fall_start": "September III",
+        "fall_end_inclusive": "December II",
+        "weather_per_operation_stage": true,
+        "foul_weather_location_die": 1
+      }
+    },
+    {
+      "id": "chart-season-29-61",
+      "locator": "Common Charts p. 6, \u00a729.61 fall row",
+      "values": {
+        "printed_fall_game_turns": "25-36; 73-84",
+        "normal": "11-35",
+        "hot": "36-54",
+        "sandstorm": "55-61",
+        "rainstorm": "62-66"
+      }
+    },
+    {
+      "id": "chart-correction-29-61",
+      "locator": "Errata p. 2, \u00a729.61",
+      "values": {
+        "seasonal_chart_is_incorrect": true,
+        "refer_to_case": "29.1"
+      }
+    },
+    {
+      "id": "hot-scope-29-31",
+      "locator": "Land rules p. 41, \u00a729.31",
+      "values": {
+        "hot_affects_all_map_sections": true
+      }
+    },
+    {
+      "id": "hot-loss-29-34",
+      "locator": "Land rules p. 41, \u00a729.34",
+      "values": {
+        "fuel_and_water_reduction_percent": 5,
+        "wells_and_oases_water_excluded": true,
+        "fuel_and_water_in_actual_unit_consumption_excluded": true,
+        "phase": "Weather Determination Phase"
+      }
+    },
+    {
+      "id": "sandstorm-29-41",
+      "locator": "Land rules p. 41, \u00a729.41",
+      "values": {
+        "nile_delta_excluded": true,
+        "unaffected_map_sections_are_normal": true
+      }
+    },
+    {
+      "id": "weather-build-29-42-54",
+      "locator": "Land rules p. 41, \u00a7\u00a729.42, 29.54",
+      "values": {
+        "construction_in_sandstorm_hex": false,
+        "construction_in_rainstorm_hex": false
+      }
+    },
+    {
+      "id": "sandstorm-movement-29-44",
+      "locator": "Land rules p. 41, \u00a729.44",
+      "values": {
+        "movement_cost_multiplier": 2
+      }
+    }
+  ]
+}

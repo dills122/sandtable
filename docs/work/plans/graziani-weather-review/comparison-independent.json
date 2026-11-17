@@ -1,0 +1,230 @@
+{
+  "scope": "graziani-weather-review-v1",
+  "manifest_sha256": "837170deba2ae443b2400676d466e82fbf19e79cb56332d2def96f9b9e189e68",
+  "readers": [
+    "existing-researcher-source-recheck",
+    "codex-independent-weather-patrol-2026-11-17"
+  ],
+  "expected_rows": 9,
+  "evidence": [
+    {
+      "row": "scenario-calendar-map-d",
+      "source": "maps",
+      "locators": [
+        "PDF p. 4, Map D Axis Game Turn Record Track",
+        "Map D, Axis Game-Turn Record Track, turns 1-6"
+      ]
+    },
+    {
+      "row": "fall-season-29-1",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 41, §29.1",
+        "Land rules p. 41, §29.1"
+      ]
+    },
+    {
+      "row": "chart-season-29-61",
+      "source": "common-charts",
+      "locators": [
+        "printed p. 6, §29.61",
+        "Common Charts p. 6, §29.61 fall row"
+      ]
+    },
+    {
+      "row": "chart-correction-29-61",
+      "source": "errata",
+      "locators": [
+        "PDF p. 2, §29.61",
+        "Errata p. 2, §29.61"
+      ]
+    },
+    {
+      "row": "hot-scope-29-31",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 41, §29.31",
+        "Land rules p. 41, §29.31"
+      ]
+    },
+    {
+      "row": "hot-loss-29-34",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 41, §29.34",
+        "Land rules p. 41, §29.34"
+      ]
+    },
+    {
+      "row": "sandstorm-29-41",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 41, §29.41",
+        "Land rules p. 41, §29.41"
+      ]
+    },
+    {
+      "row": "weather-build-29-42-54",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 41, §§29.42 and 29.54",
+        "Land rules p. 41, §§29.42, 29.54"
+      ]
+    },
+    {
+      "row": "sandstorm-movement-29-44",
+      "source": "land-compiled",
+      "locators": [
+        "printed p. 41, §29.44",
+        "Land rules p. 41, §29.44"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "kind": "locator-difference",
+      "row": "scenario-calendar-map-d",
+      "locators": [
+        "PDF p. 4, Map D Axis Game Turn Record Track",
+        "Map D, Axis Game-Turn Record Track, turns 1-6"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "fall-season-29-1",
+      "locators": [
+        "printed p. 41, §29.1",
+        "Land rules p. 41, §29.1"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "fall-season-29-1",
+      "field": "foul_weather_location_die",
+      "values": [
+        true,
+        1
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "chart-season-29-61",
+      "locators": [
+        "printed p. 6, §29.61",
+        "Common Charts p. 6, §29.61 fall row"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "chart-season-29-61",
+      "field": "printed_fall_game_turns",
+      "values": [
+        "25–36; 73–84",
+        "25-36; 73-84"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "chart-season-29-61",
+      "field": "normal",
+      "values": [
+        "11–35",
+        "11-35"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "chart-season-29-61",
+      "field": "hot",
+      "values": [
+        "36–54",
+        "36-54"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "chart-season-29-61",
+      "field": "sandstorm",
+      "values": [
+        "55–61",
+        "55-61"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "chart-season-29-61",
+      "field": "rainstorm",
+      "values": [
+        "62–66",
+        "62-66"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "chart-correction-29-61",
+      "locators": [
+        "PDF p. 2, §29.61",
+        "Errata p. 2, §29.61"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "chart-correction-29-61",
+      "field": "refer_to_case",
+      "values": [
+        "§29.1",
+        "29.1"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "hot-scope-29-31",
+      "locators": [
+        "printed p. 41, §29.31",
+        "Land rules p. 41, §29.31"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "hot-loss-29-34",
+      "locators": [
+        "printed p. 41, §29.34",
+        "Land rules p. 41, §29.34"
+      ]
+    },
+    {
+      "kind": "disagreement",
+      "row": "hot-loss-29-34",
+      "field": "phase",
+      "values": [
+        "Weather Determination",
+        "Weather Determination Phase"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "sandstorm-29-41",
+      "locators": [
+        "printed p. 41, §29.41",
+        "Land rules p. 41, §29.41"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "weather-build-29-42-54",
+      "locators": [
+        "printed p. 41, §§29.42 and 29.54",
+        "Land rules p. 41, §§29.42, 29.54"
+      ]
+    },
+    {
+      "kind": "locator-difference",
+      "row": "sandstorm-movement-29-44",
+      "locators": [
+        "printed p. 41, §29.44",
+        "Land rules p. 41, §29.44"
+      ]
+    }
+  ],
+  "note": "Attributed entries and matching bytes do not establish independent readers, source truth, rights or release acceptance."
+}

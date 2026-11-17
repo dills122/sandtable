@@ -1,5 +1,10 @@
 # Weather: blind source review
 
+**November 17 independent review:** [entry](reading-independent.json) and
+[raw comparison](comparison-independent.json) are retained; see the
+[independent review disposition](../2026-11-17-graziani-independent-reviews.md)
+for source-specific differences and limits.
+
 **Status:** one reader and a blank second entry. Nine grouped records cover the
 Map D calendar, season rule, printed fall row and erratum, and selected weather
 effects. They do not establish a full historical weather implementation, map

@@ -7,6 +7,12 @@ The original sources do not explicitly specify a complete §60.81 Land-only
 victory-route algorithm in the passages reviewed. Keep the gate fail-closed
 until a reviewed, versioned interpretation and its prerequisites exist.
 
+**November 17 independent follow-up:** [source and decision review](2026-11-17-graziani-victory-independent-decision.md)
+proposes a versioned, fail-closed result-composition policy that retains all six
+row outcomes, distinguishes unknown from false and avoids inventing a sole
+winner when both sides qualify. Land-only route and terminal ordering remain
+unresolved; this is planning guidance, not accepted runtime authority.
+
 ## Source scope
 
 Original [scenario scan](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf),

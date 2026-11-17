@@ -1,0 +1,15 @@
+# Independent source review: D3615 eastern junction
+
+**Disposition:** The candidate mismatch is visually supported but should remain a **candidate**, not an automatic data correction. The road clearly crosses D3615/D3616. The blue cross-tied rail visibly runs through the D3615/D3516 diagonal near the crowded vertex; the D3615/D3616 rail record is not independently supported by the visible continuous blue line. Overprinting prevents a definitive absence claim for every part of the junction or a complete track classification.
+
+| Side | Independent scan reading | Pinned data |
+| --- | --- | --- |
+| D3615 / D3616 | The dark parallel road marks cross the vertical side above the junction. The visible blue cross-tied centerline runs southwest of the vertex instead; it is not seen cleanly crossing this vertical side. Coast, numerals and overprinting affect portions of the side. | `road` + `railroad`; road supported, railroad placement questionable rather than categorically disproved. |
+| D3615 / D3516 | The blue cross-tied line from D3615 intersects the down-left diagonal and continues into D3516. The intersection is near the junction, where blue, dark track and the grid side overlap. | `track` only; candidate missing rail. A visible mark is not proof of operational rail or every other side feature. |
+| D3516 / D3616 | The down-right diagonal meets road/track marks at a crowded vertex; an isolated vertex touch is insufficient to certify a particular crossing. | `track`; this inspection does not confirm or disprove it. |
+
+The 500-dpi wider crop anchors the three hex labels and surrounding coastline; the 800-dpi crop distinguishes the visible road and blue rail line. The map key identifies the blue cross-tied line as railway and the dark parallel lines as road. I inspected the same scan and previously identified crop after reading the candidate: this is an independent source recheck, not blind transcription or another edition. The visual evidence does not prove finished/usable railway, water-side passability, path continuity beyond this local intersection, current ownership, occupancy or legal movement.
+
+**Review vectors:** Retain both candidate records as unresolved until separately approved. Recheck the 800-dpi side/vertex crop and the 500-dpi label context before any change; test reciprocal edge identity and provenance if admitted. A road crossing does not establish a rail crossing, and a line touching a three-hex vertex does not establish all three edges. Preserve unknown where overprint hides a precise crossing and never promote missing feature records to proven clear sides.
+
+**Provenance:** Original [map PDF](https://spigames.net/PDFv10/CNA_Maps.pdf), Map D PDF p. 4 and key p. 1, SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; inspected `/private/tmp/graziani-mapcheck/d3615east800.png`, SHA-256 `7407f6a0e63a0df36ffd69206e6cea6cc0c80891e0e2035db60cc6a5a6960549`, and the earlier 500-dpi contextual crop. Pinned `hexsides.v1.json` hash `124e6f943930f4fa718eb04fa1dc86b6089582aebfaff8fcb83f98ab30d98e6c`; actual records read for comparison. No map/runtime changes or gameplay tests.
