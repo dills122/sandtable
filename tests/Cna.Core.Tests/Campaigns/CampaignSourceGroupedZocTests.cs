@@ -199,6 +199,59 @@ public sealed class CampaignSourceGroupedZocTests
         Assert.DoesNotContain("d3715", controlled);
     }
 
+    [Theory]
+    // Commonwealth OA PDF p.9 (70th Infantry Division, 23rd Brigade note):
+    // Essex and Durham at close-assault rating 2 per chart 4.46a.
+    [InlineData("1-essex", 2)]
+    [InlineData("1-durham-light-infantry", 2)]
+    // Commonwealth OA PDF p.11 (Unassigned British Infantry-type Units):
+    // South Staffordshires, Buffs and Hampshire at close-assault rating 1.
+    [InlineData("1-south-staffordshires", 1)]
+    [InlineData("1-buffs", 1)]
+    [InlineData("1-hampshire", 1)]
+    public void MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(string elementId, int expectedRating)
+    {
+        var member = new CampaignGroupedMember(elementId, CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false,
+            "infantry", 6, 10, CapabilityPointAmount.Zero, 0);
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(
+            CampaignSourceMatruhGroupedDefinition.GroupId, [member]);
+        Assert.True(estimate.AllKnown);
+        Assert.Equal(6 * expectedRating, estimate.LowerBound);
+    }
+
+    [Fact]
+    public void MatruhGarrisonAllFiveBattalionsHaveAFullyKnownDefenseEstimateFromTheirRealCitedRatings()
+    {
+        CampaignGroupedMember[] members =
+        [
+            new(CampaignSourceMatruhFormation.HeadquartersId, null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+            new("1-essex", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-durham-light-infantry", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-south-staffordshires", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-buffs", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-hampshire", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+        ];
+        // StackValue 0 matches the real Matruh Garrison's own zero-stacking
+        // convention (9.16 - "garrison counter zero at Matruh"), not a test
+        // placeholder, so EvaluateFormationSource is still expected to come
+        // back determinate-but-not-qualified on stacking alone, never on an
+        // unknown defense component.
+        var group = new CampaignGroupedFormation(CampaignSourceMatruhGroupedDefinition.GroupId, "commonwealth",
+            CampaignSourceMatruhFormation.HeadquartersId, "d3714", 0, 20, members, dispositionConfirmed: true);
+
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(group.GroupId, group.Members);
+        // Essex/Durham (OA p.9): 6 TOE x DR 2 x 2 units = 24. South
+        // Staffordshires/Buffs/Hampshire (OA p.11): 6 TOE x DR 1 x 3 units = 18.
+        Assert.Equal(42, estimate.LowerBound);
+        Assert.True(estimate.AllKnown);
+
+        var result = CampaignSourceGroupedZoc.EvaluateFormationSource(group);
+        Assert.NotNull(result);
+        Assert.False(result!.IsQualified);
+        Assert.Contains(ZocSourceFailureKind.InsufficientStackingPoints, result.Failures);
+        Assert.DoesNotContain(ZocSourceFailureKind.InsufficientRawDefensiveCloseAssaultPoints, result.Failures);
+    }
+
     [Fact]
     public void DetachedSingleBattalionBelowStackingThresholdIsKnownNotQualified()
     {

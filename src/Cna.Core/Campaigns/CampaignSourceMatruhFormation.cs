@@ -4,20 +4,26 @@ using Cna.Core.Content;
 
 namespace Cna.Core.Campaigns;
 
-internal sealed record CampaignSourceMatruhMember(string ElementId, string SourceCode, string AssignmentStatus);
+internal sealed record CampaignSourceMatruhMember(string ElementId, string SourceCode, string AssignmentStatus,
+    int OffensiveCloseAssaultRating, int DefensiveCloseAssaultRating);
 
 /// <summary>Owner-selected source formation state; distinct from World6 independent counters.</summary>
 internal sealed class CampaignSourceMatruhFormation
 {
     internal const string PolicyId = "graziani.matruh-source-formation.v1";
     internal const string HeadquartersId = "matruh-garrison-hq";
+    // Close-assault off/def ratings: Commonwealth OA PDF p.9 (Essex/Durham,
+    // 70th Infantry Division) and p.11 (Unassigned British Infantry-type
+    // Units: South Staffordshires/Buffs/Hampshire); chart §4.46a, PDF p.22,
+    // gives the per-TOE-point values below (see docs/work/plans/2026-11-16-
+    // graziani-source-material-research.md's November 17 Matruh follow-up).
     private static readonly IReadOnlyList<CampaignSourceMatruhMember> MembersData = Array.AsReadOnly(new[]
     {
-        new CampaignSourceMatruhMember("1-essex", "m", "scenario-23-70-vs-oa-note-f-conflict"),
-        new CampaignSourceMatruhMember("1-durham-light-infantry", "m", "scenario-23-70-vs-oa-note-f-conflict"),
-        new CampaignSourceMatruhMember("1-south-staffordshires", "p", "unassigned-source"),
-        new CampaignSourceMatruhMember("1-buffs", "p", "provisional-errata-assigned-to-matruh"),
-        new CampaignSourceMatruhMember("1-hampshire", "p", "provisional-errata-assigned-to-matruh"),
+        new CampaignSourceMatruhMember("1-essex", "m", "attached-regardless-of-assignment-timing", 2, 2),
+        new CampaignSourceMatruhMember("1-durham-light-infantry", "m", "attached-regardless-of-assignment-timing", 2, 2),
+        new CampaignSourceMatruhMember("1-south-staffordshires", "p", "unassigned-source", 1, 2),
+        new CampaignSourceMatruhMember("1-buffs", "p", "provisional-errata-assigned-to-matruh", 1, 2),
+        new CampaignSourceMatruhMember("1-hampshire", "p", "provisional-errata-assigned-to-matruh", 1, 2),
     });
     private CampaignSourceMatruhFormation(string battlefieldHash, bool confirmed, string? detachedId)
     { BattlefieldHash = battlefieldHash; Confirmed = confirmed; DetachedId = detachedId; }
@@ -86,7 +92,7 @@ internal sealed class CampaignSourceMatruhFormation
             writer.WriteString("errataHash", "sha256:5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb");
             writer.WriteString("assignmentRuling", "provisional-errata-buffs-hampshire-assigned-oa-no-assigned-exception");
             writer.WriteString("colocationRuling", "provisional-owner-select-buffs-hampshire-with-matruh");
-            writer.WriteString("essexDurhamAssignment", "scenario-23-70-vs-oa-note-f-unresolved");
+            writer.WriteString("essexDurhamAssignment", "attached-regardless-of-assignment-timing");
             writer.WriteString("headquartersId", HeadquartersId); writer.WriteString("headquartersCode", "a"); writer.WriteNumber("headquartersCpa", 30);
             writer.WriteString("locationId", "d3714"); writer.WriteString("garrisonStackRule", "9.16-garrison-counter-zero-at-matruh");
             writer.WriteString("movementRestriction", "no-voluntary-move-until-selby-or-stage-attacked-close-assault");
@@ -100,6 +106,8 @@ internal sealed class CampaignSourceMatruhFormation
                 writer.WriteStartObject(); writer.WriteString("elementId", member.ElementId); writer.WriteString("sourceCode", member.SourceCode);
                 writer.WriteString("assignmentStatus", member.AssignmentStatus); writer.WriteString("componentId", member.ElementId + ".infantry");
                 writer.WriteNumber("toe", 6); writer.WriteNumber("capabilityPoints", 10); writer.WriteNumber("individualStack", 1);
+                writer.WriteNumber("offensiveCloseAssaultRating", member.OffensiveCloseAssaultRating);
+                writer.WriteNumber("defensiveCloseAssaultRating", member.DefensiveCloseAssaultRating);
                 writer.WriteString("attachmentStatus", !Confirmed ? "owner-choice-pending" : member.ElementId == DetachedId ? "detached" : "attached");
                 writer.WriteEndObject();
             }

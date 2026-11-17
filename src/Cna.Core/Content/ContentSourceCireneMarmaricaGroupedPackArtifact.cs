@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCireneMarmaricaGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-cirene-marmarica-grouped.v1";
-    internal const string ContentHash = "sha256:0884578e9d4b10bb0a0a9112456a8735079923cf0bceef68182315626a8afca1";
+    internal const string ContentHash = "sha256:10b016f0ecbea76f84aaf0433df15f9d26b6b9fc1ec8a9ce562bc19b5bfd1d21";
     private readonly byte[] bytes;
     private ContentSourceCireneMarmaricaGroupedPackArtifact(ContentSourceLibyanGroupedPackArtifact basis, byte[] bytes)
     {
