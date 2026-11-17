@@ -1494,6 +1494,80 @@ internal sealed class CampaignSourceAuthorityState
         }
         return stream.ToArray();
     }
+    internal static readonly string AdmitSourceTobrukBardiaGarrisonActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.tobruk-bardia-garrison.admit.v1"));
+    internal static readonly string ActivateSourceTobrukBardiaGarrisonActionId = CampaignPregameSourceCreation.Digest(
+        Encoding.UTF8.GetBytes("graziani.source.tobruk-bardia-garrison.activate.v1"));
+
+    // Independent (ungrouped) static-defense counters, admitted the same way
+    // as the Axis minor garrisons: a source-evidence Battlefield entry first,
+    // then (once CW free guns exist, the file's established late-stage home
+    // for further independent-element activation - see ActivateAxisMinorGarrisons
+    // and its siblings below) materialization into the active World8.
+    internal bool CanAdmitSourceTobrukBardiaGarrison => Battlefield is not null && AxisGarrisons is not null
+        && ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+
+    internal CampaignSourceAuthorityState AdmitSourceTobrukBardiaGarrison()
+    {
+        if (!CanAdmitSourceTobrukBardiaGarrison) throw new InvalidOperationException("Tobruk/Bardia garrison requires the prior source profile and no duplicate.");
+        var battlefield = Battlefield!.AdmitSourceTobrukBardiaGarrison();
+        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
+            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+    }
+
+    internal byte[] SerializeSourceTobrukBardiaGarrisonAdmission(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-tobruk-bardia-garrison-admitted");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", AdmitSourceTobrukBardiaGarrisonActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    internal bool CanActivateSourceTobrukBardiaGarrison => CwFreeGunsWorld is { TobrukBardiaGarrisonContent: null }
+        && Battlefield is not null && ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds.All(id => Battlefield.Entries
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-tobruk-bardia-garrison-admitted"));
+
+    internal CampaignSourceAuthorityState ActivateSourceTobrukBardiaGarrison()
+    {
+        if (!CanActivateSourceTobrukBardiaGarrison) throw new InvalidOperationException("Tobruk/Bardia garrison activation is unavailable.");
+        var active = CwFreeGunsWorld!.ActivateTobrukBardiaGarrison(Battlefield!);
+        return WithCwFreeGuns(CwFreeGuns!, Battlefield!.ActivateSourceTobrukBardiaGarrison(World, active.World), active);
+    }
+
+    internal byte[] SerializeSourceTobrukBardiaGarrisonEvent(CampaignSourceAuthorityState successor)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("eventType", "source-tobruk-bardia-garrison-activated");
+            writer.WriteString("campaignId", Request.CampaignId);
+            writer.WriteNumber("priorStateVersion", StateVersion);
+            writer.WriteString("priorCheckpointHash", CampaignPregameSourceCreation.Digest(SerializeCheckpoint()));
+            writer.WriteString("actionId", ActivateSourceTobrukBardiaGarrisonActionId);
+            writer.WriteString("actor", "system");
+            writer.WriteString("contentHash", successor.CwFreeGunsWorld!.TobrukBardiaGarrisonContent!.Identity.Hash);
+            writer.WriteString("worldHash", successor.CwFreeGunsWorld.Hash());
+            writer.WriteString("groupedWorldHash", successor.GroupedWorld!.Hash());
+            writer.WriteString("battlefieldHash", successor.Battlefield!.Hash());
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
     private CampaignSourceAuthorityState WithCwFreeGuns(CampaignSourceCwFreeGuns setup, CampaignSourceBattlefield battlefield, CampaignSourceCwFreeGunsWorld? active) =>
         new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization,
             OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization,

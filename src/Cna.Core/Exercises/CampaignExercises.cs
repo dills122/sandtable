@@ -1619,6 +1619,34 @@ public static class CampaignExercises
         return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
             [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
     }
+    public static ExerciseStepResult AdmitSourceTobrukBardiaGarrison(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanAdmitSourceTobrukBardiaGarrison: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AdmitSourceTobrukBardiaGarrison(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceTobrukBardiaGarrisonAdmission(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.AdmitSourceTobrukBardiaGarrisonActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+    public static ExerciseStepResult ActivateSourceTobrukBardiaGarrison(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.SourceAuthority is not { CanActivateSourceTobrukBardiaGarrison: true } authority)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        CampaignSourceAuthorityState next;
+        try { next = authority.ActivateSourceTobrukBardiaGarrison(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var bytes = authority.SerializeSourceTobrukBardiaGarrisonEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, CampaignActionAudience.System, CampaignSourceAuthorityState.ActivateSourceTobrukBardiaGarrisonActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
+            [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
     public static bool CanPromoteSourceCwFreeGunsWorld(ExerciseSession session) => session.SourceAuthority?.CanPromoteCwFreeGunsWorld == true;
     public static ExerciseStepResult AdmitSourceCwFreeGuns(ExerciseSession session) => ApplySourceCwFreeGunsSystem(session, false);
     public static ExerciseStepResult PromoteSourceCwFreeGunsWorld(ExerciseSession session) => ApplySourceCwFreeGunsSystem(session, true);
