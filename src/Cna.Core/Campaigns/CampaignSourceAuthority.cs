@@ -10,7 +10,7 @@ namespace Cna.Core.Campaigns;
 
 // Versioned successor of the retained, source-backed pregame.  Setup is still
 // in progress; there is no game clock until setup obligations are satisfied.
-internal sealed class CampaignSourceAuthorityState
+internal sealed record CampaignSourceAuthorityState
 {
     internal const int ContractVersion = 4;
     internal const int SupplementalContractVersion = 5;
@@ -84,109 +84,226 @@ internal sealed class CampaignSourceAuthorityState
         CommonwealthMotorization = commonwealthMotorization;
         OpeningConvoyPlan = openingConvoyPlan;
         CommonwealthSupplyPlans = commonwealthSupplyPlans;
-        if (septemberPlans is not null && (commonwealthSupplyPlans is null || commonwealthSupplyPlans.NextTargetGameTurn is not null))
-            throw new ArgumentException("September planning requires completed Commonwealth plans.");
         SeptemberPlans = septemberPlans;
         AxisSupplement = axisSupplement;
-        if ((axisSupplement is null) != (autoblinda is null))
-            throw new ArgumentException("Autoblinda setup requires the matching source supplement.");
         Autoblinda = autoblinda;
-        if (commonwealthSupplement is not null && axisSupplement is null)
-            throw new ArgumentException("Commonwealth supplement requires the prior source profile.");
         CommonwealthSupplement = commonwealthSupplement;
-        if (priorityMotorization is not null && commonwealthSupplement is null)
-            throw new ArgumentException("Priority motorization requires the prior source profile.");
         PriorityMotorization = priorityMotorization;
-        if (axisPriorityMotorization is not null && priorityMotorization is null)
-            throw new ArgumentException("Axis priority motorization requires the prior source profile.");
         AxisPriorityMotorization = axisPriorityMotorization;
-        if (axisGarrisons is not null && axisPriorityMotorization is null)
-            throw new ArgumentException("Axis garrisons require the prior source profile.");
         AxisGarrisons = axisGarrisons;
-        if (battlefield is not null && axisGarrisons is null)
-            throw new ArgumentException("Source battlefield requires the prior profile.");
         Battlefield = battlefield;
-        if (cairoSetup is not null && battlefield is null)
-            throw new ArgumentException("Cairo setup requires the prior source battlefield.");
         CairoSetup = cairoSetup;
-        if (cairoWorld is not null && cairoSetup is null)
-            throw new ArgumentException("Cairo active world requires the prior source setup.");
         CairoWorld = cairoWorld;
-        if (malettiWorld is not null && cairoWorld is null)
-            throw new ArgumentException("Maletti active world requires the prior Cairo world.");
         MalettiWorld = malettiWorld;
-        if (independentWorld is not null && cairoWorld is null)
-            throw new ArgumentException("Independent world requires the prior Cairo world.");
         IndependentWorld = independentWorld;
-        if (localMapWorld is not null && independentWorld is null)
-            throw new ArgumentException("Local map requires the prior independent world.");
         LocalMapWorld = localMapWorld;
-        if (expandedIndependentWorld is not null && localMapWorld is null)
-            throw new ArgumentException("Expanded independent world requires the prior local map.");
         ExpandedIndependentWorld = expandedIndependentWorld;
-        if (attachedInitialLoads is not null && expandedIndependentWorld is null)
-            throw new ArgumentException("Attached initial loads require the prior source world.");
         AttachedInitialLoads = attachedInitialLoads;
-        if (initialWrecks is not null && attachedInitialLoads is null)
-            throw new ArgumentException("Initial wrecks require the prior setup profile.");
         InitialWrecks = initialWrecks;
-        if (axisFreeArtillery is not null && initialWrecks is null)
-            throw new ArgumentException("Axis free setup requires prior source setup.");
         AxisFreeArtillery = axisFreeArtillery;
-        if (axisFreeArtilleryWorld is not null && axisFreeArtillery is null)
-            throw new ArgumentException("Axis free world requires source setup.");
         AxisFreeArtilleryWorld = axisFreeArtilleryWorld;
-        if (axisCorpsArtillery is not null && axisFreeArtilleryWorld is null)
-            throw new ArgumentException("Axis corps setup requires prior source world.");
-        if (axisCorpsArtilleryWorld is not null && axisCorpsArtillery is null)
-            throw new ArgumentException("Axis corps world requires source setup.");
         AxisCorpsArtillery = axisCorpsArtillery;
         AxisCorpsArtilleryWorld = axisCorpsArtilleryWorld;
-        if (malettiHierarchy is not null && axisCorpsArtilleryWorld is null)
-            throw new ArgumentException("Maletti hierarchy requires prior source world.");
         MalettiHierarchy = malettiHierarchy;
-        if (certifiedMalettiWorld is not null && malettiHierarchy is null)
-            throw new ArgumentException("Certified Maletti world requires its hierarchy.");
         CertifiedMalettiWorld = certifiedMalettiWorld;
-        if (matruhFormation is not null && malettiHierarchy is null)
-            throw new ArgumentException("Matruh formation requires prior source hierarchy.");
         MatruhFormation = matruhFormation;
-        if (matruhDetachedWorld is not null && matruhFormation is null)
-            throw new ArgumentException("Matruh detached world requires the source formation.");
         MatruhDetachedWorld = matruhDetachedWorld;
         Gt2Correction = gt2Correction;
-        if (cwPriorityWorld is not null && cwPriorityCatalog is null)
-            throw new ArgumentException("Commonwealth priority world requires catalog.");
         CwPriorityCatalog = cwPriorityCatalog;
         CwPriorityWorld = cwPriorityWorld;
         CompactCheckpoint = compactCheckpoint;
         AxisUnattachedCargo = axisUnattachedCargo;
         CommonwealthUnattachedCargo = commonwealthUnattachedCargo;
+        CwFreeGuns = cwFreeGuns;
+        CwFreeGunsWorld = cwFreeGunsWorld;
+        // GroupedWorld must keep retaining the *current* active source World as
+        // its Prior -- rebind it if whatever just changed (here, or via a later
+        // `with` mutation; see Validated() below) moved World out from under it.
+        GroupedWorld = groupedWorld is null || groupedWorld.Prior == World
+            ? groupedWorld
+            : RebindGroupedWorld(groupedWorld, World);
+        StateVersion = stateVersion;
+        FinalizedOwners = finalizedOwners;
+        FinalizationVersion = finalizationVersion;
+        HorseRulingVotes = horseRulingVotes;
+        HorseStageOneNoTraining = horseStageOneNoTraining;
+        HorseRulingVersion = horseRulingVersion;
+        ValidateInvariants();
+    }
+
+    // Copies every field of `original` verbatim. This is what both the
+    // compiler-generated clone (used by `with`) and any explicit copy go
+    // through.
+    //
+    // Deliberately does NOT call ValidateInvariants() here, for two reasons,
+    // the second found the hard way while verifying the first:
+    //
+    // 1) It wouldn't protect `with` anyway. A `with` expression works as
+    //    "clone, THEN apply the member initializers" -- verified empirically
+    //    with a throwaway record reproduction -- so a ValidateInvariants() call
+    //    in this constructor only ever observes `original`'s own
+    //    (already-valid) pre-mutation field values. It can never catch an
+    //    invariant that the `with` block's own assignments introduce.
+    // 2) It actively breaks legitimate multi-step `with` composition. Validated()
+    //    below sometimes issues an intermediate `with` purely to patch
+    //    GroupedWorld (see RebindGroupedWorld) before the final result is
+    //    validated. If this constructor validated on every clone, that
+    //    intermediate clone -- which still carries the OLD GroupedWorld next to
+    //    the already-updated World-affecting fields -- would be validated while
+    //    still transiently inconsistent, and the grouped-world checks in
+    //    ValidateInvariants() would reject a perfectly legal transition (this
+    //    is exactly the regression this comment replaced: PromoteCertifiedMalettiWorld
+    //    started throwing where main's pre-refactor code did not).
+    //
+    // So the only thing that actually protects a `with`-built successor is each
+    // mutation method calling ValidateInvariants() explicitly on the *final*
+    // result, via the private `Validated()` helper -- see e.g.
+    // SetOwnerFinalization below.
+    private CampaignSourceAuthorityState(CampaignSourceAuthorityState original)
+    {
+        Pregame = original.Pregame;
+        ConvoyPlan = original.ConvoyPlan;
+        AxisSupplyWorld = original.AxisSupplyWorld;
+        CommonwealthSupplyWorld = original.CommonwealthSupplyWorld;
+        AxisInitialForces = original.AxisInitialForces;
+        CommonwealthInitialForces = original.CommonwealthInitialForces;
+        AxisMotorization = original.AxisMotorization;
+        CommonwealthMotorization = original.CommonwealthMotorization;
+        OpeningConvoyPlan = original.OpeningConvoyPlan;
+        CommonwealthSupplyPlans = original.CommonwealthSupplyPlans;
+        SeptemberPlans = original.SeptemberPlans;
+        AxisSupplement = original.AxisSupplement;
+        Autoblinda = original.Autoblinda;
+        CommonwealthSupplement = original.CommonwealthSupplement;
+        PriorityMotorization = original.PriorityMotorization;
+        AxisPriorityMotorization = original.AxisPriorityMotorization;
+        AxisGarrisons = original.AxisGarrisons;
+        Battlefield = original.Battlefield;
+        CairoSetup = original.CairoSetup;
+        CairoWorld = original.CairoWorld;
+        MalettiWorld = original.MalettiWorld;
+        IndependentWorld = original.IndependentWorld;
+        LocalMapWorld = original.LocalMapWorld;
+        ExpandedIndependentWorld = original.ExpandedIndependentWorld;
+        AttachedInitialLoads = original.AttachedInitialLoads;
+        InitialWrecks = original.InitialWrecks;
+        AxisFreeArtillery = original.AxisFreeArtillery;
+        AxisFreeArtilleryWorld = original.AxisFreeArtilleryWorld;
+        AxisCorpsArtillery = original.AxisCorpsArtillery;
+        AxisCorpsArtilleryWorld = original.AxisCorpsArtilleryWorld;
+        MalettiHierarchy = original.MalettiHierarchy;
+        CertifiedMalettiWorld = original.CertifiedMalettiWorld;
+        MatruhFormation = original.MatruhFormation;
+        MatruhDetachedWorld = original.MatruhDetachedWorld;
+        Gt2Correction = original.Gt2Correction;
+        CwPriorityCatalog = original.CwPriorityCatalog;
+        CwPriorityWorld = original.CwPriorityWorld;
+        CompactCheckpoint = original.CompactCheckpoint;
+        AxisUnattachedCargo = original.AxisUnattachedCargo;
+        CommonwealthUnattachedCargo = original.CommonwealthUnattachedCargo;
+        CwFreeGuns = original.CwFreeGuns;
+        CwFreeGunsWorld = original.CwFreeGunsWorld;
+        GroupedWorld = original.GroupedWorld;
+        StateVersion = original.StateVersion;
+        FinalizedOwners = original.FinalizedOwners;
+        FinalizationVersion = original.FinalizationVersion;
+        HorseRulingVotes = original.HorseRulingVotes;
+        HorseStageOneNoTraining = original.HorseStageOneNoTraining;
+        HorseRulingVersion = original.HorseRulingVersion;
+    }
+
+    // Mutation methods below build their successor with `this with { ... }` and
+    // then call `.Validated()` on the result so the invariant checks that used to
+    // run inside the full positional constructor call still run on every path
+    // that can produce a new instance -- see ValidateInvariants() below for why
+    // the copy constructor alone cannot provide this guarantee.
+    private CampaignSourceAuthorityState Validated()
+    {
+        // A `with` mutation can change a field that feeds the computed `World`
+        // property (CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld,
+        // ExpandedIndependentWorld, the *ArtilleryWorld fields, CertifiedMaletti/
+        // MatruhDetached/CwPriority/CwFreeGunsWorld) without touching GroupedWorld
+        // itself. The primary constructor always re-derives GroupedWorld against
+        // the freshly computed World on every reconstruction; `with` does not, so
+        // this reproduces that same rebind-or-keep step here.
+        var result = GroupedWorld is null || GroupedWorld.Prior == World
+            ? this
+            : this with { GroupedWorld = RebindGroupedWorld(GroupedWorld, World) };
+        result.ValidateInvariants();
+        return result;
+    }
+
+    private CampaignGroupedWorld RebindGroupedWorld(CampaignGroupedWorld groupedWorld, CampaignWorldSnapshotV8 world)
+    {
+        var scenarioStart = Pregame.Source.Session.Content.Definition.LegacyDefinition.Scenarios
+            .Single(value => value.ScenarioId == world.ScenarioId).Start;
+        return groupedWorld.Rebind(world, scenarioStart.GameTurn, scenarioStart.OperationStage);
+    }
+
+    // The same checks the primary constructor used to run inline, factored out so
+    // both constructors -- and every `with`-based mutation method below -- can
+    // reuse them. Order matches the original constructor exactly, so when more
+    // than one invariant is violated at once, the same one throws first.
+    private void ValidateInvariants()
+    {
+        if (SeptemberPlans is not null && (CommonwealthSupplyPlans is null || CommonwealthSupplyPlans.NextTargetGameTurn is not null))
+            throw new ArgumentException("September planning requires completed Commonwealth plans.");
+        if ((AxisSupplement is null) != (Autoblinda is null))
+            throw new ArgumentException("Autoblinda setup requires the matching source supplement.");
+        if (CommonwealthSupplement is not null && AxisSupplement is null)
+            throw new ArgumentException("Commonwealth supplement requires the prior source profile.");
+        if (PriorityMotorization is not null && CommonwealthSupplement is null)
+            throw new ArgumentException("Priority motorization requires the prior source profile.");
+        if (AxisPriorityMotorization is not null && PriorityMotorization is null)
+            throw new ArgumentException("Axis priority motorization requires the prior source profile.");
+        if (AxisGarrisons is not null && AxisPriorityMotorization is null)
+            throw new ArgumentException("Axis garrisons require the prior source profile.");
+        if (Battlefield is not null && AxisGarrisons is null)
+            throw new ArgumentException("Source battlefield requires the prior profile.");
+        if (CairoSetup is not null && Battlefield is null)
+            throw new ArgumentException("Cairo setup requires the prior source battlefield.");
+        if (CairoWorld is not null && CairoSetup is null)
+            throw new ArgumentException("Cairo active world requires the prior source setup.");
+        if (MalettiWorld is not null && CairoWorld is null)
+            throw new ArgumentException("Maletti active world requires the prior Cairo world.");
+        if (IndependentWorld is not null && CairoWorld is null)
+            throw new ArgumentException("Independent world requires the prior Cairo world.");
+        if (LocalMapWorld is not null && IndependentWorld is null)
+            throw new ArgumentException("Local map requires the prior independent world.");
+        if (ExpandedIndependentWorld is not null && LocalMapWorld is null)
+            throw new ArgumentException("Expanded independent world requires the prior local map.");
+        if (AttachedInitialLoads is not null && ExpandedIndependentWorld is null)
+            throw new ArgumentException("Attached initial loads require the prior source world.");
+        if (InitialWrecks is not null && AttachedInitialLoads is null)
+            throw new ArgumentException("Initial wrecks require the prior setup profile.");
+        if (AxisFreeArtillery is not null && InitialWrecks is null)
+            throw new ArgumentException("Axis free setup requires prior source setup.");
+        if (AxisFreeArtilleryWorld is not null && AxisFreeArtillery is null)
+            throw new ArgumentException("Axis free world requires source setup.");
+        if (AxisCorpsArtillery is not null && AxisFreeArtilleryWorld is null)
+            throw new ArgumentException("Axis corps setup requires prior source world.");
+        if (AxisCorpsArtilleryWorld is not null && AxisCorpsArtillery is null)
+            throw new ArgumentException("Axis corps world requires source setup.");
+        if (MalettiHierarchy is not null && AxisCorpsArtilleryWorld is null)
+            throw new ArgumentException("Maletti hierarchy requires prior source world.");
+        if (CertifiedMalettiWorld is not null && MalettiHierarchy is null)
+            throw new ArgumentException("Certified Maletti world requires its hierarchy.");
+        if (MatruhFormation is not null && MalettiHierarchy is null)
+            throw new ArgumentException("Matruh formation requires prior source hierarchy.");
+        if (MatruhDetachedWorld is not null && MatruhFormation is null)
+            throw new ArgumentException("Matruh detached world requires the source formation.");
+        if (CwPriorityWorld is not null && CwPriorityCatalog is null)
+            throw new ArgumentException("Commonwealth priority world requires catalog.");
         // Scenario 60.31 deploys Axis forces outside Cairo and Helwan.
         // This setup-only invariant makes Australian setup sites public-safe:
         // no hidden Axis unit can occupy one of these sites before GT1.
         if (Battlefield is not null && Battlefield.Entries.Any(entry => entry.SideId == "axis"
             && entry.LocationId is not null && CampaignSourceSixthAustralianGroupedDefinition.Locations.Contains(entry.LocationId, StringComparer.Ordinal)))
             throw new InvalidOperationException("Axis source setup cannot occupy Cairo or Helwan.");
-        if (cwFreeGunsWorld is not null && cwFreeGuns is null) throw new ArgumentException("CW free guns world requires setup.");
-        CwFreeGuns = cwFreeGuns;
-        CwFreeGunsWorld = cwFreeGunsWorld;
-        if (groupedWorld is null || groupedWorld.Prior == World) GroupedWorld = groupedWorld;
-        else
-        {
-            var scenarioStart = pregame.Source.Session.Content.Definition.LegacyDefinition.Scenarios
-                .Single(value => value.ScenarioId == World.ScenarioId).Start;
-            GroupedWorld = groupedWorld.Rebind(World, scenarioStart.GameTurn, scenarioStart.OperationStage);
-        }
-        StateVersion = stateVersion;
-        if (finalizedOwners is < 0 or > 3) throw new ArgumentOutOfRangeException(nameof(finalizedOwners));
-        if (!finalizationVersion && finalizedOwners != 0) throw new ArgumentException("Owner mask requires finalization checkpoint version.");
-        FinalizedOwners = finalizedOwners;
-        FinalizationVersion = finalizationVersion;
-        if (horseRulingVotes is < 0 or > 3) throw new ArgumentOutOfRangeException(nameof(horseRulingVotes));
-        HorseRulingVotes = horseRulingVotes;
-        HorseStageOneNoTraining = horseStageOneNoTraining;
-        HorseRulingVersion = horseRulingVersion;
+        if (CwFreeGunsWorld is not null && CwFreeGuns is null) throw new ArgumentException("CW free guns world requires setup.");
+        if (FinalizedOwners is < 0 or > 3) throw new ArgumentOutOfRangeException("finalizedOwners");
+        if (!FinalizationVersion && FinalizedOwners != 0) throw new ArgumentException("Owner mask requires finalization checkpoint version.");
+        if (HorseRulingVotes is < 0 or > 3) throw new ArgumentOutOfRangeException("horseRulingVotes");
         // Later setup actions must not invalidate either retained, owner-selected
         // source stack proof. Unsupported new occupants fail closed here.
         MalettiHierarchy?.Validate(this);
@@ -265,27 +382,27 @@ internal sealed class CampaignSourceAuthorityState
             throw new InvalidOperationException("Fourth Indian motor reservations must share the retained source pool.");
     }
 
-    internal CampaignPregameSourceState Pregame { get; }
+    internal CampaignPregameSourceState Pregame { get; private init; }
     internal CampaignCreationRequest Request => Pregame.Request;
     internal ContentSourceScheduledCombatPackArtifact Content => Pregame.Source.Session.Content;
     internal CampaignWorldSnapshotV8 World => CwFreeGunsWorld?.World ?? CwPriorityWorld?.World ?? MatruhDetachedWorld?.World ?? CertifiedMalettiWorld?.World ?? AxisCorpsArtilleryWorld?.World ?? AxisFreeArtilleryWorld?.World ?? ExpandedIndependentWorld?.World ?? LocalMapWorld?.World ?? IndependentWorld?.World ?? MalettiWorld?.World ?? CairoWorld?.World ?? Pregame.Source.Session.InitialWorld;
     internal RandomStreamState RandomState => SeptemberPlans?.RandomState ?? CommonwealthSupplyPlans?.RandomState ?? OpeningConvoyPlan.RandomState;
-    internal CampaignSourceConvoyPlan ConvoyPlan { get; }
-    internal CampaignSourceAxisSupplyWorld AxisSupplyWorld { get; }
-    internal CampaignSourceCommonwealthSupplyWorld CommonwealthSupplyWorld { get; }
-    internal CampaignSourceAxisInitialForces AxisInitialForces { get; }
-    internal CampaignSourceCommonwealthInitialForces CommonwealthInitialForces { get; }
-    internal CampaignSourceMotorizationWorld AxisMotorization { get; }
-    internal CampaignSourceMotorizationWorld CommonwealthMotorization { get; }
-    internal CampaignSourceOpeningConvoyPlan OpeningConvoyPlan { get; }
-    internal CampaignSourceCommonwealthSupplyPlans? CommonwealthSupplyPlans { get; }
-    internal CampaignSourceSeptemberConvoyPlans? SeptemberPlans { get; }
-    internal int FinalizedOwners { get; }
-    internal bool FinalizationVersion { get; }
+    internal CampaignSourceConvoyPlan ConvoyPlan { get; private init; }
+    internal CampaignSourceAxisSupplyWorld AxisSupplyWorld { get; private init; }
+    internal CampaignSourceCommonwealthSupplyWorld CommonwealthSupplyWorld { get; private init; }
+    internal CampaignSourceAxisInitialForces AxisInitialForces { get; private init; }
+    internal CampaignSourceCommonwealthInitialForces CommonwealthInitialForces { get; private init; }
+    internal CampaignSourceMotorizationWorld AxisMotorization { get; private init; }
+    internal CampaignSourceMotorizationWorld CommonwealthMotorization { get; private init; }
+    internal CampaignSourceOpeningConvoyPlan OpeningConvoyPlan { get; private init; }
+    internal CampaignSourceCommonwealthSupplyPlans? CommonwealthSupplyPlans { get; private init; }
+    internal CampaignSourceSeptemberConvoyPlans? SeptemberPlans { get; private init; }
+    internal int FinalizedOwners { get; private init; }
+    internal bool FinalizationVersion { get; private init; }
     internal const string HorseRulingId = "graziani.central-india-horse.oa-note-c-untrained.v1";
-    internal int HorseRulingVotes { get; }
-    internal bool HorseStageOneNoTraining { get; }
-    internal bool HorseRulingVersion { get; }
+    internal int HorseRulingVotes { get; private init; }
+    internal bool HorseStageOneNoTraining { get; private init; }
+    internal bool HorseRulingVersion { get; private init; }
     internal bool HasHorseRulingVote(CampaignActionAudience audience) => audience switch
     {
         CampaignActionAudience.Axis => (HorseRulingVotes & 1) != 0,
@@ -316,15 +433,7 @@ internal sealed class CampaignSourceAuthorityState
         if (IsOwnerFinalized(audience) == finish)
             throw new InvalidOperationException("Setup finalization has already been recorded.");
         var next = finish ? FinalizedOwners | flag : FinalizedOwners & ~flag;
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan,
-            CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization,
-            AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld,
-            IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld,
-            AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery,
-            AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo,
-            CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, SeptemberPlans, next, true, HorseRulingVotes, HorseStageOneNoTraining, HorseRulingVersion);
+        return (this with { StateVersion = checked(StateVersion + 1), FinalizedOwners = next, FinalizationVersion = true }).Validated();
     }
 
     internal static string HorseSetupActionId(CampaignActionAudience audience, string kind) =>
@@ -345,16 +454,7 @@ internal sealed class CampaignSourceAuthorityState
             case "reopen-stage1" when audience == CampaignActionAudience.Commonwealth && noTraining: noTraining = false; break;
             default: throw new InvalidOperationException("Horse setup decision is unavailable.");
         }
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan,
-            CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization,
-            AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld,
-            IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld,
-            AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery,
-            AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo,
-            CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, SeptemberPlans,
-            FinalizedOwners, FinalizationVersion, votes, noTraining, true);
+        return (this with { StateVersion = checked(StateVersion + 1), HorseRulingVotes = votes, HorseStageOneNoTraining = noTraining, HorseRulingVersion = true }).Validated();
     }
 
     internal byte[] SerializeHorseSetupEvent(CampaignSourceAuthorityState successor, CampaignActionAudience audience, string kind)
@@ -393,33 +493,33 @@ internal sealed class CampaignSourceAuthorityState
         }
         return stream.ToArray();
     }
-    internal CampaignSourceAxisSupplementalForces? AxisSupplement { get; }
-    internal CampaignSourceAutoblindaSetup? Autoblinda { get; }
-    internal CampaignSourceCommonwealthSupplementalForces? CommonwealthSupplement { get; }
-    internal CampaignSourcePriorityMotorization? PriorityMotorization { get; }
-    internal CampaignSourceAxisPriorityMotorization? AxisPriorityMotorization { get; }
-    internal CampaignSourceAxisGarrisonForces? AxisGarrisons { get; }
-    internal CampaignSourceBattlefield? Battlefield { get; }
-    internal CampaignSourceCairoInitialSetup? CairoSetup { get; }
-    internal CampaignSourceCairoActiveWorld? CairoWorld { get; }
-    internal CampaignSourceMalettiActiveWorld? MalettiWorld { get; }
-    internal CampaignSourceIndependentActiveWorld? IndependentWorld { get; }
-    internal CampaignSourceLocalMapWorld? LocalMapWorld { get; }
-    internal CampaignSourceExpandedIndependentWorld? ExpandedIndependentWorld { get; }
-    internal CampaignSourceAttachedInitialLoads? AttachedInitialLoads { get; }
-    internal CampaignSourceInitialWrecks? InitialWrecks { get; }
-    internal CampaignSourceAxisFreeArtillery? AxisFreeArtillery { get; }
-    internal CampaignSourceAxisFreeArtilleryWorld? AxisFreeArtilleryWorld { get; }
-    internal CampaignSourceAxisCorpsArtillery? AxisCorpsArtillery { get; }
-    internal CampaignSourceAxisCorpsArtilleryWorld? AxisCorpsArtilleryWorld { get; }
-    internal CampaignSourceMalettiHierarchy? MalettiHierarchy { get; }
-    internal CampaignSourceCertifiedMalettiWorld? CertifiedMalettiWorld { get; }
-    internal CampaignSourceMatruhFormation? MatruhFormation { get; }
-    internal CampaignSourceMatruhDetachedWorld? MatruhDetachedWorld { get; }
-    internal CampaignSourceGt2ConvoyCorrection? Gt2Correction { get; }
-    internal CampaignSourceCwPriorityCatalog? CwPriorityCatalog { get; }
-    internal CampaignSourceCwPriorityWorld? CwPriorityWorld { get; }
-    internal bool CompactCheckpoint { get; }
+    internal CampaignSourceAxisSupplementalForces? AxisSupplement { get; private init; }
+    internal CampaignSourceAutoblindaSetup? Autoblinda { get; private init; }
+    internal CampaignSourceCommonwealthSupplementalForces? CommonwealthSupplement { get; private init; }
+    internal CampaignSourcePriorityMotorization? PriorityMotorization { get; private init; }
+    internal CampaignSourceAxisPriorityMotorization? AxisPriorityMotorization { get; private init; }
+    internal CampaignSourceAxisGarrisonForces? AxisGarrisons { get; private init; }
+    internal CampaignSourceBattlefield? Battlefield { get; private init; }
+    internal CampaignSourceCairoInitialSetup? CairoSetup { get; private init; }
+    internal CampaignSourceCairoActiveWorld? CairoWorld { get; private init; }
+    internal CampaignSourceMalettiActiveWorld? MalettiWorld { get; private init; }
+    internal CampaignSourceIndependentActiveWorld? IndependentWorld { get; private init; }
+    internal CampaignSourceLocalMapWorld? LocalMapWorld { get; private init; }
+    internal CampaignSourceExpandedIndependentWorld? ExpandedIndependentWorld { get; private init; }
+    internal CampaignSourceAttachedInitialLoads? AttachedInitialLoads { get; private init; }
+    internal CampaignSourceInitialWrecks? InitialWrecks { get; private init; }
+    internal CampaignSourceAxisFreeArtillery? AxisFreeArtillery { get; private init; }
+    internal CampaignSourceAxisFreeArtilleryWorld? AxisFreeArtilleryWorld { get; private init; }
+    internal CampaignSourceAxisCorpsArtillery? AxisCorpsArtillery { get; private init; }
+    internal CampaignSourceAxisCorpsArtilleryWorld? AxisCorpsArtilleryWorld { get; private init; }
+    internal CampaignSourceMalettiHierarchy? MalettiHierarchy { get; private init; }
+    internal CampaignSourceCertifiedMalettiWorld? CertifiedMalettiWorld { get; private init; }
+    internal CampaignSourceMatruhFormation? MatruhFormation { get; private init; }
+    internal CampaignSourceMatruhDetachedWorld? MatruhDetachedWorld { get; private init; }
+    internal CampaignSourceGt2ConvoyCorrection? Gt2Correction { get; private init; }
+    internal CampaignSourceCwPriorityCatalog? CwPriorityCatalog { get; private init; }
+    internal CampaignSourceCwPriorityWorld? CwPriorityWorld { get; private init; }
+    internal bool CompactCheckpoint { get; private init; }
     internal const int FinalizedLegacyCheckpointContractVersion = 43;
     internal const int FinalizedCompactCheckpointContractVersion = 44;
     internal const int AustralianCompactCheckpointContractVersion = 46;
@@ -473,11 +573,11 @@ internal sealed class CampaignSourceAuthorityState
         (state => state.CompactCheckpoint, CompactCheckpointContractVersion),
     ];
     private int BaseProfileVersion => FirstMatch(this, BaseProfileVersionRules, LegacyProfileVersion);
-    internal CampaignSourceUnattachedCargo? AxisUnattachedCargo { get; }
-    internal CampaignSourceUnattachedCargo? CommonwealthUnattachedCargo { get; }
-    internal CampaignSourceCwFreeGuns? CwFreeGuns { get; }
-    internal CampaignSourceCwFreeGunsWorld? CwFreeGunsWorld { get; }
-    internal CampaignGroupedWorld? GroupedWorld { get; }
+    internal CampaignSourceUnattachedCargo? AxisUnattachedCargo { get; private init; }
+    internal CampaignSourceUnattachedCargo? CommonwealthUnattachedCargo { get; private init; }
+    internal CampaignSourceCwFreeGuns? CwFreeGuns { get; private init; }
+    internal CampaignSourceCwFreeGunsWorld? CwFreeGunsWorld { get; private init; }
+    internal CampaignGroupedWorld? GroupedWorld { get; private init; }
     private static readonly (Func<CampaignSourceAuthorityState, bool> When, int Version)[] LegacyProfileVersionRules =
     [
         (state => state.IsSeventhShellCorrected, ShellCorrectedLegacyCheckpointContractVersion),
@@ -642,7 +742,7 @@ internal sealed class CampaignSourceAuthorityState
     internal string CwFreeGunsWorldProfileHash => CwFreeGunsWorld is null
         ? throw new InvalidOperationException("CW free guns world not admitted.")
         : CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes(CwFreeGunsProfileHash + "\0" + CampaignSourceCwFreeGunsWorld.PolicyId + "\0" + CwFreeGunsWorld.Content.Hash()));
-    internal long StateVersion { get; }
+    internal long StateVersion { get; private init; }
     internal LandSequencePosition? Position { get; }
     internal string AuthoritySetupHash => CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes(
         AuthorityPolicyId + "\0" + Request.SetupHash + "\0" + Content.Identity.Hash + "\0"
@@ -691,17 +791,15 @@ internal sealed class CampaignSourceAuthorityState
     }
 
     internal CampaignSourceAuthorityState PlaceDump(string dumpId, string locationId) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld.Place(dumpId, locationId), CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { AxisSupplyWorld = AxisSupplyWorld.Place(dumpId, locationId), StateVersion = checked(StateVersion + 1) }).Validated();
 
     internal CampaignSourceAuthorityState PlaceCommonwealthSupply(string placementId, string locationId) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld.Place(placementId, locationId), AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { CommonwealthSupplyWorld = CommonwealthSupplyWorld.Place(placementId, locationId), StateVersion = checked(StateVersion + 1) }).Validated();
 
     internal CampaignSourceAuthorityState DecideDummy(bool axis, string dummyId, string? locationId) => axis
-        ? new(Pregame, ConvoyPlan, AxisSupplyWorld.DecideDummy(dummyId, locationId), CommonwealthSupplyWorld,
-            AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion)
+        ? (this with { AxisSupplyWorld = AxisSupplyWorld.DecideDummy(dummyId, locationId), StateVersion = checked(StateVersion + 1) }).Validated()
         : dummyId == "cw-dummy-1"
-            ? new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld.DecideDummy(locationId),
-                AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion)
+            ? (this with { CommonwealthSupplyWorld = CommonwealthSupplyWorld.DecideDummy(locationId), StateVersion = checked(StateVersion + 1) }).Validated()
             : throw new InvalidOperationException("Unknown Commonwealth dummy group.");
 
     internal static readonly string AdmitGiarabubMotorPlacementPolicyActionId = CampaignPregameSourceCreation.Digest(
@@ -714,8 +812,7 @@ internal sealed class CampaignSourceAuthorityState
     {
         if (!CanAdmitGiarabubMotorPlacementPolicy)
             throw new InvalidOperationException("Giarabub motor placement policy is unavailable.");
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
-            AxisMotorization.AdmitGiarabubPlacement(), CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { AxisMotorization = AxisMotorization.AdmitGiarabubPlacement(), StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeGiarabubMotorPlacementPolicyEvent(CampaignSourceAuthorityState successor)
@@ -738,10 +835,8 @@ internal sealed class CampaignSourceAuthorityState
     }
 
     internal CampaignSourceAuthorityState AdjustMotorization(bool axis, string poolId, string locationId, int delta) => axis
-        ? new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
-            AxisMotorization.Assign(poolId, locationId, delta), CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion)
-        : new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces,
-            AxisMotorization, CommonwealthMotorization.Assign(poolId, locationId, delta), OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        ? (this with { AxisMotorization = AxisMotorization.Assign(poolId, locationId, delta), StateVersion = checked(StateVersion + 1) }).Validated()
+        : (this with { CommonwealthMotorization = CommonwealthMotorization.Assign(poolId, locationId, delta), StateVersion = checked(StateVersion + 1) }).Validated();
 
     internal CampaignSourceAuthorityState ApplyOpeningConvoyChoice(string kind, int lane, int stage, int delta)
     {
@@ -753,8 +848,7 @@ internal sealed class CampaignSourceAuthorityState
             _ => throw new InvalidOperationException("Invalid GT1 convoy choice."),
         };
         var cwPlans = plan.IsFinished ? CampaignSourceCommonwealthSupplyPlans.Create(plan) : null;
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, plan, cwPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { OpeningConvoyPlan = plan, CommonwealthSupplyPlans = cwPlans, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal static string OpeningConvoyActionId(string kind, int lane, int stage, int delta) =>
@@ -799,9 +893,7 @@ internal sealed class CampaignSourceAuthorityState
             "roll" => plans.Roll(targetTurn),
             _ => throw new InvalidOperationException("Invalid Commonwealth supply choice."),
         };
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, next, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld,
-            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { CommonwealthSupplyPlans = next, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal CampaignSourceAuthorityState ApplySeptemberSupplyChoice(string kind, int targetTurn, int lane, int stage, int delta)
@@ -814,9 +906,7 @@ internal sealed class CampaignSourceAuthorityState
             "finish" when lane == 0 && stage == 0 && delta == 0 => (SeptemberPlans ?? throw new InvalidOperationException("Begin September planning first.")).Finish(targetTurn),
             _ => throw new InvalidOperationException("Invalid September supply choice."),
         };
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld,
-            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: next, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { StateVersion = checked(StateVersion + 1), SeptemberPlans = next }).Validated();
     }
 
     internal static string SeptemberSupplyActionId(string kind, int targetTurn, int lane, int stage, int delta) =>
@@ -855,9 +945,7 @@ internal sealed class CampaignSourceAuthorityState
     {
         if (AxisSupplement is not null) throw new InvalidOperationException("The Axis source supplement is already admitted.");
         var supplement = CampaignSourceAxisSupplementalForces.Create(Pregame, AxisInitialForces);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            supplement, CampaignSourceAutoblindaSetup.Create(supplement), null, null, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { AxisSupplement = supplement, Autoblinda = CampaignSourceAutoblindaSetup.Create(supplement), CommonwealthSupplement = null, PriorityMotorization = null, AxisPriorityMotorization = null, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal CampaignSourceAuthorityState ApplyAutoblindaChoice(string kind, string target)
@@ -870,9 +958,7 @@ internal sealed class CampaignSourceAuthorityState
             "reset" when target.Length == 0 => setup.Reset(),
             _ => throw new InvalidOperationException("Unsupported Autoblinda choice."),
         };
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, next, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Autoblinda = next, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal static readonly string AdmitCommonwealthSupplementActionId = CampaignPregameSourceCreation.Digest(
@@ -883,9 +969,7 @@ internal sealed class CampaignSourceAuthorityState
         if (AxisSupplement is null || CommonwealthSupplement is not null)
             throw new InvalidOperationException("Commonwealth source supplement requires the prior profile and no duplicate.");
         var supplement = CampaignSourceCommonwealthSupplementalForces.Create(Pregame, CommonwealthInitialForces);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, supplement, null, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { CommonwealthSupplement = supplement, PriorityMotorization = null, AxisPriorityMotorization = null, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeCommonwealthSupplementEvent(CampaignSourceAuthorityState successor)
@@ -918,9 +1002,7 @@ internal sealed class CampaignSourceAuthorityState
         if (CommonwealthSupplement is null || PriorityMotorization is not null)
             throw new InvalidOperationException("Priority motorization requires the prior source profile and no duplicate.");
         var priority = CampaignSourcePriorityMotorization.Create(CommonwealthSupplement, CommonwealthMotorization);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, priority, null, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { PriorityMotorization = priority, AxisPriorityMotorization = null, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializePriorityMotorizationAdmission(CampaignSourceAuthorityState successor)
@@ -950,9 +1032,7 @@ internal sealed class CampaignSourceAuthorityState
         if (AttachedInitialLoads is not null && !AttachedInitialLoads.CanApplyPriorityDelta(elementId, delta, priority, CommonwealthMotorization))
             throw new InvalidOperationException("Priority allocation conflicts with attached initial loads.");
         var next = priority.Adjust(elementId, delta, CommonwealthMotorization);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, next, AxisPriorityMotorization, AxisGarrisons, Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { PriorityMotorization = next, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal static string PriorityMotorizationActionId(string elementId, int delta) =>
@@ -988,9 +1068,7 @@ internal sealed class CampaignSourceAuthorityState
         if (PriorityMotorization is null || AxisPriorityMotorization is not null || AxisSupplement is null)
             throw new InvalidOperationException("Axis priority setup requires the prior source profile and no duplicate.");
         var priority = CampaignSourceAxisPriorityMotorization.Create(AxisSupplement, AxisMotorization);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, priority, null, null, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { AxisPriorityMotorization = priority, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeAxisPriorityAdmission(CampaignSourceAuthorityState successor)
@@ -1067,10 +1145,7 @@ internal sealed class CampaignSourceAuthorityState
         if (AxisPriorityMotorization is null || AxisGarrisons is not null || AxisSupplement is null)
             throw new InvalidOperationException("Axis garrisons require the prior source profile and no duplicate.");
         var garrisons = CampaignSourceAxisGarrisonForces.Create(Pregame, AxisInitialForces, AxisSupplement);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, garrisons, null, null, null, null, null, null,
-            checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { AxisGarrisons = garrisons, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeAxisGarrisonsAdmission(CampaignSourceAuthorityState successor)
@@ -1102,10 +1177,7 @@ internal sealed class CampaignSourceAuthorityState
         if (AxisGarrisons is null || Battlefield is not null)
             throw new InvalidOperationException("Source battlefield requires the prior profile and no duplicate.");
         var battlefield = CampaignSourceBattlefield.Create(this);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, null, null, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeBattlefieldAdmission(CampaignSourceAuthorityState successor)
@@ -1138,10 +1210,7 @@ internal sealed class CampaignSourceAuthorityState
             throw new InvalidOperationException("Cairo setup requires the prior battlefield and no duplicate.");
         var cairo = CampaignSourceCairoInitialSetup.Create(Battlefield);
         var battlefield = Battlefield.AddCairoSetup(cairo);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, cairo, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, CairoSetup = cairo, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeCairoSetupAdmission(CampaignSourceAuthorityState successor)
@@ -1171,10 +1240,7 @@ internal sealed class CampaignSourceAuthorityState
         if (Battlefield is null || CairoSetup is null) throw new InvalidOperationException("Cairo setup is unavailable.");
         var battlefield = Battlefield.PlaceCairo(CairoSetup, elementId, locationId);
         var cairo = CairoSetup.Place(elementId, locationId);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, cairo, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, CairoSetup = cairo, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal static string CairoPlacementActionId(string elementId, string locationId) =>
@@ -1210,10 +1276,7 @@ internal sealed class CampaignSourceAuthorityState
         if (CairoSetup is null || CairoWorld is not null || CairoSetup.PendingIds.Count != 0)
             throw new InvalidOperationException("Cairo active world requires all source placements and no duplicate.");
         var world = CampaignSourceCairoActiveWorld.Create(this);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, world, null, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { CairoWorld = world, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeCairoWorldAdmission(CampaignSourceAuthorityState successor)
@@ -1250,10 +1313,7 @@ internal sealed class CampaignSourceAuthorityState
         if (!CanPromoteMaletti) throw new InvalidOperationException("No newly detached Maletti units are ready for promotion.");
         var active = CampaignSourceMalettiActiveWorld.Create(this);
         var battlefield = Battlefield!.PromoteMaletti(AxisPriorityMotorization!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, active, null, null, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, MalettiWorld = active, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeMalettiPromotion(CampaignSourceAuthorityState successor)
@@ -1295,11 +1355,7 @@ internal sealed class CampaignSourceAuthorityState
         var active = CampaignSourceIndependentActiveWorld.Create(this);
         var battlefield = Battlefield!.PromoteSourceIndependent(CommonwealthSupplement!, AxisSupplement!,
             AxisPriorityMotorization!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, active,
-            LocalMapWorld is null ? null : CampaignSourceLocalMapWorld.Rebind(LocalMapWorld, active), checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, IndependentWorld = active, LocalMapWorld = LocalMapWorld is null ? null : CampaignSourceLocalMapWorld.Rebind(LocalMapWorld, active), StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeIndependentPromotion(CampaignSourceAuthorityState successor)
@@ -1544,10 +1600,7 @@ internal sealed class CampaignSourceAuthorityState
     {
         if (!CanAdmitSourceTobrukBardiaGarrison) throw new InvalidOperationException("Tobruk/Bardia garrison requires the prior source profile and no duplicate.");
         var battlefield = Battlefield!.AdmitSourceTobrukBardiaGarrison();
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeSourceTobrukBardiaGarrisonAdmission(CampaignSourceAuthorityState successor)
@@ -1617,10 +1670,7 @@ internal sealed class CampaignSourceAuthorityState
     {
         if (!CanAdmitSourceBardiaGarrisonRemainder) throw new InvalidOperationException("Bardia garrison remainder requires the admitted Tobruk/Bardia pack and no duplicate.");
         var battlefield = Battlefield!.AdmitSourceBardiaGarrisonRemainder();
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeSourceBardiaGarrisonRemainderAdmission(CampaignSourceAuthorityState successor)
@@ -1689,10 +1739,7 @@ internal sealed class CampaignSourceAuthorityState
     {
         if (!CanAdmitSourceTripoliTankRegiment) throw new InvalidOperationException("Tripoli tank regiment requires the prior source profile and no duplicate.");
         var battlefield = Battlefield!.AdmitSourceTripoliTankRegiment();
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeSourceTripoliTankRegimentAdmission(CampaignSourceAuthorityState successor)
@@ -1762,10 +1809,7 @@ internal sealed class CampaignSourceAuthorityState
     {
         if (!CanAdmitSourceCwAttachedArtillery) throw new InvalidOperationException("CW attached artillery requires the admitted CW frontline pack and no duplicate.");
         var battlefield = Battlefield!.AdmitSourceCwAttachedArtillery();
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeSourceCwAttachedArtilleryAdmission(CampaignSourceAuthorityState successor)
@@ -1819,12 +1863,7 @@ internal sealed class CampaignSourceAuthorityState
     }
 
     private CampaignSourceAuthorityState WithCwFreeGuns(CampaignSourceCwFreeGuns setup, CampaignSourceBattlefield battlefield, CampaignSourceCwFreeGunsWorld? active) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces, CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization,
-            OpeningConvoyPlan, CommonwealthSupplyPlans, AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization,
-            AxisGarrisons, battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), ExpandedIndependentWorld,
-            AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy,
-            CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint,
-            AxisUnattachedCargo, CommonwealthUnattachedCargo, setup, active, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), CwFreeGuns = setup, CwFreeGunsWorld = active }).Validated();
     internal byte[] SerializeCwFreeGunsEvent(CampaignSourceAuthorityState successor, string? kind = null, string? id = null, string? location = null)
     {
         using var stream = new MemoryStream();
@@ -2354,14 +2393,7 @@ internal sealed class CampaignSourceAuthorityState
             "finish" when current is not null && location is null && delta == 0 => current.Finish(this),
             _ => throw new InvalidOperationException("Unavailable initial unattached cargo choice."),
         };
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint,
-            axis ? next : AxisUnattachedCargo, axis ? CommonwealthUnattachedCargo : next, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { StateVersion = checked(StateVersion + 1), AxisUnattachedCargo = axis ? next : AxisUnattachedCargo, CommonwealthUnattachedCargo = axis ? CommonwealthUnattachedCargo : next }).Validated();
     }
     internal byte[] SerializeUnattachedCargoEvent(CampaignSourceAuthorityState successor, bool axis, string kind, string? location, int delta)
     {
@@ -2381,13 +2413,7 @@ internal sealed class CampaignSourceAuthorityState
     internal CampaignSourceAuthorityState AdmitCompactCheckpoint()
     {
         if (CompactCheckpoint) throw new InvalidOperationException("Compact checkpoint already admitted.");
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, CwPriorityWorld, true, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { StateVersion = checked(StateVersion + 1), CompactCheckpoint = true }).Validated();
     }
     internal byte[] SerializeCompactCheckpointEvent(CampaignSourceAuthorityState successor)
     {
@@ -2415,13 +2441,7 @@ internal sealed class CampaignSourceAuthorityState
         if (!CanPromoteCwPriorityWorld) throw new InvalidOperationException("Commonwealth source priority world not ready.");
         var active = CampaignSourceCwPriorityWorld.Create(this);
         var battlefield = Battlefield!.PromoteCwPriorityWorld(CommonwealthSupplement!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, CwPriorityCatalog, active, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), CwPriorityWorld = active }).Validated();
     }
     internal byte[] SerializeCwPriorityWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -2454,13 +2474,7 @@ internal sealed class CampaignSourceAuthorityState
         return WithCwPriorityCatalog(next, priority);
     }
     private CampaignSourceAuthorityState WithCwPriorityCatalog(CampaignSourceCwPriorityCatalog catalog, CampaignSourcePriorityMotorization priority) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, priority, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld,
-            Gt2Correction, catalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { PriorityMotorization = priority, StateVersion = checked(StateVersion + 1), CwPriorityCatalog = catalog }).Validated();
     internal byte[] SerializeCwPriorityCatalogEvent(CampaignSourceAuthorityState successor, string? id = null, int delta = 0)
     {
         using var stream = new MemoryStream();
@@ -2498,12 +2512,7 @@ internal sealed class CampaignSourceAuthorityState
         });
     }
     private CampaignSourceAuthorityState WithGt2Correction(CampaignSourceGt2ConvoyCorrection correction) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { StateVersion = checked(StateVersion + 1), Gt2Correction = correction }).Validated();
     internal byte[] SerializeGt2CorrectionEvent(CampaignSourceAuthorityState successor, string? kind = null, int lane = 0, int stage = 0, int delta = 0)
     {
         using var stream = new MemoryStream();
@@ -2532,15 +2541,7 @@ internal sealed class CampaignSourceAuthorityState
         MatruhFormation!.Validate(this);
         var active = CampaignSourceMatruhDetachedWorld.Create(this);
         var battlefield = Battlefield!.PromoteMatruhDetached(MatruhFormation, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld,
-            AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, active, Gt2Correction, CwPriorityCatalog,
-            CwPriorityWorld is null || CwFreeGunsWorld is not null ? CwPriorityWorld : CampaignSourceCwPriorityWorld.Rebind(CwPriorityWorld, active),
-            CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns,
-            CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active), GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), MatruhDetachedWorld = active, CwPriorityWorld = CwPriorityWorld is null || CwFreeGunsWorld is not null ? CwPriorityWorld : CampaignSourceCwPriorityWorld.Rebind(CwPriorityWorld, active), CwFreeGunsWorld = CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active) }).Validated();
     }
     internal byte[] SerializeMatruhDetachedWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -2631,15 +2632,7 @@ internal sealed class CampaignSourceAuthorityState
         MalettiHierarchy!.Validate(this);
         var active = CampaignSourceCertifiedMalettiWorld.Create(this);
         var battlefield = Battlefield!.PromoteCertifiedMaletti(MalettiHierarchy, AxisPriorityMotorization!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, active, MatruhFormation,
-            MatruhDetachedWorld is null || CwPriorityWorld is not null ? MatruhDetachedWorld : CampaignSourceMatruhDetachedWorld.Rebind(MatruhDetachedWorld, active),
-            Gt2Correction, CwPriorityCatalog, CwPriorityWorld is null || CwFreeGunsWorld is not null ? CwPriorityWorld : CampaignSourceCwPriorityWorld.Rebind(CwPriorityWorld, active),
-            CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns,
-            CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active), GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), CertifiedMalettiWorld = active, MatruhDetachedWorld = MatruhDetachedWorld is null || CwPriorityWorld is not null ? MatruhDetachedWorld : CampaignSourceMatruhDetachedWorld.Rebind(MatruhDetachedWorld, active), CwPriorityWorld = CwPriorityWorld is null || CwFreeGunsWorld is not null ? CwPriorityWorld : CampaignSourceCwPriorityWorld.Rebind(CwPriorityWorld, active), CwFreeGunsWorld = CwFreeGunsWorld is null ? null : CampaignSourceCwFreeGunsWorld.Rebind(CwFreeGunsWorld, active) }).Validated();
     }
     internal byte[] SerializeCertifiedMalettiWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -2733,11 +2726,7 @@ internal sealed class CampaignSourceAuthorityState
         if (!CanPromoteAxisCorpsWorld) throw new InvalidOperationException("No placed Axis corps guns await activation.");
         var active = CampaignSourceAxisCorpsArtilleryWorld.Create(this);
         var battlefield = Battlefield!.PromoteAxisCorpsArtillery(AxisCorpsArtillery!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, active, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), AxisCorpsArtilleryWorld = active }).Validated();
     }
     internal byte[] SerializeAxisCorpsWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -2773,11 +2762,7 @@ internal sealed class CampaignSourceAuthorityState
         return WithAxisCorpsSetup(setup.Place(id, locationId, battlefield), battlefield.PlaceAxisCorpsArtillery(setup, id, locationId));
     }
     private CampaignSourceAuthorityState WithAxisCorpsSetup(CampaignSourceAxisCorpsArtillery setup, CampaignSourceBattlefield battlefield) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, setup, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), AxisCorpsArtillery = setup }).Validated();
     internal byte[] SerializeAxisCorpsSetupEvent(CampaignSourceAuthorityState successor, string? id = null, string? locationId = null)
     {
         using var stream = new MemoryStream();
@@ -2807,11 +2792,7 @@ internal sealed class CampaignSourceAuthorityState
         if (!CanPromoteAxisFreeWorld) throw new InvalidOperationException("No placed Axis source guns await activation.");
         var active = CampaignSourceAxisFreeArtilleryWorld.Create(this);
         var battlefield = Battlefield!.PromoteAxisFreeArtillery(AxisFreeArtillery!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, active, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), AxisFreeArtilleryWorld = active }).Validated();
     }
     internal byte[] SerializeAxisFreeWorldEvent(CampaignSourceAuthorityState successor)
     {
@@ -2846,11 +2827,7 @@ internal sealed class CampaignSourceAuthorityState
         return WithAxisFreeSetup(setup.Place(id, locationId, battlefield), battlefield.PlaceAxisFreeArtillery(setup, id, locationId));
     }
     private CampaignSourceAuthorityState WithAxisFreeSetup(CampaignSourceAxisFreeArtillery setup, CampaignSourceBattlefield battlefield) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, setup, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), AxisFreeArtillery = setup }).Validated();
     internal byte[] SerializeAxisFreeSetupEvent(CampaignSourceAuthorityState successor, string? id = null, string? locationId = null)
     {
         using var stream = new MemoryStream();
@@ -2880,11 +2857,7 @@ internal sealed class CampaignSourceAuthorityState
     internal CampaignSourceAuthorityState PlaceInitialWreck(string id, string locationId) =>
         WithInitialWrecks((InitialWrecks ?? throw new InvalidOperationException("Initial wrecks not admitted.")).Place(id, locationId));
     private CampaignSourceAuthorityState WithInitialWrecks(CampaignSourceInitialWrecks wrecks) =>
-        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, AttachedInitialLoads, wrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        (this with { StateVersion = checked(StateVersion + 1), InitialWrecks = wrecks }).Validated();
     internal byte[] SerializeInitialWreckEvent(CampaignSourceAuthorityState successor, string? id = null, string? locationId = null)
     {
         using var stream = new MemoryStream();
@@ -2949,11 +2922,7 @@ internal sealed class CampaignSourceAuthorityState
             "frontline-reopen" => loads.ReopenFrontline(),
             _ => throw new InvalidOperationException("Unknown initial load choice."),
         };
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, next, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { StateVersion = checked(StateVersion + 1), AttachedInitialLoads = next }).Validated();
     }
 
     internal byte[] SerializeAttachedInitialLoadsEvent(CampaignSourceAuthorityState successor, string? kind = null, string? elementId = null)
@@ -2994,10 +2963,7 @@ internal sealed class CampaignSourceAuthorityState
         var active = CampaignSourceExpandedIndependentWorld.Create(this);
         var battlefield = Battlefield!.PromoteSourceIndependentV2(CommonwealthSupplement!, AxisSupplement!,
             AxisPriorityMotorization!, World, active.World);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1), active, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), ExpandedIndependentWorld = active }).Validated();
     }
 
     internal byte[] SerializeExpandedIndependentPromotion(CampaignSourceAuthorityState successor)
@@ -3029,10 +2995,7 @@ internal sealed class CampaignSourceAuthorityState
         if (IndependentWorld is null || LocalMapWorld is not null)
             throw new InvalidOperationException("Local source map requires the prior independent world and no duplicate.");
         var map = CampaignSourceLocalMapWorld.Create(this);
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
-            CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
-            Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, map, checked(StateVersion + 1), ExpandedIndependentWorld, AttachedInitialLoads, InitialWrecks, AxisFreeArtillery, AxisFreeArtilleryWorld, AxisCorpsArtillery, AxisCorpsArtilleryWorld, MalettiHierarchy, CertifiedMalettiWorld, MatruhFormation, MatruhDetachedWorld, Gt2Correction, CwPriorityCatalog, CwPriorityWorld, CompactCheckpoint, AxisUnattachedCargo, CommonwealthUnattachedCargo, CwFreeGuns, CwFreeGunsWorld, GroupedWorld, septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
+        return (this with { LocalMapWorld = map, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
     internal byte[] SerializeLocalMapAdmission(CampaignSourceAuthorityState successor)
