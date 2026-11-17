@@ -20,6 +20,7 @@ import { AtlasPanel, AtlasStatus } from '@sandtable/field-atlas';
 import { isCameraCoordinate, MapCameraState } from './map-camera';
 import { MapPan, OperationsMap } from './operations-map';
 import { CampaignActionFlow } from './campaign-action-flow';
+import { HttpCampaignActionAdapter } from './http-campaign-action-adapter';
 import {
   connectedKind,
   connectedSymbol,
@@ -44,8 +45,20 @@ export class ConnectedWorkspace {
   @ViewChild('mapScroll') private mapScroll?: ElementRef<HTMLElement>;
   private readonly api = inject(ConnectedCampaignService);
   private readonly destroyRef = inject(DestroyRef);
-  // The host has not admitted action submission. No adapter or capability is installed.
-  protected readonly actionFlow = new CampaignActionFlow();
+  // The real adapter now exists (HttpCampaignActionAdapter, backed by ActionsService's
+  // submit/receipt and ConnectedCampaignService's authorized-view read), so submission is no
+  // longer blocked for lack of a transport. What is still missing is any real signal that this
+  // deployment has *admitted* action submission: there is no feature flag, fixture field,
+  // dev-mode flag, or anything else in this codebase today that says "this seat/campaign may
+  // submit actions" (grepped for admitted/capability/TrustedLocalDeployment across
+  // maproom-alpha; only descriptive comments exist, no boolean signal). Inventing one here
+  // would be guessing at a decision the backend/product side hasn't made, so admittedCapability
+  // stays `false` -- the safest default -- and the submit control stays disabled exactly as
+  // before until a real signal exists to pass in its place.
+  protected readonly actionFlow = new CampaignActionFlow(
+    new HttpCampaignActionAdapter(this.api.actionsService(), this.api),
+    false,
+  );
   protected readonly camera = new MapCameraState();
   protected readonly mapFullscreen = signal(false);
   private originalPageOverflow = '';
