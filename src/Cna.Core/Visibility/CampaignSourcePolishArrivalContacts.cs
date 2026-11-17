@@ -173,8 +173,27 @@ internal static class CampaignSourcePolishArrivalContacts
                         || (side == "commonwealth" && entry.AuthorityStatus == "source-cw-frontline-active-initial-loads-unresolved"
                             && world.Source.CwFreeGunsWorld?.CwFrontlineContent is not null
                             && ContentSourceCwFrontlineArtifact.Units.Any(value => value.Id == elementId))
-                        || (side == "commonwealth" && elementId == "2-rifle-brigade"
-                            && entry.AuthorityStatus == "world8-active" && world.Source.IndependentWorld is not null);
+                        // Independent Commonwealth artillery/antitank counters attached
+                        // to the CW frontline pack (source-cw-attached-artillery.*).
+                        || (side == "commonwealth" && entry.AuthorityStatus == "source-cw-attached-artillery-active"
+                            && world.Source.CwFreeGunsWorld?.CwAttachedArtilleryContent is not null
+                            && ContentSourceCwAttachedArtilleryPackArtifact.Units.Any(value => value.Id == elementId))
+                        // The normalized CW priority world only ever activates the
+                        // French motor company (cw-priority.1-french-motor-marines);
+                        // its catalog is still the citation for that identity.
+                        || (side == "commonwealth" && entry.AuthorityStatus == "source-cw-priority-active"
+                            && world.Source.CwPriorityWorld is not null
+                            && CampaignSourceCwPriorityCatalog.Targets.Any(value => value.ElementId == elementId))
+                        // Independent-setup world counters (independent-setup.*).
+                        || (side == "commonwealth" && entry.AuthorityStatus == "world8-active"
+                            && world.Source.IndependentWorld is not null
+                            && ContentSourceIndependentPackArtifact.Units.Any(value => value.ElementId == elementId))
+                        // The expanded independent-setup world's three added
+                        // battalions (independent-setup.*), same binding kind
+                        // and status as the base independent-setup world above.
+                        || (side == "commonwealth" && entry.AuthorityStatus == "world8-active"
+                            && world.Source.ExpandedIndependentWorld is not null
+                            && ContentSourceExpandedIndependentPackArtifact.AddedUnits.Any(value => value.ElementId == elementId));
                     result.Add(independent
                         ? new(representation.RepresentationId, side, representation.RepresentationId, location,
                             CampaignContactObserverKind.IndependentCounter)

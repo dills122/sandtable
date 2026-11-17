@@ -10607,6 +10607,42 @@ public sealed class GrazianiSourceAuthorityTests
     {
         var combinedWorld = BuildFullyChainedCombinedWorldForBothSides();
         var finalBlockers = combinedWorld.ReadinessBlockers();
+        // Fix 1 (PR description): CampaignSourcePolishArrivalContacts.EffectiveCounters
+        // previously left every one of this fixture's cw-attached-artillery,
+        // cw-priority and (base + expanded) independent-setup commonwealth
+        // counters with a null ObserverFormationId - confirmed, via a temporary
+        // Assert.Fail diagnostic per this project's documented technique, by the
+        // Commonwealth-side CampaignSourceInitialContacts.Derive throwing
+        // "Source counter observer identity is not established." before Fix 1
+        // landed. That classification gap is now closed: every one of these
+        // counters is its own IndependentCounter observer.
+        var expandedIndependentCounters = CampaignSourcePolishArrivalContacts.EffectiveCounters(combinedWorld)
+            .Where(value => value.SideId == "commonwealth" && value.LocationId is "c3721" or "c3922" or "c3926" or "c4131" or "c3320")
+            .ToArray();
+        Assert.Equal(["cw-attached-artillery.3-royal-horse-artillery-antitank", "cw-attached-artillery.31-field-artillery",
+                "cw-attached-artillery.4-royal-horse-artillery", "cw-attached-artillery.7-medium-artillery",
+                "cw-priority.1-french-motor-marines", "independent-setup.1-kings-royal-rifle-corps",
+                "independent-setup.1-royal-northumberland-fusiliers", "independent-setup.2-rifle-brigade",
+                "independent-setup.2-scots-guards", "independent-setup.3-coldstream-guards"],
+            expandedIndependentCounters.Select(value => value.RepresentationId).OrderBy(value => value, StringComparer.Ordinal).ToArray());
+        Assert.All(expandedIndependentCounters, value =>
+        {
+            Assert.Equal(CampaignContactObserverKind.IndependentCounter, value.ObserverKind);
+            Assert.Equal(value.RepresentationId, value.ObserverFormationId);
+        });
+        // Fix 1 alone does not clear source-initial-contacts-unavailable: the
+        // Commonwealth-side Derive now fails later, for a different and genuine
+        // reason (confirmed the same way) - "Source map adjacency is not
+        // established.", the Fix 2 gap below, which now also blocks the
+        // Commonwealth side (these counters, now identified, must resolve
+        // adjacency to the axis Soluch/Mechili counters below) exactly as it
+        // already blocked the Axis side before Fix 1. See the Fix 2 research-
+        // blocked note a few lines down for why that gap is not closed here.
+        var diagId = combinedWorld.Source.Request.CampaignId;
+        Assert.Equal("Source map adjacency is not established.", Assert.Throws<InvalidOperationException>(() =>
+            CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Axis))).Message);
+        Assert.Equal("Source map adjacency is not established.", Assert.Throws<InvalidOperationException>(() =>
+            CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Commonwealth))).Message);
         // source-grouped-movement-domain-incomplete root cause, traced (via a
         // temporary diagnostic walking CampaignSourceGroupedZoc.EvaluateFormationSource/
         // EvaluateDetachedSource per group/detached member per side, then removed):
@@ -10624,16 +10660,28 @@ public sealed class GrazianiSourceAuthorityTests
         // inventing an uncited rating value, which this project's conventions
         // forbid; each needs its own researched chart citation, out of scope here.
         // source-initial-contacts-unavailable is a genuine, separate gap (see PR
-        // description / final report): CampaignSourcePolishArrivalContacts.EffectiveCounters
-        // leaves many independent/attached/priority commonwealth counters with a
-        // null ObserverFormationId (no case recognizes them as "independent" nor
-        // are they grouped), and CampaignSourceInitialContacts.TryAdjacent has no
-        // geometry rule connecting rear-area axis locations (e.g. Soluch a4130,
+        // description / final report). It has two independent causes, confirmed
+        // via CampaignSourceInitialContacts.Derive above. Fix 1 (this PR):
+        // CampaignSourcePolishArrivalContacts.EffectiveCounters used to leave the
+        // cw-attached-artillery/cw-priority/independent-setup commonwealth
+        // counters asserted above with a null ObserverFormationId; that
+        // classification gap is now closed (proven above). Fix 2 (NOT closed
+        // here, research-blocked): CampaignSourceInitialContacts.TryAdjacent has
+        // no geometry rule connecting rear-area axis locations (Soluch a4130,
         // Mechili b4921) to the forward commonwealth positions this chain admits
-        // (c3520, c3020, c3721, c3922, c3926, c4131, c3320) - both failures make
-        // CanProject fail closed for one side or the other. Fixing either requires
-        // new classification/geometry rules, not a missing action call; not
-        // attempted here per this task's remit.
+        // (c3520, c3020, c3721, c3922, c3926, c4131, c3320). None of the Air/
+        // Logistics §37.42 chart anchors (CampaignSourceSeamCandidate's
+        // TryPublishedDistance table - a4130 and b4921 are themselves two of its
+        // 20 named anchors) has any further cited in-section path reaching that
+        // hex cluster (TobrukPathSources/CairoPathUpper/MatruhPathUpper/
+        // C3320Neighbors/C3617Neighbors cover other, disjoint areas of Map C),
+        // and Cna1979HistoricalMap's edge graph is explicitly same-sheet-only, so
+        // no cited path exists either. Closing this needs a new, real chart or
+        // map citation for that specific anchor-to-hex distance, not a missing
+        // action call or an invented value; not attempted here per this task's
+        // remit. Because Fix 1 now gives these Commonwealth counters a real
+        // observer identity, Fix 2's gap blocks CanProject on BOTH sides (it
+        // already blocked Axis before Fix 1); the net blocker list is unchanged.
 
         // Empirically observed (via a temporary Assert.Fail("DIAG:" + string.Join(",",
         // combinedWorld.ReadinessBlockers())) diagnostic, per this project's own
@@ -10685,16 +10733,17 @@ public sealed class GrazianiSourceAuthorityTests
         // (CampaignSourceCwFreeGunsWorld.AcceptMotorMachineGunRuling) does exactly
         // that, and both blockers clear together once it is submitted, since they
         // are two facets of the same underlying no-scenario-pool fact.
-        // source-initial-contacts-unavailable also remains a genuine, separate gap,
-        // NOT closed here (see the comment above combinedWorld): CampaignSourcePolishArrivalContacts.EffectiveCounters
-        // has no "independent" classification case for several of this chain's
-        // admitted/pre-existing commonwealth counters (cw-attached-artillery.*,
-        // independent-setup.*, cw-priority.*), leaving them with a null
-        // ObserverFormationId, and CampaignSourceInitialContacts.TryAdjacent has no
-        // geometry rule connecting rear-area axis locations (Soluch a4130, Mechili
-        // b4921) to the forward commonwealth positions this chain admits. Tracing
-        // confirmed this is not a missing action call (unlike cw-frontline above) -
-        // it needs new classification and/or geometry rules.
+        // source-initial-contacts-unavailable remains in the list, but for a
+        // different reason than it would have before this PR - see the comment
+        // above combinedWorld for the full Fix 1 / Fix 2 breakdown. Fix 1's
+        // classification gap (CampaignSourcePolishArrivalContacts.EffectiveCounters
+        // had no "independent" classification case for several of this chain's
+        // admitted/pre-existing commonwealth counters: cw-attached-artillery.*,
+        // independent-setup.*, cw-priority.*) is closed. Fix 2's map-adjacency gap
+        // (CampaignSourceInitialContacts.TryAdjacent has no geometry rule
+        // connecting rear-area axis locations Soluch a4130/Mechili b4921 to the
+        // forward commonwealth positions this chain admits) is research-blocked,
+        // not a missing action call - see Task F in the research handoff doc.
         Assert.DoesNotContain("owner-setup-finalization-incomplete", finalBlockers);
         Assert.DoesNotContain("seventh-armored-shell-stack-correction-required", finalBlockers);
         Assert.DoesNotContain("central-india-horse-training-state-unresolved", finalBlockers);
