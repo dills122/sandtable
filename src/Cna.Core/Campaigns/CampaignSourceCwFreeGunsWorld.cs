@@ -9,6 +9,14 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceCwFreeGunsWorld
 {
     internal const string PolicyId = "graziani.cw-free-guns-active-world.v1";
+    // Formally accepts, as the ruling of record, what the Motor MG content
+    // artifact already states at creation time: the scenario identifies
+    // historical motorization priority for this element but no assigned
+    // motor pool or effective current allowance. This is Axis-only (an
+    // Italian unit with no Commonwealth-visible consequence modeled anywhere),
+    // so a single acceptance flag is enough - unlike Central India Horse's
+    // two-side HorseRulingVotes bitmask, there is no second party to agree.
+    internal const string MotorMachineGunRulingId = "graziani.giarabub-motor-mg.no-scenario-pool.v1";
     private readonly Lazy<string> cachedHash;
     private CampaignSourceCwFreeGunsWorld(ContentSourceCwFreeGunsPackArtifact content, CampaignWorldSnapshotV8 world,
         IEnumerable<string> added, string predecessorHash, string setupHash,
@@ -19,8 +27,11 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         ContentSourceTobrukBardiaGarrisonPackArtifact? tobrukBardiaGarrisonContent = null,
         ContentSourceBardiaGarrisonRemainderPackArtifact? bardiaGarrisonRemainderContent = null,
         ContentSourceTripoliTankRegimentPackArtifact? tripoliTankRegimentContent = null,
-        ContentSourceCwAttachedArtilleryPackArtifact? cwAttachedArtilleryContent = null)
+        ContentSourceCwAttachedArtilleryPackArtifact? cwAttachedArtilleryContent = null,
+        bool motorMachineGunRulingAccepted = false)
     {
+        if (motorMachineGunRulingAccepted && motorMachineGunContent is null)
+            throw new ArgumentException("Motor MG ruling requires its retained content.");
         Content = content; World = world; PredecessorHash = predecessorHash; SetupHash = setupHash;
         cachedHash = new Lazy<string>(ComputeHash, LazyThreadSafetyMode.ExecutionAndPublication);
         NewlyActivatedIds = Array.AsReadOnly(added.Order(StringComparer.Ordinal).ToArray());
@@ -32,6 +43,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
         BardiaGarrisonRemainderContent = bardiaGarrisonRemainderContent;
         TripoliTankRegimentContent = tripoliTankRegimentContent;
         CwAttachedArtilleryContent = cwAttachedArtilleryContent;
+        MotorMachineGunRulingAccepted = motorMachineGunRulingAccepted;
     }
     internal ContentSourceCwFreeGunsPackArtifact Content { get; }
     internal CampaignWorldSnapshotV8 World { get; }
@@ -46,6 +58,20 @@ internal sealed class CampaignSourceCwFreeGunsWorld
     internal ContentSourceBardiaGarrisonRemainderPackArtifact? BardiaGarrisonRemainderContent { get; }
     internal ContentSourceTripoliTankRegimentPackArtifact? TripoliTankRegimentContent { get; }
     internal ContentSourceCwAttachedArtilleryPackArtifact? CwAttachedArtilleryContent { get; }
+    internal bool MotorMachineGunRulingAccepted { get; }
+
+    // Only Axis, only once the content exists, only once. The source does
+    // not supply a motor pool or effective allowance to accept - this just
+    // records that the absence itself (see ContentSourceGiarabubMotorMachineGunArtifact's
+    // header comment) is the terminal, agreed finding, not a gap awaiting data.
+    internal CampaignSourceCwFreeGunsWorld AcceptMotorMachineGunRuling()
+    {
+        if (MotorMachineGunContent is null || MotorMachineGunRulingAccepted)
+            throw new InvalidOperationException("Motor MG ruling requires its retained content and no duplicate.");
+        return new(Content, World, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent,
+            MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent, BardiaGarrisonRemainderContent,
+            TripoliTankRegimentContent, CwAttachedArtilleryContent, motorMachineGunRulingAccepted: true);
+    }
 
     internal CampaignSourceCwFreeGunsWorld ActivateCwFrontline(CampaignSourceCommonwealthSupplementalForces supplement,
         CampaignSourceBattlefield battlefield, CampaignSourceMotorizationWorld motorization)
@@ -83,7 +109,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             World.World.Elements.Concat(elements), World.World.Representations.Concat(reps), World.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, World.ScenarioId, init, world6, World.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, content, TobrukBardiaGarrisonContent,
-            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateGiarabubMotorMachineGun(CampaignSourceAxisGarrisonForces garrisons,
@@ -118,7 +144,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             World.World.Elements.Append(element), World.World.Representations.Append(rep), World.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, World.ScenarioId, init, world6, World.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, content, CwFrontlineContent, TobrukBardiaGarrisonContent,
-            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateGarrisonRemainder(CampaignSourceAxisGarrisonForces garrisons,
@@ -158,7 +184,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, content, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
-            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateMinorGarrisons(CampaignSourceAxisGarrisonForces garrisons,
@@ -198,7 +224,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, content, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
-            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateTobrukBardiaGarrison(CampaignSourceBattlefield battlefield)
@@ -235,7 +261,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, content,
-            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateBardiaGarrisonRemainder(CampaignSourceBattlefield battlefield)
@@ -272,7 +298,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
-            content, TripoliTankRegimentContent, CwAttachedArtilleryContent);
+            content, TripoliTankRegimentContent, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateTripoliTankRegiment(CampaignSourceBattlefield battlefield)
@@ -309,7 +335,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
-            BardiaGarrisonRemainderContent, content, CwAttachedArtilleryContent);
+            BardiaGarrisonRemainderContent, content, CwAttachedArtilleryContent, MotorMachineGunRulingAccepted);
     }
 
     internal CampaignSourceCwFreeGunsWorld ActivateCwAttachedArtillery(CampaignSourceBattlefield battlefield)
@@ -347,7 +373,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             prior.World.Elements.Concat(elements), prior.World.Representations.Concat(reps), prior.World.BrokenVehicleLots);
         var world = new CampaignWorldSnapshotV8(content.Identity, prior.ScenarioId, init, world6, prior.PendingArrivals);
         return new(Content, world, NewlyActivatedIds, PredecessorHash, SetupHash, MinorGarrisonContent, GarrisonRemainderContent, MotorMachineGunContent, CwFrontlineContent, TobrukBardiaGarrisonContent,
-            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, content);
+            BardiaGarrisonRemainderContent, TripoliTankRegimentContent, content, MotorMachineGunRulingAccepted);
     }
 
     internal static CampaignSourceCwFreeGunsWorld Create(CampaignSourceAuthorityState state)
@@ -419,7 +445,7 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             ?? previous.MotorMachineGunContent?.Identity ?? previous.GarrisonRemainderContent?.Identity ?? previous.MinorGarrisonContent?.Identity ?? previous.Content.Identity, successor.ScenarioId, successor.Initialization,
             successor.World, successor.PendingArrivals);
         return new(previous.Content, world, previous.NewlyActivatedIds, successorHash, previous.SetupHash, previous.MinorGarrisonContent, previous.GarrisonRemainderContent, previous.MotorMachineGunContent, previous.CwFrontlineContent, previous.TobrukBardiaGarrisonContent,
-            previous.BardiaGarrisonRemainderContent, previous.TripoliTankRegimentContent, previous.CwAttachedArtilleryContent);
+            previous.BardiaGarrisonRemainderContent, previous.TripoliTankRegimentContent, previous.CwAttachedArtilleryContent, previous.MotorMachineGunRulingAccepted);
     }
 
     internal byte[] SerializeCanonical()
@@ -449,6 +475,8 @@ internal sealed class CampaignSourceCwFreeGunsWorld
             {
                 writer.WriteString("motorMachineGunContentHash", MotorMachineGunContent.Identity.Hash);
                 writer.WriteBase64String("motorMachineGunContent", MotorMachineGunContent.CanonicalBytes);
+                writer.WriteBoolean("motorMachineGunRulingAccepted", MotorMachineGunRulingAccepted);
+                if (MotorMachineGunRulingAccepted) writer.WriteString("motorMachineGunRulingId", MotorMachineGunRulingId);
             }
             if (CwFrontlineContent is not null)
             {

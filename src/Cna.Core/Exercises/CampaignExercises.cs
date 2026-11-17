@@ -87,6 +87,50 @@ public static class CampaignExercises
             new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
     }
 
+    public static CampaignPregameAxisDraft QuerySourceGiarabubMotorMgRulingDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var authority = session.SourceAuthority ?? throw new InvalidOperationException("Source setup authority is unavailable.");
+        if (audience != CampaignActionAudience.Axis || !authority.CanAcceptGiarabubMotorMgRuling)
+            throw new InvalidOperationException("Motor MG ruling owner is unavailable.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteString("rulingId", CampaignSourceCwFreeGunsWorld.MotorMachineGunRulingId);
+            writer.WriteString("finding", "no-scenario-motor-pool-or-effective-allowance");
+            writer.WriteString("printedCapabilityPoints", "8+"); writer.WriteNull("effectiveCapabilityPoints");
+            writer.WriteNull("mobilityId"); writer.WriteNull("motorPoolId"); writer.WriteNull("assignedMotorPoints");
+            writer.WriteBoolean("accepted", authority.CwFreeGunsWorld!.MotorMachineGunRulingAccepted);
+            writer.WriteStartArray("choices"); writer.WriteStartObject(); writer.WriteString("kind", "approve");
+            writer.WriteString("rulingId", CampaignSourceCwFreeGunsWorld.MotorMachineGunRulingId); writer.WriteEndObject();
+            writer.WriteEndArray(); writer.WriteEndObject();
+        }
+        return new CampaignPregameAxisDraft(authority.StateVersion, stream.ToArray(),
+            [CampaignSourceAuthorityState.GiarabubMotorMgRulingActionId]);
+    }
+
+    public static ExerciseStepResult SubmitSourceGiarabubMotorMgRuling(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session); ArgumentNullException.ThrowIfNull(submission);
+        if (session.SourceAuthority is not { } authority || session.SourceTurn is not null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (submission.ContractVersion != CampaignActionSubmission.CurrentContractVersion || submission.Audience != CampaignActionAudience.Axis)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        if (submission.CampaignId != authority.Request.CampaignId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != authority.StateVersion) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != CampaignSourceAuthorityState.SetupPositionId) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (submission.ActionId != CampaignSourceAuthorityState.GiarabubMotorMgRulingActionId || !authority.CanAcceptGiarabubMotorMgRuling)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        CampaignSourceAuthorityState next;
+        try { next = authority.AcceptGiarabubMotorMgRuling(); }
+        catch (InvalidOperationException) { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal); }
+        var bytes = authority.SerializeGiarabubMotorMgRulingEvent(next);
+        var receipt = new CampaignActionAcceptanceReceipt(authority.Request.CampaignId, authority.StateVersion, next.StateVersion,
+            CampaignSourceAuthorityState.SetupPositionId, submission.Audience, submission.ActionId);
+        return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame,
+            session.CurrentContacts.AdvancePregameSource(authority.StateVersion), [.. session.PregameHistory, bytes], next),
+            new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
+    }
+
     public static bool IsSourceTurnStarted(ExerciseSession session) => session?.SourceTurn is not null;
 
     public static byte[] QuerySourceCounterContacts(ExerciseSession session, CampaignActionAudience audience, string counterId)
@@ -7711,6 +7755,15 @@ public static class CampaignExercises
                     var successor = authority.ActivateGiarabubMotorMachineGun();
                     if (!record.AsSpan().SequenceEqual(authority.SerializeGiarabubMotorMachineGunEvent(successor)))
                         throw new InvalidOperationException("Giarabub motor MG differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-giarabub-motor-mg-ruling-accepted")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.AcceptGiarabubMotorMgRuling();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeGiarabubMotorMgRulingEvent(successor)))
+                        throw new InvalidOperationException("Giarabub motor MG ruling differs from re-adjudication.");
                     authority = successor;
                     continue;
                 }

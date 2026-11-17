@@ -185,6 +185,7 @@ internal static class CampaignSourceSetupBridge
             if (authority.IsCatanzaroGrouped) Add("catanzaro-disposition", CampaignExercises.QuerySourceCatanzaroDraft(session, audience));
             if (authority.CanAdmitCcnnBatch) Add("ccnn-batch-disposition", CampaignExercises.QuerySourceCcnnBatchDraft(session, audience));
             if (authority.CanAdmitAresca) Add("aresca-disposition", CampaignExercises.QuerySourceArescaDraft(session, audience));
+            if (authority.CanAcceptGiarabubMotorMgRuling) Add("giarabub-motor-mg-ruling", CampaignExercises.QuerySourceGiarabubMotorMgRulingDraft(session, audience));
         }
         else
         {
@@ -248,6 +249,7 @@ internal static class CampaignSourceSetupBridge
             "catanzaro-disposition" => CampaignExercises.SubmitSourceCatanzaro(session, inner),
             "ccnn-batch-disposition" => CampaignExercises.SubmitSourceCcnnBatch(session, inner),
             "aresca-disposition" => CampaignExercises.SubmitSourceAresca(session, inner),
+            "giarabub-motor-mg-ruling" => CampaignExercises.SubmitSourceGiarabubMotorMgRuling(session, inner),
             "sixteenth-brigade-disposition" => CampaignExercises.SubmitSourceSixteenthBrigade(session, inner),
             "sixth-australian-placement" => CampaignExercises.SubmitSourceSixthAustralian(session, inner),
             _ => ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal),
