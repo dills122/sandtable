@@ -134,7 +134,13 @@ Uncommitted changes correct Combat ownership when initiative holder acts last,
 and add explicit owner passes and second-side Reserve and one-hex Movement to
 the ordinary Core and durable Host paths. The latter retains any triggered
 Reaction window; movement completion advances to Breakdown only when no
-Reaction is pending. Handling Reaction and Breakdown remain open.
+Reaction is pending. **Update (2026-11-17):** this note is stale — Breakdown
+(V46, `CampaignNativeSecondBreakdownV46.cs`) is now fully implemented and
+tested end-to-end through `CampaignHostAdapter`, and the chain's eventual
+Combat step is a confirmed hand-off to the existing Combat engine, not a
+separate mechanism. The one remaining gap is narrow: no event yet resolves or
+waives a Reaction window opened by a second-side move, so V46 rejects on that
+one case (and separately on vehicle-cohort breakdown accounting).
 These changes do not advance the scenario clock to the Polish brigade's
 turn-1/stage-3 arrival, much less later reinforcements.
 
