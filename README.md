@@ -334,6 +334,7 @@ The full workflow is in the [contributor guide](CONTRIBUTING.md). The short vers
 | `just boundary-check` | Run the user-space disclosure boundary suite |
 | `just format-check` | Verify formatting without changing anything |
 | `just check` | The full local gate: format, build, boundary tests, all tests |
+| `just check-fast` | Same gate, with every CI-compatible shard run concurrently and the known ~29m43s Orleans outlier excluded |
 | `just run` | Launch the Aspire development stack |
 | `just docs-links` | Check tracked Markdown links, requires Lychee 0.24.2 |
 
