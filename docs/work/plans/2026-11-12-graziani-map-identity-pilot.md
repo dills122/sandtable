@@ -1,5 +1,9 @@
 # Graziani objective and supply map identities: first-pass ledger
 
+**November 16 follow-up:** a non-blind source recheck confirms the 11 printed
+distance cells in the [seam and setup review](2026-11-16-graziani-seam-supply-review.md#rechecked-printed-distance-cells).
+It does not independently recalculate candidate distances or authorize new joins.
+
 **Status:** one-reader research inventory, not a map, topology, content pack,
 or verified playable objective set. Original §60.81, §60.92 and the Air/Logistics
 package's location summary (PDF p. 26) and land-distance chart (PDF p. 25) were

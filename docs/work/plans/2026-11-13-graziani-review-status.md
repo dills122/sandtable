@@ -1,5 +1,13 @@
 # Graziani source-review packet status
 
+**November 16 follow-up:** [supply](graziani-supply-review/reading-b.json) and
+[trucks](graziani-truck-review/reading-b.json) now have attributed source
+rechecks. All 146 recorded fields match; 47 raw locator differences remain.
+The reader had prior planning context, so blind independent review remains open.
+See the [disposition and comparator overrides](2026-11-16-graziani-seam-supply-review.md#supply-and-truck-row-comparisons).
+The status tool still selects blank templates by default unless explicitly given
+these readings; the counts below describe the November 13 snapshot.
+
 The [status tool](graziani-review-status.py) reports the raw comparator result
 for seventeen bounded packets. It checks each actual source file's recorded SHA-256,
 manifest binding, attributed readings and all comparator issues. It accepts
