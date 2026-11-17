@@ -217,7 +217,7 @@ class DiscoveryTests(unittest.TestCase):
     def setUp(self):
         self.control_methods = ['Cna.Core.Tests.Campaigns.CombatActualRoundEntryTests.NativeActualEntryRetainsExactPreparedAndCancelledTerminalProofs', 'Cna.Core.Tests.Campaigns.BreakdownRecordTests.InvalidFiniteShapesAndNoncanonicalBytesReject']
         self.controls = [method + '(value: "quoted")' for method in self.control_methods]
-        self.payload = {'schema_version': 1, 'runner_version': '4.0.2', 'providers': [{'method': method, 'provider': 'Reviewed', 'names': [method + '(value: "deferred")']} for method in sorted(partition.DEFERRED)], 'controls': [{'method': method, 'names': [name]} for method, name in zip(self.control_methods, self.controls)]}
+        self.payload = {'schema_version': 1, 'runner_version': '4.0.3', 'providers': [{'method': method, 'provider': 'Reviewed', 'names': [method + '(value: "deferred")']} for method in sorted(partition.DEFERRED)], 'controls': [{'method': method, 'names': [name]} for method, name in zip(self.control_methods, self.controls)]}
         mutation = partition.SELECTORS[0]
         indices = {0, 1, 2, 3, 17, 18, 19, 20}
         a = [method + '(index: 0)' for method in partition.SELECTORS[1:]] + [mutation + f'(index: {i})' for i in range(34) if i not in indices]
@@ -273,7 +273,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(len(inventory['shards']['core-b']['rows']), 15)
 
     def test_unreviewed_or_malformed_runner_versions_fail(self):
-        for version in ['4.0.1', '4.0.3', 'unknown', '', 'v4.0.2', '4.0.2.0',
+        for version in ['4.0.1', '4.0.2', 'unknown', '', 'v4.0.2', '4.0.2.0',
                         '4.0.2 ', None, 402, True, ['4.0.2'], {'version': '4.0.2'}]:
             with self.subTest(version=version):
                 self.payload['runner_version'] = version

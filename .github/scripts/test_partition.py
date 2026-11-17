@@ -146,7 +146,7 @@ def load_partition(inventory, sha, sdk, attempt):
 
 
 def expand_core(text, payload):
-    require(payload.get('schema_version') == 1 and payload.get('runner_version') == '4.0.2', 'Unsupported provider proof')
+    require(payload.get('schema_version') == 1 and payload.get('runner_version') == '4.0.3', 'Unsupported provider proof')
     providers = payload.get('providers', [])
     require(len(providers) == len(DEFERRED) and {x['method'] for x in providers} == DEFERRED, 'Missing/unknown provider')
     deferred = {}
