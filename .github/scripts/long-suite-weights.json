@@ -784,6 +784,9 @@
     },
     "Cna.Core.Tests.Campaigns.GrazianiSourceTobrukBardiaGarrisonTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignSourceAuthorityStateInvariantTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4399,7 +4402,8 @@
     "17b58381ae4f5431b76942419a4a2defcf92167caa0dea1b326f84b3c6cf5df2": 46,
     "79a9758c0087ea1fdd35d2addf90eb7b74b004a234a2437679d3ef693c9e180d": 59703,
     "27b826128e047e4d7603d94895482fca3500095e867e05cd99592dd70480b245": 62452,
-    "10a40f57bc43763d4b6d8e10a772f6588382789081d78870a8bc4fca21124a60": 69930
+    "10a40f57bc43763d4b6d8e10a772f6588382789081d78870a8bc4fca21124a60": 69930,
+    "f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a": 102
   },
   "provisional_rows": {
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
@@ -4751,7 +4755,8 @@
     "81ac57d15537cd8d884c3782416561c9aa15a2aa5d10c78890f0689d86a8b49c": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
     "9845e823bc96200173b1f6e2eaed0997f451b8ad5426f5c5f6dae55d86a3c575": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
     "3b432ebd46c8933df9e5b654c188b2727bed863d7ee9de9964a4d8e6b24e1edf": "2026-11-16 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted CI calibration",
-    "10a40f57bc43763d4b6d8e10a772f6588382789081d78870a8bc4fca21124a60": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new DescribeUnresolvedSources diagnostic proof test reusing the existing IntegratingEveryAdmittedCluster... heavy fixture via a shared extracted helper, pending hosted CI calibration"
+    "10a40f57bc43763d4b6d8e10a772f6588382789081d78870a8bc4fca21124a60": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new DescribeUnresolvedSources diagnostic proof test reusing the existing IntegratingEveryAdmittedCluster... heavy fixture via a shared extracted helper, pending hosted CI calibration",
+    "f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",
