@@ -784,6 +784,9 @@
     },
     "Cna.Core.Tests.Campaigns.GrazianiSourceTobrukBardiaGarrisonTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignSourceAuthorityStateInvariantTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4406,6 +4409,7 @@
     "d8c08a2e9a9b6183750aa6a42bc9e3e69bfe4dd8d8113adfd78d69c49be47133": 1,
     "d0692b8f407c111c05e33dd5825d57180bbb1c8c1ec02b9e5d9d0419350dd30b": 1,
     "159bde80da2c52814a5203112619b69adeaf7ec932a4f1783218b3f9142b8d07": 1,
+    "f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a": 102,
     "8f6133beae6e6702ef7dd1a0bffec658b41adacedf8cc3979d48ef0871add391": 1,
     "2c3a845ab756a33d3e9f5441d2d653196075fca0629427031c13e129582eedbf": 1,
     "f2be3a7162ee76674ec7cce06848f23f4f755e7748cc0bde229cb97a60cee383": 1,
@@ -4779,6 +4783,7 @@
     "d8c08a2e9a9b6183750aa6a42bc9e3e69bfe4dd8d8113adfd78d69c49be47133": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new CampaignSourceGroupedZocTests Matruh close-assault rating rows, pending hosted CI calibration",
     "d0692b8f407c111c05e33dd5825d57180bbb1c8c1ec02b9e5d9d0419350dd30b": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new CampaignSourceGroupedZocTests Matruh close-assault rating rows, pending hosted CI calibration",
     "159bde80da2c52814a5203112619b69adeaf7ec932a4f1783218b3f9142b8d07": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new CampaignSourceGroupedZocTests Matruh close-assault rating rows, pending hosted CI calibration",
+    "f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
     "8f6133beae6e6702ef7dd1a0bffec658b41adacedf8cc3979d48ef0871add391": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML (Task F axis-adjacency-distance); local scheduling hint, pending hosted calibration",
     "2c3a845ab756a33d3e9f5441d2d653196075fca0629427031c13e129582eedbf": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML (Task F axis-adjacency-distance); local scheduling hint, pending hosted calibration",
     "f2be3a7162ee76674ec7cce06848f23f4f755e7748cc0bde229cb97a60cee383": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML (Task F axis-adjacency-distance); local scheduling hint, pending hosted calibration",

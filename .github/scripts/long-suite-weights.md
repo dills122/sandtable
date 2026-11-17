@@ -736,6 +736,10 @@ Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --con
 Theory (unmodified) were all re-run locally against the recomputed hashes and
 pass. This is scheduling evidence only; hosted CI remains the acceptance gate.
 
+## `CampaignSourceAuthorityState` record-with-expression refactor (PR #380, November 17, 2026)
+
+One new permanent row: `CampaignSourceAuthorityStateInvariantTests.ValidateInvariantsRejectsOutOfRangeFinalizedOwnersEvenThoughTheCopyConstructorCannot`, row key `f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a`. Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceAuthorityStateInvariantTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr380-weights-timing`. Result: 1 passed, 0 failed, 0 skipped; measured 102ms (XML `time="0.102"`). No other row changed; the PR's 45 call-site migrations and copy-constructor fix touch no other test row. Added to `rows` (102) and `classes` (`{"parts": 1}`); also recorded in `provisional_rows` as a local scheduling hint pending hosted CI calibration, per existing convention. Verified `discover` passes against this commit.
+
 ## Task F: Soluch/Mechili-to-forward-hex adjacency bound (2026-11-17)
 
 Closes the axis-side geometry gap in `source-initial-contacts-unavailable`
