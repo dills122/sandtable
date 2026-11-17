@@ -8,6 +8,8 @@ in below). It is written for a future planning/architecting session, not as a
 record of further fixes applied in this one — no further code changes were
 made after this document was requested.
 
+**Source research update:** [Graziani source-material research handoff](2026-11-16-graziani-source-material-research.md) supersedes this session's missing-source and Matruh identity assumptions. Australian ratings and partial CCNN characteristics are now transcribed; scenario lists both Essex and Durham. Research findings are not yet implemented, and the blocker diagnostic below has not been rerun.
+
 ## What changed this session (for context)
 
 `CampaignSourcePlayableWorld.ReadinessBlockers()` previously added three of
@@ -111,14 +113,11 @@ confirmed resolved by this session's fix.
   actual play, validate admission and replay). This is a multi-week research
   project (reading original scans, resolving all cross-section seams, full
   OB inventory), not a code fix.
-- **Who decides:** a human with the original rulebook/OA/map scans (or
-  whoever on a prior session defined what "certified" was meant to require,
-  if that intent exists anywhere not yet found) needs to either (a) specify
-  what `battlefieldComplete`/`controlCertified` should actually measure, so
-  a future session can implement it, or (b) confirm these should stay
-  deliberately false until the underlying historical-completeness work is
-  done, in which case a future session's job is that larger research
-  project, not these two flags in isolation.
+- **Research disposition:** keep both flags false until the five-step map
+  completeness work above is complete. This is a conservative planning ruling,
+  not an implemented certification predicate. Define distinct, fail-closed
+  coverage and control contracts during that work; do not infer them from the
+  existing promotion receipts. See the [research handoff](2026-11-16-graziani-source-material-research.md#4-battlefield-and-control-readiness).
 
 ### 1b. `seventh-armored-shell-stack-correction-required` / `owner-setup-finalization-incomplete` / `central-india-horse-training-state-unresolved`
 
@@ -142,8 +141,11 @@ confirmed resolved by this session's fix.
 - **Status:** pre-existing real gap, unrelated to this session's work.
   `CampaignSourcePlayableWorld.ReadinessBlockers()` checks CCNN batch members'
   `CapabilityPointAllowance`/`ComponentType` directly; this was not touched.
-- **What's needed:** not investigated this session.
-- **Who decides:** a future session to scope.
+- **Research update:** Italian chart rows for both HQs and engineer battalions
+  are transcribed in the [research handoff](2026-11-16-graziani-source-material-research.md#3-ccnn-headquarters-and-engineers).
+  The 1st HQ gun type remains unspecified and parenthesized ratings require
+  conditional handling. Implement only supported facts, then rerun the blocker
+  diagnostic; these findings do not establish that the blocker will clear.
 
 ### 1d. `forces-incomplete`
 
@@ -169,21 +171,10 @@ confirmed resolved by this session's fix.
   finds for either side, so there could be more than one cause stacked; this
   session did not narrow it down further.
 - **Root cause (prime suspects, not confirmed):**
-  - **6th Australian Division** — no defensive-rating citation exists
-    anywhere in this codebase for any of its units: the three infantry
-    battalions per brigade, the brigade HQs' "organic-antitank" TOE-1
-    component, or the divisional cavalry's "reconnaissance" TOE-8 component
-    (`CampaignSourceSixthAustralianGroupedDefinition.cs:14-26`). Its own
-    file cites `"commonwealth-oa:p13"` (line 51) for the formation generally
-    — that is a page number *within the OA charts section*, not an absolute
-    PDF page this session located. No one has opened
-    `/private/tmp/sandtable-cw-charts.pdf` to find it; doing so blind, under
-    time pressure, in an 18 MB scan, was judged too open-ended for this
-    session. A tractable approach for a future session: cross-check against
-    a chart whose absolute offset *is* inferable (7th Armored's
-    `"oa-7-armored-p6"`, already cited and used correctly in this session's
-    fact table) to establish the OA-section-to-absolute-PDF-page offset,
-    then read the Australian page directly.
+  - **6th Australian Division** — source ratings are now transcribed in the
+    [research handoff](2026-11-16-graziani-source-material-research.md#1-6th-australian-division).
+    They have not yet been added to the fact table or tested at this fixture.
+    OA citation `p13` means absolute PDF page 13; no offset calculation is needed.
   - **Independent (ungrouped) combat-classified elements** elsewhere on the
     battlefield — `CanDeriveForSide` deliberately fails on any of these too
     (this module does not yet derive ZOC for independent elements at all;
@@ -198,10 +189,9 @@ confirmed resolved by this session's fix.
   `motorizedWorld` fixture to print exactly which group/element fails first,
   for both sides. This is the single most concrete, bounded next step in the
   whole readiness line of work — more useful than guessing further.
-- **Who decides:** a future session can do the isolation work unassisted.
-  Resolving 6th Australian's citation needs either the PDF offset trick above
-  (a future session can attempt this) or a human who has already reviewed
-  that scan.
+- **Next:** isolate each failing element, then implement applicable sourced
+  ratings and separately account for independent elements. Re-run the diagnostic;
+  no source finding alone proves this blocker clears.
 
 ## 2. Compulsory-combat obligation ledger — design sketch (not started)
 
@@ -353,39 +343,25 @@ invented for any entry below).
 | 1st & 2nd Libyan Divisions | `1-libyan-division`, `2-libyan-division` | 12 rifle battalions total (TOE5/DR1) | `4.46b` + `oa-libyan-p5` |
 | Maletti Division | `maletti-division` | 5 Libyan-coded motor-infantry/infantry attachments (TOE5/DR1, same rating as the parent Libyan division's own battalions) | `4.46b` + `oa-maletti-p7` |
 
-**Explicitly not sourced, with the exact reason:**
+**Subsequent source research, not yet implemented:**
 
-- **6th Australian Division** (`6th-australian-division`) — no citation
-  anywhere in this codebase for its infantry, its brigade HQs' integral
-  "organic-antitank" component, or its divisional cavalry's "reconnaissance"
-  component. See §1e for the OA-page-offset approach a future session could
-  try.
-- **Matruh garrison's attached units** (`matruh-garrison`) — not a missing
-  number but a **disputed unit identity** already flagged in existing code:
-  `CampaignSourceMatruhFormation.cs:16-17` tags both candidate attachments
-  (`"1-essex"`, `"1-durham-light-infantry"`) with
-  `"scenario-23-70-vs-oa-note-f-conflict"`, and
-  `ContentSourceMatruhDetachedPackArtifact.cs:50` separately records
-  `"buffs-hampshire-provisional-errata-essex-durham-conflict"`. Do not
-  resolve this by assuming the otherwise-universal Commonwealth TOE6/DR2
-  infantry pattern without first settling which real-world unit this
-  represents — that would be exactly the kind of unsourced guess the
-  original brief and this plan both reject.
-- **Everything not yet grouped at all** (most of the remaining order of
-  battle — CW frontline units, Cairo garrison units, minor Axis garrisons,
-  etc.) is still represented as independent (ungrouped) World8 elements.
-  `CampaignSourceGroupedZoc.CanDeriveForSide` does not attempt to derive ZOC
-  for these at all (by design — see the architecture note in that file) and
-  fails closed if any such element is combat-classified. This is the other
-  half of §1e's open question.
+- **6th Australian Division:** infantry `p` TOE 6 / DR 2; 16th and 17th
+  brigade HQs `f` and `e`, each TOE 1 / DR 1; cavalry `ll` TOE 8 / DR 3.
+  See [full citations and qualifications](2026-11-16-graziani-source-material-research.md#1-6th-australian-division).
+- **Matruh:** scenario explicitly lists both Essex and Durham as attached,
+  alongside South Staffordshires. OA note `f` raises a separate assigned-parent
+  chronology issue; errata separately assigns both Buffs and Hampshires to
+  Matruh. See [source comparison](2026-11-16-graziani-source-material-research.md#2-matruh-identity-and-relationships).
+  Do not conflate assignment, attachment, or source conflict with identity.
+- **Independent combat-classified elements** remain outside grouped ZOC
+  derivation; `CanDeriveForSide` fails closed for them. Isolate their effect at
+  the fixture rather than assuming the Australian facts clear the blocker.
 
 ## Recommended path, in order
 
 1. **Isolate `source-grouped-movement-domain-incomplete`'s exact cause(s)**
-   at the real fixture (§1e). Bounded, mechanical, no open design question —
-   the highest-value next step, since it tells you definitively whether 6th
-   Australian is really the (or a) blocker before spending effort on its OA
-   page.
+   at the real fixture (§1e). This shows whether the now-sourced Australian
+   ratings or other independent elements are actual blockers at that checkpoint.
 2. **Verify §1b's three "believed resolved later" blockers** against a
    fully-complete setup run. Also bounded and mechanical.
 3. **In parallel or after**, scope `forces-incomplete` (§1d) — likely the
@@ -397,28 +373,19 @@ invented for any entry below).
    to gate the specific fixture a future session cares about — confirm this
    per-fixture, don't assume), add the Host-level end-to-end test for GT1
    progression and the Polish arrival described in §3's last paragraph.
-6. **Separately, and only with a human who has the original source
-   material**: resolve §1a (`battlefieldComplete`/`controlCertified`'s real
-   definition, if one is ever decided) and 6th Australian's/Matruh's unit
-   identities (§4). These are the two places this plan cannot proceed further
-   without outside information — see "Open questions" below.
+6. **Use the source research packet** for Australian ratings and partial CCNN
+   facts; preserve the unresolved Matruh relationship and 1st CCNN HQ gun
+   type. Keep both map/control flags false pending the five-step completeness
+   work, and define their checks with that work.
 
-## Open questions needing a human with the original source material
+## Remaining source and design questions
 
-- **What should `battlefieldComplete`/`controlCertified` actually measure?**
-  No prior session's code, test, or spec doc defines this; two reasonable-
-  seeming inferences this session tried both contradicted existing, intended
-  test assertions. Either someone defines it from the original rules/OA
-  material (what would make the battlefield index and territorial control
-  genuinely "certified" for this scenario), or it is confirmed that these
-  should stay false until the full historical-completeness project
-  (`graziani-source-control-map.md`) is actually done — in which case no
-  future session should spend more time guessing at these two flags in
-  isolation.
-- **6th Australian Division's defensive ratings** — needs either the
-  Commonwealth charts PDF's OA p.13 (absolute offset not yet established) or
-  someone who has already read it.
-- **Matruh garrison's true attached-unit identity** — the Essex/Durham vs.
-  Buffs/Hampshire conflict needs resolving from the original scenario and OA
-  material before any defensive rating is attached to those elements, not
-  after.
+- Determine the 1st CCNN division HQ's artillery type from authoritative source
+  evidence; do not infer it from legion HQs. Preserve conditional engineer and
+  4th HQ ratings.
+- Resolve Essex/Durham's initial assigned-parent chronology and the Matruh
+  assignment/attachment interactions, including the provisional Buffs/Hampshire
+  errata exception, without dropping any scenario-listed units.
+- Define versioned battlefield coverage and territorial-control certification
+  predicates as part of the five-step map project. Until then both flags remain
+  false. Full evidence and implementation cautions: [research handoff](2026-11-16-graziani-source-material-research.md).
