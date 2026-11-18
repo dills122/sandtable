@@ -78,6 +78,82 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         return (string?)choice!.GetType().GetProperty("Choice", hidden)!.GetValue(choice);
     }
 
+    // Same reflection path as DecisionChoice above, generalized to any field
+    // of the CampaignCombatSelectionFacts record (ContactHandle, ApparentLocationId,
+    // BoundRepresentationId, ...) -- needed to prove an assault pick actually
+    // bound a real target, not just that some legal choice was recorded.
+    private static string? DecisionFact(ExerciseSession session, string decisionPropertyName, string factName)
+    {
+        const System.Reflection.BindingFlags hidden =
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic
+                | System.Reflection.BindingFlags.Public;
+        var decision = typeof(ExerciseSession).GetProperty(decisionPropertyName, hidden)!.GetValue(session);
+        if (decision is null) return null;
+        var choice = decision.GetType().GetProperty("Decision", hidden)!.GetValue(decision);
+        return (string?)choice!.GetType().GetProperty(factName, hidden)!.GetValue(choice);
+    }
+
+    // Real adjacent-enemy analog of AdvanceToSecondCombatSelection above. Uses
+    // CombatInfantryRequest's scenario (axis-infantry at "north",
+    // commonwealth-infantry at "north-east" -- an adjacent pair by
+    // construction, per CampaignContactCombatSelectionCutTests/
+    // PrepareInfantryForceRound's own precedent for the first side) together
+    // with AdvanceToContactCombat's preserveAdjacentInfantry knob, which keeps
+    // both infantry elements from moving away during the Movement phase. The
+    // first side voluntarily finishes its own Combat without attacking (still
+    // legal today -- Land 10.3's mandatory-attack-in-ZOC rule is not yet
+    // enforced, see CampaignContactCombatSelectionCut.Project's own remarks)
+    // so neither infantry element is displaced or eliminated before the
+    // second side ever reaches its own Combat-selection cut, where
+    // commonwealth-infantry is then genuinely adjacent to a visible
+    // axis-infantry contact.
+    private static (CampaignCreationRequest Request, CampaignSeatCredential Axis,
+        CampaignSeatCredential Commonwealth) AdvanceToSecondCombatSelectionWithAdjacentEnemy(
+            CampaignDurableAuthorityJournal journal)
+    {
+        var request = CombatInfantryRequest();
+        AdvanceToContactCombat(journal, request, Timing(request), preserveAdjacentInfantry: true);
+        var axis = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
+        var opening = journal.QueryCombatOwnerOpening(axis, "axis-infantry");
+        var finishRef = opening.PublicActionRefs[^1];
+        var finished = journal.SubmitOwnerCombatSelection(axis, "axis-infantry",
+            opening.Revision, finishRef);
+        if (!finished.IsAccepted)
+            throw new InvalidOperationException("First-side voluntary finish was not accepted.");
+        var control = journal.QueryCycleControlOwnerOpening(axis);
+        if (!journal.SubmitOwnerCycleControl(axis, control.Revision,
+                control.PublicActionRefs[^1]).IsAccepted)
+            throw new InvalidOperationException("Cycle control was not accepted.");
+        var convoy = journal.QueryTruckConvoyPassOwnerOpening(axis);
+        if (!journal.SubmitOwnerTruckConvoyPass(axis, convoy.Revision,
+                convoy.PublicActionRefs[0]).IsAccepted)
+            throw new InvalidOperationException("Truck convoy pass was not accepted.");
+        for (var index = 0; index < 4; index++)
+        {
+            var phase = journal.QueryPostCombatPassOwnerOpening(axis);
+            if (!journal.SubmitOwnerPostCombatPass(axis, phase.Revision,
+                    Assert.Single(phase.PublicActionRefs)).IsAccepted)
+                throw new InvalidOperationException("Post-combat pass was not accepted.");
+        }
+        var commonwealth = journal.RedeemSeatGrant(journal.IssueSeatGrant(
+            request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        // Finish Second Reserve designation immediately with nobody
+        // designated -- same closed path AdvanceToSecondCombatSelection uses,
+        // so commonwealth-infantry is never pulled into reserve and stays on
+        // the map, still adjacent to axis-infantry.
+        var secondReserve = journal.QuerySecondReserveOwnerOpening(commonwealth);
+        if (!journal.SubmitOwnerSecondReserve(commonwealth, secondReserve.Revision,
+                secondReserve.PublicActionRefs[^1]).IsAccepted)
+            throw new InvalidOperationException("Second Reserve completion was not accepted.");
+        var movementCompletion = journal.QuerySecondMovementCompletionOwnerOpening(commonwealth);
+        var completed = journal.SubmitOwnerSecondMovementCompletion(commonwealth,
+            movementCompletion.Revision, Assert.Single(movementCompletion.PublicActionRefs));
+        if (!completed.IsAccepted)
+            throw new InvalidOperationException("Second Movement completion was not accepted.");
+        return (request, axis, commonwealth);
+    }
+
     [Fact]
     public void SecondSideVoluntaryFinishIsLegalPersistedColdReplayableAndRetried()
     {
@@ -197,5 +273,101 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.True(accepted.IsAccepted);
         var verified = fixture.Open().ReadVerified(request.CampaignId);
         Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
+    }
+
+    // Real adjacent-enemy counterpart to SecondSideCombatSelectionRejectsAnActionNotOfferedAtTheCut's
+    // gate-only check and to SecondSideVoluntaryFinishIsLegalPersistedColdReplayableAndRetried's
+    // voluntary-finish path: exercises CampaignNativeSecondCombatDecisionV47's
+    // actual "select-contact-assault" pick, with a genuine adjacent enemy
+    // contact present at the cut (see AdvanceToSecondCombatSelectionWithAdjacentEnemy's
+    // remarks). Same acceptance bar as the voluntary-finish test -- legal,
+    // atomically persisted, idempotently retried, cold-replayable -- for the
+    // one choice that test's own fixture could never offer.
+    [Fact]
+    public void SecondSideRealAssaultSelectionIsLegalPersistedColdReplayableAndRetried()
+    {
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var (request, _, commonwealth) = AdvanceToSecondCombatSelectionWithAdjacentEnemy(journal);
+        var head = journal.ReadVerified(request.CampaignId);
+        var checkpoint = CampaignExercises.QueryCheckpoint(head);
+        Assert.Equal(46, checkpoint.ContractVersion); // CampaignNativeSecondBreakdownV46.CurrentContractVersion
+        Assert.True(CampaignExercises.Reconstruct(head).IsVerified);
+
+        var opening = journal.QueryCombatOwnerOpening(commonwealth, "commonwealth-infantry");
+        using var visible = JsonDocument.Parse(opening.VisibleBytes);
+        var assaultOffers = visible.RootElement.GetProperty("assaultOffers");
+        // A genuine adjacent-enemy cut, unlike SecondSideCombatSelectionRejectsAnActionNotOfferedAtTheCut's
+        // fixture: a real assault offer against axis-infantry at "north" sits
+        // alongside the voluntary finish offer, so PublicActionRefs holds more
+        // than just the single finish ref that test exercises.
+        Assert.True(assaultOffers.GetArrayLength() > 0,
+            System.Text.Encoding.UTF8.GetString(opening.VisibleBytes));
+        var assaultIndex = Enumerable.Range(0, assaultOffers.GetArrayLength())
+            .Single(index => assaultOffers[index].GetProperty("apparentLocationId").GetString() == "north");
+        Assert.True(opening.PublicActionRefs.Count > 1);
+        var assaultRef = opening.PublicActionRefs[assaultIndex];
+        Assert.NotEqual(opening.PublicActionRefs[^1], assaultRef); // the finish ref is last, per QueryContactCombatOwnerDraft.
+
+        var noAttackCountBeforeAssault = CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-second-combat-no-attack");
+
+        // Legal real-target selection, atomic persistence.
+        var accepted = journal.SubmitOwnerCombatSelection(commonwealth, "commonwealth-infantry",
+            opening.Revision, assaultRef);
+        Assert.True(accepted.IsAccepted);
+
+        // Retry through the normal durable Host: resubmitting the same
+        // accepted action must be idempotent, not throw, and return the
+        // same canonical receipt.
+        var reopened = fixture.Open();
+        var retry = reopened.SubmitOwnerCombatSelection(commonwealth, "commonwealth-infantry",
+            opening.Revision, assaultRef);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
+
+        // Cold replay: the whole chain -- first-side combat through the
+        // second side's own real assault pick -- must reconstruct and verify
+        // from durable storage alone.
+        var cold = fixture.Open();
+        var verified = cold.ReadVerified(request.CampaignId);
+        var reconstruction = CampaignExercises.Reconstruct(verified);
+        Assert.True(reconstruction.IsVerified);
+
+        // The decision is recorded on the side-scoped field, with a real
+        // bound target, not a voluntary finish -- and the stale first-side
+        // field is untouched.
+        const System.Reflection.BindingFlags hidden =
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var secondDecisionProperty = typeof(ExerciseSession).GetProperty(
+            "CurrentSecondCombatDecision", hidden)!;
+        var secondBreakdownProperty = typeof(ExerciseSession).GetProperty(
+            "CurrentSecondBreakdown", hidden)!;
+        var secondNoAttackProperty = typeof(ExerciseSession).GetProperty(
+            "CurrentSecondNoAttackCompletion", hidden)!;
+        Assert.NotNull(secondDecisionProperty.GetValue(verified));
+        Assert.NotNull(secondBreakdownProperty.GetValue(verified));
+        Assert.Equal("select-contact-assault",
+            DecisionChoice(verified, "CurrentSecondCombatDecision"));
+        Assert.Equal("finish-combat-without-attack",
+            DecisionChoice(verified, "CurrentCombatDecision")); // the first side's own unrelated voluntary finish.
+        Assert.NotSame(secondDecisionProperty.GetValue(verified),
+            typeof(ExerciseSession).GetProperty("CurrentCombatDecision", hidden)!.GetValue(verified));
+
+        // The real target binding -- the whole point of this test over the
+        // legal/illegal gate check above it.
+        var contactHandle = DecisionFact(verified, "CurrentSecondCombatDecision", "ContactHandle");
+        Assert.NotNull(contactHandle);
+        Assert.Equal("north",
+            DecisionFact(verified, "CurrentSecondCombatDecision", "ApparentLocationId"));
+        Assert.NotNull(DecisionFact(verified, "CurrentSecondCombatDecision", "BoundRepresentationId"));
+
+        // A real assault pick must NOT trigger the second side's own
+        // voluntary-no-attack auto-completion -- that only fires for
+        // "finish-combat-without-attack" (see
+        // SecondSideVoluntaryFinishIsLegalPersistedColdReplayableAndRetried).
+        Assert.Null(secondNoAttackProperty.GetValue(verified));
+        Assert.Equal(noAttackCountBeforeAssault, CountAcceptedStep(fixture.Path, request.CampaignId,
+            "native-second-combat-no-attack"));
     }
 }
