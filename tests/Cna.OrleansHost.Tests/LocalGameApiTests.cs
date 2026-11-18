@@ -520,6 +520,15 @@ public sealed class LocalGameApiTests
                 .IssueGrants(session.OperatorId, "host-rsh-001");
             Assert.NotEqual(grants.Axis, grants.Commonwealth);
 
+            // #319: a non-bootstrap route with a fully valid cookie and CSRF token must still
+            // be rejected when both Sec-Fetch-Site and Origin are absent - that combination is
+            // not proof of same-origin, it is just a client that supplies neither. Bypass Send
+            // (which fills in a default Sec-Fetch-Site) to send a genuinely headerless request.
+            var headerlessSeat = Seat("host-rsh-001", token, csrf, grants.Axis);
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await client.SendAsync(headerlessSeat, TestContext.Current.CancellationToken))
+                .StatusCode);
+
             var badCampaign = Seat("other", token, csrf, grants.Axis);
             Assert.Equal(HttpStatusCode.Forbidden, (await Send(client, badCampaign)).StatusCode);
             var forgedGrant = Seat("host-rsh-001", token, csrf, Guid.NewGuid().ToString());
@@ -975,8 +984,17 @@ public sealed class LocalGameApiTests
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         { [LocalGameApi.TrustedLocalDeploymentConfigKey] = "true" });
 
-    private static Task<HttpResponseMessage> Send(HttpClient client, HttpRequestMessage request) =>
-        client.SendAsync(request, TestContext.Current.CancellationToken);
+    private static Task<HttpResponseMessage> Send(HttpClient client, HttpRequestMessage request)
+    {
+        // Simulate a genuine same-origin browser request by default (most real fetches
+        // supply Sec-Fetch-Site) so request builders that don't care about same-origin
+        // headers keep exercising the handler logic beyond the same-origin gate (#319).
+        // A caller that wants to test the gate itself sets Sec-Fetch-Site/Origin explicitly
+        // before calling Send, or bypasses Send (see the direct client.GetAsync call above).
+        if (!request.Headers.Contains("Sec-Fetch-Site") && !request.Headers.Contains("Origin"))
+            request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
+        return client.SendAsync(request, TestContext.Current.CancellationToken);
+    }
 
     private static HttpRequestMessage Bootstrap(HttpClient client, string? cookie = null)
     {

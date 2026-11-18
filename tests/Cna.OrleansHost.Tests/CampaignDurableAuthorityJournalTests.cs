@@ -1302,6 +1302,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 var address = completionApp.Services.GetRequiredService<IServer>().Features
                     .Get<IServerAddressesFeature>()!.Addresses.Single();
                 using var client = new HttpClient { BaseAddress = new Uri(address) };
+                // Not a same-origin-gate test; simulate a genuine same-origin fetch so the
+                // v2 middleware's stricter header-presence check (#319) doesn't block it.
+                client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
                 object Seat(CampaignSeatCredential value) => new
                 {
                     campaignId = value.CampaignId,
@@ -1456,6 +1459,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 var address = app.Services.GetRequiredService<IServer>().Features
                     .Get<IServerAddressesFeature>()!.Addresses.Single();
                 using var client = new HttpClient { BaseAddress = new Uri(address) };
+                // Not a same-origin-gate test; simulate a genuine same-origin fetch so the
+                // v2 middleware's stricter header-presence check (#319) doesn't block it.
+                client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
                 object Seat(CampaignSeatCredential value) => new
                 {
                     campaignId = value.CampaignId,
@@ -1988,8 +1994,11 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             await app.StartAsync(TestContext.Current.CancellationToken);
             var address = app.Services.GetRequiredService<IServer>().Features
                 .Get<IServerAddressesFeature>()!.Addresses.Single();
-            return new OwnerHttpHarness(app, new HttpClient { BaseAddress = new Uri(address) },
-                campaignId);
+            var client = new HttpClient { BaseAddress = new Uri(address) };
+            // Not a same-origin-gate test; simulate a genuine same-origin fetch so the
+            // v2 middleware's stricter header-presence check (#319) doesn't block it.
+            client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
+            return new OwnerHttpHarness(app, client, campaignId);
         }
 
         internal async Task Submit(CampaignSeatCredential credential, string actor,

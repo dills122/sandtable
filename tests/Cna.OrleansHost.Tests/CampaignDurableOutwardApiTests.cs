@@ -70,8 +70,7 @@ public sealed class CampaignDurableOutwardApiTests
                 scenarioId = request.ScenarioId,
                 timing = timingJson.RootElement,
             });
-            var denied = await client.PostAsync("/api/v2/campaigns/",
-                Body(creation), TestContext.Current.CancellationToken);
+            var denied = await Send(client, "/api/v2/campaigns/", creation);
             Assert.Equal(HttpStatusCode.Unauthorized, denied.StatusCode);
             using (var crossOrigin = new HttpRequestMessage(HttpMethod.Post,
                 "/api/v2/campaigns/")
@@ -82,6 +81,17 @@ public sealed class CampaignDurableOutwardApiTests
                 Assert.Equal(HttpStatusCode.Forbidden,
                     (await client.SendAsync(crossOrigin,
                         TestContext.Current.CancellationToken)).StatusCode);
+            }
+            // #319: a valid operator secret must not be enough on its own - a request with
+            // both Sec-Fetch-Site and Origin absent is rejected before the operator is even
+            // checked, because that combination is not proof of same-origin.
+            using (var headerless = new HttpRequestMessage(HttpMethod.Post, "/api/v2/campaigns/")
+            { Content = Body(creation) })
+            {
+                headerless.Headers.Add("X-Sandtable-Operator", OperatorSecret);
+                Assert.Equal(HttpStatusCode.Forbidden,
+                    (await client.SendAsync(headerless, TestContext.Current.CancellationToken))
+                    .StatusCode);
             }
             var created = await Send(client, "/api/v2/campaigns/", creation, OperatorSecret);
             Assert.Equal(HttpStatusCode.Created, created.StatusCode);
@@ -94,8 +104,7 @@ public sealed class CampaignDurableOutwardApiTests
             var creationConflict = await Send(client, "/api/v2/campaigns/",
                 creation.Replace("12345", "12346", StringComparison.Ordinal), OperatorSecret);
             Assert.Equal(HttpStatusCode.Conflict, creationConflict.StatusCode);
-            var unauthorizedRetry = await client.PostAsync("/api/v2/campaigns/", Body(creation),
-                TestContext.Current.CancellationToken);
+            var unauthorizedRetry = await Send(client, "/api/v2/campaigns/", creation);
             Assert.Equal(HttpStatusCode.Unauthorized, unauthorizedRetry.StatusCode);
             Assert.Equal(beforeRetry, RetainedAuthority(Path.Combine(directory, "campaign.sqlite")));
             var session = journal.ReadVerified(request.CampaignId);
@@ -285,6 +294,12 @@ public sealed class CampaignDurableOutwardApiTests
         using var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = Body(json) };
         if (operatorSecret is not null)
             request.Headers.Add("X-Sandtable-Operator", operatorSecret);
+        // Simulate a genuine same-origin browser request by default so callers that don't
+        // care about same-origin headers keep exercising the handler logic beyond the
+        // same-origin gate (#319). A caller testing the gate itself sets Sec-Fetch-Site or
+        // Origin explicitly before calling Send, or sends the request directly.
+        if (!request.Headers.Contains("Sec-Fetch-Site") && !request.Headers.Contains("Origin"))
+            request.Headers.Add("Sec-Fetch-Site", "same-origin");
         return await client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }
