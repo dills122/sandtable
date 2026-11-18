@@ -1869,16 +1869,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private SqliteConnection Connect(bool create)
     {
-        // Pooling is safe here: every BeginTransaction(deferred: false) is committed or
-        // rolled back before this method's `using` disposes the connection, and both
-        // per-connection PRAGMAs below are re-applied on every call, so a handle recycled
-        // from the pool carries no session state a caller could observe.
+        // Pooling is deliberately off: PR #412 enabled it, but a pooled connection's native
+        // handle stays parked after Dispose() in this Microsoft.Data.Sqlite build, which left
+        // CreateNew's own post-write wal_checkpoint(TRUNCATE) unable to fully truncate the WAL
+        // -- reproduced deterministically on a clean checkout, confirmed independently, and
+        // confirmed fixed by this revert. The connection-reuse benefit was already assessed as
+        // small (cheap local-file open/close, a grain's own lifecycle already bounds connection
+        // lifetime); re-enabling pooling needs that interaction solved first, e.g. an explicit
+        // SqliteConnection.ClearPool() before any checkpoint-dependent path runs.
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = path,
             Mode = create ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite,
             Cache = SqliteCacheMode.Private,
-            Pooling = true,
+            Pooling = false,
         }.ToString());
         connection.Open();
         Execute(connection, "PRAGMA foreign_keys=ON");
