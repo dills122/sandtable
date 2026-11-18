@@ -849,3 +849,27 @@ matrix job (one ordinary suite part, as before).
 | `Cna1979HistoricalMapTests.NeighborsOfStillRejectsOutOfRangeRowAndNonexistentColumnZero` | `00dc8b65f8fb` | 1 |
 
 Command: `dotnet test tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --list-tests --pre-enumerate-theories on --no-ansi --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests` to confirm the exact discovered display names, then `dotnet exec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --no-ansi --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --report-xunit-xml --results-directory artifacts/ci/weights-measure`. Result: 32 passed, 0 failed, 0 skipped; the two new rows measured 0.006s and 0s (floored to the 1ms minimum) respectively in the XML report. This is scheduling evidence only; hosted CI remains the acceptance gate.
+
+## PR #414: Aresca XXI(L) CV33 close-assault rating
+
+PR #414 wires the Aresca tank regiment's XXI(L) Tank Battalion CV33 close-assault
+rating into `CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`, closing the
+last remaining cause of `source-grouped-movement-domain-incomplete`. It adds three
+new `[Fact]` rows to `CampaignSourceGroupedZocTests` (same class, still one ordinary
+suite part) and renames one existing `GrazianiSourceAuthorityTests` row from
+`DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap` to
+`DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn` (same
+class, parts unchanged); the renamed identity requires a fresh measurement and the
+stale pre-rename row hash was removed from both `rows` and `provisional_rows`. All
+rows measured from a passing local macOS arm64 .NET 10 Release Microsoft.Testing.Platform
+XML run on 2026-11-18. These are local scheduling hints, not hosted latency claims;
+hosted exact-head CI remains the acceptance gate.
+
+| New/renamed row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `CampaignSourceGroupedZocTests.ArescaXxiLightTankBattalionCarriesItsCitedCv33CloseAssaultRating` | `8e883c21f7f6` | 1 |
+| `CampaignSourceGroupedZocTests.ArescaHeadquartersOwnCv33ToePointStaysUnresolvedPendingTheHqEligibilityRuling` | `bb1e1b3dc5e5` | 1 |
+| `CampaignSourceGroupedZocTests.ArescaFormationResolvesFromTheBattalionAloneWhileTheHqStaysUnknown` | `2e53a0f2f3ae` | 1 |
+| `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn` (renamed; replaces `DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap`) | `3523b0178dd2` | 69114 |
+
+Commands: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr414-weights-timing` (29 passed, 0 failed, 0 skipped) and `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn*" --report-xunit-xml --results-directory /private/tmp/sandtable-pr414-graziani-timing` (1 passed, 0 failed, 0 skipped). `IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers` (same name, assertions updated from 4 to 3 blockers) was also reconfirmed passing and its existing row hash left unchanged per the existing-entries-preserved convention. `python3 .github/scripts/long_suite_partition_test.py` (35 tests) passed locally against the merged manifest.
