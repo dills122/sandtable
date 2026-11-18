@@ -43,12 +43,56 @@ internal sealed partial class CampaignDurableAuthorityJournal
         this.contentResolver = contentResolver ?? Cna1979SyntheticContentResolver.Instance;
     }
 
+    /// <summary>
+    /// Crash-safety test seam. When set, invoked with a checkpoint name at well-defined points
+    /// during <see cref="CreateNew"/> (see call sites below). Production code leaves this null.
+    /// Only ever set by the out-of-process crash-probe child (<c>Cna.OrleansHost.FoundationChild</c>);
+    /// never set from inside the main test process, because this is static mutable state and other
+    /// test classes call <see cref="CreateNew"/> concurrently under xUnit's default parallelization.
+    /// </summary>
+    internal static Action<string>? CreateNewCrashHook;
+
+    private const string CreationTempInfix = ".creating-";
+
+    /// <summary>
+    /// Creates a brand-new durable journal at <paramref name="absolutePath"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>Crash safety (what this guarantees).</b> First-time initialization writes schema,
+    /// metadata and the application/schema version marker to a private temporary file in the same
+    /// directory, and only atomically renames it onto <paramref name="absolutePath"/>
+    /// (<see cref="File.Move(string, string)"/> on the same volume) once that temporary file is
+    /// completely valid. <see cref="File.Move(string, string)"/> without <c>overwrite</c> also
+    /// refuses to replace a file that already exists at the destination, so this never clobbers
+    /// something that showed up at the real path while we were initializing. The practical effect:
+    /// if this process is interrupted (killed, crashes, or hits an I/O failure) at <i>any</i> point
+    /// before that rename completes, <paramref name="absolutePath"/> is left exactly as it was
+    /// before this call -- either still absent (safe to retry <see cref="CreateNew"/> again) or,
+    /// if something already existed there, completely untouched. There is never a window where a
+    /// half-initialized file is visible at the real configured path.</para>
+    /// <para><b>What this does NOT guarantee.</b> This is process-termination/I/O-failure safety,
+    /// not power-loss durability: it does not call <c>fsync</c>/<c>fdatasync</c> on the temporary
+    /// file or its containing directory before the rename, so on a true power loss (as opposed to a
+    /// killed process or an in-process I/O exception) the OS/filesystem's own durability semantics
+    /// for recently renamed files apply, and that is a separate claim this code does not make.</para>
+    /// <para><b>Operator recovery when something unrecognized already sits at the path.</b> This
+    /// method refuses to run at all when <paramref name="absolutePath"/> already exists, and never
+    /// deletes or overwrites it, because an existing file might hold real campaign authority. If
+    /// that file is not actually a usable journal, <see cref="OpenExisting"/> is the code path that
+    /// classifies and reports why (see its remarks for the operator decision tree); it never
+    /// auto-repairs anything, because a wrong automatic guess between "valid journal from a newer
+    /// build", "true garbage", and "a half-written file left by a pre-fix host build" could destroy
+    /// real campaign authority. An operator must inspect the file (and a backup, if one exists)
+    /// and move it aside before a fresh journal can be created at that path.</para>
+    /// </remarks>
     internal static CampaignDurableAuthorityJournal CreateNew(string absolutePath,
         string operatorSecret, TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
     {
         RequirePath(absolutePath);
         var operatorDigest = CredentialDigest("operator", operatorSecret);
-        if (File.Exists(absolutePath)) throw new InvalidOperationException("Journal already exists.");
+        if (File.Exists(absolutePath))
+            throw new InvalidOperationException(RecoveryGuidance(absolutePath,
+                "Journal already exists."));
         var directory = Path.GetDirectoryName(absolutePath)!;
         if (!Directory.Exists(directory))
         {
@@ -58,12 +102,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     | UnixFileMode.UserExecute);
         }
         RequirePrivateDirectory(directory);
-        var journal = new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
+        // Orphaned temp files from a previous interrupted CreateNew can never hold real campaign
+        // authority -- nothing is ever published to absolutePath until the file is fully valid --
+        // so it is always safe to clear them before starting a fresh attempt.
+        TryDeleteOrphanedCreationTempFiles(absolutePath, directory);
+        var tempPath = Path.Combine(directory,
+            Path.GetFileName(absolutePath) + CreationTempInfix + Guid.NewGuid().ToString("N"));
+        var journal = new CampaignDurableAuthorityJournal(tempPath, clock ?? TimeProvider.System,
             contentResolver: contentResolver);
-        using var connection = journal.Connect(create: true);
-        Execute(connection, "PRAGMA journal_mode=WAL");
-        Execute(connection, "PRAGMA synchronous=FULL");
-        Execute(connection, """
+        try
+        {
+            using var connection = journal.Connect(create: true);
+            CreateNewCrashHook?.Invoke("after-temp-file-created");
+            Execute(connection, "PRAGMA journal_mode=WAL");
+            Execute(connection, "PRAGMA synchronous=FULL");
+            Execute(connection, """
             CREATE TABLE campaigns (
               campaign_id TEXT PRIMARY KEY, contract_version INTEGER NOT NULL,
               ruleset_hash TEXT NOT NULL, seed TEXT NOT NULL, setup_id TEXT NOT NULL,
@@ -97,6 +150,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             ON accepted_steps(campaign_id,owner_public_ref)
             WHERE owner_public_ref IS NOT NULL
             """);
+        CreateNewCrashHook?.Invoke("mid-schema");
         Execute(connection, """
             CREATE TABLE seats (
               campaign_id TEXT NOT NULL, side TEXT NOT NULL CHECK(side IN ('axis','commonwealth')),
@@ -227,13 +281,135 @@ internal sealed partial class CampaignDurableAuthorityJournal
             command.Parameters.AddWithValue("$secret", RandomNumberGenerator.GetBytes(32));
             command.ExecuteNonQuery();
         }
+        CreateNewCrashHook?.Invoke("before-version-marking");
         Execute(connection, $"PRAGMA application_id={ApplicationId}");
         Execute(connection, $"PRAGMA user_version={SchemaVersion}");
+        }
+        catch
+        {
+            TryDeleteCreationTempFiles(tempPath);
+            throw;
+        }
+        if (!OperatingSystem.IsWindows())
+            File.SetUnixFileMode(tempPath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        try
+        {
+            // Consolidate the WAL into the single main file so the atomic rename below publishes
+            // one self-contained file, never a main-file/WAL pair that a crash between two
+            // separate renames could tear apart.
+            CheckpointAndRemoveWalSidecars(tempPath);
+            CreateNewCrashHook?.Invoke("before-publish");
+            // Atomic on the same volume. File.Move without `overwrite` also refuses to replace a
+            // file that already exists at absolutePath, so this can never clobber real campaign
+            // authority that showed up at the real path while we were initializing.
+            File.Move(tempPath, absolutePath);
+        }
+        catch
+        {
+            TryDeleteCreationTempFiles(tempPath);
+            throw;
+        }
         if (!OperatingSystem.IsWindows())
             File.SetUnixFileMode(absolutePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
-        return journal;
+        return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
+            contentResolver: contentResolver);
     }
 
+    private static void TryDeleteCreationTempFiles(string tempPath)
+    {
+        foreach (var candidate in new[] { tempPath, tempPath + "-wal", tempPath + "-shm", tempPath + "-journal" })
+        {
+            try { if (File.Exists(candidate)) File.Delete(candidate); }
+            catch
+            {
+                // Best effort. A temp file that was never published to absolutePath can never
+                // hold real campaign authority -- nothing opens or writes campaigns against it --
+                // so a stale leftover here is a cleanliness issue, not a correctness one; the next
+                // CreateNew attempt uses a fresh GUID-suffixed name and also sweeps orphans itself.
+            }
+        }
+    }
+
+    private static void TryDeleteOrphanedCreationTempFiles(string absolutePath, string directory)
+    {
+        var prefix = Path.GetFileName(absolutePath) + CreationTempInfix;
+        string[] entries;
+        try { entries = Directory.GetFiles(directory); }
+        catch { return; }
+        foreach (var entry in entries)
+        {
+            var name = Path.GetFileName(entry);
+            if (!name.StartsWith(prefix, StringComparison.Ordinal)) continue;
+            if (name.EndsWith("-wal", StringComparison.Ordinal) || name.EndsWith("-shm", StringComparison.Ordinal)
+                || name.EndsWith("-journal", StringComparison.Ordinal))
+                continue; // handled alongside its main file below
+            TryDeleteCreationTempFiles(entry);
+        }
+    }
+
+    /// <summary>
+    /// Checkpoints the temporary journal's write-ahead log fully into its single main file and
+    /// removes the now-empty <c>-wal</c>/<c>-shm</c> sidecars, so the file about to be published
+    /// is one self-contained file rather than a main-file/WAL pair. Throws rather than publishing
+    /// a file with WAL content that did not fully checkpoint -- that would mean the single file we
+    /// are about to atomically move is missing data.
+    /// </summary>
+    private static void CheckpointAndRemoveWalSidecars(string dbPath)
+    {
+        using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = dbPath,
+            Mode = SqliteOpenMode.ReadWrite,
+            Cache = SqliteCacheMode.Private,
+            Pooling = false,
+        }.ToString()))
+        {
+            connection.Open();
+            Execute(connection, "PRAGMA wal_checkpoint(TRUNCATE)");
+        }
+        foreach (var sidecar in new[] { dbPath + "-wal", dbPath + "-shm" })
+        {
+            if (!File.Exists(sidecar)) continue;
+            if (new FileInfo(sidecar).Length > 0)
+                throw new InvalidOperationException(
+                    "Journal initialization could not fully checkpoint its write-ahead log; " +
+                    "refusing to publish a journal that is not yet a single self-contained file.");
+            try { File.Delete(sidecar); }
+            catch { /* best effort; an empty sidecar left behind is harmless */ }
+        }
+    }
+
+    /// <summary>
+    /// Operator-facing guidance for a file sitting at the configured journal path that this host
+    /// will not touch automatically. Shared by <see cref="CreateNew"/> (refuses to run at all when
+    /// something already exists there) and <see cref="OpenExisting"/> (refuses to guess at an
+    /// unrecognized file's meaning). The three states this cannot tell apart on its own are: a
+    /// genuine journal from a newer host build (future schema version), a half-written file left
+    /// by a pre-fix host build that crashed during first-time initialization (this fix removes that
+    /// possibility going forward, but does not retroactively repair a file written by old code),
+    /// and unrelated garbage. Recovery is manual: inspect the file (and any backup) out of band,
+    /// then either move/rename it aside so a fresh journal can be created at this path, restore a
+    /// known-good backup to this path, or -- if it is confirmed to be a valid newer-build journal
+    /// this host build should not touch -- redeploy a host build that recognizes its schema version.
+    /// </summary>
+    private static string RecoveryGuidance(string absolutePath, string detail) =>
+        detail + " Refusing to touch '" + absolutePath + "' automatically: an unrecognized file at a " +
+        "configured journal path could be a valid journal (e.g. from a newer host build), a half-written " +
+        "file left by an interrupted first-time initialization, or unrelated garbage, and guessing wrong " +
+        "could destroy real campaign authority. An operator must inspect the file (and any backup) and " +
+        "move it aside, or restore a known-good backup, before this path can be initialized or opened. " +
+        $"See the {nameof(CampaignDurableAuthorityJournal)} doc comments for the full recovery decision tree.";
+
+    /// <summary>
+    /// Opens an existing durable journal at <paramref name="absolutePath"/>.
+    /// </summary>
+    /// <remarks>
+    /// Never auto-repairs or replaces the file. If it cannot be read as a SQLite database at all,
+    /// or does not carry a recognized application id/schema version, this throws with guidance
+    /// instead of silently treating it as absent or rewriting it -- see
+    /// <see cref="RecoveryGuidance"/> and the remarks on <see cref="CreateNew"/> for the operator
+    /// recovery decision tree covering the states this cannot tell apart on its own.
+    /// </remarks>
     internal static CampaignDurableAuthorityJournal OpenExisting(string absolutePath,
         TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
     {
@@ -244,16 +420,37 @@ internal sealed partial class CampaignDurableAuthorityJournal
             & (UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead
                | UnixFileMode.OtherWrite)) != 0)
             throw new InvalidOperationException("Journal permissions are not private.");
-        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        int version;
+        int applicationId;
+        using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = absolutePath,
             Mode = SqliteOpenMode.ReadOnly,
-        }.ToString());
-        connection.Open();
-        var version = (int)ScalarInt(connection, "PRAGMA user_version");
-        if (ScalarInt(connection, "PRAGMA application_id") != ApplicationId
+        }.ToString()))
+        {
+            try
+            {
+                connection.Open();
+                version = (int)ScalarInt(connection, "PRAGMA user_version");
+                applicationId = (int)ScalarInt(connection, "PRAGMA application_id");
+            }
+            catch (SqliteException ex)
+            {
+                throw new InvalidOperationException(RecoveryGuidance(absolutePath,
+                    "The file at the configured journal path could not be read as a SQLite " +
+                    "database (it may be truncated, corrupted, or not a journal at all)."), ex);
+            }
+        }
+        if (applicationId != ApplicationId
             || version is not (SchemaVersion or RetreatSchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
-            throw new InvalidOperationException("Journal schema is not recognized.");
+            throw new InvalidOperationException(RecoveryGuidance(absolutePath, applicationId == ApplicationId
+                ? $"The file's schema version ({version}) is not one this host build recognizes. " +
+                  "This can mean the file was created by a newer host build, or that it never " +
+                  "finished first-time initialization (the version marker is written last, so an " +
+                  "interrupted pre-fix initialization can leave a file here with no recognizable " +
+                  "version at all)."
+                : "The file does not carry this journal's application id; it is not recognized as " +
+                  "a journal created by this host."));
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version, contentResolver);
     }

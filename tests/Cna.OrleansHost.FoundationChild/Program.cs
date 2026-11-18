@@ -119,6 +119,25 @@ if (args is ["--native-reserve-crash-probe"] or ["--native-custody-crash-probe"]
     return;
 }
 
+if (args is ["--native-journal-create-crash-probe"])
+{
+    var createCrashInput = JsonSerializer.Deserialize<JournalCreateCrashInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing journal create crash input.");
+    CampaignDurableAuthorityJournal.CreateNewCrashHook = phase =>
+    {
+        if (phase != createCrashInput.StopAtCheckpoint) return;
+        Console.WriteLine(JsonSerializer.Serialize(new { Phase = phase, ProcessId = Environment.ProcessId }));
+        Console.Out.Flush();
+        // Parent kills this process while stdin remains open. Never release the half-finished
+        // temp file via managed exception/disposal as a substitute for a real crash.
+        _ = Console.ReadLine();
+        throw new InvalidOperationException("Journal create crash probe was not terminated by parent.");
+    };
+    CampaignDurableAuthorityJournal.CreateNew(createCrashInput.Path, createCrashInput.OperatorSecret);
+    Console.WriteLine(JsonSerializer.Serialize(new { ProcessId = Environment.ProcessId, Completed = true }));
+    return;
+}
+
 if (args is ["--native-campaign-deadline"])
 {
     var native = JsonSerializer.Deserialize<NativeDeadlineInput>(Console.ReadLine() ?? "")
@@ -164,6 +183,8 @@ internal sealed record ProbeReadbackInput(string Path, string CampaignId, string
     string ExactBytesHex);
 
 internal sealed record NativeDeadlineInput(string Path, string CampaignId, long NowUnixMilliseconds);
+
+internal sealed record JournalCreateCrashInput(string Path, string OperatorSecret, string StopAtCheckpoint);
 
 internal sealed record ScheduledArrivalInput(string Path, CampaignSeatCredential Credential, string Reference);
 
