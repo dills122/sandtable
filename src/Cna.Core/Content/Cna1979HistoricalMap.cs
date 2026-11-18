@@ -59,7 +59,14 @@ internal sealed class Cna1979HistoricalMap
         var result = new List<string>(6);
         foreach (var (candidateRow, candidateColumn) in candidates)
         {
-            if (candidateRow is < 1 or > 99 || candidateColumn is < 1 or > 99) continue;
+            // Columns are 1-indexed on sheets A-E, but Malta's sheet (M) is
+            // transcribed 0-indexed (M0500..M1306 use column 00). Column 0 is
+            // therefore a valid candidate in general; only negative columns
+            // (and negative/zero/over-range rows, which no sheet uses) are
+            // truly out of range. The hexes.ContainsKey check below still
+            // rejects any candidate, including column 00, that isn't an
+            // actual hex on this id's own sheet.
+            if (candidateRow is < 1 or > 99 || candidateColumn is < 0 or > 99) continue;
             var candidate = $"{section}{candidateRow:D2}{candidateColumn:D2}";
             // Every other location id in this engine is lowercase; this
             // transcription's own storage is uppercase (Normalize), so the

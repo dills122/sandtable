@@ -763,7 +763,9 @@ internal static class ExerciseBundleSemanticValidator
                 ExerciseCheckFailureCode.CampaignMismatch
                     or ExerciseCheckFailureCode.RulesetMismatch
                     or ExerciseCheckFailureCode.StateVersionDiscontinuity
-                    or ExerciseCheckFailureCode.PositionMismatch) => true,
+                    or ExerciseCheckFailureCode.PositionMismatch
+                    or ExerciseCheckFailureCode.ReceiptAudienceMismatch
+                    or ExerciseCheckFailureCode.ReceiptActionMismatch) => true,
             _ => false,
         };
 

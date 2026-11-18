@@ -258,6 +258,13 @@ public static class ExerciseDiagnosticsWriter
             else writer.WriteNull("audience");
             if (decision.SelectedActionId is null) writer.WriteNull("actionId");
             else writer.WriteString("actionId", decision.SelectedActionId);
+            if (decision.ReceiptAudience.HasValue)
+                writer.WriteString(
+                    "receiptAudience",
+                    FormatAudience(decision.ReceiptAudience.Value));
+            else writer.WriteNull("receiptAudience");
+            if (decision.ReceiptActionId is null) writer.WriteNull("receiptActionId");
+            else writer.WriteString("receiptActionId", decision.ReceiptActionId);
             writer.WriteEndObject();
         });
     }
@@ -599,6 +606,8 @@ public static class ExerciseDiagnosticsWriter
         ExerciseCheckFailureCode.TerminalBoundaryNotReached => "terminal-boundary-not-reached",
         ExerciseCheckFailureCode.ReconstructionMismatch => "reconstruction-mismatch",
         ExerciseCheckFailureCode.ReadjudicationMismatch => "readjudication-mismatch",
+        ExerciseCheckFailureCode.ReceiptAudienceMismatch => "receipt-audience-mismatch",
+        ExerciseCheckFailureCode.ReceiptActionMismatch => "receipt-action-mismatch",
         _ => throw new ArgumentOutOfRangeException(nameof(failure)),
     };
 
