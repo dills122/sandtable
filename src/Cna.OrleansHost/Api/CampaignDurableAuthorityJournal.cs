@@ -1671,12 +1671,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private SqliteConnection Connect(bool create)
     {
+        // Pooling is safe here: every BeginTransaction(deferred: false) is committed or
+        // rolled back before this method's `using` disposes the connection, and both
+        // per-connection PRAGMAs below are re-applied on every call, so a handle recycled
+        // from the pool carries no session state a caller could observe.
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = path,
             Mode = create ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite,
             Cache = SqliteCacheMode.Private,
-            Pooling = false,
+            Pooling = true,
         }.ToString());
         connection.Open();
         Execute(connection, "PRAGMA foreign_keys=ON");
