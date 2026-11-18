@@ -725,23 +725,26 @@ internal static class ExerciseBundleSemanticValidator
             || decisionChecks.Take(decisionChecks.Length - 1).Any(value => !value.IsPassed))
             throw new InvalidDataException("The failed decision check sequence is contradictory.");
         var terminalDecision = decisionChecks[^1];
+        // The preceding guard already proved terminalDecision.StepOrdinal == acceptedCount, and
+        // its Audience is whichever audience the failing decision belongs to (not necessarily
+        // null), so these comparisons deliberately match only CheckId/IsPassed/FailureCode --
+        // mirroring IsAllowedInvariantFailure below. Routing this through the (StepOrdinal:
+        // null, Audience: null) overload of IsCheck would reject every real failure, since a
+        // genuine decision check never has a null StepOrdinal.
         var valid = failed.Failure.Category switch
         {
-            ExerciseFailureCategory.ControllerFailed => IsCheck(
-                terminalDecision,
-                ExerciseCheckId.SelectedActionMembership,
-                false,
-                ExerciseCheckFailureCode.SelectedActionNotCurrent),
-            ExerciseFailureCategory.NoUniqueLegalAction => IsCheck(
-                terminalDecision,
-                ExerciseCheckId.ActiveAudienceCardinality,
-                false,
-                ExerciseCheckFailureCode.NoActiveAudience),
-            ExerciseFailureCategory.IllegalAction => IsCheck(
-                terminalDecision,
-                ExerciseCheckId.AcceptedEventCardinality,
-                false,
-                ExerciseCheckFailureCode.ActionRejected),
+            ExerciseFailureCategory.ControllerFailed =>
+                terminalDecision.CheckId == ExerciseCheckId.SelectedActionMembership
+                && !terminalDecision.IsPassed
+                && terminalDecision.FailureCode == ExerciseCheckFailureCode.SelectedActionNotCurrent,
+            ExerciseFailureCategory.NoUniqueLegalAction =>
+                terminalDecision.CheckId == ExerciseCheckId.ActiveAudienceCardinality
+                && !terminalDecision.IsPassed
+                && terminalDecision.FailureCode == ExerciseCheckFailureCode.NoActiveAudience,
+            ExerciseFailureCategory.IllegalAction =>
+                terminalDecision.CheckId == ExerciseCheckId.AcceptedEventCardinality
+                && !terminalDecision.IsPassed
+                && terminalDecision.FailureCode == ExerciseCheckFailureCode.ActionRejected,
             ExerciseFailureCategory.InvariantFailed => IsAllowedInvariantFailure(terminalDecision),
             _ => false,
         };
