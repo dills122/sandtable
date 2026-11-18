@@ -18,9 +18,11 @@ test('drag keeps the selected zoom while panning without uncovering blank space'
   await page.getByRole('button', { name: 'Zoom in' }).click();
   await page.getByRole('button', { name: 'Zoom in' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('150%');
+  await expect(map).toHaveCSS('cursor', 'grab');
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
   await page.mouse.move(from.x + 100, from.y - 60, { steps: 6 });
+  await expect(map).toHaveCSS('cursor', 'grabbing');
   await page.mouse.up();
   await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   await expect
@@ -37,11 +39,19 @@ test('drag keeps the selected zoom while panning without uncovering blank space'
   await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
   await page.getByRole('button', { name: 'Fit map' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await expect(map).toHaveCSS('cursor', 'default');
+  const fitScene = await scene.boundingBox();
+  expect(fitScene).not.toBeNull();
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
   await page.mouse.move(from.x + 100, from.y - 60, { steps: 6 });
+  // At fit zoom there is nothing to pan: the cursor must not claim a drag is underway.
+  await expect(map).toHaveCSS('cursor', 'default');
   await page.mouse.up();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  // The no-op drag at 100% must leave the scene exactly where it was (issue #285).
+  await expect.poll(async () => (await scene.boundingBox())?.x).toBe(fitScene!.x);
+  await expect.poll(async () => (await scene.boundingBox())?.y).toBe(fitScene!.y);
   await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
 });
 
