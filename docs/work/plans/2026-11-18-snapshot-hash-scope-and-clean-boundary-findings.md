@@ -133,25 +133,29 @@ mechanism on the `Cna.OrleansHost` side changes nothing about what
 
 ### Short answer
 
-**Yes for the seven named lanes, and the check already exists as an unexploited
-side effect of existing validation — but the true "nothing in flight" boundary is one
-step later than the prompt's framing, and that gap is honestly unresolved below.**
-`ExerciseSession.CurrentCombatDecision == null` is already, today, both the
+**The "all seven lanes idle" predicate is real and correctly derived, but — update
+after a deeper trace, below — it is currently a one-time, not a recurring,
+boundary.** `ExerciseSession.CurrentCombatDecision == null` is, by exhaustive trace of
+the gameplay constructor's own argument-validation chain, a sufficient condition to
+prove **every one of the ~34 other optional combat/reserve/cycle/repeat constructor
+parameters is null or empty**, covering all seven round lanes (Selection, RBA, Force,
+Retreat, Custody, Reserve, Cycle) plus the Repeat sub-chain, and it is already the
 precondition the engine uses to decide whether a *new* Selection round may open
-(`CampaignExercises.cs:4320`) and — by exhaustive trace of the gameplay constructor's
-own argument-validation chain — a sufficient condition to prove **every one of the
-~34 other optional combat/reserve/cycle/repeat constructor parameters is null or
-empty**, covering all seven round lanes (Selection, RBA, Force, Retreat, Custody,
-Reserve, Cycle) plus the Repeat sub-chain. It does not need to be invented; it needs to
-be exposed as a new one-line public predicate, matching a pattern (`CampaignExercises
-.IsSourceXAdmitted(session)`) the host already consumes ~40+ times today. However, I
-also traced one step further than the prompt asked and found that reaching Cycle
-Control "Finish" does **not** immediately reset `CurrentCombatDecision` to null — a
-further post-combat sub-chain (Truck Convoy Pass → Post-Combat Pass → Second Reserve →
-Second Move → Second Movement Completion → Second Breakdown) runs afterward on the
-*same* session object, still carrying the old combat fields. I did not find, and ran
-out of budget tracing, the exact subsequent step that finally produces a session with
-all of these reset to null — see "What remains open" below.
+(`CampaignExercises.cs:4320`). That part holds exactly as first written. But I traced
+every single place in the codebase that can change this field's value (below), and
+found that **nothing currently resets `CurrentCombatDecision` back to null once it has
+been set.** Concretely: before a campaign's first-ever Combat opens, the predicate is
+(trivially) always true; the instant that first Selection is submitted, it goes false
+and — as the engine is implemented today — stays false for the remainder of that
+session chain's life, including through and after the post-combat sub-chain (Truck
+Convoy Pass → Post-Combat Pass → Second Reserve → Second Move → Second Movement
+Completion → Second Breakdown). This is not a trace I gave up on; I exhaustively
+enumerated every call site that can possibly produce a new `ExerciseSession` and found
+none that both (a) is reachable from a non-null `CurrentCombatDecision` and (b) omits
+it from the result. See "Resolved: there is currently no post-combat reset, and the
+roadmap confirms this is a known, not-yet-closed gap" below for the full trace, why
+this is not a bug I'm the first to notice, and what the predicate's definition should
+be once that gap closes.
 
 ### Evidence
 
@@ -255,12 +259,14 @@ and Supply steps continuously across six turns per side — the original design 
 own §1.2 describes `Load()`'s cost as a function of "total campaign history since
 creation," which is necessarily much larger than one ~15-20-step combat episode. Every
 step that is not part of an open combat episode has `CurrentCombatDecision == null` by
-definition (nothing else can set it). The practical conclusion: restricting snapshots
-to clean boundaries would, between any two combat episodes, bound the "steps since
-last snapshot" to roughly the longest non-combat stretch of play (plausibly dozens to
-low hundreds of steps per turn) rather than the full lifetime history — a real,
-meaningful bound, just not as tight as "snapshot every N steps regardless of game
-state" would be, and with the caveat in the next section.
+definition (nothing else can set it). **This cadence reasoning describes how often the
+predicate* would* recur once the engine supports returning to ordinary play after
+combat — see the "Resolved" section below for a direct trace showing that, as the
+engine is implemented today, no such return path exists yet, so in today's code this
+predicate is actually true at most once per campaign (before its first combat) rather
+than recurring between episodes as reasoned here.** The 15-20-steps-per-episode,
+much-larger-total-history shape of the argument is still the right one to apply *once*
+that gap closes; it just doesn't describe today's achievable frequency.
 
 **5. What would need to be serialized at a clean boundary — far less than the full
 25/34-field set, because at that exact instant they are all provably empty.** The
@@ -313,49 +319,119 @@ and a `CampaignHostAdapter`-level `SerializeCleanBoundarySnapshot`/
 `RestoreFromCleanBoundarySnapshot` pair — not inline inside
 `CampaignDurableAuthorityJournal.cs`.
 
-### What remains open (traced one step past the prompt, not fully resolved)
+### Resolved: there is currently no post-combat reset, and the roadmap confirms this is a known, not-yet-closed gap
 
-Tracing what happens *after* `SubmitNativeCycleControl` accepts a `Finish` choice
-(`CampaignExercises.cs:6486` onward) turned up a complication the prompt's "seven
-round lanes" framing does not mention, and I want to flag it honestly rather than
-paper over it:
+*(Added after a follow-up pass that closed out the gap this section originally left
+open — the prior draft stopped at "I did not locate the specific step that finally
+resets `CurrentCombatDecision`." This section replaces that with the completed trace.)*
 
-- `QueryTruckConvoyPassSource`/`SubmitTruckConvoyPass` (6442-6484) and
-  `SubmitNativePostCombatPass` (confirmed via `WithPostCombatPass` at
-  `ExerciseSession.cs:831-845`) run *after* `CurrentCycleControl.Choice == Finish`, and
-  — critically — `WithTruckConvoyPass`/`WithPostCombatPass`/`WithSecondReserve`/
-  `WithSecondMove`/`WithSecondMovementCompletion`/`WithSecondBreakdown`
-  (`ExerciseSession.cs:760-861`) all use `(ExerciseSession)MemberwiseClone()` on the
-  *existing* session, meaning `CurrentCombatDecision` and the rest of the 34-field
-  chain are carried forward **unchanged** — still non-null — through this entire
-  further sub-chain.
-- These six "Second*"/"TruckConvoyPass" fields are not among the gameplay
-  constructor's parameters at all (they're only ever set via the `MemberwiseClone`
-  successor methods), so they sit outside the 34-parameter validation chain traced
-  above — they are an orthogonal mechanism layered on top, apparently a once-per-turn
-  post-combat movement phase, not one of the seven named round lanes.
-- I did not locate the specific step that finally constructs a genuinely fresh
-  `ExerciseSession` (via the plain, no-combat-parameter constructor call, the way
-  `SubmitContactOwnerCombatSelection` does at line 4360) that would reset
-  `CurrentCombatDecision` back to null after `CompleteSecondBreakdown`
-  (`CampaignExercises.cs:6309-6326`, which itself still only calls
-  `session.WithSecondBreakdown(...)`, i.e. another `MemberwiseClone`). That transition
-  most likely lives in the generic Land-sequence/position-advancement code, which
-  I did not have budget to locate inside this 8,934-line file.
+**Finding, stated plainly: no such call site exists anywhere in the current
+turn-processing flow.** I enumerated every one of the 128 `new ExerciseSession(` call
+sites in the entire codebase (`grep -rn "new ExerciseSession(" src/` — confirmed
+earlier that all 128 live in `CampaignExercises.cs`; none exist anywhere else in
+`src/`) and classified every non-pregame one by what it passes for `combatSelection`:
 
-**Practical effect on the recommendation below:** the true "entire `ExerciseSession`
-is in its minimal shape" boundary requires checking `CurrentCombatDecision is null`
-**and** `CurrentTruckConvoyPass`, `CurrentPostCombatPass`, `CurrentSecondReserve`,
-`CurrentSecondMove`, `CurrentSecondMovementCompletion`, `CurrentSecondBreakdown` are
-all also null — six more null checks, still cheap, still a fixed bounded count, not a
-scan. It just means the idle window starts a handful of steps later than "Cycle
-Control reaches Finish," not that the boundary doesn't exist or is rare. This is a gap
-in *my* trace depth, not evidence against the overall approach — a follow-up
-implementation task should grep for whatever produces the next non-cloned
-`ExerciseSession` after `CompleteSecondBreakdown` before finalizing the exact
-`IsAllCombatLanesIdle` predicate.
+- **18 non-pregame gameplay call sites total:** lines 4360, 4431, 4465, 4496, 4557,
+  4688, 4735, 4874, 4949, 5068, 5160, 5259, 5544, 5601, 5918, 5976, 6828, 6932.
+- **16 of the 18** (4431 through 6828) explicitly pass `selected` or
+  `session.CurrentCombatDecision` as the `combatSelection` argument — i.e. they
+  *thread the existing non-null value forward*, while adding further combat-chain
+  fields (barrage, retreat, force seals, custody, successor, repeat, …). Read directly,
+  e.g. line 4496: `new ExerciseSession(session.CurrentSnapshot, session.Context,
+  session.CurrentHistory.Add(barrage), contacts, selected, combatBarrage: barrage)` —
+  `selected` here is `session.CurrentCombatDecision` captured earlier in the same
+  method. None of these 16 omits it.
+- **Exactly one** (line 4360, inside `SubmitContactOwnerCombatSelection`) sets
+  `combatSelection` for the *first* time — and its own precondition
+  (`CampaignExercises.cs:4320`) requires the input session's `CurrentCombatDecision`
+  to already be null, so this site can never be the reset; it's the site that *first
+  makes it non-null*.
+- **Exactly one** (line 6932, inside the private `Complete(ExerciseSession,
+  CampaignCurrentActionExecutionResult)` helper) constructs a session passing *no*
+  combat-chain arguments at all — `new ExerciseSession(execution.SuccessorSnapshot!,
+  session.Context, history, contacts)` — the one shape that would reset
+  `CurrentCombatDecision` to null. But `Complete` has exactly two callers, both
+  guarded immediately above the call by `if (session.CurrentCombatDecision is not
+  null) return ExerciseStepResult.Rejected(...)`: the generic dispatcher `Submit`
+  (`CampaignExercises.cs:4266-4268`) and `SubmitContactOwnerMovement`
+  (`CampaignExercises.cs:4303-4304`, the ordinary-movement submission method). Neither
+  can ever reach line 6932 while `CurrentCombatDecision` is non-null — so `Complete`
+  cannot be the reset either; it only ever *confirms* an already-null value forward.
+- The six `MemberwiseClone`-based `With*` methods for the post-combat sub-chain
+  (`ExerciseSession.cs:760-861`: `WithTruckConvoyPass`, `WithPostCombatPass`,
+  `WithSecondReserve`, `WithSecondMove`, `WithSecondMovementCompletion`,
+  `WithSecondBreakdown`) are not constructor calls at all — `MemberwiseClone` copies
+  every field, including `CurrentCombatDecision`, verbatim.
 
-One more open item in the same spirit: whether `CurrentHistory` (the `history`
+**By exhaustive case analysis over every call site that can produce an
+`ExerciseSession`, there is no path from a non-null `CurrentCombatDecision` to a null
+one.** Once a campaign's first Combat Selection is submitted, `CurrentCombatDecision`
+is non-null for the remainder of that session chain's life — through Force, Retreat,
+Custody, the successor projection, Reserve Release, Cycle Control, any Repeat cycles,
+and the entire Truck-Convoy/Post-Combat/Second-phase sub-chain — and, as a direct
+consequence, the generic `Submit` dispatcher and `SubmitContactOwnerMovement` (the
+methods ordinary, non-combat gameplay actions go through) reject *every* subsequent
+action from that point on, because both check `CurrentCombatDecision is not null`
+before doing anything else.
+
+**This is not a bug I'm the first to notice — it is explicitly named in the roadmap as
+a not-yet-reached milestone.** `docs/roadmap/pre-alpha-roadmap.md`'s delivery-graph
+status table (around line 230) lists a row for **"Working pre-alpha skeleton"** whose
+"Executable today" column reads **"Not reached"** and whose "Next gate" column defines
+the acceptance boundary as **"One authentic movement/contact/combat/release
+repeat-or-finish loop with identical replay and Chronicle evidence."** The word *loop*
+is doing exactly the work this trace independently found missing: going from Movement
+→ Contact → Combat → Release and back around to Movement again. The prose right below
+that table (line 255) is equally direct: "The campaign is not yet playable: full
+Combat support, public Combat actions, **the complete continual cycle**, published
+scenario content, remaining Land rules, victory, successor browser orders and accepted
+user-facing campaign persistence remain future work." Corroborating this at the test
+level: every integration test I found that drives a campaign through a full combat
+episode (e.g. `CampaignDurableAuthorityJournalTests.cs`'s
+`VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart`, which tracks
+`ContractVersion` 27 (Reserve Release) → 28 (Cycle Control) → 41 (Truck Convoy Pass) →
+42 (Post-Combat Pass) → 43 (Second Reserve) → 45 (Second Movement Completion) → 46
+(Second Breakdown), lines 1248-1482) stops at the end of that chain and never attempts
+a second, independent combat or an ordinary movement afterward on the same campaign —
+consistent with there being nothing to call that would succeed.
+
+**So the predicate needs a different, explicitly scoped definition today versus once
+this gap closes:**
+
+- **Today:** `CurrentCombatDecision == null` is true only *before a campaign's first
+  Combat has ever opened*. It is a one-time window, not a recurring boundary — it fires
+  once per campaign (if the campaign has not yet had its first contact) and then never
+  again for the rest of that campaign's life, under the engine as currently
+  implemented. Restricting snapshots to this predicate *today* would snapshot, at most,
+  once per campaign, before first contact — of no help for the replay-cost problem this
+  whole investigation is about, which only matters for campaigns that are actively,
+  repeatedly played (i.e., exactly the campaigns that *do* have combats).
+- **Once the "Working pre-alpha skeleton" gate closes** (i.e., once Combat genuinely
+  loops back to ordinary Movement — a prerequisite for the roadmap's own "Six-turn
+  playable MVP," which in turn has to exist before "1000 concurrent campaigns" is a
+  real scenario at all): the only shape this codebase uses anywhere for "a session with
+  no combat-chain state" is the exact one `Complete` and
+  `SubmitContactOwnerCombatSelection` both already use — the plain
+  `(snapshot, context, history, contacts)` constructor call, passing none of the 34
+  optional parameters. The strong prior, based on that being the only pattern this
+  code has for the shape, is that whatever change closes the loop will do so by making
+  *some* step after `CompleteSecondBreakdown` (or whichever step is actually last)
+  construct a successor this same way — which would make `CurrentCombatDecision ==
+  null` correct again, recurring once per combat episode, exactly as originally
+  proposed in this document. I can't point at a line number for that change because it
+  does not exist yet; a follow-up implementation task should re-run this same
+  `new ExerciseSession(` enumeration once the loop-closing change lands, rather than
+  assume the predicate still holds unchanged.
+- **A looser alternative, if the eventual design does *not* go this route:** rather
+  than "all fields null," define idle as "the tail of the combat/second-phase chain has
+  reached a terminal step for that episode, and `CampaignExercises.Query` reports no
+  further legal action pending for *any* audience at the current position." That
+  definition is robust to whatever the eventual reset mechanism turns out to be, but it
+  is weaker evidence-wise — I have not traced `Query`'s behavior once
+  `CurrentSecondBreakdown` is set, so this is offered as a fallback hypothesis, not a
+  confirmed finding like the bullet above.
+
+One more open item, unaffected by the above: whether `CurrentHistory` (the `history`
 parameter) needs to carry the *full* genesis-rooted event list on a snapshot-restored
 session, or whether a windowed tail (steps since the snapshot) would suffice on the
 live path. The only consumer of the full list I found is `HashFramed(CurrentHistory)`
@@ -363,70 +439,88 @@ inside `Reconstruct`/`ReconstructOne` — confirmed above to be exclusively an
 offline/`Cna.ExerciseRunner` concern, never invoked from a snapshot-restored session in
 `Cna.OrleansHost`. The constructor's own use of `CurrentHistory` (lines 81-94) only
 checks the *tail* against `postRepeatEvents`/`repeatAssaultEvents`, which are empty at
-a clean boundary anyway. I did not do an exhaustive audit of every one of the
-~128 `new ExerciseSession(` call sites or every consumer of `.CurrentHistory` across
-the 8,934-line `CampaignExercises.cs` to be certain nothing else depends on genesis-rooted
-history; a follow-up implementation task should `grep -n "\.CurrentHistory"` across
-that file and classify each use before deciding whether a windowed restore is safe.
+a clean boundary anyway. I did not do an exhaustive audit of every consumer of
+`.CurrentHistory` across the 8,934-line `CampaignExercises.cs` to be certain nothing
+else depends on genesis-rooted history; a follow-up implementation task should
+`grep -n "\.CurrentHistory"` across that file and classify each use before deciding
+whether a windowed restore is safe.
 
 ---
 
 ## Recommendation
 
-**A narrower, still-safe snapshotting mechanism is achievable, and is narrower than
-the original finding assumed it would need to be** — not because the full ~25/34-field
-serialization problem turns out to be easy, but because restricting snapshot points to
-clean lane boundaries makes that entire problem disappear rather than merely shrink.
-At a clean boundary, the ~34 combat/reserve/cycle/repeat fields (and the six
-Second*/TruckConvoy fields identified above) are all null by construction — there is
-nothing to serialize for them. The remaining state (`CampaignSnapshotV11` +
-`CampaignContactJournal`) already has tested, round-tripping codecs in the codebase
-today. This is a materially smaller scope than "design a serialize/deserialize format
-for the mid-round-resolution surface," which is what the original Appendix-A-adjacent
-finding (correctly) declined to attempt.
+**The narrower, clean-boundary snapshotting mechanism is achievable in principle, and
+is narrower than the original finding assumed it would need to be — but it is not
+usable against today's engine, because the "idle" state it depends on does not yet
+recur.** At a clean boundary, the ~34 combat/reserve/cycle/repeat fields (and the six
+Second*/TruckConvoy fields identified above) are all null by construction, and the
+remaining state (`CampaignSnapshotV11` + `CampaignContactJournal`) already has tested,
+round-tripping codecs in the codebase today — so *if* a campaign could be relied on to
+pass back through this state repeatedly, no new mid-round-resolution serialization
+format would be needed, which is a materially smaller scope than the original
+Appendix-A-adjacent finding worried about. The qualifier that matters: per the
+"Resolved" section above, that boundary is, in the engine as implemented right now, a
+one-time "before this campaign's first Combat" state, not a recurring one — so
+building this mechanism *today* would snapshot each campaign at most once and then
+never again, which does not solve the §1.2 replay-cost problem for any campaign that
+has had a combat (the case that matters).
 
-Concretely, a follow-up implementation task could be scoped as:
+This is not, however, a reason to shelve the idea — it is a sequencing dependency, and
+a legitimate one given where this project's own roadmap says it is. The "Working
+pre-alpha skeleton" gate (closing the Movement→Contact→Combat→Release repeat-or-finish
+loop) is a prerequisite for the roadmap's own "Six-turn playable MVP," which in turn
+has to exist before "1000 concurrent campaigns" is a real hosting scenario at all —
+and the original design doc this spike follows up on is explicit that it is a **post-RC
+scaling design**, not something RC is blocked on. So the two gates are already ordered
+correctly by the roadmap on their own terms; this finding just makes the dependency
+explicit for whoever picks up snapshotting: **don't implement clean-boundary
+snapshotting until the continual-cycle loop closes, because the predicate it relies on
+doesn't hold until then.**
 
-1. **In `Cna.Core`** (new public static methods, following the existing
-   `CampaignExercises.IsSourceXAdmitted` facade pattern):
-   - `CampaignExercises.IsAllCombatLanesIdle(ExerciseSession session)` →
-     `session.CurrentCombatDecision is null` initially, **extended** (pending the open
-     item above) to also require `CurrentTruckConvoyPass`, `CurrentPostCombatPass`,
-     `CurrentSecondReserve`, `CurrentSecondMove`, `CurrentSecondMovementCompletion`,
-     `CurrentSecondBreakdown` all null, once the exact post-Finish reset point is
-     located.
-   - A serialize/restore pair reusing `CampaignSnapshotV11Serializer` and the existing
-     `EncodeContactRecords`/`DecodeContactRecords` codec (that codec currently lives in
-     `Cna.OrleansHost`; it would need to move to or be duplicated in `Cna.Core`, or the
-     host keeps doing the encoding and `Cna.Core` only hands back the two already-typed
-     objects).
-2. **In `Cna.OrleansHost`**: a new `snapshots` table, exactly as sketched in §5.1 of
-   the prior document (`campaign_id, sequence, chain_hash, state_bytes,
-   contacts_bytes, snapshot_hash`, no `round_state_bytes` needed given the finding
-   above), written only when `IsAllCombatLanesIdle` holds at the write path's current
-   position, and consulted by `Load()` to skip straight to the nearest prior clean
-   snapshot before replaying only the steps since it.
-3. Resolve the two open items above (the exact post-Finish reset transition, and the
-   `CurrentHistory` windowing question) before finalizing step 1's predicate and
-   deciding whether a restored session's `history` argument can be a tail instead of
-   the full genesis list.
+Concretely, a follow-up task could be scoped as two separable pieces:
+
+1. **A verification task, cheap, to run once the continual-cycle loop lands:** re-run
+   the `grep -rn "new ExerciseSession(" src/` enumeration this document used, confirm a
+   new call site now resets `CurrentCombatDecision` (and the six Second*/TruckConvoy
+   fields) to null/default after a combat episode concludes, and capture its exact
+   line as the empirical basis for `CampaignExercises.IsAllCombatLanesIdle(session)`.
+   If the loop-closing change instead takes the "looser" route sketched above (query
+   legal actions rather than null-check fields), the predicate's implementation
+   changes accordingly, but the serialization-is-nearly-free conclusion for
+   `CampaignSnapshotV11`/`CampaignContactJournal` is unaffected either way.
+2. **The snapshotting implementation itself**, once (1) is confirmed — unchanged from
+   the original sketch: a new `public static` `IsAllCombatLanesIdle` predicate and a
+   serialize/restore pair reusing `CampaignSnapshotV11Serializer` and the existing
+   `EncodeContactRecords`/`DecodeContactRecords` codec, both in `Cna.Core`, following
+   the `CampaignExercises.IsSourceXAdmitted` facade pattern already used ~40 times by
+   `Cna.OrleansHost`; a new `snapshots` table in `Cna.OrleansHost`
+   (`campaign_id, sequence, chain_hash, state_bytes, contacts_bytes, snapshot_hash`, no
+   `round_state_bytes` needed) written only when the predicate holds; and a `Load()`
+   fast-path that skips to the nearest prior snapshot before replaying only the steps
+   since it. The `CurrentHistory`-windowing open item (below) should be resolved before
+   finalizing this piece.
 
 **Relative sizing:** tracing the gameplay constructor's validation chain and the
 Combat/Repeat/Second-phase method surface in `CampaignExercises.cs` for this document
 touched a few hundred lines out of an 8,934-line file covering dozens of distinct
 mechanics (Source setup, Combat, Reserve Release, Cycle Control, Repeat, the
-Second-phase chain, and more besides). The follow-up implementation work sketched
-above — two small new public predicates/codec glue in `Cna.Core`, one new SQLite table
-and a `Load()` fast-path in `Cna.OrleansHost` — is comparable in scope to the
-`status`/`campaign_id` indexing fix the prior document described as "already
-dispatched elsewhere" (PR #410, per this worktree's recent history), i.e. a bounded,
-single-PR-sized change, **not** comparable in scope to "serialize all ~25-34
-mid-round-resolution fields," which would have been a much larger, open-ended
-engine-wide effort touching every one of the Combat/Reserve/Cycle/Repeat object types.
+Second-phase chain, and more besides). Once the continual-cycle loop closes, the
+snapshotting implementation sketched above — two small new public predicates/codec
+glue in `Cna.Core`, one new SQLite table and a `Load()` fast-path in `Cna.OrleansHost` —
+is comparable in scope to the `status`/`campaign_id` indexing fix the prior document
+described as "already dispatched elsewhere" (PR #410, per this worktree's recent
+history), i.e. a bounded, single-PR-sized change, **not** comparable in scope to
+"serialize all ~25-34 mid-round-resolution fields," which would have been a much
+larger, open-ended engine-wide effort touching every one of the
+Combat/Reserve/Cycle/Repeat object types. Closing the continual-cycle loop itself is a
+separate, almost certainly larger piece of `Cna.Core` engine work that this document
+did not scope (it's game-logic work, not storage work, and is already tracked by the
+roadmap's own "Working pre-alpha skeleton" gate rather than by anything in the
+1000-campaign-ceiling design track).
 
-If the two open items above turn out to resolve unfavorably — e.g. if `CurrentHistory`
-genuinely must stay genesis-rooted even on the live path for some reason this trace
-missed — the recommendation still holds for the *round-lane* state (the ~34 fields),
-since that finding (gated validation ⟹ all-null at the boundary) does not depend on
-either open item; only the additional "how much of `CurrentHistory` has to travel with
-a restored session" tuning would need revisiting.
+If the `CurrentHistory`-windowing open item below turns out to resolve unfavorably —
+e.g. if it genuinely must stay genesis-rooted even on the live path for some reason
+this trace missed — the serialization-scope part of this recommendation still holds
+for the round-lane state (the ~34 fields), since that finding (gated validation ⟹
+all-null at the boundary) does not depend on it; only "how much of `CurrentHistory` has
+to travel with a restored session" tuning would need revisiting.
