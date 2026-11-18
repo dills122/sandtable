@@ -827,3 +827,25 @@ removed and replaced by one new row for the final name.
 | `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap` (renamed again; replaces both `...NotMatruh` and `...NotSixthAustralian`) | `7a12b20ba22f` | 72740 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap*" --report-xunit-xml --results-directory /private/tmp/sandtable-pr381-merge-timing` and `--filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests`. Result: 1 passed / 26 passed (20 from #381 + 6 from #378, both now coexisting), 0 failed, 0 skipped. The renamed test's body was extended with an `Assert.Empty(commonwealthUnresolved)` check (verified true by this run, not assumed) now that both Matruh and 6th Australian are resolved on the commonwealth side, leaving nothing but Aresca on the axis side. This is scheduling evidence only; hosted CI remains the acceptance gate.
+
+## Malta column-00 `NeighborsOf` asymmetry fix (2026-11-17)
+
+`Cna1979HistoricalMap.NeighborsOf` rejected any candidate hex with column
+below 1, but Malta's sheet (`M`) is transcribed 0-indexed (`M0500`..`M1306`
+use column `00`), unlike sheets A-E which are 1-indexed from column 1. This
+made `NeighborsOf` disagree with `EdgeBetween`'s own `SameSheetAdjacent`
+predicate (which has no such bound): a column-00 hex could be found as a
+neighbor of a positive-column hex but not the reverse, and two column-00
+hexes could never find each other. Fixed by relaxing the candidate lower
+bound from `column < 1` to `column < 0` (row keeps `row < 1`, since no sheet
+uses row 0); the existing `hexes.ContainsKey` check still rejects any
+candidate, including column 00, that isn't an actual hex on that id's own
+sheet. Two new rows added to `Cna1979HistoricalMapTests`, same class, no new
+matrix job (one ordinary suite part, as before).
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `Cna1979HistoricalMapTests.NeighborsOfMaltaColumnZeroHexAgreesWithEdgeBetweenInBothDirections` | `01c7b77035cd` | 6 |
+| `Cna1979HistoricalMapTests.NeighborsOfStillRejectsOutOfRangeRowAndNonexistentColumnZero` | `00dc8b65f8fb` | 1 |
+
+Command: `dotnet test tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --list-tests --pre-enumerate-theories on --no-ansi --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests` to confirm the exact discovered display names, then `dotnet exec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --no-ansi --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --report-xunit-xml --results-directory artifacts/ci/weights-measure`. Result: 32 passed, 0 failed, 0 skipped; the two new rows measured 0.006s and 0s (floored to the 1ms minimum) respectively in the XML report. This is scheduling evidence only; hosted CI remains the acceptance gate.

@@ -234,6 +234,51 @@ public sealed class Cna1979HistoricalMapTests
         Assert.False(reverseAdjacent);
     }
 
+    // Malta's sheet (M) is transcribed with a 0-indexed column (M0500..M1306
+    // use column 00), unlike sheets A-E which are 1-indexed. NeighborsOf used
+    // to reject any candidate with column < 1, so it could enumerate a
+    // column-00 neighbor from the column-00 endpoint but not from the
+    // adjacent positive-column endpoint, and never for two column-00 cells.
+    // EdgeBetween's own SameSheetAdjacent predicate has no such bound and
+    // already agreed these pairs are adjacent. This proves NeighborsOf now
+    // agrees with EdgeBetween in both directions for both kinds of pair.
+    [Fact]
+    public void NeighborsOfMaltaColumnZeroHexAgreesWithEdgeBetweenInBothDirections()
+    {
+        var map = Cna1979HistoricalMap.Instance;
+
+        // m0500/m0600: both endpoints use column 00.
+        string[] expectedM0500Neighbors = ["m0501", "m0600"];
+        Assert.Equal(expectedM0500Neighbors, map.NeighborsOf("m0500"));
+        Assert.Contains("m0500", map.NeighborsOf("m0600"));
+        Assert.NotNull(map.EdgeBetween("m0500", "m0600"));
+        Assert.Equal(map.EdgeBetween("m0500", "m0600"), map.EdgeBetween("m0600", "m0500"));
+
+        // m0500/m0501: column 00 joined to a positive column. Before the fix,
+        // NeighborsOf("m0501") excluded m0500 even though NeighborsOf("m0500")
+        // included m0501 and EdgeBetween("m0500", "m0501") was non-null.
+        Assert.Contains("m0501", map.NeighborsOf("m0500"));
+        Assert.Contains("m0500", map.NeighborsOf("m0501"));
+        string[] expectedM0501Neighbors = ["m0500", "m0502", "m0601", "m0600"];
+        Assert.Equal(expectedM0501Neighbors, map.NeighborsOf("m0501"));
+        var edge = map.EdgeBetween("m0500", "m0501");
+        Assert.NotNull(edge);
+        Assert.Empty(edge!.Features);
+        Assert.Equal(edge, map.EdgeBetween("m0501", "m0500"));
+    }
+
+    // Confirms the relaxed column-0 bound didn't stop rejecting candidates
+    // that are genuinely out of range: row 0 (no sheet is row 0-indexed) and
+    // a column-00 cell that doesn't exist on a 1-indexed sheet (A0100).
+    [Fact]
+    public void NeighborsOfStillRejectsOutOfRangeRowAndNonexistentColumnZero()
+    {
+        var map = Cna1979HistoricalMap.Instance;
+        string[] expectedA0101Neighbors = ["a0102", "a0201"];
+        Assert.Equal(expectedA0101Neighbors, map.NeighborsOf("a0101"));
+        Assert.Null(map.TerrainAt("a0100"));
+    }
+
     // The published-distance conflict flag on (a4130, c4321) is a real,
     // separate gap this fix deliberately routes around (see
     // TrySoluchMechiliToFtMaddalenaBound's comment) rather than silently
