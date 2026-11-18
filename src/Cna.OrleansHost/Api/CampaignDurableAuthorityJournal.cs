@@ -215,6 +215,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
+        journal.EnsureRoundIndexes(connection);
         using (var command = connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
@@ -1681,7 +1682,48 @@ internal sealed partial class CampaignDurableAuthorityJournal
         connection.Open();
         Execute(connection, "PRAGMA foreign_keys=ON");
         Execute(connection, "PRAGMA busy_timeout=5000");
+        // CreateNew's own bootstrap connection (create: true) runs before the round tables
+        // exist, so only ensure indexes on the path taken by every other caller — including a
+        // journal reopened via OpenExisting against a database written by a build that
+        // predates these indexes. There is no ALTER TABLE/migration mechanism in this codebase
+        // (see issue #330), so CREATE INDEX IF NOT EXISTS is how older on-disk journals catch up.
+        if (!create) EnsureRoundIndexes(connection);
         return connection;
+    }
+
+    /// <summary>
+    /// Ensures the (status, campaign_id) index each round table needs exists. The
+    /// CollectingXCampaigns queries filter on status='collecting' and sort by campaign_id with
+    /// no secondary index on these append-only, ever-growing tables, which forces a full table
+    /// scan on every 1-second poll from CampaignCombatTimeoutService for all 7 lanes. Idempotent
+    /// via IF NOT EXISTS so it is safe to call on every connection open. Each statement is gated
+    /// on the schema version that introduced that round table, since an older on-disk journal
+    /// opened via OpenExisting may not have it at all (there is no migration mechanism here to
+    /// add the table itself -- only to index one that already exists).
+    /// </summary>
+    private void EnsureRoundIndexes(SqliteConnection connection)
+    {
+        if (schemaVersion >= ForceSchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS force_rounds_status_campaign "
+                + "ON force_rounds(status,campaign_id)");
+        if (schemaVersion >= RbaSchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS rba_rounds_status_campaign "
+                + "ON rba_rounds(status,campaign_id)");
+        if (schemaVersion >= CycleSchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS cycle_rounds_status_campaign "
+                + "ON cycle_rounds(status,campaign_id)");
+        if (schemaVersion >= ReserveSchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS reserve_rounds_status_campaign "
+                + "ON reserve_rounds(status,campaign_id)");
+        if (schemaVersion >= CustodySchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS custody_rounds_status_campaign "
+                + "ON custody_rounds(status,campaign_id)");
+        if (schemaVersion >= RetreatSchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS retreat_rounds_status_campaign "
+                + "ON retreat_rounds(status,campaign_id)");
+        if (schemaVersion >= SelectionSchemaVersion)
+            Execute(connection, "CREATE INDEX IF NOT EXISTS selection_rounds_status_campaign "
+                + "ON selection_rounds(status,campaign_id)");
     }
 
     private static byte[] ReadBounded(SqliteDataReader reader, int ordinal, int maximum = MaxEvidenceBytes)
