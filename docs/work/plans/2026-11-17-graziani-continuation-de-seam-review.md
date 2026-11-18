@@ -1,0 +1,13 @@
+# Map D/E coastal seam: independent review
+
+**Date:** November 17, 2026. **Verdict:** candidate remains unverified; do not promote D3134/E3101 to an alias or add a seam crossing on this evidence. This is an independent visual check of the candidate report, not an independent scan or edition; the report and candidate were known before review.
+
+## Evidence checked
+
+Viewed the report's two 500 dpi crops of pages 4 and 5 of the [five-sheet map PDF](https://spigames.net/PDFv10/CNA_Maps.pdf). Local PDF SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; crop hashes match the [candidate report](2026-11-17-graziani-continuation-de-seam.md). North is up. These are the same source and crops as the report, so agreement is corroboration of reading, not independent source evidence.
+
+- **D:** Sidi Abd el Rahman's blue dot lies in 3232; coast, paired dark road strokes and blue cross-tied railway run southeast toward 3134. Road and railway cross the 3133/3134 side. At the eastern end, the paired strokes appear to stop short of the outer vertical grid line and the railway reaches the lower sloping edge area; crop alone does not establish how either continues onto E. Distinguish the printed grid edge from a demonstrated sheet-to-sheet crossing.
+- **E:** 3101 is clipped at the western image boundary. Coast, paired dark strokes and blue cross-tied railway enter the visible area there, with railway bending south near El Alamein and the road following the bay eastward. El Hamman lies farther east. The clip prevents checking the missing western part of 3101 against D3134.
+- **Registration:** candidate 33-column arithmetic places D3134 and E3101 at one proposed position and makes D3133 a neighboring candidate position. That is conditional geometry, not an independently established equivalence. Coastline shape, road and rail each supply potentially distinct registration evidence, but their corresponding features have not been matched by a measured overlay; similarity of a coastal transport corridor is insufficient. Sidi Abd el Rahman and El Alamein are different named features, not matching landmarks. No shared named point was identified in these crops.
+
+Keep both printed labels as unresolved candidates. Establish sheet registration using grid vertices and independently matching coastline, road and rail features, including the missing partial cells and relevant sides; reconcile the documented rules/geometry conflict before admitting an alias or edge. These images do not prove continuous road or rail service, traversal legality, or a route to Alexandria. No map or runtime changes made; no gameplay tests run.

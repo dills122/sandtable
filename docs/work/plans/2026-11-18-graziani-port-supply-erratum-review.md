@@ -1,0 +1,7 @@
+# Naval supply cross-reference: erratum check
+
+**Result:** September 1979 errata §30.5 corrects the first paragraph's printed `00.00` reference to §56.0. This is a direct correction to the naval supply reference; it does not by itself decide which detailed shipping procedures govern Land-only abstract Supply Units.
+
+Visually inspected [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF p. 42, §30.5, first paragraph under “Naval Transport of Troops.” It says the section applies to personnel and refers naval transport of supplies to Case `00.00`. [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF p. 2, right column, §30.5, explicitly says the first-paragraph reference should be §56.0 and directs attention to subsequent corrections. The same errata page contains separate corrections and clarifications for §§30.55, 30.57, 30.58 and 30.59; this check does not treat the single cross-reference correction as resolving those cases or their interaction with §32.36.
+
+Local SHA-256 verified: Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. This bounded reread does not independently examine §56.0, adjudicate abstract-mode precedence or constitute an exhaustive later-errata search. Same scan family, no runtime/data changes or gameplay tests.

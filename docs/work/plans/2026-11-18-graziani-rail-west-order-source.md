@@ -1,0 +1,21 @@
+# Graziani rail: west-order source convention
+
+**Date:** November 18, 2026. Bounded follow-up to [west geography](2026-11-17-graziani-rail-west-geography.md), its [review](2026-11-17-graziani-rail-west-geography-review.md), and the [seam comparison](2026-11-17-graziani-seam-geometry-comparison.md). The original Axis convoy chart explicitly defines a **hexrow** convention relevant by analogy; it does not state that Land §8.78 uses that convention for comparing individual rail hexes. It does not supply cross-sheet registration. No new seam or gameplay rule is admitted.
+
+## Distinct source convention
+
+Axis chart §32.66, PDF p. 34, explains its `Cxx01` notation: the capital letter is the map section, `xx` allows any north–south hex, and the final digits identify the east–west hexrow. Its qualifying-division condition explicitly permits a division east of **or in the same east–west hexrow as** another. This is direct authority for that chart's row notation and comparison, already documented in the [convoy review](2026-11-17-graziani-axis-convoy-review.md); its relevance to rail west ordering is the new comparison here.
+
+Within a named sheet, two identifiers sharing a final two-digit suffix therefore identify the same chart hexrow even if their first two digits differ. Map D's printed grid staggers successive numbered north–south positions: for example D3515's center is visibly west of D3615's center even though both end in `15`. Thus a center-longitude interpretation could order that pair, whereas importing the chart's same-suffix row grouping into §8.78 would classify them as the same row. The chart explicitly handles equality for its own division test; §8.78 says a rail hex **west of** an occupied rail hex and does not define equality or cite §32.66. Treat row grouping as a plausible analogy, not an official correction or a demonstrated §8.78 equality rule.
+
+Chart §32.66's lane 2 lists thresholds `Dxx01`, `Cxx16`, `Cxx01`, `Bxx16` in successive downward rows, while instructing the reader to find the westernmost relevant threshold. This is source evidence of intended large-scale directional progression in this particular lookup. It is not a precise alignment transform, an unambiguous `beyond` threshold-equality rule, or proof that every C/D near-edge cell has a strict order. It neither proves that D3515 or D3615 contains a qualifying occupant nor that either is a usable rail hex.
+
+## Scope and remaining admission
+
+Land §4.1 orders map sheets A–E west to east but its printed `01xx`/`39xx` overlay wording conflicts with the visible edge numbering documented in the seam review. Air/Logistics §37.42's 33-hex same-number distance is consistent with a candidate offset, not proof of identity or a universal west comparator. Neither the §32.66 row notation nor its threshold list determines whether near-seam cells on different sheets are aliases, adjacent or strictly west. They also do not decide whether §8.78 compares centers, row groups, whole hexes or another boundary, or how to classify overlap and equality.
+
+Any applied comparator therefore needs a documented interpretation, including staggered same-suffix positions and cross-sheet registration. A synthetic comparison of D3515/D3615 distinguishes center ordering from chart-row equality without assuming a seam; a second test using Cxx16/Dxx01 may test a chosen cross-sheet model but cannot certify it. Keep unsupported pairs unknown, independently validate rail identity, occupation and relevant state, and do not infer absence of an eastern witness from incomplete coverage. No route or actual unit movement is asserted.
+
+## Provenance
+
+Visually inspected [Axis charts](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf) PDF p. 34 §32.66, SHA-256 `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`, and [original map](https://spigames.net/PDFv10/CNA_Maps.pdf) PDF p. 4, SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`. Land §4.1/§8.78 and Air §37.42 are carried from the linked same-scan review, not independently re-rendered for this follow-up; Land PDF hash `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99` checked. No exhaustive errata or further-edition search. No data, runtime or readiness changes; no gameplay tests.

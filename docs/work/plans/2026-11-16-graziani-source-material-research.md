@@ -15,6 +15,9 @@ source conflicts and implementation remain separate.
 
 **Latest coding-session entry points:**
 
+- [Focused implementation-blocker findings](2026-11-17-graziani-implementation-blockers-research.md)
+  record the sourced Aresca CV33 rating and the bounded CCNN and Giarabub
+  unknowns, with independent source reviews and implementation caveats.
 - [Batched coding handoff](2026-11-17-graziani-batched-coding-handoff.md)
   consolidates the latest source findings, candidate map corrections,
   unresolved policies and implementation gates.
@@ -25,7 +28,7 @@ fast-forwarded to include them; recheck their behavior and current tests before
 repeating the implementation steps below.
 
 - [Current research queue](2026-11-17-graziani-remaining-source-research.md)
-  and [working decisions RUL-GRA-01–25](2026-11-12-graziani-ruling-decisions.md)
+  and [working decisions RUL-GRA-01–27](2026-11-12-graziani-ruling-decisions.md)
   distinguish source facts, provisional project interpretations and unresolved
   admission gates. None changes an existing content or ruleset identity.
 - [Fixed-hex coverage](2026-11-17-graziani-fixed-hex-review-coverage.md) now

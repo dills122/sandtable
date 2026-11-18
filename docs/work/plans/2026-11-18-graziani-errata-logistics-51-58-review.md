@@ -1,0 +1,11 @@
+# Review: September errata §§51–58 inventory
+
+**Result: one wording correction recommended; source inventory otherwise matches scan.** The [inventory](2026-11-18-graziani-errata-logistics-51-58.md) says the linked bir note “explicitly records both corrections” in §52.13. That note explicitly states the depletion roll and **mentions** carrying water from a major city/oasis, but does not explicitly state the erratum's “as much ... as you can carry” quantity. Describe it as acknowledging the carrying topic, not explicitly recording both full corrections. The inventory itself accurately states the quantity.
+
+Independently viewed [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF p. 3, middle and right columns, and checked the local scan SHA-256 `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. The printed sequence after §50.2 contains exactly §§52.13, 54.17, 55.11, 55.3, 56.25, 56.29 and 56.31 before §59.2. The inventory's descriptions preserve the conditions and quantities in these entries, including the exception for prior designation in §56.25 and letter-frequency and succession limits in §56.29.
+
+The linked port inventory identifies the errata §30.59 cross-reference to chart §55.3 and §30.58 correction to §55.2; those are reference paths, not proof that all detailed rules apply. The linked convoy census identifies §32.61's lanes reference and tonnage exemption; the coastal note describes §32.35 separately. The inventory appropriately leaves mode applicability, route, optional use and actual Graziani reachability open. Its §54.17 uncertainty is appropriate: the erratum alone does not identify the corrected table or establish a connection to §54.4.
+
+Checked the cited bir, port, convoy, supply-arrival, startup and coastal notes and relevant register rows for claims summarized above; did not freshly inspect their original rulebooks or exhaustively search all queue files. No independent edition, later errata, runtime coverage or gameplay policy assessed. Documentation only; no gameplay tests run.
+
+**Disposition:** Rechecked updated §52.13 row. It now says the bir note records the depletion correction and mentions carrying water, accurately matching the linked note. Wording concern resolved.

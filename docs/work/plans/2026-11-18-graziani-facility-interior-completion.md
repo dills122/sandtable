@@ -1,0 +1,15 @@
+# Facility interior worklist: A–E review reconciliation
+
+**Result:** Under the [original worklist](2026-11-18-graziani-facility-interior-worklist.md)'s criterion of at least one independently reviewed same-scan interior observation, the defensible current partition is **22 reviewed-observation entries, 8 retained ambiguous/challenged entries, 0 remaining in the original not-found category**. This completes that bounded review queue, not complete interior, terrain, air-facility, ownership or route certification. Ambiguous entries can also have positive observations; categories preserve the worklist's original priority for unresolved challenges.
+
+| Partition | Coordinates and source basis |
+|---|---|
+| Original reviewed observations: **6** | `E3815 B0707 B4933 D3227 D3418 D3516`, as listed in the [original worklist](2026-11-18-graziani-facility-interior-worklist.md). |
+| Former not-found, reviewed A–C: **8** | `E2132 E2133 E3512 A4728 B5526 B5825 E3614 B5331`, reconciled in [progress](2026-11-18-graziani-facility-interior-progress.md) and its [review](2026-11-18-graziani-facility-interior-progress-review.md). B5825 qualifies through observed interior brown artwork, not a proven locality or facility. E3614 qualifies through green/water artwork without a whole-hex delta determination. |
+| Former not-found, reviewed D: **5** | `C4108 E3109 E3007 C4414 B5410`: [D review](2026-11-18-graziani-facility-interior-check-d-review.md) locates a locality-associated dot/round mark inside each, with route and artwork limitations. A dot does not distinguish village from bir or establish a landing strip. |
+| Former not-found, reviewed E: **3** | `B5917 C4119 D3416`: [E review](2026-11-18-graziani-facility-interior-check-e-review.md) supports the B5917 dot, C4119 pale/route-crossed interior and D3416 brown rough-like fill. C4119 and D3416 qualify by observed interior artwork even though no distinct locality dot or landing-strip symbol was identified in their exposed portions. |
+| Original ambiguous/challenged retained: **8** | `E2212 A1816 D3323 D3520 C4419 B5229 D3231 D3903`. None was examined by A–E as an original not-found promotion. Keep Amiriya's source-location conflict, dot-attribution/overprint, settlement and coastal issues as individually described in the original worklist. B5229 already has a positively reviewed dot and remains here because its taxonomy/coastal questions are unresolved. |
+
+Arithmetic: `6 + 8 + 5 + 3 = 22`; `22 + 8 + 0 = 30`. The eight formerly unreviewed landing cells are exactly D's five and E's three; these groups do not duplicate A–C or the original fourteen. “No not-found entries” means each of the original sixteen now has at least one reviewed interior feature, **not** that every feature was read, every facility symbol found or all 30 questions resolved. A/B/C/D/E reviews use the same original map scan; they are independent readings, not independent source editions. A negative observation in exposed artwork cannot prove absence beneath lines or labels.
+
+Documentation reconciliation against the original worklist and linked A–E reviews; no fresh map scan, data/runtime edits or gameplay tests.

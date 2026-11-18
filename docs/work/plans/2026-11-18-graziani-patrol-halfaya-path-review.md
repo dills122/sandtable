@@ -1,0 +1,11 @@
+# Review: Halfaya patrol path
+
+**Disposition:** [Path note](2026-11-18-graziani-patrol-halfaya-path.md) is supported as a bounded, conditional comparison. It does not establish an eligible patrol, legal route or actual target. No material discrepancy found.
+
+Independently reproduced its Map C crop from the retained original PDF and visually checked Land §§8.42, 10.21 and 16.0–16.22 on printed/PDF pp. 15, 18 and 26. Local SHA-256 values match the note: maps `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`, Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`, errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. This is an informed check of the same scan, not an independent edition.
+
+- The crop shows C3920 and C3921 as adjacent; the next cell on that run, identified as C3922 by the cited scenario and adjacent numbering, shares the thick band with C3921. The latter label is obscured. The band and splash are consistent with the referenced escarpment and C3922 down/C3921 up reading; I did not independently recheck the terrain key. The C3920/C3921 side bears the blue checked mark and no comparable escarpment band. This does not establish a feature-free side or a track crossing.
+- §8.42 prohibits vehicles moving up an escarpment, including via track; §16.22 excludes terrain impassable to patrol units; §16.0 says patrols are abstract and no units actually move. The note properly leaves application to the motorized-infantry patrol point open rather than inferring a dismount or an automatic pass/fail.
+- §16.22's exception refers to a hex in the ZOC of the unit being reconnoitered; it does not itself remove impassable terrain. The intermediate hex's status, target qualification and possible other control remain separate. §10.21(b) blocks ZOC across an escarpment in either direction; it does not establish whether C3920 projects into C3921 or whether a patrol may cross the other side.
+
+The two-edge geometry does not eliminate a longer alternative within five hexes. Actual positions, patrol eligibility, weather, stage history and information disclosure remain unproved. I did not separately check the original scenario rows, full terrain chart, later errata or every possible route. No runtime/data changes or gameplay tests.

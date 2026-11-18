@@ -1,0 +1,16 @@
+# Review: ledger B source dispositions
+
+**Disposition:** No material false “answered” classification found in the checked claims. Two source-attribution and next-action refinements would make the dispositions more precise; neither closes an open row or changes a policy.
+
+1. **VI-01: narrow the locator recheck.** The requested independent check of *all* retained-location locators is partly stale. [Shared-objective review](2026-11-18-graziani-victory-result-order-followup-review.md) already identifies Sollum C4021 and Fort Maddalena C3019 from scenario §60.5 in its conditional possession comparison. Cite that review for those two, and name the remaining Giarabub locator and Sidi Birani/Barrani normalization as specific follow-ups rather than implying every retained locator lacks a check. A coordinate check alone does not resolve possession, supply or map admission.
+2. **VI-02: use a direct source for the map-D quantifier.** The linked [source-scope note](2026-11-18-graziani-victory-source-scope-next.md) chiefly addresses Commonwealth city-source scope and explains that Italian strategic “any hex” follows the Alexandria/Cairo objective expression; it does not independently decide the separate map-D origin quantifier. The [victory matrix](2026-11-12-graziani-victory-matrix.md) explicitly records the competing origin quantifiers. Cite that matrix or a direct origin analysis for the open map-D question; keep the existing interpretation status, which is appropriate.
+
+## Coverage and limits
+
+Compared all 19 VI/RF/AR/PT IDs with [ledger B](2026-11-18-graziani-register-ledger-b.md), its [register](2026-11-12-graziani-source-register.md), and selected cited evidence. Checked [victory packet](graziani-victory-review/README.md) and [independent disposition](2026-11-17-graziani-independent-reviews.md): independent entries exist, with 13 raw victory wording differences and eight locator differences retained; “answered” supports the bounded printed-list readings, not normalized predicates or accepted winner semantics. Also checked the [victory reference review](2026-11-17-graziani-rules-victory-reference-review.md), [combat-unit review](2026-11-17-graziani-victory-combat-units-review.md), [arrival audit](2026-11-17-graziani-arrivals-audit-next.md), [repair comparison](2026-11-18-graziani-ledger-b-source-2-review.md), [replacement review](2026-11-17-graziani-cw-replacements-review.md) and [port scope review](2026-11-17-graziani-port-land-only-scope-review.md). Their bounded answers support the corresponding classifications; actual play state, specific witnesses, conflicting source scope and rule acceptance remain distinct.
+
+This was documentary review, not a fresh scan inspection, exhaustive verification of every linked packet, runtime audit or proof of source rights. No data/runtime edits or gameplay tests.
+
+## Recheck
+
+VI-01 now narrows the locator follow-up and acknowledges the prior Sollum and Fort Maddalena checks, addressing the stale-work concern. The row does not directly link that acknowledgment to the [shared-objective review](2026-11-18-graziani-victory-result-order-followup-review.md); adding that citation would complete the attribution refinement. VI-02 now links the victory matrix for the map-D quantifier and retains the separate scope check; that finding is addressed. No broader source or runtime re-audit.

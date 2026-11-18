@@ -1,5 +1,525 @@
 # Graziani: remaining source research and evidence queue
 
+**Source portability:** Paths under `/private/tmp` or `/tmp` in research notes
+refer to ephemeral local copies used during inspection; this PR does not include
+those files. Reacquire the linked original sources when needed and compare the
+recorded hashes before repeating a reading. Some sources remain unavailable or
+have unresolved rights; a matching hash does not grant redistribution rights.
+
+[Current work triage](2026-11-18-graziani-remaining-work-triage.md) separates
+actionable bounded scan checks, source gaps requiring better evidence, and
+project interpretation or admission decisions. It does not close the queue.
+[Register-gap audit](2026-11-18-graziani-source-register-gap-audit.md) and
+[review](2026-11-18-graziani-source-register-gap-audit-review.md) confirm the
+67-ID register count and prioritize unresolved subcases without equating
+reviewed source rows with complete implementation.
+Per-row triage now covers [TI/SQ/LA](2026-11-18-graziani-register-ledger-a.md),
+[VI/RF/AR/PT](2026-11-18-graziani-register-ledger-b.md), and
+[FG/CO/ML/WT/SU/TR](2026-11-18-graziani-register-ledger-c.md). Their
+independent documentary reviews ([A](2026-11-18-graziani-register-ledger-a-review.md),
+[B](2026-11-18-graziani-register-ledger-b-review.md),
+[C](2026-11-18-graziani-register-ledger-c-review.md)) found and rechecked
+corrections, including the Benghazi diversion's absence condition. These
+ledgers classify work; they do not claim the queue or source coverage complete.
+Source-fact dispositions further separate bounded answers, checks, external
+evidence and policy for [A](2026-11-18-graziani-ledger-a-source-dispositions.md),
+[B](2026-11-18-graziani-ledger-b-source-dispositions.md), and
+[C](2026-11-18-graziani-ledger-c-source-dispositions.md), with documentary
+reviews [A](2026-11-18-graziani-ledger-a-source-dispositions-review.md),
+[B](2026-11-18-graziani-ledger-b-source-dispositions-review.md), and
+[C](2026-11-18-graziani-ledger-c-source-dispositions-review.md). Reviews
+identified and rechecked source-scope and attribution corrections; these are
+not blanket completion certificates.
+[Errata inventories](2026-11-18-graziani-errata-land-inventory.md),
+[repair/training inventory](2026-11-18-graziani-errata-repair-inventory.md),
+and [setup inventory](2026-11-18-graziani-errata-setup-inventory.md), with
+respective reviews [Land](2026-11-18-graziani-errata-land-inventory-review.md),
+[repair](2026-11-18-graziani-errata-repair-inventory-review.md), and
+[setup](2026-11-18-graziani-errata-setup-inventory-review.md), identify source
+corrections and coverage gaps without establishing scenario reachability or
+new policy. The setup inventory's original erroneous roster-absence claim was
+corrected: the retained errata PDF includes the three OA sheets on page four.
+Additional September errata inventories cover [§§33–42](2026-11-18-graziani-errata-air-33-42.md),
+[§§43–50](2026-11-18-graziani-errata-air-43-50.md), and
+[§§51–58](2026-11-18-graziani-errata-logistics-51-58.md), with respective
+reviews [33–42](2026-11-18-graziani-errata-air-33-42-review.md),
+[43–50](2026-11-18-graziani-errata-air-43-50-review.md), and
+[51–58](2026-11-18-graziani-errata-logistics-51-58-review.md). Detailed-mode
+corrections are cataloged without automatic Land-only admission; several
+specific cross-mode and chart-reference checks remain.
+[Aircraft designation check](2026-11-18-graziani-ju8sd-identification.md) and
+[review](2026-11-18-graziani-ju8sd-identification-review.md) retain errata's
+printed `Ju8SD` while identifying `Ju88D` as a strong original-source
+inference. A separate [FW220 check](2026-11-18-graziani-fw220-identification.md)
+and [review](2026-11-18-graziani-fw220-identification-review.md) find
+`Fw. 200 C` a contextual candidate, but no explicit equivalence or correction.
+[Convoy errata scope](2026-11-18-graziani-convoy-air-errata-scope.md) and
+[review](2026-11-18-graziani-convoy-air-errata-scope-review.md) distinguish
+detailed 10% rounding from abstract motorization treatment. [Air supply scope](2026-11-18-graziani-air-supply-errata-scope.md)
+and [review](2026-11-18-graziani-air-supply-errata-scope-review.md) retain
+unresolved shortage mapping. The formerly unlocated [§46.4 chart](2026-11-18-graziani-46-4-chart-acquisition.md)
+is now on common charts p. 11 and [independently reviewed](2026-11-18-graziani-46-4-chart-acquisition-review.md);
+its erratum directs use of §46.3's notes. Detailed-Air scope remains separate.
+[Port/Logistics
+scope](2026-11-18-graziani-port-logistics-errata-scope.md) and [review](2026-11-18-graziani-port-logistics-errata-scope-review.md)
+distinguish detailed demolition, personnel chart and Axis tonnage exceptions
+from abstract rules; none is automatically imported.
+[M13/40 breakdown correction](2026-11-18-graziani-m13-bar-erratum.md) and
+[review](2026-11-18-graziani-m13-bar-erratum-review.md) confirm `1R` and
+compare selected six-turn starting and arrival sources; other introduction
+paths remain unexamined.
+
+**Implementation-agent priority:** The [focused blocker findings](2026-11-17-graziani-implementation-blockers-research.md)
+record the sourced Aresca CV33 rating and fresh independent reviews of CCNN HQ
+and Giarabub motorization. The latter two retain explicit source unknowns;
+accepting them in readiness remains an implementation/policy decision.
+[Motorization follow-up](2026-11-18-graziani-initial-motorization-source.md)
+and [review](2026-11-18-graziani-initial-motorization-source-review.md) identify
+a conditional medium-truck infantry CPA of 20 if qualifying actual transport
+and applicability are established; starting allocation and effective CPA
+remain unknown.
+[Allocation follow-up](2026-11-18-graziani-motorization-allocation-followup.md)
+and [review](2026-11-18-graziani-motorization-allocation-followup-review.md)
+distinguish §8.97's transfer of already-attached parent trucks from an
+initial assignment of an unattached pool; the latter remains unproved.
+[Axis motorization-arrival check](2026-11-18-graziani-axis-motor-arrival-sixturn.md)
+and [review](2026-11-18-graziani-axis-motor-arrival-sixturn-review.md) bound
+ordinary newly planned truck arrivals while preserving scenario preplanning,
+other sources and actual convoy delivery as separate questions.
+
+[Air-distance worked example](2026-11-18-graziani-map-registration-source-next.md)
+and [review](2026-11-18-graziani-map-registration-source-next-review.md) give
+four 33-hex same-address steps, first explicitly east, but also print a zero
+step between distinct Map E coordinates. This supports a counting convention
+without establishing physical sheet aliases or correcting the example.
+[Off-map distance follow-up](2026-11-18-graziani-offmap-distance-source.md)
+and [review](2026-11-18-graziani-offmap-distance-source-review.md) distinguish
+chosen flight paths, chart distances and western-box land travel; none supplies
+an Ismailia ground route or corrects the example.
+[Example consistency check](2026-11-18-graziani-distance-example-consistency.md),
+[arithmetic audit](2026-11-18-graziani-distance-example-consistency-review.md)
+and [visual chain review](2026-11-18-graziani-distance-example-chain-review.md)
+distinguish the zero-step discrepancy from the matrix's 24 triangle violations
+and support an eight-edge same-sheet chain under the regular-grid model. The
+result does not supply an official correction or a global shortest path.
+[Conflict scope](2026-11-18-graziani-distance-conflict-scope.md) and
+[arithmetic audit](2026-11-18-graziani-distance-conflict-scope-review.md)
+classify the 24 matrix violations by printed map labels, including one C/E
+triple. A separate, informed [visual check](2026-11-18-graziani-distance-138-source.md)
+confirms the additional El Agheila–Alexandria `138` cell in the same scan;
+label membership does not establish a particular route obstruction.
+[Tobruk–Ben Gania example](2026-11-18-graziani-map-distance-example-next.md)
+and [review](2026-11-18-graziani-map-distance-example-next-review.md) reproduce
+its printed 31-hex distances under the conditional 33-column grid model; one
+leg distinguishes the tested 32-, 33- and 34-column offsets under that model.
+This does not prove seam ownership or a traversable edge.
+[Land-only scope](2026-11-18-graziani-air-distance-land-scope.md) and
+[review](2026-11-18-graziani-air-distance-land-scope-review.md) confirm the
+same examples and chart appear on the Map C scan itself. They support geographic
+evidence but do not establish precedence or Land-only movement semantics.
+[Distance evidence reconciliation](2026-11-18-graziani-map-distance-evidence-reconciliation.md)
+and [review](2026-11-18-graziani-map-distance-evidence-reconciliation-review.md)
+separate these incremental findings from the existing provisional model and
+its remaining physical-registration and rule-admission gates.
+
+**Current work classification:** The [map](2026-11-17-graziani-continuation-map-disposition.md),
+[rules](2026-11-17-graziani-continuation-rules-disposition.md), and
+[setup](2026-11-17-graziani-continuation-setup-disposition.md) dispositions
+separate actionable checks from source-blocked questions, policy/admission
+decisions, and coding or verification work. None certifies the whole queue.
+Scenario extent seed inventories now cover [Axis](2026-11-17-graziani-axis-extent-seeds.md),
+[Commonwealth](2026-11-17-graziani-cw-extent-seeds.md), and
+[objectives, facilities and supply](2026-11-17-graziani-objective-supply-extent-seeds.md),
+with independent [Axis](2026-11-18-graziani-axis-extent-seeds-review.md),
+[Commonwealth](2026-11-18-graziani-cw-extent-seeds-review.md), and
+[objective/facility](2026-11-18-graziani-objective-supply-extent-seeds-review.md)
+source reviews. These list candidate seeds, not a playable boundary or route.
+Facility-side batches cover 30 additional scenario-listed airfield and landing
+strip targets, with [airfield review](2026-11-18-graziani-air-facility-edges-batch-review.md),
+[landing A review](2026-11-18-graziani-landing-strip-edges-a-review.md), and
+[landing B challenge](2026-11-18-graziani-landing-strip-edges-b-review.md).
+Gazala B4933–B4934 has a visible road missing from the pin, which also lacks
+the B4934 endpoint; its [review](2026-11-18-graziani-gazala-road-candidate-review.md)
+retains seam and identity gates. The [B/C seam comparison](2026-11-18-graziani-gazala-bc-seam.md)
+and [review](2026-11-18-graziani-gazala-bc-seam-review.md) leave candidate
+B4934/C4901 correspondence unverified. Scenario Amiriya E2212 conflicts with a later
+scenario's E3212; a map mark near the Amiriya label is not conclusively
+identified. A [targeted rail recheck](2026-11-18-graziani-d3516-rail-conflict.md)
+corrects a batch reading that missed the previously observed D3516–D3517
+rail crossing. [Further B-side rechecks](2026-11-18-graziani-landing-b-critical-recheck.md)
+retain road-type and classification discrepancies; none is admitted as a
+runtime correction.
+[Amiriya source comparison](2026-11-18-graziani-amiriya-coordinate-conflict.md)
+also finds E3212 printed for an airfield of that name in later scenario §61.33;
+that separate scenario is not an express correction of §60.5's E2212. The
+[independent review](2026-11-18-graziani-amiriya-coordinate-conflict-review.md)
+confirms the source-specific coordinates but not the identity or airfield
+status of the map mark. [RUL-GRA-27](2026-11-12-graziani-ruling-decisions.md#rul-gra-27-graziani-amiriya-coordinate-bounded-planning)
+retains §60.5's E2212 for planning, without resolving the source conflict or
+admitting a runtime coordinate. Its [audit](2026-11-18-graziani-rul27-audit.md)
+checks the ruling and scenario text without proving map identity.
+[Later airfield-complex setup](2026-11-18-graziani-setup-remaining-source.md)
+and [review](2026-11-18-graziani-setup-remaining-source-review.md) identify
+six player-placed airfields within one hex of named Amiriya in §63.33, with no
+center coordinate on that line. This does not correct or resolve §60.5.
+The [extent crosswalk](2026-11-18-graziani-scenario-extent-crosswalk.md) and
+[documentary audit](2026-11-18-graziani-scenario-extent-crosswalk-review.md)
+deduplicate those seeds and identify remaining local map-coverage gaps.
+[Facility-interior reconciliation](2026-11-18-graziani-facility-interior-completion.md)
+and [review](2026-11-18-graziani-facility-interior-completion-review.md)
+classify the 30 listed coordinates as 22 with at least one reviewed interior
+observation and eight with an explicit ambiguity or challenge. That closes
+the initial missing-observation list, not full terrain or facility identity.
+[Later interior reconciliation](2026-11-18-graziani-facility-interior-reconciliation-2.md)
+and [review](2026-11-18-graziani-facility-interior-reconciliation-2-review.md)
+promote Fuka D3323 and Baggush D3520 dot containment, yielding 24 reviewed
+observations and six retained challenges under that limited worklist criterion.
+[Coastal-hex source check](2026-11-18-graziani-coastal-hex-source.md) and
+[review](2026-11-18-graziani-coastal-hex-source-review.md) do not find an
+explicit adjacent-water or vertex-only definition in the bounded checked text.
+[Native OCR follow-up](2026-11-18-graziani-coastal-ocr-followup.md) and
+[review](2026-11-18-graziani-coastal-ocr-followup-review.md) search all 47
+Land PDF pages for related terms without finding an explicit geometry definition
+in the matches. Recognition errors and omitted terms prevent an exhaustive
+negative; original scan and OCR artifacts remain outside Git.
+[Alternative-term search](2026-11-18-graziani-coastal-ocr-alternative.md) and
+[review](2026-11-18-graziani-coastal-ocr-alternative-review.md) identify an
+all-sea-hexside ZOC rule, but no coastal-hex membership definition in the
+checked passages. OCR limitations and omitted phrasing remain possible.
+[Tmimi subtype check](2026-11-18-graziani-blue-dot-village-bir-source.md) and
+[review](2026-11-18-graziani-blue-dot-village-bir-source-review.md) retain its
+village-versus-bir uncertainty; chart die-1 values were corrected to 100/50.
+[Menastir locator check](2026-11-18-graziani-menastir-locator-source.md) and
+[review](2026-11-18-graziani-menastir-locator-source-review.md) confirm the
+scenario's C4419 listing without proving a map-mark absence or alternate locator.
+[Combined map coverage](2026-11-18-graziani-combined-map-coverage.md) and its
+[arithmetic audit](2026-11-18-graziani-combined-map-coverage-review.md) count
+138 named cells across mixed observation types, including 114 six-side targets;
+these counts do not certify all features, routes or a playable map.
+Siwa C0127 and Sidi Omar C3618 now have six-side readings with independent
+reviews, linked in that crosswalk; sheet-margin and obscured-feature questions
+remain open. A separate [Halfaya C3821 reading](2026-11-18-graziani-fixed-seed-gap-followup.md)
+and [review](2026-11-18-graziani-fixed-seed-gap-followup-review.md) cover the
+Air/Logistics location-summary alternative without replacing the scenario's
+explicit C3922 or establishing an alias.
+
+**Continuation after PR #403:** Original Map D readings extend the local
+Fuka–El Daba evidence ([first segment](2026-11-17-graziani-continuation-map.md),
+[review](2026-11-17-graziani-continuation-map-review.md), [eastward segment](2026-11-17-graziani-continuation-map-east.md),
+[review](2026-11-17-graziani-continuation-map-east-review.md)); vertex and
+seam limitations remain. A [rail restriction check](2026-11-17-graziani-continuation-rules.md)
+and [scope review](2026-11-17-graziani-continuation-rail-scope-review.md)
+document an off-route eastern Axis witness, with construction status, west
+geometry and privacy still material. A [Matruh placement candidate](2026-11-17-graziani-continuation-setup.md)
+and [independent review](2026-11-17-graziani-continuation-setup-review.md)
+leave Buffs/Hampshire's precise starting location conditional.
+[Matruh capacity continuation](2026-11-17-graziani-matruh-capacity-continuation.md)
+and [review](2026-11-17-graziani-matruh-capacity-continuation-review.md)
+distinguish scenario-listed formation-limit exceptions from §59.65's
+unavoidable initial supply overstacking; six-total versus six-additional
+attachments remains unresolved.
+[Rail-witness coverage](2026-11-17-graziani-rail-nonlocal-coverage.md) and
+[review](2026-11-17-graziani-rail-nonlocal-coverage-review.md) bound selected
+candidate sections; proving no witness requires all relevant eastern Map D
+branches and other applicable sheets, not only a traveled path.
+[Pinned Map D rail inventory](2026-11-18-graziani-map-d-pinned-rail-inventory.md)
+and [data audit](2026-11-18-graziani-map-d-pinned-rail-inventory-review.md)
+count 42 records, including two open sides, and 41 endpoints. These are pin
+counts, not full source coverage or proof of a usable network.
+[Exact-side worklist](2026-11-18-graziani-map-d-rail-worklist.md) and
+[audit](2026-11-18-graziani-map-d-rail-worklist-review.md) reconcile those
+records into 22 source-positive, six unknown, 12 awaiting exact-side review,
+and two open sides at that snapshot. Subsequent original-scan batches
+[A](2026-11-18-graziani-map-d-rail-batch-a.md),
+[B](2026-11-18-graziani-map-d-rail-batch-b.md), and
+[C](2026-11-18-graziani-map-d-rail-batch-c.md), with respective reviews
+[A](2026-11-18-graziani-map-d-rail-batch-a-review.md),
+[B](2026-11-18-graziani-map-d-rail-batch-b-review.md), and
+[C](2026-11-18-graziani-map-d-rail-batch-c-review.md), cover the 12 remaining
+pin records. A separate [Matruh road check](2026-11-18-graziani-matruh-road-pins-source.md)
+and [review](2026-11-18-graziani-matruh-road-pins-source-review.md) support
+road readings at two pins, with one crossing's exact-side attribution qualified
+by a vertex. Neither reading establishes a route or alters the rail dispositions.
+A [partition audit](2026-11-18-graziani-map-d-rail-batch-reconciliation-review.md)
+gives 26 source-positive, 14 class or side unknown, zero unreviewed, and two
+open at its snapshot. A [higher-resolution class recheck](2026-11-18-graziani-map-d-rail-batch-c-class-check.md)
+then supports the four batch C unfinished-rail readings, correcting the first
+reader's earlier class-unknown assessment and agreeing with its review. The
+current partition is 30 qualified positives, ten unknown and two open. Class
+and construction remain distinct; scan-only rail omitted from the pin has not
+been comprehensively surveyed.
+[Open-evidence survey](2026-11-18-graziani-map-d-rail-open-evidence.md)
+identified native-resolution opportunities. [Recheck A](2026-11-18-graziani-map-d-rail-unknown-recheck-a.md)
+and [review](2026-11-18-graziani-map-d-rail-unknown-recheck-a-review.md)
+support three further qualified unfinished-class matches, with one vertex
+still unknown. [Recheck B](2026-11-18-graziani-map-d-rail-unknown-recheck-b.md)
+and [review](2026-11-18-graziani-map-d-rail-unknown-recheck-b-review.md)
+leave two classes unknown. Current pinned-record partition: 33 qualified
+positives, seven unknown, two open. Enlarged renderings interpolate the same
+embedded scan, not new source pixels or an independent edition.
+[D3613 bounded unpinned search](2026-11-18-graziani-map-d-unpinned-search.md)
+and [review](2026-11-18-graziani-map-d-unpinned-search-review.md) find no
+additional crossing on exposed portions of its six sides; overprint and vertex
+ambiguity prevent a general absence or full-sheet claim.
+[D3608 search](2026-11-18-graziani-map-d-unpinned-search-2.md) and
+[review](2026-11-18-graziani-map-d-unpinned-search-2-review.md) likewise find
+only the two pinned crossings in exposed portions of that bounded window.
+[D3609 six-side search](2026-11-18-graziani-map-d-3609-source.md) and
+[review](2026-11-18-graziani-map-d-3609-source-review.md) support two pinned
+unfinished rail crossings and identify no additional crossing on exposed
+portions; overprint and vertex qualifications remain.
+[D3516 search](2026-11-18-graziani-map-d-unpinned-search-3.md) and
+[review](2026-11-18-graziani-map-d-unpinned-search-3-review.md) corroborate
+the existing missing-rail lead on D3516–D3517 and retain the vertex-qualified
+D3516–D3615 lead; nearby track and other features require separate evidence.
+[Map E coastal rail](2026-11-17-graziani-east-rail-coast-batch.md) and
+[review](2026-11-17-graziani-east-rail-coast-batch-review.md) check eight
+local crossings; the adjacent junction and D/E seam remain unconfirmed.
+[Cairo rail branches](2026-11-17-graziani-east-rail-cairo-batch.md) and
+[review](2026-11-17-graziani-east-rail-cairo-batch-review.md) add eight local
+observations with overprint limits. A [Cairo extension](2026-11-17-graziani-cairo-rail-extension.md)
+and [review](2026-11-17-graziani-cairo-rail-extension-review.md) retain an
+uncertain river junction, further checked in the [junction reading](2026-11-18-graziani-cairo-river-junction.md)
+and [review](2026-11-18-graziani-cairo-river-junction-review.md). An [Alexandria coastal extension](2026-11-17-graziani-alex-coastal-rail-extension.md)
+and [review](2026-11-17-graziani-alex-coastal-rail-extension-review.md) retain
+vertex ambiguity. A [further fork reading](2026-11-18-graziani-alex-rail-fork-followup.md)
+and [review](2026-11-18-graziani-alex-rail-fork-followup-review.md) stop at
+the unclear Kafr el Douwar junction. [West-relation research](2026-11-17-graziani-rail-west-geography.md)
+and [review](2026-11-17-graziani-rail-west-geography-review.md) support one
+local comparison without establishing a global seam comparator.
+[West-order source follow-up](2026-11-18-graziani-rail-west-order-source.md)
+and [review](2026-11-18-graziani-rail-west-order-source-review.md) distinguish
+the convoy chart's explicit row grouping and same-row qualification from
+§8.78's unspecified comparison; neither establishes cross-sheet registration.
+The [Cairo northbound follow-up](2026-11-18-graziani-cairo-nile-rail-followup.md)
+and [review](2026-11-18-graziani-cairo-nile-rail-followup-review.md) support a
+local crossing and stop at the next ambiguous three-hex vertex.
+The [eastern witness crosswalk](2026-11-18-graziani-rail-eastern-witness-crosswalk.md)
+and [documentary audit](2026-11-18-graziani-rail-eastern-witness-crosswalk-review.md)
+reconcile 36 Map E candidate hexes, without proving coverage, occupancy,
+inter-sheet ordering or a negative witness result. A [follow-up](2026-11-18-graziani-rail-eastern-candidates-next.md)
+and [review](2026-11-18-graziani-rail-eastern-candidates-next-review.md)
+add five candidates (41 total), retaining a vertex uncertainty. [Kafr el
+Douwar](2026-11-18-graziani-kafr-el-douwar-junction.md) and [review](2026-11-18-graziani-kafr-el-douwar-junction-review.md)
+identify a river-like mark on E3516–E3616 missing from the pin; its type and
+route consequences remain unresolved.
+[Pinned Map E rail inventory](2026-11-18-graziani-pinned-map-e-rail-inventory.md)
+and [data audit](2026-11-18-graziani-pinned-map-e-rail-inventory-review.md)
+count 143 incident rail records and 142 endpoints, including 101 beyond the
+41 reviewed candidates at that inventory's baseline. This is a pin-only
+worklist, not source-complete coverage or a negative witness proof.
+[Reviewed-pair worklist](2026-11-18-graziani-map-e-rail-remaining-worklist.md)
+and [mechanical audit](2026-11-18-graziani-map-e-rail-remaining-worklist-review.md)
+partition the 143 pinned records into 81 source-positive, 15 unresolved,
+46 unreviewed and one open side at that snapshot. Its manually maintained
+labels are not independent proof of scan completeness.
+[Pinned-sweep reconciliation](2026-11-18-graziani-map-e-rail-pinned-sweep-completion.md)
+and [audit](2026-11-18-graziani-map-e-rail-pinned-sweep-completion-review.md)
+now partition all 143 selected pin records: 122 source-positive, 19 unresolved,
+one apparent mismatch, and one open edge. Positives include qualified
+observations; this does not search for rail absent from the pin or prove a
+complete network, construction state, occupancy or §8.78 negative result.
+[Higher-resolution rechecks](2026-11-18-graziani-map-e-rail-unknown-reconciliation.md)
+and [audit](2026-11-18-graziani-map-e-rail-unknown-reconciliation-review.md)
+subsequently support seven of those 19 as qualified positives, leaving 129
+positive, 12 unresolved, one mismatch and one open side in that pin partition.
+[Open-evidence triage](2026-11-18-graziani-map-e-rail-open-evidence.md) groups
+the 12 unresolved sides by scan ambiguity and records discriminating evidence.
+[Alternate-map source search](2026-11-18-graziani-alternate-map-source-search.md)
+and [audit](2026-11-18-graziani-alternate-map-source-search-review.md) find
+that the available separate-map and all-in-one PDFs embed byte-identical Map D
+and E images; other leads were not verified as clearer independent scans.
+[Official clarification search](2026-11-18-graziani-official-clarification-search.md)
+and [audit](2026-11-18-graziani-official-clarification-search-review.md) found
+no newly identified official answer for the bounded map and weather cases;
+one external PDF could not be independently inspected and OCR/search limits remain.
+One [bounded unpinned search](2026-11-18-graziani-map-e-unpinned-rail-search.md)
+and [review](2026-11-18-graziani-map-e-unpinned-rail-search-review.md) found
+no missing rail in its small selected window; wider coverage remains open.
+[Eastern strip](2026-11-18-graziani-map-e-unpinned-search-east.md) and
+[review](2026-11-18-graziani-map-e-unpinned-search-east-review.md) find no
+additional crossing in another bounded window. [Western strip](2026-11-18-graziani-map-e-unpinned-search-west.md)
+and [review](2026-11-18-graziani-map-e-unpinned-search-west-review.md) leave
+two unpinned sides at an ambiguous vertex as candidates, not established omissions.
+[Sweep D](2026-11-18-graziani-map-e-rail-sweep-d.md) and [review](2026-11-18-graziani-map-e-rail-sweep-d-review.md)
+cover 15 of those pairs: 13 visibly supported, one vertex unresolved, and
+E1927–E1928 with no visible rail across the inspected side despite the pinned
+rail feature. That discrepancy is not an admitted data correction.
+[Eastern rail batch](2026-11-18-graziani-suez-rail-source-batch.md) and
+[review](2026-11-18-graziani-suez-rail-source-batch-review.md) add eight local
+side observations. The [delta batch](2026-11-18-graziani-delta-rail-source-batch.md)
+and [review](2026-11-18-graziani-delta-rail-source-batch-review.md) support
+seven local rail crossings, including E2927–E3027 where pinned features omit
+railroad; other feature membership and route legality remain open.
+[Sequence research](2026-11-17-graziani-sequence-continuation-batch.md) and
+[review](2026-11-17-graziani-sequence-continuation-batch-review.md) record
+combat-cycle ordering and CP lifetime without claiming an eligible action.
+[Startup-sequence follow-up](2026-11-17-graziani-startup-sequence-continuation.md)
+and [review](2026-11-17-graziani-startup-sequence-continuation-review.md)
+retain the initial preamble interpretation and mode-specific order differences.
+[Startup source comparison](2026-11-18-graziani-startup-source-next.md) and
+[review](2026-11-18-graziani-startup-source-next-review.md) distinguish initial
+motorization distribution from later reassignment and initial empty coastal
+ships from pre-start convoy planning; neither resolves whether the preamble runs.
+[Supply shortage research](2026-11-17-graziani-supply-shortage-continuation.md)
+and [review](2026-11-17-graziani-supply-shortage-continuation-review.md)
+record air-transport fuel prepayment while retaining shortage and initially
+loaded-point questions. [Air-transport witness research](2026-11-17-graziani-air-supply-witness.md)
+and [review](2026-11-17-graziani-air-supply-witness-review.md) preserve a
+possible separate-counter fuel payment without certifying the trip or
+settling §32.14's printed off-map wording. [Later setup comparison](2026-11-18-graziani-supply-capacity-source-next.md)
+and [review](2026-11-18-graziani-supply-capacity-source-next-review.md) limit
+§61.72(D)'s two-regular-unit cap to its named distribution; no general on-map
+or combined dummy-unit limit follows. [Capacity decision input](2026-11-18-graziani-supply-capacity-decision-input.md)
+and [review](2026-11-18-graziani-supply-capacity-decision-input-review.md)
+distinguish literal uncertainty from RUL-GRA-08/09's selected planning cap and
+real/dummy treatment. [Arrival timing](2026-11-18-graziani-independent-queue-followup.md)
+and [review](2026-11-18-graziani-independent-queue-followup-review.md) show
+an Axis supply unit arriving in Phase D cannot supply earlier Phase C air
+movement; subsequent movement remains conditional on all applicable gates.
+[Air-movement proximity analysis](2026-11-18-graziani-supply-source-followup.md)
+and [review](2026-11-18-graziani-supply-source-followup-review.md) distinguish
+§32.37's enemy-combat-unit condition from patrol-specific classifications;
+actual units, distance, dummy/engineer status and Land-only AA removals remain
+separate gates.
+[Bardia proximity witness](2026-11-18-graziani-air-proximity-start-witness.md)
+and [independent review](2026-11-18-graziani-air-proximity-start-witness-review.md)
+find a four-hex geometric chain from Axis supply at C4321 to listed
+Commonwealth infantry at C3922. Under the ordinary hex-count reading, that
+enemy combat presence blocks departure while both positions and combat
+presence persist at the checked snapshot; setup organization and later
+changes remain material. This does not establish a legal move or disclose the
+hidden witness to an opposing player.
+[Tobruk second-origin check](2026-11-18-graziani-air-proximity-second-origin.md)
+and [review](2026-11-18-graziani-air-proximity-second-origin-review.md) find
+no nearby witness among the checked fixed Map C locations under the local
+regular-grid model. Flexible placements, other units and any alternative
+global seam metric remain unassessed; the origin is not certified clear.
+[Matruh initial supply](2026-11-18-graziani-matruh-supply-followup.md) and
+[review](2026-11-18-graziani-matruh-supply-followup-review.md) establish five
+full counters at D3714, totaling 200 Ammo and 300 Fuel; a conditional 12-Fuel
+payment leaves 288 Fuel without emptying a counter. Rearrangement timing and
+actual air-movement legality remain separate gates.
+[Matruh local-draw candidate](2026-11-18-graziani-draw-setup-witness.md) and
+[review](2026-11-18-graziani-draw-setup-witness-review.md) identify listed
+Essex and five Supply Units at D3714. Co-location does not by itself admit a
+zero-length trace or establish a legal draw, setup state or expenditure.
+[Same-hex draw source check](2026-11-18-graziani-same-hex-draw-source.md)
+and [review](2026-11-18-graziani-same-hex-draw-source-review.md) identify a
+detailed-logistics erratum permitting same-hex fuel access as an analogy, not
+automatic authority for §32.16's Land-only zero-length trace.
+[Alexandria capacity example](2026-11-18-graziani-queue-next-source.md) and
+[review](2026-11-18-graziani-queue-next-source-review.md) show that three
+listed initial counters plus one hypothetical arrival fit the printed
+five-unit city cap; conditional optional setup allocations can change the
+count. Actual placement, HQ eligibility, timing and legal movement remain open.
+[Tobruk stock example](2026-11-18-graziani-axis-supply-source-next.md) and
+[review](2026-11-18-graziani-axis-supply-source-next-review.md) check a
+conditional same-hex redistribution of three scenario-listed 15 Ammo / 50 Fuel
+units; the general §32.15 initial quantities and scenario-specific replacement
+remain explicitly compared.
+[C0716 fuel example](2026-11-18-graziani-scenario-witness-next.md) and
+[review](2026-11-18-graziani-scenario-witness-next-review.md) identify a
+listed Axis supply unit with 6 Fuel against the 12-Fuel air-payment rule.
+Insufficiency depends on the absence of other eligible local fuel; optional
+dump placement and whether the oasis is an eligible origin remain unproved.
+[Tripoli box example](2026-11-18-graziani-air-transport-case-next.md) and
+[review](2026-11-18-graziani-air-transport-case-next-review.md) confirm eight
+initial Supply Units and §32.14's explicit unlimited box capacity. Applying
+air-transport payment, proximity and endpoint rules to that box remains
+conditional; the example does not establish a legal shipment.
+[Tripoli loading-stage analysis](2026-11-18-graziani-source-priority-next.md)
+and [review](2026-11-18-graziani-source-priority-next-review.md) distinguish
+§8.88's loading-stage movement bar from setup-preloaded units and §32.31's
+arrival-stage movement wording. Their interaction and which specific trucks
+carry optional supply remain unresolved.
+[Division-row analysis](2026-11-17-graziani-air-supply-division-scope.md)
+and [review](2026-11-17-graziani-air-supply-division-scope-review.md)
+retain equality, map ordering and dispersed-formation occupancy as questions.
+[Supply capture continuation](2026-11-17-graziani-supply-capture-continuation.md)
+and [review](2026-11-17-graziani-supply-capture-continuation-review.md)
+separate combat-entry, ZOC capture and HQ-specific rules, retaining open
+precedence and immediate-use accounting. [Port mode scope](2026-11-17-graziani-port-land-only-scope.md)
+and [review](2026-11-17-graziani-port-land-only-scope-review.md) confirm the
+Land-only efficiency threshold without silently importing detailed logistics.
+[Clearance follow-up](2026-11-18-graziani-port-clearance-source-next.md) and
+[review](2026-11-18-graziani-port-clearance-source-next-review.md) confirm
+September errata corrects §30.58's printed reference to harbor-blocking §55.2.
+The correction does not itself establish a Land-only clearance procedure.
+[Port threshold comparison](2026-11-18-graziani-port-erratum-mode-scope.md)
+and [review](2026-11-18-graziani-port-erratum-mode-scope-review.md) separate
+§30.58's personnel threshold from §32.36's supply-unit threshold. The
+corrected cross-reference does not automatically transfer one to the other.
+The [supply cross-reference check](2026-11-18-graziani-port-supply-erratum-review.md)
+also verifies September errata corrects §30.5's printed `00.00` to §56.0;
+the applicable Land-only resource and clearance rules remain unresolved.
+[Port errata inventory](2026-11-18-graziani-port-errata-inventory.md) and
+[review](2026-11-18-graziani-port-errata-inventory-review.md) record all six
+entries in §§30.5–32.4, including personnel and cargo corrections and the
+designer's qualification of abstract rules. The §30.57 stage-versus-example
+timing and mode applicability remain open.
+[Later Tobruk port setup](2026-11-18-graziani-tobruk-port-source-next.md) and
+[review](2026-11-18-graziani-tobruk-port-source-next-review.md) identify
+another printed efficiency 7 in §61.6, with the ship still present. It does not
+resolve the chart's maximum 5 or establish a correction or clearance rule.
+[Compulsory-combat research](2026-11-17-graziani-compulsory-combat-continuation.md)
+and [review](2026-11-17-graziani-compulsory-combat-continuation-review.md)
+distinguish enemy ZOC projection from the phasing unit's own projection and
+retain retreat-rule precedence and legal overlap geometry as open.
+A [conditional salt-marsh overlap](2026-11-17-graziani-retreat-overlap-source.md)
+and [source review](2026-11-17-graziani-retreat-overlap-source-review.md)
+provide a synthetic distinguishing case, not historical reachability or a
+selected retreat precedence.
+[Loaded-fuel precedence](2026-11-17-graziani-loaded-fuel-mode-precedence.md)
+and [review](2026-11-17-graziani-loaded-fuel-mode-precedence-review.md)
+distinguish same-hex stock consolidation from direct split payment, which remains
+unresolved. [Capture disclosure](2026-11-17-graziani-supply-capture-disclosure.md)
+and [review](2026-11-17-graziani-supply-capture-disclosure-review.md) preserve
+audience and dummy-discovery questions.
+[Retreat overlap options](2026-11-17-graziani-retreat-overlap-policy.md),
+[loaded-fuel options](2026-11-17-graziani-loaded-fuel-policy.md), and
+[supply-capture options](2026-11-17-graziani-supply-capture-policy.md) collect
+unadmitted alternatives and their independent critiques; they do not select
+source facts, legal actions or operational decisions.
+[Destroyed-rail analysis](2026-11-17-graziani-destroyed-rail-identity.md) and
+[review](2026-11-17-graziani-destroyed-rail-identity-review.md) support but do
+not settle retaining a destroyed constructed rail hex as a §8.78 witness;
+the unbuilt-rail exclusion is separately explicit. [RUL-GRA-26](2026-11-12-graziani-ruling-decisions.md#rul-gra-26-destroyed-railroad-witness-bounded-planning)
+selects retained witness as a bounded planning interpretation, pending
+geography, timing, coverage and privacy admission gates. Its [independent audit](2026-11-17-graziani-rul26-audit.md)
+reviews the selected logic and contract gaps against the proposal, not the
+original scans or runtime. [Reachability research](2026-11-17-graziani-destroyed-rail-reachability.md)
+and [review](2026-11-17-graziani-destroyed-rail-reachability-review.md) do not
+establish initial damage or a six-turn witness.
+The [Fuka prefix](2026-11-17-graziani-continuation-fuka-prefix.md) and
+[review](2026-11-17-graziani-continuation-fuka-prefix-review.md) identify a
+supported local rail crossing and a separate uncertain pinned rail feature.
+The [D/E seam comparison](2026-11-17-graziani-continuation-de-seam.md) and
+[review](2026-11-17-graziani-continuation-de-seam-review.md) leave candidate
+cell identity and route crossings unverified. A further [anchor batch](2026-11-17-graziani-de-seam-anchor-batch.md)
+and [review](2026-11-17-graziani-de-seam-anchor-batch-review.md) find feature
+offsets and no independent landmark proving the assumed grid correspondence.
+A [C/D northern anchor check](2026-11-17-graziani-cd-seam-anchor-followup.md)
+and [review](2026-11-17-graziani-cd-seam-anchor-followup-review.md) likewise
+leave the 33-column correspondence and crossings hypothetical; the named
+landmarks were not found as independent matches on both cropped sheets.
+A [convoy reachability reduction](2026-11-17-graziani-convoy-five-percent-continuation.md)
+and [review](2026-11-17-graziani-convoy-five-percent-continuation-review.md)
+bound the qualifying division's conditional bands; they do not establish an
+actual six-turn witness or prove one impossible. A [later witness analysis](2026-11-17-graziani-five-percent-witness-followup.md)
+and [review](2026-11-17-graziani-five-percent-witness-followup-review.md)
+calculate conditional position changes for two division pairs, not global
+minima or a legal movement path.
+[7th Armoured candidate](2026-11-17-graziani-seventh-armoured-convoy-witness.md)
+and [review](2026-11-17-graziani-seventh-armoured-convoy-witness-review.md)
+document a conditional brigade reunion, not a legal movement or convoy witness.
+[Reunion timing](2026-11-17-graziani-seventh-reunion-timing.md) and [review](2026-11-17-graziani-seventh-reunion-timing-review.md)
+bound the earliest affected arrival conditionally on a legal first-stage
+reunion and attachment; they do not establish such a reunion. [Map arithmetic](2026-11-18-graziani-first-rtr-reunion-map.md)
+and [review](2026-11-18-graziani-first-rtr-reunion-map-review.md) give a
+conditional 25-transition combined lower bound under the proposed seam model,
+not a legal route or CP bound.
+
 **Status:** November 17, 2026 inventory for a future research/coding session.
 This consolidates open work identified in the current Graziani source register,
 review packets, map and readiness handoffs. It is not a claim that every
@@ -28,10 +548,32 @@ A focused [arrival and assignment check](2026-11-17-graziani-organization-batch-
 and [independent source review](2026-11-17-graziani-organization-batch-followup-review.md)
 record NZ and Hussars assignment evidence, Cairo setup conditions and
 mode-specific truck conversion without settling all listed relationships.
+[Arriving-truck source check](2026-11-18-graziani-ledger-b-source-next.md)
+and [review](2026-11-18-graziani-ledger-b-source-next-review.md) distinguish
+first-line attached trucks from convoys under general §9.29, while §32.9
+waives those road/track stacking restrictions in Land-only play. Initial
+conversion, ordinary hex capacity and actual placement remain separate.
+[NZ assignment example](2026-11-18-graziani-nz-assignment-erratum.md) and
+[review](2026-11-18-graziani-nz-assignment-erratum-review.md) distinguish the
+corrected hypothetical §19.14 example from actual initial setup; it does not
+resolve the separate 6th NZ arrival-date conflict.
 A [further arrival check](2026-11-17-graziani-batch-closure-check.md) and
 [review](2026-11-17-graziani-batch-closure-check-review.md) distinguish
 initial setup from later arrivals, optional historical assignment shifts,
 and the hypothetical 7 RTR example; parent and timing conflicts remain.
+[Benghazi diversion follow-up](2026-11-18-graziani-benghazi-diversion-source-next.md)
+and [review](2026-11-18-graziani-benghazi-diversion-source-next-review.md)
+identify no eligible six-turn Axis whole-unit arrival in checked tracks. Matruh
+Garrison is a conditional denial witness if a qualifying combat unit remains
+at D3714; no positive diversion witness or full absence proof follows.
+[Later RTR setup comparison](2026-11-18-graziani-arrival-remaining-source.md)
+and [review](2026-11-18-graziani-arrival-remaining-source-review.md) preserve
+later brigade assignments and a separate 7 RTR parenthetical without inferring
+continuous identity or resolving GT2 assignments.
+[Six-turn arrival placement crosswalk](2026-11-18-graziani-arrival-placement-crosswalk.md)
+and [review](2026-11-18-graziani-arrival-placement-crosswalk-review.md)
+check all six printed rows against Cairo's default and later named exceptions;
+actual city-hex eligibility, parent placement and NZ timing remain open.
 [Policy candidates](2026-11-17-graziani-policy-batch-proposals.md) and an
 [independent critique](2026-11-17-graziani-policy-batch-proposals-review.md)
 collect remaining convoy, rail and victory tradeoffs without admitting them.
@@ -70,6 +612,19 @@ crowded unfinished-road crossing as uncertain. Neither establishes a route.
 [Siwa local approaches](2026-11-17-graziani-siwa-route-source.md) and
 [visual review](2026-11-17-graziani-siwa-route-source-review.md) identify
 candidate exits but leave junctions, seam geometry and route proof open.
+An [eight-side extension](2026-11-17-graziani-siwa-route-extension.md) and
+[review](2026-11-17-graziani-siwa-route-extension-review.md) preserve a
+vertex-adjacent assignment as uncertain.
+Follow-up traces cover five leads: [west](2026-11-17-graziani-siwa-west-leads.md),
+[east](2026-11-17-graziani-siwa-east-leads.md), and [north](2026-11-17-graziani-siwa-north-lead.md),
+with independent [west](2026-11-17-graziani-siwa-west-leads-review.md),
+[east](2026-11-17-graziani-siwa-east-leads-review.md), and
+[north](2026-11-17-graziani-siwa-north-lead-review.md) reviews. The apparent
+C0133–C0134 track is absent from pinned records; junctions and sheet-edge
+continuation remain unresolved. [Vertex-attribution research](2026-11-18-graziani-vertex-attribution.md)
+and [review](2026-11-18-graziani-vertex-attribution-review.md) found no
+tie-break in the inspected key and clauses; they support this track candidate
+without promoting ambiguous junctions to known sides.
 [Siwa branch follow-up](2026-11-17-graziani-siwa-branch-batch.md) and
 [review](2026-11-17-graziani-siwa-branch-batch-review.md), plus [Tobruk
 east-branch follow-up](2026-11-17-graziani-tobruk-east-branch-batch.md) and
@@ -87,7 +642,10 @@ and [south](2026-11-17-graziani-contact-envelope-south.md) side batches with
 previous C3320 reading supplies the remaining center; shared-side occlusion,
 outside forces and actual ZOC remain open. A [coverage audit](2026-11-17-graziani-contact-envelope-audit.md)
 reconciles 60 directed observations into 41 distinct pairs without a material
-shared-side contradiction; it does not certify blocked or clear sides.
+shared-side contradiction; it does not certify blocked or clear sides. A
+[flexible-contact analysis](2026-11-17-graziani-sheferzen-flexible-contact.md)
+and [review](2026-11-17-graziani-sheferzen-flexible-contact-review.md)
+do not establish singleton stacks or a complete legal additional unit.
 
 **Follow-up after PR #375:** Original scans remain under review. A new
 [El Daba map check](2026-11-17-graziani-map-el-daba-east.md) and
@@ -167,6 +725,14 @@ vehicle repair; no post-control outcome is selected. A [city-fortification check
 and [independent review](2026-11-17-graziani-rules-city-fortifications-review.md)
 distinguish built-in levels from constructed counters and flag that suppressed
 initial levels do not automatically satisfy the source's rebuilding condition.
+[Later construction comparison](2026-11-18-graziani-ledger-c-source-next.md)
+and [review](2026-11-18-graziani-ledger-c-source-next-review.md) compare a
+separate scenario's railroad parenthetical and fortification allowance; they
+do not resolve Graziani's intrinsic city-level interpretation.
+[Pipeline source check](2026-11-18-graziani-ledger-c-source-2.md) and
+[review](2026-11-18-graziani-ledger-c-source-2-review.md) identify detailed
+railroad hexes as pipelines, but do not import that water rule into Land-only
+play or settle intrinsic fortification levels.
 No runtime or pinned map data changed.
 
 The [fixed-hex coverage index](2026-11-17-graziani-fixed-hex-review-coverage.md)
@@ -215,6 +781,13 @@ of the cell. No pinned data was changed.
 A [37-cell interior comparison](2026-11-17-graziani-radius-full-data-audit.md)
 identifies those same four candidates and additional boundary-artwork
 classification questions; it does not certify all terrain or legal routes.
+[Facility correction triage](2026-11-18-graziani-facility-correction-triage.md)
+and [audit](2026-11-18-graziani-facility-correction-triage-review.md) separate
+positive source discrepancies from unresolved pin classifications and retain
+endpoint, rights, coverage and replay admission gates.
+The [map conflict catalog](2026-11-18-graziani-map-conflict-catalog.md) and
+[documentary audit](2026-11-18-graziani-map-conflict-catalog-review.md) gather
+the current candidates and their distinct evidence limits.
 [Reconciliation notes](2026-11-17-graziani-radius-reconciliation.md) distinguish
 two positive correction candidates from unsupported removal of overprinted
 features; versioned map identity and transcription conventions remain gates.
@@ -613,6 +1186,20 @@ rules evidence.
    and [independent review](2026-11-17-graziani-matruh-organization-followup-review.md)
    retain unknown Essex/Durham parents and the six-total versus six-additional
    conflict; historical assignment changes are optional under §19.24.
+   [Capacity source follow-up](2026-11-18-graziani-matruh-capacity-source-followup.md)
+   and [review](2026-11-18-graziani-matruh-capacity-source-followup-review.md)
+   additionally distinguish the chart's battalion-equivalent Tank definition
+   from its non-shell company modifier; tank-company classification and the
+   modifier's capacity interpretation remain unselected.
+   [Attachment-cap erratum analysis](2026-11-18-graziani-matruh-cap-erratum-analysis.md)
+   and [review](2026-11-18-graziani-matruh-cap-erratum-analysis-review.md)
+   find general support for additional attachments but leave the specific
+   Matruh OA six-limit interaction unresolved; the eight-versus-six example
+   assumes every listed unit counts as one charged attachment.
+   [Alternate-source search](2026-11-18-graziani-matruh-alternate-source-search.md)
+   and [audit](2026-11-18-graziani-matruh-alternate-source-search-review.md)
+   found no verified later authoritative Matruh clarification in their bounded
+   public search; dealer and community materials remain unverified leads.
 3. **Map identity, seams and coverage.** Five-sheet map reacquired and
    hash-matched. Independently record grid labels, edge features, terrain and candidate joins.
    The [blind 190-cell transcription](2026-11-17-graziani-distance-transcription.md)
@@ -659,6 +1246,9 @@ rules evidence.
    and [independent review](2026-11-17-graziani-d2228-escarpment-direction-review.md)
    find the erratum does not state the high side; the pinned D2328 direction
    is a contour-continuity inference requiring an explicit policy.
+   [Additional source search](2026-11-18-graziani-escarpment-source-next.md)
+   and [review](2026-11-18-graziani-escarpment-source-next-review.md) found no
+   independent high-side authority; derivative map leads retain provenance limits.
    A separate
    [Living Rules lead](2026-11-17-graziani-living-rules-lead.md) documents an
    external geometry interpretation, not independent primary map evidence.
@@ -723,11 +1313,57 @@ rules evidence.
    proposal](2026-11-17-graziani-victory-policy-next.md) specifies candidate
    directions and row choices, but its [independent review](2026-11-17-graziani-victory-policy-review.md)
    identifies a terminal publication-timing leak and witness-binding gaps;
-   it remains unadmitted. A [convoy direction check](2026-11-17-graziani-victory-convoy-direction-next.md)
+   it remains unadmitted. [Publication source follow-up](2026-11-18-graziani-victory-publication-source.md)
+   and [review](2026-11-18-graziani-victory-publication-source-review.md)
+   confirm the scenario endpoint and bounded disclosure rules but find no
+   digital result-publication timing or audience in the inspected passages.
+   [Other-scenario timing comparison](2026-11-18-graziani-ledger-b-source-3.md)
+   and [review](2026-11-18-graziani-ledger-b-source-3-review.md) document
+   explicit end-of-scenario and early-win language elsewhere without importing
+   either into Graziani's assessment rule.
+   [Result-pair analysis](2026-11-18-graziani-victory-result-order-followup.md)
+   and [review](2026-11-18-graziani-victory-result-order-followup-review.md)
+   conditionally exclude four opposing row pairs under exclusive terminal
+   possession; they do not settle all simultaneous outcomes or precedence.
+   [Control source check](2026-11-18-graziani-victory-remaining-source.md) and
+   [review](2026-11-18-graziani-victory-remaining-source-review.md) confirm
+   §10.27 permits shared ZOC control. Its relation to scenario take, hold and
+   occupy language remains unselected; exclusive current possession was an
+   explicit condition of the four row-pair exclusions.
+   [Control-term comparison](2026-11-18-graziani-victory-control-terms.md)
+   and [review](2026-11-18-graziani-victory-control-terms-review.md) identify
+   last-occupier and current combat-occupation definitions in other contexts;
+   neither is expressly imported by Graziani §60.81.
+   [HQ combat-class check](2026-11-18-graziani-victory-hq-combat-class.md)
+   and [review](2026-11-18-graziani-victory-hq-combat-class-review.md) use a
+   distinct gun-equipped Libyan regimental HQ as a conditional case; the
+   unaccompanied HQ's victory classification remains unresolved.
+   [Engineer classification check](2026-11-18-graziani-victory-engineer-class.md)
+   and [review](2026-11-18-graziani-victory-engineer-class-review.md) distinguish
+   noncombat engineers, HQ engineering capability and actual combat attachment.
+   The original example's incorrect 1st Libyan tank attachment was corrected to
+   a conditional 2nd Libyan / IX(L) candidate at C3920; no victory is established.
+   [Sidi Birani/Barrani identity check](2026-11-18-graziani-sidi-barrani-identity.md)
+   and [review](2026-11-18-graziani-sidi-barrani-identity-review.md) support
+   C4131 as a strong same-edition inference, not an express printed correction
+   or admitted coordinate.
+   [Sidi Omar identity check](2026-11-18-graziani-ledger-b-source-4.md) and
+   [review](2026-11-18-graziani-ledger-b-source-4-review.md) support objective
+   C3618 and a separate neighboring Libyan Omar label; the latter's C3617
+   numeral is obscured and identified by grid sequence.
+   [Shared-control decision input](2026-11-18-graziani-city-control-decision-input.md)
+   and [review](2026-11-18-graziani-city-control-decision-input-review.md)
+   compare endpoint alternatives and a conditional disclosure concern; neither
+   option is selected or admitted.
+   A [convoy direction check](2026-11-17-graziani-victory-convoy-direction-next.md)
    and [independent review](2026-11-17-graziani-victory-convoy-direction-review.md)
    distinguish the scenario's source-to-objective and back-to-source wording
    from actual convoy movement; whether physical convoy restrictions apply to
-   a hypothetical victory trace remains a policy question. A [Commonwealth
+   a hypothetical victory trace remains a policy question. [ZOC comparison](2026-11-18-graziani-victory-trace-source-followup.md)
+   and [review](2026-11-18-graziani-victory-trace-source-followup-review.md)
+   distinguish §10.29's prior friendly combat-unit occupancy for actual
+   convoy entry from §32.16's friendly-unit wording for local supply draw;
+   §60.81 does not select either for the hypothetical victory trace. A [Commonwealth
    city-source follow-up](2026-11-17-graziani-commonwealth-victory-trace-followup.md)
    distinguishes the trace-subject, shared-city, eligible-hex and control
    questions; it compares earlier readings and does not independently inspect
@@ -780,6 +1416,31 @@ rules evidence.
    [independent review](2026-11-17-graziani-supply-destruction-review.md)
    confirm the per-unit/per-subsegment attempt limit, die and modifier; CP
    allocation and mapping the source's subsegment remain open.
+   [Supply-section census](2026-11-18-graziani-supply-section-census.md) and
+   [review](2026-11-18-graziani-supply-section-census-review.md) cover the
+   printed §32.12–.18 cases against register rows; the §32.17 wording calls
+   for a die roll for each Supply Unit in the hex, while target scope and
+   ownership remain interpretive. Census coverage does not close those gates.
+   Further numbered-case censuses cover [§32.2 expenditure](2026-11-18-graziani-supply-expenditure-census.md),
+   [§32.3 movement](2026-11-18-graziani-supply-movement-census.md), and
+   [§32.4 availability](2026-11-18-graziani-supply-arrival-census.md), with
+   independent reviews [expenditure](2026-11-18-graziani-supply-expenditure-census-review.md),
+   [movement](2026-11-18-graziani-supply-movement-census-review.md), and
+   [availability](2026-11-18-graziani-supply-arrival-census-review.md). They
+   retain source, policy and state gaps; §32.37's no-movement wording applies
+   to the whole Operations Stage, not merely after the air move.
+   The remaining numbered cases are inventoried in [§32.5 motorization](2026-11-18-graziani-motorization-section-census.md),
+   [§32.6 convoys](2026-11-18-graziani-convoy-section-census.md), and
+   [§§32.7–.9 fleet/AA](2026-11-18-graziani-fleet-aa-section-census.md),
+   with reviews [motorization](2026-11-18-graziani-motorization-section-census-review.md),
+   [convoys](2026-11-18-graziani-convoy-section-census-review.md), and
+   [fleet/AA](2026-11-18-graziani-fleet-aa-section-census-review.md). All
+   numbered §32.12–.9 cases now have bounded source coverage in these
+   inventories; rule interactions, mode, actual state and admission remain open.
+   [Carryover example](2026-11-18-graziani-supply-destruction-source-next.md)
+   and [review](2026-11-18-graziani-supply-destruction-source-next-review.md)
+   distinguish full CPA from remaining headroom after prior-portion retreat;
+   the example does not settle payer allocation or a legal destruction attempt.
    [Source expenditure matrix](2026-11-17-graziani-supply-expenditure-next.md)
    and its [independent check](2026-11-17-graziani-supply-expenditure-review.md)
    record printed ammunition/fuel amounts; repeated thresholds, multiple loads,
@@ -836,15 +1497,27 @@ rules evidence.
    [independent planning review](2026-11-17-graziani-facilities-independent-decision.md)
    proposes bounded facility, fortification and repair-supply choices; RUL-GRA-07
    selects them for planning. An [independent policy review](2026-11-17-graziani-selected-policies-review.md)
+   and [repair availability follow-up](2026-11-18-graziani-repair-availability-followup.md),
+   independently [reviewed](2026-11-18-graziani-repair-availability-followup-review.md),
+   distinguish field-repair companion eligibility from combat-unit supply
+   draw and later movement fuel from repair-time supply availability. The policy review
    identifies guard conditions. Tobruk facility type after control change
    remains unresolved, and all choices need admission review. A [facility
    follow-up](2026-11-17-graziani-tobruk-facility-followup.md) and [independent
    review](2026-11-17-graziani-tobruk-facility-followup-review.md) found no
    authoritative correction settling that transition; outside interpretations
-   remain non-authoritative. A [Commonwealth facility setup check](2026-11-17-graziani-cw-facility-setup.md)
+   remain non-authoritative. [Later scenario comparison](2026-11-18-graziani-tobruk-transition-source-next.md)
+   and [review](2026-11-18-graziani-tobruk-transition-source-next-review.md)
+   document differing printed facility types in separate setups; neither
+   establishes a live control-change conversion, and Land-only scope remains
+   conditional. A [Commonwealth facility setup check](2026-11-17-graziani-cw-facility-setup.md)
    and [review](2026-11-17-graziani-cw-facility-setup-review.md) retain the
    Alexandria all-hex parenthetical ambiguity, per-hex grouping evidence and
    the single-point 10% exception's chart-versus-rule discrepancy.
+   A [later-scenario comparison](2026-11-18-graziani-ledger-b-source-2.md) and
+   [review](2026-11-18-graziani-ledger-b-source-2-review.md) distinguish that
+   scenario's facility case from its replaced supply case; Graziani's own
+   replacement scope and per-hex facility status remain unresolved.
    [Independent port source review](2026-11-17-graziani-tobruk-port-independent.md)
    confirms that scenario 7 and chart 5 are efficiency levels, not throughput;
    chart 5 less the three-level obstruction suggests 2 but conflicts with the
@@ -873,7 +1546,13 @@ rules evidence.
    source does not specify a lifecycle transition between them. A [bounded
    errata follow-up](2026-11-17-graziani-marine-transition-followup.md) and
    [review](2026-11-17-graziani-marine-transition-followup-review.md) found
-   no official transition in the checked material. An [arrival
+   no official transition in the checked material. A [later scenario check](2026-11-18-graziani-marine-source-next.md)
+   and [review](2026-11-18-graziani-marine-source-next-review.md) identify a
+   similarly named company at Msus at GT26/3, without proving a continuous
+   identity or transition to later battalion rows. A [later track check](2026-11-18-graziani-ledger-c-residual-scan.md)
+   and [review](2026-11-18-graziani-ledger-c-residual-scan-review.md) identify
+   a GT65 stage discrepancy for 1st Marine Battalion between track and OA;
+   neither row supplies a company transition. An [arrival
    audit](2026-11-17-graziani-arrivals-audit-next.md) verifies the six track
    rows and 21 corresponding OA identities, and limits errata §8.86 to the
    Tripoli/Tunisia-specific case; §20.12 supplies the general arrival-stage
@@ -884,6 +1563,10 @@ rules evidence.
    and [independent review](2026-11-17-graziani-nz-arrival-followup-review.md)
    verify the track/OA and general-example conflict without finding an official
    correction in the inspected errata.
+   [Schedule-procedure follow-up](2026-11-18-graziani-nz-arrival-source-next.md)
+   and [review](2026-11-18-graziani-nz-arrival-source-next-review.md) identify
+   §4.42's OA cross-check as evidence for the track reading, without resolving
+   the contradictory §20.11 example or finding an official correction.
    [Corps-artillery source audit](2026-11-17-graziani-corps-artillery-next.md)
    and [independent check](2026-11-17-graziani-corps-artillery-review.md)
    resolve the explicitly corrected XXI duplicate to one identity, distinct
@@ -892,6 +1575,18 @@ rules evidence.
    provisional battalion identity from the OA and counter; the scenario's
    repeated text and missing punctuation remain uncorrected by the inspected
    errata. Runtime admission requires full source reconciliation.
+   [Additional counter-area check](2026-11-18-graziani-4-1ar-source-next.md)
+   and [review](2026-11-18-graziani-4-1ar-source-next-review.md) find no
+   additional 4/1AR face in two bounded areas; this does not resolve punctuation
+   or prove absence from every sheet.
+   [Section 2/3 counter sweep](2026-11-18-graziani-4-1ar-counter-sweep.md) and
+   [review](2026-11-18-graziani-4-1ar-counter-sweep-review.md) identify one
+   readable `4/1AR` face and no additional readable match in the inspected
+   sections. Repeated scenario wording and uninspected faces remain separate.
+   [Remaining Axis-area counter inventory](2026-11-18-graziani-4-1ar-counter-remaining.md)
+   and [review](2026-11-18-graziani-4-1ar-counter-remaining-review.md) find no
+   additional readable match in inspected sections 4, 5 and 9; sections 6–8
+   received overview only. No global absence or punctuation correction follows.
    [Benghazi diversion analysis](2026-11-17-graziani-axis-benghazi-arrival-next.md)
    and [independent review](2026-11-17-graziani-axis-benghazi-arrival-review.md)
    establish the first ordinary Axis track entry at GT9 stage 2, outside the
@@ -909,6 +1604,10 @@ rules evidence.
    and [independent review](2026-11-17-graziani-initiative-ratings-review.md)
    establish the GT1 fixed holder, GT1–6 Commonwealth rating and conditional
    Axis chart values while retaining Rommel's separate absence rule.
+   [Rommel schedule check](2026-11-18-graziani-rommel-schedule-source.md) and
+   [review](2026-11-18-graziani-rommel-schedule-source-review.md) place his
+   ordinary entry at GT20/2, after Graziani, without exhausting exceptional
+   paths; §31.0 and §17.28 morale-effect wording also requires reconciliation.
    [RUL-GRA-13](2026-11-12-graziani-ruling-decisions.md#rul-gra-13-arrival-and-training-order-planning-interpretation)
    selects reviewed arrival/training sequencing for planning, while replacement
    instructor, completion and interruption consequences remain separate gates.
@@ -920,10 +1619,141 @@ rules evidence.
    and [independent review](2026-11-17-graziani-replacement-training-followup-review.md)
    document durations, interruption and absorption while retaining unresolved
    instructor and capacity interpretation.
+   [Repair towing source check](2026-11-18-graziani-ledger-a-source-next.md)
+   and [review](2026-11-18-graziani-ledger-a-source-next-review.md) retain the
+   nearest-facility requirement, the failed-field-repair towing restriction,
+   and their unresolved phase and capture-placement interactions.
+   [Specialized recovery comparison](2026-11-18-graziani-ledger-a-source-2.md)
+   and [review](2026-11-18-graziani-ledger-a-source-2-review.md) distinguish
+   turn-worded towing from ensuing-stage repair limits. The reviewed Axis
+   schedule candidate is GT24/3, beyond Graziani; identity and exceptional
+   introductions remain unproved.
+   [Recovery-counter follow-up](2026-11-18-graziani-ledger-a-residual-scan.md)
+   and [review](2026-11-18-graziani-ledger-a-residual-scan-review.md) add a
+   German counter face and later-scenario erratum as a candidate identity
+   crosswalk; they do not prove identity or six-turn introduction.
+   [SGSU arrival erratum](2026-11-18-graziani-sgsu-arrival-erratum.md) and
+   [review](2026-11-18-graziani-sgsu-arrival-erratum-review.md) distinguish
+   detailed-Air availability and scenario pools from any unproved Land-only
+   arrival or eligible training instructor.
+   [Morale erratum analysis](2026-11-18-graziani-morale-cap-erratum.md) and
+   [review](2026-11-18-graziani-morale-cap-erratum-review.md) confine §17.28's
+   +4 exception to Axis units stacked with Rommel during assault; it is not a
+   general increase to Commonwealth training's Basic Morale ceiling. Scenario
+   reachability and actual training progression remain unproved.
+   [Australian training horizon](2026-11-18-graziani-ledger-c-source-4.md) and
+   [review](2026-11-18-graziani-ledger-c-source-4-review.md) compare a named
+   brigade's conditional 24 qualifying stages from zero credit with the 18
+   scenario stage positions; pre-existing credit and actual eligibility are unknown.
+   [Cairo instructor candidate](2026-11-18-graziani-ledger-c-source-3.md) and
+   [review](2026-11-18-graziani-ledger-c-source-3-review.md) identify 2 KOR as
+   a potential infantry instructor, contingent on actual strength, status,
+   co-location and stage conditions; no training completion is established.
    [Patrol details](2026-11-17-graziani-patrol-details-next.md) and their
    [independent review](2026-11-17-graziani-patrol-details-independent.md)
    record source limits and disclosures; stage-history, dummy and loss-table
    interactions remain open.
+   [Limited-intelligence source inventory](2026-11-18-graziani-limited-intelligence-source-inventory.md)
+   and [review](2026-11-18-graziani-limited-intelligence-source-inventory-review.md)
+   enumerate §3.62 examples and selected patrol/ZOC disclosures by trigger and
+   audience; this bounded list is not a complete application disclosure policy.
+   Further bounded disclosure passes cover [Land §§6–16](2026-11-18-graziani-disclosure-land-6-16.md),
+   [§§17–29](2026-11-18-graziani-disclosure-land-17-29.md), and
+   [§§30–32](2026-11-18-graziani-disclosure-land-30-32.md), with respective
+   reviews [6–16](2026-11-18-graziani-disclosure-land-6-16-review.md),
+   [17–29](2026-11-18-graziani-disclosure-land-17-29-review.md), and
+   [30–32](2026-11-18-graziani-disclosure-land-30-32-review.md). They document
+   specific printed triggers and audiences, not an exhaustive view contract.
+   [Introductory disclosure pass](2026-11-18-graziani-disclosure-land-1-4.md)
+   and [review](2026-11-18-graziani-disclosure-land-1-4-review.md), plus
+   [sequence pass](2026-11-18-graziani-disclosure-sequence.md) and
+   [review](2026-11-18-graziani-disclosure-sequence-review.md), cover the
+   earlier Land §§1–5 gaps within bounded source scope; other source sets and
+   application-level disclosure decisions remain open.
+   [Scenario disclosure census](2026-11-18-graziani-scenario-disclosure-census.md)
+   and [review](2026-11-18-graziani-scenario-disclosure-census-review.md)
+   record bounded §§59–60 findings: the scenario says it receives dummy groups
+   that may be placed according to the rules, without settling whether zero may
+   be placed. Placement and disclosure are separate questions.
+   [Chart disclosure census](2026-11-18-graziani-chart-disclosure-census.md)
+   and [review](2026-11-18-graziani-chart-disclosure-census-review.md) flag a
+   raider-guard equality discrepancy and mode-specific reporting; the chart
+   search was not exhaustive. The subsequent [Axis arrival and OA key check](2026-11-18-graziani-axis-arrival-oa-disclosure.md)
+   and [review](2026-11-18-graziani-axis-arrival-oa-disclosure-review.md)
+   find no explicit opponent announcement in those inspected keys; their
+   silence does not establish a universal secrecy rule.
+   [Guard-equality discriminator](2026-11-18-graziani-raider-guard-equality.md)
+   and [review](2026-11-18-graziani-raider-guard-equality-review.md) compare
+   equality under §27.91 and §27.55(b), with the separate attack die and
+   conditional report. Source precedence and Land-only scope remain open.
+   [OCR-assisted disclosure leads](2026-11-18-graziani-disclosure-ocr-leads.md)
+   and [review](2026-11-18-graziani-disclosure-ocr-leads-review.md) identify
+   conflicting probe-announcement timing and a conditional Reaction close-assault
+   announcement; no timing precedence or digital audience is selected.
+   [Probe timing follow-up](2026-11-18-graziani-probe-announcement-source.md)
+   and [review](2026-11-18-graziani-probe-announcement-source-review.md)
+   check nearby errata but find no express reconciliation of the printed
+   timing conflict. [Patrol elimination follow-up](2026-11-18-graziani-patrol-elimination-source.md)
+   and [review](2026-11-18-graziani-patrol-elimination-source-review.md)
+   retain the separate objective-loss branch and §16.33 wording tension.
+   [Land addenda disclosure census](2026-11-18-graziani-land-addenda-disclosure-census.md)
+   and [review](2026-11-18-graziani-land-addenda-disclosure-census-review.md)
+   enumerate numbered rules and counter corrections on pp. 45–46; other
+   books, indirect interactions and application-level views remain unexhausted.
+   [Record-sheet disclosure check](2026-11-18-graziani-record-sheets-disclosure.md)
+   and [review](2026-11-18-graziani-record-sheets-disclosure-review.md)
+   distinguish usage and legibility from §3.6 secrecy; the printed “other
+   Players” wording does not by itself establish blanket access to fields.
+   [Warship barrage disclosure](2026-11-18-graziani-warship-barrage-disclosure.md)
+   and [review](2026-11-18-graziani-warship-barrage-disclosure-review.md)
+   record the Commonwealth-warship identification addendum without inferring
+   a general fleet manifest or actual eligible attack.
+   [Minefield disclosure check](2026-11-18-graziani-minefield-disclosure-source.md)
+   and [review](2026-11-18-graziani-minefield-disclosure-source-review.md)
+   distinguish secret construction item from revelation on enemy entry and
+   identify conflicting dummy-removal timing; no precedence is selected.
+   [Loss-table follow-up](2026-11-18-graziani-patrol-interaction-followup.md)
+   and [review](2026-11-18-graziani-patrol-interaction-followup-review.md)
+   identify a hypothetical eligible one-point patrol whose 1 killed / 1
+   captured result exceeds its size, and confirm the separate zero-CP chart
+   entry. Loss allocation, prisoner treatment and objective-loss conversion
+   remain unselected; scenario reachability is not established.
+   [One-point setup candidate](2026-11-18-graziani-patrol-one-point-witness.md)
+   and [review](2026-11-18-graziani-patrol-one-point-witness-review.md) identify
+   1st KRRC and a nearby enemy formation in printed setup, with motorization,
+   path, weather and phase gates unresolved. §16.22's target-ZOC exception
+   must be considered; no legal patrol or die result is established.
+   [C3922 allocation comparison](2026-11-18-graziani-ledger-a-source-3.md)
+   and [review](2026-11-18-graziani-ledger-a-source-3-review.md) distinguish
+   player allocation from historical-motorization priority; the KRRC's actual
+   pool assignment and patrol eligibility remain unproved.
+   [C4131 motorization check](2026-11-18-graziani-c4131-motorization-source.md)
+   and [review](2026-11-18-graziani-c4131-motorization-source-review.md) compare
+   conditional infantry transport needs against ten listed medium trucks; gun
+   transport, actual allocation and group CPA remain separate questions.
+   [Halfaya path check](2026-11-18-graziani-patrol-halfaya-path.md) and
+   [review](2026-11-18-graziani-patrol-halfaya-path-review.md) identify an
+   uphill escarpment on the direct candidate's first side; whether the patrol
+   terrain test imports vehicle passage restrictions remains unresolved.
+   [Dummy-target follow-up](2026-11-18-graziani-patrol-dummy-followup.md)
+   and [review](2026-11-18-graziani-patrol-dummy-followup-review.md) retain
+   uncertain dummy-only occupancy, no-combat disclosure versus deception,
+   report quota and objective-loss recipient. Land-only rules strongly support
+   ignoring Stores expenditure; a separate presence condition remains open.
+   [Dummy-tank class check](2026-11-18-graziani-ledger-b-source-5.md) and
+   [review](2026-11-18-graziani-ledger-b-source-5-review.md) confirm §16.43's
+   restriction on Italian formations, including mixed formations, without
+   establishing a universal Axis ban or a victory-unit classification.
+   [Dummy setup check](2026-11-18-graziani-dummy-setup-source.md) and
+   [review](2026-11-18-graziani-dummy-setup-source-review.md) distinguish the
+   three-at-once tank-dummy maximum from any starting inventory and from
+   scenario Supply Unit dummies; initial tank-dummy absence is not proved.
+   [Stage-history follow-up](2026-11-18-graziani-patrol-stage-history.md) and
+   [review](2026-11-18-graziani-patrol-stage-history-review.md) identify
+   conflicting probe classifications in §§15.25 and 15.91, with implications
+   for patrol eligibility. Existing RUL-GRA-19 remains planning policy, not
+   an official source correction; barrage timing and probe treatment need
+   explicit admission.
    [Road stacking research](2026-11-17-graziani-road-stacking-next.md) and
    its [independent review](2026-11-17-graziani-road-stacking-review.md) confirm
    the Land-only road/track congestion waiver while retaining ordinary hex
@@ -936,10 +1766,44 @@ rules evidence.
    and [independent review](2026-11-17-graziani-escort-reaction-followup-review.md)
    distinguish §8.98's truck-convoy capture from §32.58's forced-return rule,
    the specific assault target and stacking at Reaction.
+   [Retreat comparison](2026-11-18-graziani-escort-reaction-source-followup.md)
+   and [review](2026-11-18-graziani-escort-reaction-source-followup-review.md)
+   distinguish voluntary retreat before assault from reaction and the forced
+   over-15-CPA return; abstract-carrier eligibility, escort effects and rule
+   hierarchy remain open.
+   [Motorization combat-CP check](2026-11-18-graziani-mp-combat-cp-scope.md)
+   and [review](2026-11-18-graziani-mp-combat-cp-scope-review.md) compare
+   §11.25's hex-wide charge with §32.58(C)'s qualifying transport-point
+   exemption; representation, actual participation and timing remain gates.
+   [Raider-entry analysis](2026-11-18-graziani-logistics-priority-source.md)
+   and [review](2026-11-18-graziani-logistics-priority-source-review.md)
+   identify specific occupied-hex and guarded-dump raid exceptions, while
+   retaining raider classification, major-city exclusion and abstract Supply
+   Unit capture precedence as separate questions.
+   [Prisoner-guard erratum](2026-11-18-graziani-prisoner-guard-erratum.md)
+   and [review](2026-11-18-graziani-prisoner-guard-erratum-review.md) confirm
+   one guard per five moving Prisoner Points; nonmultiple rounding and actual
+   capture/camp reachability remain open.
+   [Raider Reaction erratum](2026-11-18-graziani-raider-reaction-erratum.md)
+   and [review](2026-11-18-graziani-raider-reaction-erratum-review.md) record
+   permission after any Spotting attempt while retaining spotted/eliminated
+   timing, Land-only applicability and six-turn reachability questions.
+   [Raider return follow-up](2026-11-18-graziani-raider-return-erratum.md) and
+   [review](2026-11-18-graziani-raider-return-erratum-review.md) bound the
+   four-turn return and corrected SAS secret-movement reference; neither an
+   early eligible raider nor a specific return stage is established.
+   [Carrier classification](2026-11-18-graziani-carrier-retreat-classification.md)
+   and [review](2026-11-18-graziani-carrier-retreat-classification-review.md)
+   check counter, motorization-point and marker wording; the source does not
+   expressly identify a coupled §13 retreat subject or settle cargo behavior.
    [Vehicle-marker secrecy](2026-11-17-graziani-vehicle-marker-fog-next.md)
    and its [independent review](2026-11-17-graziani-vehicle-marker-fog-review.md)
    distinguish map-counter inspection from secret contents, but leave captor
    knowledge and destroyed-marker relocation interpretation open.
+   [Captor follow-up](2026-11-18-graziani-vehicle-marker-captor-source.md) and
+   [review](2026-11-18-graziani-vehicle-marker-captor-source-review.md)
+   distinguish optional capture-time relocation from later towing toward a
+   facility; captor access to secret contents remains unresolved.
    [Abandoned-vehicle source analysis](2026-11-17-graziani-abandoned-vehicle-source-next.md)
    and [independent review](2026-11-17-graziani-abandoned-vehicle-source-review.md)
    identify a detailed salt-marsh recovery procedure and competing vehicle
@@ -973,14 +1837,71 @@ rules evidence.
    a separate [Australian baseline](2026-11-17-graziani-australia-shell-next.md)
    and [independent review](2026-11-17-graziani-australia-shell-review.md)
    find non-shell status under co-located default attachments. Actual setup
-   choices, substitutes and convoy snapshots remain material. A [conditional
+   choices, substitutes and convoy snapshots remain material. [Training-stage
+   analysis](2026-11-18-graziani-convoy-scenario-next.md) and [review](2026-11-18-graziani-convoy-scenario-next-review.md)
+   distinguish initial 6th Australian training from its actual later convoy
+   composition; continuing training restricts voluntary movement under stated
+   conditions, but instructor presence and stage state require evidence.
+   [Training threshold correction](2026-11-18-graziani-training-source-next.md)
+   and [review](2026-11-18-graziani-training-source-next-review.md) confirm
+   instructional battalions need at least **one-third** of assigned TOE
+   strength; the prior half-strength statement in the training-stage note and
+   review was corrected. A [conditional
    pair analysis](2026-11-17-graziani-convoy-pair-next.md), independently
    [reviewed](2026-11-17-graziani-convoy-pair-review.md), finds the Australian
    division qualifies using 4th Indian only under stated non-shell, location and
    map-geometry assumptions; it does not determine an actual bomb column. The
    [weather source review](2026-11-17-graziani-weather-schedule-review.md)
    locates common-chart §29.7 and confirms all six foul-weather area mappings;
-   region membership and Land-only effects still need admission. [Hot-weather
+   region membership and Land-only effects still need admission.
+   [Cairo-adjacent delta check](2026-11-18-graziani-ledger-c-source-5.md) and
+   [review](2026-11-18-graziani-ledger-c-source-5-review.md) identify delta
+   ink within E1629 and sequence-supported E1729; mixed-terrain classification,
+   road/rail connectivity and actual weather remain open.
+   [E1829 delta check](2026-11-18-graziani-e1829-delta-source.md) and
+   [review](2026-11-18-graziani-e1829-delta-source-review.md) find no clear
+   delta fill in exposed interior portions, but overprint prevents an absence
+   or whole-hex classification conclusion; the numeral is sequence-inferred.
+   [Opening weather comparison](2026-11-18-graziani-weather-stage-scope-next.md)
+   and [review](2026-11-18-graziani-weather-stage-scope-next-review.md)
+   identify that §29.7 never selects Maps C and E together in one determination;
+   actual stage weather and locations remain conditional.
+   [Land-only movement and supply weather analysis](2026-11-18-graziani-land-weather-effects.md)
+   and [review](2026-11-18-graziani-land-weather-effects-review.md) distinguish
+   actual movement from hypothetical supply traces and the Motorization Point
+   breakdown exemption. Rain-wadi precedence, sandstorm breakdown scope,
+   trace effects and stored-fuel evaporation remain explicit decision gates.
+   [Rain-wadi chart check](2026-11-18-graziani-rule-priority-followup.md) and
+   [review](2026-11-18-graziani-rule-priority-followup-review.md) distinguish
+   hex and side breakdown values, but do not settle whether the road-side
+   negation survives rain's track treatment or determine a crossing total.
+   [Decision input](2026-11-18-graziani-rain-wadi-decision-input.md) and
+   [review](2026-11-18-graziani-rain-wadi-decision-input-review.md) compare
+   candidate breakdown readings with a conditional numeric discriminator;
+   no precedence is selected.
+   [Weather and construction](2026-11-18-graziani-weather-repair-construction.md)
+   and [review](2026-11-18-graziani-weather-repair-construction-review.md)
+   distinguish a storm-paused construction stage from restart after a
+   participant leaves, and major-facility repair exceptions from temporary
+   facility ZOC exceptions. Completion timing, dismantling and abstract
+   construction prerequisites remain interpretation gates.
+   [Construction stacking erratum](2026-11-18-graziani-construction-stacking-erratum.md)
+   and [review](2026-11-18-graziani-construction-stacking-erratum-review.md)
+   distinguish the road/track stacking exception, Land-only waiver, CP halt
+   and storm restart; ordinary terrain-hex limits remain separate.
+   [Minefield HQ candidates](2026-11-18-graziani-ledger-a-source-4.md) and
+   [review](2026-11-18-graziani-ledger-a-source-4-review.md) distinguish
+   §24.31's named Commonwealth HQ engineering case from unresolved Axis HQ
+   eligibility and abstract construction costs; no action is established.
+   [Alexandria repair case](2026-11-18-graziani-repair-scenario-case.md) and
+   [review](2026-11-18-graziani-repair-scenario-case-review.md) connect a
+   listed broken A10 to a conditional singleton 10% chart-versus-rule conflict;
+   facility status, adjustment, eligibility and actual roll remain unproved.
+   [Weather scenario case](2026-11-18-graziani-weather-scenario-case.md) and
+   [review](2026-11-18-graziani-weather-scenario-case-review.md) use the same
+   listed tanks to bound the major-facility storm exception; actual weather,
+   co-location, towing and repair eligibility remain separate conditions.
+   [Hot-weather
    fuel analysis](2026-11-17-graziani-hot-supply-next.md) and its
    [independent review](2026-11-17-graziani-hot-supply-review.md) preserve
    competing abstraction readings, loaded-holdings and RNG/privacy gates, and
@@ -999,14 +1920,49 @@ rules evidence.
    [rail occupancy follow-up](2026-11-17-graziani-rail-occupancy-followup.md)
    and [review](2026-11-17-graziani-rail-occupancy-followup-review.md) leave
    self-occupancy, CP wording and pickup/dropoff ordering unadmitted.
+   [Rail timing follow-up](2026-11-18-graziani-rail-capacity-source-next.md)
+   and [review](2026-11-18-graziani-rail-capacity-source-next-review.md)
+   distinguish arrival-stage rail permission from the general start-of-stage
+   rail requirement and retain cumulative-boardings versus peak-load ambiguity.
+   [Axis rail scope](2026-11-18-graziani-axis-rail-erratum-scope.md) and
+   [review](2026-11-18-graziani-axis-rail-erratum-scope-review.md) compare
+   detailed Axis authorization and stock with the Commonwealth-specific
+   abstract allowance; Axis phase and Land-only applicability remain open.
+   [Load-wording search](2026-11-18-graziani-rail-load-meaning-next.md) and
+   [review](2026-11-18-graziani-rail-load-meaning-next-review.md) find no
+   inspected example settling that ambiguity; detailed-logistics rules cannot
+   be imported into Land-only play without a separate decision.
+   [Arrival-witness check](2026-11-18-graziani-rail-arrival-witness-next.md)
+   and [review](2026-11-18-graziani-rail-arrival-witness-next-review.md) do
+   not establish a concrete conflicting supply arrival; receipt timing and
+   placement remain prerequisites for the conditional discriminator.
+   [Decision input](2026-11-18-graziani-rail-arrival-decision-input.md) and
+   [review](2026-11-18-graziani-rail-arrival-decision-input-review.md) compare
+   literal timing, a narrow arrival exception and deferral without selecting one.
+   [Coastal supply capacity](2026-11-18-graziani-coastal-supply-mission.md)
+   and [review](2026-11-18-graziani-coastal-supply-mission-review.md) compare
+   printed ship holds and the two-ship mission wording; pooling, dummy cargo,
+   loading and Land-only detailed-rule scope remain unresolved.
    [Abstract fleet/AA inventory](2026-11-17-graziani-abstract-aa-fleet-next.md)
    records side-specific removals, the scenario-wide fleet attack allowance and
    remaining timing, damage and initial-deployment questions. The [independent
    review](2026-11-17-graziani-abstract-aa-fleet-review.md) corrects the Malta
    allowance to two destroyers and flags conflicting AA damage wording.
+   [Non-AA tank case](2026-11-18-graziani-ledger-a-source-5.md) and
+   [review](2026-11-18-graziani-ledger-a-source-5-review.md) identify listed
+   II(M) M11/39 points with AA 1 as a conditional §32.84 category example;
+   no actual AA action or later strength is established.
    [RUL-GRA-15](2026-11-12-graziani-ruling-decisions.md#rul-gra-15-abstract-fleet-attack-order-planning-interpretation)
    selects a reviewed post-repair attack boundary for planning; target,
    weather, damaged-ship and disclosure contracts remain unadmitted.
+   [Fleet repair supply check](2026-11-18-graziani-fleet-repair-supply-source.md)
+   and [review](2026-11-18-graziani-fleet-repair-supply-source-review.md)
+   confirm §30.37's no-supplies/no-engineer repair condition and identify
+   §30.38's AA-fire permission; repair/rest overlap and completion order remain open.
+   [Fleet no-target analysis](2026-11-18-graziani-fleet-no-target-source.md)
+   and [review](2026-11-18-graziani-fleet-no-target-source-review.md) bound a
+   conditional excess-damage example; empty harbors, allocation and actual
+   surviving targets remain unresolved.
    [AA lifecycle analysis](2026-11-17-graziani-aa-lifecycle-next.md) and its
    [independent review](2026-11-17-graziani-aa-lifecycle-review.md) establish
    GT2 as the earliest ordinary Italian Light AA plan and GT4 as its nominal
@@ -1042,6 +1998,13 @@ rules evidence.
    provenance, availability and contents remain unverified. No purchase or
    contact was made. This is a historical-context lead, not a source-backed
    correction to a game counter, setup or rule.
+   [Later booklet search](2026-11-18-graziani-historical-booklet-search-next.md)
+   and [review](2026-11-18-graziani-historical-booklet-search-next-review.md)
+   identify a spare-parts listing; stock, edition, contents and rights remain
+   unverified. [Formation clarification search](2026-11-18-graziani-formation-clarification-search-next.md)
+   and [review](2026-11-18-graziani-formation-clarification-search-next-review.md)
+   find no new authoritative CCNN-gun or Marine-lifecycle answer in their
+   bounded public search.
 
 ## Independent review queue
 
