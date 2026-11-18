@@ -132,7 +132,7 @@ public sealed class GrazianiSourceJournalTests
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        builder.Services.AddSingleton(journal);
+        builder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal));
         await using var app = builder.Build();
         app.MapDurableCampaignApi();
         await app.StartAsync(TestContext.Current.CancellationToken);

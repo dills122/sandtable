@@ -91,7 +91,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             }
             IntegratedCampaignCompare(control, original.Path, disk.Open(clock), disk.Path, campaignId);
 
-            void SweepControl() => new CampaignCombatTimeoutService(control, clock,
+            void SweepControl() => new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(control), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
 
             void Compare(NativeChildResult result)

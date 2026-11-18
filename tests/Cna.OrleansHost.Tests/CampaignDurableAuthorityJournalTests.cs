@@ -1343,7 +1343,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var completionBuilder = WebApplication.CreateBuilder();
         completionBuilder.Environment.EnvironmentName = "Development";
         completionBuilder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        completionBuilder.Services.AddSingleton(completionJournal);
+        completionBuilder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(completionJournal));
         await using (var completionApp = completionBuilder.Build())
         {
             completionApp.MapDurableCampaignApi();
@@ -1500,7 +1500,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        builder.Services.AddSingleton(movementJournal);
+        builder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(movementJournal));
         await using (var app = builder.Build())
         {
             app.MapDurableCampaignApi();
@@ -2039,7 +2039,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             var builder = WebApplication.CreateBuilder();
             builder.Environment.EnvironmentName = "Development";
             builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-            builder.Services.AddSingleton(journal);
+            builder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal));
             var app = builder.Build();
             app.MapDurableCampaignApi();
             await app.StartAsync(TestContext.Current.CancellationToken);

@@ -87,7 +87,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
         var (request, _, _) = PrepareRbaRound(journal);
-        var scheduler = new CampaignCombatTimeoutService(journal, clock,
+        var scheduler = new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal), clock,
             NullLogger<CampaignCombatTimeoutService>.Instance);
         scheduler.SweepOnce(CancellationToken.None);
         clock.Advance(TimeSpan.FromSeconds(30));
@@ -140,7 +140,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             insert.Parameters.AddWithValue("$seed", invalidSeed);
             insert.ExecuteNonQuery();
         }
-        var scheduler = new CampaignCombatTimeoutService(journal, clock,
+        var scheduler = new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal), clock,
             NullLogger<CampaignCombatTimeoutService>.Instance);
         clock.Advance(TimeSpan.FromSeconds(30));
         scheduler.SweepOnce(CancellationToken.None);

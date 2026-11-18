@@ -636,8 +636,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
         command.Parameters.AddWithValue("$element", actingElementId);
     }
 
-    private static byte[] ReadReferenceKey(SqliteConnection connection,
-        SqliteTransaction transaction)
+    /// <summary>
+    /// Reads the campaign-reference HMAC key from this campaign's own per-campaign file.
+    /// Deliberately per-campaign, not host-identity state like <c>operator_capability</c> -- see
+    /// <see cref="EnsureHostIdentity"/>'s remarks for why the two are not treated the same way:
+    /// <see cref="Reference"/> always takes <c>campaignId</c> as an explicit input and is only ever
+    /// checked within one campaign's own scope, so nothing requires this key to match across
+    /// campaigns, and keeping it in the campaign's own file means it travels correctly with that
+    /// file alone if it is ever copied/backed up elsewhere (a shared host-identity file would not).
+    /// </summary>
+    private static byte[] ReadReferenceKey(SqliteConnection connection, SqliteTransaction transaction)
     {
         using var query = connection.CreateCommand();
         query.Transaction = transaction;

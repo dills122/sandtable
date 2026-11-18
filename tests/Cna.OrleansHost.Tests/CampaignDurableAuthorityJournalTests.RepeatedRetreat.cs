@@ -113,7 +113,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 Assert.Equal(22, CampaignExercises.QueryCheckpoint(disk.Open(clock).ReadVerified(request.CampaignId)).ContractVersion);
                 ThirdCycleReserveSql(disk.Path, "DROP TRIGGER fail_repeated_retreat");
             }
-            new CampaignCombatTimeoutService(cold, clock,
+            new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(cold), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
             var after = disk.Open(clock).ReadVerified(request.CampaignId);
             Assert.NotEqual(22, CampaignExercises.QueryCheckpoint(after).ContractVersion);
@@ -152,7 +152,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.Equal(paid.RootElement.GetProperty("afterRandomState").GetRawText(), successor.RootElement.GetProperty("randomState").GetRawText());
             Assert.Equal(settlement.RootElement.GetProperty("settledWorldHash").GetString(), successor.RootElement.GetProperty("worldHash").GetString());
             var rowsAfter = IntegratedCampaignRows(disk.Path, "accepted_steps");
-            new CampaignCombatTimeoutService(disk.Open(clock), clock,
+            new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(disk.Open(clock)), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
             Assert.Equal(rowsAfter, IntegratedCampaignRows(disk.Path, "accepted_steps"));
             Assert.True(CampaignExercises.Reconstruct(disk.Open(clock).ReadVerified(request.CampaignId)).IsVerified);

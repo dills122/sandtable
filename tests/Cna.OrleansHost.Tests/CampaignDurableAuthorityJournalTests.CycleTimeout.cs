@@ -31,7 +31,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var (request, _) = PrepareCycleRound(fixture.Create(clock));
         var cold = fixture.Open(clock);
         clock.Advance(TimeSpan.FromSeconds(30));
-        var scheduler = new CampaignCombatTimeoutService(cold, clock,
+        var scheduler = new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(cold), clock,
             NullLogger<CampaignCombatTimeoutService>.Instance);
         scheduler.SweepOnce(CancellationToken.None);
         Assert.Equal(34, CampaignExercises.QueryCheckpoint(cold.ReadVerified(request.CampaignId)).ContractVersion);
@@ -218,7 +218,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             insert.CommandText = "UPDATE campaigns SET seed='bad' WHERE campaign_id=$id";
             insert.ExecuteNonQuery();
         }
-        var scheduler = new CampaignCombatTimeoutService(journal, clock,
+        var scheduler = new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal), clock,
             NullLogger<CampaignCombatTimeoutService>.Instance);
         clock.Advance(TimeSpan.FromSeconds(30));
         scheduler.SweepOnce(CancellationToken.None);

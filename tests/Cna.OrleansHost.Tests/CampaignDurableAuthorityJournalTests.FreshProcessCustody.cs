@@ -116,7 +116,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.Equal(1, CountAcceptedStep(disk.Path, campaignId, CampaignHostAcceptedStep.NativeCombatCustodyTimeoutKind));
             Compare(retry);
 
-            void SweepControl() => new CampaignCombatTimeoutService(control, clock,
+            void SweepControl() => new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(control), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
 
             void Compare(NativeChildResult child)

@@ -230,7 +230,10 @@ offer or a distinguishable error.
 ### Normal durable HTTP contract
 
 `/api/v2/campaigns` is the version-2 route for the same normal Core/Host
-authority. It is configured with `CampaignJournal:Path` and a 64-lowercase-hex
+authority. It is configured with `CampaignJournal:Path` (a directory holding
+one SQLite file per campaign, per the data-layer design doc's file-per-campaign
+hot-tier topology -- `docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md`
+&#167;3 -- rather than a single shared file) and a 64-lowercase-hex
 `CampaignJournal:OperatorSecret`; `CampaignJournal:EnableOutwardApi=true` maps
 it in local Development hosting. It is off by default, accepts loopback callers
 only, requires same-origin browser requests, limits JSON bodies to 8 KiB, and
