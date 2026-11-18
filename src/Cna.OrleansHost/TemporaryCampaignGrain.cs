@@ -117,6 +117,27 @@ public sealed class TemporaryCampaignGrain(
     internal const string SetupHash = "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3";
     internal const string ContentHash = "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
     internal const string ScenarioId = "breakdown-truck-lab";
+
+    // Admission budget for memory.OutwardRequests (issue #390). That dictionary has no natural
+    // bound: a seated client can submit unlimited distinct, well-formed-but-stale/invalid
+    // request IDs, and each rejected outcome is retained forever (by design — see the
+    // request-reuse/stale-view handling in SubmitOutwardAsync and
+    // docs/specs/maproom-trusted-host-protocol-v1.md's "Fresh rejected requests may be retained
+    // as immutable private dedupe outcomes" note). Accepted request IDs do NOT share that
+    // problem: each one corresponds 1:1 with an outward action that actually advanced the
+    // committed campaign, so their count is already bounded by how many actions a finite Rules9
+    // lab scenario can accept before it ends — ordinarily a few dozen, nowhere near this budget.
+    // Rejected IDs are the only unbounded source, which is why a single combined cap (rather than
+    // separate accepted/rejected sub-budgets) is sufficient: even a pathological run that is
+    // 100% accepted traffic still cannot exceed this ceiling, and realistic accepted volume for
+    // one ephemeral, non-persisted lab campaign leaves effectively all headroom to rejected
+    // traffic. 256 retained identities is far beyond any real interactive or scripted-test
+    // session (a handful to a few dozen actions per campaign) while keeping worst-case memory for
+    // one campaign's dictionary tiny (each record is a handful of short strings/enums, well under
+    // 1 KB, so 256 of them is well under a MB). Tune this constant if real usage ever needs more;
+    // it intentionally is not runtime-configurable since this grain is temporary/dev-only.
+    internal const int OutwardRequestCapacity = 256;
+
     private readonly string activationId = Guid.NewGuid().ToString("N");
     private TemporaryCampaignMemory memory = null!;
 
@@ -314,6 +335,15 @@ public sealed class TemporaryCampaignGrain(
         if (memory.OutwardRequests.TryGetValue(request.RequestId, out var prior))
             return prior.Seat == seat && prior.Request == request
                 ? prior.Reply : Outward(TemporaryCampaignStatus.Conflict, "request-reuse");
+
+        // Admission budget check (issue #390): only a genuinely new request ID reaches here —
+        // an already-admitted ID (accepted or rejected) always returns above, regardless of
+        // capacity, so exact-retry and changed-payload conflict handling for existing IDs is
+        // unaffected by this gate. At capacity, turn away the new ID with a clear response
+        // instead of evicting any existing record; evicting to make room would let a retired
+        // request ID later be treated as new, which is exactly what this budget must prevent.
+        if (memory.OutwardRequests.Count >= OutwardRequestCapacity)
+            return Outward(TemporaryCampaignStatus.Rejected, "at-capacity");
 
         TemporaryOutwardActionReply result;
         var cut = memory.AudienceTracker?.Read(seat.Audience, memory.CommittedVersion,
