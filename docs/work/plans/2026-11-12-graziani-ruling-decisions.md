@@ -307,6 +307,11 @@ optional excess placement, and deterministic replay under an immutable ruleset
 identity. See [source interaction](2026-11-12-graziani-abstract-logistics-crosswalk.md#matruh-supply-stacking-interaction).
 The [independent source review](2026-11-17-graziani-supply-stacking-review.md)
 confirms the cited rule text and flags limits of its separate map check.
+The later [original-map/key inspection](2026-11-17-graziani-map-matruh-classification.md)
+and [independent visual check](2026-11-17-graziani-map-matruh-classification-review.md)
+corroborate D3714's Village/Bir symbol rather than a Major City symbol. This
+source observation does not decide the rule's on-map capacity wording or
+convert this planning interpretation into an admitted rule.
 
 ## RUL-GRA-09: Monthly motorization and dummy supply, bounded planning
 
@@ -759,3 +764,196 @@ insufficient resources under any adopted cost, no invented stores in Land-only
 mode, failed repair's source-defined consumption, weather/ZOC restrictions,
 randomness and replay. Facility existence/type decisions do not close this
 separate expenditure question.
+
+## RUL-GRA-19: Patrol history, bounded planning interpretation
+
+Select the reviewed [patrol history proposal](2026-11-17-graziani-patrol-policy-proposal.md)
+for planning. At each player's patrol boundary, evaluate completed events
+earlier in the same Operations Stage: any qualifying anti-armor combat or
+close assault by either side blocks patrol, and a barrage or air bombardment
+by either side at the target blocks that target. Events from earlier stages
+do not trigger these selected predicates; later actions do not retroactively
+cancel a completed patrol. These are project interpretations of conflicting
+source formulations, not official corrections. Preserve the source's
+phasing-player, whole-stage combat and potentially unbounded target-history
+alternatives. A whole-stage reading would require a separate forward
+restriction, delay or retrospective mechanism; the cited source does not
+establish which mechanism applies.
+
+An established disqualifying occurrence makes its internal predicate false;
+without one, incomplete or unclassified history remains unknown. Before an
+action or externally observable eligibility decision, require a separate
+causal-completion proof through the current boundary, regardless of that
+internal result. Land-only patrol has no supply expenditure under §32.25;
+weather, points, path, target and other prerequisites remain separate.
+
+The [final independent review](2026-11-17-graziani-patrol-policy-final-review.md)
+finds this coherent for bounded planning and stresses that §5.2 also supports
+phasing-player alternatives. Runtime admission remains blocked on classified
+combat and bombardment events, air-event coverage, causal closure and
+correction/replay, complete history and map evidence, and an audience-safe
+protocol covering actual downstream results as well as responses. Apply the
+proposal's synthetic validation matrix only after those contracts are defined;
+no runtime rule, readiness status or gameplay test changes here.
+See the independent [RUL-GRA-19–21 audit](2026-11-17-graziani-rul19-21-audit.md)
+for the retained alternatives and remaining admission gates.
+
+## RUL-GRA-20: Sheferzen initial organizational size, bounded planning
+
+Select the [reviewed size interpretation](2026-11-17-graziani-sheferzen-size-policy.md)
+for the scenario's Sceferzen Oasis Garrison at its verified initial `dd`,
+`N`, one-of-one TOE baseline: use **company-equivalent** when a rule requires
+its organizational level under §9.22. The printed stacking value `0`, full
+company chart row and `dd` characteristic support that choice. Preserve the
+counter's battalion `II` symbol and OA's battalion wording as conflicting
+source evidence, not a silently corrected erratum. This is not a general
+rule that zero stacking points establishes company size.
+
+Time alone does not invalidate a still-proven unchanged baseline; a changed
+or unknown identity, strength, composition, attachment, location or governing
+source requires separate reassessment before applying this unit-specific
+selection. Distinguish printed stacking, location-dependent effective
+garrison stacking, shell status and organizational level. The possible
+Autoblinda assignment and maximum-TOE interaction remain unresolved. This
+choice does not establish co-located forces, ZOC or a legal action.
+
+The [independent policy review](2026-11-17-graziani-sheferzen-size-policy-review.md)
+supports this bounded planning choice while requiring explicit lifecycle,
+consumer, replay and audience contracts before admission. Retain source
+alternatives and the proposal's synthetic tests; no runtime, map content,
+readiness or gameplay tests change here.
+
+## RUL-GRA-21: Land-only supply-destruction cost, bounded planning
+
+For planning a Land-only abstract Supply Unit destruction attempt, select
+the specific §32.17 half-CPA procedure rather than adding the common §6.3
+one-third-CPA dump action to the same attempt. Section 32.17 specifies half
+the CPA of all units in the hex, rounded upward; it does not resolve whether
+rounding applies to each unit or an aggregate, which units pay, or how CP
+overruns are assigned. Those questions remain open and block a numerical
+runtime debit. This choice is a project interpretation, not an explicit
+source-stated override.
+
+The [source comparison](2026-11-17-graziani-destruction-cost-hierarchy.md)
+and [independent review](2026-11-17-graziani-destruction-cost-hierarchy-review.md)
+find that Logistics §54.14 explicitly uses a one-third-basic-CPA procedure
+matching the common chart, while §32.17 has different actors, basis, targets
+and timing. Abstract Supply Units use Supply Dump counters, however, and the
+chart row has no mode qualifier. Retain that alternative and do not assert
+that physical counter identity alone resolves precedence. No source directs
+both costs for the same attempt.
+
+This selection does not settle a distinct detailed-game dump action, an
+optional target subset, dummies, cycle/sub-segment identity, CPA allocation,
+rounding, legal overruns, visibility or retry semantics. The [timing proposal](2026-11-17-graziani-destruction-timing-policy.md)
+remains unadmitted. Implement only after those contracts, counter semantics,
+privacy, replay and the source comparison's distinguishing tests are reviewed.
+No runtime rule, readiness status or gameplay test changed here.
+
+## RUL-GRA-22: Italian strategic city witness, bounded planning
+
+For planning §60.81 Italian strategic victory, interpret “either Alexandria or
+Cairo (any hex)” as a choice of either named city and one qualifying hex in
+that city. At the relevant evaluation, require the **same qualifying combat
+unit** that holds the selected objective hex to be the witness that can be
+supplied by convoy. This is a project interpretation of the source grammar,
+not an official correction or a requirement that the unit actually received
+supply. Preserve the Cairo-only parenthesis, all-city-hex and separate-witness
+alternatives. This selection does not apply the Italian parenthesis to the
+Commonwealth's different source wording.
+
+The [source reading](2026-11-17-graziani-victory-city-hex-scope.md) and its
+[independent source review](2026-11-17-graziani-victory-city-hex-scope-review.md)
+identify both city location lists and distinguish the distance chart's
+representative hexes from victory endpoints. The [policy proposal](2026-11-17-graziani-victory-city-policy-proposal.md)
+and [independent policy review](2026-11-17-graziani-victory-city-policy-proposal-review.md)
+support this bounded choice while preserving other source readings.
+
+This selection does not settle city membership and topology, control or
+occupation, what proves taking and holding over time, substitution, recapture,
+the Map D quantifier, convoy origin and route, or terminal ordering. Preserve
+unknown evidence and the separately selected RUL-GRA-07 result-composition
+policy: a verified false required conjunct makes that row no-match even if
+another conjunct is unknown, while any row still unknown keeps the result
+unresolved. “Complete evidence” means sufficient authorized proof for each
+row's selected determination, not that every masked conjunct must be known.
+This logical choice does not by itself authorize publication or terminalization.
+Before admission, define causal history, ruleset identity, replay and an
+audience-safe terminal protocol that covers state freezes, retries, later
+actions and verdict timing, not just error text. Apply the proposal's synthetic
+distinguishing cases after these contracts are defined. No runtime rule,
+readiness status or gameplay test changed here.
+
+## RUL-GRA-23: Saharan Detachment setup radius, bounded planning
+
+For planning scenario §60.31, interpret “within 3 hexes of C0716” as
+shortest local hex-step distance at most three, including the center and
+distance-three ring. Under the documented Map C adjacency this yields 37
+geometric candidates. This is a project interpretation, not an explicit
+source clarification or a finding that any candidate is a legal placement.
+Retain alternatives excluding the origin or outer ring and do not assume a
+Libya-only restriction from the separate preceding scenario row.
+
+The [radius source](2026-11-17-graziani-c0716-radius-source.md) and
+[independent review](2026-11-17-graziani-c0716-radius-source-review.md)
+support the local geometry; the [planning proposal](2026-11-17-graziani-saharan-radius-policy.md)
+and [independent critique](2026-11-17-graziani-saharan-radius-policy-review.md)
+record evidence and admission gates. They use the same scanned edition.
+
+This selection does not decide terrain, political-boundary effects, stacking,
+formation distribution, truck allocation or optional equipment. Before
+admission, verify source rights and map provenance, decision authority, legal
+setup and evidence completeness; define stale-selection revalidation,
+ruleset identity, replay and audience-safe candidate and rejection disclosure.
+No runtime rule, readiness status or gameplay test changed here.
+
+## RUL-GRA-24: Land-only Axis convoy 5%, bounded planning
+
+For planning the otherwise unspecified Land §32.65 5% result, use
+`ceil(n / 20)` losses for each nonempty accepted cargo group of an individual
+Axis convoy, capped by that group's carried quantity; a known empty group
+loses zero. Tentatively distinguish Supply Units, Motorization Points, and
+Italian and German tanks and guns by nationality and equipment class. This is
+a project choice using detailed-game rounding by analogy, not a printed
+Land-only correction. Unknown or unclassified cargo is not empty.
+
+This deliberately accepts a non-monotonic consequence: a synthetic convoy
+with one supply and one motorization point loses both at 5%, but the reviewed
+printed 10% branch loses neither. If this consequence is unacceptable, the
+entire result hierarchy needs a separate redesign, not a silent change to the
+printed 10% branch. Preserve combined ceiling, per-group floor, zero and
+convoy-wide minimum as alternatives. The [comparison](2026-11-17-graziani-land5-policy-compare.md)
+and [independent critique](2026-11-17-graziani-land5-policy-compare-review.md)
+document their tradeoffs and limits.
+
+Grouping and allocation among models, chooser authority, legal loads and
+six-turn reachability remain unadmitted. Before implementation, define complete
+cargo and mode evidence, immutable ruleset identity, persisted RNG and
+atomic retry/replay, and side-safe observations and timing. Run the comparison's
+distinguishing tests after those contracts are accepted. No runtime rule,
+readiness status or gameplay test changed here.
+
+## RUL-GRA-25: Commonwealth victory city-source traces, bounded planning
+
+For planning §60.81, apply the supply-trace condition separately to each
+objective listed in the row being evaluated. Each objective may independently
+trace to one certified, friendly-controlled city hex in Alexandria or Cairo;
+different objectives may use different cities or hexes. Bind the route to the
+same qualifying objective hex that meets the separately accepted possession
+and history conditions. This is a project interpretation, not an official
+clarification; preserve single-subject, common-city, designated-hex and other
+alternatives in the [proposal](2026-11-17-graziani-cw-city-policy-proposal.md).
+
+This choice is limited to hypothetical non-consuming connectivity: separate
+witnesses do not prove jointly feasible shipments or shared capacity. Initial
+stock or an actual shipment is not an additional endpoint test solely because
+of this ruling. Positive and negative route proofs require the accepted map,
+control, route and snapshot contracts; an unresolved possible route remains
+unknown, while RUL-GRA-07's known-false row rule still applies. The
+[independent review](2026-11-17-graziani-cw-city-policy-proposal-review.md)
+identifies multi-hex witness binding, shared-resource and disclosure gates.
+
+Before admission define objective-hex quantifiers, route direction and
+interference, full positive and negative evidence coverage, terminal timing,
+versioned replay and side-safe verdict timing. No runtime rule, readiness
+status or gameplay test changed here.

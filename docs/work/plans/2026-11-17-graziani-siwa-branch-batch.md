@@ -1,0 +1,17 @@
+# Siwa branch batch: local Map C route marks
+
+**Date:** November 17, 2026. **Status:** candidate ink continuations only; no legal route, correction, or victory result established. Extends the [Siwa source review](2026-11-17-graziani-siwa-route-source-review.md), using the same scan rather than independent source material. Image directions below refer to the rendered sheet.
+
+Visually traced dashed marks on [Map C](https://spigames.net/PDFv10/CNA_Maps.pdf), PDF p. 3, around Siwa C0127. The [key](https://spigames.net/PDFv10/CNA_Maps.pdf), p. 1, distinguishes single-dashed track from paired-dashed unfinished road. Each arrow below denotes an apparent crossing of a printed shared side, not an assertion that movement is legal. Pinned features come from [hexsides.v1.json](../../../src/Cna.Core/Content/HistoricalMap/hexsides.v1.json); records are sparse VASSAL-derived data, not independent verification of the original sheet.
+
+| Candidate sequence from Siwa | Visible marks and junction | Pinned pair features |
+| --- | --- | --- |
+| C0127 → C0226 → C0225 | Single dashes run northwest out of the oasis, then west into C0225. | Both pairs `track`. |
+| C0225 → C0224; C0225 → C0325 | Western line continues into C0224; another line approaches from upper left through C0325 and meets it in C0225. Dashes leave small gaps near the meeting. | Both pairs `track`. |
+| C0127 → C0227 → C0228 → C0229 | Single dashes curve right from the oasis and continue east across C0228 into C0229. Palm and lettering ink obscure portions near Siwa. | All three pairs `track`; C0127–C0227 also `unfinished-road`. |
+| C0229 → C0230; C0229 → C0130 | Near C0229, single dashes diverge toward upper right and lower right. The lower-right lead crosses into C0130 amid salt-marsh and oasis artwork. Exact join is interrupted by dash gaps. | Both pairs `track`. |
+| C0127 → C0227 → C0327 → C0426 | Paired dashes run upward from oasis through C0227 and C0327, then cross toward C0426. Label and palm artwork obscure portions near the oasis; C0227–C0327 crossing also overlays brown terrain ink. | First pair `unfinished-road`, `track`; second `slope`, `unfinished-road`; third `unfinished-road`. |
+
+These are local side sequences, not complete connected routes. The precise relationship between the paired and single lines inside C0127 remains hidden by oasis ink; crossing the same side does not prove a junction. Exact dashed-line joins in C0225 and C0229 remain uncertain. At C0227–C0327, the pinned slope is reported for comparison; this batch does not adjudicate slope geometry or its movement effect. Other side features, including absent records, were not exhaustively classified. Leads beyond C0224, C0325, C0230, C0130 and C0426 remain untraced here; off-road options and printed-edge coverage remain open. No conclusion follows about a connection to Tobruk C4807, convoy supply, or impossibility of one. Those require complete adjacent-side evidence and a selected movement and convoy policy, including current state, as described in the [source note](2026-11-17-graziani-siwa-route-source.md).
+
+**Reproduction and limits:** inspected the source note's 600 dpi crop and wider local render. Map SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; detailed crop `9a801bc94aa8d4ceca1f1635d0aa542a3d0c2520cb7a308ded329c65d6553004` (renderer-dependent); pinned sides `124e6f943930f4fa718eb04fa1dc86b6089582aebfaff8fcb83f98ab30d98e6c`. Single scan, not physical sheet or independent edition. No runtime change or gameplay test.

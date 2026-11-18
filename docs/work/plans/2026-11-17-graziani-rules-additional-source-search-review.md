@@ -1,0 +1,7 @@
+# Graziani additional source search: independent review
+
+**Finding:** The Moves #49 lead can be narrowed. A separately hosted [scan of Pratuch's article](https://www.spigames.net/MovesScans/Moves49/CNAGPM49.pdf) is publicly accessible even though the linked complete issue failed to open. Its two pages (15–16) survey game components, play time, and general rules; they do not give an apparent answer to either §32.17 or §32.65. Exact text searches for both case numbers returned no matches. OCR is imperfect, so this is a bounded reading of this article, not proof about the entire issue or other publications. Grognard identifies it as analysis; it is not an authoritative designer ruling. Recommend linking the accessible article and retaining the inaccessible full issue as a separate limitation.
+
+**Other checks:** Grognard's [transcription](https://grognard.com/errata1/cna.html) identifies its addenda as September 1979; Friend or Foe [credits Clay Stone](https://friendorfoe.com/war/cfna/) for its errata-applied PDFs; and [CNA Living Rules](https://basmith.net/cna/) states it is unaffiliated with SPI or successors. These support the document's provenance distinctions. The complete Moves issue and forum links also failed to open in this check; that is an access result, not proof they are unavailable to everyone.
+
+The disposition appropriately limits its negative finding to the search and preserves both questions as open. No basis found to assert a definitive negative or adopt a new rule. No contact or purchase.

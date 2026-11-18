@@ -1,0 +1,15 @@
+# PR #377 alternate distance bounds: source review
+
+**Disposition:** The [alternate-bounds note](2026-11-17-graziani-pr377-alternate-distance-bounds.md) correctly transcribes all four chart cells and computes both conditional lower bounds of 60. Independently recomputed committed graph BFS gives the seven reported path lengths. The resulting separation is conditional on both selected chart cells and the local graph paths describing the same fixed-endpoint hex metric; neither result certifies those assumptions or identifies a source correction.
+
+## Evidence and arithmetic
+
+Visually checked [Air/Logistics §37.42](https://spigames.net/PDFv10/CNA_AirGameRules.pdf), PDF p. 25: Bir-el-Qatrani `D2903` row gives Soluch `A4130` **77** and Ft. Maddalena `C3019` **17**; Soluch row gives Benghazi `A4827` **7**, and Ft. Maddalena row gives Benghazi **67**. The four are distinct cells in one scanned table, with no asterisks on these endpoints. The chart specifies shortest hex distance, origin excluded and destination included, with an assumed sea grid where needed. It also states a 33-hex adjacent-sheet same-number relation. Cells are not independent observations or separate source editions.
+
+In a common undirected metric, reverse triangle gives `d(S,F) ≥ |d(S,Bir) − d(F,Bir)| = 60`, independently of direct S–F cell; similarly `d(S,F) ≥ |d(F,Benghazi) − d(S,Benghazi)| = 60`. Either pair suffices conditionally. A shared chart generation error or endpoint interpretation can affect both; other known chart inconsistencies limit confidence. Neither bound proves 60 is exact or that all four cells are correct.
+
+At commit `35e32e8051141f1a67a87011cd483bb5021bb51b`, independently ran BFS on its `hexes.v1.json` IDs using the committed `NeighborsOf` odd-row candidate rule. From C3019 the returned lengths were `C3520=5`, `C3020=1`, `C3721=7`, `C3922=9`, `C3926=11`, `C4131=17`, `C3320=3`, matching the note and commit message. The committed `FtMaddalenaMapDistances` traverses the same `NeighborsOf` graph and the method `TrySoluchMechiliToFtMaddalenaBound` uses the direct published anchor plus its conflict gate, not these alternate pairs. This reproduces graph arithmetic, not a visual verification of every path edge or map seam.
+
+If each graph path of at most 17 is a valid path in the same metric as one correct chart pair, reverse triangle yields `d(S,target) ≥ 60 − path_length ≥ 43 > 1`. A finite path suffices; it need not be a source-certified shortest path. This conclusion concerns Soluch and these seven targets, not Mechili or all reachable hexes; adjacency evidence does not settle legal movement, ZOC or actual setup. A map identity mismatch, a false chart cell, or a graph edge invalid in that metric invalidates the corresponding conditional inference.
+
+Same scan Air PDF SHA-256 `9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4`. Review uses the stated commit and its committed hex data, not a new edition or independent full-map transcription. No runtime changes or gameplay tests.

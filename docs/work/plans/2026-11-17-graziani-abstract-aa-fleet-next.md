@@ -89,9 +89,11 @@ identified only after the actual schedule and captured state are checked.
   fuel cost, sortie or inference call is specified by this abstract case; do
   not invent one or claim every other naval requirement has been examined.
 - **Damage consequences:** §30.34 says damage reduces a ship's **Gun Rating**
-  by damage points; its example leaves AA rating unchanged, while its final
-  sentence refers to reduced Gun and AA ratings. Preserve that internal
-  tension rather than treating AA as universally unchanged. §30.36 prevents a
+  by damage points; its example states the resulting AA rating but does not
+  establish the starting AA rating. A later [source follow-up](2026-11-17-graziani-aa-damage-followup.md)
+  and [independent review](2026-11-17-graziani-aa-damage-followup-review.md)
+  identify §30.13's proportional AA reduction; rounding and restoration remain
+  open. §30.36 prevents a
   ship below 50% of face Gun Rating from leaving port until repaired to more
   than 50%; losing its entire Gun Rating sinks it and makes it unrepairable.
   The exact equality-at-50% interaction is not resolved by those phrases.

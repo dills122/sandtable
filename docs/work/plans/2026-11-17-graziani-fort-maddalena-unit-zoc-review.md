@@ -1,0 +1,23 @@
+# Fort Maddalena and 11th Hussars: independent source review
+
+**Disposition:** Confirm the [unit/ZOC note](2026-11-17-graziani-fort-maddalena-unit-zoc.md)'s printed unit values, counter marks and conditional raw-defense calculations. One wording correction: the Fort Maddalena `U@2` baseline is **understrength** relative to maximum 3, not a full-strength garrison. It is nevertheless above the below-half threshold for battalion-shell status. Neither singleton arithmetic nor an adjacent starting position proves actual ZOC or compulsory combat.
+
+## Source readings
+
+Visually inspected [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf) PDF p. 3; [Axis charts](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf) PDF pp. 4, 14 and 26; [Commonwealth charts](https://spigames.net/PDFv10/CNA_ChartsCWPlayer.pdf) PDF pp. 5–6 and 23; [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) PDF/printed pp. 17–19; [counter sheets](https://spigames.net/PDFv10/CNA_Counters.pdf) PDF pp. 1 and 4; and [Map C](https://spigames.net/PDFv10/CNA_Maps.pdf) PDF p. 3. SHA-256 rechecked: scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Axis `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`; Commonwealth `f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; counters `bc3e6c60131e8c813481510a5a0c991d027bdaaa7e0aa83f413737c22d62dae9`; map `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`.
+
+Scenario §60.31 lists Fort Maddalena Garrison C3019; §60.41 lists 11th Hussars C3020 with three medium trucks and identifies the 7th Armored Division HQ's previously listed division units as detached. Those are printed baselines, subject to setup and relationship rules.
+
+Axis OA p. 14 lists Fort Maddalenna Garrison Bn, `FtMad`, `q`, `U@2`, `D`, with basic morale −3. Axis §4.46b p. 26 identifies `q` infantry battalion-equivalent, CPA 15, anti-air 1, barrage 6, anti-armor 4, vulnerability 4, close assault 3/3 and maximum TOE 3. The OA key says `U@2` deploys at two TOE. Raw defense at that baseline is `2 × 3 = 6` under Land §11.3. Two of three is above one half, so §9.26's below-half battalion-shell condition does not hold at that baseline. The physical `FtMad` counter shows `G`, `II`, `1`; §9.16(a)'s assigned-location free-stacking rule is separate from the printed value.
+
+Commonwealth OA p. 6 lists `11 Hus`, `ll`, `U@6 TOE`, `D` under 7th Armored Division, whose basic morale is +2. Commonwealth §4.46a p. 23 places `ll` in reconnaissance battalion-equivalents with CPA 45, armor protection 1, close assault 2/3 and maximum TOE 8. Raw baseline defense is `6 × 3 = 18`; six of eight is above the below-half shell threshold. The counter shows `II`, `1`, `11 Hus` and `7Spt/7`. The OA point count does not identify a specific armored-car model.
+
+Land §10.11's above-battalion/greater-than-one stacking requirement and alternative greater-than-one hex stack condition, together with §10.15's minimum 10 raw defensive close-assault points, support the source note's **standalone conditional** conclusions: garrison raw 6 is too low; Hussars raw 18 clears that threshold but its single printed 1 does not independently clear the stacking threshold. Garrison location-specific stacking, actual other units, effects of represented formations, state, terrain, entry and phase remain open.
+
+## Corrections and limits
+
+The source note's hypothetical extra Autoblinda sentence calls the preexisting fort garrison `full`; replace that word with **understrength two-TOE baseline**. Its arithmetic `6 + 2 = 8` is a conditional arithmetic illustration, not proof that adding the point is legal, that its characteristics apply unchanged or that no other units may co-locate. The scenario offers two points with at most one per unit or a Tobruk replacement option; capacity, attachment and setup choices require separate review.
+
+The source note's reference to the Sheferzen boundary note uses an obsolete November 18 path; the current file is [November 17 boundary analysis](2026-11-17-graziani-map-sheferzen-border.md). The reviewed map locally shows the two coordinate hexes sharing the blue checkered side; national-boundary identification and independent movement effects remain interpretive. Neither blue ink nor lack of an obvious escarpment proves positive projection.
+
+Source review followed the companion note and uses the same scans, not blind transcription or a new edition; hashes do not grant rights. No exhaustive errata search, runtime changes, readiness change or gameplay tests.

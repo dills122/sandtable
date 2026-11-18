@@ -15,10 +15,24 @@ source conflicts and implementation remain separate.
 
 **Latest coding-session entry points:**
 
+- [Batched coding handoff](2026-11-17-graziani-batched-coding-handoff.md)
+  consolidates the latest source findings, candidate map corrections,
+  unresolved policies and implementation gates.
+
+`origin/main` subsequently gained Matruh rating/attachment work in PR #378
+and 6th Australian grouped ZOC ratings in PR #381. This research branch was
+fast-forwarded to include them; recheck their behavior and current tests before
+repeating the implementation steps below.
+
 - [Current research queue](2026-11-17-graziani-remaining-source-research.md)
-  and [working decisions RUL-GRA-01–18](2026-11-12-graziani-ruling-decisions.md)
+  and [working decisions RUL-GRA-01–25](2026-11-12-graziani-ruling-decisions.md)
   distinguish source facts, provisional project interpretations and unresolved
   admission gates. None changes an existing content or ruleset identity.
+- [Fixed-hex coverage](2026-11-17-graziani-fixed-hex-review-coverage.md) now
+  indexes paired six-side readings for all 33 explicit starting coordinates
+  and six additional Cairo/Alexandria city hexes. The [index audit](2026-11-17-graziani-fixed-hex-review-coverage-audit.md)
+  checks the links and count, not map correctness; obscured edges, optional
+  placements, seams and full reachable coverage remain unresolved.
 - Both B1705/B1706 and B1706/B1805 slopes have independently checked
   [source evidence](2026-11-17-graziani-slope-directions-next.md) identifying
   B1706 as the high side. Pinned v1 still stores unknown directions; make any
