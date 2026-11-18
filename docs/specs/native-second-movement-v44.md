@@ -24,14 +24,34 @@ the pinned sequence and verifies those fields and the unchanged contact cut.
 The retained V41–V45 successor chain is verified oldest-first without recursive
 calls, so its length does not consume one call-stack frame per event. The full
 event-stream hash is still computed at the requested head.
-**Update (2026-11-17):** this line is stale. Breakdown (V46,
-`CampaignNativeSecondBreakdownV46.cs`) is now implemented and tested
-end-to-end through `CampaignHostAdapter`; its successor position lands in the
-existing Combat engine's `PositionDetermination` step, confirming Combat is a
-hand-off, not a separate mechanism to build. The one genuine remaining gap:
-no event yet resolves or waives a Reaction window opened by a second-side
-move, so V46 rejects while one is pending — that specific case, and separately
-vehicle-cohort breakdown accounting, are the real unimplemented cuts.
+**Update (2026-11-17, corrected):** Breakdown (V46,
+`CampaignNativeSecondBreakdownV46.cs`) is implemented and tested, and its
+*checkpoint* (`CampaignExercises.QueryCheckpoint`) correctly reports a
+successor position at the Combat engine's `PositionDetermination` step for
+the second acting side. That checkpoint is **not** a working hand-off,
+confirmed by direct reproduction (GitHub issue #394): a session at the V46
+checkpoint still has `CurrentSnapshot.CurrentPosition` frozen at the
+*first*-acting-side's old Combat position from earlier the same turn —
+`WithSecondBreakdown` and its V41–V45 siblings never advance it — and
+`CurrentCombatDecision` is the stale, unrelated decision retained from that
+first-side combat cycle, never cleared by the native second-side `With*`
+methods. As a result the normal owner-cut path
+(`CampaignExercises.QueryContactOwnerCombatCut`,
+`CampaignHostAdapter.QueryContactCombatOwnerDraft`) rejects immediately with
+"Combat selection has already advanced this authority cut.", and the
+Host's selection-round binding (`QueryNativeCombatSelectionRoundBinding`)
+rejects with "No pending repeated Combat selection." — both for reasons
+unrelated to the real state. Separately and independently, even with a
+correct `CurrentSnapshot`, `CampaignContactCombatSelectionCut.Project` and
+`CampaignNativeCombatSelectionTimeoutV38.ValidateInitialScope` hard-require
+`LandActorRole.FirstActingSide` and `order.FirstSide`, so they would still
+reject a genuine second-acting-side Combat entry. There is also no
+`CampaignOwnerOpeningKind` on the Host side for a second-side Combat
+opening, and no call analogous to `TryInitializeSelectionRound`/
+`InitializeSelectionRound` is wired after `SecondMovementCompletion`/
+`SecondBreakdown` persist. Combat is **not yet** a working hand-off for the
+second acting side; the Reaction-window-resolution gap and vehicle-cohort
+breakdown accounting remain additional, separate unimplemented cuts.
 
 The normal Host authenticates an owner opening for the acting element and
 persists command, event, receipt, checkpoint and contacts atomically in the

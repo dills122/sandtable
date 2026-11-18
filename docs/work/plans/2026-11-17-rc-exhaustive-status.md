@@ -56,16 +56,45 @@ one retained genuine history is exercised, broader gate still open.
 
 ## 4. Native second-side movement chain (feeds `MVP-GATE-03`)
 
-**Mostly Done — much further along than previously tracked.** A background
-investigation this session confirmed V43 (Reserve) through V46 (Breakdown)
-are fully implemented, tested end-to-end, and wired into the main
-`CampaignHostAdapter` path; the chain's eventual Combat step is a confirmed
-hand-off to the existing Combat engine, not a separate mechanism to build.
-Two stale docs (`docs/specs/native-second-movement-v44.md`,
-`2026-10-24-rc-checklist.md`) said otherwise and have been corrected this
-session. The one real remaining gap: no event yet resolves/waives a Reaction
-window opened by a second-side move (proposed "V47"), plus separately,
-vehicle-cohort breakdown accounting. Both are small, scoped, not urgent.
+**Partial — V43 through V46 are real, but the "Combat is a confirmed
+hand-off" claim below was wrong and has been retracted (GitHub issue #394).**
+V43 (Reserve) through V46 (Breakdown) are implemented, tested, and wired
+into the main `CampaignHostAdapter` path, and V46's checkpoint correctly
+*reports* a successor position at the Combat engine's
+`PositionDetermination` step for the second acting side. A direct
+reproduction this session (build a real V43→V46 history and attempt the
+normal second-side Combat opening through it) showed that checkpoint is not
+actually reachable through any existing path:
+
+- `ExerciseSession.WithSecondBreakdown` (and the whole V41–V46 `With*`
+  family) never advances `CurrentSnapshot` — it stays frozen at the
+  *first*-acting-side's old Combat position from earlier the same turn —
+  and never clears `CurrentCombatDecision`, so a V46-checkpoint session
+  still carries the stale decision object from that unrelated first-side
+  combat. The normal owner-cut path rejects immediately with "Combat
+  selection has already advanced this authority cut." (from the stale
+  decision, not any real second-side progress), and
+  `QueryNativeCombatSelectionRoundBinding` rejects with "No pending
+  repeated Combat selection."
+- Independently, `CampaignContactCombatSelectionCut.Project` and
+  `CampaignNativeCombatSelectionTimeoutV38.ValidateInitialScope` hard-require
+  `LandActorRole.FirstActingSide` / `order.FirstSide`, so they would reject a
+  genuine second-acting-side Combat entry even with a correct snapshot.
+- There is no `CampaignOwnerOpeningKind` for a second-side Combat opening on
+  the Host, and no call analogous to `TryInitializeSelectionRound` is wired
+  after `SecondMovementCompletion`/`SecondBreakdown` persist
+  (`CampaignDurableAuthorityJournal.Submissions.cs`).
+
+This is a real RC-authority-continuation gap, not a one-call composition
+fix: it needs clearing/rescoping combat-cycle session state across the
+native second-side `With*` methods, a real `CurrentSnapshot` projection for
+the native track's result, generalizing two independent central
+Combat-authority gates beyond `FirstActingSide`, and new Host wiring —
+central, correctness-sensitive Combat code that needs a scoped human design
+decision, not a speculative fix. `docs/specs/native-second-movement-v44.md`
+has been corrected to match. The Reaction-window-resolution gap (proposed
+"V47") and vehicle-cohort breakdown accounting remain additional, separate,
+smaller unimplemented cuts on top of this.
 
 ## 5. Completed this session (merged to `main`)
 
