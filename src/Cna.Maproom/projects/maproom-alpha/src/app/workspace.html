@@ -114,12 +114,13 @@
       <section
         #mapPanel
         class="map-panel"
-        aria-labelledby="map-title"
+        [attr.aria-labelledby]="map.mapTitleId"
         [class.is-fullscreen]="mapFullscreen()"
         [attr.role]="mapFullscreen() ? 'dialog' : null"
         [attr.aria-modal]="mapFullscreen() ? 'true' : null"
       >
         <mr-operations-map
+          #map
           hint="Schematic · no scale · zoom in to pan"
           [zoom]="store.zoom()"
           [transform]="store.cameraTransform()"

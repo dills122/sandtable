@@ -19,6 +19,8 @@ export interface MapPan {
   readonly height: number;
 }
 
+let nextMapTitleId = 0;
+
 /** Presentation-only camera and hex surface shared by fixture and connected cuts. */
 @Component({
   selector: 'mr-operations-map',
@@ -27,6 +29,8 @@ export interface MapPan {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperationsMap {
+  /** Unique per instance so two OperationsMap components never collide on the heading id. */
+  readonly mapTitleId = `map-title-${nextMapTitleId++}`;
   @Input({ required: true }) zoom = 1;
   @Input({ required: true }) transform = '';
   @Input() hint = '';
