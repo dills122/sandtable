@@ -1,0 +1,23 @@
+# Graziani blocker: 1st CCNN HQ weapon and starting strength
+
+**Result:** The checked source set does not identify a weapon for 1st CCNN division HQ or settle whether its allowed gun point is initially present. Preserve both as **unknown**. `N` is an OA strength notation, not an unidentified weapon code. This is a bounded source finding, not a ruling that the HQ starts empty, a complete formation combat value, or proof that no other edition or clarification exists.
+
+The [independent review](2026-11-17-graziani-blocker-ccnn-hq-review.md)
+confirms this bounded result. It emphasizes that the literal `N` reading
+supports an initially full-strength unit, while the missing weapon listing
+leaves its precise gun assignment unresolved.
+
+## Fresh source check
+
+- [Axis OA chart](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf), PDF p. 17, 1st CCNN division, lists the HQ `1 CCNN`, characteristics ID `g`, TOE and weapons `N`, arrival `D`. The same division's 219th and 233rd Legion HQs each list `1 × 65/17 Gun` explicitly; its 201st artillery regiment has separate listed equipment. These belong to other units and cannot supply the division HQ's model.
+- The OA key, PDF p. 4, defines capital `N` for non-tank/non-gun units as maximum TOE per their characteristics ID. It separately requires tank and gun points, including those assigned to other unit types, to be listed by number and weapon system. `D` means deployed at the opening of GT1 OpStage 1. The HQ row thus has a tension: a maximum-strength notation, but no weapon-specific gun listing. It names neither model nor a numerical initial gun assignment.
+- Axis characteristics §4.46b, PDF p. 26, ID `g`, describes an HQ with CPA 20, a maximum of one TOE and permission to assign one artillery TOE point. Its rating columns contain dashes and its row gives no weapon type. PDF p. 27's continuation and legend define the maximum as a unit capacity, identify certain other codes and explain symbols; they provide no conversion from OA capital `N` to a weapon. Lowercase `n` on p. 26 is a different characteristics ID for an infantry battalion-equivalent; it is not the HQ's OA `N`. Neither `g` nor `N` names a gun. A maximum or permission alone does not establish an occupied initial point.
+- [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF pp. 1–4: re-read the extracted complete four-page text, including §4.44b OA corrections, §4.46 note and §60.31 setup clarification. No correction found for 1st CCNN HQ's `N`, initial gun count or weapon; §60.31 addresses duplicate XXI Corps artillery. Relevant §4.44b and §4.46 passages were also visually checked on PDF p. 1. This is a search of this errata document, not all later errata.
+- [Counter sheet](https://spigames.net/PDFv10/CNA_Counters.pdf), PDF p. 2, counter section 3, visibly identifies `1 CCNN` with `XX`, `(5)` and `(1CN)`. No weapon or gun TOE count appears on the face. `(5)` is HQ stacking notation, not five guns; `(1CN)` is not the OA `N`. The counter cannot rule out an attached weapon or unit represented through the HQ. See [prior visual review](2026-11-17-graziani-ccnn-counter-review.md).
+- [Scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 3 / printed p. 27, §60.31 deploys 1st CCNN Division at C4218 with the stated tank attachment. It does not state the HQ's weapon or initial gun point. Division deployment and attachment do not independently identify the HQ's own point.
+
+A literal `N`-to-maximum interpretation could imply one unspecified artillery point, while the weapon-listing rule and optional capacity allow a reading where a gun's presence has not been established. Neither reading supplies a weapon model; the sources checked do not select between them. Keep the two initial facts separate from the known one-point capacity and deployed division identity. Any versioned project interpretation, further authoritative evidence, or admission of unknown requires its own review; do not populate a 65/17, zero or combat rating as a source fact.
+
+## Provenance
+
+Local SHA-256 verified November 17, 2026: Axis `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`; errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`; counters `bc3e6c60131e8c813481510a5a0c991d027bdaaa7e0aa83f413737c22d62dae9`; scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`. Visually checked Axis PDF pp. 4, 17, 26–27, counter crop, scenario p. 3 and errata p. 1; searched extracted errata pp. 1–4. These are the same scans as prior work, not independent editions or rights grants. No runtime or data changes and no gameplay tests.
