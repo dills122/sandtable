@@ -966,5 +966,27 @@ Either answer is substantial, correctness-adjacent engine work owned by
 whoever knows the native-combat/round state machine best — not something a
 storage/journal-layer PR should decide unilaterally.
 
+**Update 2026-11-18 — that spike is done:** see
+[`2026-11-18-campaign-replay-snapshotting-design.md`](2026-11-18-campaign-replay-snapshotting-design.md).
+It re-verifies the three findings above against the current code (confirming
+finding 1 as stated; refining finding 2 — `HashFramed`/`Reconstruct` turn out
+to be consumed only by `Cna.ExerciseRunner`'s export tooling, never by
+`Load()`, so the real full-history blocker on the hot path is
+`CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents` instead, a dependency
+Appendix B did not name; and confirming finding 3 as an undercount — it's 33
+constructor fields, not ~25, plus eight more fields that are recursive
+pointers to whole prior `ExerciseSession` objects, added by #394 after this
+Appendix was first written). It answers (a) yes, a window-since-snapshot scope
+is achievable with no weakening of `DET-001`/`DET-002`/`EVT-001` — `REL-001`
+is what licenses the split between `Load()`'s hot resume and a from-genesis
+audit path — provided the ammunition ledger is seeded explicitly instead of
+re-derived; and (b) clean lane-boundary instants occur often enough to make
+"snapshot only at clean boundaries" the recommended policy, so no mid-round
+serialization format needs building. It also names a tradeoff this Appendix's
+original framing left implicit: `Load()` moves from "every call re-proves
+correctness from genesis" to "every call trusts the last snapshot, with only
+a separately-scheduled from-genesis audit able to catch a wrong-but-consistent
+snapshot" — see that document's §5.4.
+
 This does not block anything else in §11's rollout — items 1-4 there do not
 depend on §5, and are resequenced ahead of it accordingly.
