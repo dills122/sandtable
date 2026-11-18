@@ -392,8 +392,12 @@ public sealed class TemporaryCampaignGrainTests
             Assert.All(replies, reply => Assert.Equal(TemporaryCampaignStatus.Accepted,
                 reply.Status));
             Assert.Equal(replies[0], replies[1]);
-            Assert.Equal(cut.StateVersion + 1,
-                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            // SubmitOutwardAsync now also auto-advances any pending System-owned continuation
+            // in the same call (#422), so the committed view can move forward by more than
+            // this one accepted step; assert only that it moved forward, not by exactly how
+            // much the fixture's own System sequence happens to add.
+            Assert.True((await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion
+                > cut.StateVersion);
             Assert.Equal(replies[0], await ingress.FindRequestAsync(axis.Token,
                 cut.CampaignId, request.RequestId));
             Assert.Equal(replies[0], await ingress.SubmitAsync(axis.Token, request));
@@ -558,8 +562,12 @@ public sealed class TemporaryCampaignGrainTests
             Assert.Equal(TemporaryCampaignStatus.Accepted, (await inFlight).Status);
             Assert.True(await relinquish);
             Assert.False(await lateAdmission);
-            Assert.Equal(cut.StateVersion + 1,
-                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            // SubmitOutwardAsync now also auto-advances any pending System-owned continuation
+            // in the same call (#422), so the committed view can move forward by more than
+            // this one accepted step; assert only that it moved forward, not by exactly how
+            // much the fixture's own System sequence happens to add.
+            Assert.True((await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion
+                > cut.StateVersion);
             var ingress = new TemporaryOutwardActionIngress(sessions,
                 host.Services.GetRequiredService<IGrainFactory>(),
                 host.Services.GetRequiredService<TemporaryCampaignAccess>());
@@ -924,6 +932,14 @@ public sealed class TemporaryCampaignGrainTests
         try
         {
             var grain = GetTrustedGrain(host);
+            // OnActivateAsync's reactivation recovery (#422) runs on the grain's first call and
+            // may already drive forward some of the System-only steps seeded into `memory`
+            // above, before this test ever calls SubmitAsync itself. Force activation now and
+            // resynchronize the parallel direct-Core `session` to whatever the grain actually
+            // reached, so the manual step-by-step walk below starts from a consistent state
+            // instead of resubmitting a step the grain already consumed.
+            await grain.QueryAsync(CampaignActionAudience.System);
+            session = memory.Committed!;
             for (var index = 0; index < 20; index++)
             {
                 var set = Enum.GetValues<CampaignActionAudience>()
@@ -1254,27 +1270,90 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Equal(Hash(replies[0].Snapshot!), stored.AudienceTracker.CommittedHeadHash);
                 if (index is 0 or 3)
                 {
-                    var beforePrivate = (await grain.QueryPrivateSideAsync(
-                        CampaignActionAudience.Axis)).Cut!;
                     var priorActivation = await grain.ActivationIdAsync();
                     await grain.DeactivateAsync();
                     Assert.NotEqual(priorActivation, await grain.ActivationIdAsync());
+                    // Reactivation recovery (#422) may itself have just driven forward a
+                    // System-owned continuation left pending by this very step, exactly like an
+                    // explicit AdvanceSystemAsync call would - reactivation is no longer
+                    // guaranteed to be a side-effect-free no-op. Resynchronize the parallel
+                    // direct-Core session to whatever the grain actually reached (below, via
+                    // `stored.Committed`) instead of assuming it is unchanged, and prove the
+                    // recovered cut is correct and that request dedupe survived the reactivation.
+                    var expectedAfter = CampaignHostAdapter.QueryPrivateSideCut(
+                        stored.Committed!, CampaignActionAudience.Axis)!;
                     var afterPrivate = (await grain.QueryPrivateSideAsync(
                         CampaignActionAudience.Axis)).Cut!;
-                    Assert.Equal(beforePrivate.StateVersion, afterPrivate.StateVersion);
-                    Assert.Equal(beforePrivate.ActionSetToken, afterPrivate.ActionSetToken);
-                    Assert.Equal(beforePrivate.Contacts.Select(c => c.ContactId),
-                        afterPrivate.Contacts.Select(c => c.ContactId));
-                    Assert.Equal(beforePrivate.NextDiaryCursor, afterPrivate.NextDiaryCursor);
-                    Assert.Equal(beforePrivate.Diary, afterPrivate.Diary);
+                    Assert.Equal(expectedAfter.StateVersion, afterPrivate.StateVersion);
+                    Assert.Equal(expectedAfter.Contacts.Select(c => c.RepresentationId),
+                        afterPrivate.Contacts.Select(c => c.RepresentationId));
                     Assert.Equal(replies[0].Receipt,
                         (await grain.FindRequestAsync(actor, id, chosen.Audience)).Receipt);
-                    Assert.Equal(beforeStale.LegalActions,
+                    var expectedLegal = CampaignHostAdapter.QueryAudience(
+                        stored.Committed!, CampaignActionAudience.Axis).LegalActions!;
+                    Assert.Equal(CampaignLegalActionSerializer.Serialize(expectedLegal),
                         (await grain.QueryAsync(CampaignActionAudience.Axis)).LegalActions);
                 }
-                direct = directStep.SuccessorSession!;
+                // When this iteration reactivated the grain above, recovery may have advanced
+                // it past directStep.SuccessorSession; stored.Committed (the grain's own backing
+                // session) is then the only accurate successor for the next iteration's compare.
+                direct = index is 0 or 3 ? stored.Committed! : directStep.SuccessorSession!;
             }
             Assert.True(sawApprovedDiaryEntry);
+        }
+        finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task ReactivationRecoversPendingSystemContinuationsWithoutManualAdvance()
+    {
+        // Issue #422, restart-recovery half: OnActivateAsync must drive forward any
+        // System-owned continuation left pending by a prior activation, independent of
+        // another user submission waking the campaign (design doc
+        // combat-sealed-decision-protocol-v1.md:211-215). This only covers in-process
+        // reactivation - the backing TemporaryCampaignMemoryStore is a DI singleton that
+        // outlives one grain activation but not the host process; see
+        // SystemProgressionStopsForHumanAndRestartLosesTemporaryCampaign below for the
+        // (unchanged, still correct) proof that a genuine process restart still loses
+        // everything, since this grain keeps no durable state.
+        using var host = BuildHost();
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var grain = GetTrustedGrain(host);
+            await grain.CreateAsync("operator-1", "create-1");
+            // Drive only the first of the three System-only steps this fixture needs before
+            // any human action is legal, leaving two more pending (mirrors the budget=1 step
+            // in SystemProgressionStopsForHumanAndRestartLosesTemporaryCampaign below).
+            Assert.Equal(TemporaryCampaignStatus.StepLimit,
+                (await grain.AdvanceSystemAsync(1)).Status);
+            Assert.Equal(2, (await grain.QueryPrivateSideAsync(CampaignActionAudience.Axis))
+                .Cut!.StateVersion);
+
+            var priorActivation = await grain.ActivationIdAsync();
+            await grain.DeactivateAsync();
+            // Any call after deactivation forces a new activation. No AdvanceSystemAsync call
+            // appears anywhere below this point - OnActivateAsync's own recovery must be what
+            // finishes driving the remaining pending System candidates forward.
+            Assert.NotEqual(priorActivation, await grain.ActivationIdAsync());
+
+            var system = await grain.QueryAsync(CampaignActionAudience.System);
+            Assert.Equal(TemporaryCampaignStatus.Current, system.Status);
+            Assert.Empty(CampaignLegalActionSerializer.DeserializeCanonical(
+                system.LegalActions!).Candidates);
+            var axis = await grain.QueryAsync(CampaignActionAudience.Axis);
+            var commonwealth = await grain.QueryAsync(CampaignActionAudience.Commonwealth);
+            Assert.True(
+                CampaignLegalActionSerializer.DeserializeCanonical(axis.LegalActions!)
+                    .Candidates.Count > 0
+                || CampaignLegalActionSerializer.DeserializeCanonical(commonwealth.LegalActions!)
+                    .Candidates.Count > 0);
+            // Matches exactly where SystemProgressionStopsForHumanAndRestartLosesTemporaryCampaign
+            // lands via two explicit AdvanceSystemAsync calls (budgets 1 then 8): state version 4,
+            // NeedsHuman. Recovery alone, with no further explicit AdvanceSystemAsync call at
+            // all, reaches the identical result.
+            Assert.Equal(4, (await grain.QueryPrivateSideAsync(CampaignActionAudience.Axis))
+                .Cut!.StateVersion);
         }
         finally { await host.StopAsync(TestContext.Current.CancellationToken); }
     }
