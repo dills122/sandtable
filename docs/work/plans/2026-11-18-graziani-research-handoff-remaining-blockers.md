@@ -1,5 +1,12 @@
 # Graziani research handoff — the 3 remaining RC engine blockers (November 18, 2026)
 
+**Subsequent research:** [Focused source findings](2026-11-17-graziani-implementation-blockers-research.md)
+confirm Aresca's CV33 close-assault rating as **1 offensive / 2 defensive per
+TOE point**. They retain CCNN's weapon and Giarabub's specific initial motor
+pool as bounded unknowns, with separate HQ participation and motorization
+qualifications. These findings have not been admitted into runtime by this
+research pass; the status below describes the earlier handoff.
+
 **Purpose:** a focused, standalone handoff for exactly the research still blocking
 `CampaignSourcePlayableWorld.ReadinessBlockers()` from going fully clean. Everything else
 from the Nov 16/17 research batches (Matruh, 6th Australian, the large Nov 17 map-geometry
