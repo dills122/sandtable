@@ -9,7 +9,9 @@ test('local read lane shows only the returned audience view and never submits an
     const path = new URL(request.url()).pathname;
     requests.push(`${request.method()} ${path}`);
     if (path === '/api/v1/bootstrap') {
-      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+      });
     } else if (path === '/api/v1/fixtures') {
       await route.fulfill({
         json: [
@@ -285,6 +287,90 @@ test('local read lane shows only the returned audience view and never submits an
   await expect(page.getByText('Unidentified presence')).toHaveCount(0);
 });
 
+// Proves the wiring, not just the field's presence: bootstrap's actionSubmissionTrusted mirrors
+// LocalGameApi's TrustedLocalDeployment posture (#366 / PR #379), and connected-workspace now
+// reads it (ConnectedCampaignService.isActionSubmissionTrusted()) instead of always passing
+// `false` into CampaignActionFlow. CampaignActionFlow.canSubmit still separately requires a live
+// view, a selected formation's legal action, a valid actionSetToken/revision and a 'human'
+// decision - this test satisfies every one of those so the only variable left is the trusted
+// flag itself.
+test('a trusted deployment enables the submit control once a live view and legal action exist', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/**', async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === '/api/v1/bootstrap') {
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: true },
+      });
+    } else if (path === '/api/v1/fixtures') {
+      await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Truck lab' }] });
+    } else if (path === '/api/v1/campaigns') {
+      await route.fulfill({
+        status: 201,
+        json: {
+          contractVersion: 1,
+          campaign: { campaignId: 'c-1' },
+          seatGrants: { axis: 'grant-axis', commonwealth: 'grant-commonwealth' },
+        },
+      });
+    } else if (path === '/api/v1/campaigns/c-1/seat') {
+      await route.fulfill({
+        json: { contractVersion: 1, campaignId: 'c-1', seat: 'axis', sessionGeneration: 'g-1' },
+      });
+    } else if (path === '/api/v1/campaigns/c-1/view') {
+      await route.fulfill({
+        json: {
+          contractVersion: 1,
+          campaignId: 'c-1',
+          seat: 'axis',
+          sessionGeneration: 'g-1',
+          audienceRevision: '1',
+          rulesetHash: 'r',
+          position: {
+            positionId: 'p-1',
+            turn: '1',
+            phaseId: 'movement',
+            stageId: 'initial',
+            decision: 'human',
+          },
+          locations: [{ locationId: 'west', label: 'West', x: -1, y: 0 }],
+          ownFormations: [
+            {
+              formationId: 'outward-truck',
+              label: 'Axis truck',
+              kindLabel: 'Truck convoy',
+              locationId: 'west',
+              orderStatusLabel: 'Reserve I',
+            },
+          ],
+          apparentContacts: [],
+          legalActions: [
+            {
+              actionId: 'move',
+              actionContractVersion: 1,
+              kind: 'move',
+              label: 'Move truck',
+              formationId: 'outward-truck',
+            },
+          ],
+          formationLedger: [],
+          warDiary: [],
+          nextDiaryCursor: '0',
+          actionSetToken: 'opaque',
+        },
+      });
+    } else throw new Error(`Unexpected API call: ${path}`);
+  });
+
+  await page.goto('/?mode=campaign');
+  await page.getByRole('button', { name: 'Check local fixtures' }).click();
+  await page.getByRole('button', { name: 'Create and enter Axis' }).click();
+  await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
+  await page.locator('.roster-item').filter({ hasText: 'Axis truck' }).click();
+  await expect(page.getByRole('button', { name: 'Move truck' })).toBeEnabled();
+});
+
 test('main Maproom switches between fixture and local campaign without losing the route mode', async ({
   page,
 }) => {
@@ -340,7 +426,9 @@ test('unavailable initial view stops without showing fixture orders', async ({ p
   await page.route('**/api/v1/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/v1/bootstrap') {
-      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+      });
     } else if (path === '/api/v1/fixtures') {
       await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
     } else if (path === '/api/v1/campaigns') {
@@ -374,7 +462,9 @@ for (const deniedStatus of [401, 403]) {
     await page.route('**/api/v1/**', async (route) => {
       const path = new URL(route.request().url()).pathname;
       if (path === '/api/v1/bootstrap')
-        await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+        await route.fulfill({
+          json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+        });
       else if (path === '/api/v1/fixtures')
         await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
       else if (path === '/api/v1/campaigns')
@@ -443,7 +533,9 @@ test('mismatched refresh generation removes prior audience view', async ({ page 
   await page.route('**/api/v1/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/v1/bootstrap')
-      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+      });
     else if (path === '/api/v1/fixtures')
       await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
     else if (path === '/api/v1/campaigns')
@@ -512,7 +604,9 @@ test('refresh recovers a rotated generation only after rechecking the same seat'
   await page.route('**/api/v1/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/v1/bootstrap')
-      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+      });
     else if (path === '/api/v1/fixtures')
       await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
     else if (path === '/api/v1/campaigns')
@@ -566,7 +660,9 @@ test('conflicting process-local creation explains restart boundary', async ({ pa
   await page.route('**/api/v1/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/v1/bootstrap')
-      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+      });
     else if (path === '/api/v1/fixtures')
       await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
     else if (path === '/api/v1/campaigns')
@@ -592,7 +688,9 @@ for (const seat of ['axis', 'commonwealth'] as const) {
       const path = new URL(request.url()).pathname;
       if (request.method() === 'POST') posts.push(path);
       if (path === '/api/v1/bootstrap')
-        await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+        await route.fulfill({
+          json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+        });
       else if (path === '/api/v1/fixtures')
         await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Truck lab' }] });
       else if (path === '/api/v1/campaigns')
@@ -770,10 +868,12 @@ for (const seat of ['axis', 'commonwealth'] as const) {
   });
 }
 
-// Models a same-tab hot-seat handoff. The shipped submit control is permanently disabled
-// (ConnectedWorkspace constructs CampaignActionFlow with no adapter and admittedCapability
-// false), so a "drafted action" never advances past selecting an own formation and seeing its
-// legal-action labels. Reaching a real seat flip in one tab also needs the view to already be
+// Models a same-tab hot-seat handoff. The submit control stays disabled here because this
+// test's mocked bootstrap reports actionSubmissionTrusted: false - the real deployment-trust
+// signal ConnectedWorkspace now reads via ConnectedCampaignService.isActionSubmissionTrusted()
+// (mirroring LocalGameApi's TrustedLocalDeployment gate, #366 / PR #379) - so a "drafted action"
+// never advances past selecting an own formation and seeing its legal-action labels. Reaching a
+// real seat flip in one tab also needs the view to already be
 // cleared first (the start screen's seat buttons only render when `!view()`), so this reuses the
 // same route-mocking technique as "mismatched refresh generation removes prior audience view"
 // above: a refresh reports a seat/generation mismatch (clearing axis's view), then entering
@@ -787,7 +887,9 @@ test('seat switch after a drafted-but-unsubmitted selection leaves no axis trace
     const request = route.request();
     const path = new URL(request.url()).pathname;
     if (path === '/api/v1/bootstrap') {
-      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      await route.fulfill({
+        json: { contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: false },
+      });
     } else if (path === '/api/v1/fixtures') {
       await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
     } else if (path === '/api/v1/campaigns') {
@@ -921,7 +1023,7 @@ test('seat switch after a drafted-but-unsubmitted selection leaves no axis trace
   await page.getByRole('button', { name: 'Create and enter Axis' }).click();
   await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
 
-  // Seat A drafts: select the formation and see its (permanently disabled) action label.
+  // Seat A drafts: select the formation and see its (disabled, untrusted-deployment) action label.
   await page.locator('.roster-item').filter({ hasText: 'Panzer scout element' }).click();
   await expect(page.locator('.connected-inspector')).toContainText('Panzer scout element');
   const draftAction = page.getByRole('button', { name: 'Advance scout element' });

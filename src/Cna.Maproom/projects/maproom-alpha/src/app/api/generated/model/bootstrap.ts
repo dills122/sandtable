@@ -11,6 +11,7 @@
 export interface Bootstrap {
   contractVersion: Bootstrap.ContractVersionEnum;
   csrfToken: string;
+  actionSubmissionTrusted: boolean;
 }
 export namespace Bootstrap {
   export const ContractVersionEnum = {
