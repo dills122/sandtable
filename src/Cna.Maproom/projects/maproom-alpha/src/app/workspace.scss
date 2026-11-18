@@ -366,6 +366,12 @@ h2 {
 .inspector-context {
   margin: 0 0 var(--space-md);
 }
+.inspector-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
 .records-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
