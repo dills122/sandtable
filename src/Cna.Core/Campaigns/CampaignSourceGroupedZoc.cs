@@ -34,6 +34,9 @@ internal static class CampaignSourceGroupedZoc
     private static readonly RuleReference AxisOaMarmaricaP4 = new(Cna1979GrazianiSourceFacts.ErrataSourceId, "oa-marmarica-p4");
     private static readonly RuleReference AxisOaLibyanP5 = new(Cna1979GrazianiSourceFacts.AxisChartsSourceId, "oa-libyan-p5");
     private static readonly RuleReference AxisOaMalettiP7 = new(Cna1979GrazianiSourceFacts.AxisChartsSourceId, "oa-maletti-p7");
+    private static readonly RuleReference AxisOaLibyanTankCommandP6 =
+        new(Cna1979GrazianiSourceFacts.AxisChartsSourceId, "oa-libyan-tank-command-p6");
+    private static readonly RuleReference AxisOa448 = new(Cna1979GrazianiSourceFacts.AxisChartsSourceId, "4.48");
 
     internal const string FourthIndianGroupId = "4-indian-division";
     internal const string SeventhArmoredGroupId = "7-armored-division";
@@ -223,6 +226,24 @@ internal static class CampaignSourceGroupedZoc
                 && elementId is "1-1-libyan-motor-infantry" or "3-1-libyan-motor-infantry" or "5-1-libyan-motor-infantry"
                     or "17-5-libyan-infantry" or "19-5-libyan-infantry")
             { rating = 1; sources = [AxisChart446b, AxisOaMalettiP7]; return true; }
+        }
+        // Aresca tank regiment: per scenario 60.31, only XXI(L) Tank Battalion
+        // (chart ID 'k', Axis OA p.6) remains attached at setup - the other
+        // three assigned battalions are detached to other initial groups and
+        // never appear as members here. CV33's close-assault rating is cited
+        // at Axis OA p.29 §4.48 (unparenthesized) - 1 offensive / 2 defensive
+        // per TOE strength point - not the 4.46b unit-row chart, whose 'k'
+        // cell is a dash (it is not the assigned weapon-system table).
+        // Deliberately scoped to the battalion element only: Aresca HQ's own
+        // 1-TOE CV33 (chart ID 'd') gets no entry here. Whether that HQ point
+        // is even eligible to count (Land 3.35 vs 9.22) is a separate, still
+        // unresolved ruling question - do not add one until that is decided.
+        if (groupId == CampaignSourceArescaGroupedDefinition.GroupId && componentType == "cv33" && toe == 9
+            && elementId == CampaignSourceArescaGroupedDefinition.BattalionId)
+        {
+            rating = 2;
+            sources = [AxisOaLibyanTankCommandP6, AxisOa448];
+            return true;
         }
         return false;
     }

@@ -324,4 +324,63 @@ public sealed class CampaignSourceGroupedZocTests
         Assert.NotNull(result);
         Assert.True(result!.IsQualified);
     }
+
+    // Axis OA PDF p.29 §4.48 (Italian Tank and Gun Characteristics): CV 33
+    // (L3/35) prints unparenthesized 1/2 Close Assault Off/Def per TOE
+    // strength point. XXI(L) Tank Battalion (chart ID 'k', OA p.6) is the
+    // one Aresca-assigned battalion still attached at scenario 60.31 setup.
+    [Fact]
+    public void ArescaXxiLightTankBattalionCarriesItsCitedCv33CloseAssaultRating()
+    {
+        var member = new CampaignGroupedMember(CampaignSourceArescaGroupedDefinition.BattalionId,
+            CampaignSourceArescaGroupedDefinition.RootId, null, 0, false, "cv33", 9, 30, CapabilityPointAmount.Zero, 0);
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(
+            CampaignSourceArescaGroupedDefinition.GroupId, [member]);
+        Assert.True(estimate.AllKnown);
+        Assert.Equal(18, estimate.LowerBound);
+    }
+
+    // Aresca HQ's own 1 CV33 TOE point (chart ID 'd') must NOT get a rating
+    // entry: whether it is even eligible to count under Land 3.35 (tanks
+    // assigned to armored division/brigade HQs cannot be used in combat
+    // while a combat unit is attached) versus 9.22 (Italian regiments can be
+    // brigade-equivalents, assessed by printed stacking value) is a separate,
+    // still-unresolved ruling question. This pins that it stays unresolved
+    // so a future regression cannot silently start counting it.
+    [Fact]
+    public void ArescaHeadquartersOwnCv33ToePointStaysUnresolvedPendingTheHqEligibilityRuling()
+    {
+        var member = new CampaignGroupedMember(CampaignSourceArescaGroupedDefinition.RootId, null, null, 0, false,
+            "cv33", 1, 30, CapabilityPointAmount.Zero, 0);
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(
+            CampaignSourceArescaGroupedDefinition.GroupId, [member]);
+        Assert.False(estimate.AllKnown);
+        Assert.Equal(0, estimate.LowerBound);
+    }
+
+    [Fact]
+    public void ArescaFormationResolvesFromTheBattalionAloneWhileTheHqStaysUnknown()
+    {
+        CampaignGroupedMember[] members =
+        [
+            new(CampaignSourceArescaGroupedDefinition.RootId, null, null, 0, false, "cv33", 1, 30, CapabilityPointAmount.Zero, 0),
+            new(CampaignSourceArescaGroupedDefinition.BattalionId, CampaignSourceArescaGroupedDefinition.RootId, null, 0, false,
+                "cv33", 9, 30, CapabilityPointAmount.Zero, 0),
+        ];
+        var group = new CampaignGroupedFormation(CampaignSourceArescaGroupedDefinition.GroupId, "axis",
+            CampaignSourceArescaGroupedDefinition.RootId, CampaignSourceArescaGroupedDefinition.LocationId, 1, 10,
+            members, dispositionConfirmed: true);
+
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(group.GroupId, group.Members);
+        // XXI(L)'s 9 CV33 TOE x defensive rating 2 = 18 raw points. The HQ's
+        // own TOE never contributes (no entry, by design), so the formation
+        // is not fully known - but 18 already clears Land 10.15's 10-point
+        // floor on its own (ResolveAgainstThreshold's documented lower-bound
+        // shortcut), so the formation still resolves determinately.
+        Assert.Equal(18, estimate.LowerBound);
+        Assert.False(estimate.AllKnown);
+
+        var result = CampaignSourceGroupedZoc.EvaluateFormationSource(group);
+        Assert.NotNull(result);
+    }
 }
