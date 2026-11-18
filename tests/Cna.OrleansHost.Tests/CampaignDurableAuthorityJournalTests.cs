@@ -138,6 +138,57 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             previous.CreateCampaign(CombatInfantryRequest(), Timing(CombatInfantryRequest())));
     }
 
+    [Theory]
+    [InlineData("force_rounds_status_campaign")]
+    [InlineData("rba_rounds_status_campaign")]
+    [InlineData("cycle_rounds_status_campaign")]
+    [InlineData("reserve_rounds_status_campaign")]
+    [InlineData("custody_rounds_status_campaign")]
+    [InlineData("retreat_rounds_status_campaign")]
+    [InlineData("selection_rounds_status_campaign")]
+    public void RoundTableGetsStatusCampaignIndexOnCreateAndOnReopenOfAnOlderJournal(string indexName)
+    {
+        using var fixture = new JournalFixture();
+        fixture.Create();
+
+        // CreateNew must leave the index in place immediately.
+        Assert.True(IndexExists(fixture.Path, indexName),
+            $"Expected {indexName} to exist right after CreateNew.");
+
+        // Simulate a journal file written by a build that predates this index: there is no
+        // ALTER TABLE/migration mechanism in this codebase (issue #330), so an older on-disk
+        // journal is indistinguishable from one that simply never had the index created.
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var drop = connection.CreateCommand();
+            drop.CommandText = $"DROP INDEX {indexName}";
+            drop.ExecuteNonQuery();
+        }
+        Assert.False(IndexExists(fixture.Path, indexName),
+            $"Expected {indexName} to be gone after simulating an older journal.");
+
+        // OpenExisting itself only opens a read-only connection to check the schema version, so
+        // the index must reappear the first time a real operation opens a writable connection
+        // via Connect(create: false) -- proving that path (used by every CollectingXCampaigns /
+        // TickXRound / CreateCampaign call on a reopened journal), not just CreateNew, restores
+        // the index on a pre-existing database file.
+        var reopened = fixture.Open();
+        _ = reopened.CollectingSelectionCampaigns("", 1);
+        Assert.True(IndexExists(fixture.Path, indexName),
+            $"Expected {indexName} to be recreated after OpenExisting plus one operation.");
+
+        static bool IndexExists(string path, string indexName)
+        {
+            using var connection = new SqliteConnection($"Data Source={path}");
+            connection.Open();
+            using var query = connection.CreateCommand();
+            query.CommandText = "SELECT 1 FROM sqlite_master WHERE type='index' AND name=$name";
+            query.Parameters.AddWithValue("$name", indexName);
+            return query.ExecuteScalar() is not null;
+        }
+    }
+
     [Fact]
     public void ContactCombatOpeningCommitsOnceAndColdReplaysSelectedAuthority()
     {
