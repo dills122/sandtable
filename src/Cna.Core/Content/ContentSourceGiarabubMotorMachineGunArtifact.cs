@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceGiarabubMotorMachineGunArtifact
 {
     internal const string FormatId = "sandtable.source-giarabub-motor-mg.v1";
-    internal const string ContentHash = "sha256:178af9ec5fc908935150c398df023fedc8f2e6aa6d2ee057f92ddf641e50bbdc";
+    internal const string ContentHash = "sha256:d14c307d21bb58848f03ab9d6dc374dd0be087ad5920ef4256ec9c80e3a521ea";
     internal const string ElementId = "giarabub-motor-machine-gun";
     internal const string LocationId = "c1014";
     private readonly byte[] bytes;

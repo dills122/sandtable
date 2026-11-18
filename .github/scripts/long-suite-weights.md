@@ -688,6 +688,58 @@ CI remains the acceptance gate.
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --filter-class Cna.Core.Tests.Campaigns.GrazianiAustralianBaselineTests --filter-class Cna.Core.Tests.Campaigns.GrazianiHorseSetupTests --filter-class Cna.Core.Tests.Campaigns.GrazianiRetainedFormationTests --filter-class Cna.Core.Tests.CampaignSourceSeamCandidateTests --filter-class Cna.Core.Tests.CampaignSourceTrainingLedgerTests --report-xunit-xml --results-directory /private/tmp/claude-501/sandtable-weights-timing`. Result: 34 passed, 0 failed, 0 skipped. Verified against a full local Release `--list-tests` discovery that all seven classes' rows and class entries now resolve with no missing/extra entries for these classes specifically (an unrelated, pre-existing set of randomized mutation-theory rows elsewhere in the suite differs between local and CI-fixture-pinned discovery, as expected, and is untouched by this change).
 
+## Matruh Garrison real close-assault ratings and Essex/Durham ruling
+
+Real Commonwealth OA-cited close-assault ratings (OA PDF pp. 9/11, chart
+4.46a p.22) are now wired into `CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`
+for all five Matruh Garrison battalions, and `CampaignSourceMatruhFormation`'s
+Essex/Durham `AssignmentStatus`/`essexDurhamAssignment` fields now reflect the
+project's attachment-stands ruling instead of the old conflict marker. Six new
+`CampaignSourceGroupedZocTests` rows prove the per-element ratings and the
+formation-level estimate directly. `GrazianiSourceAuthorityTests`'s existing
+`DescribeUnresolvedSources...` proof test is renamed to
+`DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotMatruh` (same
+row count, one renamed identity) because Matruh no longer appears as an
+unresolved rating gap on either side; Aresca's CV33 component and the 6th
+Australian Division still correctly do.
+
+Because `CampaignSourceMatruhFormation.Members`' `AssignmentStatus` field is
+embedded directly in the canonical, pinned-hash bytes of
+`ContentSourceMatruhDetachedPackArtifact` and `ContentSourceMatruhGroupedPackArtifact`,
+changing it for Essex/Durham cascades through every downstream Graziani
+content-pack artifact that chains from them (`ContentSourceCwPriorityPackArtifact`,
+`ContentSourceCwFreeGunsPackArtifact`, and from there the Fourth Indian/Matruh/
+Maletti/Libyan/Cirene-Marmarica/Seventh Armored/Sixteenth Brigade/Catanzaro/
+Sixth Australian grouped packs, the four `ContentSourceCcnnBatchPackArtifact`
+flag-combination hashes, and the Tobruk-Bardia/Tripoli tank regiment/Axis
+garrison remainder/Giarabub/CW frontline/CW attached-artillery branches). All
+of these pinned `ContentHash`-style constants were recomputed and updated to
+match the new, correct canonical bytes; no CCNN/Sixth Australian/Aresca
+combat fact or rating was changed, only the derived SHA-256 fingerprint that
+necessarily shifts when upstream bytes change. New hashes were computed by
+independently reconstructing each gated layer's own byte-serialization code
+against plain `byte[]`/hash values in a throwaway test (never by weakening or
+bypassing any production pinned-hash guard), then deleted once applied.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-essex", expectedRating: 2)` | `fbf75c96ab74` | 10 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-durham-light-infantry", expectedRating: 2)` | `670097d9a277` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-south-staffordshires", expectedRating: 1)` | `631590c760c0` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-buffs", expectedRating: 1)` | `d8c08a2e9a9b` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(elementId: "1-hampshire", expectedRating: 1)` | `d0692b8f407c` | 1 |
+| `CampaignSourceGroupedZocTests.MatruhGarrisonAllFiveBattalionsHaveAFullyKnownDefenseEstimateFromTheirRealCitedRatings` | `159bde80da2c` | 1 |
+| `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotMatruh` (renamed; replaces `DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps`) | `be6ff9260639` | 70334 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --report-xunit-xml --results-directory <local-dir>` and `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotMatruh*" --report-xunit-xml --results-directory <local-dir>`. Result: 16 passed / 1 passed, 0 failed, 0 skipped. The full content-pack chain test (`GrazianiSourceSetupPackArtifactTests`), the Tobruk/Bardia garrison test, the Axis garrison forces (Giarabub) test, and the pinned
+`IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers`
+Theory (unmodified) were all re-run locally against the recomputed hashes and
+pass. This is scheduling evidence only; hosted CI remains the acceptance gate.
+
+## `CampaignSourceAuthorityState` record-with-expression refactor (PR #380, November 17, 2026)
+
+One new permanent row: `CampaignSourceAuthorityStateInvariantTests.ValidateInvariantsRejectsOutOfRangeFinalizedOwnersEvenThoughTheCopyConstructorCannot`, row key `f4c9aad1563833f2497fd4ad0a151828afc9225803d7425167f8e11f31fb687a`. Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceAuthorityStateInvariantTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr380-weights-timing`. Result: 1 passed, 0 failed, 0 skipped; measured 102ms (XML `time="0.102"`). No other row changed; the PR's 45 call-site migrations and copy-constructor fix touch no other test row. Added to `rows` (102) and `classes` (`{"parts": 1}`); also recorded in `provisional_rows` as a local scheduling hint pending hosted CI calibration, per existing convention. Verified `discover` passes against this commit.
+
 ## Task F: Soluch/Mechili-to-forward-hex adjacency bound (2026-11-17)
 
 Closes the axis-side geometry gap in `source-initial-contacts-unavailable`
@@ -726,3 +778,52 @@ local scheduling observation, not hosted CI acceptance.
 | `SoluchToBardiaPublishedDistanceConflictIsStillPresent` | `afd05140cc91` | 1 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --report-xunit-xml --results-directory /private/tmp/claude-501/-Users-dsteele--claude-spares-spare-AJorff/f16846dd-f774-47ef-a30e-399495b4cd3b/scratchpad/hmtest-timing`. Result: 30 passed, 0 failed, 0 skipped (the class's existing rows plus these 15 new ones). All 15 new row hashes are recorded in `provisional_rows` pending hosted calibration; the existing class entry (`parts: 1`) is unchanged.
+
+## 6th Australian Division real close-assault ratings (PR #381, November 17, 2026)
+
+Commonwealth OA PDF p.13 (6th Australian Division) and chart §4.46a (pp.22-23)
+are now wired into `CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`
+for the six 16th/17th Brigade battalions, both brigade HQ organic-antitank
+components, and the divisional cavalry's reconnaissance component. Ten new
+`CampaignSourceGroupedZocTests` rows prove the per-element ratings and the
+full-roster defense estimate directly. `GrazianiSourceAuthorityTests`'s
+existing `DescribeUnresolvedSources...` proof test is renamed to
+`DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian`
+(same row count, one renamed identity) because 6th Australian no longer
+appears as an unresolved rating gap; Aresca's CV33 component and Matruh
+Garrison (open in PR #378 at the time of this change) still correctly do.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-1-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `2cc3e7d0cb7c` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-2-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `4a5d33bb35cb` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-3-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `6da01d9be88f` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-5-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `25d9cb46ce48` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-6-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `baa0281506a5` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "2-7-australian-infantry", componentType: "infantry", toe: 6, expectedRating: 2)` | `5d6b82b94d60` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "16-australian-infantry-brigade-hq", componentType: "organic-antitank", toe: 1, expectedRating: 1)` | `aeb9bf257db8` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "17-australian-infantry-brigade-hq", componentType: "organic-antitank", toe: 1, expectedRating: 1)` | `b90ce75908ec` | 1 |
+| `SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(elementId: "6-australian-divisional-cavalry", componentType: "reconnaissance", toe: 8, expectedRating: 3)` | `2db69ad346db` | 1 |
+| `SixthAustralianDivisionFullRosterHasAFullyKnownDefenseEstimateAndQualifies` | `23f0322e8a89` | 1 |
+| `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian` (renamed; replaces `DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps`) | `fea12c04e0e9` | 74792 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr381-weights-timing` and `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*DescribeUnresolvedSourcesNamesTheTwoRealRemainingRatingGapsNotSixthAustralian*" --report-xunit-xml --results-directory /private/tmp/sandtable-pr381-weights-timing2`. Result: 20 passed / 1 passed, 0 failed, 0 skipped. Exact display names (and the stale pre-rename row to delete) confirmed via the real `dotnet test --list-tests --pre-enumerate-theories on` discovery command, not guessed from XML-report escaping. This is scheduling evidence only; hosted CI remains the acceptance gate.
+
+## Merge disposition: PR #378 x PR #381 rename collision (2026-11-17)
+
+PR #378 (Matruh) and PR #381 (6th Australian) each independently renamed the
+same original `DescribeUnresolvedSourcesNamesTheThreeRealMissingRatingGaps`
+method (to `...NotMatruh` and `...NotSixthAustralian` respectively), each
+correctly reflecting that only 2 gaps remained from their own branch's
+point of view. Merging #381 onto main after #378 had already landed makes
+both resolved simultaneously, so neither rename is the real final state:
+only Aresca's CV33 component remains unresolved. Renamed again, by hand,
+to `DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap`; both
+competing rows (`be6ff9260639` at 70334ms, `fea12c04e0e9` at 74792ms) are
+removed and replaced by one new row for the final name.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap` (renamed again; replaces both `...NotMatruh` and `...NotSixthAustralian`) | `7a12b20ba22f` | 72740 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap*" --report-xunit-xml --results-directory /private/tmp/sandtable-pr381-merge-timing` and `--filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests`. Result: 1 passed / 26 passed (20 from #381 + 6 from #378, both now coexisting), 0 failed, 0 skipped. The renamed test's body was extended with an `Assert.Empty(commonwealthUnresolved)` check (verified true by this run, not assumed) now that both Matruh and 6th Australian are resolved on the commonwealth side, leaving nothing but Aresca on the axis side. This is scheduling evidence only; hosted CI remains the acceptance gate.

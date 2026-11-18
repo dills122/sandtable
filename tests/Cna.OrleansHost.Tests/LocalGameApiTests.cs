@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans;
@@ -120,10 +121,66 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
+    public async Task LocalGameApiDoesNotMountWithoutExplicitTrustedLocalDeploymentFlag()
+    {
+        // The security property this fix (#366) exists for: IsDevelopment() alone must
+        // no longer be sufficient to expose the local game API. With the explicit
+        // deployment-posture flag absent (default), the API must not mount even though
+        // the host environment is Development.
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            Assert.Equal(HttpStatusCode.NotFound,
+                (await Send(client, Bootstrap(client))).StatusCode);
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task LocalGameApiMountsWhenExplicitTrustedLocalDeploymentFlagIsSetTrue()
+    {
+        // The complement of the above: with both IsDevelopment() and the explicit
+        // flag true, the API mounts as before.
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            Assert.Equal(HttpStatusCode.OK,
+                (await Send(client, Bootstrap(client))).StatusCode);
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
     public async Task ViewReadInFlightIsDeniedAfterSeatRotation()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<LocalSessionStore>();
@@ -162,6 +219,7 @@ public sealed class LocalGameApiTests
     {
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<LocalSessionStore>();
@@ -265,6 +323,7 @@ public sealed class LocalGameApiTests
     {
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<LocalSessionStore>();
@@ -358,6 +417,7 @@ public sealed class LocalGameApiTests
     {
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<LocalSessionStore>();
@@ -722,6 +782,13 @@ public sealed class LocalGameApiTests
         Assert.Null(store.Find(seat.Token));
     }
 
+    // Sets the explicit deployment-posture flag (#366) so these functional tests - which
+    // exercise the loopback/CSRF/same-origin/body-limit behavior, not the gating itself -
+    // keep mounting the API the way they did before that gate was split out.
+    private static void TrustLocalDeployment(WebApplicationBuilder builder) =>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        { [LocalGameApi.TrustedLocalDeploymentConfigKey] = "true" });
+
     private static Task<HttpResponseMessage> Send(HttpClient client, HttpRequestMessage request) =>
         client.SendAsync(request, TestContext.Current.CancellationToken);
 
@@ -831,6 +898,7 @@ public sealed class LocalGameApiTests
             var fixture = new ActionFixture();
             var builder = WebApplication.CreateBuilder();
             builder.Environment.EnvironmentName = "Development";
+            TrustLocalDeployment(builder);
             builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
             builder.Services.AddSingleton(TimeProvider.System);
             builder.Services.AddSingleton<LocalSessionStore>();

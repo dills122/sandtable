@@ -199,6 +199,59 @@ public sealed class CampaignSourceGroupedZocTests
         Assert.DoesNotContain("d3715", controlled);
     }
 
+    [Theory]
+    // Commonwealth OA PDF p.9 (70th Infantry Division, 23rd Brigade note):
+    // Essex and Durham at close-assault rating 2 per chart 4.46a.
+    [InlineData("1-essex", 2)]
+    [InlineData("1-durham-light-infantry", 2)]
+    // Commonwealth OA PDF p.11 (Unassigned British Infantry-type Units):
+    // South Staffordshires, Buffs and Hampshire at close-assault rating 1.
+    [InlineData("1-south-staffordshires", 1)]
+    [InlineData("1-buffs", 1)]
+    [InlineData("1-hampshire", 1)]
+    public void MatruhGarrisonBattalionsCarryTheirCitedCloseAssaultRating(string elementId, int expectedRating)
+    {
+        var member = new CampaignGroupedMember(elementId, CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false,
+            "infantry", 6, 10, CapabilityPointAmount.Zero, 0);
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(
+            CampaignSourceMatruhGroupedDefinition.GroupId, [member]);
+        Assert.True(estimate.AllKnown);
+        Assert.Equal(6 * expectedRating, estimate.LowerBound);
+    }
+
+    [Fact]
+    public void MatruhGarrisonAllFiveBattalionsHaveAFullyKnownDefenseEstimateFromTheirRealCitedRatings()
+    {
+        CampaignGroupedMember[] members =
+        [
+            new(CampaignSourceMatruhFormation.HeadquartersId, null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+            new("1-essex", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-durham-light-infantry", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-south-staffordshires", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-buffs", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("1-hampshire", CampaignSourceMatruhFormation.HeadquartersId, 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+        ];
+        // StackValue 0 matches the real Matruh Garrison's own zero-stacking
+        // convention (9.16 - "garrison counter zero at Matruh"), not a test
+        // placeholder, so EvaluateFormationSource is still expected to come
+        // back determinate-but-not-qualified on stacking alone, never on an
+        // unknown defense component.
+        var group = new CampaignGroupedFormation(CampaignSourceMatruhGroupedDefinition.GroupId, "commonwealth",
+            CampaignSourceMatruhFormation.HeadquartersId, "d3714", 0, 20, members, dispositionConfirmed: true);
+
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(group.GroupId, group.Members);
+        // Essex/Durham (OA p.9): 6 TOE x DR 2 x 2 units = 24. South
+        // Staffordshires/Buffs/Hampshire (OA p.11): 6 TOE x DR 1 x 3 units = 18.
+        Assert.Equal(42, estimate.LowerBound);
+        Assert.True(estimate.AllKnown);
+
+        var result = CampaignSourceGroupedZoc.EvaluateFormationSource(group);
+        Assert.NotNull(result);
+        Assert.False(result!.IsQualified);
+        Assert.Contains(ZocSourceFailureKind.InsufficientStackingPoints, result.Failures);
+        Assert.DoesNotContain(ZocSourceFailureKind.InsufficientRawDefensiveCloseAssaultPoints, result.Failures);
+    }
+
     [Fact]
     public void DetachedSingleBattalionBelowStackingThresholdIsKnownNotQualified()
     {
@@ -210,5 +263,65 @@ public sealed class CampaignSourceGroupedZocTests
         Assert.NotNull(result);
         Assert.False(result!.IsQualified);
         Assert.Contains(ZocSourceFailureKind.InsufficientStackingPoints, result.Failures);
+    }
+
+    [Theory]
+    // Commonwealth OA PDF p.13 (6th Australian Division), chart 4.46a (PDF
+    // pp.22-23): all nine named battalions share ID code 'p' and close-
+    // assault rating 2; only six of them (16th/17th Brigades') are part of
+    // this grouped formation.
+    [InlineData("2-1-australian-infantry", "infantry", 6, 2)]
+    [InlineData("2-2-australian-infantry", "infantry", 6, 2)]
+    [InlineData("2-3-australian-infantry", "infantry", 6, 2)]
+    [InlineData("2-5-australian-infantry", "infantry", 6, 2)]
+    [InlineData("2-6-australian-infantry", "infantry", 6, 2)]
+    [InlineData("2-7-australian-infantry", "infantry", 6, 2)]
+    // 16th/17th Brigade HQ organic antitank: ID codes 'f'/'e'.
+    [InlineData("16-australian-infantry-brigade-hq", "organic-antitank", 1, 1)]
+    [InlineData("17-australian-infantry-brigade-hq", "organic-antitank", 1, 1)]
+    // Divisional cavalry reconnaissance: ID code 'll'.
+    [InlineData("6-australian-divisional-cavalry", "reconnaissance", 8, 3)]
+    public void SixthAustralianDivisionMembersCarryTheirCitedCloseAssaultRating(
+        string elementId, string componentType, int toe, int expectedRating)
+    {
+        var member = new CampaignGroupedMember(elementId, CampaignSourceSixthAustralianGroupedDefinition.RootId,
+            componentType == "infantry" ? toe : null, 0, false, componentType, toe, 10, CapabilityPointAmount.Zero, 0);
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(
+            CampaignSourceSixthAustralianGroupedDefinition.GroupId, [member]);
+        Assert.True(estimate.AllKnown);
+        Assert.Equal(toe * expectedRating, estimate.LowerBound);
+    }
+
+    [Fact]
+    public void SixthAustralianDivisionFullRosterHasAFullyKnownDefenseEstimateAndQualifies()
+    {
+        var rootId = CampaignSourceSixthAustralianGroupedDefinition.RootId;
+        CampaignGroupedMember[] members =
+        [
+            new(rootId, null, null, 0, false, null, null, 30, CapabilityPointAmount.Zero, 0),
+            new("16-australian-infantry-brigade-hq", rootId, null, 0, false, "organic-antitank", 1, 20, CapabilityPointAmount.Zero, 0),
+            new("2-1-australian-infantry", "16-australian-infantry-brigade-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("2-2-australian-infantry", "16-australian-infantry-brigade-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("2-3-australian-infantry", "16-australian-infantry-brigade-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("17-australian-infantry-brigade-hq", rootId, null, 0, false, "organic-antitank", 1, 20, CapabilityPointAmount.Zero, 0),
+            new("2-5-australian-infantry", "17-australian-infantry-brigade-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("2-6-australian-infantry", "17-australian-infantry-brigade-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("2-7-australian-infantry", "17-australian-infantry-brigade-hq", 6, 0, false, "infantry", 6, 10, CapabilityPointAmount.Zero, 0),
+            new("6-australian-divisional-cavalry", rootId, null, 0, false, "reconnaissance", 8, 45, CapabilityPointAmount.Zero, 0),
+        ];
+        var group = new CampaignGroupedFormation(CampaignSourceSixthAustralianGroupedDefinition.GroupId, "commonwealth",
+            rootId, "e1829", 5, 0, members, dispositionConfirmed: true);
+
+        var estimate = CampaignSourceGroupedZoc.EstimateRawDefenseLowerBound(group.GroupId, group.Members);
+        // Six battalions (OA p.13, chart 4.46a): 6 TOE x DR 2 x 6 units = 72.
+        // Two brigade HQs' organic antitank: 1 TOE x DR 1 x 2 units = 2.
+        // Divisional cavalry: 8 TOE x DR 3 x 1 unit = 24. The division HQ
+        // carries no combat component of its own and contributes nothing.
+        Assert.Equal(98, estimate.LowerBound);
+        Assert.True(estimate.AllKnown);
+
+        var result = CampaignSourceGroupedZoc.EvaluateFormationSource(group);
+        Assert.NotNull(result);
+        Assert.True(result!.IsQualified);
     }
 }

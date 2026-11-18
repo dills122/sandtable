@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceMatruhGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-matruh-grouped.v1";
-    internal const string ContentHash = "sha256:1964df64889750d230ca0f0337eb78b717e6964200904f63de2a1e252cfd5922";
+    internal const string ContentHash = "sha256:41a85745748ceffe70f12d14d98a9f8f960bc797262b6a26bc5390b656a5704d";
     private readonly byte[] bytes;
     private ContentSourceMatruhGroupedPackArtifact(ContentSourceFourthIndianPackArtifact basis, byte[] bytes)
     {
@@ -37,7 +37,7 @@ internal sealed class ContentSourceMatruhGroupedPackArtifact
             writer.WriteString("sourcePolicy", CampaignSourceMatruhFormation.PolicyId);
             writer.WriteString("assignmentRuling", "provisional-errata-buffs-hampshire-assigned-oa-no-assigned-exception");
             writer.WriteString("colocationRuling", "provisional-owner-select-buffs-hampshire-with-matruh");
-            writer.WriteString("essexDurhamAssignment", "scenario-23-70-vs-oa-note-f-unresolved");
+            writer.WriteString("essexDurhamAssignment", "attached-regardless-of-assignment-timing");
             writer.WriteString("garrisonStack", "9.16-zero-at-matruh"); writer.WriteString("movementRestriction", "no-voluntary-move-until-selby-or-stage-attacked-close-assault");
             writer.WriteString("conversion", "gt12-operation-stage2-selby");
             writer.WriteString("headquartersId", CampaignSourceMatruhFormation.HeadquartersId); writer.WriteNumber("headquartersCpa", 30);

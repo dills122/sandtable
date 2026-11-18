@@ -9,8 +9,8 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceMatruhDetachedPackArtifact
 {
     internal const string FormatId = "sandtable.source-matruh-detached.v1";
-    internal const string CorpsBasisHash = "sha256:0a9c848a242b342e391acbb4fafd88e17de88813408e0abd3e7c80df30f81d48";
-    internal const string MalettiBasisHash = "sha256:ca2824c4c92d3dec9f507fc6eda171c9b77d96f76351115e204751d291504109";
+    internal const string CorpsBasisHash = "sha256:f0489525df87af6ee05646c5df9b656e6752dfc3dc1f713fa25ac0c694c286e3";
+    internal const string MalettiBasisHash = "sha256:9fc618963e779ec8f1d1363a6676da7a0d8715f1545979543fb10d018041a12f";
     private readonly byte[] bytes;
     private ContentSourceMatruhDetachedPackArtifact(ContentScheduledPackIdentity basisIdentity, byte[] bytes)
     {

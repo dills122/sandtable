@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwPriorityPackArtifact
 {
     internal const string FormatId = "sandtable.source-cw-priority-catalog.v1";
-    internal const string ContentHash = "sha256:e17a713b9d9d248881ed676318e8e33dc071e3e100e5cbd3d118b18025a52258";
+    internal const string ContentHash = "sha256:529b3ce17143b438b736aa5b009f70e13bee92061485e86ba1fa824772843dd0";
     private readonly byte[] bytes;
     private ContentSourceCwPriorityPackArtifact(ContentSourceAxisCorpsArtilleryPackArtifact basis, byte[] bytes)
     {

@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceAxisGarrisonRemainderPackArtifact
 {
     internal const string FormatId = "sandtable.source-axis-garrison-remainder.v1";
-    internal const string ContentHash = "sha256:3ee6cb394c6f9538a45e599f1df223721ebba52354d4482b38fac84965539910";
+    internal const string ContentHash = "sha256:03445f5b86d7f4da8d16c16c3395221affe0fd7a40932ddb0d4cecd4b2d399d5";
     private readonly byte[] bytes;
     private ContentSourceAxisGarrisonRemainderPackArtifact(ContentSourceAxisMinorGarrisonsPackArtifact basis, byte[] bytes)
     {

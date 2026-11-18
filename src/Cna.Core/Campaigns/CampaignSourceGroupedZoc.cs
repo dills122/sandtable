@@ -19,6 +19,10 @@ internal static class CampaignSourceGroupedZoc
         new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-indian-p15");
     private static readonly RuleReference CommonwealthOa70InfantryP9 =
         new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-70-infantry-p9");
+    private static readonly RuleReference CommonwealthOaAustralianP13 =
+        new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-australian-p13");
+    private static readonly RuleReference CommonwealthOaBritishP11 =
+        new(Cna1979GrazianiSourceFacts.CommonwealthChartsSourceId, "oa-british-p11");
     private static readonly RuleReference AxisChart446b =
         new(Cna1979GrazianiSourceFacts.AxisChartsSourceId, "4.46b");
     private static readonly RuleReference CommonwealthOa7ArmoredP6 =
@@ -98,6 +102,59 @@ internal static class CampaignSourceGroupedZoc
             rating = 2;
             sources = [CommonwealthChart446a, CommonwealthOa70InfantryP9];
             return true;
+        }
+        // 6th Australian Division: Commonwealth OA PDF p.13 identifies each
+        // unit's ID code (the nine named battalions under code 'p', 16th/17th
+        // Brigade HQ organic antitank under 'f'/'e', the divisional cavalry
+        // under 'll'); chart 4.46a (PDF pp.22-23) gives the matching ratings.
+        // Only the six 16th/17th Brigade battalions, both of those brigade
+        // HQs, and the divisional cavalry are represented in this grouped
+        // formation - 19th Brigade (HQ code 'a', not 'e'/'f') is excluded
+        // from the initial training group by scenario 60.41 and is never
+        // given an antitank component here by pattern-matching off 16th/17th.
+        if (groupId == CampaignSourceSixthAustralianGroupedDefinition.GroupId)
+        {
+            if (componentType == "infantry" && toe == 6
+                && elementId is "2-1-australian-infantry" or "2-2-australian-infantry" or "2-3-australian-infantry"
+                    or "2-5-australian-infantry" or "2-6-australian-infantry" or "2-7-australian-infantry")
+            {
+                rating = 2;
+                sources = [CommonwealthChart446a, CommonwealthOaAustralianP13];
+                return true;
+            }
+            if (componentType == "organic-antitank" && toe == 1
+                && elementId is "16-australian-infantry-brigade-hq" or "17-australian-infantry-brigade-hq")
+            {
+                rating = 1;
+                sources = [CommonwealthChart446a, CommonwealthOaAustralianP13];
+                return true;
+            }
+            if (componentType == "reconnaissance" && toe == 8 && elementId == "6-australian-divisional-cavalry")
+            {
+                rating = 3;
+                sources = [CommonwealthChart446a, CommonwealthOaAustralianP13];
+                return true;
+            }
+        }
+        // Matruh Garrison: Essex/Durham are identified on OA p.9 (70th
+        // Infantry Division, 23rd Brigade note); South Staffordshires/Buffs/
+        // Hampshire are identified on OA p.11 (Unassigned British Infantry-
+        // type Units). Chart 4.46a gives each its own close-assault rating -
+        // Essex/Durham at 2, the other three at 1 - not a shared value.
+        if (groupId == CampaignSourceMatruhGroupedDefinition.GroupId && componentType == "infantry" && toe == 6)
+        {
+            if (elementId is "1-essex" or "1-durham-light-infantry")
+            {
+                rating = 2;
+                sources = [CommonwealthChart446a, CommonwealthOa70InfantryP9];
+                return true;
+            }
+            if (elementId is "1-south-staffordshires" or "1-buffs" or "1-hampshire")
+            {
+                rating = 1;
+                sources = [CommonwealthChart446a, CommonwealthOaBritishP11];
+                return true;
+            }
         }
         // 7th Armored Division: each cited against OA p.6 with its printed
         // weapon's own defensive rating (Mark VI light vs A10 Cruiser), not a

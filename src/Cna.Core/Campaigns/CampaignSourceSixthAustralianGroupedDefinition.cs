@@ -11,6 +11,19 @@ internal static class CampaignSourceSixthAustralianGroupedDefinition
     internal const string GroupId = "6th-australian-division";
     internal const string RootId = "6-australian-division-hq";
     internal static readonly string[] Locations = ["e1430", "e1730", "e1829", "e1830", "e1930", "e1931"];
+    // Commonwealth OA PDF p.13 ID codes (chart 4.46a, PDF pp.22-23, gives the
+    // matching TOE/CPA/close-assault ratings - see
+    // CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating): the nine
+    // named infantry battalions are code 'p' (TOE 6, CPA 10, close assault
+    // 1/2), 16th Brigade HQ's organic antitank is 'f' (TOE 1, CPA 20, close
+    // assault 0/1), 17th Brigade HQ's organic antitank is 'e' (same TOE/CPA/
+    // close assault as 'f'), and the divisional cavalry's reconnaissance
+    // component is 'll' (TOE 8, CPA 45, close assault 2/3). Only six of the
+    // nine battalions (16th/17th Brigades') plus both of those HQs plus
+    // cavalry are represented here - 19th Brigade's HQ is code 'a', not
+    // 'e'/'f', and scenario 60.41 excludes 19th Brigade from the initial
+    // training group, so it is never given an organic antitank component by
+    // pattern-matching off 16th/17th.
     private static readonly (string Id, string? Parent, string? Type, int? Toe, int Cpa)[] Units =
     [
         (RootId, null, null, null, 30),
