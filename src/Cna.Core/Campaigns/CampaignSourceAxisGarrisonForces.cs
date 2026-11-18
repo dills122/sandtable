@@ -13,7 +13,7 @@ internal sealed class CampaignSourceAxisGarrisonForces
 {
     internal const string PolicyId = "graziani.axis-initial-forces.giarabub-minor.v1";
     // Derived from (and so changes whenever) CampaignSourceAxisSupplementalForces.ContentHash
-    // changes - see RUL-GRA-26's note on that constant for the most recent reason.
+    // changes - see RUL-GRA-28's note on that constant for the most recent reason.
     internal const string ContentHash = "sha256:84313115e7200cc53c732ff870945d7f48dbe7371bcea4f3d5e209f85ed6ad16";
     private readonly ReadOnlyCollection<CampaignSourceInitialForce> forces;
 

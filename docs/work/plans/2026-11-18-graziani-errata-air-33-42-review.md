@@ -1,0 +1,9 @@
+# Review: September errata §§33–42 inventory
+
+Visually checked [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) PDF p. 2 right column, §§34.72–37.31, and p. 3 left column, §§39.11–42.53, against [inventory](2026-11-18-graziani-errata-air-33-42.md). Nineteen identifiers match, in order; sequence contains no §§33, 36 or 38 entry and next entry is §43.12. The paraphrases preserve the printed substance and relevant qualifications. Source SHA-256 rechecked: `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`.
+
+One coverage refinement: inventory says §41.35's host case and referent need checking, but its linked [convoy rounding follow-up](2026-11-17-graziani-convoy-rounding-source-followup.md) already describes this instruction as concerning bombing supply dumps, not a universal rounding rule. That is existing documented context, not a fresh original Air-rule verification in this review. Land-only application still requires its own explicit path; the erratum alone does not settle convoy rounding.
+
+The cited [convoy census review](2026-11-18-graziani-convoy-section-census-review.md) and [fleet review](2026-11-18-graziani-fleet-no-target-source-review.md) support the inventory's bounded §41.5 coverage and unchanged named Bomb Points cells; the convoy census retains §41.67's abstract use as unresolved. These claims are checked against those notes, not newly re-rendered underlying charts here. Inventory's qualified treatment of §41.65G and other detailed Air entries does not establish cross-mode applicability or scenario reachability. Same packet, not independent edition or later-errata audit; no policy, data, runtime or gameplay tests changed.
+
+**Disposition:** Updated inventory now attributes §41.35's supply-dump host context to the existing follow-up and retains the Land-only scope limit. Review refinement addressed; no new original-rule verification claimed.

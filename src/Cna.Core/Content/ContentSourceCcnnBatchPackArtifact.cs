@@ -9,7 +9,7 @@ internal sealed class ContentSourceCcnnBatchPackArtifact
 {
     internal const string FormatId = "sandtable.source-grouped-extensions.v1";
     // All four derived from (and so changed when) CampaignSourceAxisSupplementalForces.ContentHash
-    // changed - see RUL-GRA-26's note on that constant for the most recent reason.
+    // changed - see RUL-GRA-28's note on that constant for the most recent reason.
     internal const string CcnnHash = "sha256:4e17559ae7a7358c9d13ff3bb29a7a2df02c507b31a8f8f2bb8a32d47f7d0203";
     internal const string CombinedHash = "sha256:b3d74b6204dd8821da271bb381847fc5939732e84f3bd991f3e5e04340e0efd6";
     internal const string CcnnArescaHash = "sha256:5d55910a8af9c03941b482dc6f215ebe2945a9dff63480a2eb537812d2b6f48c";

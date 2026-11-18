@@ -5,7 +5,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Tests.Campaigns;
 
-// RUL-GRA-26 (docs/work/plans/2026-11-12-graziani-ruling-decisions.md): the
+// RUL-GRA-28 (docs/work/plans/2026-11-12-graziani-ruling-decisions.md): the
 // 1st/4th CCNN division HQs (1-ccnn-hq, 4-ccnn-hq) carry one artillery TOE
 // point from deployment, with its weapon identity permanently unidentified.
 //
@@ -74,7 +74,7 @@ public sealed class GrazianiSourceCcnnHqArtilleryRulingTests
 
         // The real production groups (including the two still-unresolved
         // engineers) still trip the blocker - that is genuinely out of this
-        // ruling's scope, per RUL-GRA-26's own text, not a regression here.
+        // ruling's scope, per RUL-GRA-28's own text, not a regression here.
         Assert.True(CampaignSourceCcnnBatch.HasIncompleteCharacteristics(groups));
     }
 

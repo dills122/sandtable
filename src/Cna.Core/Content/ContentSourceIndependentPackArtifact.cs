@@ -14,7 +14,7 @@ internal sealed class ContentSourceIndependentPackArtifact
 {
     internal const string FormatId = "sandtable.source-independent-setup.v1";
     // Derived from (and so changes whenever) CampaignSourceAxisSupplementalForces.ContentHash
-    // changes - see RUL-GRA-26's note on that constant for the most recent reason.
+    // changes - see RUL-GRA-28's note on that constant for the most recent reason.
     internal const string ContentHash = "sha256:3a8832098cac32c35d7ec7076273c0903e093a04d4529da973a52b8c3255c4aa";
     private static readonly ReadOnlyCollection<ContentSourceIndependentUnit> Catalog = Array.AsReadOnly(
         CampaignSourceAxisPriorityMotorization.Targets.Select(id => new ContentSourceIndependentUnit(id, "axis", "c3617", 10, 5,

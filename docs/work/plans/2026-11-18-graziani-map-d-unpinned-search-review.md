@@ -1,0 +1,9 @@
+# Map D D3613 unpinned rail search: source review
+
+**Disposition:** Supports [bounded search](2026-11-18-graziani-map-d-unpinned-search.md): no additional unpinned blue cross-tied crossing identified in exposed parts of D3613's other four sides. This is not proof of absence at overprinted or crowded vertices, an all-sheet search, or a class or route finding. Informed reading of the same scan, not an independent edition.
+
+- `D3612|D3613` and `D3514|D3613` carry blue cross-tied crossings away from their shared-side vertices. The rail ink exits D3613 across the latter diagonal; nearby ties alone should not be assigned to the adjoining D3613–D3614 side.
+- `D3613|D3714` carries the dark paired road across its diagonal and brown slope ink; no distinct blue cross-tied crossing identified there. `D3613|D3713`, `D3613|D3614`, and `D3513|D3613` show no additional rail crossing in their exposed side portions. Brown band, place lettering, grid and vertex marks qualify these negative observations.
+- Literal pin lookup confirms five D3613 pairs with feature lists reported by the candidate: rail on D3612 and D3514 sides; road and slope on D3714; slope on D3713 and D3614. No literal `D3513|D3613` pair returned. Pin absence is not an assertion of clear terrain or absent ink. This review does not independently settle the pinned rail class or slope directions.
+
+Compared [Map D and key](https://spigames.net/PDFv10/CNA_Maps.pdf), PDF pp. 4 and 1, after reading the candidate and rendering its 600-dpi crop. Embedded image is 300 ppi; enlargement adds no source detail. Map PDF SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; crop SHA-256 `de5ae0f627d54e052daac0446f100226bbe75c33c189aad3d8f2219f117fcd18`; pinned hexsides SHA-256 `124e6f943930f4fa718eb04fa1dc86b6089582aebfaff8fcb83f98ab30d98e6c`. Crop bytes depend on renderer. No data or runtime changes; no gameplay tests.

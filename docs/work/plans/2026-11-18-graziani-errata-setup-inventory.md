@@ -1,0 +1,18 @@
+# September errata: bounded setup inventory
+
+**Result:** No newly decisive correction to the CCNN gun or Giarabub motor pool found in the checked entries. One precision gap matters for future supply analysis: errata §59.45 expressly permits initial truck supplies **above and beyond the listed availability**, not merely starting with listed supplies loaded. The [supply pilot](2026-11-12-graziani-supply-accounting-pilot.md) already flags extra truck loads and the unresolved Land-only interaction; the [Giarabub review](2026-11-17-graziani-giarabub-initial-allocation-review.md) notes the broad rule but does not quote this quantitative distinction. Neither text establishes a particular allocation or resolves abstract motorization conversion.
+
+Visual inspection of [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF p. 1 middle column and p. 3 right column; local `/private/tmp/sandtable-cna-errata.pdf` SHA-256 verified `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. Inventory of the printed §§59–60 and relevant §4.44/.46 entries:
+
+| Locator | Printed substance | Applicability and existing disposition |
+| --- | --- | --- |
+| p. 3 §59.2 | Cp means Corps; TOE expands Table of Organization and Equipment. | Terminology, not a gun model or allocation. |
+| p. 3 §59.45 | All trucks may be loaded as player wishes; scenario-start truck supplies may exceed listed supplies. | Detailed-truck setup; interaction with abstract §59.63/.66 remains open. Do not infer a fixed unlimited stock or automatically add this to abstract units. |
+| p. 3 §60.31 | XXI Corps Artillery appears twice under Anywhere in Libya. | [Corps artillery check](2026-11-17-graziani-corps-artillery-next.md) already documents one identity and separate unresolved 4/1AR repetition. Erratum gives no CCNN armament or Giarabub pool. |
+| p. 3 §60.32 | Italian aircraft printed 2501 should be Z501. | Aircraft identity correction; no land-force or abstract motor pool finding follows. |
+| p. 3 §60.45 | Only first paragraph correct; ignore material beginning “The following units are available...” | Commonwealth fleet. [Fleet review](2026-11-17-graziani-abstract-aa-fleet-next.md) already preserves first paragraph and discards later material. Not an Axis ground setup correction. |
+| p. 1 §4.44b items 1–3 | Sirte, Cirene, Marmarica OA sheets omitted; 1st Buffs and 1st Hampshires assigned to Matruh Garrison at campaign/Italian scenario start; French Motor Marine Company arrival date D. | [Source register](2026-11-12-graziani-source-register.md) tracks the sheets, Matruh conflict and French company. The [independent review](2026-11-18-graziani-errata-setup-inventory-review.md) confirms the PDF's fourth page embeds all three OA sheets; the original version of this inventory incorrectly said they were absent. |
+| p. 1 §4.44b items 4–6 | CW air reconnaissance legend R; Re.2000 characteristics apparently left in despite likely no appearance; German 362 Artillery Battery ID x, not w. | Air chart / German artillery corrections, not evidence for the Italian CCNN HQ gun. Re.2000 remark is qualified by author, not a categorical exhaustive scenario proof. |
+| p. 1 §§4.44a, 4.44c, 4.46 | Gladiator fuel consumption 1; Bf.109E lacks D, Bf.110 fighter maneuver 32 only on night missions, otherwise 30; §4.46 is a note about complexity. | Aircraft corrections and explanatory note. §4.46 does not provide a Giarabub pool, priority assignment or CPA. |
+
+This is a bounded visual inventory of the cited entries, not an exhaustive errata or all-editions search, runtime audit, rights determination, or policy ruling. No runtime/data edits or gameplay tests.

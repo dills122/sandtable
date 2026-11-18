@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceMalettiGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-maletti-grouped.v1";
-    internal const string ContentHash = "sha256:4b813f546d07188da8d9e9e0dd41ff5c6bd4bc02e681b7e46c23a001d68d4bbc"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:4b813f546d07188da8d9e9e0dd41ff5c6bd4bc02e681b7e46c23a001d68d4bbc"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceMalettiGroupedPackArtifact(ContentSourceMatruhGroupedPackArtifact basis, byte[] bytes)
     {

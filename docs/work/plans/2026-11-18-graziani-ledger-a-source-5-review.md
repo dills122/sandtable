@@ -1,0 +1,11 @@
+# LA-19 M11/39 anti-air exception: source review
+
+**Disposition:** The [source note](2026-11-18-graziani-ledger-a-source-5.md) supports its bounded non-AA-point classification. The M11/39's AA rating alone does not remove its tank TOE points under §32.8. This does not establish a Land-only AA action, an actual later surviving count or immunity from unrelated loss. No material discrepancy found in the checked comparison.
+
+Visually inspected [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf) PDF p. 3 / printed p. 27; [Axis charts](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf) PDF pp. 6 and 29; and [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) printed/PDF pp. 43–45. Verified local SHA-256: scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Axis `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. Informed same-scan review, not a separate edition.
+
+- Scenario §60.31 lists Maletti at C3617 with II(M) attached. The Axis OA's Libyan Tank Command row lists **II(M) Tank Battalion**, ID `l`, `7 × M11/39`, `D`; its note identifies Maletti as the initial attachment. These are printed baseline facts, subject to actual setup/representation and later losses.
+- Axis §4.48 places M11/39 under **Tank Weapon Systems** and prints AA **1**. Section 32.84 says §32.8's modifications and restrictions apply to anti-air TOE and Replacement Points, not non-anti-air points possessing an anti-air rating. This supports the note's point-level comparison; it does not exempt separately assigned anti-air points in a mixed formation or define an action.
+- Section 32.83 separately enumerates Italian anti-air units, anti-air points in specified emplaced-gun units, heavy anti-air points in specified artillery and heavy anti-air replacements. It also limits light anti-air Replacement Points to one per month. This latter distinct restriction is outside the note's short list, not an exception for M11/39 tank points. Other side-specific rules and classification must be applied to their own subjects.
+
+No separate actual-state, counter identity, later-errata, aircraft-action or runtime audit was performed. No data edits or gameplay tests.

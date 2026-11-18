@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceExpandedIndependentPackArtifact
 {
     internal const string FormatId = "sandtable.source-independent-expanded.v1";
-    internal const string ContentHash = "sha256:785a8643296f50d54de993c6c82b99445a7f1700f3c744ec92ebafe9ee6c8145"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:785a8643296f50d54de993c6c82b99445a7f1700f3c744ec92ebafe9ee6c8145"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private static readonly IReadOnlyList<ContentSourceIndependentUnit> Added = Array.AsReadOnly(new[]
     {
         Unit("1-royal-northumberland-fusiliers", "c3721", 8, 3),

@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwPriorityPackArtifact
 {
     internal const string FormatId = "sandtable.source-cw-priority-catalog.v1";
-    internal const string ContentHash = "sha256:139c00802df6a18506f23c44e3f3e88818ad641b8e05c7bb089a7bc4c2c3a091"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:139c00802df6a18506f23c44e3f3e88818ad641b8e05c7bb089a7bc4c2c3a091"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceCwPriorityPackArtifact(ContentSourceAxisCorpsArtilleryPackArtifact basis, byte[] bytes)
     {

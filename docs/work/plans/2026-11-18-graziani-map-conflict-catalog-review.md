@@ -1,0 +1,12 @@
+# Graziani map conflict catalog: evidence audit
+
+**November 18, 2026. Disposition:** No blocking discrepancy found in the [catalog](2026-11-18-graziani-map-conflict-catalog.md) against the cited reviews. This audit compares the catalog with those reviews; it is not a new visual inspection, independent edition check, or runtime admission.
+
+- **Gazala:** [Road](2026-11-18-graziani-gazala-road-candidate-review.md) and [seam](2026-11-18-graziani-gazala-bc-seam-review.md) reviews support a road crossing `B4933|B4934` and report no `B4934` hex or side record in v1. `C4901` remains a candidate position under an unproved translation, not an established alias or adjacency. Endpoint representation remains blocked.
+- **`B5917|B5918`:** [Critical recheck](2026-11-18-graziani-landing-b-critical-recheck.md) supports continuous paired road strokes conflicting with v1 unfinished road. Other side features and edition equivalence remain unverified.
+- **`C0133|C0134`:** [Siwa east review](2026-11-17-graziani-siwa-east-leads-review.md) supports a dashed track crossing and reports no explicit v1 pair. The obscured oasis join and sheet edge do not establish a continuation or route.
+- **`D3516|D3517`:** [Targeted recheck](2026-11-18-graziani-d3516-rail-conflict.md) supports a railroad crossing and corrects the batch B omission and review entry. Road membership at the crowded vertex remains unknown; absence of a pair record does not establish a clear side.
+- **Amiriya:** [Policy review](2026-11-18-graziani-amiriya-coordinate-policy-review.md) preserves §60.5 `E2212` and separate §61.33 `E3212`; the mark in `E3212` has uncertain identity and does not establish an airfield. [RUL-GRA-27 audit](2026-11-18-graziani-rul27-audit.md) confirms `E2212` as a bounded planning choice, not a verified correction or runtime admission.
+- **Priority and gate:** Catalog distinguishes positive source observations from conditional readings and unresolved attribution. Its proposed steps retain provenance, unknown versus clear, versioning and replay, consumer and boundary review, and deterministic testing as prerequisites. Same-scan reviews and sparse v1 comparison do not establish independent corroboration, complete side inventories, route legality, or absence of unobserved features.
+
+Reviewed the catalog and its cited targeted reviews and priority handoff. No runtime or map-data changes; no gameplay tests run.

@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCireneMarmaricaGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-cirene-marmarica-grouped.v1";
-    internal const string ContentHash = "sha256:a5bdc3d720daa6ca750646231fb2a49cbefefb20ad0ae9b534ff28ad10224f5f"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:a5bdc3d720daa6ca750646231fb2a49cbefefb20ad0ae9b534ff28ad10224f5f"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceCireneMarmaricaGroupedPackArtifact(ContentSourceLibyanGroupedPackArtifact basis, byte[] bytes)
     {

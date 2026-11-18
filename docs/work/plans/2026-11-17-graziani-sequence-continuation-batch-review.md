@@ -1,0 +1,10 @@
+# Graziani sequence continuation: source review
+
+**Review date:** November 17, 2026. Independent visual reading of the same scans, not an independent edition. Reviewed [batch](2026-11-17-graziani-sequence-continuation-batch.md) against Land §§5.1–5.2, 6.13–6.16 (PDF/printed pp. 11–12) and scenario §§60.22, 60.9–60.92 (PDF pp. 3–5 / printed pp. 27–29). Scan SHA-256 values match batch. Scope: sequence and source claims only; no gameplay witness or implementation verification.
+
+**Disposition:** No blocking mismatch found in reviewed claims. Two clarifications for downstream use:
+
+- Land §5.2 III.G defines four segments and permits Player A to repeat all four together under §8.2. Initial passage through the phase is distinct from optional repetitions; “each chosen iteration” must not imply the first passage is optional. Player B then performs phases F–L with A/B exchanged. Breakdown follows movement and applies to both sides; barrage follows position determination and precedes retreat, assignment, anti-armor and close assault. Both players secretly assign points; phasing player decides probes, withheld points and assault order. Probe identity is announced after each assault resolves.
+- Scenario §60.92 is the Land-only abstraction, supplementing §59.6 as stated in §60.9. It changes motorization and initial supply, including ammunition and fuel; the reviewed portion does not establish actual eligible barrage subjects or authorize dropping detailed Land-only prerequisites. The batch correctly leaves those prerequisites open; cite §60.92 and §59.6 when resolving them.
+
+Land §6.14 counts CP spent during both players' portions against the same unit's stage allowance; §6.16 prevents unused CP from carrying to the next stage, unlike cohesion. Allowance may be exceeded with disorganization under §6.13; it is not a hard spending cap. Scenario §60.22 sets GT1 stage 1 through conclusion of GT6 stage 3. Reached sequence positions do not establish an eligible subject, actual decision, empty phase, or completed legal playthrough. GT1 pre-stage interpretation remains open.

@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwFrontlineArtifact
 {
     internal const string FormatId = "sandtable.source-cw-frontline.v1";
-    internal const string ContentHash = "sha256:28dd214ff5b94535f4284cfce9ec2a030fe7b6e773051dc809085608830a792e"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:28dd214ff5b94535f4284cfce9ec2a030fe7b6e773051dc809085608830a792e"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceCwFrontlineArtifact(ContentSourceGiarabubMotorMachineGunArtifact basis, byte[] bytes)
     {

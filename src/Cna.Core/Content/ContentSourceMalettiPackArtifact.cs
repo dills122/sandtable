@@ -12,7 +12,7 @@ internal sealed class ContentSourceMalettiPackArtifact
     internal const string FormatId = "sandtable.source-maletti-setup.v1";
     // All seven non-empty entries derived from (and so changed when)
     // CampaignSourceAxisSupplementalForces.ContentHash changed - see
-    // RUL-GRA-26's note on that constant for the most recent reason.
+    // RUL-GRA-28's note on that constant for the most recent reason.
     private static readonly string[] PinnedHashes = ["",
         "sha256:b5db187fc519f2e40b3030d45bdda788ea0ede1c48f0b7907572ca1e6a880e3c",
         "sha256:1d1a76b61c9c7d0615a5a610b30d423ed3ee4841e512dd1746b0b1d1d9a6e066",

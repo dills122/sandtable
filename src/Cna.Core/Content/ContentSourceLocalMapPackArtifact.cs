@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceLocalMapPackArtifact
 {
     internal const string FormatId = "sandtable.source-local-map.v1";
-    internal const string ContentHash = "sha256:4067e7396531806ff5ffed83e8ba6dd2866092ed36b84ec9f31dc13a6ac0f524"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:4067e7396531806ff5ffed83e8ba6dd2866092ed36b84ec9f31dc13a6ac0f524"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private static readonly IReadOnlyList<string> C3320Neighbors = Array.AsReadOnly<string>(
         ["c3219", "c3220", "c3319", "c3321", "c3419", "c3420"]);
     private static readonly IReadOnlyList<string> C3617Neighbors = Array.AsReadOnly<string>(

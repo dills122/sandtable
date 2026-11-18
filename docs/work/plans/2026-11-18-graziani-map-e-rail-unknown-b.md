@@ -1,0 +1,20 @@
+# Map E rail: six unresolved pairs rechecked
+
+**Date:** November 18, 2026. **Disposition:** One provisional source-positive crossing and five still unknown. This is an informed re-reading of the same scan, with pins and previous readings visible, not independent-edition corroboration. It does not amend the [pinned sweep reconciliation](2026-11-18-graziani-map-e-rail-pinned-sweep-completion.md) or map data.
+
+Inspected Map E, page 5 of the [original scan](https://spigames.net/PDFv10/CNA_Maps.pdf), and its page 1 terrain key. The key shows blue cross-tied railroad and broken cross-tied unfinished railroad; paired dark lines denote road. Printed numbers identify hexes, not labels on rail features. Source-positive here means the printed rail centerline crosses the exact shared side; it does not establish a junction, route, service, construction or damage state, control, or legal movement. Unknown does not mean absent. Ink thickness, scanning, grid and overprint limit precision near vertices.
+
+| Pair | Recheck | Evidence and limits |
+| --- | --- | --- |
+| `E2422–E2523` | **Source-positive, provisional** | In the 300 dpi middle crop, the blue ticked centerline crosses the shared diagonal around (480, 650); the common vertex with `E2423` is around (500, 662). Crossing lies visibly along the diagonal rather than at the vertex, but proximity and ink width warrant a second visual challenge. This upgrades the unknown in [sweep B](2026-11-18-graziani-map-e-rail-sweep-b.md); it does not establish connectivity of the nearby rail branches. |
+| `E2428–E2429` | **Unknown** | Eastward ticked ink meets the shared vertical near its upper vertex, where river and grid overlap. The exact side attribution remains insecure; see [river junction](2026-11-18-graziani-cairo-river-junction.md). |
+| `E2529–E2628` | **Unknown** | Northbound ticked rail and paired road overlap the grid close to the three-hex vertex with `E2528`; neither crossing nor absence on this specific diagonal is secure. See [Cairo north followup](2026-11-18-graziani-cairo-nile-rail-followup.md). |
+| `E2829–E2830` | **Unknown** | Zagazig junction and river ink meet the upper end of the shared vertical; rail reaches the vertex area, but the precise side is obscured. See [sweep D review](2026-11-18-graziani-map-e-rail-sweep-d-review.md). |
+| `E2829–E2930` | **Unknown** | Rail, city dot and river converge near the diagonal endpoint at Zagazig. Ink in that area cannot securely assign a crossing to this diagonal. See [sweep E review](2026-11-18-graziani-map-e-rail-sweep-e-review.md). |
+| `E2905–E3004` | **Unknown** | Coastal rail meets the neighboring `E3003–E3004` vertical just above its lower vertex; no separate branch is visible across the named diagonal. Near-vertex ink and convention do not settle whether the diagonal also bears a crossing. See [coast review](2026-11-17-graziani-east-rail-coast-batch-review.md). |
+
+No pair classified visually unsupported: absence of a distinct crossing near a vertex does not decide attribution. No other feature label adjudicated and no omission survey performed.
+
+## Reproduction
+
+Existing unrotated crops were inspected with page 1 key. Coordinates above use the middle crop, origin upper left. The [sweep B](2026-11-18-graziani-map-e-rail-sweep-b.md#reproduction), [sweep D](2026-11-18-graziani-map-e-rail-sweep-d.md#reproduction), [Cairo north followup](2026-11-18-graziani-cairo-nile-rail-followup.md#reproduction), and [coast batch](2026-11-17-graziani-east-rail-coast-batch.md) give render commands. PDF SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; middle crop `ee0df7def4b2ffc194b9c55b822f3e0291e9b1770305cbf70644ef36390bd0b1`; north crop `b1c7ee4e0058394b16413b3243552077d15dd269278267354c3b5df886f4058c`; Cairo north crop `ef345c8066e55295c8146a6539b4b39a88d4f62d3f4670993ae43fa79f117cdc`; key crop `ea29b2f8389e4159126f6fda082db5e5c992cb0ece99fc2b1809e73f3d3de189`; coastal detail `8d70284d466ac84a204e9857dd9fec07c66c8b660cebe0955a9b8ec8db4127b7`. PNG hashes depend on rendering and cropping. Documentation only; no runtime or data changes, no gameplay tests.

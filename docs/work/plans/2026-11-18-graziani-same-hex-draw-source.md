@@ -1,0 +1,23 @@
+# LA-13: same-hex draw source check
+
+**Result:** The checked Land-only §32.16 gives no explicit same-hex or zero-CP example. A distinct detailed-logistics erratum **does** explicitly allow a unit to take fuel from a source in its own hex. That is an informative analogy, not an express amendment to §32.16: §32.0/.11 replaces detailed supply procedures for Land-only play. Neither an unconditional same-hex draw nor a rule requiring a nonzero trace is selected here.
+
+## Source comparison
+
+- [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF p. 43, §32.16: a friendly combat unit may draw from a Supply Unit within half its CPA. Distance is measured **from the unit to the Supply Unit**, as if traversed by a medium truck, except non-motorized infantry traces as infantry. The line cannot go through impassable terrain or enemy ZOCs unoccupied by friendly units. Its printed examples give five, ten and 23 CP for particular unit descriptions; none says how to count a source in the unit's own hex or whether an endpoint must be entered.
+- On that same page, §32.15 expressly permits rearranging supplies **among Supply Units in the same hex** during Organization; it separately permits movement and combat requirements to be met from a friendly Supply Unit within range. The first permission concerns supply-to-supply transfers, not a combat unit's §32.16 draw. Section 32.37 permits an air-transported Supply Unit to be drawn upon under §32.16, but does not specify a same-hex combat-unit example.
+- [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF p. 3, §49.14 explicitly permits units to take fuel from a source such as a dump or truck in the same hex, while discussing detailed fuel capacity. This establishes a same-hex fuel-source convention in that specific detailed rule; it does not address abstract Supply Units, ammunition, §32.16's range calculation or its endpoints. The §32.0 and §32.11 replacement text prevents treating the detailed fuel rule itself as automatic Land-only authority.
+- Land p. 18 §10.29 applies a separate **actual Truck Convoy entry** condition in enemy ZOCs. It does not expressly define an abstract draw's zero-length path, and its already-present friendly **combat** unit wording differs from §32.16's friendly-unit exception. Do not import its entry condition without a separate source decision; see [trace comparison](2026-11-18-graziani-victory-trace-source-followup.md).
+
+## D3714 discriminator and alternatives
+
+The [Matruh setup candidate](2026-11-18-graziani-draw-setup-witness.md) records 1 Essex and five regular Supply Units printed at D3714, with formation representation, stacking, actual action and stock still conditional. Two source-compatible approaches need explicit disposition:
+
+1. **Zero-length local trace:** with a valid co-located friendly combat subject and source, take zero traversed hexsides and zero CP as within a positive half-CPA allowance. Section 49.14 gives a detailed-mode local-source analogy, but does not itself prove this Land-only result. Define whether the common endpoint is subject to terrain or enemy-ZOC restrictions and whether friendly presence satisfies the latter.
+2. **Require an explicit convention before allowing the draw:** §32.16 describes a supply line and hypothetical traversal, without defining its zero-length case. Preserve the co-located result as unsupported until a source or versioned policy defines endpoint, range and terrain handling. This is an evidence boundary, not an affirmative printed prohibition.
+
+Neither option establishes actual supply use, cost or stock. A stronger discriminator would be an original Land-only example, official clarification or general distance rule expressly specifying same-hex endpoint cost and applicable terrain/ZOC treatment. Test accepted same-hex behavior separately from a nonzero trace, and separately from §60.81's victory convoy requirement.
+
+## Provenance and search limits
+
+Visually checked the two Land pages and errata p. 3 on November 18, 2026. SHA-256 verified beforehand: Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. Targeted extracted-text search of the four-page errata for `32.16`, `same hex`, `supply line`, `supply unit` and `trace` found the §49.14 analogy, but no explicit §32.16 correction; extraction and literal searches cannot establish absence of indirect or later clarification. Scenario setup is taken from the linked witness, not independently rechecked here. Same-edition sources only; no data edits or gameplay tests.

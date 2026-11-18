@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCwFreeGunsPackArtifact
 {
     internal const string FormatId = "sandtable.source-cw-free-guns.v1";
-    internal const string ContentHash = "sha256:7a54581b0af8b521d5194ffbbd41b0009e93a3cd4c39085bf8e54ad82c8f09c9"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:7a54581b0af8b521d5194ffbbd41b0009e93a3cd4c39085bf8e54ad82c8f09c9"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceCwFreeGunsPackArtifact(ContentSourceCwPriorityPackArtifact basis, byte[] bytes)
     {

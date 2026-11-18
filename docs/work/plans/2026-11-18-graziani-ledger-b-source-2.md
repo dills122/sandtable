@@ -1,0 +1,21 @@
+# RF-02: later scenario facility placement and replacement scope
+
+**Result:** A separate scenario's construction section states that Alexandria and Cairo contain major repair facilities “as usual,” while its Land-only replacement explicitly replaces a different, numbered Commonwealth supply case. That comparison supports keeping general city facilities and a separately placed facility statement distinct from supply quantities, but it does **not** decide whether Graziani §60.92(C) replaces the final facility sentence of §60.44 or whether §22.31's “all hexes” includes Alexandria.
+
+## Original-source comparison
+
+I visually inspected the [scenario book](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 9 / printed p. 33, §§62.5 and 62.62(C), and PDF pp. 4–5 / printed pp. 28–29, §§60.44 and 60.92(C). I compared [Land](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF p. 35 §22.31, and the existing [facility-placement analysis](2026-11-17-graziani-cw-facility-setup.md). The existing [Tobruk transition comparison](2026-11-18-graziani-tobruk-transition-source-next.md) already records §62.5's temporary Tobruk facility; this check concerns its **Alexandria/Cairo wording and numbered replacement boundary**, not a new Tobruk transition.
+
+| Source | What it says | Relevance and limit |
+| --- | --- | --- |
+| Graziani §60.44 and §60.92(C) | §60.44 includes Alexandria major and Matruh temporary facility sentences after initial-supply text. §60.92(C), under Commonwealth Initial Supply Status, says Case 60.44 is replaced, then lists abstract Supply Units. | The numbered case reference includes the facility sentence on its face; the supply heading provides context for a narrower reading. Neither source explicitly limits replacement to supply paragraphs. |
+| Crusader §62.5 and §62.62(C) | §62.5, **Construction at the Start of the Scenario**, states that Alexandria and Cairo contain major repair facilities “as usual.” The separate §62.62(C), under Land Game Only, says Commonwealth initial-supply Case **62.35** is replaced and lists abstract supply units. | The literal replacement target is not §62.5. This is a concrete example of a scenario putting a facility statement outside the supply case it replaces. It does not establish that every other rule leaves §62.5 unchanged, or that §60.92(C) should be read as replacing less than the case it names. |
+| Land §22.31 | The general list includes Alexandria and Cairo with an “all hexes” parenthetical following Cairo. | The separate scenario's city-level wording supports their usual major-facility status, but does not explicitly state which city hexes have facilities, resolve that parenthetical's scope, assign an owner, or define facility identity after control changes. |
+
+The earlier [facility setup check](2026-11-17-graziani-cw-facility-setup.md) already compares Desert Fox §61.36's “either hex” wording. The new §62.5 comparison adds a different scenario's **section structure**, not a second independent edition, a correction of §60.44, or evidence that one or both Alexandria hexes are eligible under Graziani. The two Land-only replacement texts each name their own scenario's supply case; the fact that a facility sentence falls outside one target and inside another is the material distinction. Neither §62.5 nor its placement in that other scenario establishes legal Alexandria repair at Graziani setup.
+
+Before admitting RF-02, resolve §22.31's parenthetical, mapped city membership and actual control, then specify facility identity and repair eligibility. §60.44 replacement and Matruh temporary-facility policy remain a separate scope decision. A directly applicable official correction or example naming a Graziani Alexandria hex would discriminate more strongly; no absence of such evidence is claimed.
+
+## Provenance and limits
+
+Local SHA-256 verified: scenario PDF `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Land PDF `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. This is an informed reading of the same retained edition, not an independent printing or exhaustive later-errata/scenario search. No control-change witness, runtime/data edit, gameplay test or policy selection.

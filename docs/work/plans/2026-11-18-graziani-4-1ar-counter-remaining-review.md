@@ -1,0 +1,10 @@
+# Review: remaining 4/1AR counter areas
+
+**Disposition:** No material error found in the [remaining-sheet inventory](2026-11-18-graziani-4-1ar-counter-remaining.md). Its negative is appropriately limited to readable exact labels in inspected scan areas; it does not establish physical-counter absence, a replacement identity or scenario correction.
+
+- [Counter scan](https://spigames.net/PDFv10/CNA_Counters.pdf) PDF p. 2 Section 4 has two blocks under the German label, including formations, artillery, aircraft/SGSU and generic pieces. I found no readable exact `4/1AR` or `4/2AR` in the displayed faces. This is an informed visual reading, not certainty over obscured or small glyphs.
+- PDF p. 3 Section 5 shows shared Axis numbered discs, vehicle and shipping symbols and neutral facility markers, plus German, Allied and Commonwealth areas. No readable exact label was identified in those areas; shared symbols do not establish an additional named Italian artillery identity.
+- PDF pp. 5–6 identify Section 9 **Front** and **Back** respectively, with Axis, Allied and neutral marker areas; no readable named Italian artillery face or either exact designation was identified. Overprinting, blank or generic faces and other physical sides cannot be ruled out by this result.
+- Section 6 on p. 3 and Sections 7–8 on p. 4 were examined at overview scale only; their broad Commonwealth and Allied labeling is consistent with the inventory. This is not a glyph-by-glyph negative for those sections. Earlier section 1–3 checks and the separate OA/scenario comparison are carried from the linked reviews, not re-adjudicated here.
+
+Rechecked PDF SHA-256 `bc3e6c60131e8c813481510a5a0c991d027bdaaa7e0aa83f413737c22d62dae9` and inspected the candidate's four 200-dpi source crops, whose hashes match its reproduction record. Also inspected low-resolution full-page overviews for pp. 3–4. Same source scan and prepared crops, not an independent edition or an independently authenticated physical sheet. No runtime/data edits or gameplay tests.

@@ -26,7 +26,7 @@ public static class Cna1979GrazianiSourceFacts
     public const string ReconnaissanceComponentClassId = Cna1979Combat.ReconnaissanceComponentClassId;
     public const string AntiAirComponentClassId = "land.combat-component.anti-air";
     public const string AntiAirClassificationId = "land.combat-classification.anti-air";
-    // RUL-GRA-26: both CCNN division HQs (1-ccnn-hq, 4-ccnn-hq) carry one
+    // RUL-GRA-28: both CCNN division HQs (1-ccnn-hq, 4-ccnn-hq) carry one
     // artillery TOE point from deployment (Axis OA p.17/p.18 "N" plus
     // characteristics ID 'g', OA key p.4 §4.44b, characteristics p.26 §4.46b),
     // but no checked source names its weapon. This sentinel is a deliberate,
@@ -671,7 +671,7 @@ public static class Cna1979GrazianiSourceFacts
 
     // The division HQ's one artillery TOE point is recorded separately by
     // CreateFirstCcnnToeCandidates/CcnnHqUnidentifiedArtillerySeed under
-    // RUL-GRA-26 - its weapon model remains permanently unidentified, so it
+    // RUL-GRA-28 - its weapon model remains permanently unidentified, so it
     // is deliberately not a ContentElementCombatFacts/ContentCombatComponent
     // entry here (that record requires a defensive rating no source supports).
     // The engineer's conditional combat rules remain unresolved.
@@ -1392,7 +1392,7 @@ public static class Cna1979GrazianiSourceFacts
     private static ContentElementCombatFacts LibyanRegimentalHeadquartersFacts(string id) =>
         AxisRegimentalHeadquartersFacts(id, "oa-libyan-p5");
 
-    // RUL-GRA-26 planning seed: records the division HQ's one known artillery
+    // RUL-GRA-28 planning seed: records the division HQ's one known artillery
     // TOE point without inventing a weapon model, rating, or any other
     // combat characteristic. This deliberately bypasses AxisWeaponFacts/
     // ContentCombatComponent (which require a defensive rating) because no

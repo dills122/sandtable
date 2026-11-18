@@ -21,7 +21,7 @@ internal sealed class ContentSourceCwAttachedArtilleryPackArtifact
 {
     internal const string FormatId = "sandtable.source-cw-attached-artillery.v1";
     // Derived from (and so changes whenever) CampaignSourceAxisSupplementalForces.ContentHash
-    // changes - see RUL-GRA-26's note on that constant for the most recent reason.
+    // changes - see RUL-GRA-28's note on that constant for the most recent reason.
     internal const string ContentHash = "sha256:2d37abf3c8994633b1edb005cd968b225a702315fd6d2f7766d9f35666aa7cc2";
     private readonly byte[] bytes;
 

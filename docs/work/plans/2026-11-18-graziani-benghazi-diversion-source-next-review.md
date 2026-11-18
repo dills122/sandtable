@@ -1,0 +1,12 @@
+# Review: Benghazi diversion witness boundary
+
+**Disposition:** Supported within the [source note](2026-11-18-graziani-benghazi-diversion-source-next.md)'s stated limits. No material discrepancy found. Its Matruh case is a conditional denial, not an actual arrival or a positive diversion witness.
+
+Independently rendered and visually inspected Land pp. 6 and 31, Axis chart PDF pp. 2–3 (the complete printed §4.43b schedule and legend), scenario PDF pp. 3–4, and September errata pp. 1–3. Local SHA-256 values match the note: Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`, Axis `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`, scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`, errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. This is an informed same-scan check, not an independent edition.
+
+- §20.15's gate is absence of Commonwealth **land combat units west of Matruh, inclusive**. The note correctly states the one-battalion-or-two-company package, up-to-ten assigned transport, stacking and worse-than-level-three restrictions. Its reset-frequency and capacity-debit limits are appropriately retained.
+- The complete printed Axis track starts GT9/OpStage 2 and its continuation contains no earlier-dated entry. Scenario §60.22 ends GT6/OpStage 3; §60.37 invokes the track. This supports no ordinary track entry within the window, not the absence of every optional, delayed or scenario-specific introduction. Replacement and supply convoys alone do not establish a qualifying new whole-unit reinforcement.
+- Scenario §60.41 prints Matruh Garrison at D3714 with named attachments; §60.5 identifies Matruh D3714. §§3.23 and 3.31 support the described conditional combat-unit classification. Presence at the relevant check and valid setup/attachment remain assumptions, so the proposed denial does not establish an actual check or outcome. The same-hex case avoids needing a cross-sheet west ordering, subject to the printed inclusive language's application.
+- The note's bounded errata observations are supported, including no direct §20.15 entry in the inspected numbered sequence and the separate §§55.11/55.3 port context. That is not an exhaustive indirect-effect or later-correction search.
+
+Privacy and mode-dependent port handling remain policy and implementation work; this review does not decide either. No runtime/data edits or gameplay tests.

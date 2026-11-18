@@ -1,0 +1,11 @@
+# Review: Australian trainee morale horizon
+
+**Disposition:** [Source note](2026-11-18-graziani-ledger-c-source-4.md) supports the conditional 24-versus-18-stage comparison. It does not establish a zero-credit start, instructor, legal training history or actual final morale.
+
+Independently visually inspected scenario PDF p. 3 / printed p. 27 §§60.22 and 60.41, Commonwealth OA PDF p. 13, and Land printed/PDF pp. 27–28 §§17.31–.36. Verified local SHA-256: scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Commonwealth `f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. This informed reread uses the same scans, not an independent edition.
+
+- Scenario lists 6th Australian Division in training at Cairo and/or Helwan, excluding 19th Brigade and the named 2/1 and 2/2 field artillery. OA identifies 16th Australian Brigade HQ and 2/1, 2/2 and 2/3 infantry battalions as `N`, `D`; its formation sheet gives Basic Morale `+1 (−3)`. The excluded 19th Brigade rows have `2/9`. This supports the candidate, subject to representation and actual setup.
+- §17.31 identifies the parenthesized value as untrained and the other as the maximum reachable through training. §17.34 raises Basic Morale by one for each six Operations Stages of training, without exceeding designated morale. Starting at −3 with **zero credit**, four increases require 24 qualifying stages to reach +1. The scenario provides 18 stage positions; under that hypothetical, three increases reach 0. Neither arithmetic establishes that all 18 qualify or that any earlier partial credit is zero.
+- §17.33's no-CP condition addresses the training unit; §17.35 requires an eligible designated-morale combat instructor in the same hex during each training stage and at least one-third assigned TOE strength. Its infantry and tank distinctions remain applicable. §17.36 permits fighting at lesser morale without training. None of these proves the separately proposed 2 KOR instructor is co-located or eligible at a particular stage.
+
+No exhaustive errata, initial-credit, formation-state, interruption-policy, legal-action or runtime audit was performed. No data edits or gameplay tests.

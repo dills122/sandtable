@@ -1,0 +1,11 @@
+# CO-01: later scenario construction wording
+
+**Result:** A bounded comparison of a later scenario's starting-construction text supplies another use of the railroad parenthetical, but does not settle whether Graziani §60.7 suppresses intrinsic major-city fortification levels. This source case was chosen because the answer affects initial city combat state; it is not a new ruling or an independent edition.
+
+Visually inspected the [original scenario booklet](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 4 / printed p. 28 §60.7 and PDF p. 6 / printed p. 30 §61.6, on November 18, 2026. SHA-256 verified before reading: `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`.
+
+- Graziani §60.7 lists minefields, fortifications and pipeline as absent, followed by the railroad parenthetical; its railroad ends at Mersa Matruh D3714.
+- Later scenario §61.6 also states that the railroad ends at Mersa Matruh, then lists minefields and pipeline as absent with the same railroad parenthetical. Unlike §60.7, that negative list does not include fortifications. It separately permits the Commonwealth player to place four level-one fortifications within two hexes of Tobruk.
+- This comparison shows that a similarly worded railroad qualification also appears where fortifications are not in the negative list. It does **not** establish whether the qualification in either sentence applies only to pipeline or also to another listed item; it does not state which construction the railroad provides. Section 61.6 concerns a different scenario and is not an express correction or precedence rule for §60.7. Its player-placed fortifications do not establish the treatment of intrinsic major-city levels.
+
+The earlier [city-fortification review](2026-11-17-graziani-rules-city-fortifications-review.md) distinguishes built-in levels, constructed counters and rebuilding while retaining the §60.7 conflict. That disposition remains: compare applicable railroad/pipeline rules or identifiable official clarification for the parenthetical, and select a versioned precedence policy for initial city levels separately. A source comparison cannot establish actual combat reachability or runtime behavior. No other scenario construction sections, later corrections or physical edition were surveyed; no data or gameplay tests changed.

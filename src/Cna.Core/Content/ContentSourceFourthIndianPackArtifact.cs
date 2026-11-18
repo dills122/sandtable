@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceFourthIndianPackArtifact
 {
     internal const string FormatId = "sandtable.source-fourth-indian.v1";
-    internal const string ContentHash = "sha256:7eb303a0ea23b21e7225cc5d530483101c06442cd432df9bd861e0daace767ee"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:7eb303a0ea23b21e7225cc5d530483101c06442cd432df9bd861e0daace767ee"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceFourthIndianPackArtifact(ContentSourceCwFreeGunsPackArtifact basis, byte[] bytes)
     {

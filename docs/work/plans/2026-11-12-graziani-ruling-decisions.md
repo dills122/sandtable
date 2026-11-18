@@ -958,7 +958,53 @@ interference, full positive and negative evidence coverage, terminal timing,
 versioned replay and side-safe verdict timing. No runtime rule, readiness
 status or gameplay test changed here.
 
-## RUL-GRA-26: 1st/4th CCNN HQ artillery point, unknown weapon
+## RUL-GRA-26: Destroyed railroad witness, bounded planning
+
+For planning Land §8.78, an Axis combat unit on an independently established,
+previously constructed railroad hex can remain a witness after the railroad is
+destroyed. This retains railroad identity for the nonlocal restriction; it does
+not permit rail movement into the destroyed hex. Certified unconstructed rail
+is ignored under §§8.47 and 24.67. Historical-line ink alone is excluded under
+an application of §§8.71 and 24.6; separately established overlapping track
+must be evaluated independently. The historical-line interaction with Axis
+rail under §54.4 remains open. These are project interpretations, not explicit
+§8.78 clarifications.
+
+A proven witness blocks the selected western use even when other candidates
+are unknown; a known false predicate excludes its candidate, while no witness
+can be established only with complete relevant coverage. Otherwise preserve
+unknown. The [proposal](2026-11-17-graziani-destroyed-rail-policy.md) and
+[independent critique](2026-11-17-graziani-destroyed-rail-policy-review.md)
+retain operational-track alternatives and distinguish physical track status
+from full action legality.
+
+Before implementation, settle construction provenance, relevant map and
+occupancy coverage, west and use semantics, combat classification, snapshot and
+event order, side-safe action disclosure, versioned replay and the other rail
+legality gates. No runtime rule, readiness status or gameplay test changed here.
+
+## RUL-GRA-27: Graziani Amiriya coordinate, bounded planning
+
+For planning the Graziani setup, retain the applicable scenario §60.5's
+printed Amiriya airfield coordinate E2212. Preserve the separate §61.33
+Desert Fox row at E3212 as competing evidence, not an official correction or
+an alias. The Map E mark near the Amiriya label is not conclusively identified
+as an airfield or a place dot. This is a source-precedence choice for planning,
+not proof that either coordinate describes the historical facility or that the
+same facility changed location.
+
+The [source comparison](2026-11-18-graziani-amiriya-coordinate-conflict.md),
+[independent source review](2026-11-18-graziani-amiriya-coordinate-conflict-review.md),
+[policy options](2026-11-18-graziani-amiriya-coordinate-policy.md), and
+[independent policy review](2026-11-18-graziani-amiriya-coordinate-policy-review.md)
+retain an E3212 project-correction alternative and deferral. A verified applicable
+correction would require reevaluation, not silent reinterpretation.
+
+Before admission, resolve relevant country, ownership, control, mode, facility
+capacity and occupancy, source rights, affected consumers and versioned replay.
+This selection grants no legal action and does not certify geography, gameplay
+readiness, or any route. No runtime or data changes or gameplay tests follow.
+## RUL-GRA-28: 1st/4th CCNN HQ artillery point, unknown weapon
 
 **Selected interpretation:** both the 1st and 4th CCNN division HQs
 (`1-ccnn-hq`, `4-ccnn-hq`) carry one artillery TOE point from deployment; the

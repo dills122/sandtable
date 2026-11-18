@@ -16,7 +16,7 @@ public sealed class GrazianiSourceAxisSupplementalForcesTests
         Assert.Equal(predecessor.Hash(), supplement.PredecessorHash);
         Assert.Equal(10, supplement.Groups.Count);
         Assert.Equal(110, supplement.Forces.Count());
-        // RUL-GRA-26 moves 1-ccnn-hq and 4-ccnn-hq from explicitly-unknown
+        // RUL-GRA-28 moves 1-ccnn-hq and 4-ccnn-hq from explicitly-unknown
         // TOE to a known one-point artillery TOE with its weapon identity
         // still explicitly unresolved (see the dedicated assertions below) -
         // 87 -> 89 known, 23 -> 21 unknown.
@@ -28,7 +28,7 @@ public sealed class GrazianiSourceAxisSupplementalForcesTests
         Assert.Equal(13, catanzaro.Forces.Count);
         var infantry = Assert.Single(catanzaro.Forces, value => value.ElementId == "1-141-infantry");
         Assert.Equal(7, Assert.Single(infantry.InitialToes!).Toe);
-        // Catanzaro's own HQ is untouched by RUL-GRA-26 (it is scoped to the
+        // Catanzaro's own HQ is untouched by RUL-GRA-28 (it is scoped to the
         // 1st/4th CCNN division HQs only) and still has no recorded TOE.
         Assert.Null(Assert.Single(catanzaro.Forces, value => value.ElementId == "64-catanzaro-hq").InitialToes);
         var maletti = Assert.Single(supplement.Groups, value => value.GroupId == "maletti-source-candidate");
@@ -43,7 +43,7 @@ public sealed class GrazianiSourceAxisSupplementalForcesTests
         var fourthHqToe = Assert.Single(fourthHq.InitialToes!);
         Assert.Equal("4-ccnn-hq." + Cna1979GrazianiSourceFacts.CcnnHqUnidentifiedArtilleryComponentType, fourthHqToe.ComponentId);
         Assert.Equal(1, fourthHqToe.Toe);
-        // The engineers remain out of RUL-GRA-26's scope and still have no recorded TOE.
+        // The engineers remain out of RUL-GRA-28's scope and still have no recorded TOE.
         Assert.Null(Assert.Single(firstCcnn.Forces, value => value.ElementId == "201-ccnn-engineer").InitialToes);
         Assert.Null(Assert.Single(fourthCcnn.Forces, value => value.ElementId == "204-ccnn-engineer").InitialToes);
         using var json = JsonDocument.Parse(supplement.SerializeCanonical());

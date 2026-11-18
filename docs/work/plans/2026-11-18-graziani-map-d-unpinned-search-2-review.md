@@ -1,0 +1,9 @@
+# Map D D3608 unpinned rail search: source review
+
+**Disposition:** Supports [bounded search](2026-11-18-graziani-map-d-unpinned-search-2.md). Two blue cross-tied crossings meet D3608's vertical sides; no additional unpinned crossing is identified in the exposed portions of its four diagonals. This is not an absence certification or an all-sheet search. Informed reading of the same scan, not an independent edition.
+
+- `D3607|D3608` and `D3608|D3609` have blue cross-tied crossings near the middle of their vertical sides, away from vertices; grid and blue ties crowd intersections. In the unrotated crop the line stays well away from the four diagonal vertices of D3608.
+- No blue rail crossing identified on exposed portions of `D3608|D3708` or `D3608|D3709`, where brown artwork and grid occupy the upper diagonals, or on `D3508|D3608` or `D3509|D3608` below. Nearby black paired road and thick dashed track are distinct ink; their presence elsewhere does not establish rail on these sides. Overprint and limited scan resolution qualify negative observations.
+- Direct literal lookup returns exactly four D3608 pairs, with `unfinished-railroad` on the two vertical sides and `slope` on the two upper diagonals, as reported. No literal pair returned for either lower diagonal. This review does not determine slope direction, independently reassess rail class, or treat missing pairs as clear terrain.
+
+Compared [Map D and key](https://spigames.net/PDFv10/CNA_Maps.pdf), PDF pp. 4 and 1, after reading the candidate and rendering its crop. Embedded Map D image is 300 ppi; 600-dpi rendering enlarges existing detail. Map PDF SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; crop SHA-256 `21a7a1a11a2d7837a0e6ec2ef6d4a9c4e698ed7df36d733340e638dad2763a9b`; pinned hexsides SHA-256 `124e6f943930f4fa718eb04fa1dc86b6089582aebfaff8fcb83f98ab30d98e6c`. Crop bytes depend on renderer. No data or runtime changes; no gameplay tests.

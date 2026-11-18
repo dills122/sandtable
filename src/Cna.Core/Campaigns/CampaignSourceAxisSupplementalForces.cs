@@ -14,7 +14,7 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceAxisSupplementalForces
 {
     internal const string PolicyId = "graziani.axis-initial-forces.mainland-supplement.v1";
-    // RUL-GRA-26 (2026-11-12-graziani-ruling-decisions.md) changed this
+    // RUL-GRA-28 (2026-11-12-graziani-ruling-decisions.md) changed this
     // identity: 1-ccnn-hq and 4-ccnn-hq now carry one known artillery TOE
     // point with an explicit unidentified-weapon component type instead of
     // null InitialToes. This is an intentional, ruling-driven fact change,

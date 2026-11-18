@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceAxisFreeArtilleryPackArtifact
 {
     internal const string FormatId = "sandtable.source-axis-free-artillery.v1";
-    internal const string ContentHash = "sha256:aa31213766422d8a634ce09e92d1cdaaa97f3a3674785cc2b83e196294415852"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
+    internal const string ContentHash = "sha256:aa31213766422d8a634ce09e92d1cdaaa97f3a3674785cc2b83e196294415852"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceAxisFreeArtilleryPackArtifact(ContentSourceExpandedIndependentPackArtifact basis, byte[] bytes)
     {

@@ -1,0 +1,14 @@
+# D/E seam anchor batch: independent review
+
+**Date:** November 17, 2026. **Disposition:** retain as a tentative visual hypothesis; do not certify alias, adjacency, or transport continuity. Same scan and same proposed registration are reviewed here, so this is not independent source corroboration.
+
+## Findings
+
+1. **Grid fit is conditional, not an independent match.** Translating D by `(-1460,-10)` maps its stated top and right vertices to the stated E vertices within roughly 0–3 pixels. This checks arithmetic and local grid scale. It does not identify the cells: a repeated hex lattice admits many similarly fitting translations, and the alleged D3134/E3101 correspondence is assumed when choosing the vertices. The clipped E western side supplies no independent boundary check. Describe the grid as consistent with the candidate, not as positive proof or, by itself, a strong anchor.
+2. **Feature residuals matter.** In the reproduced equal-opacity overlay, grid lines nearly coincide while coast bends differ visibly; near the right side the coast displacement is on the order of tens of pixels at 350 dpi, compared with approximately 220 pixels across a hex. Road strokes also separate and end differently; rail centerlines and tie placement differ, especially near the lower-right side. Similar ordering and direction are suggestive but do not establish common artwork or uniquely distinguish this alignment from nearby alternatives. No residual tolerance, scan-distortion model, control registration, or competing candidate comparison is provided. Avoid treating the offset as quantified survey evidence or asserting a strong visual match.
+3. **Rail edge wording overstates what is visible.** D's blue line ends at or just short of the lower-right boundary; the scan does not clearly show it crossing that boundary. E's line reaches and continues across its corresponding boundary. D's end cannot establish E3001 as its neighbor or a connected rail edge. The road similarly stops inside D3134 while E's pair continues through its right side.
+4. **Certification remains blocked.** Neither shared named landmark nor a distinctive coincident feature is established in the overlap, and E3101 is clipped. A geometric alias would still not establish legal movement, railway service, or complete Matruh–Alexandria coverage. Land §4.1 and sheet geometry remain to be reconciled before authoritative map data or routing changes.
+
+## Check performed
+
+Viewed pages 4 and 5 at the supplied crop coordinates and recreated the stated 50% overlay with no scaling or rotation. Verified SHA-256 of the source PDF and both crops against the batch report. These are visual checks of one scan, not independent-edition verification; offsets are approximate and no gameplay tests were run. Obtain full-edge evidence or physical sheets, compare distinctive shared features and alternative grid registrations, then resolve the printed-rules conflict before promotion.

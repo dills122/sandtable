@@ -1,0 +1,33 @@
+# SQ-05: Axis rail erratum, actors and stage scope
+
+**Result:** The September §8.71 correction points to the **detailed** §54.4 Axis procedure, whose own text names controlled Commonwealth rail, imported stock and movement in a “Convoy Stage.” It does not expressly supply an Axis counterpart to the Land-only §32.34 Commonwealth supply-unit allowance. The original texts leave the Axis phase and abstract-mode interaction unresolved. This check adds a four-case actor/direction comparison to the [earlier rail scope](2026-11-13-graziani-rail-scope.md); it does not establish a new Axis service, route or ruling.
+
+## Original source boundaries
+
+| Source | Reading and scope |
+| --- | --- |
+| Land §5.2, p. 12 | In each Operations Stage, player A's named Commonwealth Rail Movement Phase allows use if A is Commonwealth. Player B then performs F–L with roles exchanged. Thus whichever side is Commonwealth has that named phase in its own player block; the outline itself does not name an Axis rail phase. Stages 2 and 3 repeat stage 1 facets. |
+| Land §8.72, p. 15 | Commonwealth may use rail once per Operations Stage in that phase, moving one stack in **each** direction; units and/or supplies may be transported. This is separate from the narrower abstract supply wording below. |
+| September errata §§8.71, 8.73, p. 1 | Axis may use rail lines under §54.4, correcting original §8.71's Commonwealth-only statement. Units travelling by rail may not **earn** reorganization points in the Stage of travel. It does not say points cannot be spent, and does not expressly define Supply Units as units for this restriction. |
+| Air/Logistics §§54.41–.46, printed p. 23 | Axis requires at least five contiguous controlled rail hexes; the rule defines control by the last land combat unit passing through. Axis cannot build new line but can repair controlled rail. §54.43 calls for imported stock, 250 Stores and 100 Fuel per increment brought to a controlled, operative rail hex, and describes 300 tons per stock increment in **any one direction during an Operations Stage**, then says rail movement occurs in the “Convoy Stage.” The [review](2026-11-18-graziani-axis-rail-erratum-scope-review.md) confirms the stock location condition. §54.44 gives a separate stock-equivalent threshold for transporting a stacking point; §54.46 extends Commonwealth movement/use rules to Axis. These are detailed-mode conditions, not an automatic Land-only conversion. |
+| Land §§32.0, 32.11, 32.34, p. 43 | §32.0 applies when Air and Logistics are omitted, substitutes abstract supply/motorization, and §32.11 says only the supply rules below apply. §32.34 explicitly permits the **Commonwealth** up to two real and/or dummy Supply Units as total load in any one direction for a given Operations Stage, applying normal rail rules. Its text does not name Axis, map detailed tonnage to Supply Units, or define another phase. |
+| Scenario §§60.22, 60.7, 60.92, pp. 27–29 | Scenario starts GT1 OpStage 1 and ends GT6 OpStage 3; initial railroad ends at Matruh D3714. §60.92 identifies the Land-only adjustments. Endpoint is not proof of a complete path, control or Axis stock. |
+
+§54.4's opening specifically addresses the Commonwealth coastal line and expressly excludes the Barce line east of Benghazi. It therefore supplies a narrower context for the erratum's plural “rail lines”; it does not erase the independently printed historical-line exclusion. A separately constructed overlapping line still needs its own evidence.
+
+## Four actor/direction cases
+
+Each row is a source comparison for a **single** Operations Stage; it is not a demonstrated movement or a four-service allowance. Repeat the same checks in stages 1, 2 and 3 and for either initiative order. East/west are candidate travel directions, not a map proof.
+
+| Actor | Direction | Source status and unresolved boundary |
+| --- | --- | --- |
+| Commonwealth | East | §8.72 allows an eastbound general stack in its named player-block phase, subject to normal restrictions; §32.34 permits its abstract Supply Unit load in one direction. Whether this consumes or limits a separately conceived westbound general movement needs an accepted §8.72/§32.34 reconciliation. |
+| Commonwealth | West | Same stage/actor boundary in the opposite direction; §32.34's “any one direction” cannot itself authorize two supply loads, one each way, in the same stage. Whether ordinary non-supply traffic may simultaneously use the other direction remains a separate interaction. |
+| Axis | East | Erratum references §54.4, where controlled rail and detailed stock can support one-direction capacity in an Operations Stage. §5.2 has no expressly named Axis phase; “Convoy Stage” is not explicitly equated in these clauses to the Commonwealth player-block phase or Naval Convoy Arrival. Land-only applicability, stock replacement and supply-unit authority remain open. |
+| Axis | West | Same conditional detailed authorization and phase/mode uncertainties; direction choice is not proof of a second simultaneous service. Verify actual controlled contiguous line, stock and path, and separately apply any accepted §8.73 requirements. |
+
+The erratum's reorganization restriction concerns **the stage of actual rail travel**, not the entire turn or only the rail phase. Whether a counter is a covered unit and whether an abstract supply counter inherits that restriction require their own basis. §§8.73/8.77 CP history, enemy ZOC, pickup/dropoff and §8.78's nonlocal Axis-occupancy predicate are additional independent conditions; this comparison does not resolve their precedence or privacy. Six-turn reachability, map registration and the opening pre-operations Convoy Stage remain unproved.
+
+## Evidence and limits
+
+Visually inspected [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) printed/PDF pp. 12, 15 and 43, SHA-256 `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) p. 1, `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`; [Air/Logistics](https://www.spigames.net/PDFv10/CNA_AirGameRules.pdf) PDF p. 27 / printed p. 23, `9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4`; and [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf) PDF pp. 3–4 / printed pp. 27–28, `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`, using matched local copies. This is an informed same-scan comparison, not independent-edition corroboration, exhaustive later-errata search or proof of scenario reachability. No runtime/data edits or gameplay tests.

@@ -59,7 +59,7 @@ internal static class CampaignSourceCcnnBatch
     // Mirrors CampaignSourcePlayableWorld.ReadinessBlockers()'s
     // "ccnn-characteristics-incomplete" predicate so it is independently
     // unit-testable against synthetic/filtered groups, without needing the
-    // full source-authority chain. RUL-GRA-26 resolves this for 1-ccnn-hq
+    // full source-authority chain. RUL-GRA-28 resolves this for 1-ccnn-hq
     // and 4-ccnn-hq (one artillery point, weapon identity explicitly
     // unknown - never null); 201-ccnn-engineer/204-ccnn-engineer remain out
     // of that ruling's scope and still trip this when their ComponentType

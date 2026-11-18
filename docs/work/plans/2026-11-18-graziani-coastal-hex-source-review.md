@@ -1,0 +1,14 @@
+# Review: coastal-hex source definition
+
+**Disposition:** The candidate's bounded negative conclusion is supported by the inspected key and named rules. No material geometry or mode error found. The Coast key illustrates land and blue water in one hex; it does not expressly settle adjacency, vertex-only contact or a project field. One minor glossary wording refinement: the p. 5 term following Capability Point is **Cohesion**, not “Coherence”; this does not affect the conclusion.
+
+- [Map p. 1 key](https://spigames.net/PDFv10/CNA_Maps.pdf) depicts Coast as an outlined hex containing both pale land and blue water separated by a shoreline; Sea is a separate blue-filled sample. This is positive evidence of the pictured mixed case, not a textual exclusion of an adjacent-water or vertex-contact interpretation.
+- Land p. 5 §3.1's alphabetic glossary has no separately headed coastal-hex definition; Land p. 14 §§8.31–.37 distinguishes hex and hexside terrain and does not specify that neighboring water makes the current cell coastal. The candidate correctly limits both negative claims to inspected passages, not the entire ruleset.
+- Land §24.73 p. 37 permits flying-boat facilities only in coastal hexes regardless of terrain; [Air §36.3](https://spigames.net/PDFv10/CNA_AirGameRules.pdf), p. 7, places flying-boat basins in coastal hexes. Air §41.38 p. 11 permits night road bombing if the road is in a coastal hex. None of these passages defines shoreline adjacency or a vertex threshold. They are detailed-Air applications and do not create a Land-only facility or mission. Land §29.46's sandstorm consequence is supported by the cited prior weather review, not independently re-read here.
+- The candidate relies on the [landing B review](2026-11-18-graziani-landing-strip-edges-b-review.md) and [critical recheck](2026-11-18-graziani-landing-b-critical-recheck.md) for named-cell geometry; this pass does not certify those crops, actual movement or the pinned `coastal` field. The candidate's disclosed failed full-Land OCR and bounded Air/errata searches are material limits: absence of a found definition is not proof none exists in an unexamined passage, edition or clarification.
+
+**Provenance:** Visually checked map p. 1 key, Land pp. 5, 14 and 37, and Air pp. 7 and 11. Local SHA-256 verified: map `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; Air `9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4`; September errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. Errata text search and Air sequence were not independently repeated in this pass. Same scan edition; no data/runtime edits or gameplay tests.
+
+## Recheck
+
+The source note now says **Cohesion** in the glossary row; the minor wording finding is addressed. The bounded definition and search limitations are unchanged.

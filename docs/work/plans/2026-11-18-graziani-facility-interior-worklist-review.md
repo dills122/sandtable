@@ -1,0 +1,17 @@
+# Review: facility-interior worklist
+
+**Disposition:** The partition matches the crosswalk's **30 distinct on-map facility coordinates**, with no duplicate, omission or extra: six reviewed observations, eight ambiguous/challenged and sixteen without an identified independent interior observation. The partition tracks documented research status, not physical absence or certification of the entire cell.
+
+- Independently compared the 30 coordinate sets and counts from the [extent crosswalk](2026-11-18-graziani-scenario-extent-crosswalk.md) and [worklist](2026-11-18-graziani-facility-interior-worklist.md): each contains 30 unique coordinates; both set differences are empty. Eight are listed as airfields, twenty as landing strips and two as flying-boat basins in the crosswalk. Scenario facility labels do not alone establish map symbols, occupancy or eligible use.
+- Sampled the linked independent reviews: [E3714 review](2026-11-17-graziani-e3714-six-sides-review.md) explicitly locates Aboukir port/training symbols in E3815; [landing A review](2026-11-18-graziani-landing-strip-edges-a-review.md) places the Gazala dot inside B4933 and describes B0707 desert artwork; [landing B review](2026-11-18-graziani-landing-strip-edges-b-review.md) explicitly places Qotifiya, D3418 and Gerawla dots and challenges C4419, B5229, D3231 and D3903. Those observations and ambiguities support the worklist's sampled classifications, including B5229's known dot coexisting with unresolved coastal/type classification.
+- [Air-facility review](2026-11-18-graziani-air-facility-edges-batch-review.md) expressly does not certify all interiors; its negative scope does **not** mean the initial reading saw nothing. The worklist correctly preserves that distinction and does not promise a readable hidden symbol. The Amiriya coordinate challenge requires retaining scenario `E2212` and the disputed map mark independently, not a silent relocation.
+
+## Specific high-value independent checks
+
+These are targeted review leads, **not completed independent observations** or guarantees that dense artwork can be resolved. The [first reading](2026-11-18-graziani-air-facility-edges-batch.md) supplies a visible dot/name lead for each; the corresponding independent review focuses on sides and does not certify its interior. Use original map PDF pp. 1 and 5 plus key, and record overprints and any inconclusive result.
+
+1. `E2132` Abbassia and `E2133` Almaza: independently locate each named dot within its own grid cell, checking blue rail overprinting and whether any distinct facility symbol is actually visible. These are two neighboring Cairo-area scenario airfields; a locality dot alone is not an airfield symbol or a victory-city member.
+2. `A4728` El Berca: independently place dot/name against cell boundaries and adjoining Benghazi city/road ink on map p. 1. Geographic proximity makes this useful to the separate `A4827`/`B4827` Benghazi identity question, but does not resolve that scenario conflict by itself.
+3. `B5526` Martuba: independently check printed dot/name, rough interior and grid on map p. 2; first reading reports these, while independent side review establishes only selected side crossings. Record dot versus key's village/bir ambiguity and do not infer a facility symbol.
+
+The sample and leads are documentary checks only; no map scan was freshly inspected in this review, and it is not an exhaustive search for every later independent interior note. No runtime/data edits or gameplay tests.

@@ -1,0 +1,17 @@
+# FW220 and Fw. 200 C: bounded identification check
+
+**Result:** `Fw. 200 C` is the sole Focke Wulf row in the inspected German aircraft-characteristics chart and a plausible contextual candidate for the `FW220` named in the bomber-basing rule. The retained sources do **not** expressly equate the two or correct the number. Preserve both literal designations; do not silently rewrite `FW220` as `Fw. 200 C`. No separately characterized `FW220` aircraft was found in the inspected chart, but that is not an all-source absence finding.
+
+| Original source | What is printed / inference boundary |
+| --- | --- |
+| [Air rules](https://spigames.net/PDFv10/CNA_AirGameRules.pdf) p. 14 §43.11 | The Mediterranean basing group names He 111, Ju88D and **FW220**. Section 43.13 again prints **FW220** in the later Crete group; its `Ju88` wording is broader than §43.11's Ju88D. These are two occurrences of the same rulebook spelling, not an independent identifier or a correction. |
+| [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) p. 3 §43.12 | Names German bombers referred to as `He111`, `Ju8SD` and **FW 220**. The space differs from the rulebook; the digits remain 220. The erratum does not replace that number with 200. [Ju8SD source check](2026-11-18-graziani-ju8sd-identification.md) separately treats Ju88D as an inferred middle-name candidate. |
+| [Axis aircraft chart](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf) pp. 1–2, German §4.44c and continuation printed §4.44b | The fighter/fighter-bomber group on p. 1 lists Bf.109E/F/G, Bf.110 and Ju.88c. The bomber/flying-boat/transport/reconnaissance continuation on p. 2 lists **Fw. 200 C**, manufacturer **Focke Wulf**, Range 205 and Bomb 14, alongside He.111 and Ju.88D among other aircraft. No `FW220` row appears in these two visually inspected German-characteristics groups. |
+
+The shared German bomber context and only visible Focke Wulf characteristics row make `Fw. 200 C` a strong **candidate** for further reconciliation, not an explicit synonym or official correction: the rule and erratum both print 220, while the chart prints 200 C. The chart's group combines several aircraft functions and does not itself say the rule's name is a typo. A publisher clarification, independently sourced aircraft roster expressly equating these labels, or corrected chart/rule would discriminate. Do not infer availability, force count or a mission from the candidate.
+
+## Search and scope
+
+Visually checked original Air p. 14, Axis chart pp. 1–2 and errata p. 3. Existing full-book Air OCR, scenario OCR and errata text were searched for `FW220`, `FW200`, spacing/period variants and Focke; Air §§43.11/.13 and the erratum produced the cited `FW220` matches. Character recognition may omit variants. The Axis PDF has no usable full text in the local extraction; the negative for an `FW220` row is limited to the visually inspected German aircraft-characteristics chart, not every Axis arrival schedule, roster, counter, expansion or another edition. The related rule concerns **detailed Air** basing; no automatic Land-only Graziani action or state follows.
+
+Source SHA-256: Air `9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4`; Axis charts `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`; errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. Same retained edition; no runtime/data changes or gameplay tests.

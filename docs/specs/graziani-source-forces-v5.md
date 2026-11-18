@@ -27,7 +27,7 @@ of UTF-8 `graziani.source.axis-forces.supplement.v1`. The supplement identity is
 changed source data requires a new identity rather than reinterpretation of
 retained history. (This identity changed from the prior
 `sha256:1a34826c4d5e1a3fe20891f9064b61e8e6b58f5ecee7935d5ac076839e083372`
-under RUL-GRA-26, which gives 1-ccnn-hq and 4-ccnn-hq a known one-point
+under RUL-GRA-28, which gives 1-ccnn-hq and 4-ccnn-hq a known one-point
 artillery TOE with an explicitly unidentified weapon; see
 docs/work/plans/2026-11-12-graziani-ruling-decisions.md.)
 
@@ -110,7 +110,7 @@ unresolved, and no pregame transfer from an unattached pool is assumed. The
 garrison source identity is
 `sha256:84313115e7200cc53c732ff870945d7f48dbe7371bcea4f3d5e209f85ed6ad16`
 (changed from `sha256:4c17bd5e47bf43324c77f01e48574206ea7c4e31bb68bc3dca6a62b65911c7e1`
-under RUL-GRA-26, which changes the upstream Axis supplement identity it derives from).
+under RUL-GRA-28, which changes the upstream Axis supplement identity it derives from).
 
 The `source-axis-minor-garrisons-admitted` event contains, in order,
 `contractVersion` (9), `eventType`, `campaignId`, `priorStateVersion`,
@@ -285,7 +285,7 @@ catalog describes all five supported counters independent of which are active;
 its identity is
 `sha256:3a8832098cac32c35d7ec7076273c0903e093a04d4529da973a52b8c3255c4aa`
 (changed from `sha256:92f5c0d2dd6abf930bf7d4dabc1d7c348ac93c9481051700e359f0d9207a3f20`
-under RUL-GRA-26, which changes the upstream Axis supplement identity it embeds).
+under RUL-GRA-28, which changes the upstream Axis supplement identity it embeds).
 The event retains the actual predecessor world and choices, and each promotion
 checks source location and TOE, preserves existing elements and representations,
 and leaves both deferred arrival groups pending. Terrain, topology, movement and
@@ -308,7 +308,7 @@ An operator/system transition binds source-verified geometric neighborhoods for
 `c3617` and `c3320` to the active source content and rebinds the existing
 World8 without moving units. The map artifact is pinned to
 `sha256:4067e7396531806ff5ffed83e8ba6dd2866092ed36b84ec9f31dc13a6ac0f524`
-(changed under RUL-GRA-26, which changes the upstream Axis supplement identity it embeds via the independent catalog).
+(changed under RUL-GRA-28, which changes the upstream Axis supplement identity it embeds via the independent catalog).
 The original Map C scan supports the six adjacent hexes around each location;
 terrain, route and hexside effects remain unknown. These edges do not grant a
 legal movement action or establish a complete map. Later independent-unit
@@ -328,7 +328,7 @@ Northumberland Fusiliers MG at `c3721`. Original scenario, OA, characteristics
 and counter evidence establish their locations, TOE, CPA and stack values. The
 new fixed content identity is
 `sha256:785a8643296f50d54de993c6c82b99445a7f1700f3c744ec92ebafe9ee6c8145`
-(changed under RUL-GRA-26).
+(changed under RUL-GRA-28).
 It retains the version 15 map artifact, earlier active units and pending groups;
 new Axis detachments remain blocked pending stack certification.
 It does not certify movement or game-start readiness.
@@ -401,7 +401,7 @@ each with three gun TOE and 15 CPA. After placement, a system transition can
 promote selected units into the actual World8; it may be repeated as additional
 units are placed. The fixed source content identity is
 `sha256:aa31213766422d8a634ce09e92d1cdaaa97f3a3674785cc2b83e196294415852`
-(changed under RUL-GRA-26).
+(changed under RUL-GRA-28).
 The transition retains prior units, map evidence and pending arrivals without
 claiming native movement or a complete battlefield.
 
@@ -477,7 +477,7 @@ Version 21 journals the source-bound owner placements and battlefield changes;
 version 22 promotes placed units into World8 with their source gun/AA TOE,
 preserving the prior world and pending arrivals. Its source content identity is
 `sha256:05aafa2092adebf7d50d7d3f02d1d1dd68ccf75098390ba03e68a0e81edf3fb7`
-(changed under RUL-GRA-26).
+(changed under RUL-GRA-28).
 Neither transition completes setup, establishes control or starts the clock.
 
 The source journal currently retains bounded canonical checkpoint evidence for
