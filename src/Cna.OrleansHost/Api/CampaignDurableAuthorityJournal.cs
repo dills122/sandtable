@@ -108,14 +108,29 @@ internal sealed partial class CampaignDurableAuthorityJournal
             throw new InvalidOperationException(RecoveryGuidance(absolutePath,
                 "Journal already exists."));
         var directory = Path.GetDirectoryName(absolutePath)!;
-        if (!Directory.Exists(directory))
+        // Bootstrap+check is serialized through HostIdentityGate (the same first-time-setup gate
+        // EnsureHostIdentity uses just below) because Directory.CreateDirectory makes
+        // Directory.Exists true before the follow-up File.SetUnixFileMode has actually run: an
+        // unguarded concurrent caller could observe the directory mid-creation, in its transient
+        // default-umask state, and fail RequirePrivateDirectory on a directory that is microseconds
+        // from being correctly locked down (see this method's own concurrent-first-creation bug).
+        // The unlocked fast check below is safe because once a directory is fully created+chmodded
+        // it is never touched again by this code, so it can only ever produce a false negative
+        // (falling through to the lock), never a false positive.
+        if (!TryRequirePrivateDirectory(directory))
         {
-            Directory.CreateDirectory(directory);
-            if (!OperatingSystem.IsWindows())
-                File.SetUnixFileMode(directory, UnixFileMode.UserRead | UnixFileMode.UserWrite
-                    | UnixFileMode.UserExecute);
+            lock (HostIdentityGate)
+            {
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                    if (!OperatingSystem.IsWindows())
+                        File.SetUnixFileMode(directory, UnixFileMode.UserRead | UnixFileMode.UserWrite
+                            | UnixFileMode.UserExecute);
+                }
+                RequirePrivateDirectory(directory);
+            }
         }
-        RequirePrivateDirectory(directory);
         // Host-identity (operator_capability only) is shared across every campaign file in this
         // directory, not duplicated per campaign -- see EnsureHostIdentity's remarks for why.
         // Ensured before anything else so an operator-gated call (including one that creates a
@@ -2518,6 +2533,27 @@ internal sealed partial class CampaignDurableAuthorityJournal
             & (UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.GroupExecute
                | UnixFileMode.OtherRead | UnixFileMode.OtherWrite | UnixFileMode.OtherExecute)) != 0)
             throw new InvalidOperationException("Journal directory permissions are not private.");
+    }
+
+    /// <summary>
+    /// Non-throwing fast-path probe for <see cref="RequirePrivateDirectory"/>, used by <see
+    /// cref="CreateNew"/>'s directory bootstrap to decide whether the locked slow path is needed.
+    /// Never a source of false positives: a directory's permissions are set once, at creation, and
+    /// never touched again by this code, so the only way this can disagree with a subsequent locked
+    /// check is by under-reporting (e.g. observing a directory another thread is still creating, or
+    /// one that does not exist yet at all) -- never by wrongly reporting a bad directory as good.
+    /// </summary>
+    private static bool TryRequirePrivateDirectory(string directory)
+    {
+        try
+        {
+            RequirePrivateDirectory(directory);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static void Execute(SqliteConnection connection, string sql)
