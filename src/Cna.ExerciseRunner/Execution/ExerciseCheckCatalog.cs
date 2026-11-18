@@ -32,6 +32,8 @@ public enum ExerciseCheckFailureCode
     TerminalBoundaryNotReached,
     ReconstructionMismatch,
     ReadjudicationMismatch,
+    ReceiptAudienceMismatch,
+    ReceiptActionMismatch,
 }
 
 public sealed record ExerciseCheckResult

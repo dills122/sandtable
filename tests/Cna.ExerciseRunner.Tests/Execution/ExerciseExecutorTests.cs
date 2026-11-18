@@ -419,6 +419,91 @@ public sealed class ExerciseExecutorTests
     }
 
     [Fact]
+    public void ContinuityFailureRejectsAReceiptClaimingASubstitutedAction()
+    {
+        var forgedActionId = Sha('e');
+        var runtime = new FaultingRuntime
+        {
+            SubmissionOverride = (_, _, result) => result.IsAccepted
+                ? result with { Receipt = ForgeReceipt(result.Receipt!, actionId: forgedActionId) }
+                : result,
+        };
+        var manifest = ExerciseManifestCodecTests.Create(detail: ExerciseDetail.Forensic);
+
+        var result = ExerciseExecutor.Execute(
+            manifest,
+            runtime,
+            TestContext.Current.CancellationToken);
+
+        Assert.False(result.IsSucceeded);
+        Assert.Empty(result.Steps);
+        var decision = Assert.Single(result.FailedDecisions);
+        Assert.Equal(ExerciseDecisionFailureStage.CheckpointContinuity, decision.FailureStage);
+        Assert.Equal(ExerciseCheckFailureCode.ReceiptActionMismatch, decision.FailureCode);
+        Assert.NotNull(decision.SelectedActionId);
+        Assert.NotEqual(decision.SelectedActionId, forgedActionId);
+        Assert.Equal(forgedActionId, decision.ReceiptActionId);
+        Assert.Equal(decision.SelectedAudience, decision.ReceiptAudience);
+        AssertCorrelatedFailedDecisionDiagnostics(manifest, result, "checkpoint-continuity");
+        var diagnostics = Diagnostics(manifest, result);
+        Assert.Contains(
+            $"\"receiptActionId\":\"{forgedActionId}\"",
+            diagnostics,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            $"\"actionId\":\"{decision.SelectedActionId}\"",
+            diagnostics,
+            StringComparison.Ordinal);
+
+        Assert.False(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
+    }
+
+    [Fact]
+    public void ContinuityFailureRejectsAReceiptClaimingASubstitutedAudience()
+    {
+        var runtime = new FaultingRuntime
+        {
+            SubmissionOverride = (_, submission, result) => result.IsAccepted
+                ? result with
+                {
+                    Receipt = ForgeReceipt(
+                        result.Receipt!,
+                        audience: submission.Audience == CampaignActionAudience.System
+                            ? CampaignActionAudience.Axis
+                            : CampaignActionAudience.System),
+                }
+                : result,
+        };
+        var manifest = ExerciseManifestCodecTests.Create(detail: ExerciseDetail.Forensic);
+
+        var result = ExerciseExecutor.Execute(
+            manifest,
+            runtime,
+            TestContext.Current.CancellationToken);
+
+        Assert.False(result.IsSucceeded);
+        Assert.Empty(result.Steps);
+        var decision = Assert.Single(result.FailedDecisions);
+        Assert.Equal(ExerciseDecisionFailureStage.CheckpointContinuity, decision.FailureStage);
+        Assert.Equal(ExerciseCheckFailureCode.ReceiptAudienceMismatch, decision.FailureCode);
+        Assert.NotNull(decision.SelectedAudience);
+        Assert.NotEqual(decision.SelectedAudience, decision.ReceiptAudience);
+        Assert.Equal(decision.SelectedActionId, decision.ReceiptActionId);
+        AssertCorrelatedFailedDecisionDiagnostics(manifest, result, "checkpoint-continuity");
+        var diagnostics = Diagnostics(manifest, result);
+        Assert.Contains(
+            $"\"receiptAudience\":\"{FormatAudience(decision.ReceiptAudience!.Value)}\"",
+            diagnostics,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            $"\"audience\":\"{FormatAudience(decision.SelectedAudience!.Value)}\"",
+            diagnostics,
+            StringComparison.Ordinal);
+
+        Assert.False(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
+    }
+
+    [Fact]
     public void DebugFailuresPreserveEveryTimingMeasuredBeforeFailure()
     {
         var stepLimitManifest = ExerciseManifestCodecTests.Create(
@@ -642,6 +727,53 @@ public sealed class ExerciseExecutorTests
             null));
 
     private static string Sha(char value) => $"sha256:{new string(value, 64)}";
+
+    /// <summary>
+    /// Builds a self-consistent but forged receipt: every field matches the genuine receipt
+    /// except the overridden identity field(s), simulating a defective runtime/adaptor that
+    /// substitutes a different, otherwise-valid audience or action in its own self-report.
+    /// </summary>
+    private static CampaignActionAcceptanceReceipt ForgeReceipt(
+        CampaignActionAcceptanceReceipt genuine,
+        CampaignActionAudience? audience = null,
+        string? actionId = null)
+    {
+        using var document = System.Text.Json.JsonDocument.Parse(
+            CampaignActionAcceptanceReceiptSerializer.Serialize(genuine));
+        var root = document.RootElement;
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", root.GetProperty("contractVersion").GetInt32());
+            writer.WriteString("campaignId", root.GetProperty("campaignId").GetString());
+            writer.WriteNumber(
+                "priorStateVersion",
+                root.GetProperty("priorStateVersion").GetInt64());
+            writer.WriteNumber(
+                "committedStateVersion",
+                root.GetProperty("committedStateVersion").GetInt64());
+            writer.WriteString(
+                "resultingPositionId",
+                root.GetProperty("resultingPositionId").GetString());
+            writer.WriteString(
+                "audience",
+                audience.HasValue
+                    ? FormatAudience(audience.Value)
+                    : root.GetProperty("audience").GetString());
+            writer.WriteString("actionId", actionId ?? root.GetProperty("actionId").GetString());
+            writer.WriteEndObject();
+        }
+        return CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(stream.ToArray());
+    }
+
+    private static string FormatAudience(CampaignActionAudience value) => value switch
+    {
+        CampaignActionAudience.System => "system",
+        CampaignActionAudience.Axis => "axis",
+        CampaignActionAudience.Commonwealth => "commonwealth",
+        _ => throw new ArgumentOutOfRangeException(nameof(value)),
+    };
 
     private sealed class FaultingRuntime : IExerciseExecutionRuntime
     {
