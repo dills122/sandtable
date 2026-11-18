@@ -127,7 +127,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE accepted_steps (
               campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL,
               action_kind TEXT NOT NULL, acting_element_id TEXT,
@@ -140,18 +140,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE operator_capability (
               singleton INTEGER PRIMARY KEY CHECK(singleton=1), digest BLOB NOT NULL
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE UNIQUE INDEX accepted_owner_ref
             ON accepted_steps(campaign_id,owner_public_ref)
             WHERE owner_public_ref IS NOT NULL
             """);
-        CreateNewCrashHook?.Invoke("mid-schema");
-        Execute(connection, """
+            CreateNewCrashHook?.Invoke("mid-schema");
+            Execute(connection, """
             CREATE TABLE seats (
               campaign_id TEXT NOT NULL, side TEXT NOT NULL CHECK(side IN ('axis','commonwealth')),
               epoch INTEGER NOT NULL CHECK(epoch>0),
@@ -161,12 +161,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE reference_key (
               singleton INTEGER PRIMARY KEY CHECK(singleton=1), secret BLOB NOT NULL
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE owner_openings (
               campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
               seat_epoch INTEGER NOT NULL, revision INTEGER NOT NULL,
@@ -176,7 +176,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id,side) REFERENCES seats(campaign_id,side)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE owner_actions (
               campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
               public_ref TEXT NOT NULL, ordinal INTEGER NOT NULL, core_action_id TEXT NOT NULL,
@@ -185,7 +185,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 REFERENCES owner_openings(campaign_id,side,acting_element_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE force_rounds (
               campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
               decline_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
@@ -197,7 +197,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE rba_rounds (
               campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
               barrage_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
@@ -209,7 +209,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE cycle_rounds (
               campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
               entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
@@ -221,7 +221,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE reserve_rounds (
               campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
               entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
@@ -233,7 +233,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE custody_rounds (
               campaign_id TEXT NOT NULL, settlement_hash TEXT NOT NULL,
               entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
@@ -245,7 +245,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE retreat_rounds (
               campaign_id TEXT NOT NULL, result_hash TEXT NOT NULL,
               entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
@@ -257,7 +257,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        Execute(connection, """
+            Execute(connection, """
             CREATE TABLE selection_rounds (
               campaign_id TEXT NOT NULL, entry_hash TEXT NOT NULL,
               entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
@@ -269,21 +269,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """);
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
-            command.Parameters.AddWithValue("$digest", operatorDigest);
-            command.ExecuteNonQuery();
-        }
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandText = "INSERT INTO reference_key VALUES (1,$secret)";
-            command.Parameters.AddWithValue("$secret", RandomNumberGenerator.GetBytes(32));
-            command.ExecuteNonQuery();
-        }
-        CreateNewCrashHook?.Invoke("before-version-marking");
-        Execute(connection, $"PRAGMA application_id={ApplicationId}");
-        Execute(connection, $"PRAGMA user_version={SchemaVersion}");
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
+                command.Parameters.AddWithValue("$digest", operatorDigest);
+                command.ExecuteNonQuery();
+            }
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "INSERT INTO reference_key VALUES (1,$secret)";
+                command.Parameters.AddWithValue("$secret", RandomNumberGenerator.GetBytes(32));
+                command.ExecuteNonQuery();
+            }
+            CreateNewCrashHook?.Invoke("before-version-marking");
+            Execute(connection, $"PRAGMA application_id={ApplicationId}");
+            Execute(connection, $"PRAGMA user_version={SchemaVersion}");
         }
         catch
         {
