@@ -812,13 +812,22 @@ document):**
 
 **Post-RC, purely a scaling milestone (this document's actual payload, in
 dependency order):**
-1. **Snapshotting (§5)** first — highest-value, lowest-architectural-risk
-   (additive table, no topology change) and immediately helps even before
-   the file split lands.
+
+**Re-sequenced 2026-11-18 — see [Appendix B](#appendix-b-snapshotting-5-is-blocked-not-step-1):
+§5 as originally scoped is blocked on a `Cna.Core` capability that does not
+exist. It is no longer step 1. The order below reflects that.**
+
+1. **Schema evolution/migration mechanism (§9)** first — independent of
+   everything else, and every later step here is itself a schema/topology
+   change existing code has no mechanism to apply to an existing file
+   (issue #330's "no implicit migration" concern). Originally scoped as
+   "should land before 1-4 ship," now simply first since nothing blocks it.
 2. **Per-campaign (or per-shard) file topology (§3/§6)** second — the real
    concurrency unlock, bigger structural change (storage path derivation,
-   Orleans grain wiring, directory layout, open-file-handle budget), benefits
-   from snapshotting being proven first.
+   Orleans grain wiring, directory layout, open-file-handle budget). No
+   longer "benefits from snapshotting being proven first," since snapshotting
+   is blocked — this is now the primary lever for the dominant cost in §1.3's
+   finding (cross-campaign lock contention), independent of §5.
 3. **Define the terminal-state signal and the hot/cold archival path (§4)**
    third — depends on (2) existing (archival deletes/moves a hot-tier file,
    which needs to already be per-campaign for that to be a clean operation)
@@ -827,11 +836,10 @@ dependency order):**
 4. **Replace the cross-file sweep with per-grain reminders (§7)** fourth —
    naturally follows (2), since the sweep's current shape only makes sense
    while there's one file to poll.
-5. **Schema evolution/migration mechanism (§9)** should land *before* 1-4 ship
-   to real users, even though it's independent of the concurrency work,
-   because every one of 1-4 is itself a schema/topology change existing code
-   has no mechanism to apply to an existing file (issue #330's "no implicit
-   migration" concern).
+5. **Snapshotting (§5)** — demoted from step 1 to here, and now contingent on
+   a separate `Cna.Core`-owned design spike (Appendix B) rather than being a
+   storage-layer implementation task. May never land in the form originally
+   scoped; (1)-(4) above do not depend on it.
 6. **WAL checkpoint policy and FD/activation budget tuning (§10 remaining
    bottlenecks 1-2), plus archival observability (§10 bottleneck 3)**
    alongside real load testing, once 1-4 exist to load-test against.
@@ -863,3 +871,58 @@ summary):
   don't force an immediate write lock (§1.3), and (b) there is no terminal/status
   concept on the `campaigns` table at all today (§4.1), which matters once
   archival is on the table.
+
+---
+
+## Appendix B: snapshotting (§5) is blocked, not step 1
+
+An implementation attempt on §5 (2026-11-18) stopped before writing any
+journal-layer code, and correctly so. It traced the actual engine code rather
+than inferring from this document's prose, and found that §5.1's load-bearing
+assumption — that `Load()` can "deserialize `state_bytes`/`round_state_bytes`
+as the starting point, then replay only steps since the snapshot" — does not
+hold against `Cna.Core` as it exists today:
+
+- `CampaignHostAdapter.ImportWithContentResolver` → `ImportCore` → `ImportStarted`
+  always calls `Create(request, resolver)` (a **fresh** engine instance from
+  genesis) and then replays the **entire** provided `steps` list. No
+  skip-ahead/resume-from-mid-stream entry point exists anywhere in that call
+  chain.
+- `ExerciseSession`'s `CurrentHistory` (the full parsed event history since
+  creation) is not disposable bookkeeping — `CampaignExercises.cs` computes
+  `HashFramed(CurrentHistory)` as the engine's own re-adjudication/verification
+  hash in `ReconstructOne`/`Reconstruct`. Bounding replay cost by discarding
+  pre-snapshot history would change what that hash proves, not just how fast
+  it's computed.
+- `ExerciseSession`'s gameplay constructor also takes ~25 optional
+  "mid-round-resolution" fields (`combatSelection`, `combatBarrage`,
+  `combatRetreatMove`, `combatForceSeals`, `combatCustodyState`, `repeatMove`,
+  `cycleControl`, etc.), none of which have a serialize/deserialize format
+  today. A snapshot taken at an arbitrary point (every N steps, per §5.1) can
+  land mid-sequence in any of the seven round lanes, and nothing today can
+  capture or restore that in-flight state.
+- The one existing checkpoint precedent this document cites in §1.7
+  (`AdmitSourceCompactCheckpoint`) does not contradict this — it still appends
+  to `PregameHistory` rather than compacting it, and gates "no further pregame
+  edits," not "skip replay." It is not a usable precedent for general
+  mid-campaign resumption.
+
+**Consequence:** the `snapshots` table schema in §5.1 remains sound as a
+*storage shape*, but there is nothing in `Cna.Core` for `Load()` to call that
+would make it bound replay cost. Building the table without a consuming
+mechanism would be dead weight, or worse, an invitation to wire up an unsafe
+shortcut later. §5 as scoped is not implementable as a storage-layer task.
+
+**What would actually be needed, if this is still wanted:** a `Cna.Core`-owned
+design spike, not a follow-up implementation PR, resolving two separable
+questions first: (a) what hash scope the seven lanes' completion/verification
+hashes actually require — full-genesis, or can a window-since-snapshot scope
+be made equally sound — and (b) whether snapshot points can be restricted to
+provably "clean" lane-boundary instants (no in-flight mid-round-resolution
+state), or whether all ~25 mid-round fields need a real serialization format.
+Either answer is substantial, correctness-adjacent engine work owned by
+whoever knows the native-combat/round state machine best — not something a
+storage/journal-layer PR should decide unilaterally.
+
+This does not block anything else in §11's rollout — items 1-4 there do not
+depend on §5, and are resequenced ahead of it accordingly.
