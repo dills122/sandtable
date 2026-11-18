@@ -131,9 +131,15 @@ internal static class LocalGameApi
         api.MapPost("/campaigns/{campaignId}/seat", async (HttpContext context,
             LocalSessionStore store, string campaignId) =>
         {
-            var session = store.Find(context.Request.Cookies[Cookie]);
-            if (session is null) return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
-            if (!ValidCsrf(context, session)) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+            var cookie = context.Request.Cookies[Cookie];
+            var session = store.Find(cookie);
+            // No cookie at all is never recoverable (there's nothing to look a prior
+            // redemption up by), so this still fails fast exactly like before recovery
+            // existed.
+            if (session is null && cookie is null)
+                return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
+            if (session is not null && !ValidCsrf(context, session))
+                return ApiError(StatusCodes.Status403Forbidden, "forbidden");
             string? grantId;
             try
             {
@@ -152,10 +158,30 @@ internal static class LocalGameApi
             catch (JsonException) { return ApiError(StatusCodes.Status400BadRequest, "invalid-request"); }
             if (!Guid.TryParse(grantId, out _))
                 return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
-            var next = await store.RedeemAsync(session, campaignId, grantId);
-            if (next is null) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
-            SetCookie(context, next.Token);
-            return Results.Json(SessionInfo(next));
+
+            if (session is not null)
+            {
+                var next = await store.RedeemAsync(session, campaignId, grantId,
+                    context.RequestAborted);
+                if (next is null) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+                SetCookie(context, next.Token);
+                return Results.Json(SessionInfo(next));
+            }
+
+            // The cookie is present but matches no active session. It may simply be stale
+            // (unknown/expired), or it may be the OLD cookie from a redemption that already
+            // committed on a previous call to this same route, whose response (the
+            // Set-Cookie carrying the new token) never reached this caller - see
+            // LocalSessionStore.RedeemAsync/RecoverRedemption for exactly what that does
+            // and doesn't recover. Try recovery before giving up; a mismatch on any of
+            // cookie/grantId/campaignId/CSRF - including an entirely unrelated caller who
+            // never had this cookie - correctly fails it.
+            var csrf = context.Request.Headers.TryGetValue(CsrfHeader, out var header)
+                && header.Count == 1 ? header[0] : null;
+            var recovered = store.RecoverRedemption(cookie!, campaignId, grantId, csrf);
+            if (recovered is null) return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
+            SetCookie(context, recovered.Token);
+            return Results.Json(SessionInfo(recovered));
         });
         api.MapGet("/campaigns/{campaignId}/session", (HttpContext context,
             LocalSessionStore store, string campaignId) =>

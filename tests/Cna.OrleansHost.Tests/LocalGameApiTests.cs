@@ -67,7 +67,7 @@ public sealed class LocalGameApiTests
         var grants = JsonDocument.Parse(JsonSerializer.Serialize(recovered.Response))
             .RootElement.GetProperty("seatGrants");
         Assert.Null(await sessions.RedeemAsync(owner, "host-rsh-001",
-            grants.GetProperty("axis").GetString()!));
+            grants.GetProperty("axis").GetString()!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -255,12 +255,12 @@ public sealed class LocalGameApiTests
             var operatorSession = store.Bootstrap(null)!;
             var grants = store.IssueGrants(operatorSession.OperatorId, "host-rsh-001");
             var axis = (await store.RedeemAsync(operatorSession,
-                "host-rsh-001", grants.Axis))!;
+                "host-rsh-001", grants.Axis, TestContext.Current.CancellationToken))!;
             var pending = Send(client, Get("/api/v1/campaigns/host-rsh-001/view",
                 $"sandtable_session={axis.Token}"));
             await reader.Started.Task.WaitAsync(TestContext.Current.CancellationToken);
             Assert.NotNull(await store.RedeemAsync(axis,
-                "host-rsh-001", grants.Commonwealth));
+                "host-rsh-001", grants.Commonwealth, TestContext.Current.CancellationToken));
             reader.Release.SetResult(new TemporaryPrivateCutReply
             { Status = TemporaryCampaignStatus.Current });
             Assert.Equal(HttpStatusCode.Forbidden, (await pending).StatusCode);
@@ -602,6 +602,72 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
+    public async Task SeatRedeemRetryWithSameCookieRecoversSameSessionAfterLostReply()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            var bootstrap = await Send(client, Bootstrap(client));
+            var cookie = bootstrap.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var csrf = (await JsonDocument.ParseAsync(
+                await bootstrap.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken),
+                cancellationToken: TestContext.Current.CancellationToken))
+                .RootElement.GetProperty("csrfToken").GetString()!;
+            var session = app.Services.GetRequiredService<LocalSessionStore>()
+                .Find(cookie.Split('=')[1])!;
+            var grants = app.Services.GetRequiredService<LocalSessionStore>()
+                .IssueGrants(session.OperatorId, "host-rsh-001");
+
+            var entered = await Send(client, Seat("host-rsh-001", cookie, csrf, grants.Axis));
+            Assert.Equal(HttpStatusCode.OK, entered.StatusCode);
+            var seatCookie = entered.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var body = await entered.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+            // Simulate the browser never receiving that response: it retries with the
+            // SAME (now-stale) cookie, the same CSRF token and the same (already-consumed)
+            // grantId. This must recover the identical outcome, not fail.
+            var retry = await Send(client, Seat("host-rsh-001", cookie, csrf, grants.Axis));
+            Assert.Equal(HttpStatusCode.OK, retry.StatusCode);
+            var retryCookie = retry.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var retryBody = await retry.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            Assert.Equal(seatCookie, retryCookie);
+            Assert.Equal(body, retryBody);
+
+            // The recovered session is the real, usable one: it can read the session info.
+            Assert.Equal(HttpStatusCode.OK,
+                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/session", seatCookie)))
+                .StatusCode);
+
+            // An unrelated caller with the right grantId but no knowledge of the original
+            // cookie/CSRF never recovers anything - a fresh, unredeemed session is just
+            // unauthorized, not granted this seat.
+            var strangerBootstrap = await Send(client, Bootstrap(client));
+            var strangerCookie = strangerBootstrap.Headers.GetValues("Set-Cookie").Single()
+                .Split(';')[0];
+            var strangerCsrf = (await JsonDocument.ParseAsync(
+                await strangerBootstrap.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken),
+                cancellationToken: TestContext.Current.CancellationToken))
+                .RootElement.GetProperty("csrfToken").GetString()!;
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(client,
+                Seat("host-rsh-001", strangerCookie, strangerCsrf, grants.Axis))).StatusCode);
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
     public async Task SubmittedOutwardActionIsAcceptedAndReceiptIsRetrievableByRequestId()
     {
         await using var fixture = await ActionFixture.CreateAsync();
@@ -796,9 +862,11 @@ public sealed class LocalGameApiTests
         var owner = store.Bootstrap(null)!;
         var other = store.Bootstrap(null)!;
         var grants = store.IssueGrants(owner.OperatorId, "host-rsh-001");
-        Assert.Null(await store.RedeemAsync(other, "host-rsh-001", grants.Axis));
+        Assert.Null(await store.RedeemAsync(other, "host-rsh-001", grants.Axis,
+            TestContext.Current.CancellationToken));
         clock.Advance(TimeSpan.FromMinutes(11));
-        Assert.Null(await store.RedeemAsync(owner, "host-rsh-001", grants.Axis));
+        Assert.Null(await store.RedeemAsync(owner, "host-rsh-001", grants.Axis,
+            TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -823,7 +891,8 @@ public sealed class LocalGameApiTests
         var store = new LocalSessionStore(clock);
         var owner = store.Bootstrap(null)!;
         var first = store.IssueGrants(owner.OperatorId, "host-rsh-001");
-        var seat = (await store.RedeemAsync(owner, "host-rsh-001", first.Axis))!;
+        var seat = (await store.RedeemAsync(owner, "host-rsh-001", first.Axis,
+            TestContext.Current.CancellationToken))!;
         Assert.Equal("axis", seat.Seat);
         for (var index = 1; index < LocalSessionStore.MaxGrants / 2; index++)
             store.IssueGrants(owner.OperatorId, "host-rsh-001");
@@ -834,6 +903,69 @@ public sealed class LocalGameApiTests
         Assert.NotEqual(replacement.Axis, replacement.Commonwealth);
         clock.Advance(TimeSpan.FromHours(2));
         Assert.Null(store.Find(seat.Token));
+    }
+
+    [Fact]
+    public async Task LostRedemptionReplyRecoversSameSessionOnExactRetryButNotOtherwise()
+    {
+        var clock = new ManualClock();
+        var store = new LocalSessionStore(clock);
+        var owner = store.Bootstrap(null)!;
+        var grants = store.IssueGrants(owner.OperatorId, "host-rsh-001");
+
+        // Simulates the HTTP response carrying `next`'s Set-Cookie never reaching the
+        // browser: the caller still only has `owner`'s old token/CSRF and the grantId.
+        var next = (await store.RedeemAsync(owner, "host-rsh-001", grants.Axis,
+            TestContext.Current.CancellationToken))!;
+        Assert.Equal("axis", next.Seat);
+        Assert.Null(store.Find(owner.Token));
+
+        // Wrong grantId, wrong campaign, and wrong CSRF each fail recovery - only the
+        // exact original caller recovers the outcome, not anyone who merely has the cookie.
+        Assert.Null(store.RecoverRedemption(owner.Token, "host-rsh-001",
+            grants.Commonwealth, owner.CsrfToken));
+        Assert.Null(store.RecoverRedemption(owner.Token, "other-campaign",
+            grants.Axis, owner.CsrfToken));
+        Assert.Null(store.RecoverRedemption(owner.Token, "host-rsh-001",
+            grants.Axis, "wrong-csrf"));
+        Assert.Null(store.RecoverRedemption("unknown-token", "host-rsh-001",
+            grants.Axis, owner.CsrfToken));
+
+        // The exact retry - same old cookie, same grantId, same campaign, same CSRF -
+        // recovers the SAME session/token, not a new one and not a failure.
+        var recovered = store.RecoverRedemption(owner.Token, "host-rsh-001",
+            grants.Axis, owner.CsrfToken);
+        Assert.Equal(next, recovered);
+
+        // It keeps working on further retries too, right up to the grant's own original
+        // expiry window (10 minutes) - the recovery record supplants that grant, so it
+        // inherits the grant's bounded lifetime rather than living forever.
+        clock.Advance(TimeSpan.FromMinutes(9));
+        Assert.Equal(next, store.RecoverRedemption(owner.Token, "host-rsh-001",
+            grants.Axis, owner.CsrfToken));
+        clock.Advance(TimeSpan.FromMinutes(2));
+        Assert.Null(store.RecoverRedemption(owner.Token, "host-rsh-001",
+            grants.Axis, owner.CsrfToken));
+    }
+
+    [Fact]
+    public async Task LostRedemptionReplyIsNotRecoverableOnceTheNewSessionItselfIsGone()
+    {
+        var clock = new ManualClock();
+        var store = new LocalSessionStore(clock);
+        var owner = store.Bootstrap(null)!;
+        var grants = store.IssueGrants(owner.OperatorId, "host-rsh-001");
+        var next = (await store.RedeemAsync(owner, "host-rsh-001", grants.Axis,
+            TestContext.Current.CancellationToken))!;
+
+        // The new session is independently relinquished (or swept, or superseded by a
+        // later seat switch) before the retry arrives - this corner case is intentionally
+        // unsupported: there is no grant left to re-redeem, so the caller must
+        // re-authenticate from scratch instead of recovering a session that no longer
+        // exists.
+        Assert.True(await store.RelinquishAsync(next, "host-rsh-001"));
+        Assert.Null(store.RecoverRedemption(owner.Token, "host-rsh-001",
+            grants.Axis, owner.CsrfToken));
     }
 
     // Sets the explicit deployment-posture flag (#366) so these functional tests - which

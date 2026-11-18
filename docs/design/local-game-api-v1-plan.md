@@ -53,6 +53,16 @@ deployment. Within that gate, for every route under `/api/v1`:
 - `POST /campaigns` takes a client-supplied `requestId` (a GUID) for
   idempotent creation — the create-or-return-existing semantics this
   project already uses elsewhere for retry safety.
+- `POST .../seat` (issue #389) follows the same retry-safety idiom for its
+  own one-use grant: the grant and the caller's old session are consumed
+  atomically with minting the new one, so if the reply carrying the new
+  cookie is lost, an exact retry (same cookie, same `grantId`, same
+  campaign, same CSRF token) recovers the *same* new session/token instead
+  of failing — see `LocalSessionStore.RedeemAsync`/`RecoverRedemption`.
+  Recovery is bounded by the grant's own original expiry and stops working
+  once the new session itself is gone (relinquished, superseded by a later
+  seat switch, or swept) — a retry past that point cannot be recovered and
+  must re-authenticate from scratch, by design.
 - `GET /campaigns/{id}/view` is a real worked example of side-safe
   projection done right: it maps the session's seat to a
   `CampaignActionAudience`, reads a private cut via
