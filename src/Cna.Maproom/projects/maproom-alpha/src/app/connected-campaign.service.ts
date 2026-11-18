@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { ActionsService } from './api/generated/api/actions.service';
 import { CampaignsService } from './api/generated/api/campaigns.service';
 import { FixturesService } from './api/generated/api/fixtures.service';
 import { SessionsService } from './api/generated/api/sessions.service';
@@ -30,9 +31,23 @@ export class ConnectedCampaignService {
   private readonly sessions = new SessionsService(this.http, '', this.configuration);
   private readonly campaigns = new CampaignsService(this.http, '', this.configuration);
   private readonly fixtures = new FixturesService(this.http, '', this.configuration);
+  private actions: ActionsService | undefined;
   private creation:
     { fixtureId: string; requestId: string; response?: CampaignCreated } | undefined;
   private entered: SessionInfo | undefined;
+
+  /**
+   * Shares this service's live CSRF-aware Configuration (the arrow function above reads
+   * `this.csrfToken` at request time, not at construction time) so an ActionsService built from
+   * this call authenticates submitAction's required X-Sandtable-CSRF header the same way
+   * campaign/session requests already do. A separately-constructed ActionsService (e.g. the
+   * one Angular DI would hand out via `inject(ActionsService)`) would carry a bare Configuration
+   * with no CSRF credential and would be rejected by the host.
+   */
+  actionsService(): ActionsService {
+    this.actions ??= new ActionsService(this.http, '', this.configuration);
+    return this.actions;
+  }
 
   async availableFixtures(): Promise<FixtureDescriptor[]> {
     this.acceptBootstrap(await firstValueFrom(this.sessions.bootstrapLocalOperator()));
