@@ -273,29 +273,59 @@ not something Appendix B named — but it is tractable and small (one type,
 **Clean boundaries are workable as the snapshot policy. Recommend against
 building a serialization format for the 33+8 mid-round fields.**
 
-A clean boundary (§2) recurs at most once per fully-resolved Combat
-engagement — i.e. after selection, barrage, retreat decline/move, force
-seals, force completion or cancellation, anti-armor, cancelled-assault or
-assault-result, post-result retreat, settlement, custody disposition,
-successor, the (variable-length) reserve-release event sequence, cycle
-control, and then whichever of the optional repeat chain (movement →
-breakdown → combat selection → no-attack-or-assault) and second-side chain
-(breakdown → combat selection → no-attack → movement completion → move →
-reserve → post-combat pass → truck-convoy pass) actually fire, all the way
-back to the next `Complete`-style step. This is bounded by the round-lane
-state machine's own one-shot structure — every `With*` method and every
-branch in the big constructor throws if the field it is about to set is
-already non-null (e.g. `ExerciseSession.cs:145`: `if (forceSeals.Length > 2 ||
-...)`, and the repeated `"... must advance its retained cut once"` guards
-throughout `:774-932`) — so a single engagement cannot loop indefinitely; it
-is a fixed-shape sequence of on the order of 20-30 accepted steps in the
-worst case (full repeat chain plus full second-side chain), not something
-that grows with total campaign history.
+**Corrected 2026-11-18, post-benchmark — the claim below originally said
+"20-30 steps... not something that grows with total campaign history." That
+was wrong, and is kept struck through rather than deleted so the mistake is
+visible:**
 
-That bound was inferred from reading the mutual-exclusion/one-shot throws
-across the constructor and `With*` methods, **not from an exhaustive
-enumeration of every legal step sequence or a test run** — see §6 for the
-follow-up this implies.
+~~A clean boundary (§2) recurs at most once per fully-resolved Combat
+engagement... This is bounded by the round-lane state machine's own one-shot
+structure... so a single engagement cannot loop indefinitely; it is a
+fixed-shape sequence of on the order of 20-30 accepted steps in the worst
+case (full repeat chain plus full second-side chain), not something that
+grows with total campaign history.~~
+
+**What a dedicated measurement agent actually found**, driving the richest
+existing continuation fixture (`AdvanceToSecondCombatSelection`,
+`tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.SecondCombatSelection.cs:20-64`)
+and tracing the real repeat-cycle machinery:
+
+- The one-shot throws cited above only prove each of the 33 scalar fields and
+  8 predecessor-chain fields can be set **once per `ExerciseSession` object**.
+  They say nothing about how many times a Combat engagement can *repeat*
+  before returning to `Complete()`, because repeating is not implemented via
+  those fields at all — `CampaignNativePostRepeatRuntime.Apply`
+  (`CampaignNativePostRepeatRuntime.cs:106-231`) resets
+  `Control`/`Movement`/`Breakdown`/`Selection` to `null` and loops back into
+  another movement→breakdown→selection→resolution cycle on a `Repeat` choice
+  (`:120-126`), appending to the same flat `CurrentPostRepeatEvents` list.
+- **The real circuit breaker is an explicit retained-event-count cap, not a
+  one-shot throw:** `CampaignNativeRepeatAssaultRuntime.cs:81-83` and
+  `CampaignNativePostRepeatRuntime.cs:66-68,92` each throw
+  `InvalidCampaignHistoryException` only once `retained.Length > 1024` — two
+  independent lists (`CurrentRepeatAssaultEvents`, `CurrentPostRepeatEvents`),
+  each capped at 1024. `CycleOrdinal` itself (`CampaignNativeCycleControlV28.cs:25-26`)
+  has no cap beyond `int` overflow.
+- **Measured lower bound: 14 accepted steps** for the cheapest possible path
+  through the fixture above (voluntary finish, no barrage/retreat/seals/
+  custody/repeat at all, plus the full second-side chain) — and that path
+  *still hadn't reached a clean boundary* at step 14. No existing test in
+  `tests/Cna.Core.Tests` or `tests/Cna.OrleansHost.Tests` chains more than one
+  repeat cycle, or combines a full assault/custody chain with the second-side
+  chain, so **14 is a real but weak lower bound; the repo has zero test
+  coverage of the actual worst case.**
+
+**Corrected conclusion: the true engine-enforced ceiling per engagement is
+~1024-2048 accepted steps (two independent 1024 caps), roughly 30-70x the
+original "20-30" estimate** — not because the original one-shot-throw
+reasoning was fabricated, but because it answered a narrower question (can a
+single field be set twice?) than the one §4 needed answered (can an
+engagement repeat indefinitely?). Whether a real six-turn Graziani-scale
+scenario's actual content ever drives a chain anywhere near 1024 is a
+scenario/content question, not an engine guarantee — the design below treats
+the engine-enforced ~1024-2048 ceiling as the only number safe to rely on for
+correctness, and "typical play is much shorter" as an unverified assumption
+about performance only, per §5.4.
 
 Given that bound, and given the data-layer doc's own characterization of this
 project's scale (six-turn scenarios, bounded Combat profiles per
@@ -318,19 +348,22 @@ mid-round fields, because:
   second-side continuation chain," because that state never persists across
   a clean boundary by construction.
 
-**Tradeoff this policy accepts, named precisely:** replay cost is bounded by
-"steps since the last clean boundary reached at or after N," not by a hard
-`LIMIT N` the way a pure step-count cap would be. If some future scenario
-produces unusually long uninterrupted engagement sequences (e.g. many
-sequential campaigns' worth of repeat/second-side continuations without ever
-reaching a non-Combat action), the bound degrades toward the engagement
-length rather than staying at exactly N. Given the one-shot structure cited
-above this is believed to be a small constant in practice, but that belief
-has not been benchmarked — flagged as an open item in §6, not asserted as
-settled.
+**Tradeoff this policy accepts, named precisely, and corrected post-benchmark:**
+replay cost is bounded by "steps since the last clean boundary reached at or
+after N," not by a hard `LIMIT N` the way a pure step-count cap would be. The
+bound does **not** degrade toward "a small constant in practice" as
+originally believed — it degrades toward the engine's real ~1024-2048-step
+per-engagement ceiling, confirmed above. This is still a real, useful bound
+(it does not grow with *total campaign history*, which was §5's actual
+goal), but it is a much weaker one than first claimed, and choosing a
+snapshot cadence `N` without accounting for it would be a correctness-blind
+performance choice, not a safe one. §7 updates the recommendation
+accordingly.
 
-This resolves (b) as: **clean boundaries occur often enough; do not build a
-mid-round serialization format.**
+This resolves (b) as: **clean boundaries occur often enough to avoid
+serializing mid-round state; they do not occur as frequently as originally
+estimated, and the real ~1024-2048-step ceiling, not "20-30," is what any
+implementation must treat as the worst case.**
 
 ---
 
@@ -499,24 +532,35 @@ requirement that licenses this design in the first place.
 
 ## 6. What this document does not resolve — open items, not fabricated certainty
 
-- **No exhaustive audit of other full-history-scan dependencies.** The
-  ammunition ledger (§1.2) was found and traced completely. A grep for the
-  same shape (`events.OfType<...>()`/`FromAcceptedEvents`-style helpers)
-  across `src/Cna.Core/Campaigns/*.cs` found only the ammunition ledger;
-  `grep -rln "Ledger" src/Cna.Core/` surfaces other ledger-named types (e.g.
-  `CampaignSourceCombatObligationLedger.cs`, pregame-scope) that were **not**
-  individually traced for the same pattern. Before implementation, every
-  function that takes `session.CurrentHistory` (or an equivalent "all events
-  so far" parameter) as an argument should be enumerated and checked for the
-  same full-history dependency; this document asserts the ammunition ledger
-  is confirmed, not that it is the only instance.
-- **The worst-case accepted-step count for a single Combat engagement (§4)
-  was inferred from the one-shot/mutual-exclusion throws in `ExerciseSession`'s
-  constructor and `With*` methods, not measured.** Recommend a focused test
-  run (`just test-suite core`, per this repo's convention for scoped
-  verification — not the full gate) that counts accepted steps across the
-  longest existing Combat-continuation fixture, to pin a concrete number
-  before committing to a snapshot cadence `N`.
+- ~~No exhaustive audit of other full-history-scan dependencies.~~
+  **Resolved 2026-11-18, by a dedicated audit agent.** Exhaustive search
+  across `src/Cna.Core/` for the `FromAcceptedEvents`/full-genesis-fold shape
+  found exactly two other instances — `CampaignContactJournal.FromEvents`
+  (`CampaignContactJournal.cs:116-137`) and `CampaignCurrentProjector.Replay`
+  (`CampaignCurrentEventRuntime.cs:212-217`) — both with their **only** call
+  site inside `ReconstructOne`, the same non-hot export/validation path
+  already established for the ammunition ledger's `ReconstructOne` call
+  (confirmed independently: `CampaignExercises.Reconstruct` has exactly 3
+  callers repo-wide, all in `Cna.ExerciseRunner`, none in `Cna.OrleansHost`).
+  `CampaignSourceCombatObligationLedger.cs` was traced completely: it does
+  **not** match the rescan-from-genesis shape at all (it folds forward via
+  ordinary `With*`-style clones, the pattern this design wants), and is in
+  fact currently **unwired from any replay path whatsoever** — not just
+  pregame-scoped as originally assumed, but dead/unused production code
+  today. **Net result: no additional hot-path full-history dependency found.
+  The ammunition ledger (§5.3) remains the only one that needs seeding.**
+- ~~The worst-case accepted-step count for a single Combat engagement (§4)
+  was inferred... not measured.~~ **Resolved 2026-11-18, by a dedicated
+  measurement agent — and the original estimate was wrong.** See the
+  corrected §4 above: the real engine-enforced ceiling is ~1024-2048 steps
+  per engagement (two independent 1024-event caps in
+  `CampaignNativeRepeatAssaultRuntime.cs`/`CampaignNativePostRepeatRuntime.cs`),
+  not 20-30. A measured lower bound of 14 steps was observed on the cheapest
+  existing fixture path, confirming the original estimate's rough shape for
+  a *non-repeating* engagement, but the repo has **zero test coverage of a
+  chain that actually repeats**, so the true worst case remains unexercised
+  by any existing test. §7 updates the recommendation to treat ~1024-2048 as
+  the only number safe to design around.
 - **`round_state_bytes`'s actual contents were not designed here.** The
   data-layer doc's §5.1 proposed it at the storage layer as "status/high-water
   for all 7 lanes as of `sequence`"; this document establishes that the seven
@@ -552,3 +596,15 @@ unilaterally by a storage-layer PR.
 Nothing here blocks RC — same framing as the data-layer doc's own §11: RC is
 local-only, single-player, low-scale, and not blocked on anything in this
 document landing.
+
+**Added 2026-11-18, post-benchmark:** choose the snapshot cadence `N` (§5.1)
+with the real ~1024-2048-step engine ceiling in mind, not the original
+"20-30" estimate — either pick `N` conservatively relative to that real
+ceiling (e.g. low enough that even a worst-case repeat chain's cost is
+acceptable), or add real test coverage of a long repeat chain (none exists
+today) before relying on "typical play is much shorter" as anything more
+than a performance assumption. This does not change the recommendation to
+proceed — the design still bounds replay cost independent of *total
+campaign history*, which was always the actual goal (§5) — but implementers
+should not carry forward the original "small constant, 20-30 steps" framing
+into a concrete `N` choice.
