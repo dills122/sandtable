@@ -187,7 +187,7 @@ available across restarts.
 | Playable rule path | Working through Combat entry | A runner executes Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
 | Combat and the continual turn cycle | Bounded native implementation | Contact-based Core and normal durable Host cover an initial assault plus two selected repeated assaults, settlement, custody, and Reserve Release. Development loopback access is not public Combat certification; broader support and evidence gates remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and evidence bundles, all from the CLI. |
-| User interface (Maproom) | Angular foundation, local read-only preview | A synthetic fixture study and a local, URL-backed campaign read mode. No live multiplayer actions yet. |
+| User interface (Maproom) | Angular foundation, local read-only preview, plus a wired but unreachable action-submission path | A synthetic fixture study and a local, URL-backed campaign read mode. A real HTTP action-submission adapter and a real backend trust signal (bootstrap's `actionSubmissionTrusted`) are now wired end to end into `canSubmit` and covered by a browser test. No mounted route yet advances a campaign past its first System-only decision, so the bundled fixture never reaches a human decision point: nothing is actually clickable yet. |
 | Published scenario | Source data in progress | Six-turn Graziani's Offensive is the first target; historical campaign admission and the required Combat loop remain incomplete. |
 | Durable save and resume | Local durable Host implemented; product gate open | SQLite journal and cold replay support bounded local campaigns; schema 14 persists Selection, RBA, Force, Retreat, Custody, Reserve Release and cycle-control deadlines at decision entry; background fallback needs no owner query. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
 | Model-backed commanders | Scaffold only | The gateway and worker processes exist. No model provider is configured, and AI will not hold authority over the rules. |
@@ -343,8 +343,11 @@ some of which currently fail due to known source-pin drift. Check the
 [verification inventory](docs/research/combat-verification-pin-maintenance.md) before treating an
 older passing run as current evidence on Combat contracts specifically.
 
-CI splits the suite across parallel jobs to keep the required pipeline fast; the target is under
-ten minutes. Adding a large test class may require updating the
+CI now runs in three tiers. Pull requests run only the `fast-*`/`r02-*`/`exercise`/`contracts`
+shards (`long-*` excluded) to keep the required pipeline fast, with a target under ten minutes.
+Pushes to `main` run the unchanged full suite as the post-merge safety net. Orleans and the six
+`p01-*` proof families no longer run on either trigger; they run nightly on a schedule
+(`.github/workflows/ci-nightly-heavy.yml`). Adding a large test class may require updating the
 [long-suite manifest](.github/scripts/long-suite-weights.md). An optional, label-triggered PR
 review pass for high-risk changes is also available; see the
 [runbook](docs/runbooks/optional-code-review.md). It supplements ordinary CI and review, and does
