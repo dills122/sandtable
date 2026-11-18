@@ -50,12 +50,8 @@ test('drag keeps the selected zoom while panning without uncovering blank space'
   await page.mouse.up();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
   // The no-op drag at 100% must leave the scene exactly where it was (issue #285).
-  await expect
-    .poll(async () => (await scene.boundingBox())?.x)
-    .toBe(fitScene!.x);
-  await expect
-    .poll(async () => (await scene.boundingBox())?.y)
-    .toBe(fitScene!.y);
+  await expect.poll(async () => (await scene.boundingBox())?.x).toBe(fitScene!.x);
+  await expect.poll(async () => (await scene.boundingBox())?.y).toBe(fitScene!.y);
   await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
 });
 
