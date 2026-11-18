@@ -785,9 +785,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (breakdown.IsAccepted)
             {
                 var command = CampaignHostAdapter.SecondBreakdownCommand(acceptedHead.Session, breakdown);
-                PersistAccepted(connection, transaction, seat.CampaignId, acceptedHead,
+                var breakdownHead = PersistAccepted(connection, transaction, seat.CampaignId, acceptedHead,
                     CampaignHostAcceptedStep.NativeSecondBreakdownKind, null,
                     null, null, null, command, breakdown);
+                // #394 gap 4: SecondMovementCompletion is the second-side
+                // analog of Movement (both complete a movement and open the
+                // way to a Combat selection round), not of Custody -- match
+                // that sibling's pattern instead of leaving nothing to
+                // initialize the successor Selection round.
+                TryInitializeSelectionRound(connection, transaction, breakdownHead, seat.CampaignId);
             }
         }
         if (kind == CampaignOwnerOpeningKind.Custody)
@@ -802,7 +808,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
             UpdateRetreatRound(connection, transaction, retreatRound! with { Status = "completed" });
             AppendWorldSettlement(connection, transaction, seat.CampaignId, acceptedHead);
         }
+        // #394 extra-3: guarded against a second-side session whose stale
+        // first-side CurrentCombatDecision happens to carry the same Choice
+        // string as the decision the second side actually just made --
+        // without this, this first-side-only check could alias onto a
+        // genuinely second-side submission and run the wrong continuation.
         if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && !CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
             && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
         {
             var noAttack = CampaignHostAdapter.CompleteNativeCombatNoAttack(result.SuccessorSession!);
@@ -816,7 +828,50 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 null, null, null, systemCommand, noAttack);
             AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, reserveHead);
         }
+        // #394 extra-3: second-side analog of the voluntary-finish
+        // auto-continuation above. Uses the side-correct
+        // IsNativeSecondCombatVoluntaryFinish/CompleteSecondCombatNoAttack
+        // pair (extra-3) instead of the first-side checks, which would read
+        // whatever the *first* side chose, not this decision.
+        //
+        // Deliberately stops here: CompleteSecondCombatNoAttack persists the
+        // second-side no-attack completion (CurrentSecondNoAttackCompletion)
+        // durably and atomically, but this PR does NOT call
+        // AppendEmptyReserveRelease for it. That helper ultimately reaches
+        // CampaignExercises.QueryNativeReserveReleaseState, whose only lazy
+        // initializer for CurrentReserveRelease
+        // (InitializeAfterInitialNoAttack) is keyed to the FIRST side's
+        // CurrentCombatDecision/CurrentNoAttackCompletion -- there is no
+        // second-side-keyed initializer yet. Calling it here would either
+        // silently resolve the stale first-side Reserve Release state (wrong)
+        // or throw from deep inside a shared helper with no clear message
+        // (confusing). So the second side's decision and no-attack completion
+        // are accepted, persisted, and cold-replayable, but the campaign does
+        // not auto-advance into Reserve Release/Cycle Control past this point
+        // yet -- that is the explicit, intentional follow-up this PR leaves
+        // for #394's next pass, not a silent gap.
         else if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(result.SuccessorSession!))
+        {
+            var noAttack = CampaignHostAdapter.CompleteSecondCombatNoAttack(result.SuccessorSession!);
+            if (!noAttack.IsAccepted)
+                throw new InvalidOperationException("Accepted second-side voluntary finish cannot complete Combat.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.SecondCombatNoAttackCommand(
+                systemHead.Session, noAttack);
+            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind, null,
+                null, null, null, systemCommand, noAttack);
+        }
+        // #394 extra-2: a second-side "select-contact-assault" pick is
+        // likewise accepted and persisted by the submission itself, with no
+        // auto-continuation here -- second-side Barrage/Retreat/Custody/
+        // Settlement resolution is out of this PR's scope (see the PR
+        // description). Guarded the same way as the voluntary-finish check
+        // above so a stale first-side "select-contact-assault" pick can
+        // never alias onto this second-side submission either.
+        else if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && !CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
             && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
         {
             var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);

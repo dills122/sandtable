@@ -102,6 +102,44 @@ internal sealed record CampaignContactOwnerMovementCut(
             Array.AsReadOnly(locations), Array.AsReadOnly(edges), owner, Array.AsReadOnly(offers));
     }
 
+    // #394 gap 2/3: second-side analog of the owner-visibility half of
+    // CampaignContactCombatSelectionCut.Project, built from (World, Position)
+    // directly -- mirroring ProjectSecondMovement immediately above for the
+    // same reason (no CampaignSnapshotV11 can represent this position; see
+    // CampaignNativeSecondCombatDecisionV47's remarks). MovementOffers is
+    // irrelevant to a Combat cut and left empty.
+    internal static CampaignContactOwnerMovementCut ProjectSecondCombatOwner(
+        CampaignWorldSnapshotV6 world, LandSequencePosition position, CampaignContentContext context,
+        CampaignContactJournal contacts, LandSide side, string actingElementId)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(position);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(contacts);
+        ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
+        if (context.ArtifactV6 is not { } artifact || !Enum.IsDefined(side)
+            || position.ActorRole != LandActorRole.SecondActingSide || position.ActiveSide != side
+            || position.SegmentId != LandSegmentIds.Combat || position.StepId != LandStepIds.PositionDetermination
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new ArgumentException("Second Combat selection requires a valid owner World and position.");
+        var definition = artifact.Definition.LegacyDefinition;
+        var content = definition.Elements.SingleOrDefault(element => element.ElementId == actingElementId
+            && element.SideId == CampaignSnapshotSerializer.FormatSide(side)
+            && element.PlacementMode == ContentPlacementMode.Independent)
+            ?? throw new ArgumentException("Second Combat selection requires an independently owned element.",
+                nameof(actingElementId));
+        var own = CampaignOwnElementProjection.ProjectPlaced(definition, world, side);
+        var owner = own.Single(value => value.ElementId == content.ElementId);
+        var knowledge = contacts.ObserveFor(side, content.ParentFormationId);
+        var locations = definition.Locations.Select(location =>
+            new CampaignObservationLocation(location.LocationId, location.TerrainId)).ToArray();
+        var edges = definition.Edges.Select(edge => new CampaignObservationEdge(edge.FirstLocationId,
+            edge.SecondLocationId, edge.Features.Select(feature => new CampaignObservationEdgeFeature(
+                feature.FeatureId, feature.DirectionFromLocationId)).ToArray())).ToArray();
+        return new CampaignContactOwnerMovementCut(contacts.AuthorityVersion, knowledge,
+            Array.AsReadOnly(locations), Array.AsReadOnly(edges), owner, []);
+    }
+
     private static MoveElementAction[] DeriveMovementOffers(
         CampaignSnapshotV11 snapshot,
         ObservedOwnElement owner,

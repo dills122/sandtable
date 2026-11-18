@@ -756,6 +756,20 @@ public sealed class ExerciseSession
     internal ExerciseSession? SecondMovementCompletionPredecessor { get; private set; }
     internal CampaignNativeSecondBreakdownV46? CurrentSecondBreakdown { get; private set; }
     internal ExerciseSession? SecondBreakdownPredecessor { get; private set; }
+    // #394 gap 1 (Option A for gap 3): side-scoped siblings of
+    // CurrentCombatDecision/CurrentNoAttackCompletion for the second-acting
+    // side, so the ~70 existing first-side call sites and the big first-side
+    // ExerciseSession constructor are untouched. CurrentSecondCombatDecision
+    // uses a dedicated type (CampaignNativeSecondCombatDecisionStateV47, not
+    // CampaignNativeCombatDecisionStateV12) because it is keyed to a
+    // (World, Position) pair instead of a CampaignSnapshotV11 -- see that
+    // type's remarks. CurrentSecondNoAttackCompletion stays the exact same
+    // first-side type: CampaignNativeCombatNoAttackCompletionV13 and its
+    // factory are already generic over "which decision" via
+    // CampaignCombatSelectionFrame's implicit operator (which both decision
+    // types now support), so no second type is needed there.
+    internal CampaignNativeSecondCombatDecisionStateV47? CurrentSecondCombatDecision { get; private set; }
+    internal CampaignNativeCombatNoAttackCompletionV13? CurrentSecondNoAttackCompletion { get; private set; }
 
     internal ExerciseSession WithSecondBreakdown(CampaignNativeSecondBreakdownV46 completed,
         CampaignContactJournal contacts)
@@ -766,11 +780,68 @@ public sealed class ExerciseSession
             || completed.PriorStateVersion != CurrentContacts.AuthorityVersion
             || contacts.AuthorityVersion != completed.StateVersion)
             throw new InvalidOperationException("Second Breakdown must advance its retained cut once.");
+        // #394 gap 3: CurrentSnapshot is intentionally left untouched here --
+        // a direct CampaignSnapshotV11 pointing at the second side's
+        // post-breakdown Combat/PositionDetermination position is rejected
+        // by Cna1979LandSequenceV4.IsSupportedCheckpoint (confirmed by
+        // testing), so no such snapshot is ever constructed. Gap 1/2/4 below
+        // instead carry the second side's own (World, Position) pair
+        // directly -- see CampaignNativeSecondCombatDecisionV47's remarks.
         var successor = (ExerciseSession)MemberwiseClone();
         successor.SecondBreakdownPredecessor = this;
         successor.CurrentSecondBreakdown = completed;
         successor.CurrentContacts = contacts;
         successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
+    // #394 gap 1 / extra-2: parallel to the first-side ExerciseSession
+    // constructor's handling of a fresh CampaignNativeCombatDecisionStateV12,
+    // but implemented as a clone (like every other V41-V46 With* method) so
+    // the second side's accumulated history (CurrentSecondBreakdown and its
+    // predecessors) survives instead of being dropped, and keyed to the new
+    // CampaignNativeSecondCombatDecisionStateV47 type instead of a
+    // CampaignSnapshotV11-bound one.
+    internal ExerciseSession? SecondCombatSelectionPredecessor { get; private set; }
+
+    internal ExerciseSession WithSecondCombatSelection(CampaignNativeSecondCombatDecisionStateV47 selected,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentSecondBreakdown is null || CurrentSecondCombatDecision is not null
+            || selected.Decision.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != selected.StateVersion)
+            throw new InvalidOperationException("Second Combat selection must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondCombatSelectionPredecessor = this;
+        successor.CurrentSecondCombatDecision = selected;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(selected.Decision);
+        return successor;
+    }
+
+    internal ExerciseSession? SecondNoAttackPredecessor { get; private set; }
+
+    // #394 extra-2: second-side analog of the no-attack completion the full
+    // constructor records for the first side. CampaignNativeCombatNoAttackCompletionV13
+    // and its factory are already generic over "which decision" via
+    // CampaignCombatSelectionFrame's implicit operator, so no new completion
+    // type is needed here, only this clone to preserve second-side history.
+    internal ExerciseSession WithSecondNoAttack(CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentSecondCombatDecision is not { } selected || CurrentSecondNoAttackCompletion is not null
+            || completion.PriorStateVersion != selected.StateVersion
+            || contacts.AuthorityVersion != completion.StateVersion)
+            throw new InvalidOperationException("Second no-attack completion must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondNoAttackPredecessor = this;
+        successor.CurrentSecondNoAttackCompletion = completion;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completion);
         return successor;
     }
 

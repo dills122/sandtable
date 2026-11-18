@@ -408,6 +408,19 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(completed.StateVersion);
     }
 
+    // #394 gap 1/extra-2: second-side analog of AdvanceNativeCombatSelection,
+    // keyed to the flat CampaignNativeSecondCombatDecisionV47 event instead
+    // of a CampaignSnapshotV11-bound state wrapper.
+    internal CampaignContactJournal AdvanceSecondCombatSelection(
+        CampaignNativeSecondCombatDecisionV47 selected)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        if (selected.CampaignId != CampaignId || selected.PriorStateVersion != AuthorityVersion
+            || selected.StateVersion != checked(AuthorityVersion + 1))
+            throw new ArgumentException("Second Combat selection does not bind the contact authority cut.", nameof(selected));
+        return AtAuthorityVersion(selected.StateVersion);
+    }
+
     internal CampaignContactJournal AppendNativeSecondMove(CampaignWorldSnapshotV6 before,
         CampaignWorldSnapshotV6 after, CampaignNativeSecondMoveV44 movement, CampaignContentContext context)
     {
