@@ -707,6 +707,51 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
+    public async Task SubmittedOutwardActionAutoAdvancesPendingSystemCandidates()
+    {
+        // Issue #422: before this fix, nothing but a test calling AdvanceSystemAsync directly
+        // ever drove a System-owned continuation forward - the real POST .../actions path
+        // (ActionFixture's one Axis "act-first" action, exercised below exactly as a real
+        // client would submit it) left the campaign wedged as soon as the next required step
+        // happened to be System-audience again, since neither SubmitAsync nor
+        // SubmitOutwardAsync called into AdvanceSystemAsync.
+        await using var fixture = await ActionFixture.CreateAsync();
+        try
+        {
+            var cut = await fixture.ReadAxisCutAsync();
+            var requestId = Guid.NewGuid().ToString("D");
+            var submit = await Send(fixture.Client, fixture.SubmitAction(requestId,
+                cut.PositionId, cut.Actions[0].OutwardActionId, cut.ActionSetToken));
+            Assert.Equal(HttpStatusCode.OK, submit.StatusCode);
+            var receiptJson = await submit.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            Assert.Equal("accepted",
+                JsonDocument.Parse(receiptJson).RootElement.GetProperty("status").GetString());
+
+            // The defining proof: System's own legal actions, which before the fix would still
+            // show the next pending System candidate (e.g. "resolve-weather") untouched, must
+            // now be empty - SubmitOutwardAsync drove them all the way forward in this same
+            // outward call, with no separate trigger of any kind.
+            var system = await fixture.QueryAsync(CampaignActionAudience.System);
+            Assert.Equal(TemporaryCampaignStatus.Current, system.Status);
+            Assert.Empty(CampaignLegalActionSerializer.DeserializeCanonical(
+                system.LegalActions!).Candidates);
+
+            // The game is not left stuck either: auto-advance ran until it reached the next
+            // point that genuinely needs a human, so one of the two player audiences now has a
+            // legal action to take.
+            var axis = await fixture.QueryAsync(CampaignActionAudience.Axis);
+            var commonwealth = await fixture.QueryAsync(CampaignActionAudience.Commonwealth);
+            var hasHumanCandidate =
+                CampaignLegalActionSerializer.DeserializeCanonical(axis.LegalActions!)
+                    .Candidates.Count > 0
+                || CampaignLegalActionSerializer.DeserializeCanonical(commonwealth.LegalActions!)
+                    .Candidates.Count > 0;
+            Assert.True(hasHumanCandidate);
+        }
+        finally { await fixture.StopAsync(); }
+    }
+
+    [Fact]
     public async Task DuplicateSubmissionReplaysRetainedReceiptWithoutDoubleApplying()
     {
         await using var fixture = await ActionFixture.CreateAsync();
@@ -719,6 +764,13 @@ public sealed class LocalGameApiTests
             var first = await Send(fixture.Client, request);
             Assert.Equal(HttpStatusCode.OK, first.StatusCode);
             var firstJson = await first.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            // SubmitOutwardAsync now also auto-advances any pending System-owned continuation
+            // in the same call (#422), so this one accepted action can legitimately move the
+            // revision forward by more than one; capture where it actually landed right after
+            // the first (real) submission, before asserting the duplicate below doesn't move
+            // it any further.
+            var firstCut = await fixture.ReadAxisCutAsync();
+            Assert.True(firstCut.AudienceRevision > cut.AudienceRevision);
 
             // A lost-reply retry resubmits the exact same canonical request. The ingress's
             // own requestId-keyed cache must replay the retained reply rather than resolving
@@ -731,9 +783,9 @@ public sealed class LocalGameApiTests
             Assert.Equal(firstJson, secondJson);
 
             // Proof the action did not double-apply: the committed audience revision the
-            // engine actually reached only advanced once.
+            // engine actually reached after the first submission did not advance any further.
             var afterCut = await fixture.ReadAxisCutAsync();
-            Assert.Equal(cut.AudienceRevision + 1, afterCut.AudienceRevision);
+            Assert.Equal(firstCut.AudienceRevision, afterCut.AudienceRevision);
         }
         finally { await fixture.StopAsync(); }
     }
@@ -1104,6 +1156,8 @@ public sealed class LocalGameApiTests
         private const string CampaignId = "host-rsh-001";
         private WebApplication app = null!;
         private ITemporaryPrivateCutReader reader = null!;
+        private TemporaryCampaignAccess access = null!;
+        private ITemporaryCampaignGrain grain = null!;
         internal HttpClient Client { get; private set; } = null!;
         internal string AxisCookie { get; private set; } = null!;
         internal string AxisCsrf { get; private set; } = null!;
@@ -1126,9 +1180,11 @@ public sealed class LocalGameApiTests
             fixture.app.MapLocalGameApi();
             await fixture.app.StartAsync(TestContext.Current.CancellationToken);
 
-            var access = fixture.app.Services.GetRequiredService<TemporaryCampaignAccess>();
-            var grain = fixture.app.Services.GetRequiredService<IGrainFactory>()
+            fixture.access = fixture.app.Services.GetRequiredService<TemporaryCampaignAccess>();
+            fixture.grain = fixture.app.Services.GetRequiredService<IGrainFactory>()
                 .GetGrain<ITemporaryCampaignGrain>(CampaignId);
+            var access = fixture.access;
+            var grain = fixture.grain;
             Assert.Equal(TemporaryCampaignStatus.Created,
                 (await grain.CreateAsync(access.Capability, "operator-test", "request-test")).Status);
             Assert.Equal(TemporaryCampaignStatus.NeedsHuman,
@@ -1169,6 +1225,9 @@ public sealed class LocalGameApiTests
             Assert.Equal(TemporaryCampaignStatus.Current, reply.Status);
             return reply.Cut!;
         }
+
+        internal Task<TemporaryCampaignReply> QueryAsync(CampaignActionAudience audience) =>
+            grain.QueryAsync(access.Capability, audience);
 
         internal async Task<string> EnterCommonwealthSeatAsync()
         {

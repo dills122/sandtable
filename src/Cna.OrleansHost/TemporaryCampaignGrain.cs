@@ -138,13 +138,31 @@ public sealed class TemporaryCampaignGrain(
     // it intentionally is not runtime-configurable since this grain is temporary/dev-only.
     internal const int OutwardRequestCapacity = 256;
 
+    // AdvanceSystemAsync's own validated upper bound (see its stepBudget check below). Reused
+    // as the budget for the two production auto-advance call sites (SubmitOutwardAsync and
+    // OnActivateAsync, see issue #422) so there is exactly one place that decides "how many
+    // system-owned continuations may run forward in one go" rather than a second, differently
+    // reasoned magic number. 32 already comfortably covers the longest observed run of
+    // consecutive System candidates in the rules-laboratory fixture (a handful of steps between
+    // human decisions), with headroom, while still bounding a single grain call/activation.
+    internal const int MaxSystemStepBudget = 32;
+
     private readonly string activationId = Guid.NewGuid().ToString("N");
     private TemporaryCampaignMemory memory = null!;
 
-    public override Task OnActivateAsync(CancellationToken cancellationToken)
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         memory = store.Get(this.GetPrimaryKeyString());
-        return Task.CompletedTask;
+        // Restart/reactivation recovery (design doc combat-sealed-decision-protocol-v1.md:211-215,
+        // issue #422): a prior activation may have left pending System-audience continuations
+        // (e.g. mid-sequence after a committed player step, see SubmitOutwardAsync). Nothing else
+        // runs between activation and the first real request, so drive them forward here, bounded
+        // by the same step budget AdvanceSystemAsync itself accepts. This only recovers in-process
+        // reactivation of an existing in-memory campaign (this grain keeps no durable state - see
+        // the class summary - so a genuine process restart loses `memory` entirely and has nothing
+        // to recover; durable storage/process-restart recovery is a separately gated future
+        // increment per docs/roadmap/pre-alpha-roadmap.md's MVP-GATE-04 and MAP-07 notes).
+        if (memory.Committed is not null) await AdvanceSystemCoreAsync(MaxSystemStepBudget);
     }
 
     public Task<TemporaryCampaignReply> CreateAsync(byte[] capability, string operatorId, string requestId)
@@ -389,6 +407,19 @@ public sealed class TemporaryCampaignGrain(
         if (result.Status is TemporaryCampaignStatus.Accepted or TemporaryCampaignStatus.Rejected)
             memory.OutwardRequests.Add(request.RequestId,
                 new OutwardRequestRecord(seat, request, result));
+
+        // Post-submit auto-advance (design doc combat-sealed-decision-protocol-v1.md:211-215,
+        // issue #422): this is the only production entry point a real player action reaches
+        // (LocalGameApi -> TemporaryOutwardActionIngress -> here); grain.SubmitAsync itself has
+        // no other production caller (AdvanceSystemAsync's own loop submits System-audience
+        // steps directly and must not re-trigger this). Once this seat's own step is committed,
+        // drive any now-pending System-audience continuation forward in the same call, so a
+        // human player's next decision never waits on a separate, nonexistent trigger. Bounded
+        // by the same step budget AdvanceSystemAsync itself accepts; the result is best-effort
+        // and intentionally not surfaced on this reply - the caller asked about their own
+        // outward action, not about System's unrelated continuation.
+        if (result.Status == TemporaryCampaignStatus.Accepted)
+            await AdvanceSystemCoreAsync(MaxSystemStepBudget);
         return result;
     }
 
@@ -414,15 +445,25 @@ public sealed class TemporaryCampaignGrain(
     {
         if (!access.Allows(capability)) return Reply(TemporaryCampaignStatus.Rejected, "unauthorized");
         if (memory.Committed is null) return Reply(TemporaryCampaignStatus.Missing);
-        if (stepBudget is < 1 or > 32) return Reply(TemporaryCampaignStatus.Rejected, "invalidBudget");
+        if (stepBudget is < 1 or > MaxSystemStepBudget) return Reply(TemporaryCampaignStatus.Rejected, "invalidBudget");
+        return await AdvanceSystemCoreAsync(stepBudget);
+    }
+
+    // Shared loop behind AdvanceSystemAsync (explicit/test-driven stepping) and the two
+    // production auto-advance call sites added for issue #422 (SubmitOutwardAsync and
+    // OnActivateAsync). Callers are responsible for their own capability/Missing/budget-range
+    // checks first - this assumes memory.Committed is already non-null, exactly as
+    // AdvanceSystemAsync itself required before this was extracted.
+    private async Task<TemporaryCampaignReply> AdvanceSystemCoreAsync(int stepBudget)
+    {
         for (var step = 0; step < stepBudget; step++)
         {
-            var system = CampaignHostAdapter.QuerySystem(memory.Committed);
+            var system = CampaignHostAdapter.QuerySystem(memory.Committed!);
             if (!system.IsSuccessful) return Reply(TemporaryCampaignStatus.Unavailable, "invalidState", step);
             if (system.ActionSet!.Candidates.Count == 0)
             {
-                var axis = CampaignHostAdapter.QueryAudience(memory.Committed, CampaignActionAudience.Axis);
-                var commonwealth = CampaignHostAdapter.QueryAudience(memory.Committed, CampaignActionAudience.Commonwealth);
+                var axis = CampaignHostAdapter.QueryAudience(memory.Committed!, CampaignActionAudience.Axis);
+                var commonwealth = CampaignHostAdapter.QueryAudience(memory.Committed!, CampaignActionAudience.Commonwealth);
                 if (!axis.IsProjected || !commonwealth.IsProjected)
                     return Reply(TemporaryCampaignStatus.Unavailable, "invalidState", step);
                 return Reply(axis.LegalActions!.Candidates.Count > 0
@@ -436,7 +477,8 @@ public sealed class TemporaryCampaignGrain(
                 CampaignActionAudience.System, candidate.ActionId);
             var bytes = CampaignActionSubmissionSerializer.SerializeCanonical(command);
             var id = $"system-{system.ActionSet.StateVersion}-{candidate.ActionId}";
-            var accepted = await SubmitAsync(capability, "host-system", id, CampaignActionAudience.System, bytes);
+            var accepted = await SubmitAsync(access.Capability, "host-system", id,
+                CampaignActionAudience.System, bytes);
             if (accepted.Status != TemporaryCampaignStatus.Accepted)
                 return Reply(TemporaryCampaignStatus.Unavailable, "systemStepRejected", step);
         }
