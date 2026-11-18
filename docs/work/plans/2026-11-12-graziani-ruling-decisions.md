@@ -1071,3 +1071,67 @@ distinguishable content identity rather than silently reinterpreting an
 existing save. `201-ccnn-engineer` and `204-ccnn-engineer` remain outside this
 ruling's scope and continue to trip `ccnn-characteristics-incomplete` on their
 own unresolved combat facts.
+
+## RUL-GRA-29: Compulsory-combat/terrain retreat overlap, terrain priority
+
+**Selected interpretation:** when a unit is simultaneously subject to Land
+§15.34's terrain-blocked-assault retreat (a combat unit in the ZOC of an
+enemy it cannot attack due to terrain, and no other unit attacks that enemy)
+and §§10.31-.36's compulsory-combat retreat (a unit that can neither legally
+assault nor Hold Off the ZOC-projecting enemy), §15.34 governs: the unit
+retreats one hex, and none of §10.36's extra disorganization, movement-CP
+cost, or blocked-path surrender machinery applies in this overlap. This
+treats the terrain-blocked-assault case as the more specific rule, pre-
+empting the general compulsory-combat retreat.
+
+**Evidence:** a source-constructed synthetic state (see
+[2026-11-17-graziani-retreat-overlap-source.md](2026-11-17-graziani-retreat-overlap-source.md))
+proves both predicates can hold at the same time on the same unit: a
+non-motorized enemy force in salt marsh projects ZOC onto an adjacent
+motorized unit on clear terrain; that unit cannot assault (§8.44/§15.34's
+terrain bar), has no qualifying Hold Off, and no other friendly unit attacks
+the enemy. Neither the Land rules (printed/PDF p.18 §§10.31-.36, p.23 §15.34)
+nor the September 1979 errata state which prescription governs, or whether
+both apply - confirmed by an independent same-scan review of the same source
+pages. A negative control in the same research (enemy source across an
+escarpment hexside instead of marsh) shows §10.21(b) blocks that ZOC outright,
+so the overlap never arises there - the conflict is real only in the specific
+terrain-blocked-assault case, not a false alarm from an overly generic test.
+See the [four-option comparison](2026-11-17-graziani-retreat-overlap-policy.md)
+and the [decision packet](2026-11-18-rul-gra-29-combat-continuation-retreat-decision.md)
+that raised this choice; none of the four candidates is a "more correct"
+reading of the source text, and this selection is a project decision, not a
+finding that new evidence settles it - the same posture as RUL-GRA-24's and
+RUL-GRA-25's choices.
+
+**Alternative:** compulsory-combat priority - apply §10.36's three-hex
+retreat (with its disorganization/CP/surrender machinery) whenever its
+predicate holds, treating "can neither assault nor Hold Off" as the more
+specific failure instead. A third alternative, sequential application of both
+retreats, was also compared and rejected as the least-specified option: order,
+whether the first retreat's ZOC change invalidates the second predicate, and
+cost-stacking are all undetermined in any checked source. A fourth
+alternative, deferring the overlap unresolved, was available and not selected
+here; this ruling is what unselects it.
+
+**Required contract vectors:** this decision unblocks, but does not by
+itself implement, a new compulsory-retreat mechanic distinct from
+`CampaignCombatLossRetreat`/`CampaignNativeCombatRetreatTimeoutV37` (both of
+which resolve retreat only after a combat result is settled; neither
+implements this pre-combat obligation). Implementation still needs: route-
+legality and cost resolution for the one-hex terrain retreat; per-enemy,
+per-unit quantifiers for multi-projector cases beyond the single-enemy
+synthetic witness above; side-safe disclosure rules for the retreat
+obligation, since eligibility and route legality can leak hidden-unit
+information across the authority boundary (same privacy-gate pattern as
+other rulings in this ledger); and versioned ruleset binding, so this
+interpretation gets a distinguishable content identity rather than silently
+reinterpreting an existing save if it's ever revisited. Separately unresolved
+and not settled by this ruling: whether a zero-rated/unrated unit can itself
+constitute a legal assault (§15.11 vs §15.21 tension), and the full
+route-selection authority question (neither source text names who chooses
+the retreat route, or a deterministic fallback). Issue #394's authority-
+continuation bug (`CampaignNativeSecondBreakdownV46`/`WithSecondBreakdown`
+not handing a second-side Combat checkpoint to owner-selection) is a
+separate, narrower bug not fixed by this ruling; it sits on top of the
+broader mechanic this ruling unblocks, not the other way around.
