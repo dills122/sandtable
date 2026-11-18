@@ -1,0 +1,11 @@
+# RF-02 later-scenario comparison: source review
+
+**Disposition:** The [comparison](2026-11-18-graziani-ledger-b-source-2.md) accurately distinguishes the later scenario's separately numbered facility statement from its replaced supply case. No material discrepancy found. This evidence does not decide Graziani's different replacement scope or Alexandria's per-hex facility status.
+
+Visually checked [scenario booklet](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf) PDF pp. 4–5 and 8–9 / printed pp. 28–29 and 32–33, and [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) printed/PDF p. 35, after verifying local SHA-256 scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66` and Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. Informed same-scan reading, not independent-edition corroboration.
+
+- Graziani §60.44 ends its initial-supply section with major Alexandria and temporary Matruh facility statements. §60.92(C) says Case 60.44 is replaced by its listed abstract supply setup. The printed case reference and supply heading leave the competing scope readings described in the note; neither is explicitly resolved by the later scenario.
+- Crusader §62.35 is the numbered Commonwealth supply case on printed p. 32. Section 62.5 on p. 33 separately states major repair facilities in Alexandria and Cairo, described as usual. Section 62.62(C), in the Land-only abstraction, expressly replaces Case 62.35. Thus §62.5 lies outside the particular numbered replacement target. This demonstrates source organization, not a general guarantee that every scenario facility survives every abstraction rule.
+- Land §22.31 lists major facilities in Tripoli, Tobruk, Alexandria and Cairo, with “all hexes” following Cairo. The later §62.5 names both cities without assigning facilities to individual hexes. The separate Desert Fox §61.36 wording “Alexandria (either hex)” is printed on scenario p. 29, but belongs to another setup and does not settle Graziani's parenthetical or acceptance policy.
+
+No exhaustive scenario/errata search, mapped hex and control check, repair action or runtime verification was performed. Setup, control-change and replacement-precedence decisions remain open; no data changes or gameplay tests.

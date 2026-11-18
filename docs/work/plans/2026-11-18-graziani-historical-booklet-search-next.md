@@ -1,0 +1,14 @@
+# Historical booklet: public source follow-up
+
+Checked 2026-11-18 after the [independent source review](2026-11-17-graziani-historical-booklet-source-review.md) and [rights status](2026-11-17-graziani-source-rights-status.md). Search targeted the separate historical booklet in SPI's *The Campaign for North Africa: The Desert War 1940–43*, not its Land rules or a similarly titled military history. No booklet content was inspected.
+
+**Disposition:** A newly identified physical-parts lead names the booklet, but no new archive or publisher copy of its contents was verified. The source-material question remains open; the conflicting 16/48-page reports remain unresolved.
+
+| Lead | Observed access and limits |
+|---|---|
+| [Enterprise Games SPI Spare Parts](https://enterprisegames.com/spi-parts/) | Public dealer page, opened directly, lists “Historical Background booklet” for $5 under “Campaign for North Africa.” The page asks readers to check availability; stock, printing, completeness, condition and exact edition are unverified. It does not show booklet pages or an author or page count. This is a new booklet-specific lead, though the same page was previously checked for maps. No inquiry or purchase made. |
+| [Enterprise Games game listing](https://enterprisegames.com/games1/war-games/campaign-north-africa-copy/) | Public dealer listing labels a 1979 SPI game in stock, but does not itemize the historical booklet; it cannot confirm its presence or content. Listing status may change. |
+| [Open Library: *The campaign for North Africa*](https://openlibrary.org/books/OL4401961M/The_campaign_for_North_Africa) | Search surfaced a catalog/borrow record for Jack Coggins, Doubleday, first edition, 1980, 208 pages. This is a different book, not evidence of access to the SPI booklet. No borrowing attempted. |
+| [PDFCoffee: *[SPI] the Campaign for North Africa*](https://pdfcoffee.com/spi-the-campaign-for-north-africa-pdf-free.html) | Public page preview begins with “Land Game Rules of Play”; search of that page found no “Historical Background” heading. Preview does not establish complete file contents, booklet access, provenance or permission. No file acquired. |
+
+Search included title, booklet name, authors, archive and library terms. Results also returned the previously reviewed [Pratuch survey](https://spigames.net/MovesScans/Moves49/CNAGPM49.pdf) and [Noble Knight catalog entry](https://www.nobleknight.com/P/2148003114/Campaign-for-North-Africa---Historical-Background-Book). A limited search cannot prove that no other copy exists. A future physical inspection should record cover, credits, publication and page count and compare the actual item to both descriptions before relying on its contents. Access does not establish reuse rights; user handles the separate rights inquiry, and no reply or permission is recorded. No scans, runtime data or tests changed.

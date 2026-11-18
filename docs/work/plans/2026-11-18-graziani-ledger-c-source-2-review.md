@@ -1,0 +1,11 @@
+# Review: railroad pipeline referent
+
+**Disposition:** [Source comparison](2026-11-18-graziani-ledger-c-source-2.md) is supported within its stated scope. Air/Logistics §54.33 gives a concrete pipeline referent for §60.7's railroad qualification; it does not resolve intrinsic city fortifications or establish a Land-only water procedure.
+
+Independently visually inspected [Air/Logistics](https://www.spigames.net/PDFv10/CNA_AirGameRules.pdf) PDF p. 27 / printed p. 23 §§54.31–.34, [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf) PDF p. 4 / printed p. 28 §60.7, and [Land](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) printed/PDF p. 43 §§32.0 and 32.11. Local SHA-256 values match: Air `9e11678e26269525c25fd276a760e827a7cc738b987b39e89fe14295a7164cf4`; scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. This informed review uses the same scans, not an independent edition.
+
+- §60.7's construction-at-start statement names minefields, fortifications and pipeline, followed by the railroad parenthetical; it places the endpoint at Mersa Matruh D3714. §54.33 says railroad hexes are pipelines in the context of transporting water. This supports the proposed pipeline reading as a source-grounded connection, while neither clause expressly limits the parenthetical to that reading or determines the scope of “fortifications.”
+- §54.34 separately states one Operations Stage per calendar month when railroad use is unavailable because water is being transported for railroad use. This does not contradict §54.33's pipeline statement, nor does it establish a Land-only rule by itself.
+- §32.0 describes abstract supply for Land without Air and Logistics; §32.11 excludes ordinary usage/expenditure and limits supply rules to those below. The note appropriately uses §54.33 as explanatory context without importing detailed water costs or action. Broader railroad mode and scope questions remain separate.
+
+No exhaustive pipeline or later-errata search, city-fortification decision, scenario action or runtime verification was performed. No data changes or gameplay tests.

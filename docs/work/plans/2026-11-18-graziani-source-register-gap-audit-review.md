@@ -1,0 +1,11 @@
+# Review: source-register gap audit
+
+**Disposition:** Counts and bounded classifications check out. No full-row review, completed implementation, accepted ruling, or readiness follows from the audit. One wording qualification: the current register now labels the 47-row figures explicitly as a **historical snapshot**, rather than presenting them as its current row count.
+
+Independently parsed lines beginning with a table-row ID in [source register](2026-11-12-graziani-source-register.md): **67 occurrences and 67 unique IDs**, with no duplicate. Category counts are TI 6, SQ 7, LA 21, VI 7, RF 3, AR 7, PT 2, FG 3, CO 1, ML 3, WT 3, SU 3 and TR 1, matching the audit. These are identifier counts only, not verified obligations, completed mechanics or a denominator for readiness.
+
+The register's lines 121–123 explicitly say the **original** 47-row snapshot has grown to 67 and frame its unresolved obligations as applying at that snapshot. Thus the audit's reference to stale 47-row summaries is historically correct, but should not be read as claiming the current register still asserts 47 is its live count or that all 67 rows presently have the exact same status. The audit itself correctly says the queue uses 67 and rejects row-count completion claims.
+
+Spot checks support the selected classifications: the [D2228/D2328 review](2026-11-17-graziani-d2228-escarpment-direction-review.md) confirms erratum-proven presence with unresolved high side; the [Tobruk supply review](2026-11-18-graziani-axis-supply-source-next-review.md) records scenario 15/50 against general initial 40/60 without choosing precedence; the [port review](2026-11-17-graziani-port-land-only-scope-review.md) preserves abstraction and capacity questions; and the [replacement ruling review](2026-11-17-graziani-rul16-review.md) records a bounded planning choice, not a comprehensive admission. These checks do not establish complete coverage of the grouped register rows or every linked subcase. Same-scan independent readings are not independent editions, and a reviewed source conflict may still need a project decision or better evidence.
+
+This audit checked register IDs and selected linked documentation only; it did not reread original scans, exhaustively audit all 67 rows or assess current implementation, CI, rights or scenario readiness. No runtime/data edits or gameplay tests.

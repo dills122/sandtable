@@ -1,0 +1,21 @@
+# LA-13: Matruh initial local-draw candidate
+
+**Result:** Scenario source places both a named Commonwealth infantry candidate and five regular abstract Supply Units at D3714. This is a **co-location candidate**, not a proven legal draw or a completed historical setup. No map path is inferred from coordinates; no combat, expenditure or resource mutation is asserted.
+
+## Source-specific evidence
+
+- Scenario §60.41, printed p. 27, places Matruh Garrison at D3714 and lists **1 Essex** among its attached infantry. Land §3.23, p. 6, classifies infantry-type units as combat units; §3.31 describes an HQ as representing attached units. Actual admitted component identity, attachment and parent representation need the separate [Matruh setup reconciliation](2026-11-12-graziani-formation-setup-conflicts.md).
+- Scenario §60.92(C), printed p. 29, replaces §60.44's initial Commonwealth supply for Land-only and lists **five regular Supply Units at D3714**, each with 40 Ammo and 60 Fuel. The [Matruh supply review](2026-11-18-graziani-matruh-supply-followup-review.md) corroborates the starting-counter arithmetic but does not certify setup stacking or a later balance. The candidate uses a regular counter, not a dummy or the replaced detailed-supply row.
+- Land §32.16, p. 43, permits a friendly combat unit to draw from a Supply Unit within half its CPA. It measures **from unit to Supply Unit**, as though a medium truck traversed the route, except non-motorized infantry traces as infantry. The supply line may not pass through impassable terrain or enemy ZOCs unoccupied by friendly units. Range, path passability and the enemy-ZOC/friendly-occupancy exception are distinct conditions. A trace is a hypothetical measurement; it does not itself move a truck or Supply Unit. See [range review](2026-11-17-graziani-supply-range-rounding-review.md).
+
+## Candidate state and remaining gates
+
+At the printed initial locations, the listed 1 Essex component and a listed regular Supply Unit share D3714. Under a proposed zero-length, zero-CP local-trace interpretation and a positive applicable CPA, the **arithmetic range** would be satisfied without crossing an edge. That is a conditional test input, not an explicit source statement that co-location automatically satisfies every trace condition. Do not substitute an assumed route, infer a neighboring hex is clear, or treat a unit's printed location as its later position.
+
+Before calling this a legal draw, establish the admitted formation/component and its CPA and motorization status at the actual action snapshot; source and recipient identity, friendly ownership and continued co-location; §59.65 initial overstacking and §32.14's disputed limit; the accepted zero-length trace, endpoint/ZOC and terrain semantics; and sufficient stock for a separately legal cost. The fixed five 40/60 counters establish printed opening quantities, not an actual later balance. No selected combat or movement action, expense, draw timing or loaded-motorization priority is proved here. Half-CPA rounding is material for nonzero threshold cases, not needed to calculate the conditional zero-distance geometry; do not use the planning ruling as admission.
+
+A discriminating future test should hold an accepted D3714 snapshot and chosen source fixed, then compare its accepted same-hex trace with a separately sourced nonzero route: vary path cost around the accepted half-CPA boundary, impassable terrain, and enemy ZOC with and without an appropriate friendly occupant. Verify each intervening hex and side and the relevant occupancy/ZOC snapshot independently. Unknown coverage remains unknown. Local §32.16 access does not prove the separate §60.81 victory convoy trace.
+
+## Provenance and limits
+
+Visually inspected [scenario booklet](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf) PDF pp. 3 and 5 / printed pp. 27 and 29, [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) printed/PDF pp. 6 and 43, and compared the cited existing review. Local SHA-256 verified: scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. Informed same-scan check; no independent edition, complete errata census, actual scenario action, runtime/data edits or gameplay tests.

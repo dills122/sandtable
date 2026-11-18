@@ -1,0 +1,16 @@
+# Independent review: compulsory combat continuation
+
+**Disposition:** Directional reading supported; retreat precedence and automatic decision policy remain unresolved. One admission-vector qualification below. No historical reachability established.
+
+## Findings
+
+1. **Terrain overlap needs a valid projection witness.** Land §10.21(b) blocks ZOC through an escarpment hexside, including the side across which §15.34 prohibits a motorized uphill assault. A motorized unit facing only that enemy across that edge is not, by that edge alone, in that enemy's ZOC and does not establish the claimed overlapping retreat triggers. Construct and document a separate legal witness, for example a salt-marsh assault restriction with enemy projection independently established, and check all entry and route restrictions. Also test the escarpment case as a negative projection control. Whether another enemy source changes the §15.34 relationship needs explicit analysis; do not assume it does.
+2. **Route selection is policy, not directly settled by these passages.** §10.36 mandates retreat and specifies distance, costs, disorganization, ZOC restriction and surrender when forced into enemy ZOC; it does not itself specify a route-selection actor or algorithm. §15.34 prescribes one hex unless another unit attacks that enemy, without specifying a route algorithm. Treat owner route choices and a deterministic fallback as proposed interface or authority decisions, not as established source text. The plan correctly rejects inventing an automatic route and preserves an unresolved state.
+
+## Source checks
+
+- Original Land §§10.11, .14–.16, .21, .27 and .31–.36 (printed/PDF pp. 17–18): source unit's ZOC on friendly combat units triggers §10.31; no reciprocal friendly projection requirement appears. §10.27 describes units actually exerting ZOCs on each other. September 1979 errata §10.3 restricts that case to the phasing player. §10.16 has a specific disclosure rule at movement start or entry; avoid treating all source attributes as generally visible.
+- §10.36 prescribes three hexes, movement CPs, three additional disorganization points, destination three hexes distant and surrender if forced into an enemy ZOC. §15.34 prescribes one hex for a combat unit in an enemy ZOC it cannot attack, unless another unit attacks that enemy. Terrain context supports the plan's reading, but neither passage expressly settles precedence when both apply. Preserve timing and precedence as unresolved.
+- §15.29 says no phasing allocation means no assault, ignored, and says this can occur only under §10.31 et seq.; defender non-allocation produces a distinct three-hex retreat and disorganization outcome. It does not specify an automatic attacker or route. §15.21 requires offensive ratings for phasing units to close assault; reconcile against §15.11 and §10.35 before drawing conclusions about unrated units.
+
+Original source: [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), visually checked printed/PDF pp. 17–18 and 23–24; [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), p. 1. Same edition, independent reading, not independent corroboration or exhaustive errata search. Review limited to requested rules and plan; no runtime/data changes or gameplay tests. November 17, 2026.

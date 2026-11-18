@@ -1,0 +1,9 @@
+# Review: Fuka D3323 dot containment
+
+**Disposition:** The bounded containment reading is supported. The Fuka-associated blue round mark lies within D3323 in the retained map scan; no material grid or mark error found. This does not determine landing-strip existence, full terrain, edge connectivity or legal placement.
+
+The printed `3323` is partly crossed by blue cross-ticked railway; surrounding numbered cells and their grid establish the target polygon. In the independently rendered crop, its approximate top vertex is `(507,195)` and the mark is near `(518,257)`, below the upper diagonals and inside the right boundary, not on the vertex. Paired dark road ink, a dashed lead, the railway and Fuka lettering crowd the area; their complete junction or individual side assignment is not certified by the dot. The page-1 key's blue dot is **Village/Bir**, while the airfield has a separate symbol. The source does not distinguish village from bir through that shared dot or prove a facility symbol hidden under overprint.
+
+The candidate properly distinguishes the earlier side review's visible-dot observation from this cell-containment check and preserves route uncertainty. Scenario facility assignment and an actual action were not independently rechecked here.
+
+**Provenance:** Independently rendered [Map D](https://spigames.net/PDFv10/CNA_Maps.pdf) p. 4 at the candidate's stated 300-dpi coordinates; crop SHA-256 `857f20d41f45acefc10a275f7ba133e2b8ee8c3a9611e8c06a404c98d2e99b53` matches its reported crop, and PDF SHA-256 `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030` verified. Key comparison uses the same p. 1 scan inspected in the [facility C review](2026-11-18-graziani-facility-interior-check-c-review.md). Same-edition scan, not an independent physical map or complete side/terrain audit. No data/runtime edits or gameplay tests.

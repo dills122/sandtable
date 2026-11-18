@@ -1,0 +1,18 @@
+# Review: ledger C source dispositions
+
+**Disposition:** All 14 assigned IDs appear once; linked local files exist. Bounded source answers are generally distinguished from policy, actual state and runtime admission. One qualification improves the ML-02 next step; no falsely completed full row identified in the checked evidence.
+
+**ML-02 — avoid treating one evidence route as the only possible resolution.** The disposition says “external registration evidence needed” and recommends physical sheets **or** clearer original imagery. The [distance reconciliation review](2026-11-18-graziani-map-distance-evidence-reconciliation-review.md) leaves physical overlap, aliases and global registration unproved; the [alternate-source audit](2026-11-18-graziani-alternate-map-source-search-review.md) does not prove that a clearer scan is a different original or that it could establish physical overlay. Recommend “physical registration remains unproved; provenance-identified physical sheets or an independently established image/registration may help; assess exact discriminating anchors and retain a versioned provisional model where appropriate.” This avoids presenting an unverified scan as sufficient, or asserting that no bounded same-scan comparison or explicit project interpretation can make progress. The direction and transform are still unaccepted.
+
+## Checked dispositions
+
+- **SU-02:** [corps-artillery review](2026-11-17-graziani-corps-artillery-review.md) supports one XXI identity distinct from XXVI and the recorded OA composition within the inspected row; the second `4/1AR`, punctuation, exhaustive counter inventory and actual placement remain separate. “Answered” is appropriately scoped to the duplicate identity, not complete setup.
+- **FG-02 and TR-01:** [patrol path review](2026-11-18-graziani-patrol-halfaya-path-review.md) leaves motorized-infantry terrain treatment and actual path/state open; [instructor review](2026-11-18-graziani-ledger-c-source-3-review.md) confirms the one-third threshold but does not prove an eligible training stage. The disposition preserves both boundaries.
+- **CO-01, ML-03 and WT-03:** [pipeline review](2026-11-18-graziani-ledger-c-source-2-review.md) gives a source-supported railroad-pipeline referent without settling fortification precedence; [escarpment review](2026-11-18-graziani-escarpment-source-next-review.md) confirms edge presence but not high side; [rain-wadi review](2026-11-18-graziani-rain-wadi-decision-input-review.md) retains competing conditional interpretations. Their stated partial/conflict statuses are appropriate.
+- **WT-01 and WT-02:** [schedule review](2026-11-17-graziani-weather-schedule-review.md) supports the six-turn calendar and printed chart outcomes while retaining season selection and map-area gates. [Hot-fuel review](2026-11-17-graziani-hot-fuel-followup-review.md) supports conditional 50 → 2.5 loss → 47.5 remainder without settling applicability or rounding. Neither source result proves actual weather or holdings.
+
+Compared every disposition to its [register row](2026-11-12-graziani-source-register.md#initial-obligation-rows), and read the linked evidence above plus the prior [ledger review](2026-11-18-graziani-register-ledger-c-review.md). Other cited sources were not exhaustively reread. No fresh scan, runtime or rights audit, data changes or gameplay tests. This review does not certify that every future source question has been found.
+
+## Recheck
+
+Rechecked revised ML-02. It now labels physical registration unresolved and treats physical sheets or different, clearer imagery as potentially helpful, neither guaranteed sufficient nor the only bounded path forward. The review qualification is addressed; no new source or runtime check.

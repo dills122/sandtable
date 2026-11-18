@@ -1,0 +1,21 @@
+# Land-only repair: presence and later movement boundaries
+
+**Date:** November 18, 2026. Follow-up to the [repair resource matrix](2026-11-13-graziani-repair-resource-matrix.md) and [facility planning review](2026-11-17-graziani-facilities-independent-decision.md). Two additional source distinctions constrain possible availability interpretations; neither settles §22.13(b) under §32.11 or selects a policy.
+
+## Field-repair companion versus supply draw
+
+Land §22.22 permits field repair where a broken-down vehicle is stacked with a **friendly unit of any type**, explicitly including a Squadron Ground Support Unit. That example belongs to the Air Game context and is not invented in Land-only play. Section 22.13 separately bars repair when supplies are unavailable, among other conditions. In contrast §32.16 grants abstract Supply Unit draw to a friendly **combat unit** within half that combat unit's CPA, with its specified tracing and ZOC restrictions. The broken-down vehicle cannot participate in combat under §21.44; the accompanying unit need not be a combat unit under §22.22.
+
+The practical distinction is a source-supported **conditional** case: a broken vehicle stacked only with an otherwise eligible friendly noncombat unit can satisfy §22.22's companion wording while not supplying a §32.16 combat-unit draw subject. Sections 3.33 and 3.36 distinguish an HQ without combat attachments or combat values; whether a particular HQ remains present and eligible in a concrete hex still depends on its circumstances. This does not prove the repair is legal, that no other combat unit is within range, or that the companion itself must draw supplies. Nor does it establish that §32.16 is the applicable test for §22.13(b) at all.
+
+Three readings remain materially distinct: §32.11 displaces the ordinary §22.13(b) repair-supply availability condition; the condition survives but requires an independently specified availability witness; or an interpretation imports some §32.16-style draw requirement with a defined recipient. The latter is an extra rule choice, not a necessary consequence of the companion clause. In particular, **do not require a combat companion merely because local supply draw names a combat unit**. Field-repair type, control, no towing in the Repair Phase, weather and any applicable resource checks remain independent.
+
+## Repair versus later movement
+
+Section 22.5 treats repaired vehicles as Replacement Points for their type, says they must have fuel to move again, and subjects them to replacement-point rules except training. That is a later movement condition, not an express debit or availability rule for the repair attempt. Section 32.23 supplies abstract fuel expenditure for specified land movements and §32.24 differentiates the types that require it. Their applicability to an actual repaired replacement and its movement must be determined under the relevant replacement, movement and Land-only rules. A reading that removes a repair-time debit therefore does not by itself certify fueled subsequent movement; conversely, §22.5 does not by itself reinstate §22.26's repair-time fuel expenditure under abstraction.
+
+To distinguish interpretations after a decision, compare a broken vehicle with only an eligible noncombat companion versus with a friendly combat companion, both with known and unknown Supply Unit positions, and separately test repair completion followed by any proposed movement. These are synthetic checks, not evidence of an actual repair, draw, legal route, or scenario reachability.
+
+## Provenance and limits
+
+Visually checked [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF pp. 6, 34–35 and 43, §§3.33/.36, 21.44, 22.13, 22.22–.26, 22.5, 32.0/.11/.16/.23–.24, SHA-256 `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`. [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) SHA-256 `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb` checked; existing facility review summarizes relevant §22/§32 entries. No new exhaustive errata, replacement-system or scenario reachability review. Same-edition scan; documentation only, no runtime/data changes or gameplay tests.

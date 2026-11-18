@@ -1,0 +1,41 @@
+# Graziani: destroyed railroad witness policy
+
+**Disposition:** Adopt retained-witness as the proposed versioned planning policy for Land §8.78: a qualifying Axis combat unit on an independently established, previously constructed railroad hex remains a witness after that railroad is destroyed. This is an interpretation, not an explicit source ruling. It does not make that hex usable for rail movement, establish actual construction or admit a runtime action. Keep operational-witness as a documented alternative until authoritative interpretation or new evidence warrants a versioned change.
+
+## Source and boundary
+
+- [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF p. 16, §8.78 bars Allied railroad movement use of a rail hex west of **any** rail hex occupied by an Axis combat unit. It does not expressly require that witness to be operational or on the route. Section 8.76 calls destroyed locations rail hexes and bars rail entry until repair; §§24.61–24.63 and 24.66, p. 37, distinguish new construction from rebuilding destroyed track and describe a destruction marker. Continuing identity is a reasonable inference, not a textual decision on the nonlocal witness question. Section 8.73 separately restricts enemy-occupied hexes and enemy ZOC; neither gate replaces the other.
+- Sections 8.47, p. 15, and 24.67, p. 37, explicitly exclude unconstructed railroad hexes until built. A certified unbuilt printed hex is no witness; do not extend that exception to previously constructed, later destroyed railroad. Unknown construction is not certified unbuilt or constructed.
+- Sections 8.71 and 24.6 exclude the historical Soluch–Benghazi–Barce line from game use. Exclude its historical ink alone as a witness under a versioned application of those restrictions to §8.78, not as an express §8.78 exception. Assess any independently established overlapping qualifying track separately. The [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), p. 1, permits Axis rail use under §54.4; its interaction with the historical-line exclusion remains unresolved without review of §54.4. Do not infer a general prohibition on all Axis rail use.
+- Section 24.65 bars building or rebuilding enemy-controlled or enemy-occupied railroad hexes. Destruction does not imply repair, and later repair cannot be assumed while that condition holds. Qualify combat status under applicable unit and representation rules, including attached combat units; do not substitute ZOC, strength or ability to attack.
+
+Source basis is the [independent visual review](2026-11-17-graziani-destroyed-rail-identity-review.md), including its scan hashes and limits. It found no express §8.76 or §8.78 change in September errata; it did not review all scenario rules, §54.4, later errata, or maps. A scenario, overriding rule or better evidence may change this interpretation.
+
+## Evaluation contract
+
+For a fixed authoritative snapshot, evaluate each used rail hex against all potentially qualifying eastern rail locations, including off-route branches and relevant map sheets. A witness requires established qualifying rail identity and construction history, Axis combat occupancy, and a separately established west relation to the used hex. The chosen definition of west, used hexes, map coverage, unit classification and snapshot timing remain independent decisions. Do not infer a continuous connection, travel direction or ZOC condition from §8.78. Actual construction at any Graziani location is unproven by this policy: printed track, a named railhead or a hypothetical destruction marker alone does not certify construction history or a legal destruction event. Construction evidence and provenance must be established for each location and snapshot.
+
+Use three-valued internal evaluation: a proven witness blocks even if other candidates are unknown; absence of a witness is established only when complete relevant coverage excludes every candidate; otherwise the result is unknown. For each candidate, a proven false required condition excludes that candidate even if another condition is unknown; all required conditions must be proven true to establish a witness. Destroyed status alone neither proves construction nor clears a constructed witness. Unknown is not permission, an unbuilt finding, or proof of a block. This predicate is only one independent rail legality gate.
+
+The alternative operational-witness interpretation requires a usable witness track and would exclude a proven destroyed constructed witness until repaired; §8.78 does not expressly state that condition. As the [independent critique](2026-11-17-graziani-destroyed-rail-policy-review.md) notes, an alternative must separately define whether “usable” means physical track condition or full action legality, since enemy occupancy and other restrictions differ. Preserve policy identity and ruleset/configuration version in any future decision and replay record. Compare alternatives on identical snapshots; do not silently reinterpret prior decisions.
+
+## Timing, privacy and admission
+
+Destruction, construction, repair, movement and occupancy changes can alter a later result. Select and version the authoritative snapshot and event ordering for each rail action and any pickup/dropoff before implementation; this policy does not choose stage-start, action-start or per-step timing. Never infer repair from passage of time. A known state at one snapshot cannot establish another without corresponding events and legal prerequisites.
+
+Authoritative evaluation may require hidden off-route Axis occupancy. Do not send hidden opposing state to the intelligence plane or reveal witness location, existence, classification or construction state through legal-action lists, errors, timing, event ordering, or distinct unknown/blocked responses. Define and test a side-safe public boundary against equal authorized histories; if unavailable, hold the affected action unavailable at that boundary. Internal three-valued results do not authorize disclosure.
+
+No runtime or data admission follows. Before any future implementation, resolve timing, geography and use semantics, complete nonlocal rail and occupancy coverage, establish construction provenance and combat classification, and specify all independent phase, route, ZOC, enemy occupancy, capacity, CP, stacking, repair and privacy gates. Preserve deterministic replay and versioning.
+
+## Proposed distinguishing checks
+
+Use synthetic, otherwise independently legal fixtures; these are obligations, not executed tests or evidence of historical reachability.
+
+1. Hold an eastern qualifying Axis combat occupant and western used hex fixed. Constructed intact track blocks; the same constructed track destroyed still blocks under retained-witness, but not operational-witness. Rail entry into the destroyed hex remains barred independently.
+2. Certified unbuilt printed track supplies no witness; unknown construction yields unknown absent an independently sufficient witness. A separately proven completed construction changes the result only at the selected subsequent snapshot.
+3. Historical-line ink alone supplies no witness under the proposed scope; independently established overlapping qualifying constructed track is evaluated on its own. Unknown overlap remains unknown unless another witness proves a block.
+4. Vary off-route occupancy, combat classification, geographic relation and survey completeness. A known qualifying witness blocks despite other unknowns; an incomplete eastern survey cannot prove absence. Check both travel directions, equal-west boundary and separate §8.73 gates.
+5. Compare pre- and post-destruction, construction, repair and occupancy events at each candidate timing boundary. Check §24.65 independently and do not fabricate a legal repair or construction event. Replay with recorded policy version.
+6. Compare public observations for equal authorized histories with hidden witness, no witness and unknown internal state. Verify action availability, messages, ordering and timing reveal no hidden distinction under the selected disclosure contract.
+
+Planning date: November 17, 2026. Documentation only; no runtime or data changes, and no tests run.

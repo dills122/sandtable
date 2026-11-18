@@ -1,0 +1,15 @@
+# Review: port and demolition errata scope
+
+**Result: one source-wording correction recommended.** The [scope note](2026-11-18-graziani-port-logistics-errata-scope.md) attributes an exemption for “scheduled reinforcements” to chart §55.3. The chart says **reinforcements**, without that qualifier. Logistics §55.15 separately specifies scheduled reinforcements and distinguishes those planned by players. Preserve each source's wording; silently inserting the narrower qualifier in the chart blurs a potentially relevant distinction.
+
+Independently visually checked [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF p. 2 right column §§30.58–.59 and p. 3 middle/right columns §§54.17, 55.11 and 55.3; [Logistics rules](https://spigames.net/PDFv10/CNA_AirGameRules.pdf), printed p. 23 / PDF p. 27, §§54.14–.17 and 55.11–.15; [common charts](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf), printed/PDF pp. 14–15, §§54.17 and 55.3; and [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF pp. 42–44, §§30.5, 32.17, 32.36 and 32.61. Local SHA-256 values match the scope note.
+
+- The demolition table prints 33 at −1 and 7; erratum changes them to 0 and 100 respectively. Its percentages and cumulative modifiers are separate from §32.17's half-CPA, die result and stacking modifier for abstract Supply Units. Name/counter similarity does not establish a combined procedure.
+- Errata §55.11 defers shipping eligibility to chart §55.3. The reported Bardia, Sollum and Derna incoming entries and zero-stacking-point footnote match the chart. Corrected §30.59 locates the chart within personnel transport; §32.36 separately names three ports and imposes its destination capacity threshold.
+- Errata §55.3's G/Tripoli exception concerns excess arriving tonnage. Section 32.61 cites §56.0 for lane assignment and excludes tonnage limitation for its abstract procedure. These texts do not decide import or exclusion of the exception, actual G capacity, cargo or arrival. Section 30.57's corrected personnel/supply interaction and the chart's no-interaction statement remain separate source conflict.
+
+This check uses the same scans, not independent edition evidence. It does not settle precedence, mode policy, implementation or scenario reachability; no exhaustive later-errata or indirect-reference search and no gameplay tests.
+
+**Disposition:** Rechecked revised §55.3 row: chart wording now says “reinforcements,” with §55.15's scheduled/planned distinction separately attributed. Concern resolved. Separately re-rendered the Air/Logistics PDF for the related air-supply note: PDF p. 21 is printed p. 21; PDF pp. 24–25 are inserted distance charts. Its original printed/PDF pp. 17 and 20–21 locators were correct, so the later four-page offset correction should be reverted. Printed p. 23 is PDF p. 27 because chart pages intervene.
+
+**Final disposition:** Re-rendered Air/Logistics PDF pp. 17 and 20 and checked printed page numbers and relevant cases; PDF p. 21 was checked above. Restored printed/PDF pp. 17 and 20–21 locators match. The §55.3 chart wording correction remains in place.

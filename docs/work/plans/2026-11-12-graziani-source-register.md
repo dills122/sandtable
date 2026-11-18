@@ -118,8 +118,8 @@ no scan was added to Git. This is a single-reader check, not independent double 
 The [victory matrix](2026-11-12-graziani-victory-matrix.md) decomposes VI-01–06
 into source predicates and test obligations; it does not adopt a winner policy.
 
-**Row accounting:** 47 scoped rows: 6 turn/initiative, 20 abstraction, 6 victory, 3 repair, 3 arrival, 1 port, 2 map locations, 3 weather, 2 setup and 1 training.
-All 47 retain at least one unresolved source, scenario integration or validation
+**Historical row accounting:** The original 47-row snapshot comprised 6 turn/initiative, 20 abstraction, 6 victory, 3 repair, 3 arrival, 1 port, 2 map locations, 3 weather, 2 setup and 1 training. The table has since grown to 67 IDs; see the [current gap audit](2026-11-18-graziani-source-register-gap-audit.md). Row count is not a completion metric.
+At that snapshot all 47 retained at least one unresolved source, scenario integration or validation
 obligation. No row is classified as fully supported for the playable scenario.
 This does not assert that all underlying mechanisms are unimplemented.
 

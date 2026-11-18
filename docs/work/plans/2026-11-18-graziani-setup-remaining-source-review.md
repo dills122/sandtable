@@ -1,0 +1,9 @@
+# Amiriya complex: source review
+
+**Disposition:** The [candidate](2026-11-18-graziani-setup-remaining-source.md) correctly states the later scenario's complex entry and its limits. It does not resolve the earlier coordinate conflict or establish a Graziani facility.
+
+Visually checked [scenario book](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 10 / printed p. 34: §63.33's Air Facilities paragraph directs the Commonwealth Player to place **six Airfields within one hex of Amiriya**, naming that group the Amiriya complex. Neither that sentence nor the Amiriya Air Complex row in the adjacent air-strength table gives its coordinate or six actual placement hexes. The following independent permission for an additional airfield and other facilities carries its own map and enemy-distance conditions; do not silently transfer those particular conditions to the six-airfield sentence. Other general placement restrictions were not audited here.
+
+The earlier printed entries are §60.5, PDF p. 4 / printed p. 28, **Amiriya E2212**, and §61.33, PDF p. 5 / printed p. 29, **Amiriya E3212**. The later sentence does not choose between them or establish which location, if either, is the center. Section 63.2, PDF p. 9 / printed p. 33, starts both scenarios in that later group at GT102, Operations Stage 1. Its independent setup and optional choices cannot prove an actual Graziani state, coordinate alias, a particular earlier airfield's membership in the complex, or six distinct hexes. Scope of these later air facilities in Land-only mode remains outside this check.
+
+Scenario PDF SHA-256 `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`, verified. Same scan as candidate, not independent-edition evidence; no exhaustive map, source or errata audit. No runtime/data changes or gameplay tests.

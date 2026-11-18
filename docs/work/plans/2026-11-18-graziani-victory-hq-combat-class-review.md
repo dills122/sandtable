@@ -1,0 +1,11 @@
+# Review: intrinsic HQ weapons and victory classification
+
+**Disposition:** The [candidate analysis](2026-11-18-graziani-victory-hq-combat-class.md) is supported within stated limits. The OA supplies a specific gun and quantity; it does not by itself settle an unaccompanied HQ's §60.81 qualification or prove a victory position.
+
+Independently visually checked scenario PDF pp. 3–4 / printed pp. 27–28 §§60.31 and 60.81; Axis OA PDF p. 5, characteristics p. 26 §4.46b and weapons p. 29 §4.48; Land printed/PDF pp. 5–6 §§3.1, 3.23, 3.31–.36; and September errata p. 1 §3.36. Local SHA-256 values match the analysis: scenario `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`; Axis `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`; Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`. Same-scan informed review, not an independent edition.
+
+- §60.31 lists 1 Libyan Division at C4020. Its OA lists 1 Libyan Regiment HQ as `h`, with **1 × 65/17 Gun** and `D`, alongside its infantry. The `h` characteristics row permits one artillery TOE point, while the OA supplies the specific listed initial quantity and model; §4.48 prints the gun's barrage 5 and close-assault 1/1. These source records are not evidence of an unaccompanied HQ or its terminal location.
+- §3.31 makes an HQ representing attached combat units a combat unit; §3.33 says an HQ with none attached is not one. §3.34 separately gives certain HQs directly assigned guns and describes return to noncombat status when those guns are eliminated. The explicit interaction with §3.33 for a gun-bearing HQ without attached combat units is not resolved by a victory-specific statement in these cases. Treat both candidate readings as interpretations.
+- §3.36 addresses capture of HQs without combat values and without combat units in the hex; the erratum clarifies defense by HQs with parenthesized values. That is not a general victory-classification grant. Scenario §60.81 explicitly names combat units in the Italian strategic and decisive conditions; do not silently impose that wording on the other categories.
+
+This is not an exhaustive errata, counter-identity, attachment, gun-survival or scenario-reachability audit. No runtime/data changes or gameplay tests.

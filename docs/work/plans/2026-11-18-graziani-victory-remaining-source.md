@@ -1,0 +1,17 @@
+# Victory possession and shared ZOC control
+
+**Result:** Land §10.27 expressly permits both players to control the same hex through opposing Zones of Control. A victory model cannot derive exclusive current possession merely from the general term “controlled” without an additional interpretation. The rule does not itself define §60.81's take, hold or retain predicates.
+
+## Source comparison
+
+The [shared-objective analysis](2026-11-18-graziani-victory-result-order-followup.md) and [review](2026-11-18-graziani-victory-result-order-followup-review.md) condition their cross-side exclusions on exclusive possession, while distinguishing that assumption from Land §8.13's enemy-occupied entry rule. Their bounded check does not compare §10.27's explicit shared-control case. I visually checked [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF p. 18, §§10.21, 10.26–.27, and [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 4 / printed p. 28, §60.81:
+
+- §10.27 says that, if opposing units exert ZOCs into the same hex, the hex is considered **controlled by both players**. A candidate hex must satisfy actual ZOC eligibility and projection restrictions; §10.21 separately blocks projection across specified sides and into otherwise inaccessible adjacent hexes.
+- §10.26 says, **for all movement purposes**, a friendly combat unit in a hex negates the effect of an enemy ZOC; friendly ZOCs never affect friendly units. That movement-scoped effect does not by itself say that §10.27's shared-control status becomes exclusive for victory, nor does it decide an unoccupied hex's status.
+- §60.81 uses take, hold, occupy and retain in its individual rows. Its Italian decisive row explicitly says take and hold **(occupy)** Matruh and Siwa with a combat unit. Those words should not automatically be collapsed into §10.27's general shared-ZOC control: neither provision expressly equates an unoccupied jointly controlled hex with taking and holding an objective.
+
+A conditional distinguishing case is a legally established hex into which both sides project ZOC, with no friendly occupying combat unit: §10.27 describes control for both, while the explicit Italian decisive occupation requirement is not thereby demonstrated. This is a rule illustration, not a certified objective position or six-turn-reachable geometry. It shows why a proposed victory predicate using generic control needs an explicit bridge to the row's wording, rather than assuming generic control is necessarily exclusive or necessarily enough to satisfy hold.
+
+The earlier exclusive-possession exclusions remain valid **under their stated assumption**; this check does not disprove that assumption for victory, permit opposing units to co-occupy, establish mutual victory, select a tie-break, or resolve convoy supply. The relationship between ZOC control, possession, historical taking and terminal occupation remains a project interpretation or needs a more specific official definition. No rereading of Fort Maddalena or convoy traces was required.
+
+Land PDF SHA-256 `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; scenario PDF SHA-256 `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`. Same source scans, not a separate edition; no exhaustive control, errata or reachability search. No runtime/data changes or gameplay tests.

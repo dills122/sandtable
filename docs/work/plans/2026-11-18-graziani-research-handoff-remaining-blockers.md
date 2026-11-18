@@ -1,4 +1,4 @@
-# Graziani research handoff — the 3 remaining RC engine blockers (November 18, 2026)
+# Graziani research handoff — historical priority snapshot (November 18, 2026)
 
 **Subsequent research:** [Focused source findings](2026-11-17-graziani-implementation-blockers-research.md)
 confirm Aresca's CV33 close-assault rating as **1 offensive / 2 defensive per
@@ -7,25 +7,26 @@ pool as bounded unknowns, with separate HQ participation and motorization
 qualifications. These findings have not been admitted into runtime by this
 research pass; the status below describes the earlier handoff.
 
-**Purpose:** a focused, standalone handoff for exactly the research still blocking
+**Historical purpose:** a focused, standalone handoff for the research believed to block
 `CampaignSourcePlayableWorld.ReadinessBlockers()` from going fully clean. Everything else
 from the Nov 16/17 research batches (Matruh, 6th Australian, the large Nov 17 map-geometry
 batch) is either already landed in code or tracked separately and does not block this list.
-This doc exists so a research pass can be scoped to exactly these 3 items without re-deriving
-context from the larger task backlog.
+The original request grouped two runtime blocker topics with a third verification task;
+current source findings and remaining qualifications are in the linked synthesis above.
+Do not use this historical snapshot to infer current runtime readiness.
 
-**Status as of this writing:** none of the 3 items below have moved. Task A was re-attempted
-in the Nov 17 batch and reconfirmed unresolved (see
-[`2026-11-17-graziani-remaining-source-research.md`](2026-11-17-graziani-remaining-source-research.md)
-lines 569-588: a counter-sheet check "locates the 1st CCNN HQ but finds no weapon model or gun
-TOE there"). Tasks D and E were not attempted at all in that batch — they don't appear anywhere
+**Historical status at handoff:** none of the 3 items below had moved. Task A was re-attempted
+in the Nov 17 batch and reconfirmed unresolved: a counter-sheet check located the 1st CCNN HQ
+but did not identify its weapon model or gun TOE. See the direct source-check links under Task A
+below for that historical result and the synthesis above for subsequent findings. Tasks D and E
+were not attempted at all in that batch — they don't appear anywhere
 in its 361 files.
 
 **Ground rule, unchanged from every prior handoff:** don't invent a value. A confirmed "the
 source doesn't say" is a complete, useful answer. A guess is worse than a gap, because these
 numbers get baked into pinned `ContentHash` values.
 
-## Source files — verified present on this machine right now
+## Source files — historical availability snapshot
 
 These were cited as possibly-cleaned-up temp paths in earlier handoffs. As of 2026-11-18 they
 are present on this machine with hashes matching every prior citation exactly — confirmed by
@@ -43,9 +44,10 @@ replacement copy — a file with the same name but a different hash is not the s
 
 ## Item 1 — 1st CCNN HQ weapon identification (`ccnn-characteristics-incomplete`)
 
-**What's needed:** `1-ccnn-hq`'s maximum TOE is "1 artillery point" per Axis OA p.17, but the
-OA lists its weapon as unidentified code `N`, not yet resolved to a real weapon type or combat
-rating.
+**Current finding:** Axis OA `N` is maximum-strength notation, not a weapon code. The HQ
+maximum permits one artillery TOE point, but its weapon model and initial presence remain
+unknown. See the [focused findings](2026-11-17-graziani-implementation-blockers-research.md);
+do not infer an assigned gun or copy a neighboring HQ's weapon.
 
 **Already ruled out, don't repeat:**
 - The 65/17 gun from the CCNN Legion HQs — confirmed not the same unit type.
@@ -59,20 +61,14 @@ rating.
   counter but finds no weapon model or gun TOE printed on it; the `(5)` visible there is
   stacking notation, not a weapon code.
 
-**Where to look that hasn't been tried yet:** the Axis OA chart's weapon-code legend/key (same
-chart section as the TOE table, pp.26-27) and the September 1979 errata for any note on code
-`N` specifically — both already checked once each per the prior passes above, but worth a
-fresh, careful re-read since two independent searches have now failed to find it through the
-obvious channels. If the legend genuinely has no entry for code `N`, that itself is the
-deliverable (see below) — stop searching once that's confirmed rather than guessing a plausible
-Italian artillery piece.
-
-**Deliverable:** the real weapon/gun type for `1-ccnn-hq`'s artillery point with a page/table
-citation — **or** an explicit, source-grounded statement that code `N` is genuinely
-unresolvable from every source available (OA legend, errata, counter sheet all checked and
-exhausted). The second answer is complete and lets us stop searching; it is not a failure.
+**Remaining evidence:** a provenance-identified authoritative correction or other source
+establishing the gun model and starting assignment. The OA, checked errata, counter and
+bounded public searches did not settle those facts; this is not an exhaustive claim about
+all sources. Unknown remains a complete source result.
 
 ## Item 2 — Aresca Tank Regiment's CV33 close-assault rating (`source-grouped-movement-domain-incomplete`)
+
+**Historical request and status below:** the [focused findings](2026-11-17-graziani-implementation-blockers-research.md) now establish the CV33 rating, with separate HQ eligibility qualifications. Runtime admission remains a coding decision.
 
 **What's needed:** `CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`'s rating table has
 zero entry for `aresca-tank-regiment`'s CV33 light tank component. This is now the single
@@ -95,6 +91,8 @@ statement that CV33 light tanks are not assigned a close-assault rating at all (
 the source's vehicle-classification rules actually say). Either answer resolves this gap.
 
 ## Item 3 — Giarabub motor-machine-gun: double-check the "no pool" finding (not currently a `ReadinessBlockers()` entry, but open)
+
+**Historical request and status below:** the [focused findings](2026-11-17-graziani-implementation-blockers-research.md) completed the source verification and retain unknown initial allocation and effective CPA. A [later conditional chart reading](2026-11-18-graziani-initial-motorization-source.md) does not establish either value.
 
 **What's needed:** this is a verification task, not a fresh lookup. The codebase already
 states a conclusion
@@ -124,7 +122,7 @@ mirroring the Central India Horse / `battlefieldComplete` pattern, may be built 
 this task's outcome — if real data turns up here later, that becomes a follow-up fix to the
 ruling's accepted value, not wasted prior work either way.)
 
-## Why these 3 and not the rest of the Nov 17 batch
+## Historical rationale for this scope
 
 The Nov 17 batch's ~361 files are almost entirely new map-geometry transcriptions and two
 planning-only policy rulings (RUL-GRA-24, RUL-GRA-25) — none of it is runtime-admitted, and

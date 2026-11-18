@@ -1,0 +1,19 @@
+# Graziani 5% convoy: candidate-position review
+
+**Date:** November 17, 2026. **Disposition:** Confirm the [follow-up](2026-11-17-graziani-five-percent-witness-followup.md)'s conditional row bands and pair-restricted net-index arithmetic. Neither candidate establishes a legal convoy event or a global minimum. Formation status and movement remain unverified here.
+
+## Source checks
+
+Independently downloaded and visually checked the same scanned [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 3 / printed p. 27, [Axis chart](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf), PDF p. 34, and [common chart](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf), PDF p. 12. SHA-256 respectively: `fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`, `9bbd997f5a50bc38b2c745d4cd951b14fcd7cf4467c7cf2d599f59695a6085ca`, and `51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0`. These match the earlier review; they are not an independent edition.
+
+Scenario §§60.22, 60.37 and 60.41 print the six-turn endpoint, September routes 2, 3 and 6, 7th Armoured at D3612, 4th Indian at D3615, and 6th Australian training at Cairo and/or Helwan E1430, with exclusions. Section 60.41 also lists 2nd New Zealand HQ and other units at Alexandria; that entry alone does not establish a non-shell division. Axis §32.66 prints route 6 thresholds Dxx11 and Dxx01 for 21–40 and 41–80 Bomb Points, and routes 2 and 3 as Dxx01 followed by Cxx16 and Cxx21. It defines qualifying divisions using a distinct non-shell division at or west of the qualifying one. Common §41.5 prints `55–64` for 5% at 21–40 Bomb Points against an Axis naval convoy.
+
+## Arithmetic and limits
+
+With D-relative index `Dcol = col`, `Ccol = col − 33`, `Ecol = col + 33`, strict west-of and the stated read-down selection, the second-westernmost non-shell position `s` must satisfy `1 ≤ s < 11` for lane 6, hence integer band `1–10`. For lanes 2 and 3 the bands are `−17–0` and `−12–0`. Equality at the next threshold stays in the earlier row only under this strict hypothesis; the chart wording and map sheets do not independently certify that policy or the 33-column transform.
+
+Under the fixed pair assumptions, initial indices are Indian 15, Armoured 12, and Australian 63 if Helwan is chosen. Lane 6 requires both named members of either two-division pair at most 10: Indian/Australian net westward changes are at least `5 + 53 = 58`; Armoured/Indian at least `2 + 5 = 7`. Lanes 2 and 3 require at most 0: respective sums are `15 + 63 = 78` and `12 + 15 = 27`. These are necessary bounds for the named surviving pair, not sufficient endpoints: the second position must also remain at or east of the next threshold. Values count index differences, not legal hexes, movement points, paths, or turns. The assumed ties describe distinct divisions in the same row, not necessarily the same hex.
+
+A third non-shell division changes the order statistic: `[10, 10, 63]` still selects 10, while two divisions strictly west of Dxx01 would select a later row under the assumed policy. A third division already west of one candidate can reduce movement needed from the named pair. Unknown shell status or position cannot be excluded. These calculations therefore do not establish minimum total repositioning across all divisions, six-turn impossibility, or a legal seven-step route.
+
+Review did not independently reconstruct brigade counts, attachment legality, training, stacking, sheet geometry, timing, convoy cargo, or loss allocation. Establish those and all relevant divisions at an actual convoy snapshot before treating either illustration as a witness. A negative result requires exhaustive legal alternatives, including any applicable October lanes. The earlier review supplies bounded startup, errata, and loss-policy checks. No runtime or source data changed; no gameplay tests ran.
