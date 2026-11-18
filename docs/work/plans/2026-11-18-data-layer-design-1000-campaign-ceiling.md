@@ -78,7 +78,9 @@ stopping the pile from growing.
 
 ### 1.2 `Load()` is the dominant cost, and it's worse than "just slow"
 
-`Load()` (`CampaignDurableAuthorityJournal.cs:1436-1611`) runs on **every**
+`Load()` (`CampaignDurableAuthorityJournal.cs:1982-2157` as of PR #427/#429/#430
+on current main; line numbers above have drifted since this section was
+written but the method's structure, described below, is unchanged) runs on **every**
 write path and even on read paths (`ReadVerified`, line ~401). For a normal
 (non-pregame-source) campaign it:
 
