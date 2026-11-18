@@ -364,6 +364,38 @@ file-per-host imposes once you have genuinely concurrent campaigns — that
 ceiling is exactly the artifact §2.1 describes, and the fix is removing the
 shared file, not tuning around it.
 
+### 3.2 Clustering and grain placement (resolved by human decision, 2026-11-18)
+
+A PR review of this document's first draft flagged a real gap: §3's
+file-per-campaign recommendation is justified entirely by "Orleans already
+serializes one grain's writes in-memory," which holds on a single host but
+says nothing about what happens once the host is clustered. A campaign's
+grain activation could, in principle, reactivate on a different silo; a local
+SQLite file left on the old silo's disk would not follow it, and SQLite (even
+in WAL mode) is not safe to run over a shared/network filesystem.
+
+**Decision: for now, pin each campaign's grain permanently to the silo that
+created it.** This keeps §3's file-per-campaign recommendation valid as-is —
+one campaign, one grain, one silo, one local file — and avoids designing a
+storage-follows-grain or shared-storage mechanism before there's a concrete
+need for one. Concretely, this requires a placement mechanism keyed by
+`campaign_id` that always resolves to the same silo for that campaign's
+lifetime (e.g. a custom `IPlacementDirector`, or recording an explicit
+`owning_host_id` on the `campaigns` row and routing calls there) — an
+implementation detail for whoever builds the clustering phase, not resolved
+further in this document.
+
+**Explicitly accepted trade-off, not solved here:** this decision does not
+provide failover. If the silo a campaign is pinned to goes down, that
+campaign is unavailable until that silo comes back — it is not migrated to
+another silo automatically. That is an acceptable gap *for now*, per the
+human decision above, not an oversight; revisit if/when availability during a
+single-silo outage becomes a real requirement (at that point, a
+storage-follows-grain or shared-storage design would need to be built, and
+§3's "keep SQLite" recommendation itself may need to be revisited alongside
+it, since durable shared storage is exactly the kind of multi-writer problem
+§3 argued SQLite doesn't need to solve).
+
 ---
 
 ## 4. Hot/cold split scoped per campaign, with archival on completion
