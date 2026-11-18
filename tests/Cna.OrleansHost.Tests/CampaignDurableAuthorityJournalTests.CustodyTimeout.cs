@@ -64,7 +64,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.False(journal.TickCustodyRound(request.CampaignId));
         clock.Advance(TimeSpan.FromMilliseconds(1));
         var cold = fixture.Open(clock);
-        new CampaignCombatTimeoutService(cold, clock, NullLogger<CampaignCombatTimeoutService>.Instance)
+        new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(cold), clock, NullLogger<CampaignCombatTimeoutService>.Instance)
             .SweepOnce(CancellationToken.None);
         var session = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.False(CampaignHostAdapter.IsNativeCombatCustodyPending(session));

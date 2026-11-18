@@ -64,7 +64,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 Assert.True(CampaignExercises.Reconstruct(disk.Open(clock).ReadVerified(request.CampaignId)).IsVerified);
                 ThirdCycleReserveSql(disk.Path, "DROP TRIGGER fail_third_cycle");
             }
-            new CampaignCombatTimeoutService(cold, clock,
+            new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(cold), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
             var after = disk.Open(clock).ReadVerified(request.CampaignId);
             Assert.Equal(CampaignExercises.QueryCheckpoint(before).StateVersion + 1,

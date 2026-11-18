@@ -42,7 +42,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             var saveCount = 1;
             Compare();
             clock.Advance(TimeSpan.FromSeconds(30));
-            InBoth(journal => new CampaignCombatTimeoutService(journal, clock,
+            InBoth(journal => new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None));
             SaveAndResume(); // Reserve choice remains pending in copied authority.
             InBoth(journal =>
@@ -127,7 +127,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind, "snapshot_checkpoint");
             var worldBeforeFinish = reserveBeforeFinish.RootElement.GetProperty("worldHash").GetString();
             clock.Advance(TimeSpan.FromSeconds(30));
-            InBoth(journal => new CampaignCombatTimeoutService(journal, clock,
+            InBoth(journal => new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None));
             SaveAndResume();
             Assert.Equal(34, CampaignExercises.QueryCheckpoint(resumed.ReadVerified(request.CampaignId)).ContractVersion);
@@ -224,8 +224,13 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(leftContacts.Count, rightContacts.Count);
         for (var index = 0; index < leftContacts.Count; index++)
             Assert.Equal(leftContacts[index], rightContacts[index]);
+        // operator_capability is no longer part of the per-campaign file (design doc §3: it moved
+        // to a small shared host-identity file -- see
+        // CampaignDurableAuthorityJournal.EnsureHostIdentity's remarks); CampaignDurableAuthorityJournalStoreTests
+        // covers that it is shared/consistent. reference_key stays in the per-campaign file (see
+        // CampaignDurableAuthorityJournal.ReadReferenceKey's remarks) and is still compared here.
         foreach (var table in new[] { "campaigns", "accepted_steps", "owner_openings", "owner_actions",
-            "seats", "reference_key", "operator_capability",
+            "seats", "reference_key",
             "selection_rounds", "rba_rounds", "force_rounds", "retreat_rounds",
             "custody_rounds", "reserve_rounds", "cycle_rounds" })
             Assert.Equal(IntegratedCampaignRows(leftPath, table), IntegratedCampaignRows(rightPath, table));

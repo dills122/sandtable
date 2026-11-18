@@ -110,7 +110,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 Assert.True(CampaignHostAdapter.IsNativeCombatCustodyPending(disk.Open(clock).ReadVerified(request.CampaignId)));
                 ThirdCycleReserveSql(disk.Path, "DROP TRIGGER fail_repeated_custody");
             }
-            new CampaignCombatTimeoutService(cold, clock,
+            new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(cold), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
             var after = disk.Open(clock).ReadVerified(request.CampaignId);
             Assert.False(CampaignHostAdapter.IsNativeCombatCustodyPending(after));
@@ -162,7 +162,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.Equal(result.GetProperty("worldHash").GetString(), successor.RootElement.GetProperty("worldHash").GetString());
             Assert.Equal(result.GetProperty("custodyStateHash").GetString(), successor.RootElement.GetProperty("custodyStateHash").GetString());
             var rowsAfter = IntegratedCampaignRows(disk.Path, "accepted_steps");
-            new CampaignCombatTimeoutService(disk.Open(clock), clock,
+            new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(disk.Open(clock)), clock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
             Assert.Equal(rowsAfter, IntegratedCampaignRows(disk.Path, "accepted_steps"));
             Assert.True(CampaignExercises.Reconstruct(disk.Open(clock).ReadVerified(request.CampaignId)).IsVerified);

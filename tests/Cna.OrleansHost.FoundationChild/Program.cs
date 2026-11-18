@@ -199,7 +199,7 @@ if (args is ["--native-campaign-deadline"])
     var before = journal.ReadVerified(native.CampaignId);
     var beforeReplay = CampaignExercises.Reconstruct(before);
     if (!beforeReplay.IsVerified) throw new InvalidOperationException("Child initial replay failed.");
-    new CampaignCombatTimeoutService(journal, clock,
+    new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal), clock,
         NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
     var after = journal.ReadVerified(native.CampaignId);
     var replay = CampaignExercises.Reconstruct(after);

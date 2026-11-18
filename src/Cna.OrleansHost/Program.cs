@@ -13,24 +13,24 @@ builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutRea
 builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
 builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
 builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
-var campaignJournalPath = builder.Configuration["CampaignJournal:Path"];
-if (!string.IsNullOrWhiteSpace(campaignJournalPath))
+// CampaignJournal:Path is now a directory, not a single file: the design doc's §3
+// (docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md) moves the hot tier from
+// one SQLite file shared by every campaign to one file per campaign under this directory, to
+// remove the artificial cross-campaign lock contention §1.3 identifies (each campaign's grain is
+// already single-writer by Orleans's own model; only the shared file forced them to contend).
+// CampaignDurableAuthorityJournalStore resolves/creates each campaign's own file lazily, on first
+// use, and caches it for the life of the host -- see its own remarks for why
+// CampaignDurableAuthorityJournal itself did not need to change shape to support this.
+var campaignJournalDirectory = builder.Configuration["CampaignJournal:Path"];
+if (!string.IsNullOrWhiteSpace(campaignJournalDirectory))
 {
     var operatorSecret = builder.Configuration["CampaignJournal:OperatorSecret"];
     if (string.IsNullOrWhiteSpace(operatorSecret))
         throw new InvalidOperationException(
             "CampaignJournal:OperatorSecret is required when the durable journal is configured.");
-    // CreateNew only ever publishes a fully-initialized journal to campaignJournalPath (it
-    // builds it at a private temp path and atomically renames it on once valid), so File.Exists
-    // being true here always means either a complete journal or something CreateNew refused to
-    // touch -- never a half-written file from an interrupted run of CreateNew itself. OpenExisting
-    // is the one place that classifies and reports an unrecognized file; see its remarks and
-    // CreateNew's remarks on CampaignDurableAuthorityJournal for the operator recovery guidance.
-    builder.Services.AddSingleton(services => File.Exists(campaignJournalPath)
-        ? CampaignDurableAuthorityJournal.OpenExisting(campaignJournalPath,
-            services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>())
-        : CampaignDurableAuthorityJournal.CreateNew(campaignJournalPath,
-            operatorSecret, services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>()));
+    builder.Services.AddSingleton(services => new CampaignDurableAuthorityJournalStore(
+        campaignJournalDirectory, operatorSecret,
+        services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>()));
     builder.Services.AddHostedService<CampaignCombatTimeoutService>();
 }
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration

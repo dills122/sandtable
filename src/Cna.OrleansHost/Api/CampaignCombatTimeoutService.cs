@@ -2,8 +2,21 @@ using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
 
-/// <summary>Schedules durable clock checks; Core remains sole adjudication authority.</summary>
-internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJournal journal,
+/// <summary>
+/// Schedules durable clock checks; Core remains sole adjudication authority.
+/// </summary>
+/// <remarks>
+/// Depends on <see cref="CampaignDurableAuthorityJournalStore"/>, not a bare
+/// <see cref="CampaignDurableAuthorityJournal"/>, because under the design doc's &#167;3
+/// file-per-campaign topology a <c>TickXRound(campaignId)</c> call found by one lane's
+/// <c>CollectingXCampaigns</c> enumeration can -- and in production routinely will -- name a
+/// campaign that lives in a different file than whichever one answered the enumeration (any
+/// single file can answer "which campaigns are collecting" correctly by looking at its own
+/// directory, but ticking a specific campaign's round needs that campaign's own file). The
+/// store's forwarding methods route each call to the right file; nothing else in this class
+/// changed.
+/// </remarks>
+internal sealed class CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore journal,
     TimeProvider clock, ILogger<CampaignCombatTimeoutService> logger) : BackgroundService
 {
     private static readonly Action<ILogger, Exception?> LogEnumerationFailure =

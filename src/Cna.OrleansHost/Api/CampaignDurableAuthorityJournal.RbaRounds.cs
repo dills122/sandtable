@@ -101,7 +101,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return gate.CancellationReason is not null;
     }
 
-    internal IReadOnlyList<string> CollectingRbaCampaigns(string after, int limit)
+    /// <summary>
+    /// Cross-file aggregation entry point -- see <see cref="CollectingAcrossSiblingFiles"/>'s
+    /// remarks for why this is no longer a single-file query under the design doc's &#167;3
+    /// file-per-campaign topology.
+    /// </summary>
+    internal IReadOnlyList<string> CollectingRbaCampaigns(string after, int limit) =>
+        CollectingAcrossSiblingFiles(after, limit, static (journal, after, limit) =>
+            journal.CollectingRbaCampaignsInThisFile(after, limit));
+
+    private List<string> CollectingRbaCampaignsInThisFile(string after, int limit)
     {
         if (schemaVersion != SchemaVersion) return [];
         using var connection = Connect(create: false);

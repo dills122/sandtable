@@ -17,6 +17,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const int ApplicationId = 0x5343414A; // SCAJ
     private const int SchemaVersion = 14;
+    // Host-identity store (operator_capability only -- reference_key stays per-campaign, see
+    // ReadReferenceKey's remarks): see EnsureHostIdentity's remarks.
+    // A different extension than CampaignFileExtension so a directory listing for campaign files
+    // (CollectingAcrossSiblingFiles) never mistakes this for one.
+    private const string HostIdentityFileName = "_host-identity.db";
+    private const int HostIdentityApplicationId = 0x53434149; // SCAI
+    private const int HostIdentitySchemaVersion = 1;
+    // Per-campaign hot-tier file extension (design doc §3: file-per-campaign topology). Shared by
+    // CampaignDurableAuthorityJournalStore (which names each campaign's file) and
+    // CollectingAcrossSiblingFiles (which globs for them) so the two can never drift apart.
+    internal const string CampaignFileExtension = ".sqlite";
     private const int SelectionSchemaVersion = 14;
     private const int RetreatSchemaVersion = 13;
     private const int CustodySchemaVersion = 12;
@@ -89,7 +100,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string operatorSecret, TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
     {
         RequirePath(absolutePath);
-        var operatorDigest = CredentialDigest("operator", operatorSecret);
+        // Validate the secret's shape early and fail fast, before touching the filesystem.
+        // EnsureHostIdentity (below) is what actually stores its digest, since operator
+        // capability is host-identity state now, not per-campaign state -- see its remarks.
+        _ = CredentialDigest("operator", operatorSecret);
         if (File.Exists(absolutePath))
             throw new InvalidOperationException(RecoveryGuidance(absolutePath,
                 "Journal already exists."));
@@ -102,6 +116,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     | UnixFileMode.UserExecute);
         }
         RequirePrivateDirectory(directory);
+        // Host-identity (operator_capability only) is shared across every campaign file in this
+        // directory, not duplicated per campaign -- see EnsureHostIdentity's remarks for why.
+        // Ensured before anything else so an operator-gated call (including one that creates a
+        // brand-new campaign, which has no file yet) can always authenticate, even against a
+        // directory that has never held a single campaign file before.
+        EnsureHostIdentity(HostIdentityPathForDirectory(directory), operatorSecret);
         // Orphaned temp files from a previous interrupted CreateNew can never hold real campaign
         // authority -- nothing is ever published to absolutePath until the file is fully valid --
         // so it is always safe to clear them before starting a fresh attempt.
@@ -138,11 +158,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
               prior_hash TEXT NOT NULL, record_hash TEXT NOT NULL,
               PRIMARY KEY(campaign_id,sequence),
               FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE operator_capability (
-              singleton INTEGER PRIMARY KEY CHECK(singleton=1), digest BLOB NOT NULL
             )
             """);
             Execute(connection, """
@@ -272,12 +287,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
             journal.EnsureRoundIndexes(connection);
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
-                command.Parameters.AddWithValue("$digest", operatorDigest);
-                command.ExecuteNonQuery();
-            }
-            using (var command = connection.CreateCommand())
-            {
+                // Independently generated per campaign file -- not shared host-wide like
+                // operator_capability (see EnsureHostIdentity's remarks). Reference() always takes
+                // campaignId as an explicit input and is only ever checked within one campaign's
+                // own scope, so nothing requires this to match across campaigns; keeping it inside
+                // the campaign's own file means it travels correctly with that one file if it is
+                // ever copied/backed up/restored elsewhere, which a shared host-identity file would
+                // not (found by FreshProcessThirdCycleReserveRecoveryRetainsConvertedReserveAndIsIdempotent
+                // and similar tests that back up a single campaign file to a new location).
                 command.CommandText = "INSERT INTO reference_key VALUES (1,$secret)";
                 command.Parameters.AddWithValue("$secret", RandomNumberGenerator.GetBytes(32));
                 command.ExecuteNonQuery();
@@ -968,7 +985,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -989,7 +1006,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1010,7 +1027,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1031,7 +1048,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1052,7 +1069,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1073,7 +1090,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1094,7 +1111,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1115,7 +1132,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1136,7 +1153,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1157,7 +1174,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1178,7 +1195,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1199,7 +1216,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1220,7 +1237,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1241,7 +1258,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1262,7 +1279,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1283,7 +1300,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1304,7 +1321,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1325,7 +1342,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1346,7 +1363,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1418,7 +1435,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not source-backed.");
@@ -1479,7 +1496,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1500,7 +1517,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1521,7 +1538,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1542,7 +1559,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1563,7 +1580,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1584,7 +1601,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1605,7 +1622,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1626,7 +1643,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1647,7 +1664,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1668,7 +1685,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1689,7 +1706,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1710,7 +1727,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1731,7 +1748,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1752,7 +1769,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1773,7 +1790,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1794,7 +1811,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1815,7 +1832,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -1838,7 +1855,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireWritable();
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
+        RequireOperator(operatorSecret);
         var head = Load(connection, transaction, campaignId);
         if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
             throw new InvalidOperationException("Campaign is not a source-backed setup.");
@@ -2245,6 +2262,177 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (schemaVersion >= SelectionSchemaVersion)
             Execute(connection, "CREATE INDEX IF NOT EXISTS selection_rounds_status_campaign "
                 + "ON selection_rounds(status,campaign_id)");
+    }
+
+    internal static string HostIdentityPathForDirectory(string directory) =>
+        Path.Combine(directory, HostIdentityFileName);
+
+    /// <summary>
+    /// The host-identity file sitting beside this instance's own per-campaign file, in the same
+    /// directory. See <see cref="EnsureHostIdentity"/>'s remarks for why operator capability and
+    /// the campaign-reference HMAC key live here rather than inside every per-campaign file.
+    /// </summary>
+    private string HostIdentityPath() =>
+        HostIdentityPathForDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+
+    private static readonly object HostIdentityGate = new();
+
+    /// <summary>
+    /// Ensures a small, shared, host-wide identity file exists at <paramref name="hostIdentityPath"/>,
+    /// holding exactly what <c>operator_capability</c> held inside the single shared journal file
+    /// before the design doc's &#167;3 file-per-campaign split
+    /// (<c>docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md</c>). Deliberately
+    /// <i>not</i> <c>reference_key</c> too -- see <see cref="ReadReferenceKey"/>'s remarks for why
+    /// that one stays per-campaign.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>Why this is not simply duplicated into every per-campaign file.</b> Unlike
+    /// <c>campaigns</c>/<c>accepted_steps</c>/the round tables, <c>operator_capability</c> was never
+    /// per-campaign data to begin with -- it is host-wide administrative identity that happened to
+    /// live in the one shared file purely because, before this change, there was only ever one file
+    /// to put anything in. Two call sites make this concrete: <c>CampaignDurableOutwardApi</c>'s
+    /// <c>/source</c> and <c>/pregame-source*</c> routes authenticate the operator
+    /// (<see cref="RequireOperator"/>) <i>before</i> the campaign they are about to create has a
+    /// file at all, so there is no per-campaign file to check this against even in principle.
+    /// Per the design doc's &#167;2.2 (the same reasoning that already keeps
+    /// <c>LocalSessionStore</c>, &#167;1.8, out of the campaign journal entirely) and &#167;1.8's
+    /// explicit "never folded into the campaign journal's schema or file" guidance, this host
+    /// identity gets its own small shared store instead -- one file, written once per secret
+    /// (at most a few bytes, a handful of times over a host's lifetime), never contended by the
+    /// 1000-campaigns-at-once problem &#167;3 exists to solve, so sharing one file for it carries
+    /// none of the risk sharing one file for campaign history did. <c>reference_key</c> does not
+    /// share this requirement (nothing authenticates against it before a campaign exists), and
+    /// sharing it the same way turned out to be actively wrong -- see
+    /// <see cref="ReadReferenceKey"/>'s remarks.</para>
+    /// <para><b>Crash safety.</b> Built at a private temporary path and published with the same
+    /// atomic, no-overwrite <see cref="File.Move(string, string)"/> <see cref="CreateNew"/> uses,
+    /// so a process killed mid-bootstrap never leaves a half-written identity file visible at
+    /// <paramref name="hostIdentityPath"/>.</para>
+    /// <para><b>Concurrency.</b> Called from <see cref="CreateNew"/> every time <i>any</i> campaign
+    /// file is first created, and eagerly once by <c>CampaignDurableAuthorityJournalStore</c>'s
+    /// constructor so it exists before the host ever serves a request. The common case (already
+    /// exists) is a single <see cref="File.Exists"/> check with no lock. Only the rare first-ever
+    /// creation takes <see cref="HostIdentityGate"/>, and a concurrent loser's
+    /// <see cref="File.Move(string, string)"/> (no overwrite) simply fails because the winner's
+    /// publish already landed -- treated as success, not an error, since the end state (a valid
+    /// identity file at the path) is identical either way.</para>
+    /// </remarks>
+    internal static void EnsureHostIdentity(string hostIdentityPath, string operatorSecret)
+    {
+        if (File.Exists(hostIdentityPath)) return;
+        lock (HostIdentityGate)
+        {
+            if (File.Exists(hostIdentityPath)) return;
+            var operatorDigest = CredentialDigest("operator", operatorSecret);
+            var directory = Path.GetDirectoryName(hostIdentityPath)!;
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+                if (!OperatingSystem.IsWindows())
+                    File.SetUnixFileMode(directory, UnixFileMode.UserRead | UnixFileMode.UserWrite
+                        | UnixFileMode.UserExecute);
+            }
+            RequirePrivateDirectory(directory);
+            var tempPath = Path.Combine(directory,
+                Path.GetFileName(hostIdentityPath) + CreationTempInfix + Guid.NewGuid().ToString("N"));
+            try
+            {
+                using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+                {
+                    DataSource = tempPath,
+                    Mode = SqliteOpenMode.ReadWriteCreate,
+                    Cache = SqliteCacheMode.Private,
+                    Pooling = false,
+                }.ToString()))
+                {
+                    connection.Open();
+                    Execute(connection, "PRAGMA journal_mode=WAL");
+                    Execute(connection, "PRAGMA synchronous=FULL");
+                    Execute(connection, """
+                    CREATE TABLE operator_capability (
+                      singleton INTEGER PRIMARY KEY CHECK(singleton=1), digest BLOB NOT NULL
+                    )
+                    """);
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = "INSERT INTO operator_capability VALUES (1,$digest)";
+                        command.Parameters.AddWithValue("$digest", operatorDigest);
+                        command.ExecuteNonQuery();
+                    }
+                    Execute(connection, $"PRAGMA application_id={HostIdentityApplicationId}");
+                    Execute(connection, $"PRAGMA user_version={HostIdentitySchemaVersion}");
+                }
+                if (!OperatingSystem.IsWindows())
+                    File.SetUnixFileMode(tempPath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+                CheckpointAndRemoveWalSidecars(tempPath);
+                File.Move(tempPath, hostIdentityPath);
+            }
+            catch (IOException) when (File.Exists(hostIdentityPath))
+            {
+                // Lost a race with a concurrent creator (a different process; same-process races
+                // are already serialized by HostIdentityGate above) between our own existence
+                // check and our publish. The identity file is there now either way -- benign.
+                TryDeleteCreationTempFiles(tempPath);
+            }
+            catch
+            {
+                TryDeleteCreationTempFiles(tempPath);
+                throw;
+            }
+            if (!OperatingSystem.IsWindows() && File.Exists(hostIdentityPath))
+                File.SetUnixFileMode(hostIdentityPath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        }
+    }
+
+    /// <summary>
+    /// Cross-file aggregation for the seven <c>CollectingXCampaigns</c> sweep-enumeration entry
+    /// points, forced by the design doc's &#167;3 file-per-campaign topology: under the old
+    /// file-per-host layout, "which campaigns are collecting" was one query against one file. There
+    /// is no longer one file to run that query against (&#167;7 names this directly), so this lists
+    /// every sibling campaign file in this instance's own directory -- every <see
+    /// cref="CampaignFileExtension"/> file beside this one; the host-identity file deliberately uses
+    /// a different extension so it is never mistaken for a campaign file here -- opens each with
+    /// <see cref="OpenExisting"/>, asks it for every one of <i>its own</i> matching campaign ids via
+    /// <paramref name="queryOneFile"/> (ordinarily zero or one, since production never creates more
+    /// than one campaign per file, but this does not assume that -- a few existing tests
+    /// deliberately stuff several synthetic campaigns into one file to exercise sweep-cursor
+    /// behavior, and this aggregator produces the same cursor/limit semantics either way), and
+    /// merges the union in the same order the single-file SQL used (ordinal/<c>BINARY</c>),
+    /// honoring <paramref name="after"/> and <paramref name="limit"/> over the merged set.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately unoptimized: this opens every sibling file on every call (today, once per
+    /// second per lane, from <c>CampaignCombatTimeoutService</c>). The design doc's &#167;7 names
+    /// the real fix -- replacing this cross-file poll with per-grain Orleans reminders -- as the
+    /// next phased-rollout step after this one (&#167;11), not part of this change; &#167;10 already
+    /// expects the sweep to need its own pass once per-campaign files exist. This aggregator exists
+    /// so the sweep keeps working correctly in the interim, not to make it fast.
+    /// </remarks>
+    private List<string> CollectingAcrossSiblingFiles(string after, int limit,
+        Func<CampaignDurableAuthorityJournal, string, int, IReadOnlyList<string>> queryOneFile)
+    {
+        var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
+        string[] siblings;
+        try { siblings = Directory.GetFiles(directory, "*" + CampaignFileExtension); }
+        catch (DirectoryNotFoundException) { siblings = []; }
+        var merged = new SortedSet<string>(StringComparer.Ordinal);
+        foreach (var sibling in siblings)
+        {
+            CampaignDurableAuthorityJournal instance;
+            try { instance = OpenExisting(sibling, clock, contentResolver); }
+            catch (InvalidOperationException)
+            {
+                // A file mid-publish (temp-file rename hasn't landed, so this never actually
+                // matched the glob above anyway), one that just got deleted by a concurrent
+                // archival pass, or one this build does not recognize. The sweep already tolerates
+                // and retries individual campaigns next tick (CampaignCombatTimeoutService.SweepLane);
+                // the same tolerance applies to a whole file it could not even open.
+                continue;
+            }
+            foreach (var id in queryOneFile(instance, "", int.MaxValue))
+                if (string.CompareOrdinal(id, after) > 0) merged.Add(id);
+        }
+        return limit >= merged.Count ? [.. merged] : merged.Take(limit).ToList();
     }
 
     private static byte[] ReadBounded(SqliteDataReader reader, int ordinal, int maximum = MaxEvidenceBytes)

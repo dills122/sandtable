@@ -15,11 +15,27 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     internal bool AuthenticateOperator(string secret)
     {
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction();
         try
         {
-            RequireOperator(connection, transaction, secret);
+            RequireOperator(secret);
+            return true;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// <see cref="AuthenticateOperator"/>, usable before any particular campaign's journal
+    /// instance exists -- see <see cref="EnsureHostIdentity"/>'s remarks for why operator
+    /// capability is host-identity state, keyed only by directory, not by campaign.
+    /// </summary>
+    internal static bool AuthenticateOperatorAt(string directory, string secret)
+    {
+        try
+        {
+            RequireOperatorAt(HostIdentityPathForDirectory(directory), secret);
             return true;
         }
         catch (UnauthorizedAccessException)
@@ -33,9 +49,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
     {
         RequireWritable();
         var side = Side(audience);
+        RequireOperator(operatorSecret);
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(connection, transaction, operatorSecret);
         if (IsScheduledWorld6(connection, transaction, campaignId))
             _ = LoadScheduledWorld6(connection, transaction, campaignId);
         else
@@ -214,13 +230,31 @@ internal sealed partial class CampaignDurableAuthorityJournal
             credential.Epoch);
     }
 
-    private static void RequireOperator(SqliteConnection connection,
-        SqliteTransaction transaction, string secret)
+    /// <summary>
+    /// Checks <paramref name="secret"/> against this instance's own host-identity file (the one
+    /// beside its own per-campaign file -- see <see cref="HostIdentityPath"/> and
+    /// <see cref="EnsureHostIdentity"/>'s remarks), not against anything in its own per-campaign
+    /// file. Opens its own short-lived read-only connection rather than reusing whatever
+    /// connection/transaction the caller already has open against the per-campaign file, since
+    /// operator capability no longer lives there.
+    /// </summary>
+    private void RequireOperator(string secret) => RequireOperatorAt(HostIdentityPath(), secret);
+
+    private static void RequireOperatorAt(string hostIdentityPath, string secret)
     {
         var digest = TryCredentialDigest("operator", secret);
         if (digest is null) throw new UnauthorizedAccessException("Operator capability rejected.");
+        if (!File.Exists(hostIdentityPath))
+            throw new UnauthorizedAccessException("Operator capability rejected.");
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = hostIdentityPath,
+            Mode = SqliteOpenMode.ReadOnly,
+            Cache = SqliteCacheMode.Private,
+            Pooling = false,
+        }.ToString());
+        connection.Open();
         using var query = connection.CreateCommand();
-        query.Transaction = transaction;
         query.CommandText = "SELECT digest FROM operator_capability WHERE singleton=1";
         if (query.ExecuteScalar() is not byte[] stored || !SameDigest(stored, digest))
             throw new UnauthorizedAccessException("Operator capability rejected.");

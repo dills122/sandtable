@@ -32,16 +32,25 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.False(File.Exists(path));
             // The killed attempt's temp file (if it got far enough to create one) is left behind
             // under its private, never-the-real-path name; it is swept on the next CreateNew below.
+            // EnsureHostIdentity's own small shared host-identity file (design doc §3: operator
+            // capability is host-wide, not per-campaign -- see its remarks) is a legitimate,
+            // already-fully-published file by this point, not a leftover: it completes before
+            // CreateNew's per-campaign checkpoints (all four InlineData values here) even start.
+            var hostIdentityPath = CampaignDurableAuthorityJournal.HostIdentityPathForDirectory(directory);
             Assert.All(Directory.GetFiles(directory),
-                leftover => Assert.Contains(".creating-", Path.GetFileName(leftover)));
+                leftover => Assert.True(leftover == hostIdentityPath
+                    || Path.GetFileName(leftover).Contains(".creating-", StringComparison.Ordinal),
+                    $"Unexpected leftover file: {leftover}"));
 
             // Retrying CreateNew in this (fresh, non-faulted) process must recover cleanly.
             var journal = CampaignDurableAuthorityJournal.CreateNew(path, OperatorSecret);
             Assert.True(File.Exists(path));
             if (!OperatingSystem.IsWindows())
                 Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(path));
-            // Orphaned temp artifact from the killed attempt is swept; only the published file remains.
-            Assert.Equal(new[] { path }, Directory.GetFiles(directory));
+            // Orphaned temp artifact from the killed attempt is swept; only the published campaign
+            // file and the (already-published, untouched-by-this-retry) host-identity file remain.
+            Assert.Equal([hostIdentityPath, path], Directory.GetFiles(directory).OrderBy(file => file,
+                StringComparer.Ordinal));
 
             var session = journal.CreateCampaign(Request());
             Assert.NotNull(session);

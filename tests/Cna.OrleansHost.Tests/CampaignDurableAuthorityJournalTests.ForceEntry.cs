@@ -127,7 +127,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             rba.Revision, rba.PublicActionRefs[^1]).IsAccepted);
         clock.Advance(TimeSpan.FromSeconds(30));
         var cold = fixture.Open(clock);
-        var scheduler = new CampaignCombatTimeoutService(cold, clock,
+        var scheduler = new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(cold), clock,
             NullLogger<CampaignCombatTimeoutService>.Instance);
         scheduler.SweepOnce(CancellationToken.None);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(cold.ReadVerified(request.CampaignId)).ContractVersion);

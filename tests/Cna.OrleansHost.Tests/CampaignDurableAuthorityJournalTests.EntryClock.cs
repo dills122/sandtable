@@ -100,7 +100,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 opening.Revision, opening.PublicActionRefs[0]);
             Assert.True(retry.IsAccepted);
             Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
-            new CampaignCombatTimeoutService(faultDisk.Open(faultClock), faultClock,
+            new CampaignCombatTimeoutService(CampaignDurableAuthorityJournalStore.ForSingleCampaign(faultDisk.Open(faultClock)), faultClock,
                 NullLogger<CampaignCombatTimeoutService>.Instance).SweepOnce(CancellationToken.None);
             Assert.Equal(retainedSteps, IntegratedCampaignRows(faultDisk.Path, "accepted_steps"));
             Assert.True(CampaignExercises.Reconstruct(faultDisk.Open(faultClock).ReadVerified(request.CampaignId)).IsVerified);
