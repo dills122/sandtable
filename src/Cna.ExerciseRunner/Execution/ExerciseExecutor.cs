@@ -56,6 +56,8 @@ internal sealed class ExerciseDecisionDiagnostic
     internal long? SubmissionElapsedMicroseconds { get; private set; }
     internal ExerciseDecisionFailureStage FailureStage { get; private set; }
     internal ExerciseCheckFailureCode FailureCode { get; private set; }
+    internal CampaignActionAudience? ReceiptAudience { get; private set; }
+    internal string? ReceiptActionId { get; private set; }
 
     internal void RecordQuery(ExerciseQueryDiagnostic query)
     {
@@ -90,6 +92,13 @@ internal sealed class ExerciseDecisionDiagnostic
         SubmissionRejectionReason = result.IsAccepted ? null : result.RejectionReason;
         SubmittedEventCount = result.IsAccepted ? result.EventRecords.Count : null;
         SubmissionElapsedMicroseconds = elapsedMicroseconds;
+    }
+
+    internal void RecordReceiptIdentity(CampaignActionAudience audience, string actionId)
+    {
+        ArgumentNullException.ThrowIfNull(actionId);
+        ReceiptAudience = audience;
+        ReceiptActionId = actionId;
     }
 
     internal void MarkFailed(
@@ -630,6 +639,7 @@ public static class ExerciseExecutor
             var continuityFailure = ContinuityFailure(
                 checkpoint,
                 resultingCheckpoint,
+                submission,
                 submitted.Receipt!);
             checks.Add(continuityFailure == ExerciseCheckFailureCode.None
                 ? ExerciseCheckResult.Passed(
@@ -643,6 +653,9 @@ public static class ExerciseExecutor
                     continuityFailure));
             if (continuityFailure != ExerciseCheckFailureCode.None)
             {
+                decision.RecordReceiptIdentity(
+                    submitted.Receipt!.Audience,
+                    submitted.Receipt!.ActionId);
                 decision.MarkFailed(
                     ExerciseDecisionFailureStage.CheckpointContinuity,
                     continuityFailure);
@@ -770,17 +783,28 @@ public static class ExerciseExecutor
     private static ExerciseCheckFailureCode ContinuityFailure(
         ExerciseCheckpoint prior,
         ExerciseCheckpoint committed,
+        CampaignActionSubmission submission,
         CampaignActionAcceptanceReceipt receipt)
     {
         if (!string.Equals(prior.CampaignId, receipt.CampaignId, StringComparison.Ordinal)
-            || !string.Equals(committed.CampaignId, receipt.CampaignId, StringComparison.Ordinal))
+            || !string.Equals(committed.CampaignId, receipt.CampaignId, StringComparison.Ordinal)
+            || !string.Equals(submission.CampaignId, receipt.CampaignId, StringComparison.Ordinal))
             return ExerciseCheckFailureCode.CampaignMismatch;
         if (!string.Equals(prior.RulesetHash, committed.RulesetHash, StringComparison.Ordinal))
             return ExerciseCheckFailureCode.RulesetMismatch;
         if (receipt.PriorStateVersion != prior.StateVersion
+            || receipt.PriorStateVersion != submission.ExpectedStateVersion
             || receipt.CommittedStateVersion != checked(prior.StateVersion + 1)
             || committed.StateVersion != receipt.CommittedStateVersion)
             return ExerciseCheckFailureCode.StateVersionDiscontinuity;
+        // The receipt is the runtime/adapter's own self-report of what it committed. Bind it to
+        // the controller's actual submission so a defective runtime cannot substitute a
+        // different (but otherwise valid) audience or action and have the substitution verify
+        // itself via matching successor state and event count alone.
+        if (receipt.Audience != submission.Audience)
+            return ExerciseCheckFailureCode.ReceiptAudienceMismatch;
+        if (!string.Equals(receipt.ActionId, submission.ActionId, StringComparison.Ordinal))
+            return ExerciseCheckFailureCode.ReceiptActionMismatch;
         return string.Equals(
             committed.PositionId,
             receipt.ResultingPositionId,

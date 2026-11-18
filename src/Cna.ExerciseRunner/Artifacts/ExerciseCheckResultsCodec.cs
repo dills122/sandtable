@@ -172,6 +172,8 @@ public static class ExerciseCheckResultsCodec
         ExerciseCheckFailureCode.TerminalBoundaryNotReached => "terminal-boundary-not-reached",
         ExerciseCheckFailureCode.ReconstructionMismatch => "reconstruction-mismatch",
         ExerciseCheckFailureCode.ReadjudicationMismatch => "readjudication-mismatch",
+        ExerciseCheckFailureCode.ReceiptAudienceMismatch => "receipt-audience-mismatch",
+        ExerciseCheckFailureCode.ReceiptActionMismatch => "receipt-action-mismatch",
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
