@@ -440,6 +440,78 @@ public sealed class TemporaryCampaignGrainTests
     }
 
     [Fact]
+    public async Task OutwardRequestCapacityRejectsNewIdentitiesWhileRetriesOfAdmittedOnesStillWork()
+    {
+        using var host = BuildHost();
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var grain = GetTrustedGrain(host);
+            await grain.CreateAsync("operator-1", "create-1");
+            await grain.AdvanceSystemAsync(3);
+            var cut = (await grain.QueryPrivateSideAsync(CampaignActionAudience.Axis)).Cut!;
+            var seat = new TemporaryAuthenticatedSeat("operator-1", cut.CampaignId,
+                CampaignActionAudience.Axis, Generation);
+            var actionId = cut.Actions.Single(action => action.Kind == "act-first")
+                .OutwardActionId;
+
+            // One genuine accepted outward action, retained as the accepted baseline below.
+            var acceptedRequest = new TemporaryOutwardActionRequest(1, cut.CampaignId,
+                Guid.NewGuid().ToString("D"), Generation, cut.PositionId, actionId, 1,
+                cut.ActionSetToken);
+            var acceptedReply = await grain.Inner.SubmitOutwardAsync(grain.Capability, seat,
+                acceptedRequest);
+            Assert.Equal(TemporaryCampaignStatus.Accepted, acceptedReply.Status);
+
+            // Fill the remaining admission budget with distinct, well-formed-but-stale
+            // requests: the committed view has moved on since `cut` was captured (the accepted
+            // action above advanced it), so every one of these is rejected ("stale-view") yet
+            // still occupies a retained dedupe slot, exactly like the issue's growth vector.
+            TemporaryOutwardActionRequest StaleRequest() => new(1, cut.CampaignId,
+                Guid.NewGuid().ToString("D"), Generation, cut.PositionId, actionId, 1,
+                cut.ActionSetToken);
+            var rejectedRequests = new List<TemporaryOutwardActionRequest>();
+            for (var admitted = 1; admitted < TemporaryCampaignGrain.OutwardRequestCapacity; admitted++)
+            {
+                var stale = StaleRequest();
+                var reply = await grain.Inner.SubmitOutwardAsync(grain.Capability, seat, stale);
+                Assert.Equal(TemporaryCampaignStatus.Rejected, reply.Status);
+                Assert.Equal("stale-view", reply.Reason);
+                rejectedRequests.Add(stale);
+            }
+
+            // Budget (one accepted plus N-1 rejected identities) is now exactly full. A
+            // genuinely new identity gets a clear at-capacity response instead of growing the
+            // dictionary further.
+            var overflowReply = await grain.Inner.SubmitOutwardAsync(grain.Capability, seat,
+                StaleRequest());
+            Assert.Equal(TemporaryCampaignStatus.Rejected, overflowReply.Status);
+            Assert.Equal("at-capacity", overflowReply.Reason);
+
+            // At capacity, retrying the earlier accepted identity with its original payload
+            // still returns the cached accepted reply, unaffected by the cap.
+            Assert.Equal(acceptedReply,
+                await grain.Inner.SubmitOutwardAsync(grain.Capability, seat, acceptedRequest));
+
+            // At capacity, retrying an earlier rejected identity with its original payload
+            // still returns the cached rejected reply, unaffected by the cap.
+            var earlierRejected = rejectedRequests[0];
+            var repeatRejected = await grain.Inner.SubmitOutwardAsync(grain.Capability, seat,
+                earlierRejected);
+            Assert.Equal(TemporaryCampaignStatus.Rejected, repeatRejected.Status);
+            Assert.Equal("stale-view", repeatRejected.Reason);
+
+            // At capacity, retrying an earlier identity with a changed payload still conflicts,
+            // rather than being silently treated as new or blocked by the cap.
+            var changed = earlierRejected with { ActionId = Guid.NewGuid().ToString("D") };
+            var conflict = await grain.Inner.SubmitOutwardAsync(grain.Capability, seat, changed);
+            Assert.Equal(TemporaryCampaignStatus.Conflict, conflict.Status);
+            Assert.Equal("request-reuse", conflict.Reason);
+        }
+        finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
     public async Task SeatRelinquishmentWaitsForAdmittedActionCommit()
     {
         using var host = BuildHost();
