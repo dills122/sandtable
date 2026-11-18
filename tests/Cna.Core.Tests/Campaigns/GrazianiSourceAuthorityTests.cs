@@ -8609,10 +8609,10 @@ public sealed class GrazianiSourceAuthorityTests
     // IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
     // below (see that test for what it combines and why). Extracted, byte-
     // for-byte, out of that test's own setup so
-    // DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap
-    // can reuse the exact same chained scenario - the one that actually
-    // reaches the known rating-table gaps - without duplicating ~2000 lines
-    // of setup or re-deriving a cheaper fixture that might not reach them.
+    // DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn
+    // can reuse the exact same chained scenario - the one that used to reach
+    // the known rating-table gaps - without duplicating ~2000 lines of setup
+    // or re-deriving a cheaper fixture that might not reach them.
     private static CampaignSourcePlayableWorld BuildFullyChainedCombinedWorldForBothSides()
     {
         var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
@@ -10643,22 +10643,23 @@ public sealed class GrazianiSourceAuthorityTests
         var diagId = combinedWorld.Source.Request.CampaignId;
         CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Axis));
         CampaignSourceInitialContacts.Derive(combinedWorld, 1, new CampaignContactKnowledge(diagId, LandSide.Commonwealth));
-        // source-grouped-movement-domain-incomplete root cause, traced (via a
-        // temporary diagnostic walking CampaignSourceGroupedZoc.EvaluateFormationSource/
+        // source-grouped-movement-domain-incomplete root cause, originally traced
+        // (via a temporary diagnostic walking CampaignSourceGroupedZoc.EvaluateFormationSource/
         // EvaluateDetachedSource per group/detached member per side, then removed):
-        // CanDeriveForSide fails for BOTH sides, each for the same reason - a
-        // genuine missing-chart-citation gap, not a missing action call. Axis:
-        // the "aresca-tank-regiment" formation's CV33 light tank component
-        // (CampaignSourceArescaGroupedDefinition.BattalionId) has no Close Assault
-        // defensive rating entry anywhere in CampaignSourceGroupedZoc's hand-cited
-        // rating table (TryDefensiveCloseAssaultRating has no case for
-        // componentType "cv33" at all), so its defense estimate is unresolved
-        // (AllKnown=false, LowerBound=0). Commonwealth: the "6th-australian-division"
-        // and "matruh-garrison" formations are in the exact same position - neither
-        // groupId appears anywhere in that same rating table for any of their
-        // member component types. None of these three gaps are closeable without
-        // inventing an uncited rating value, which this project's conventions
-        // forbid; each needs its own researched chart citation, out of scope here.
+        // CanDeriveForSide used to fail for both sides, each for a genuine
+        // missing-chart-citation gap, not a missing action call. Commonwealth's
+        // "6th-australian-division" and "matruh-garrison" gaps were closed by
+        // PRs #378/#381 (real OA-cited ratings wired into TryDefensiveCloseAssaultRating).
+        // Axis's "aresca-tank-regiment" formation's CV33 light tank component
+        // is now closed too: XXI(L) Tank Battalion (CampaignSourceArescaGroupedDefinition.
+        // BattalionId, chart ID 'k') carries its real Axis OA PDF p.29 §4.48 rating
+        // (1 offensive / 2 defensive per TOE strength point, unparenthesized) -
+        // 9 TOE x 2 = 18 raw defensive points, clearing Land 10.15's 10-point
+        // floor on its own. Aresca HQ's own 1-TOE CV33 (chart ID 'd') deliberately
+        // gets no entry: whether that point is even eligible to count (Land 3.35
+        // vs 9.22) is a separate, still-unresolved ruling question. Both sides'
+        // CanDeriveForSide now succeed, so source-grouped-movement-domain-incomplete
+        // clears entirely.
         // source-initial-contacts-unavailable was a genuine gap with two
         // independent causes (confirmed via CampaignSourceInitialContacts.Derive
         // above). Fix 1 (PR #371): CampaignSourcePolishArrivalContacts.EffectiveCounters
@@ -10687,13 +10688,12 @@ public sealed class GrazianiSourceAuthorityTests
         // combinedWorld.ReadinessBlockers())) diagnostic, per this project's own
         // documented technique, run through `just test-method core
         // '*IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers*'`
-        // and then removed) to now be exactly these 4, four fewer than the 8 this
+        // and then removed) to now be exactly these 3, five fewer than the 8 this
         // fixture originally landed with (cw-frontline-initial-loads-unresolved,
-        // both giarabub-motor-mg-* blockers, and source-initial-contacts-unavailable
-        // itself all cleared - see below):
-        //   battlefield-incomplete, control-incomplete, ccnn-characteristics-incomplete,
-        //   source-grouped-movement-domain-incomplete
-        // 6 of the original 8 pre-this-PR blockers cleared: owner-setup-finalization-incomplete,
+        // both giarabub-motor-mg-* blockers, source-initial-contacts-unavailable,
+        // and now source-grouped-movement-domain-incomplete all cleared - see below):
+        //   battlefield-incomplete, control-incomplete, ccnn-characteristics-incomplete
+        // 7 of the original 8 pre-this-PR blockers cleared: owner-setup-finalization-incomplete,
         // seventh-armored-shell-stack-correction-required, central-india-horse-
         // training-state-unresolved (each already individually proven; this is the
         // first fixture to chain them with the admitted-content clusters before the
@@ -10701,8 +10701,9 @@ public sealed class GrazianiSourceAuthorityTests
         // PRs admitted, plus Aresca's 2, is now represented.
         // source-grouped-movement-domain-incomplete did NOT clear as a side effect
         // of resolving forces-incomplete - the hypothesis in this project's plan
-        // doc is settled false; CampaignSourceGroupedZoc.CanDeriveForSide still
-        // rejects this fixture for some other reason and needs its own fix.
+        // doc was settled false at the time. It now clears instead because Aresca's
+        // CV33 component (the real remaining gap, confirmed below) has its cited
+        // rating wired into TryDefensiveCloseAssaultRating.
         // ccnn-characteristics-incomplete/battlefield-incomplete/control-incomplete
         // remain, as expected (out of scope: a real research gap and a pending
         // product decision, not code gaps).
@@ -10748,46 +10749,46 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Contains("ccnn-characteristics-incomplete", finalBlockers);
         Assert.Contains("battlefield-incomplete", finalBlockers);
         Assert.Contains("control-incomplete", finalBlockers);
-        Assert.Contains("source-grouped-movement-domain-incomplete", finalBlockers);
-        Assert.Equal(4, finalBlockers.Count);
+        // Aresca's CV33 rating (see DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn
+        // below) was the real remaining cause; it is now wired in, so both
+        // sides' CanDeriveForSide succeed and this blocker clears entirely.
+        Assert.DoesNotContain("source-grouped-movement-domain-incomplete", finalBlockers);
+        Assert.Equal(3, finalBlockers.Count);
     }
 
     // Proves CampaignSourceGroupedZoc.DescribeUnresolvedSources is actually
     // useful, not just non-empty: against the exact same fully-chained
     // fixture as IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers
-    // above - where source-grouped-movement-domain-incomplete is still
-    // present - it must name the real causes this session had to hand-trace
+    // above, it used to name the real causes this session had to hand-trace
     // with a throwaway diagnostic (walking EvaluateFormationSource/
     // EvaluateDetachedSource per group/side, then reverting it) before this
     // method existed: Aresca's CV33 component, the Matruh Garrison, and the
     // 6th Australian Division. The Matruh Garrison's (Commonwealth OA PDF
     // pp. 9/11, chart 4.46a p.22) and 6th Australian Division's (OA PDF
-    // p.13, chart 4.46a pp.22-23) real close-assault ratings are now wired
-    // into CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating, so only
-    // Aresca's CV33 component remains unresolved.
+    // p.13, chart 4.46a pp.22-23) real close-assault ratings were wired into
+    // CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating by PRs #378/#381,
+    // and Aresca's CV33 (XXI(L) Tank Battalion, Axis OA PDF p.29 §4.48) is now
+    // wired in too - so this fixture no longer has any unresolved source on
+    // either side, and the blocker clears entirely (see finalBlockers above).
     [Fact]
-    public void DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap()
+    public void DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn()
     {
         var combinedWorld = BuildFullyChainedCombinedWorldForBothSides();
         // Guard: fail loudly here, not silently, if this fixture's known
-        // blocker ever clears for an unrelated reason.
-        Assert.Contains("source-grouped-movement-domain-incomplete", combinedWorld.ReadinessBlockers());
+        // blocker reappears for an unrelated reason.
+        Assert.DoesNotContain("source-grouped-movement-domain-incomplete", combinedWorld.ReadinessBlockers());
 
         var axisUnresolved = CampaignSourceGroupedZoc.DescribeUnresolvedSources(combinedWorld, "axis");
         var commonwealthUnresolved = CampaignSourceGroupedZoc.DescribeUnresolvedSources(combinedWorld, "commonwealth");
 
-        var aresca = Assert.Single(axisUnresolved, value => value.SourceId == CampaignSourceArescaGroupedDefinition.GroupId);
-        Assert.Equal(CampaignSourceGroupedZoc.ZocUnresolvedSourceKind.FormationNotDeterminate, aresca.Kind);
-        // The specific, actionable detail this session had to dig for by
-        // hand: which element/component/toe has no cited rating.
-        Assert.Contains("cv33", aresca.Reason);
-        Assert.Contains(CampaignSourceArescaGroupedDefinition.BattalionId, aresca.Reason);
-        Assert.Contains("close-assault rating", aresca.Reason);
+        // Aresca's CV33 component no longer appears as an unresolved source:
+        // XXI(L)'s own cited rating already clears the formation's defense
+        // threshold on its own, independent of the HQ's still-unrated point.
+        Assert.DoesNotContain(axisUnresolved, value => value.SourceId == CampaignSourceArescaGroupedDefinition.GroupId);
+        Assert.Empty(axisUnresolved);
 
-        // Matruh's and 6th Australian's real ratings are now cited and
-        // wired in, so neither appears as an unresolved source on either
-        // side anymore - Aresca's CV33 component above is the only cause
-        // left on commonwealthUnresolved's side too.
+        // Matruh's and 6th Australian's real ratings are cited and wired in,
+        // so neither appears as an unresolved source on either side.
         Assert.DoesNotContain(axisUnresolved, value => value.SourceId == CampaignSourceMatruhGroupedDefinition.GroupId);
         Assert.DoesNotContain(commonwealthUnresolved, value => value.SourceId == CampaignSourceMatruhGroupedDefinition.GroupId);
         Assert.DoesNotContain(axisUnresolved, value => value.SourceId == CampaignSourceSixthAustralianGroupedDefinition.GroupId);

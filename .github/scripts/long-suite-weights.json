@@ -1394,6 +1394,7 @@
     "2dc2a9121ba6211293f2ee1e3f0c880486a39155f7c09d9c5a9012a2c0f55348": 1,
     "2e40ddb07a705c7a300114d876c581c5571d7ad9b2b1c8a15ef22619ec77c8cd": 17,
     "2e4e9403934d9f4645cc2c31d3a3548a82513f8cfffe7facd4fe25972aa249bd": 1,
+    "2e53a0f2f3aea7f900e15f91368f2b07cc27ce1360c2fa86da576766f5fd2633": 1,
     "2e68463a2b15a5db4c583dc6c7b2c1a2fe6ed0db6b66d612f858e8064eb8f6c3": 14780,
     "2e71eae02f4f24fbd0baafe5129557972bbc5c265c1a0c07da52f0f2c2edf0ce": 959,
     "2e73d7fabde92616a04787a6dc94eca9f0b92d7ae5b634aed718173380ec54f9": 1,
@@ -1481,6 +1482,7 @@
     "34cc72d8b42e38ff149c75b47f439719c5c4497dacf02d8bf43ff930cd57d23a": 23,
     "34fb116b7e59733caf07173e5cf2911ae799165c5e77b4340f92b20b881886cc": 183,
     "35150d1550d1a24b52e51ac3c451c5d00e65fe3d339ee68ef094f0e230f9a3f2": 1,
+    "3523b0178dd21fa2e5f1724a1f3a35976a31dcb3c29a5bb1397378fb4a0aae44": 69114,
     "3526be6c14c9d228a995f6f5a280dfaad95a5cde6c6b0d99d39aa24e220b3bb2": 4368,
     "352bcfb3f69031372cd528edc256703f136961f118f1f50cbd8f1b4c3eca08f9": 1,
     "353edacf29ca5f247921e9b93895c14797b2537a46d9bc221ef0bdae34b7476c": 1,
@@ -2615,6 +2617,7 @@
     "8e471c0098a8c154a58585bfc7167d044e08fe8b733a5264d34baa2ec08dd2be": 1,
     "8e769b2534d34c7cef3fbe0d602b093f2303e1ac78941e3a7d57224362f51273": 3827,
     "8e84d6e9a2bfe82069611226bec0b153b2c11e4d5d414f2aa126acd8e1dfad52": 1884,
+    "8e883c21f7f68d20c55d62592fc12e3b7ba78c3fe02d17a7f68395fefeb38573": 1,
     "8e8c49275c499c9c3f602b0ffe822ab42925f53d6810d50cd2d0ee577c2cc95e": 4,
     "8e91897f47514f9573ea07949950a23551e7a78cdf0f749c170a05aee24ae0af": 8048,
     "8eb7b74a5dfc6163a72532827473efeb8c9b4007e7c2640c3a29ccb919f98d26": 1,
@@ -3191,6 +3194,7 @@
     "baec279b49b00c2ed88b37b6b767c9cbfdaadc1a09e2cf91c93a2a44f04e9411": 194,
     "bb128d11b6ed953a2a6ae29bda8ceba75920e3977bce80b1508e73164407f91e": 100,
     "bb1c54d7b919ee68519f71b80a25b5b7e67a0039a56c5a63f9b9b423370689b0": 12,
+    "bb1e1b3dc5e5e81f2119a4e6b5e19fd17fd1189d8f033f50730e189db33880f2": 1,
     "bb3822dea5f7c8e294e875406dbf703245f4a09eb0d4e2ae91573929d468d10d": 6,
     "bb601e77b5b044df9c19ea9a7fb77f700beaaa8513221fcf83fb26556cfe9511": 1,
     "bb6b00595fc7e128c9b371c1efc8f21de70db5736ea523815124b648b50e39f3": 1,
@@ -4440,7 +4444,6 @@
     "b90ce75908ec54c5279cf863164c6ad3fdc9c6e1c3043fb95bdff6ebf18d0257": 1,
     "2db69ad346dbbe39109b450a146f418a6f07016ead89392a6193463d8b58975a": 1,
     "23f0322e8a890610783524745878157ada936386059f0efae0a67b160fc32ecd": 1,
-    "7a12b20ba22fb51648c57b6005470d1ebfc5193bd21038efb7888877e2a39c20": 72740,
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": 6,
     "00dc8b65f8fb78452aa4492509dfad99dcdef00f6d27c1c7eec51a844112b9f2": 1
   },
@@ -4827,8 +4830,7 @@
     "aeb9bf257db8cf45baafab99b15ce7ac063824a45589fe59dc5bd58dfabeacd5": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
     "b90ce75908ec54c5279cf863164c6ad3fdc9c6e1c3043fb95bdff6ebf18d0257": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
     "2db69ad346dbbe39109b450a146f418a6f07016ead89392a6193463d8b58975a": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
-    "23f0322e8a890610783524745878157ada936386059f0efae0a67b160fc32ecd": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
-    "7a12b20ba22fb51648c57b6005470d1ebfc5193bd21038efb7888877e2a39c20": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; DescribeUnresolvedSources proof test renamed again after merging both the Matruh and 6th Australian rename branches (only Aresca CV33 remains unresolved), pending hosted CI calibration"
+    "23f0322e8a890610783524745878157ada936386059f0efae0a67b160fc32ecd": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration"
   },
   "supplemental_measurements": {
     "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",
