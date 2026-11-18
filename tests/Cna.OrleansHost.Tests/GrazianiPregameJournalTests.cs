@@ -1425,6 +1425,10 @@ public sealed class GrazianiPregameJournalTests
         {
             var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Single();
             using var client = new HttpClient { BaseAddress = new Uri(address) };
+            // Not a same-origin-gate test (besides the explicit crossOrigin cases below);
+            // simulate a genuine same-origin fetch so the v2 middleware's stricter
+            // header-presence check (#319) doesn't block the other requests here.
+            client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
             var body = new
             {
                 contractVersion = 2,
@@ -1558,6 +1562,10 @@ public sealed class GrazianiPregameJournalTests
         {
             var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Single();
             using var client = new HttpClient { BaseAddress = new Uri(address) };
+            // Not a same-origin-gate test (besides the explicit crossOrigin cases below);
+            // simulate a genuine same-origin fetch so the v2 middleware's stricter
+            // header-presence check (#319) doesn't block the other requests here.
+            client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
             var content = Cna1979GrazianiCairoSourceExcerpt.Build();
             var body = new
             {

@@ -882,8 +882,12 @@ internal static class CampaignDurableOutwardApi
     private static bool SameOrigin(HttpContext context)
     {
         var fetchSite = context.Request.Headers["Sec-Fetch-Site"].ToString();
-        if (fetchSite.Length > 0 && fetchSite != "same-origin") return false;
         var origin = context.Request.Headers.Origin.ToString();
+        // Absence of both headers is not proof of same-origin - it is simply the
+        // signature of a client that supplies neither. Require positive same-origin
+        // evidence from at least one of them before trusting the rest of this check (#319).
+        if (fetchSite.Length == 0 && origin.Length == 0) return false;
+        if (fetchSite.Length > 0 && fetchSite != "same-origin") return false;
         return origin.Length == 0 || origin == $"{context.Request.Scheme}://{context.Request.Host}";
     }
 

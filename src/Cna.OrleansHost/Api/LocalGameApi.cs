@@ -44,11 +44,8 @@ internal static class LocalGameApi
         var api = app.MapGroup("/api/v1");
         api.MapGet("/bootstrap", (HttpContext context, LocalSessionStore store) =>
         {
-            // A browser navigation with no Origin is not proof of same-origin script intent.
-            // Modern same-origin fetches supply Sec-Fetch-Site; explicit Origin supports tools.
-            if (string.IsNullOrEmpty(context.Request.Headers["Sec-Fetch-Site"])
-                && string.IsNullOrEmpty(context.Request.Headers.Origin))
-                return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+            // The shared /api/v1 middleware above already requires at least one of
+            // Sec-Fetch-Site/Origin via IsSameOrigin, so no extra check is needed here.
             var session = store.Bootstrap(context.Request.Cookies[Cookie]);
             if (session is null) return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
             SetCookie(context, session.Token);
@@ -335,8 +332,13 @@ internal static class LocalGameApi
     private static bool IsSameOrigin(HttpContext context)
     {
         var fetchSite = context.Request.Headers["Sec-Fetch-Site"].ToString();
-        if (fetchSite is not ("" or "same-origin")) return false;
         var origin = context.Request.Headers.Origin.ToString();
+        // Absence of both headers is not proof of same-origin - it is simply the
+        // signature of a client (curl, an <img>/<script> tag, some older browser
+        // navigations) that supplies neither. Require positive same-origin evidence
+        // from at least one of them before trusting the rest of this check (#319).
+        if (fetchSite.Length == 0 && origin.Length == 0) return false;
+        if (fetchSite is not ("" or "same-origin")) return false;
         if (string.IsNullOrEmpty(origin)) return true;
         return Uri.TryCreate(origin, UriKind.Absolute, out var value)
             && value.Scheme == context.Request.Scheme
