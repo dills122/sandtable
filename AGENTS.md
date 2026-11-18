@@ -92,33 +92,25 @@ The repository uses .NET 10 native Microsoft.Testing.Platform mode. Always pass 
 - Do not commit directly to `main`.
 - When work is ready, provide the branch name, PR title, summary, and exact test evidence.
 
-## Context Engine (CCE)
+## Codebase search: use codebase-memory-mcp
 
-This project uses Code Context Engine for intelligent code retrieval and
-cross-session memory.
+This project replaced the prior "Context Engine (CCE)" setup (never actually
+installed — `$HOME/.cce/hooks/cce_hook.sh` did not exist on disk) with the
+`codebase-memory-mcp` MCP server, registered in this repo's `.mcp.json`. It
+is a code-structure search/graph tool, not a decision ledger.
 
-### Searching the codebase
+**Use the graph tools instead of reading files directly** when exploring the
+codebase, answering questions about code, or understanding how something
+works:
 
-**Use `context_search` instead of reading files directly** when exploring
-the codebase, answering questions about code, or understanding how things
-work. `context_search` returns the most relevant code chunks with
-confidence scores instead of whole files.
-
-When to use `context_search`:
-- Answering questions about the codebase ("how does X work?", "where is Y?")
-- Exploring structure or architecture
-- Finding related code, functions, or patterns
-
-Other tools:
-- `expand_chunk` for full source of a compressed result
-- `related_context` for what calls/imports a function
-- `session_recall` to recall past decisions
-
-### Cross-session memory
-
-Call `session_recall("topic phrase")` before answering non-trivial questions.
-Call `record_decision(decision="...", reason="...")` after making choices.
-Call `record_code_area(file_path="...", description="...")` after meaningful work.
+- `search_graph` — find symbols by name/kind.
+- `trace_path` — find callers/callees.
+- `get_code_snippet` — fetch source for a found symbol.
+- `query_graph` — multi-hop structural queries.
+- `get_architecture` — broad structural overview.
+- `search_code` / grep — literal strings or anything the graph doesn't cover.
+- `check_index_coverage` — call for every file you rely on; if incomplete,
+  read the reported missed lines directly.
 
 ### Output style
 

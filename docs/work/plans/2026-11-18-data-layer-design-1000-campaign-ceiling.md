@@ -1,8 +1,17 @@
 # Data/persistence layer design for a 1000-concurrent-campaign ceiling
 
-**Status:** design proposal for human review. No code changes accompany this
-document. RC remains local-only, single-player, low-scale and is **not**
-blocked on anything in here landing. This is a post-RC scaling design.
+**Status:** design accepted; rollout steps 1-2 implemented. §9 (schema
+evolution/migration) landed as #416; §3/§6 (per-campaign file topology,
+`CampaignDurableAuthorityJournalStore`) landed as
+[PR #427](https://github.com/dills122/sandtable/pull/427). Stress testing
+the new topology (2026-11-18) also surfaced and fixed a real TOCTOU race in
+directory bootstrap under concurrent first-access — see
+[PR #429](https://github.com/dills122/sandtable/pull/429) — unrelated to
+scaling but found via this rollout's own verification. Steps 3-6 (hot/cold
+archival, sweep→per-grain reminders, snapshotting, load-test tuning) remain
+not started; see §11. RC remains local-only, single-player, low-scale and is
+**not** blocked on anything remaining in here landing — this is a post-RC
+scaling design.
 
 **Scope note on sources:** everything below that describes current behavior
 was re-read directly from `src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.cs`
@@ -849,17 +858,18 @@ dependency order):**
 §5 as originally scoped is blocked on a `Cna.Core` capability that does not
 exist. It is no longer step 1. The order below reflects that.**
 
-1. **Schema evolution/migration mechanism (§9)** first — independent of
-   everything else, and every later step here is itself a schema/topology
-   change existing code has no mechanism to apply to an existing file
-   (issue #330's "no implicit migration" concern). Originally scoped as
-   "should land before 1-4 ship," now simply first since nothing blocks it.
-2. **Per-campaign (or per-shard) file topology (§3/§6)** second — the real
-   concurrency unlock, bigger structural change (storage path derivation,
-   Orleans grain wiring, directory layout, open-file-handle budget). No
-   longer "benefits from snapshotting being proven first," since snapshotting
-   is blocked — this is now the primary lever for the dominant cost in §1.3's
-   finding (cross-campaign lock contention), independent of §5.
+1. **Schema evolution/migration mechanism (§9)** — **Done**, #416.
+   Independent of everything else, and every later step here is itself a
+   schema/topology change existing code has no mechanism to apply to an
+   existing file (issue #330's "no implicit migration" concern).
+2. **Per-campaign (or per-shard) file topology (§3/§6)** — **Done**,
+   [PR #427](https://github.com/dills122/sandtable/pull/427)
+   (`CampaignDurableAuthorityJournalStore`, host-identity routing/caching).
+   The real concurrency unlock. Verified via dedicated stress testing at
+   N=10 through N=1000 (2026-11-18): lock-contention elimination holds,
+   `_host-identity.db` is not a new bottleneck, no FD leaks at N=1000. That
+   same stress test found and led to fixing a genuine TOCTOU race in
+   directory bootstrap — [PR #429](https://github.com/dills122/sandtable/pull/429).
 3. **Define the terminal-state signal and the hot/cold archival path (§4)**
    third — depends on (2) existing (archival deletes/moves a hot-tier file,
    which needs to already be per-campaign for that to be a clean operation)
