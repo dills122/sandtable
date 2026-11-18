@@ -20,6 +20,12 @@ if (!string.IsNullOrWhiteSpace(campaignJournalPath))
     if (string.IsNullOrWhiteSpace(operatorSecret))
         throw new InvalidOperationException(
             "CampaignJournal:OperatorSecret is required when the durable journal is configured.");
+    // CreateNew only ever publishes a fully-initialized journal to campaignJournalPath (it
+    // builds it at a private temp path and atomically renames it on once valid), so File.Exists
+    // being true here always means either a complete journal or something CreateNew refused to
+    // touch -- never a half-written file from an interrupted run of CreateNew itself. OpenExisting
+    // is the one place that classifies and reports an unrecognized file; see its remarks and
+    // CreateNew's remarks on CampaignDurableAuthorityJournal for the operator recovery guidance.
     builder.Services.AddSingleton(services => File.Exists(campaignJournalPath)
         ? CampaignDurableAuthorityJournal.OpenExisting(campaignJournalPath,
             services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>())
