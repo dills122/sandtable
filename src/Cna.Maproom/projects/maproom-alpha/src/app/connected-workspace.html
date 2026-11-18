@@ -165,7 +165,7 @@
       </aside>
       <section
         class="map-panel connected-map"
-        aria-labelledby="map-title"
+        [attr.aria-labelledby]="map.mapTitleId"
         [class.is-fullscreen]="mapFullscreen()"
         [attr.role]="mapFullscreen() ? 'dialog' : null"
         [attr.aria-modal]="mapFullscreen() ? 'true' : null"
@@ -178,6 +178,7 @@
           aria-label="Scrollable situation map"
         >
           <mr-operations-map
+            #map
             hint="Audience locations · own formations · apparent contacts"
             [zoom]="camera.zoom()"
             [transform]="camera.transform()"
