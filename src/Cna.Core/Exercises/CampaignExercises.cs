@@ -3898,11 +3898,42 @@ public static class CampaignExercises
             audience);
     }
 
+    // #394 gap 2: CurrentCombatDecision never clears across the second-side
+    // boundary (by design -- see ExerciseSession's remarks), so once any
+    // first-side Combat decision has ever been made this must check the
+    // side-appropriate field instead of the single first-side field, or a
+    // second-side query is unconditionally rejected as "already advanced"
+    // even though no second-side decision exists yet.
+    private static bool HasAdvancedCombatSelection(ExerciseSession session) =>
+        session.CurrentSecondBreakdown is not null
+            ? session.CurrentSecondCombatDecision is not null
+            : session.CurrentCombatDecision is not null;
+
+    // #394 gap 3: the second side's own (World, Position) pair, following
+    // CampaignNativeSecondMoveV44.Source's own precedent for binding a
+    // catalog slot's ActiveSide -- the catalog's own entries carry no side
+    // (see LandSequencePosition.ActiveSide), so it is rebound here to the
+    // side the second Breakdown actually recorded.
+    private static (CampaignWorldSnapshotV6 World, LandSequencePosition Position)
+        QuerySecondCombatWorldAndPosition(ExerciseSession session)
+    {
+        var breakdown = session.CurrentSecondBreakdown
+            ?? throw new InvalidOperationException("Second Combat selection requires a completed second Breakdown.");
+        var world = session.CurrentSecondMoveWorld ?? session.CurrentSecondReserveWorld
+            ?? throw new InvalidOperationException("Second Combat selection requires a retained World.");
+        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+            .Single(value => value.PositionId == breakdown.NextPositionId);
+        var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
+            catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
+            catalog.ActorRole, breakdown.Side, catalog.Sources);
+        return (world, position);
+    }
+
     internal static CampaignContactOwnerMovementCut QueryContactOwnerMovementCut(
         ExerciseSession session, Cna.Core.Rules.LandSide side, string actingElementId)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentCombatDecision is not null)
+        if (HasAdvancedCombatSelection(session))
             throw new InvalidOperationException("Combat selection has already advanced this authority cut.");
         return CampaignContactOwnerMovementCut.Project(session.CurrentSnapshot, session.Context,
             session.CurrentContacts, side, actingElementId);
@@ -3912,8 +3943,14 @@ public static class CampaignExercises
         ExerciseSession session, LandSide side, string actingElementId)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentCombatDecision is not null)
+        if (HasAdvancedCombatSelection(session))
             throw new InvalidOperationException("Combat selection has already advanced this authority cut.");
+        if (session.CurrentSecondBreakdown is not null)
+        {
+            var (world, position) = QuerySecondCombatWorldAndPosition(session);
+            return CampaignContactCombatSelectionCut.ProjectSecondCombat(world, position, session.Context,
+                session.CurrentContacts, side, actingElementId);
+        }
         return CampaignContactCombatSelectionCut.Project(session.CurrentSnapshot, session.Context,
             session.CurrentContacts, side, actingElementId);
     }
@@ -3982,6 +4019,17 @@ public static class CampaignExercises
         if (session.SourceTurn is { } sourceTurn) return new ExerciseCheckpoint(sourceTurn);
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
+        // #394 gap 1/3: second-side Combat selection/no-attack completion are
+        // chronologically later than the second Breakdown checkpoint below,
+        // so they must be checked first, the same way CurrentNoAttackCompletion/
+        // CurrentCombatDecision are checked ahead of earlier first-side
+        // checkpoints further down this cascade. Reuses the exact same
+        // ExerciseCheckpoint constructors the first side already uses --
+        // they are generic over "which decision/completion", not hard-coded.
+        if (session.CurrentSecondNoAttackCompletion is { } secondNoAttack)
+            return new ExerciseCheckpoint(secondNoAttack, session.CurrentSecondCombatDecision!);
+        if (session.CurrentSecondCombatDecision is { } secondDecision)
+            return new ExerciseCheckpoint(secondDecision);
         if (session.CurrentSecondBreakdown is { } secondBreakdown)
             return new ExerciseCheckpoint(secondBreakdown, session.CurrentSnapshot);
         if (session.CurrentSecondMovementCompletion is { } completed)
@@ -4317,17 +4365,31 @@ public static class CampaignExercises
         if (string.IsNullOrWhiteSpace(actingElementId)
             || !CampaignActionContractValidator.IsValidSubmission(submission))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
-        if (session.CurrentCombatDecision is not null
+        // #394 extra-2: this method now also serves the second side's first
+        // Combat decision after their own Breakdown (V46) completes -- gated
+        // the same way as the two Query cuts above, by the side-appropriate
+        // field rather than the always-stale first-side one. The expected
+        // state version/position for a second-side submission come from the
+        // second Breakdown's own fields, not from the (stale)
+        // session.CurrentSnapshot -- QueryCheckpoint already resolves these
+        // correctly for the Host's submission-building, so this must match.
+        var isSecondSide = session.CurrentSecondBreakdown is not null;
+        var expectedStateVersion = isSecondSide
+            ? session.CurrentSecondBreakdown!.StateVersion : session.CurrentSnapshot.StateVersion;
+        if (HasAdvancedCombatSelection(session)
             || session.Context.ArtifactV6 is not { } artifact
             || !CampaignSnapshotV11Admission.IsValid(session.CurrentSnapshot, artifact,
                 session.Context.Scenario)
-            || session.CurrentContacts.AuthorityVersion != session.CurrentSnapshot.StateVersion)
+            || session.CurrentContacts.AuthorityVersion != expectedStateVersion)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         if (submission.CampaignId != session.CurrentSnapshot.CampaignId)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
-        if (submission.ExpectedStateVersion != session.CurrentSnapshot.StateVersion)
+        if (submission.ExpectedStateVersion != expectedStateVersion)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
-        if (submission.ExpectedPositionId != CampaignCurrentActionExecution.CurrentPositionId(session.CurrentSnapshot))
+        var expectedPositionId = isSecondSide
+            ? session.CurrentSecondBreakdown!.NextPositionId
+            : CampaignCurrentActionExecution.CurrentPositionId(session.CurrentSnapshot);
+        if (submission.ExpectedPositionId != expectedPositionId)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         var side = submission.Audience switch
         {
@@ -4339,6 +4401,31 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         try
         {
+            if (isSecondSide)
+            {
+                // Net-new path: no legacy second-side Combat decision event
+                // can exist, so retainedLegacyEvent never applies here.
+                var (world, position) = QuerySecondCombatWorldAndPosition(session);
+                var secondCut = CampaignContactCombatSelectionCut.ProjectSecondCombat(world, position,
+                    session.Context, session.CurrentContacts, side.Value, actingElementId);
+                if (!secondCut.AssaultOffers.Any(offer => offer.ActionId == submission.ActionId)
+                    && secondCut.FinishOffer?.ActionId != submission.ActionId)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                var secondSelected = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                    session.CurrentSnapshot, session.CurrentSnapshot.RandomState, session.Context,
+                    session.CurrentContacts, side.Value, actingElementId, submission.ActionId);
+                if (secondSelected.Decision.Side != side || secondSelected.Decision.ActingElementId != actingElementId
+                    || secondSelected.Decision.ActionId != submission.ActionId)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                var secondContacts = session.CurrentContacts.AdvanceSecondCombatSelection(secondSelected.Decision);
+                var secondSuccessor = session.WithSecondCombatSelection(secondSelected, secondContacts);
+                var secondBytes = secondSelected.Decision.SerializeCanonical();
+                var secondReceipt = new CampaignActionAcceptanceReceipt(secondSelected.CampaignId,
+                    secondSelected.Decision.PriorStateVersion, secondSelected.StateVersion,
+                    secondSelected.Decision.PositionId, submission.Audience, submission.ActionId);
+                return ExerciseStepResult.Accepted(secondSuccessor,
+                    new ExerciseStepEvidence(secondReceipt, secondBytes, secondBytes));
+            }
             var cut = retainedLegacyEvent is null
                 ? QueryContactOwnerCombatCut(session, side.Value, actingElementId)
                 : CampaignContactCombatSelectionCut.Project(session.CurrentSnapshot, session.Context,
@@ -4356,9 +4443,8 @@ public static class CampaignExercises
                 || (retainedLegacyEvent is not null && selected.Decision.ContractVersion != CampaignNativeCombatDecisionV12.CurrentContractVersion))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
             var contacts = session.CurrentContacts.AdvanceNativeCombatSelection(selected);
-            var history = session.CurrentHistory.Add(selected.Decision);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
-                history, contacts, selected);
+                session.CurrentHistory.Add(selected.Decision), contacts, selected);
             var receipt = new CampaignActionAcceptanceReceipt(session.CurrentSnapshot.CampaignId,
                 session.CurrentSnapshot.StateVersion, selected.StateVersion,
                 selected.Decision.PositionId, submission.Audience, submission.ActionId);
@@ -4376,11 +4462,36 @@ public static class CampaignExercises
     internal static (string EntryHash, long StateVersion) QueryNativeCombatSelectionRoundBinding(ExerciseSession session,
         bool legacyInitiativeOwner = false)
     {
+        ArgumentNullException.ThrowIfNull(session);
+        // #394 gap 4: second side has no CampaignSnapshotV11-backed position
+        // to feed CampaignNativeCombatSelectionTimeoutV38.Create (see
+        // CampaignNativeSecondCombatDecisionV47's remarks), and no
+        // repeat/cycle chain of its own either, so it cannot share
+        // CreateSelectionTimeout's first-side-only logic below at all.
+        if (session.CurrentSecondBreakdown is not null)
+            return QuerySecondCombatSelectionRoundBinding(session);
         var timeout = CreateSelectionTimeout(session, CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
             -1, -1, -1, null, "selection-unavailable", legacyInitiativeOwner);
         var evidence = timeout is CampaignNativeCombatSelectionTimeoutV38 initial
             ? initial.Evidence : ((CampaignNativeRepeatCombatSelectionTimeoutV38)timeout).Evidence;
         return (evidence.EntryHash, evidence.PriorStateVersion);
+    }
+
+    // #394 gap 4: binds the Host's selection-round timing row to the second
+    // side's own pending authority cut. Mirrors
+    // CampaignNativeRepeatCombatSelectionTimeoutV38.Create's own precedent
+    // for a cut with no CampaignSnapshotV11 of its own: EntryHash is the
+    // hash of the preceding bound event (there, the repeated Breakdown;
+    // here, the second Breakdown that opened this round), not a hash of a
+    // snapshot. Only binding is supported here -- see
+    // TimeoutNativeCombatSelection's second-side branch for why actually
+    // *applying* a second-side selection timeout is out of this PR's scope.
+    private static (string EntryHash, long StateVersion) QuerySecondCombatSelectionRoundBinding(ExerciseSession session)
+    {
+        if (session.CurrentSecondCombatDecision is not null)
+            throw new InvalidOperationException("No pending second-side Combat selection.");
+        var breakdown = session.CurrentSecondBreakdown!;
+        return (CampaignSelectionTimeoutEvidenceV38.Digest(breakdown.SerializeCanonical()), breakdown.StateVersion);
     }
 
     private static object CreateSelectionTimeout(ExerciseSession session, string configurationHash,
@@ -4409,6 +4520,16 @@ public static class CampaignExercises
         bool legacyInitiativeOwner = false)
     {
         ArgumentNullException.ThrowIfNull(session);
+        // #394 gap 4/extra-1: applying a selection-round timeout for the
+        // second side is explicitly out of this PR's scope (see
+        // QuerySecondCombatSelectionRoundBinding's remarks) -- fail loudly
+        // and specifically here rather than falling into the first-side-only
+        // logic below, which would either misread a second-side cut as a
+        // first-side one or throw a generic, unhelpful "no pending repeated
+        // Combat selection" once CreateSelectionTimeout's unconditional
+        // CurrentCombatDecision check sees the stale first-side field.
+        if (session.CurrentSecondBreakdown is not null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
             if ((configuration is not null && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
@@ -4464,6 +4585,53 @@ public static class CampaignExercises
             var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
                 session.CurrentHistory.Add(completion), contacts, selected, completion);
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                selected.StateVersion, completion.StateVersion,
+                completion.NextPositionId, CampaignActionAudience.System,
+                $"sha256:{Convert.ToHexStringLower(SHA256.HashData(
+                    completion.SerializeCanonical()))}");
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
+                completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    // #394 extra-2: second-side analog of CompleteNativeCombatNoAttack. A
+    // distinct method rather than a branch inside the first-side one, to
+    // match this file's own convention of a separate Complete* method per
+    // "track" (c.f. CompleteNativeRepeatCombatNoAttack for the repeat track)
+    // and to keep CompleteNativeCombatNoAttack's own ~70-call-site behavior
+    // completely untouched. CampaignNativeCombatNoAttackCompletionV13.Create
+    // itself needs no change: it takes a CampaignCombatSelectionFrame, and
+    // that type's implicit operator from CampaignNativeCombatDecisionStateV12
+    // (CampaignCombatSelectionFrame.cs) derives World/RandomState from
+    // `selected.PriorSnapshot`, which gap 3 already bridges correctly for
+    // the second side.
+    //
+    // Deliberately NOT wired into Reserve Release: QueryNativeReserveReleaseState
+    // (above) only knows how to lazily initialize CurrentReserveRelease from
+    // the first side's CurrentCombatDecision/CurrentNoAttackCompletion. A
+    // second-side no-attack completion is accepted and durably persisted by
+    // this method, but the campaign does not auto-advance past it into
+    // Reserve Release in this change -- see the Host-side auto-continuation
+    // in CampaignDurableAuthorityJournal.Submissions.cs for where that stops
+    // on purpose, and this PR's description for the follow-up this leaves.
+    internal static ExerciseStepResult CompleteSecondCombatNoAttack(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentSecondCombatDecision is not { } selected
+            || session.CurrentSecondNoAttackCompletion is not null
+            || session.CurrentContacts.AuthorityVersion != selected.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var completion = CampaignNativeCombatNoAttackCompletionV13.Create(selected, session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
+            var successor = session.WithSecondNoAttack(completion, contacts);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 selected.StateVersion, completion.StateVersion,
                 completion.NextPositionId, CampaignActionAudience.System,
@@ -8012,6 +8180,69 @@ public static class CampaignExercises
         bool predecessorVerified)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
+        // #394 gap 1/3: second-side Combat selection/no-attack completion are
+        // chronologically later than the second Breakdown checked below, so
+        // -- mirroring QueryCheckpoint's own ordering -- they must be
+        // replayed and verified first.
+        if (completedSession.CurrentSecondNoAttackCompletion is { } secondNoAttack)
+        {
+            var expected = secondNoAttack.SerializeCanonical();
+            var secondNoAttackHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.SecondNoAttackPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Second no-attack completion has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Second no-attack predecessor did not replay.");
+                var result = CompleteSecondCombatNoAttack(predecessor);
+                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Second no-attack completion differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    expected, streamHash, secondNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondNoAttackHash, null); }
+        }
+        if (completedSession.CurrentSecondCombatDecision is { } secondDecision)
+        {
+            var expected = secondDecision.Decision.SerializeCanonical();
+            var secondDecisionHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.SecondCombatSelectionPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Second Combat selection has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Second Combat selection predecessor did not replay.");
+                var (world, position) = QuerySecondCombatWorldAndPosition(predecessor);
+                var replayed = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                    predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                    predecessor.CurrentContacts, secondDecision.Decision.Side, secondDecision.Decision.ActingElementId,
+                    secondDecision.Decision.ActionId);
+                var bytes = replayed.Decision.SerializeCanonical();
+                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayed.Decision);
+                if (!expected.AsSpan().SequenceEqual(bytes)
+                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Second Combat selection differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    bytes, streamHash, secondDecisionHash, Hash(bytes));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondDecisionHash, null); }
+        }
         if (completedSession.CurrentSecondBreakdown is { } secondBreakdown)
         {
             var expected = secondBreakdown.SerializeCanonical();

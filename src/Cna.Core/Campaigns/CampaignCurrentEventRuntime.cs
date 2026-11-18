@@ -18,6 +18,9 @@ internal static class CampaignCurrentEventSerializer
         CampaignNativeSecondMoveV44 movement => movement.SerializeCanonical(),
         CampaignNativeSecondMovementCompletedV45 completed => completed.SerializeCanonical(),
         CampaignNativeSecondBreakdownV46 breakdown => breakdown.SerializeCanonical(),
+        // #394 gap 1/3: second-side Combat decision, keyed to (World, Position)
+        // rather than CampaignSnapshotV11 -- see that type's remarks.
+        CampaignNativeSecondCombatDecisionV47 secondSelected => secondSelected.SerializeCanonical(),
         CampaignNativeCombatRbaCancellationV33 rbaCancellation => rbaCancellation.SerializeCanonical(),
         CampaignNativeRepeatCombatNoAttackV32 noAttack => noAttack.SerializeCanonical(),
         CampaignNativeRepeatCombatDecisionV31 selection => selection.SerializeCanonical(),
@@ -80,6 +83,7 @@ internal static class CampaignCurrentEventSerializer
             "second-element-moved-and-stopped" => CampaignNativeSecondMoveV44.Deserialize(canonicalJson),
             "second-movement-completed" => CampaignNativeSecondMovementCompletedV45.Deserialize(canonicalJson),
             "second-breakdown-completed" => CampaignNativeSecondBreakdownV46.Deserialize(canonicalJson),
+            "second-combat-selection-decided" => CampaignNativeSecondCombatDecisionV47.Deserialize(canonicalJson),
             "cycle-repeat-combat-no-attack-completed" =>
                 CampaignNativeRepeatCombatNoAttackV32.Deserialize(canonicalJson),
             "cycle-repeat-combat-selection-decided" =>

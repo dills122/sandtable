@@ -57,6 +57,32 @@ internal sealed record CampaignContactCombatSelectionCut(
             mayFinish ? new FinishCombatWithoutAttackAction(actingElementId) : null);
     }
 
+    // #394 gap 2/3: second-side analog of Project, built from (World, Position)
+    // directly instead of a CampaignSnapshotV11 -- see
+    // CampaignNativeSecondCombatDecisionV47's remarks for why. Reuses
+    // DeriveAdjacentOffers below unchanged: it is already generic over where
+    // its inputs come from.
+    internal static CampaignContactCombatSelectionCut ProjectSecondCombat(
+        CampaignWorldSnapshotV6 world, LandSequencePosition position, CampaignContentContext context,
+        CampaignContactJournal contacts, LandSide side, string actingElementId)
+    {
+        var owner = CampaignContactOwnerMovementCut.ProjectSecondCombatOwner(world, position, context,
+            contacts, side, actingElementId);
+        var offers = DeriveAdjacentOffers(actingElementId,
+            owner.ContactObservation.ActingFormationId,
+            owner.ActingElement.CurrentLocationId, owner.Edges,
+            owner.ContactObservation.CurrentTargets);
+        // Mirrors Project's own Land 10.3 mandatory-attack check; ArtifactV6
+        // is already guaranteed non-null by ProjectSecondCombatOwner above.
+        var opposing = side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
+        var enemyControl = CampaignElementMovedV3Factory.DeriveZocAuthority(
+            world, context.ArtifactV6!, context.Scenario, opposing);
+        if (enemyControl.SourceRepresentationIds.Count != 0 || enemyControl.ControlledLocationIds.Count != 0)
+            throw new InvalidOperationException("Positive ZOC needs a contact-safe Combat projection.");
+        return new(contacts.AuthorityVersion, owner, Array.AsReadOnly(offers),
+            new FinishCombatWithoutAttackAction(actingElementId));
+    }
+
     internal static SelectContactAssaultAction[] DeriveAdjacentOffers(string actingElementId,
         string actingFormationId, string originLocationId,
         IReadOnlyList<CampaignObservationEdge> edges,

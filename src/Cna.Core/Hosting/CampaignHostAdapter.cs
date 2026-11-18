@@ -1220,6 +1220,14 @@ public static class CampaignHostAdapter
     public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatNoAttack(session);
 
+    /// <summary>
+    /// #394 extra-2/3: second-side analog of <see cref="CompleteNativeCombatNoAttack"/>.
+    /// Deliberately does not auto-advance into Reserve Release -- see
+    /// <see cref="CampaignExercises.CompleteSecondCombatNoAttack"/>'s remarks.
+    /// </summary>
+    public static ExerciseStepResult CompleteSecondCombatNoAttack(ExerciseSession session) =>
+        CampaignExercises.CompleteSecondCombatNoAttack(session);
+
     public static ExerciseStepResult CompleteNativeRepeatCombatNoAttack(
         ExerciseSession session) =>
         CampaignExercises.CompleteNativeRepeatCombatNoAttack(session);
@@ -1322,6 +1330,24 @@ public static class CampaignHostAdapter
     public static bool IsNativeCombatVoluntaryFinish(ExerciseSession session) =>
         session.CurrentCombatDecision?.Decision.Choice == "finish-combat-without-attack";
 
+    // #394 extra-3: IsNativeCombatVoluntaryFinish/IsNativeCombatSelectedAssault
+    // key off CurrentCombatDecision only. Once a second-side decision exists
+    // that field is stale (whatever the first side chose), so the Host's
+    // post-selection auto-continuation needs these side-correct siblings
+    // instead of reusing the first-side checks against the wrong decision.
+    public static bool IsNativeSecondCombatVoluntaryFinish(ExerciseSession session) =>
+        session.CurrentSecondCombatDecision?.Decision.Choice == "finish-combat-without-attack";
+
+    public static bool IsNativeSecondCombatSelectedAssault(ExerciseSession session) =>
+        session.CurrentSecondCombatDecision?.Decision.Choice == "select-contact-assault";
+
+    // #394 extra-3: lets callers (the Host's post-selection auto-continuation)
+    // guard the *first*-side-only checks above/below so they never alias onto
+    // a second-side decision just because the stale CurrentCombatDecision
+    // happens to carry the same Choice string the second side also picked.
+    public static bool IsSecondSideCombatPending(ExerciseSession session) =>
+        session.CurrentSecondBreakdown is not null;
+
     public static bool IsNativeCombatSelectedAssault(ExerciseSession session) =>
         session.CurrentCombatDecision?.Decision.Choice == "select-contact-assault";
 
@@ -1368,6 +1394,23 @@ public static class CampaignHostAdapter
         if (!accepted.IsAccepted || predecessor.CurrentCombatDecision is null
             || accepted.SuccessorSession?.CurrentNoAttackCompletion is null)
             throw new ArgumentException("Accepted no-attack completion required.", nameof(accepted));
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+            CampaignActionAudience.System, accepted.Evidence!.Receipt.ActionId);
+    }
+
+    /// <summary>
+    /// #394 extra-2/3: second-side analog of <see cref="NativeCombatNoAttackCommand"/>,
+    /// used only for the <c>NativeSecondCombatNoAttackKind</c> accepted step.
+    /// </summary>
+    public static CampaignActionSubmission SecondCombatNoAttackCommand(
+        ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        if (!accepted.IsAccepted || predecessor.CurrentSecondCombatDecision is null
+            || accepted.SuccessorSession?.CurrentSecondNoAttackCompletion is null)
+            throw new ArgumentException("Accepted second-side no-attack completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
             checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
@@ -1637,6 +1680,18 @@ public static class CampaignHostAdapter
         {
             var breakdown = CampaignNativeRepeatBreakdownV30.Deserialize(step.EventRecords[0]);
             return (CampaignSelectionTimeoutEvidenceV38.Digest(breakdown.SerializeCanonical()), breakdown.StateVersion);
+        }
+        // #394 gap 4: second-side analog of the NativeRepeatBreakdownKind
+        // case immediately above -- VerifySelectionRounds replays every
+        // accepted step's binding from history to cross-check the
+        // selection_rounds table, so this must derive the exact same
+        // EntryHash QuerySecondCombatSelectionRoundBinding computed when the
+        // round was first initialized (CampaignExercises.cs), or a
+        // genuinely correct second-side round looks tampered-with on replay.
+        if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind && step.EventRecords.Count == 1)
+        {
+            var secondBreakdown = CampaignNativeSecondBreakdownV46.Deserialize(step.EventRecords[0]);
+            return (CampaignSelectionTimeoutEvidenceV38.Digest(secondBreakdown.SerializeCanonical()), secondBreakdown.StateVersion);
         }
         if (step.Kind is not (CampaignHostAcceptedStep.LegacyKind or CampaignHostAcceptedStep.ContactMovementKind)) return null;
         using var document = System.Text.Json.JsonDocument.Parse(step.SnapshotCheckpoint);
@@ -2758,6 +2813,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactMovementKind
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
+                or CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeCombatBarrageKind
                 or CampaignHostAcceptedStep.ContactRbaDeclineKind
                 or CampaignHostAcceptedStep.ContactRbaMoveKind
@@ -2835,15 +2891,35 @@ public static class CampaignHostAdapter
             {
                 if (step.EventRecords.Count != 1)
                     return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                // #394: a second-side decision serializes as
+                // CampaignNativeSecondCombatDecisionV47 -- a different,
+                // deliberately non-legacy shape (see that type's remarks).
+                // The legacy-contract-version check below only applies to
+                // genuine first-side events; without this, a second-side
+                // event fails CampaignNativeCombatDecisionV12.Deserialize
+                // (wrong eventType) and the existing catch below rejects the
+                // whole step as InvalidStep instead of just leaving
+                // retainedLegacySelection null (there is no such thing as a
+                // "legacy" second-side event -- the mechanism is net new).
+                var isSecondSideDecision = false;
                 try
                 {
-                    var recorded = CampaignNativeCombatDecisionV12.Deserialize(step.EventRecords[0]);
-                    if (recorded.ContractVersion == CampaignNativeCombatDecisionV12.CurrentContractVersion)
-                        retainedLegacySelection = step.EventRecords[0];
+                    _ = CampaignNativeSecondCombatDecisionV47.Deserialize(step.EventRecords[0]);
+                    isSecondSideDecision = true;
                 }
-                catch (System.Text.Json.JsonException)
+                catch (System.Text.Json.JsonException) { }
+                if (!isSecondSideDecision)
                 {
-                    return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                    try
+                    {
+                        var recorded = CampaignNativeCombatDecisionV12.Deserialize(step.EventRecords[0]);
+                        if (recorded.ContractVersion == CampaignNativeCombatDecisionV12.CurrentContractVersion)
+                            retainedLegacySelection = step.EventRecords[0];
+                    }
+                    catch (System.Text.Json.JsonException)
+                    {
+                        return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+                    }
                 }
             }
             CampaignSelectionTimeoutEvidenceV38? selectionTimeout = null;
@@ -2993,6 +3069,7 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.ContactMovementKind => SubmitContactOwnerMovement(
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
+                CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind => CompleteSecondCombatNoAttack(session),
                 CampaignHostAcceptedStep.NativeCombatBarrageKind => CompleteNativeCombatBarrage(session),
                 CampaignHostAcceptedStep.NativeCombatForceCompletionKind =>
                     CompleteNativeCombatForceAssignment(session),
@@ -3269,6 +3346,11 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         NativeCombatNoAttackCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind == CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(
+                        SecondCombatNoAttackCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (step.Kind == CampaignHostAcceptedStep.NativeRepeatCombatNoAttackKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
@@ -3746,10 +3828,16 @@ public sealed class CampaignHostAcceptedStep
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
+    // #394 extra-3: Host-recorded system step for the second side's
+    // voluntary-finish auto-continuation. Distinct from NativeCombatNoAttackKind
+    // so cold replay dispatches to CompleteSecondCombatNoAttack instead of the
+    // first-side method.
+    public const int NativeSecondCombatNoAttackContractVersion = 115;
     public const string LegacyKind = "legacy-action";
     public const string ContactMovementKind = "contact-movement";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
     public const string NativeCombatNoAttackKind = "native-combat-no-attack";
+    public const string NativeSecondCombatNoAttackKind = "native-second-combat-no-attack";
     public const string NativeCombatBarrageKind = "native-combat-barrage";
     public const string ContactRbaDeclineKind = "contact-rba-decline";
     public const string ContactRbaMoveKind = "contact-rba-move";
@@ -3871,7 +3959,7 @@ public sealed class CampaignHostAcceptedStep
         string? actingElementId = null)
     {
         if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactCombatSelectionKind
-                or NativeCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
+                or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
                 or NativeCombatCancelledAssaultKind or NativeCombatAssaultResultKind
@@ -3889,7 +3977,7 @@ public sealed class CampaignHostAcceptedStep
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
                 or ContactRepeatMovementKind or ContactRepeatCombatSelectionKind
                 && string.IsNullOrWhiteSpace(actingElementId))
-            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeCombatBarrageKind
+            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 or NativeCombatAntiArmorKind or NativeCombatCancelledAssaultKind
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
@@ -4014,6 +4102,7 @@ public sealed class CampaignHostAcceptedStep
             NativeCombatRetreatTimeoutKind => NativeCombatRetreatTimeoutContractVersion,
             NativeCombatSelectionTimeoutKind => NativeCombatSelectionTimeoutContractVersion,
             NativeCombatNoAttackKind => NativeCombatNoAttackContractVersion,
+            NativeSecondCombatNoAttackKind => NativeSecondCombatNoAttackContractVersion,
             _ => NativeCombatBarrageContractVersion,
         };
         Kind = kind;

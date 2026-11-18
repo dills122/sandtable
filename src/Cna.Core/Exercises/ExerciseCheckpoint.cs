@@ -134,6 +134,32 @@ public sealed class ExerciseCheckpoint
         PositionId = completion.NextPositionId;
     }
 
+    // #394 gap 1/3: second-side analogs of the two constructors immediately
+    // above, for the (World, Position)-keyed CampaignNativeSecondCombatDecisionStateV47
+    // instead of the CampaignSnapshotV11-keyed CampaignNativeCombatDecisionStateV12.
+    // RulesetHash still comes from TurnFacts -- a turn-wide, position-independent
+    // fact that does not depend on which side's position CurrentSnapshot happens
+    // to be frozen at (see that type's own remarks).
+    internal ExerciseCheckpoint(CampaignNativeSecondCombatDecisionStateV47 decision)
+    {
+        ArgumentNullException.ThrowIfNull(decision);
+        ContractVersion = decision.Decision.ContractVersion;
+        CampaignId = decision.CampaignId;
+        StateVersion = decision.StateVersion;
+        RulesetHash = decision.TurnFacts.RulesetHash;
+        PositionId = decision.Decision.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignNativeSecondCombatDecisionStateV47 decision)
+    {
+        ContractVersion = CampaignNativeCombatNoAttackCompletionV13.CurrentContractVersion;
+        CampaignId = completion.CampaignId;
+        StateVersion = completion.StateVersion;
+        RulesetHash = decision.TurnFacts.RulesetHash;
+        PositionId = completion.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeCombatBarrageV14 barrage,
         CampaignNativeCombatDecisionStateV12 decision)
     {
