@@ -1,0 +1,11 @@
+# Graziani E3714: independent source review
+
+**Disposition:** Six neighbors and location-level summary agree with the scanned map. The note omits comparison with pinned data and states a railroad crossing at the E side more confidently than this crowded scan permits. Treat railroad crossings and the SE junction as unresolved, not as complete side certification or movement permission.
+
+Checked PDF pages 5 and 1 of the same scan, not an independent edition. PDF SHA-256 matches `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; independently rendered page-5 crop matches `88c5bca1d3c1415e4aa26a202fd8273222d7f0da865360068a24e9d76e751fd0`. Grid places E3813, E3814, E3715, E3614, E3613 and E3713 respectively NW, NE, E, SE, SW and W of E3714. City blocks and three figures are visible in E3714; a very faint circular port mark is visible in the water. Aboukir's clearer port and training symbols lie in E3815. The page-1 key identifies these symbol types; its Alexandria row lists E3613/3714 with Major City, Port and Victory Condition marked, and Assigned Garrison dashed. That row does not assign each property individually to both hexes.
+
+A dark paired road crosses the E and SW sides. Route and city ink overlap tightly at E, SW and especially SE; blue marks near E are consistent with railroad artwork but this review cannot independently distinguish a continuous cross-ticked railroad crossing there. Nor can it certify individual railroad crossings or route connectivity at SW or SE. Sea is visible at NW, NE and W; overprint limits negative claims near corners.
+
+Pinned [hex data](../../../src/Cna.Core/Content/HistoricalMap/hexes.v1.json) records E3714 as `terrain: major-city`, `settlement: major-city`, `coastal: true`. Pinned [side data](../../../src/Cna.Core/Content/HistoricalMap/hexsides.v1.json) records E3613–E3714 and E3714–E3715 as `railroad` and `road`, and E3614–E3714 as `coast` and `road`. No literal E3714 side entry appears for E3813, E3814 or E3713. Visible road readings agree with the first two entries; the crowded SE junction prevents independent certification of its individual features. Absence of an entry does not establish absence of a printed feature.
+
+No runtime data or tests changed. This review does not assess rights, occupancy, or game rules.

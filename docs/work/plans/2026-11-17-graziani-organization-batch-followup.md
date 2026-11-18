@@ -1,0 +1,27 @@
+# Graziani Commonwealth arrivals: assignment and deployment follow-up
+
+**2026-11-17 — bounded same-stream visual source check.** This checks the
+organization and deployment implications of the six already-transcribed
+Commonwealth schedule rows, not an independent roster transcription, official
+clarification, accepted policy or complete legal-action analysis. The previously
+independently entered schedule and 21 member fields are in the
+[arrival packet](graziani-arrival-review/README.md); source conflicts and
+limitations remain in the [arrival scope](2026-11-12-graziani-arrival-scope.md).
+
+| Source | Bounded finding | Implication / unresolved question |
+| --- | --- | --- |
+| [Commonwealth charts](https://spigames.net/PDFv10/CNA_ChartsCWPlayer.pdf), PDF pp. 3–4, §4.43a legend | Bracketed information following a unit includes its parent formation; New Zealand units other than two railroad engineer battalions are assigned to 2nd NZ Division even where parent is omitted. | The GT2 6 NZ Field Artillery and GT6 6 NZ Brigade therefore have source support for the same divisional assignment, despite missing brackets on those rows. Assignment is not proof of initial co-location or attachment, and the GT6 versus Land §20.11 timing conflict remains. |
+| Same source, pp. 3–4 and 11 | GT4 3rd Hussars carries `[7]`; OA lists it among unassigned armor-class units. Its OA note describes a **later** 9th Armored Brigade / 10th Armored Division assignment and later changed tank mix. GT2 2 RTR is also on the unassigned sheet; its note says it was assigned to 4/7 Armored Brigade upon arrival. GT2 7 RTR has no bracket or assignment note on these inspected rows. | The bracketed schedule, OA placement and historical note are distinct evidence; do not turn later Hussars assignment or later weapon mix into GT4 starting facts. Decide the game effect of schedule `[7]` and 2 RTR's historical note, and check any controlling scenario/organization exceptions. These pages alone do not establish 7 RTR's parent at arrival. |
+| Same source, pp. 3–5 and 15 | GT3 1 Field Artillery and GT5 7 Indian Brigade are bracketed `[4 In]`. The OA sheet places both under 4th Indian Division; the brigade's three named infantry battalions are indented under its HQ. OA key defines indentation as parent assignment; its introduction allows player changes subject to §19. | Source supports divisional assignment and printed brigade-parent relationships, not a fixed attachment arrangement or waiver of reorganization rules. Check any scenario override and legality before encoding. |
+| Same source, pp. 4–5 and 21 | Polish OA note describes attachment to 6th Australian Division at the beginning of the campaign in the sense of taking orders. Its brigade and eight OA rows arrive `3/1`; the schedule row does not name a parent. | Historical command relationship is evidence, but the note does not independently specify a scenario-stage attachment operation, hex, cost or enforceable player restriction. Check §19 and scenario precedence before deciding its game representation. |
+| Same source, p. 4; [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), p. 31, §20.14; [scenario](https://spigames.net/PDFv10/CNA_Scenarios_DupFromAirRules.pdf), PDF p. 4 / printed p. 28, §60.47 | Schedule defaults reinforcements to any Cairo hex unless specifically indicated; returning units have a separate Alexandria-or-Cairo option. Same-parent arrivals may share a hex with player-selected attachments/detachments subject to stacking; arrivals without the same parent must use separate hexes **if possible**, without exceeding stacking. Scenario directs the printed track. | Cairo is not a single-hex default. Same-parent co-location is permissive, not mandatory; different-parent separation is conditional, not permission to exceed stacking. Determine whether/when the same-parent test uses chosen or printed assignments, its interaction with arrival attachments and applicable stage order. No claim here that six-row deployment is legal on an actual map state. |
+| Same charts, pp. 3–4; scenario p. 28, §60.92(A) and p. 29, §60.93(A) | The GT5 row prints 5 light/20 medium and GT6 row 25 light/85 medium/5 heavy; schedule calls listed trucks first-line attached trucks freely divisible among units unless otherwise indicated. Land-only §60.92(A) equates the ability to bring in motorization points with medium-truck ability, one point per medium point. Land-and-Air §60.93(A) instead names medium **plus heavy**. | Printed medium subtotals are 20 and 85; 105 is only their arithmetic sum, not an established total scenario allowance. Do not add light, or apply the Land-and-Air heavy conversion to Land-only. Whether and how §60.92(A) converts these particular attached row quantities, especially blanks elsewhere and timing/attachment, still needs a selected interpretation and reconciliation with other applicable rules. |
+
+**Source identity:** checked local scans SHA-256: Commonwealth charts
+`f75d074727071025f3145b273921ec03882b8b57cb4a429485995d4cf5255981`, Land
+`b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`, scenario
+`fa12488e59552d7b0ff0d5abefa891d4b81af0492256bec2d25f8d61ef040a66`.
+Visual checks used charts pp. 3–5, 11, 15, 18 and 21, Land p. 31 and scenario
+pp. 28–29; they do not exhaust errata, special exceptions, attachment limits,
+map hex availability or other editions. Hashes establish byte identity, not
+source rights. No gameplay or runtime changes and no new independent reading.

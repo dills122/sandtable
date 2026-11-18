@@ -74,9 +74,10 @@ reinforcement or errata audit and no independent physical edition.
    cells. §32.74 distributes resulting damage points as the Axis player
    desires among ships in Alexandria Harbor; resolve empty harbor and excess
    allocation separately. §30.34 takes ship damage from Gun Rating and its
-   example leaves AA unchanged, but its last sentence refers to reduced Gun
-   **and AA** ratings if any; do not generalize the example into an independently
-   proven universal rule that AA rating can never be reduced. §30.36 distinguishes
+   example gives the resulting AA rating without specifying its starting AA.
+   A later [independent check](2026-11-17-graziani-aa-damage-followup-review.md)
+   identifies proportional AA reduction in §30.13; the earlier inference that
+   the example leaves AA unchanged was unsupported. §30.36 distinguishes
    falling below half from repair to better than half, so the equality case
    warrants the candidate's explicit gate. §30.37 describes six consecutive
    Alexandria OpStages for one Gun Rating level, restarting if the ship moves

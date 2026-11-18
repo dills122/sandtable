@@ -1,0 +1,15 @@
+# Sequential dice: second source review
+
+**Disposition:** corroborate the [source note](2026-11-17-graziani-rules-sequential-dice.md) and [first review](2026-11-17-graziani-rules-sequential-dice-review.md). The checked examples and chart values support fixed distinguished die roles; no correction to their counts or table cells found. One wording qualification: an ordered two-digit result such as `25` preserves both faces and can be decoded; a record need not literally store a pair if it preserves the ordered values without loss.
+
+## Source checks
+
+- [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) PDF/printed p. 5 §3.1 defines a sequential roll using the large die for tens and small die for ones. Page 24 §15.73(a) expressly gives large die 2 and small die 5 as `25`, so descending numerical-face sorting is incompatible with that example. The same case uses `34`, and §§15.73(b–c) add the **same** two faces for separate close-assault results. §15.73(d) calls for an additional die when a Captured result occurs; the original two dice are not a fresh roll for (b–c). This extra draw concerns that close-assault procedure, not automatically a convoy attack.
+- Land p. 44 §32.64 directs two dice read sequentially for the simplified Axis convoy result. It does not repeat the large/small example or explicitly authorize numerical sorting. The general glossary plus §15.73's example support the fixed-role reading; applying it here is an interpretation across rules, not an explicit convoy worked example.
+- [Common chart](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf), PDF/printed p. 12 §41.5, Axis Naval Convoys: at 21–40 Bomb Points, `55–64` corresponds to 5%; at 201–260, `64–66` corresponds to 25%. For two distinguished d6, the first interval comprises `55, 56, 61, 62, 63, 64` and the second `64, 65, 66`. Under independent fair-d6 assumptions their conditional probabilities are 6/36 and 3/36. The table alone establishes neither those assumptions nor a reachable bomb column.
+
+The source note's instruction to preserve die roles or ordered draw identity is sound. Its warning against replacing the ordered pair with “a single number” is best read as avoiding a **lossy** aggregate such as the sum: a faithful d66 integer is reversible over valid faces 1–6, and supports both sequential lookup and the sum. The system still needs a versioned RNG/replay contract and separate validation of each draw, including §15.73(d)'s conditional extra die in that distinct procedure. Convoy 5% application, grouping and rounding remain separate unresolved questions.
+
+## Provenance and limits
+
+Visually re-rendered Land PDF pp. 5, 24 and 44 and common-chart PDF p. 12 on November 17, 2026. SHA-256 Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; common chart `51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0`. Informed same-scan review, not a blind entry, new edition or rights grant. Did not independently inspect the Air examples, errata, physical dice or runtime RNG. No runtime data, tests or readiness changed.

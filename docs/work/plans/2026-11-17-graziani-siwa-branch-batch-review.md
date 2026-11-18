@@ -1,0 +1,9 @@
+# Siwa branch batch: independent visual review
+
+**Date:** November 17, 2026. **Verdict:** The [batch](2026-11-17-graziani-siwa-branch-batch.md) describes plausible local ink continuations within its stated limits; it does not establish legal connectivity or a convoy route.
+
+Independently inspected the existing 600 dpi detail of [Map C](https://spigames.net/PDFv10/CNA_Maps.pdf), PDF p. 3. Single dashed marks cross C0127–C0226 and C0226–C0225, with leads across C0225–C0224 and C0225–C0325. Other single dashes cross C0127–C0227, C0227–C0228 and C0228–C0229, then lead across C0229–C0230 and C0229–C0130. Paired dashes cross C0127–C0227, C0227–C0327 and C0327–C0426. Dash gaps at the apparent C0225 and C0229 junctions and oasis artwork in C0127 prevent certifying exact joins. C0227–C0327 overlays brown terrain ink; this review does not classify its slope or movement effect.
+
+Checked all eleven listed pairs against [pinned hexsides](../../../src/Cna.Core/Content/HistoricalMap/hexsides.v1.json); reported features match. These sparse VASSAL-derived records are comparison data, not independent proof of the printed sheet. No exhaustive terrain or onward-route survey was made. Local marks alone cannot establish a connection to Tobruk, convoy eligibility, or impossibility; movement policy, state and relevant remaining coverage still require evidence.
+
+**Provenance and limits:** Inspected the same scan and existing crop as the batch, not an independent edition or physical sheet. Verified SHA-256: map `8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`; crop `9a801bc94aa8d4ceca1f1635d0aa542a3d0c2520cb7a308ded329c65d6553004`; pinned sides `124e6f943930f4fa718eb04fa1dc86b6089582aebfaff8fcb83f98ab30d98e6c`. Key identification relies on the prior [source review](2026-11-17-graziani-siwa-route-source-review.md). No runtime change or gameplay test.

@@ -1,0 +1,18 @@
+# Graziani replacement training: independent source review
+
+**Date:** 2026-11-17
+**Disposition:** Confirm follow-up's duration, training-location, interruption, and absorption boundaries. No source error found in its stated claims. Do not treat unresolved instructor, capacity, timing, or interruption questions as settled policy.
+
+## Sources checked
+
+Visually read [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), printed/PDF pages 12, 27–28, and 31, §§5.2, 17.31–.37, 20.21, and 20.41–.49; read [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), PDF page 2, §17.3. Downloaded Land PDF SHA-256 `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`, matching follow-up. Reviewed [follow-up](2026-11-17-graziani-replacement-training-followup.md) against those sources. This is an independent reading of the same edition, not independent source corroboration or an exhaustive later-errata, chart, and scenario search.
+
+## Findings
+
+- **Duration confirmed.** §20.43 explicitly requires training for both sides: gun one Operations Stage (described as uncrating), infantry three, tank/AC/recce six; arrival stage may count. Its note distinguishes Commonwealth morale training. §17.34's six stages per morale point therefore cannot simply replace this schedule; §17.36's option to fight untrained concerns morale training and does not remove §20.43's requirement.
+- **Locations and instructor boundary confirmed.** §20.43 names Tripoli or any major city for Axis and points to §17.32 for Commonwealth locations. §17.35 prescribes an eligible same-hex combat battalion during each training stage and its morale, strength, and type conditions. §20.43 cross-references §17.3 but does not spell out application to each replacement class. Errata says Axis centers train replacement points rather than actual units; it does not expressly dispense with instructors or state whether centers are mandatory in addition to the named city rule. These remain interpretive questions, not proof of a center-only or center-plus-battalion rule.
+- **Interruption boundary confirmed.** §17.33 states any CP expenditure during an Operations Stage interrupts a unit's training; §5.2 permits reaction as exception to the voluntary-movement prohibition. Neither inspected passage states whether previous stage credits survive interruption or whether required stages must be consecutive. Applying unit language to replacement counters and deciding whether an absent instructor or changed location invalidates current or prior credit require explicit interpretation.
+- **Absorption boundary confirmed.** §20.41 requires immediate designation for eventual delivery, trained points, and same-hex receiving unit; §20.49 restricts absorption to Reorganization. Organization precedes Naval Convoy Arrival in §5.2, though Organization segments can be ordered freely. Arrival-stage training allowance does not by itself establish same-stage absorption or the precise completion boundary.
+- **Additional implementation constraints.** §20.41 also requires immediate reassignment when the designated unit is eliminated or withdrawn; §20.42 gives unabsorbed points Basic Morale −3 and restricts their combat, enemy-ZOC entry, and CPA. §20.46 calls replacement points moving toward the front for assignment truck convoys moving only in the Truck Convoy Movement Phase, while §20.44 describes trained tank, gun, and recce points moving on their own or by rail. Interpret those movement provisions together before asserting a transport rule. These are supplementary constraints, not errors in the scoped follow-up.
+
+No runtime or readiness changes. No gameplay tests run.

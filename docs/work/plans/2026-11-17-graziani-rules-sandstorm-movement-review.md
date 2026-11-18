@@ -1,0 +1,21 @@
+# Sandstorm movement and breakdown: source review
+
+**Disposition:** Confirm the [movement note](2026-11-17-graziani-rules-sandstorm-movement.md)'s source readings. Section 21.37(d)'s movement measured in CP expended supports an actual-movement denominator more strongly than a printed CPA denominator, but the overlap with §29.45, movement context, cost attribution and check timing need a versioned interpretation. Neither synthetic threshold examples nor a weather roll establish a legal move or breakdown check.
+
+## Source check
+
+Visually inspected [Land rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf), PDF/printed pp. 14, 33–34, 41 and 44: §§8.31–.33, 21.11, 21.21–.29, 21.32–.33, 21.37(d), 29.1, 29.41, 29.44–.46 and 32.55. Also checked all four pages of [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf). Verified SHA-256: Land `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`; errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`.
+
+Section 21.37(d) describes at least half a unit's **movement**, calculated in CP expended in a particular Movement Phase, Retreat, Reaction, etc., on a game-map with sandstorms, and adjusts the breakdown column one higher. Section 29.45 says a unit expending at least half its Capability Points for movement in sandstorm hexes during a given Movement Phase receives the adjustment. Neither explicitly states that printed CPA is the denominator. The first wording supports movement CP as denominator; exact scope and `game-map` versus `hexes` remain interpretive rather than resolved by this review. Section 29.44 doubles movement costs for hexes with sandstorms, without explicitly allocating mixed hexside costs across differently affected hexes. Section 8.31 describes distinct hex and side costs; §8.33 supplies conditional road/track effects.
+
+Section 29.1 determines weather per Operations Stage and consults a location table for sandstorm or rainstorm; §29.41 excludes delta hexes and §29.46 stops sandstorms in coastal hexes. Membership in those terrain categories and affected maps must be established separately. Section 32.55 exempts **Motorization Points** from breakdown but says all other breakdown rules apply. That text alone does not exempt separately represented eligible tank or armored-reconnaissance TOE points.
+
+Section 21.11 limits breakdown to specified vehicle types. Under §§21.24–.27, stopping prompts a possible check, breakdown points accumulate over both players' portions of the stage, a repeat check depends on reaching the next higher column after an earlier check, and no check occurs until more than three points accumulate. Section 21.32 combines vehicle and weather adjustments; §21.33 bounds table columns. Cumulative breakdown points are distinct from the movement-CP fraction's unresolved time window. Whether a new weather shift affects a repeated-check eligibility or only the checked column requires an explicit reading of §§21.26 and 21.32, not an assumption from the two different accumulations. Preserve previously resolved checks and identify later correction/replay behavior.
+
+No explicit §21.37, §29.44 or §29.45 correction was found in the four-page errata scan. This is limited to that package and does not exclude indirect or later authority.
+
+## Tests and admission limits
+
+A `1 / 2` movement-CP example distinguishes a half-actual-movement interpretation from half of a 10-CPA allowance only after the same accepted cost attribution is used for numerator and denominator. Decide explicitly whether those amounts use weather-doubled charges and how side costs are apportioned; the source passages do not fully define that calculation. Test just below, exactly at and above half using exact arithmetic, plus zero movement, mixed weather, multiple stops and segments, retreat/reaction, weather shift with unchanged accumulated points, and eligible real vehicles versus abstract Motorization Points. Verify known versus unknown weather/map inputs and deterministic replay without retroactively changing completed checks.
+
+This is an informed separate reading of the same scan, not a blind entry, independent edition or rights grant. No policy is admitted; no runtime, readiness or gameplay tests changed.

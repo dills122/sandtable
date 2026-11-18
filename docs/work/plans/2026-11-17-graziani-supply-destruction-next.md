@@ -2,6 +2,16 @@
 
 **Result:** The printed action is a pre-movement, CP-costed, per-Supply-Unit die attempt, with an explicit one-attempt-per-unit-per-subsegment limit. It is separate from §32.13 capture, §32.15 both-zero depletion and §32.18 dummy discovery. Source does not completely specify target selection, CP allocation or dummy interaction; no attempted destruction, map contact or die result is inferred for Graziani.
 
+**Later source qualification:** §32.12 represents abstract Supply Units with
+Supply Dump counters, so the common §6.3 one-third-CPA dump action cannot be
+excluded by terminology alone. The relationship between it and §32.17's
+one-half-CPA instruction needs an explicit precedence decision. See the
+[follow-up](2026-11-17-graziani-destruction-subsegment-source.md) and
+[independent review](2026-11-17-graziani-destruction-subsegment-source-review.md).
+The half-CPA values below quote §32.17. [RUL-GRA-21](2026-11-12-graziani-ruling-decisions.md#rul-gra-21-land-only-supply-destruction-cost-bounded-planning)
+selects that procedure for Land-only planning, but allocation, rounding and
+runtime admission remain open.
+
 ## Printed action and exact boundaries
 
 | Element | Source-backed reading |
