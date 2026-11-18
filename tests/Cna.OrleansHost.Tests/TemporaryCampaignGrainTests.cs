@@ -369,12 +369,14 @@ public sealed class TemporaryCampaignGrainTests
             var grants = sessions.IssueGrants(operatorSession.OperatorId,
                 TemporaryCampaignGrain.FixtureCampaignId);
             var axis = (await sessions.RedeemAsync(operatorSession,
-                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis,
+                TestContext.Current.CancellationToken))!;
             var commonwealthOperator = sessions.Bootstrap(null)!;
             var otherGrants = sessions.IssueGrants(commonwealthOperator.OperatorId,
                 TemporaryCampaignGrain.FixtureCampaignId);
             var commonwealth = (await sessions.RedeemAsync(commonwealthOperator,
-                TemporaryCampaignGrain.FixtureCampaignId, otherGrants.Commonwealth))!;
+                TemporaryCampaignGrain.FixtureCampaignId, otherGrants.Commonwealth,
+                TestContext.Current.CancellationToken))!;
             var ingress = new TemporaryOutwardActionIngress(sessions,
                 host.Services.GetRequiredService<IGrainFactory>(),
                 host.Services.GetRequiredService<TemporaryCampaignAccess>());
@@ -526,7 +528,8 @@ public sealed class TemporaryCampaignGrainTests
             var grants = sessions.IssueGrants(operatorSession.OperatorId,
                 TemporaryCampaignGrain.FixtureCampaignId);
             var axis = (await sessions.RedeemAsync(operatorSession,
-                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis,
+                TestContext.Current.CancellationToken))!;
             var cut = (await grain.Inner.QueryPrivateSideAsync(grain.Capability,
                 CampaignActionAudience.Axis, axis.Generation!)).Cut!;
             var request = new TemporaryOutwardActionRequest(1, cut.CampaignId,
@@ -580,7 +583,8 @@ public sealed class TemporaryCampaignGrainTests
         var grants = sessions.IssueGrants(operatorSession.OperatorId,
             TemporaryCampaignGrain.FixtureCampaignId);
         var axis = (await sessions.RedeemAsync(operatorSession,
-            TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+            TemporaryCampaignGrain.FixtureCampaignId, grants.Axis,
+            TestContext.Current.CancellationToken))!;
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var inFlight = sessions.WithAuthorizedSeatAsync(axis.Token, axis.CampaignId!,
@@ -591,7 +595,8 @@ public sealed class TemporaryCampaignGrainTests
                 return true;
             }, false);
         await entered.Task;
-        var handoff = sessions.RedeemAsync(axis, axis.CampaignId!, grants.Commonwealth);
+        var handoff = sessions.RedeemAsync(axis, axis.CampaignId!, grants.Commonwealth,
+            TestContext.Current.CancellationToken);
         Assert.False(handoff.IsCompleted);
         release.SetResult();
         Assert.True(await inFlight);
@@ -599,6 +604,51 @@ public sealed class TemporaryCampaignGrainTests
         Assert.Equal("commonwealth", next!.Seat);
         Assert.Null(sessions.Find(axis.Token));
         Assert.NotEqual(axis.Generation, next.Generation);
+    }
+
+    [Fact]
+    public async Task CancelledSeatHandoffWaiterDoesNotLockOutFutureAdmissionOrRedemption()
+    {
+        var sessions = new LocalSessionStore(TimeProvider.System);
+        var operatorSession = sessions.Bootstrap(null)!;
+        var grants = sessions.IssueGrants(operatorSession.OperatorId,
+            TemporaryCampaignGrain.FixtureCampaignId);
+        var axis = (await sessions.RedeemAsync(operatorSession,
+            TemporaryCampaignGrain.FixtureCampaignId, grants.Axis,
+            TestContext.Current.CancellationToken))!;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        // Hold the admission gate with an in-flight action, exactly like
+        // SeatHandoffWaitsForAdmittedAction, so the handoff below has to wait for it.
+        var inFlight = sessions.WithAuthorizedSeatAsync(axis.Token, axis.CampaignId!,
+            async _ =>
+            {
+                entered.SetResult();
+                await release.Task;
+                return true;
+            }, false);
+        await entered.Task;
+
+        using var cancellation = new CancellationTokenSource();
+        var handoff = sessions.RedeemAsync(axis, axis.CampaignId!, grants.Commonwealth,
+            cancellation.Token);
+        Assert.False(handoff.IsCompleted);
+        cancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => handoff);
+
+        // Let the in-flight action finish and release the admission gate.
+        release.SetResult();
+        Assert.True(await inFlight);
+
+        // The cancelled waiter must not have consumed the grant, removed the old
+        // session, or left a phantom pending-revocation marker behind: both the old
+        // session and the untouched grant must still work afterward.
+        Assert.Same(axis, sessions.Find(axis.Token));
+        Assert.True(await sessions.WithAuthorizedSeatAsync(axis.Token, axis.CampaignId!,
+            _ => Task.FromResult(true), false));
+        var retried = await sessions.RedeemAsync(axis, axis.CampaignId!, grants.Commonwealth,
+            TestContext.Current.CancellationToken);
+        Assert.Equal("commonwealth", retried!.Seat);
     }
 
     private static CampaignHostPrivateSideCut Side(CampaignActionAudience side, long version,
