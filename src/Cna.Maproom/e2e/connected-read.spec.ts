@@ -769,3 +769,181 @@ for (const seat of ['axis', 'commonwealth'] as const) {
     expect(posts).toEqual(['/api/v1/campaigns', '/api/v1/campaigns/c-1/seat']);
   });
 }
+
+// Models a same-tab hot-seat handoff. The shipped submit control is permanently disabled
+// (ConnectedWorkspace constructs CampaignActionFlow with no adapter and admittedCapability
+// false), so a "drafted action" never advances past selecting an own formation and seeing its
+// legal-action labels. Reaching a real seat flip in one tab also needs the view to already be
+// cleared first (the start screen's seat buttons only render when `!view()`), so this reuses the
+// same route-mocking technique as "mismatched refresh generation removes prior audience view"
+// above: a refresh reports a seat/generation mismatch (clearing axis's view), then entering
+// Commonwealth resolves through ConnectedCampaignService's resumeSeat()/GET .../session path.
+test('seat switch after a drafted-but-unsubmitted selection leaves no axis trace in the commonwealth DOM', async ({
+  page,
+}) => {
+  let viewReads = 0;
+  let sessionReads = 0;
+  await page.route('**/api/v1/**', async (route) => {
+    const request = route.request();
+    const path = new URL(request.url()).pathname;
+    if (path === '/api/v1/bootstrap') {
+      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+    } else if (path === '/api/v1/fixtures') {
+      await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
+    } else if (path === '/api/v1/campaigns') {
+      await route.fulfill({
+        status: 201,
+        json: {
+          contractVersion: 1,
+          campaign: { campaignId: 'rules9' },
+          seatGrants: { axis: 'grant-axis', commonwealth: 'grant-commonwealth' },
+        },
+      });
+    } else if (path === '/api/v1/campaigns/rules9/seat') {
+      expect(request.postDataJSON()).toEqual({ contractVersion: 1, grantId: 'grant-axis' });
+      await route.fulfill({
+        json: { contractVersion: 1, campaignId: 'rules9', seat: 'axis', sessionGeneration: 'g-1' },
+      });
+    } else if (path === '/api/v1/campaigns/rules9/session') {
+      sessionReads++;
+      // First call is the refresh's own identity recheck: it reports a seat the refresh did not
+      // request, so ConnectedCampaignService.refreshAuthorizedView rejects it and the view is
+      // cleared. The second call is the later "Create and enter Commonwealth" resumeSeat() check,
+      // which now reports the seat actually requested, so the handoff is accepted.
+      await route.fulfill({
+        json:
+          sessionReads === 1
+            ? {
+                contractVersion: 1,
+                campaignId: 'rules9',
+                seat: 'commonwealth',
+                sessionGeneration: 'handoff-pending',
+              }
+            : {
+                contractVersion: 1,
+                campaignId: 'rules9',
+                seat: 'commonwealth',
+                sessionGeneration: 'g-2',
+              },
+      });
+    } else if (path === '/api/v1/campaigns/rules9/view') {
+      viewReads++;
+      if (viewReads === 1) {
+        await route.fulfill({
+          json: {
+            contractVersion: 1,
+            campaignId: 'rules9',
+            seat: 'axis',
+            sessionGeneration: 'g-1',
+            audienceRevision: '1',
+            position: { turn: '1', phaseId: 'movement', stageId: 'initial', decision: 'human' },
+            locations: [{ locationId: 'west', label: 'West crossing', x: -1, y: 0 }],
+            ownFormations: [
+              {
+                formationId: 'axis-scout-1',
+                label: 'Panzer scout element',
+                kindLabel: 'Recon',
+                locationId: 'west',
+                orderStatusLabel: 'Awaiting orders',
+              },
+            ],
+            apparentContacts: [],
+            legalActions: [
+              {
+                actionId: 'advance',
+                actionContractVersion: 1,
+                kind: 'move',
+                label: 'Advance scout element',
+                formationId: 'axis-scout-1',
+              },
+            ],
+            formationLedger: [],
+            warDiary: [],
+          },
+        });
+      } else if (viewReads === 2) {
+        // Refresh's read: a different generation than 'g-1' triggers SeatIdentityError.
+        await route.fulfill({
+          json: {
+            contractVersion: 1,
+            campaignId: 'rules9',
+            seat: 'axis',
+            sessionGeneration: 'rotated',
+            audienceRevision: '2',
+            position: { turn: '1', phaseId: 'movement', stageId: 'initial', decision: 'human' },
+            locations: [],
+            ownFormations: [],
+            apparentContacts: [],
+            legalActions: [],
+            formationLedger: [],
+            warDiary: [],
+          },
+        });
+      } else {
+        await route.fulfill({
+          json: {
+            contractVersion: 1,
+            campaignId: 'rules9',
+            seat: 'commonwealth',
+            sessionGeneration: 'g-2',
+            audienceRevision: '1',
+            position: { turn: '1', phaseId: 'movement', stageId: 'initial', decision: 'human' },
+            locations: [{ locationId: 'south', label: 'South ridge', x: 1, y: 0 }],
+            ownFormations: [
+              {
+                formationId: 'cw-patrol-1',
+                label: 'Highland patrol',
+                kindLabel: 'Infantry',
+                locationId: 'south',
+                orderStatusLabel: 'Awaiting orders',
+              },
+            ],
+            apparentContacts: [],
+            legalActions: [
+              {
+                actionId: 'flank',
+                actionContractVersion: 1,
+                kind: 'move',
+                label: 'Patrol flank route',
+                formationId: 'cw-patrol-1',
+              },
+            ],
+            formationLedger: [],
+            warDiary: [],
+          },
+        });
+      }
+    } else throw new Error(`Unexpected API call: ${path}`);
+  });
+
+  await page.goto('/?mode=campaign');
+  await page.getByRole('button', { name: 'Check local fixtures' }).click();
+  await page.getByRole('button', { name: 'Create and enter Axis' }).click();
+  await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
+
+  // Seat A drafts: select the formation and see its (permanently disabled) action label.
+  await page.locator('.roster-item').filter({ hasText: 'Panzer scout element' }).click();
+  await expect(page.locator('.connected-inspector')).toContainText('Panzer scout element');
+  const draftAction = page.getByRole('button', { name: 'Advance scout element' });
+  await expect(draftAction).toBeVisible();
+  await expect(draftAction).toBeDisabled();
+  await expect(page.locator('.map-caption')).toContainText('Selected: Panzer scout element');
+
+  // Hand off without submitting: refresh reports a seat mismatch and the view is cleared.
+  await page.getByRole('button', { name: 'Refresh view' }).click();
+  await expect(page.getByRole('alert')).toContainText('Seat identity changed');
+  await expect(page.getByText('Panzer scout element')).toHaveCount(0);
+
+  // Seat B enters the same tab/page through the real resumeSeat() handoff path.
+  await page.getByRole('button', { name: 'Create and enter Commonwealth' }).click();
+  await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
+  await expect(page.locator('.connected-inspector')).toContainText('Highland patrol');
+  await expect(page.locator('dl.phase-facts')).toContainText('commonwealth');
+
+  // Assert no trace of seat A's drafted selection survives into seat B's rendered DOM.
+  await expect(page.getByText('Panzer scout element')).toHaveCount(0);
+  await expect(page.getByText('Advance scout element')).toHaveCount(0);
+  await expect(page.getByText('West crossing')).toHaveCount(0);
+  await expect(page.locator('[data-location-id="axis-scout-1"]')).toHaveCount(0);
+  await expect(page.locator('.map-caption')).not.toContainText('Panzer scout element');
+});
