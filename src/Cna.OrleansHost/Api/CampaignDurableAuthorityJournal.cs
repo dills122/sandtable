@@ -349,13 +349,45 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     /// <summary>
-    /// Checkpoints the temporary journal's write-ahead log fully into its single main file and
-    /// removes the now-empty <c>-wal</c>/<c>-shm</c> sidecars, so the file about to be published
-    /// is one self-contained file rather than a main-file/WAL pair. Throws rather than publishing
-    /// a file with WAL content that did not fully checkpoint -- that would mean the single file we
-    /// are about to atomically move is missing data.
+    /// Checkpoints <paramref name="dbPath"/>'s write-ahead log fully into its single main file and
+    /// removes the now-empty <c>-wal</c>/<c>-shm</c> sidecars, so it is one self-contained file
+    /// rather than a main-file/WAL pair. Used by <see cref="CreateNew"/> and <see
+    /// cref="RunMigrations"/> on the temporary file each builds right before publishing it, and by
+    /// <see cref="RunMigrations"/> a second time on the real configured path itself, immediately
+    /// before replacing it with that temporary file (see <see cref="RunMigrations"/>'s remarks for
+    /// why). Throws rather than letting a caller publish/leave a file with WAL content that did not
+    /// fully checkpoint -- that would mean the single file in question is missing data, or (for the
+    /// real path) risks a stale WAL surviving next to content that supersedes it.
     /// </summary>
     private static void CheckpointAndRemoveWalSidecars(string dbPath)
+    {
+        // A WAL checkpoint needs no other reader/writer holding dbPath open to fully TRUNCATE.
+        // RunMigrations calls this against the real configured path immediately after recovering
+        // from (or retrying) a crash, which can mean a few milliseconds of OS-level lag releasing a
+        // just-terminated process's shared-memory mapping of that same path's -shm sidecar before a
+        // fresh checkpoint sees it as free -- observed directly while verifying this change. Retry
+        // briefly rather than failing on that transient lag. This does not weaken the guarantee: if
+        // the WAL genuinely cannot be fully checkpointed (a real other connection, not just OS
+        // cleanup lag), every attempt below observes the same non-empty sidecar and this still
+        // throws, refusing to publish, exactly as before this retry loop existed.
+        InvalidOperationException? lastFailure = null;
+        for (var attempt = 0; attempt < 10; attempt++)
+        {
+            if (attempt > 0) Thread.Sleep(20);
+            try
+            {
+                CheckpointAndRemoveWalSidecarsOnce(dbPath);
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
+                lastFailure = ex;
+            }
+        }
+        throw lastFailure!;
+    }
+
+    private static void CheckpointAndRemoveWalSidecarsOnce(string dbPath)
     {
         using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
@@ -377,6 +409,278 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     "refusing to publish a journal that is not yet a single self-contained file.");
             try { File.Delete(sidecar); }
             catch { /* best effort; an empty sidecar left behind is harmless */ }
+        }
+    }
+
+    /// <summary>
+    /// A single explicit, numbered forward-migration step: given a connection already inside an
+    /// open transaction against a private temporary copy of the journal, mutates the schema/data in
+    /// place (<c>ALTER TABLE</c>, data transforms, etc.) to carry it from <see cref="FromVersion"/>
+    /// to <see cref="ToVersion"/>. Does not set <c>PRAGMA user_version</c> itself -- <see
+    /// cref="RunMigrations"/> does that once, after every applicable step has committed.
+    /// </summary>
+    internal readonly record struct MigrationStep(int FromVersion, int ToVersion,
+        Action<SqliteConnection, SqliteTransaction> Apply);
+
+    /// <summary>
+    /// Explicit, numbered forward-migration steps for the hot/live journal, applied in order by
+    /// <see cref="RunMigrations"/> when <see cref="OpenExisting"/> finds an on-disk file whose
+    /// <c>user_version</c> is behind <see cref="CurrentSchemaVersion"/> but still within this
+    /// mechanism's scope (some step's <see cref="MigrationStep.FromVersion"/>).
+    /// </summary>
+    /// <remarks>
+    /// <para><b>Scope boundary</b> (answering issue #330's "Archives compatibility" checklist item):
+    /// this mechanism is for schema changes <b>from this point forward</b> only. The historical
+    /// versions recognized by <see cref="RetreatSchemaVersion"/> down through
+    /// <see cref="LegacySchemaVersion"/> predate this mechanism's introduction and are deliberately
+    /// left exactly as they were, on the existing parallel read-only legacy branches in
+    /// <see cref="Load"/> and the <c>schemaVersion != CurrentSchemaVersion</c> write-gates (e.g.
+    /// <see cref="RequireWritable"/>) -- this list never runs against them, and never will.
+    /// Retroactively migrating those historical versions is explicitly out of scope ("no implicit
+    /// migration or fabricated deadlines").</para>
+    /// <para>Empty in production today: nothing has changed <see cref="SchemaVersion"/>'s shape (14)
+    /// yet, so there is nothing to migrate from. A future real schema change bumps
+    /// <see cref="SchemaVersion"/> (and <see cref="CreateNew"/>'s DDL) to the new value and, in the
+    /// same change, registers a step here from the old value to the new one, so on-disk files
+    /// written under the old value get carried forward the next time they are opened. Tests register
+    /// throwaway steps through this same list (see <c>Cna.OrleansHost.FoundationChild</c>'s
+    /// migration-probe modes) to exercise the mechanism itself without waiting for a real schema
+    /// change -- always from a short-lived, single-purpose child process, never from inside the
+    /// shared test process, for the same reason <see cref="CreateNewCrashHook"/> is restricted that
+    /// way: this is static mutable state, and other test classes open journals concurrently under
+    /// xUnit's default parallelization.</para>
+    /// <para><b>Cold-tier note.</b> This registry and <see cref="RunMigrations"/> apply to the
+    /// hot/live journal only. The design doc
+    /// (<c>docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md</c> &#167;9)
+    /// proposes that a future cold/archived tier never migrates its records -- they are read forever
+    /// under whatever schema version they were written with, which is simpler and consistent with
+    /// never mutating archived data. That tier does not exist yet; a future implementer of it should
+    /// not assume this mechanism extends there.</para>
+    /// </remarks>
+    internal static readonly List<MigrationStep> MigrationSteps = [];
+
+    /// <summary>
+    /// Test-only accessor for <see cref="SchemaVersion"/> (today's baseline, before this
+    /// mechanism's introduction), so a migration-probe test registering a synthetic step doesn't
+    /// need to hardcode that baseline as a magic number -- and stays correct if it is ever bumped
+    /// for a real schema change.
+    /// </summary>
+    internal static int SchemaVersionForMigrationTests => SchemaVersion;
+
+    /// <summary>
+    /// The schema version <see cref="OpenExisting"/>'s migration mechanism treats as fully migrated:
+    /// <see cref="SchemaVersion"/> when <see cref="MigrationSteps"/> is empty (production today), or
+    /// the last registered step's <see cref="MigrationStep.ToVersion"/> otherwise. Every write-gate
+    /// that used to compare against <see cref="SchemaVersion"/> directly now compares against this
+    /// instead, so a freshly migrated file is treated identically to one created directly at the
+    /// newest version.
+    /// </summary>
+    private static int CurrentSchemaVersion => MigrationSteps.Count == 0
+        ? SchemaVersion : MigrationSteps[^1].ToVersion;
+
+    /// <summary>
+    /// True when <paramref name="version"/> is a version <see cref="MigrationSteps"/> knows how to
+    /// carry forward to <see cref="CurrentSchemaVersion"/> -- i.e. it equals some registered step's
+    /// <see cref="MigrationStep.FromVersion"/>. Also validates that the registered chain is
+    /// contiguous (each step's <see cref="MigrationStep.FromVersion"/> equal to the previous step's
+    /// <see cref="MigrationStep.ToVersion"/>, starting at <see cref="SchemaVersion"/>), so a caller
+    /// that gets <see langword="true"/> back can trust that running the chain always lands exactly on
+    /// <see cref="CurrentSchemaVersion"/>, never short of it.
+    /// </summary>
+    private static bool IsMigratableVersion(int version)
+    {
+        var expected = SchemaVersion;
+        var found = false;
+        foreach (var step in MigrationSteps)
+        {
+            if (step.FromVersion != expected)
+                throw new InvalidOperationException(
+                    "Registered migration steps are not a contiguous chain from SchemaVersion.");
+            if (step.FromVersion == version) found = true;
+            expected = step.ToVersion;
+        }
+        return found;
+    }
+
+    private const string MigrationTempInfix = ".migrating-";
+
+    /// <summary>
+    /// Crash-safety test seam for <see cref="RunMigrations"/>, invoked with a checkpoint name at
+    /// well-defined points (see call sites below) -- the migration analogue of
+    /// <see cref="CreateNewCrashHook"/>, with the same restriction: only ever set by an
+    /// out-of-process crash-probe child, never from inside the shared test process.
+    /// </summary>
+    internal static Action<string>? MigrationCrashHook;
+
+    /// <summary>
+    /// Carries an existing journal file forward from <paramref name="fromVersion"/> to
+    /// <see cref="CurrentSchemaVersion"/> by running every applicable <see cref="MigrationSteps"/>
+    /// entry in order, inside the same crash-safety envelope <see cref="CreateNew"/> uses for
+    /// first-time initialization.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>Crash safety (what this guarantees).</b> Every schema/data change this method makes
+    /// lives in a private temporary file in the same directory, built via SQLite's <c>VACUUM INTO</c>
+    /// against a read-only connection to <paramref name="absolutePath"/> -- which, per SQLite's own
+    /// documentation, never requires (and never takes) write access to the source database, and also
+    /// fully consolidates any not-yet-checkpointed write-ahead log content into the copy. So no
+    /// migration step, and no schema/data mutation of any kind, is ever applied to
+    /// <paramref name="absolutePath"/> directly -- only to the temporary copy. Every migration step
+    /// runs in its own committed transaction against that copy; only once every step has committed
+    /// and the temporary file has been fully WAL-checkpointed into a single self-contained file
+    /// (<see cref="CheckpointAndRemoveWalSidecars"/>, reused from <see cref="CreateNew"/>) does this
+    /// method atomically replace <paramref name="absolutePath"/> with it
+    /// (<see cref="File.Move(string, string, bool)"/> with <c>overwrite: true</c> -- atomic on the
+    /// same volume, the same guarantee <see cref="CreateNew"/>'s remarks describe for its own publish
+    /// step; the only difference here is a destination that already exists, which is exactly why
+    /// <c>overwrite: true</c> is needed instead of the no-overwrite publish <see cref="CreateNew"/>
+    /// uses). Immediately before that rename, this method also runs the same
+    /// <see cref="CheckpointAndRemoveWalSidecars"/> helper against <paramref name="absolutePath"/>
+    /// itself -- the one operation this method performs directly against the original file, and a
+    /// non-destructive one: a WAL checkpoint only persists already-committed data into the main file,
+    /// changing no logical content (same schema, same rows, same hash chain), so it does not
+    /// contradict "never half-migrated." It is required, not optional: <see cref="File.Move"/> only
+    /// replaces the main file, so a stale pre-migration <c>-wal</c>/<c>-shm</c> pair left sitting next
+    /// to the newly-published content would make SQLite replay that stale WAL (self-consistently
+    /// validated against its own matching <c>-shm</c>) over the new file's different page layout on
+    /// the very next open, corrupting reads of the migrated file -- a failure mode this method
+    /// verified by reproducing it before adding this step. If this process is interrupted at any
+    /// point before the rename completes, <paramref name="absolutePath"/> is left exactly as it was
+    /// before this call in every way that matters -- fully pre-migration, openable by the old logic
+    /// exactly as before -- never half-migrated. There is never a window where a partially migrated
+    /// file is visible at the real configured path.</para>
+    /// </remarks>
+    private static void RunMigrations(string absolutePath, int fromVersion)
+    {
+        var directory = Path.GetDirectoryName(absolutePath)!;
+        // An orphaned temp file from a previous interrupted migration attempt can never have been
+        // published to absolutePath -- nothing is published until it is fully built and verified --
+        // so it is always safe to clear before starting a fresh attempt, exactly like CreateNew's
+        // own orphan sweep.
+        TryDeleteOrphanedMigrationTempFiles(absolutePath, directory);
+        var tempPath = Path.Combine(directory,
+            Path.GetFileName(absolutePath) + MigrationTempInfix + Guid.NewGuid().ToString("N"));
+        try
+        {
+            using (var source = new SqliteConnection(new SqliteConnectionStringBuilder
+            {
+                DataSource = absolutePath,
+                Mode = SqliteOpenMode.ReadOnly,
+                Cache = SqliteCacheMode.Private,
+                Pooling = false,
+            }.ToString()))
+            {
+                source.Open();
+                using var vacuum = source.CreateCommand();
+                vacuum.CommandText = "VACUUM INTO $dest";
+                vacuum.Parameters.AddWithValue("$dest", tempPath);
+                vacuum.ExecuteNonQuery();
+            }
+            MigrationCrashHook?.Invoke("after-temp-snapshot-created");
+            using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+            {
+                DataSource = tempPath,
+                Mode = SqliteOpenMode.ReadWrite,
+                Cache = SqliteCacheMode.Private,
+                Pooling = false,
+            }.ToString()))
+            {
+                connection.Open();
+                Execute(connection, "PRAGMA journal_mode=WAL");
+                Execute(connection, "PRAGMA synchronous=FULL");
+                Execute(connection, "PRAGMA foreign_keys=ON");
+                var version = fromVersion;
+                var stepIndex = 0;
+                foreach (var step in MigrationSteps)
+                {
+                    if (step.FromVersion < version) continue;
+                    if (step.FromVersion != version)
+                        throw new InvalidOperationException(
+                            "Registered migration steps are not a contiguous chain from SchemaVersion.");
+                    using var transaction = connection.BeginTransaction(deferred: false);
+                    step.Apply(connection, transaction);
+                    transaction.Commit();
+                    version = step.ToVersion;
+                    stepIndex++;
+                    // Named by ordinal position, not by version number, so a crash-probe test can
+                    // reference a fixed checkpoint name without depending on SchemaVersion's actual
+                    // current value.
+                    MigrationCrashHook?.Invoke($"after-step-{stepIndex}");
+                }
+                if (version != CurrentSchemaVersion)
+                    throw new InvalidOperationException(
+                        "Migration steps did not reach the current schema version.");
+                MigrationCrashHook?.Invoke("before-version-marking");
+                Execute(connection, $"PRAGMA user_version={CurrentSchemaVersion}");
+            }
+        }
+        catch
+        {
+            TryDeleteMigrationTempFiles(tempPath);
+            throw;
+        }
+        if (!OperatingSystem.IsWindows())
+            File.SetUnixFileMode(tempPath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        try
+        {
+            // Same reasoning as CreateNew: consolidate the WAL into the single main file first, so
+            // the atomic rename below publishes one self-contained file, never a main-file/WAL pair
+            // a crash between two separate renames could tear apart.
+            CheckpointAndRemoveWalSidecars(tempPath);
+            // Also fold and clear any not-yet-checkpointed WAL content sitting at absolutePath's OWN
+            // sidecars (left over from ordinary prior use -- a live WAL-mode file commonly still has
+            // these). This is non-destructive: a WAL checkpoint only persists already-committed data
+            // into the main file, changing no logical content, so it does not conflict with "the
+            // original file is never half-migrated" -- it stays byte-for-byte equivalent in every way
+            // that matters (schema, rows, hash chain). It is required before the rename, not optional:
+            // File.Move only replaces the main file, so a stale pre-migration -wal/-shm pair left
+            // sitting next to the newly-published content would make SQLite replay that stale WAL
+            // (validated self-consistently against its own matching -shm) over the NEW file's
+            // different page layout on the very next open, corrupting reads of the migrated file --
+            // confirmed by reproduction during this change's own verification.
+            CheckpointAndRemoveWalSidecars(absolutePath);
+            MigrationCrashHook?.Invoke("before-publish");
+            // Atomic on the same volume, same as CreateNew's publish -- overwrite:true because,
+            // unlike CreateNew, the destination already exists (the pre-migration file being
+            // replaced).
+            File.Move(tempPath, absolutePath, overwrite: true);
+        }
+        catch
+        {
+            TryDeleteMigrationTempFiles(tempPath);
+            throw;
+        }
+        if (!OperatingSystem.IsWindows())
+            File.SetUnixFileMode(absolutePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+    }
+
+    private static void TryDeleteMigrationTempFiles(string tempPath)
+    {
+        foreach (var candidate in new[] { tempPath, tempPath + "-wal", tempPath + "-shm", tempPath + "-journal" })
+        {
+            try { if (File.Exists(candidate)) File.Delete(candidate); }
+            catch
+            {
+                // Best effort -- see TryDeleteCreationTempFiles for the same reasoning: a temp file
+                // never published to absolutePath can never hold real campaign authority.
+            }
+        }
+    }
+
+    private static void TryDeleteOrphanedMigrationTempFiles(string absolutePath, string directory)
+    {
+        var prefix = Path.GetFileName(absolutePath) + MigrationTempInfix;
+        string[] entries;
+        try { entries = Directory.GetFiles(directory); }
+        catch { return; }
+        foreach (var entry in entries)
+        {
+            var name = Path.GetFileName(entry);
+            if (!name.StartsWith(prefix, StringComparison.Ordinal)) continue;
+            if (name.EndsWith("-wal", StringComparison.Ordinal) || name.EndsWith("-shm", StringComparison.Ordinal)
+                || name.EndsWith("-journal", StringComparison.Ordinal))
+                continue;
+            TryDeleteMigrationTempFiles(entry);
         }
     }
 
@@ -442,8 +746,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     "database (it may be truncated, corrupted, or not a journal at all)."), ex);
             }
         }
+        // A version this mechanism knows how to carry forward (some registered step's FromVersion,
+        // short of CurrentSchemaVersion) is recognized even though it is not literally
+        // CurrentSchemaVersion or one of the historical legacy constants below -- it gets migrated
+        // in place, under crash safety, a few lines down.
+        var migratable = applicationId == ApplicationId && version != CurrentSchemaVersion
+            && IsMigratableVersion(version);
         if (applicationId != ApplicationId
-            || version is not (SchemaVersion or RetreatSchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion))
+            || (!migratable && version != CurrentSchemaVersion
+                && version is not (RetreatSchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion)))
             throw new InvalidOperationException(RecoveryGuidance(absolutePath, applicationId == ApplicationId
                 ? $"The file's schema version ({version}) is not one this host build recognizes. " +
                   "This can mean the file was created by a newer host build, or that it never " +
@@ -452,6 +763,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   "version at all)."
                 : "The file does not carry this journal's application id; it is not recognized as " +
                   "a journal created by this host."));
+        if (migratable)
+        {
+            RunMigrations(absolutePath, version);
+            version = CurrentSchemaVersion;
+        }
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
             version, contentResolver);
     }
@@ -460,7 +776,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         CampaignDecisionTimingConfigurationV1? timing = null)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (schemaVersion != SchemaVersion)
+        if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException("Create new campaigns in a current journal.");
         var timingBytes = timing?.SerializeCanonical() ?? [];
         using var connection = Connect(create: false);
@@ -502,7 +818,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(initialization);
-        if (schemaVersion != SchemaVersion)
+        if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException("Create new campaigns in a current journal.");
         var created = CampaignHostAdapter.Create(request, content, initialization);
         RequireBounded(created.CreationEventBytes, MaxSourceCreationBytes);
@@ -1627,7 +1943,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private void RequireWritable()
     {
-        if (schemaVersion != SchemaVersion)
+        if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException("Legacy journal is read-only; explicit migration is required.");
     }
 
@@ -1811,7 +2127,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void VerifySourceHasNoAuxiliaryAuthority(SqliteConnection connection,
         SqliteTransaction transaction, string campaignId)
     {
-        if (schemaVersion != SchemaVersion)
+        if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException("Source initialization requires the current journal schema.");
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
@@ -1836,7 +2152,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void VerifyPregameAuxiliaryAuthority(SqliteConnection connection,
         SqliteTransaction transaction, string campaignId, bool sourceSetup)
     {
-        if (schemaVersion != SchemaVersion)
+        if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException("Pregame source requires the current journal schema.");
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
@@ -1869,16 +2185,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private SqliteConnection Connect(bool create)
     {
-        // Pooling is safe here: every BeginTransaction(deferred: false) is committed or
-        // rolled back before this method's `using` disposes the connection, and both
-        // per-connection PRAGMAs below are re-applied on every call, so a handle recycled
-        // from the pool carries no session state a caller could observe.
+        // Pooling is deliberately off: PR #412 enabled it, but a pooled connection's native
+        // handle stays parked after Dispose() in this Microsoft.Data.Sqlite build, which left
+        // CreateNew's own post-write wal_checkpoint(TRUNCATE) unable to fully truncate the WAL
+        // -- reproduced deterministically on a clean checkout, confirmed independently, and
+        // confirmed fixed by this revert. The connection-reuse benefit was already assessed as
+        // small (cheap local-file open/close, a grain's own lifecycle already bounds connection
+        // lifetime); re-enabling pooling needs that interaction solved first, e.g. an explicit
+        // SqliteConnection.ClearPool() before any checkpoint-dependent path runs.
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = path,
             Mode = create ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite,
             Cache = SqliteCacheMode.Private,
-            Pooling = true,
+            Pooling = false,
         }.ToString());
         connection.Open();
         Execute(connection, "PRAGMA foreign_keys=ON");
