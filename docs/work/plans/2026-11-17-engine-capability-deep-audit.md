@@ -202,5 +202,31 @@ and found zero remaining hits. Not re-flagging; confirming closure instead.
    list** — a half-day verification task, not a feature, with a clear
    pass/fail (every feature ID resolves, or it doesn't).
 
+   **Outcome (2026-11-17):** the question doesn't resolve pass/fail as asked,
+   because the two sides never meet yet. The admitted map
+   (`src/Cna.Core/Content/HistoricalMap/hexsides.v1.json`, 4,365 hexsides) uses
+   12 distinct raw feature tags: `coast`, `escarpment`, `major-river`,
+   `minor-river`, `railroad`, `ridge`, `road`, `slope`, `track`,
+   `unfinished-railroad`, `unfinished-road`, `wadi`. `Cna1979Zoc`'s
+   `TopologyAuthority` list (8 entries, namespaced `land.edge.*`) is consumed
+   only by `Cna1979Zoc.EvaluateProjection(ZocProjectionFacts facts)`, reading
+   `facts.HexsideFeatureIds` — and nothing in production code ever
+   constructs those facts from the map's raw tags; `EvaluateProjection` is
+   exercised only by `tests/Cna.Core.Tests/Rules/ZocRulesTests.cs` with
+   synthetic IDs. Meanwhile the map's raw tags are consumed directly
+   elsewhere (`Cna1979HistoricalMap.cs`, `CampaignSourceFourthIndianRoad.cs`,
+   `CampaignSourceGroupedZoc.cs`) by un-namespaced string match (`"road"`,
+   `"railroad"`, `"unfinished-railroad"`, `"track"`), never through
+   `TopologyAuthority`. So of the map's 12 raw tags, only 5 share a name with
+   a `TopologyAuthority` entry (`road`, `track`, `ridge`, `slope`,
+   `escarpment`; `major-river` is a 6th near-match but no live path compares
+   it) — and `coast`, `minor-river`, `railroad`, `unfinished-railroad`,
+   `unfinished-road`, `wadi` have no `TopologyAuthority` counterpart at all.
+   None of this is reachable today (no caller wires the map into
+   `EvaluateProjection`), so it isn't a live bug — but if that wiring is ever
+   added, 6 of 12 raw tags would hit `ZocRuleUnsupportedKind.TopologyFeature`
+   immediately. Worth a line in whichever doc tracks ZOC/movement integration
+   gaps before anyone builds that wiring.
+
 None of these three are urgent relative to the active PR #361 work; they're
 offered as the next things worth picking up once that lands.

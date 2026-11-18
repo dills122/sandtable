@@ -198,6 +198,38 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
+    public async Task BootstrapReportsActionSubmissionTrustedWhenDeploymentIsTrusted()
+    {
+        // The browser has no other way to learn that this deployment's action-submission
+        // routes are actually mounted (see #366 / PR #379's trust gate). Bootstrap's
+        // actionSubmissionTrusted field must mirror that same posture check, not a separate
+        // or invented signal.
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        TrustLocalDeployment(builder);
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            var bootstrap = await Send(client, Bootstrap(client));
+            Assert.Equal(HttpStatusCode.OK, bootstrap.StatusCode);
+            using var json = JsonDocument.Parse(await bootstrap.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            Assert.True(json.RootElement.GetProperty("actionSubmissionTrusted").GetBoolean());
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
     public async Task ViewReadInFlightIsDeniedAfterSeatRotation()
     {
         var builder = WebApplication.CreateBuilder();

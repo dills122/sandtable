@@ -23,6 +23,7 @@ export class SeatIdentityError extends Error {
 export class ConnectedCampaignService {
   private readonly http = inject(HttpClient);
   private csrfToken: string | undefined;
+  private actionSubmissionTrusted = false;
   private readonly configuration = new Configuration({
     basePath: '',
     withCredentials: true,
@@ -49,6 +50,16 @@ export class ConnectedCampaignService {
     return this.actions;
   }
 
+  /**
+   * Deployment posture only (see LocalGameApi's TrustedLocalDeploymentConfigKey gate on the
+   * host): whether this host would admit an action submission at all. It says nothing about
+   * whether the current seat/view is otherwise allowed to submit - CampaignActionFlow.canSubmit
+   * separately requires a live view, a legal action and so on.
+   */
+  isActionSubmissionTrusted(): boolean {
+    return this.actionSubmissionTrusted;
+  }
+
   async availableFixtures(): Promise<FixtureDescriptor[]> {
     this.acceptBootstrap(await firstValueFrom(this.sessions.bootstrapLocalOperator()));
     return firstValueFrom(this.fixtures.listFixtures());
@@ -63,6 +74,7 @@ export class ConnectedCampaignService {
       this.entered = undefined;
     }
     this.csrfToken = bootstrap.csrfToken;
+    this.actionSubmissionTrusted = bootstrap.actionSubmissionTrusted === true;
   }
 
   private async refreshBootstrap(): Promise<void> {

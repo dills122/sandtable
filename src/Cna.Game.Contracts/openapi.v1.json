@@ -786,11 +786,15 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128
+          },
+          "actionSubmissionTrusted": {
+            "type": "boolean"
           }
         },
         "required": [
           "contractVersion",
-          "csrfToken"
+          "csrfToken",
+          "actionSubmissionTrusted"
         ]
       },
       "EnterSeatRequest": {

@@ -98,6 +98,8 @@ existing roadmap gates; no scope reduction is inferred from finishing Combat.
 | MVP-GATE-06 full playthrough | Not demonstrated | Two independently checked complete six-turn games, including save/resume and correct victory, reproduce from seeds/events; no reachable unsupported mechanics; retain build/content/test hashes. |
 | MVP-GATE-07 delivery | Open | Approved distribution/rights/notices; CI-built versioned package with hashes and supported-platform matrix; fresh-machine launch/create/play/save/quit/resume smoke; backup/save location/compatibility instructions. |
 
+MVP-GATE-07 note: the Orleans Host has no production clustering provider configured and cannot run outside a single dev machine.
+
 ### November 13 scenario and arrival working packet
 
 Matruh and 6th NZ printed conflicts have a bounded independent transcription;

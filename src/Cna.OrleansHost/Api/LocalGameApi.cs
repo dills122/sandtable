@@ -52,7 +52,17 @@ internal static class LocalGameApi
             var session = store.Bootstrap(context.Request.Cookies[Cookie]);
             if (session is null) return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
             SetCookie(context, session.Token);
-            return Results.Json(new { contractVersion = 1, csrfToken = session.CsrfToken });
+            return Results.Json(new
+            {
+                contractVersion = 1,
+                csrfToken = session.CsrfToken,
+                // Same check this method's own early-return already gated on (both
+                // IsDevelopment() and the explicit posture flag are implied true here,
+                // since MapLocalGameApi would have returned before mounting this route
+                // otherwise) - lets the browser learn whether this deployment would
+                // actually admit an action submission, without duplicating the config key.
+                actionSubmissionTrusted = app.Configuration.GetValue<bool>(TrustedLocalDeploymentConfigKey),
+            });
         });
         api.MapGet("/fixtures", () => Results.Json(new[]
         {

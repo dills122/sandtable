@@ -71,6 +71,18 @@ describe('ConnectedCampaignService', () => {
     expect((await result).seat).toBe('axis');
   });
 
+  it('captures actionSubmissionTrusted from bootstrap and exposes it via its getter', async () => {
+    expect(service.isActionSubmissionTrusted()).toBe(false);
+    const fixtures = service.availableFixtures();
+    http
+      .expectOne('/api/v1/bootstrap')
+      .flush({ contractVersion: 1, csrfToken: 'csrf', actionSubmissionTrusted: true });
+    await Promise.resolve();
+    expect(service.isActionSubmissionTrusted()).toBe(true);
+    http.expectOne('/api/v1/fixtures').flush([]);
+    await fixtures;
+  });
+
   it('rejects a mismatched seat before reading a view', async () => {
     const fixtures = service.availableFixtures();
     http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'csrf' });

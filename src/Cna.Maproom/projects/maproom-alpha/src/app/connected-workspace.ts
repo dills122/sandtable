@@ -45,20 +45,17 @@ export class ConnectedWorkspace {
   @ViewChild('mapScroll') private mapScroll?: ElementRef<HTMLElement>;
   private readonly api = inject(ConnectedCampaignService);
   private readonly destroyRef = inject(DestroyRef);
-  // The real adapter now exists (HttpCampaignActionAdapter, backed by ActionsService's
-  // submit/receipt and ConnectedCampaignService's authorized-view read), so submission is no
-  // longer blocked for lack of a transport. What is still missing is any real signal that this
-  // deployment has *admitted* action submission: there is no feature flag, fixture field,
-  // dev-mode flag, or anything else in this codebase today that says "this seat/campaign may
-  // submit actions" (grepped for admitted/capability/TrustedLocalDeployment across
-  // maproom-alpha; only descriptive comments exist, no boolean signal). Inventing one here
-  // would be guessing at a decision the backend/product side hasn't made, so admittedCapability
-  // stays `false` -- the safest default -- and the submit control stays disabled exactly as
-  // before until a real signal exists to pass in its place.
-  protected readonly actionFlow = new CampaignActionFlow(
-    new HttpCampaignActionAdapter(this.api.actionsService(), this.api),
-    false,
-  );
+  // The real adapter exists (HttpCampaignActionAdapter, backed by ActionsService's
+  // submit/receipt and ConnectedCampaignService's authorized-view read), and the real admitted-
+  // capability signal now exists too: /api/v1/bootstrap's actionSubmissionTrusted field, which
+  // mirrors the same TrustedLocalDeployment posture check LocalGameApi's own route-mounting gate
+  // uses (see issue #366 / PR #379). That field only arrives async, after bootstrapLocalOperator()
+  // resolves, so the value read here at construction time is just this field's safe pre-bootstrap
+  // default (false); buildActionFlow() below is called again once connect() has actually
+  // bootstrapped, so the submit control reflects the real posture rather than being frozen
+  // disabled forever. This still says nothing about per-seat authorization - CampaignActionFlow's
+  // own canSubmit keeps separately requiring a live view, a legal action, etc.
+  protected actionFlow = this.buildActionFlow();
   protected readonly camera = new MapCameraState();
   protected readonly mapFullscreen = signal(false);
   private originalPageOverflow = '';
@@ -136,7 +133,21 @@ export class ConnectedWorkspace {
   }
 
   protected async connect(): Promise<void> {
-    await this.run(async () => this.fixtures.set(await this.api.availableFixtures()));
+    await this.run(async () => {
+      this.fixtures.set(await this.api.availableFixtures());
+      // availableFixtures() is what actually bootstraps; before this resolves the first time,
+      // actionFlow was built with the field initializer's pre-bootstrap default. Rebuilding here
+      // (only when no audience is in flight) picks up the real posture without discarding an
+      // active submission.
+      if (!this.actionFlow.currentView()) this.actionFlow = this.buildActionFlow();
+    });
+  }
+
+  private buildActionFlow(): CampaignActionFlow {
+    return new CampaignActionFlow(
+      new HttpCampaignActionAdapter(this.api.actionsService(), this.api),
+      this.api.isActionSubmissionTrusted(),
+    );
   }
 
   protected async create(fixtureId: string, seat: Seat): Promise<void> {
