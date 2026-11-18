@@ -49,15 +49,34 @@ one retained genuine history is exercised, broader gate still open.
 | `MVP-GATE-01` scenario freeze | Exact six-turn/18-stage rules/content/source matrix, explicit unsupported-item count, accepted task graph | **Open** | Oct 18 inventory still stands as "initial inventory, reconciliation open." This session found real progress hiding in it: Cirene, Marmarica, and Catanzaro OA facts are already transcribed in `Cna1979GrazianiSourceFacts.cs`; Sirte is confirmed **out of scope** (arrives turn 10, beyond the 6-turn scenario) — not a gap. 7 double-entry review packets (`docs/work/plans/graziani-*-review/`) still need their next/first-blind reading; handed to codex this session ([handoff doc](2026-11-17-graziani-mvp-gate-01-research-handoff.md)). The 18-stage reachability pass itself hasn't started. |
 | `MVP-GATE-02` content admission | Versioned, stable-ID content with no dangling references, provenance/rights accepted | **Partial** | Large jump this session: **57 elements admitted** across PRs [#352](https://github.com/dills122/sandtable/pull/352) (Giarabub, 13), [#355](https://github.com/dills122/sandtable/pull/355) (Tobruk/Bardia, 28), [#359](https://github.com/dills122/sandtable/pull/359) (Category B + Aresca, 14), each as standalone proven fixtures. 3 genuine fact gaps remain, handed to codex: CCNN 1st-HQ weapon ID, Matruh's 5 units' real combat ratings, Essex/Durham assignment-chronology ruling ([handoff doc](2026-11-17-graziani-source-material-research-tasks.md)). Provenance/rights posture for the source PDFs still undecided. |
 | `MVP-GATE-03` six-turn authority | Every reachable mechanic/victory rule executes deterministically, zero silent approximation | **Partial** | This is the engine's `ReadinessBlockers()` gate. [PR #361](https://github.com/dills122/sandtable/pull/361) **merged** — every admitted cluster is now wired into one continuous setup path on `main`. Remaining count is **7**, all root-caused (see §7): one missing mechanism (motor-MG), two missing rule gaps (initial-contacts), and three missing chart citations (grouped-ZOC), two already with codex. |
-| `MVP-GATE-04` durable local lifecycle | Create/checkpoint/stop/resume/recover, no model/I/O in authoritative turns | **Partial** | Bounded journal implemented (per checklist). This session confirmed (via dedicated investigation) the Orleans journal's O(n²) replay-cost scaling issue is **not safely fixable** without real architectural investment — a known risk for long campaigns, not a blocker for RC itself, but worth tracking. |
+| `MVP-GATE-04` durable local lifecycle | Create/checkpoint/stop/resume/recover, no model/I/O in authoritative turns | **Partial, materially closer** | Bounded journal implemented. 2026-11-18 session closed both of this gate's named sub-requirements: operational diagnostics/recovery procedure is now written ([runbook](../../runbooks/durable-journal-recovery.md), PR #428), and "no model/I/O in authoritative turns" is verified true (zero project references from `Cna.Core`/`Cna.OrleansHost` to `Cna.Intelligence.Gateway`). Per-campaign file topology landed (PR #427) and was stress-tested at N=10-1000, which also found and fixed a real TOCTOU directory-bootstrap race (PR #429). The O(n²) replay-cost scaling issue noted previously remains **not safely fixable** without real architectural investment — unchanged, still a long-campaign risk not an RC blocker. |
 | `MVP-GATE-05` Maproom/hot-seat | Two seats inspect/choose/confirm/submit/hand off privately, no model | **Open** | Foundation/read preview only; no work this session. The dependency findings above (26 dev-toolchain vulns) are relevant here before this becomes player-facing, though they don't affect the shipped app itself. **See section 10 — the deep audit found this status description itself is understated.** |
 | `MVP-GATE-06` full playthrough | Two independent complete six-turn games, save/resume, correct victory, seed reproduction | **Open** | Not demonstrated; no work this session. |
 | `MVP-GATE-07` delivery | Approved distribution/rights, CI-built package, fresh-machine smoke | **Open** | Not started; no work this session. |
 
 ## 4. Native second-side movement chain (feeds `MVP-GATE-03`)
 
-**Partial — V43 through V46 are real, but the "Combat is a confirmed
-hand-off" claim below was wrong and has been retracted (GitHub issue #394).**
+**Resolved 2026-11-18 — [PR #430](https://github.com/dills122/sandtable/pull/430), closes #394.**
+The gap described below is fixed. Summary of the fix, since the detailed
+gap analysis right after this note is now historical: a new
+`CampaignNativeSecondCombatDecisionV47` type + `ProjectSecondCombat`/
+`ProjectSecondCombatOwner` query, keyed to `(CampaignWorldSnapshotV6,
+LandSequencePosition)` directly (mirroring the existing `CampaignNativeSecondMoveV44`/
+`ProjectSecondMovement` precedent), gives the second acting side a real
+Combat-selection path without ever touching `CampaignSnapshotV11`/
+`IsSupportedCheckpoint`'s validator boundary — the first fix attempt tried
+routing through that boundary and threw, confirming it genuinely couldn't be
+widened safely. `Cna.Core.Tests` 3978/3978, `Cna.OrleansHost.Tests` 311/317
+(6 pre-existing unrelated failures, same count PR #427 already carried).
+One explicitly deferred gap: second-side Reserve-Release initialization is
+still unimplemented for the no-attack-completion path (documented at the
+call sites; tracked as a follow-up issue, not silently dropped). Second-side
+assault-selection also has no automated test with a real adjacent enemy
+contact yet (noted in the PR, not blocking).
+
+**Historical gap analysis (below), now closed by the above — V43 through V46
+were real, but the "Combat is a confirmed hand-off" claim was wrong and was
+retracted (GitHub issue #394):**
 V43 (Reserve) through V46 (Breakdown) are implemented, tested, and wired
 into the main `CampaignHostAdapter` path, and V46's checkpoint correctly
 *reports* a successor position at the Combat engine's
@@ -162,6 +181,28 @@ doc's own sources, and found:
 See [the full audit](2026-11-17-engine-capability-deep-audit.md) for
 per-subsystem detail, citations, and three concrete bounded next-step
 candidates.
+
+## 11. 2026-11-18 session update
+
+Separate session, data-layer/concurrency focus plus closing out #394. Merged
+to `main`: #420 (data-layer design doc §3.2 recovery), #421/#423 (manifest
+gate + test cleanup), #424 (`AdvanceSystemAsync` fix, filed/scoped/closed as
+#422), #425 (accepted #394 design proposal), #426 (RUL-GRA-29 ruling,
+terrain priority on compulsory-combat/retreat overlap), #427 (per-campaign
+journal file topology), #428 (durable-journal recovery runbook), #429
+(TOCTOU directory-bootstrap race fix, found via stress-testing #427), #430
+(closes #394 — see §4 above). Net effect on the gates above: `MVP-GATE-04`
+moved from "bounded journal, no diagnostics doc" to "bounded journal,
+documented recovery, stress-tested topology, one real concurrency bug
+found and fixed." `MVP-GATE-03`'s native second-side movement/combat chain
+(§4) is now fully resolved except the explicitly-deferred Reserve-Release
+follow-up. The 7 `MVP-GATE-03` readiness-blockers from §3/§6/§7 above
+(motor-MG, initial-contacts, grouped-movement-domain) were **not** touched
+this session — still open, still queued with codex. `MVP-GATE-01`/`02`/`05`/
+`06`/`07` saw no engineering time this session.
+
+Still open from this session's own work, not yet actioned: file the
+Reserve-Release follow-up issue (#394's explicitly-deferred scope).
 
 ## Honest bottom line
 
