@@ -121,6 +121,28 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
+    public async Task UnexpectedCreationFailureClearsPendingSoOtherOperatorsCanProceed()
+    {
+        var sessions = new LocalSessionStore(TimeProvider.System);
+        var owner = sessions.Bootstrap(null)!;
+        var other = sessions.Bootstrap(null)!;
+        var creator = new FaultingCreator();
+        using var creations = new LocalCampaignCreationStore();
+        var requestId = Guid.NewGuid().ToString("D");
+        await Assert.ThrowsAsync<InvalidOperationException>(() => creations.CreateAsync(owner,
+            "host-rsh-001", requestId, sessions, creator, TestContext.Current.CancellationToken));
+        Assert.Equal(1, creator.Calls);
+        var otherRequestId = Guid.NewGuid().ToString("D");
+        // If the first failure had left `pending` set, this different operator/request
+        // would short-circuit to Conflict before ever reaching the grain again - proven
+        // by the creator being invoked a second time instead of being skipped.
+        await Assert.ThrowsAsync<InvalidOperationException>(() => creations.CreateAsync(other,
+            "host-rsh-001", otherRequestId, sessions, creator,
+            TestContext.Current.CancellationToken));
+        Assert.Equal(2, creator.Calls);
+    }
+
+    [Fact]
     public async Task LocalGameApiDoesNotMountWithoutExplicitTrustedLocalDeploymentFlag()
     {
         // The security property this fix (#366) exists for: IsDevelopment() alone must
@@ -868,6 +890,18 @@ public sealed class LocalGameApiTests
                 { Status = TemporaryCampaignStatus.Created });
             Started.SetResult();
             return Release.Task;
+        }
+    }
+
+    private sealed class FaultingCreator : ITemporaryCampaignCreator
+    {
+        internal int Calls { get; private set; }
+
+        public Task<TemporaryCampaignReply> CreateAsync(string campaignId,
+            string operatorId, string requestId)
+        {
+            Calls++;
+            throw new InvalidOperationException("boom");
         }
     }
 
