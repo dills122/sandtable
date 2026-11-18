@@ -1004,3 +1004,70 @@ Before admission, resolve relevant country, ownership, control, mode, facility
 capacity and occupancy, source rights, affected consumers and versioned replay.
 This selection grants no legal action and does not certify geography, gameplay
 readiness, or any route. No runtime or data changes or gameplay tests follow.
+## RUL-GRA-28: 1st/4th CCNN HQ artillery point, unknown weapon
+
+**Selected interpretation:** both the 1st and 4th CCNN division HQs
+(`1-ccnn-hq`, `4-ccnn-hq`) carry one artillery TOE point from deployment; the
+weapon model and all other characteristics of that point remain permanently
+unidentified from the checked sources. Represent the point as present with an
+explicit, distinct unknown-weapon component identity - never null (the prior
+state, which blocked readiness) and never a real weapon-type identity some
+other code path could treat as a usable, rated gun.
+
+**Evidence:** the [Axis OA chart](https://spigames.net/PDFv10/CNA_ChartsAxisPlayer.pdf)
+lists the 1st CCNN HQ on PDF p.17 and the 4th CCNN HQ on PDF p.18, each with
+characteristics ID `g` and TOE-and-weapons entry `N`
+(`Cna1979GrazianiSourceFacts.FirstCcnnInitialChartCandidate` /
+`FourthCcnnInitialChartCandidate`). The OA key, PDF p.4 §4.44b, defines capital
+`N` for non-tank/non-gun units as possession of the characteristics ID's
+maximum TOE at arrival/deployment, while separately requiring tank and gun TOE
+points to be listed by number and weapon system - a listing absent from both
+rows. Characteristics §4.46b, PDF p.26, ID `g`, gives maximum TOE 1 and permits
+assignment of one artillery TOE point; no weapon system is named, and its
+rating columns are dashes. Read together, `N` plus `g` support one present
+point without identifying its weapon. No checked source - the OA key, the
+characteristics page, the September 1979 errata, the counter sheet, or the
+scenario - names a weapon for either HQ; the adjacent Legion HQs' explicit
+`1 x 65/17 Gun` listings belong to those separate units and cannot supply the
+division HQ's model. See
+[2026-11-17-graziani-blocker-ccnn-hq.md](2026-11-17-graziani-blocker-ccnn-hq.md),
+its [independent review](2026-11-17-graziani-blocker-ccnn-hq-review.md), and
+the [implementation evidence handoff](2026-11-17-graziani-ccnn-unknown-implementation-evidence.md)
+for the full source check; those checks are bounded to the 1st CCNN HQ's row,
+but the 4th CCNN HQ's row carries the identical `g`/`N` pattern, so the same
+reading applies to it without a separate source re-check.
+
+**Alternative:** treat the HQ's gun assignment as fully unresolved - neither
+the point's presence nor its weapon established - and leave both facts
+unknown, as the source's missing weapon-specific listing would otherwise
+support. The
+[gun-capacity policy proposal](2026-11-17-graziani-ccnn-gun-capacity-policy.md)'s
+own [independent review](2026-11-17-graziani-ccnn-gun-capacity-policy-review.md)
+found "insufficient basis to rank [the one-point reading] above the competing
+unresolved-assignment reading." This ruling selects the one-point reading
+anyway, as a project decision resolving a genuine, acknowledged source
+ambiguity - not a finding that new evidence settles it. It is adopted because
+the readiness blocker requires a resolution, and `N` plus `g` is a defensible,
+literal reading of the point's presence that concedes nothing about the
+weapon itself.
+
+**Required contract vectors:** one artillery TOE point present for both
+`1-ccnn-hq` and `4-ccnn-hq`; weapon identity permanently unknown, represented
+by the distinct sentinel component type
+`Cna1979GrazianiSourceFacts.CcnnHqUnidentifiedArtilleryComponentType`
+(`"unidentified-artillery"`) - never a placeholder borrowed from another
+unit's gun (e.g. the Legion HQs' `65-17-gun`), never zero, and never a
+generic/default gun with combat characteristics. This sentinel has no case in
+`CampaignSourceGroupedZoc.TryDefensiveCloseAssaultRating`, so
+`EstimateRawDefenseLowerBound` continues to report `AllKnown = false` and
+contributes no rating for either HQ's point, exactly like any other unmatched
+`(groupId, elementId, componentType, toe)` combination - the point clears the
+`ccnn-characteristics-incomplete` readiness gap for these two elements without
+ever letting a combat consumer guess its value. Ruleset-version binding: this
+fact change moves `CampaignSourceAxisSupplementalForces.ContentHash` (and
+every pinned content-pack hash downstream of it in the Axis setup chain) to a
+new identity, so a future change to this interpretation produces a new,
+distinguishable content identity rather than silently reinterpreting an
+existing save. `201-ccnn-engineer` and `204-ccnn-engineer` remain outside this
+ruling's scope and continue to trip `ccnn-characteristics-incomplete` on their
+own unresolved combat facts.

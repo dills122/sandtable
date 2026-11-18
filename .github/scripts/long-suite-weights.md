@@ -850,6 +850,33 @@ matrix job (one ordinary suite part, as before).
 
 Command: `dotnet test tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --list-tests --pre-enumerate-theories on --no-ansi --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests` to confirm the exact discovered display names, then `dotnet exec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --no-ansi --filter-class Cna.Core.Tests.Campaigns.Cna1979HistoricalMapTests --report-xunit-xml --results-directory artifacts/ci/weights-measure`. Result: 32 passed, 0 failed, 0 skipped; the two new rows measured 0.006s and 0s (floored to the 1ms minimum) respectively in the XML report. This is scheduling evidence only; hosted CI remains the acceptance gate.
 
+## PR #418: RUL-GRA-28, 1st/4th CCNN HQ artillery point (2026-11-18)
+
+PR #418 resolves the 1st/4th CCNN division HQs' (`1-ccnn-hq`, `4-ccnn-hq`) one
+artillery TOE point under RUL-GRA-28 (renumbered from RUL-GRA-26 in a later
+merge-conflict commit on the PR's own branch, to avoid colliding with PR
+#419's own unrelated RUL-GRA-26/27 rulings; this manifest fix targets that
+branch's current tip after the renumbering). It adds a brand-new test class,
+`GrazianiSourceCcnnHqArtilleryRulingTests` (3 `[Fact]`s, new `classes` entry,
+`parts: 1`), and updates `GrazianiSourceAxisSupplementalForcesTests`'s single
+existing test's assertions/hash for the new known/unknown TOE counts. That
+existing test's method name (`SupplementalForcesRetainActualPositionsToesAndExplicitUnknowns`)
+is unchanged by the diff against `origin/main` - checked explicitly, since a
+rename would otherwise require removing a stale row hash the same way PR
+#414's fix did - so no row removal is needed here, only the 3 additions
+below. All rows measured from a passing local macOS arm64 .NET 10 Release
+Microsoft.Testing.Platform XML run on 2026-11-18. These are local scheduling
+hints, not hosted latency claims; hosted exact-head CI remains the
+acceptance gate.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `GrazianiSourceCcnnHqArtilleryRulingTests.BothDivisionHqsCarryOneKnownPointWithAnExplicitUnknownWeapon` | `6a31f31c5947` | 93 |
+| `GrazianiSourceCcnnHqArtilleryRulingTests.RulingClearsTheCharacteristicsBlockerForBothHqsAloneButRevertingRestoresIt` | `9a5c2029e127` | 5 |
+| `GrazianiSourceCcnnHqArtilleryRulingTests.UnknownWeaponNeverContributesAGuessedDefenseRating` | `43b1f1113f77` | 5 |
+
+Commands: `dotnet build Sandtable.slnx --configuration Release` (succeeded), then `dotnet exec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --no-ansi --filter-class Cna.Core.Tests.Campaigns.GrazianiSourceCcnnHqArtilleryRulingTests --report-xunit-xml --results-directory /tmp/pr418-weights-ccnn` (3 passed, 0 failed, 0 skipped) and `dotnet exec artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --no-ansi --filter-class Cna.Core.Tests.Campaigns.GrazianiSourceAxisSupplementalForcesTests --report-xunit-xml --results-directory /tmp/pr418-weights-axis` (1 passed, 0 failed, 0 skipped; same name, updated assertions/hash, existing row hash left unchanged per the existing-entries-preserved convention). `python3 .github/scripts/long_suite_partition_test.py` (35 tests) passed locally against the merged manifest.
+
 ## PR #414: Aresca XXI(L) CV33 close-assault rating
 
 PR #414 wires the Aresca tank regiment's XXI(L) Tank Battalion CV33 close-assault

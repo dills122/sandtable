@@ -18,7 +18,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceTripoliTankRegimentPackArtifact
 {
     internal const string FormatId = "sandtable.source-tripoli-tank-regiment.v1";
-    internal const string ContentHash = "sha256:ede3f775d9a86fd110e2c2a5895ec3fb983a8a3a75f4dcfd825e0e845f59330f";
+    internal const string ContentHash = "sha256:7aa0d1d4d68b2ef0afb9145fee70fe8f81cba819ebecb58c16fdaa0bc7655372"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash (via ContentSourceCwFreeGunsPackArtifact).
     private readonly byte[] bytes;
 
     private ContentSourceTripoliTankRegimentPackArtifact(ContentSourceCwFreeGunsPackArtifact basis, byte[] bytes)

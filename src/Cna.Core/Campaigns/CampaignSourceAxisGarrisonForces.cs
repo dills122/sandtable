@@ -12,7 +12,9 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceAxisGarrisonForces
 {
     internal const string PolicyId = "graziani.axis-initial-forces.giarabub-minor.v1";
-    internal const string ContentHash = "sha256:4c17bd5e47bf43324c77f01e48574206ea7c4e31bb68bc3dca6a62b65911c7e1";
+    // Derived from (and so changes whenever) CampaignSourceAxisSupplementalForces.ContentHash
+    // changes - see RUL-GRA-28's note on that constant for the most recent reason.
+    internal const string ContentHash = "sha256:84313115e7200cc53c732ff870945d7f48dbe7371bcea4f3d5e209f85ed6ad16";
     private readonly ReadOnlyCollection<CampaignSourceInitialForce> forces;
 
     private CampaignSourceAxisGarrisonForces(string baselineHash, string supplementHash,

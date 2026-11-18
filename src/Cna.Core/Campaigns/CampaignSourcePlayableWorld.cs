@@ -176,10 +176,7 @@ internal sealed class CampaignSourcePlayableWorld
             blockers.Add("giarabub-motor-mg-historical-motorization-priority-unresolved");
             blockers.Add("giarabub-motor-mg-capability-and-mobility-unresolved");
         }
-        if (GroupedWorld.Groups.Where(value => value.GroupId is CampaignSourceCcnnBatch.FirstId or CampaignSourceCcnnBatch.FourthId)
-            .Any(value => value.Members.Any(member => member.CapabilityPointAllowance is null
-                || (member.ElementId is "1-ccnn-hq" or "4-ccnn-hq" or "201-ccnn-engineer" or "204-ccnn-engineer"
-                    && member.ComponentType is null))))
+        if (CampaignSourceCcnnBatch.HasIncompleteCharacteristics(GroupedWorld.Groups))
             blockers.Add("ccnn-characteristics-incomplete");
         if (!Source.OpeningConvoyPlan.IsFinished) blockers.Add("axis-gt1-supply-plan-incomplete");
         if (Source.CommonwealthSupplyPlans is null || Source.CommonwealthSupplyPlans.NextTargetGameTurn is not null)

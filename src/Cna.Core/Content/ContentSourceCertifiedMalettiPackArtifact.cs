@@ -9,7 +9,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCertifiedMalettiPackArtifact
 {
     internal const string FormatId = "sandtable.source-certified-maletti.v1";
-    internal const string ContentHash = "sha256:35d3241de42a36e86bad7a26d017e45836fd85f946bbb10f705543eff9bad346";
+    internal const string ContentHash = "sha256:76a234112183267516f7eb71b973e3728e792c96c3baf048cb35f34376cc1f57"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceCertifiedMalettiPackArtifact(ContentSourceAxisCorpsArtilleryPackArtifact basis, byte[] bytes)
     {

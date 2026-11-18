@@ -10,14 +10,17 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceMalettiPackArtifact
 {
     internal const string FormatId = "sandtable.source-maletti-setup.v1";
+    // All seven non-empty entries derived from (and so changed when)
+    // CampaignSourceAxisSupplementalForces.ContentHash changed - see
+    // RUL-GRA-28's note on that constant for the most recent reason.
     private static readonly string[] PinnedHashes = ["",
-        "sha256:9d29241a4cdd378aac176d4a3257936e7503ead7b320292d9220e6d9821b0ece",
-        "sha256:66fe0b1e3aa7ce55f7b381f5bb93c19e8a91070d3bd3664a38bb174b587d38c2",
-        "sha256:56613b16926495ae6317764b4b7e5500bf2a4616701a3de81049f5525ad0f1cb",
-        "sha256:1577244ea41215eeac51ec089bb4b9605c7b80ae894a967dee9b2db625f769a7",
-        "sha256:636027a49fed0be24db46343415022fb261ded5a91348c9166be5f846371e678",
-        "sha256:fe67491957ab3a3e51fb84962c263dca61e1b34f6b7c8ddf9254c73fed5c8645",
-        "sha256:cc7a776d4b81a05e431adbf24535b8eb3b54c6d9cfa92e682d86f7a41151464e"];
+        "sha256:b5db187fc519f2e40b3030d45bdda788ea0ede1c48f0b7907572ca1e6a880e3c",
+        "sha256:1d1a76b61c9c7d0615a5a610b30d423ed3ee4841e512dd1746b0b1d1d9a6e066",
+        "sha256:d89e7d3f1f003c13149fe6cbe6b08202a881a4b5a4f44531ace8309b64330831",
+        "sha256:54ff3e00df5323dee80d1ae6645c1bf56f67aa70bc58a6bfdb341742b4ae70bf",
+        "sha256:376f129b54e27dcb7d9095f0b1cb48a613e9f12e6fa06dee164edd446e6703db",
+        "sha256:ae263cc210aa20a13b85c177131ea6691a533ad2c57a39cb089a0ec951b5008b",
+        "sha256:9045a938cc0b5d46d767bce25869b907fcae22444cf134b787505534c8d8129e"];
     private readonly byte[] bytes;
     private ContentSourceMalettiPackArtifact(ContentSourceSetupPackArtifact basis, string[] units, byte[] bytes)
     {

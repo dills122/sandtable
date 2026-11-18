@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceAxisCorpsArtilleryPackArtifact
 {
     internal const string FormatId = "sandtable.source-axis-corps-artillery.v1";
-    internal const string ContentHash = "sha256:36ce3f5a3be45942e7823156638f35020c8ad6187bff714803ea40db8d6b56ed";
+    internal const string ContentHash = "sha256:05aafa2092adebf7d50d7d3f02d1d1dd68ccf75098390ba03e68a0e81edf3fb7"; // RUL-GRA-28: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceAxisCorpsArtilleryPackArtifact(ContentSourceAxisFreeArtilleryPackArtifact basis, byte[] bytes)
     {
