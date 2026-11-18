@@ -66,6 +66,7 @@
   tabindex="0"
   aria-label="Situation map, arrow keys pan when zoomed"
   [class.is-dragging]="dragging()"
+  [class.can-pan]="zoom > 1"
   [class.allow-touch-scroll-at-fit]="allowTouchScrollAtFit && zoom <= 1"
   (keydown)="onKeydown($event)"
   (pointerdown)="onPointerDown($event)"

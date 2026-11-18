@@ -146,7 +146,7 @@ export class OperationsMap {
     if (
       event.button !== 0 ||
       !['mouse', 'pen', 'touch'].includes(event.pointerType) ||
-      (event.pointerType === 'touch' && this.allowTouchScrollAtFit && this.zoom <= 1) ||
+      this.zoom <= 1 ||
       (event.target as Element).closest('fa-unit-counter, button')
     )
       return;

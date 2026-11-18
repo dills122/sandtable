@@ -56,11 +56,14 @@
   isolation: isolate;
   overflow: clip;
   background: var(--color-map);
-  cursor: grab;
+  cursor: default;
   touch-action: none;
   user-select: none;
 }
-.map-canvas.is-dragging {
+.map-canvas.can-pan {
+  cursor: grab;
+}
+.map-canvas.can-pan.is-dragging {
   cursor: grabbing;
 }
 .map-canvas.allow-touch-scroll-at-fit {
