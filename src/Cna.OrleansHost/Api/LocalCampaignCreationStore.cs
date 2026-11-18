@@ -65,6 +65,16 @@ internal sealed class LocalCampaignCreationStore : IDisposable
                 // its idempotent creation record decides whether it committed.
                 return new LocalCreationResult(LocalCreationStatus.Unavailable);
             }
+            catch (Exception)
+            {
+                // Unlike a timeout, this outcome is not "unknown and retriable" - it's a
+                // real failure. Don't leave every other operator permanently Conflict-ed
+                // against a reservation that will never resolve; release it and let the
+                // actual exception propagate to the caller's own error handling.
+                sessions.RevokeCreationGrants(pending.Grants);
+                pending = null;
+                throw;
+            }
             if (reply.Status == TemporaryCampaignStatus.Conflict)
             {
                 sessions.RevokeCreationGrants(pending.Grants);
