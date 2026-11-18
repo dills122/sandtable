@@ -8,7 +8,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceMatruhGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-matruh-grouped.v1";
-    internal const string ContentHash = "sha256:41a85745748ceffe70f12d14d98a9f8f960bc797262b6a26bc5390b656a5704d";
+    internal const string ContentHash = "sha256:fff958d9345dc96bbd50971057249b379db7924ebbfd788c4663e4ecb7a2062c"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceMatruhGroupedPackArtifact(ContentSourceFourthIndianPackArtifact basis, byte[] bytes)
     {

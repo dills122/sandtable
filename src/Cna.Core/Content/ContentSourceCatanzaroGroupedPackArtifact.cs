@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCatanzaroGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-catanzaro-grouped.v1";
-    internal const string ContentHash = "sha256:a41913ef0ac3a4413e8ae3717e7e3fb1c4bc2acd420d2e848bf73e9faa58b51a";
+    internal const string ContentHash = "sha256:baa7904c633b673bdc148ac8026e40d702ded8995a64daa8115db7cd9ef0590e"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceCatanzaroGroupedPackArtifact(ContentSourceSixteenthBrigadeGroupedPackArtifact basis, byte[] bytes)
     {

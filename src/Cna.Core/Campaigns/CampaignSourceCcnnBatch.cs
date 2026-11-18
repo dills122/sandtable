@@ -56,6 +56,20 @@ internal static class CampaignSourceCcnnBatch
             Build(Cna1979GrazianiSourceFacts.FourthCcnnInitialChartCandidate, FourthId, "4-ccnn-hq", "axis-c4507-attached"),
         });
     }
+    // Mirrors CampaignSourcePlayableWorld.ReadinessBlockers()'s
+    // "ccnn-characteristics-incomplete" predicate so it is independently
+    // unit-testable against synthetic/filtered groups, without needing the
+    // full source-authority chain. RUL-GRA-26 resolves this for 1-ccnn-hq
+    // and 4-ccnn-hq (one artillery point, weapon identity explicitly
+    // unknown - never null); 201-ccnn-engineer/204-ccnn-engineer remain out
+    // of that ruling's scope and still trip this when their ComponentType
+    // is null.
+    internal static bool HasIncompleteCharacteristics(IEnumerable<CampaignGroupedFormation> groups) =>
+        groups.Where(value => value.GroupId is FirstId or FourthId)
+            .Any(value => value.Members.Any(member => member.CapabilityPointAllowance is null
+                || (member.ElementId is "1-ccnn-hq" or "4-ccnn-hq" or "201-ccnn-engineer" or "204-ccnn-engineer"
+                    && member.ComponentType is null)));
+
     internal static void Validate(CampaignSourceAuthorityState state, CampaignGroupedWorld world)
     {
         foreach (var expected in Create(state))

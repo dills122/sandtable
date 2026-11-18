@@ -11,7 +11,9 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceAutoblindaSetup
 {
     internal const string PolicyId = "graziani.autoblinda.two-points.either-or.v1";
-    internal const string InitialHash = "sha256:be50c939a71854b540309866c0263f000a00941e25391ac018a5107aa102dd87";
+    // Derived from (and so changes whenever) CampaignSourceAxisSupplementalForces.ContentHash
+    // changes - see RUL-GRA-26's note on that constant for the most recent reason.
+    internal const string InitialHash = "sha256:54e9b24232c2342740cc0280624ff7ec1a42e5546bcda2e560f7563e0bbd2ea3";
     // §60.31 permits each point on any unit, ignoring ordinary composition
     // restrictions. These two source-proven infantry are a safe subset; AA
     // removal and eligible characteristics of remaining counters are not yet

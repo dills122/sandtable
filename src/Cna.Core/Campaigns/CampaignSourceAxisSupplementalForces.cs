@@ -14,7 +14,14 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceAxisSupplementalForces
 {
     internal const string PolicyId = "graziani.axis-initial-forces.mainland-supplement.v1";
-    internal const string ContentHash = "sha256:1a34826c4d5e1a3fe20891f9064b61e8e6b58f5ecee7935d5ac076839e083372";
+    // RUL-GRA-26 (2026-11-12-graziani-ruling-decisions.md) changed this
+    // identity: 1-ccnn-hq and 4-ccnn-hq now carry one known artillery TOE
+    // point with an explicit unidentified-weapon component type instead of
+    // null InitialToes. This is an intentional, ruling-driven fact change,
+    // not drift - any history pinned to the prior hash
+    // (sha256:1a34826c4d5e1a3fe20891f9064b61e8e6b58f5ecee7935d5ac076839e083372)
+    // predates the ruling and must not be silently reinterpreted under this one.
+    internal const string ContentHash = "sha256:0646362c46b0354969caaf61a955fbde111664c29f4f072dd4ffb30d9bcc76fc";
     private readonly ReadOnlyCollection<CampaignSourceSupplementalGroup> groups;
 
     private CampaignSourceAxisSupplementalForces(string predecessorHash,

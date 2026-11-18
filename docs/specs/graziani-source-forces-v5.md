@@ -12,7 +12,7 @@ It uses the existing durable journal and its loopback/same-origin restrictions.
 The supplement records 110 distinct candidate counters in ten source groups:
 Cirene, Marmarica, the 1st and 2nd Libyan divisions, Maletti, Catanzaro, the
 1st and 4th CCNN divisions, Aresca, and a Tripoli tank-regiment subset. It
-retains partial source TOE for 87 and explicitly unknown TOE for 23. Some group
+retains partial source TOE for 89 and explicitly unknown TOE for 21. Some group
 members and tank splits, HQ and engineer details, attachments, mobility, and
 Land-only anti-air treatment remain unresolved. It is not a complete Axis
 order of battle or a claim that all recorded counters are active on the map.
@@ -23,9 +23,13 @@ The `source-axis-force-supplement-admitted` event is ordered as
 `priorAuthoritySetupHash`, `supplementHash`, `supplementalProfileHash`, and
 `autoblindaSetupHash`. The action ID is the SHA-256
 of UTF-8 `graziani.source.axis-forces.supplement.v1`. The supplement identity is
-`sha256:1a34826c4d5e1a3fe20891f9064b61e8e6b58f5ecee7935d5ac076839e083372`;
+`sha256:0646362c46b0354969caaf61a955fbde111664c29f4f072dd4ffb30d9bcc76fc`;
 changed source data requires a new identity rather than reinterpretation of
-retained history.
+retained history. (This identity changed from the prior
+`sha256:1a34826c4d5e1a3fe20891f9064b61e8e6b58f5ecee7935d5ac076839e083372`
+under RUL-GRA-26, which gives 1-ccnn-hq and 4-ccnn-hq a known one-point
+artillery TOE with an explicitly unidentified weapon; see
+docs/work/plans/2026-11-12-graziani-ruling-decisions.md.)
 
 The version 5 checkpoint carries the version 4 fields with contract version 5,
 then appends `axisSupplementHash`, `axisSupplementBase64`,
@@ -104,7 +108,9 @@ garrison counters. Giarabub includes an 8+ historically motorized machine-gun
 unit; its organization/strength interpretation and available transport remain
 unresolved, and no pregame transfer from an unattached pool is assumed. The
 garrison source identity is
-`sha256:4c17bd5e47bf43324c77f01e48574206ea7c4e31bb68bc3dca6a62b65911c7e1`.
+`sha256:84313115e7200cc53c732ff870945d7f48dbe7371bcea4f3d5e209f85ed6ad16`
+(changed from `sha256:4c17bd5e47bf43324c77f01e48574206ea7c4e31bb68bc3dca6a62b65911c7e1`
+under RUL-GRA-26, which changes the upstream Axis supplement identity it derives from).
 
 The `source-axis-minor-garrisons-admitted` event contains, in order,
 `contractVersion` (9), `eventType`, `campaignId`, `priorStateVersion`,
@@ -277,7 +283,9 @@ Rifle Brigade in World8. New Maletti promotion is blocked as described above. It
 can follow version 12 directly or a version 13 world. A fixed canonical source
 catalog describes all five supported counters independent of which are active;
 its identity is
-`sha256:92f5c0d2dd6abf930bf7d4dabc1d7c348ac93c9481051700e359f0d9207a3f20`.
+`sha256:3a8832098cac32c35d7ec7076273c0903e093a04d4529da973a52b8c3255c4aa`
+(changed from `sha256:92f5c0d2dd6abf930bf7d4dabc1d7c348ac93c9481051700e359f0d9207a3f20`
+under RUL-GRA-26, which changes the upstream Axis supplement identity it embeds).
 The event retains the actual predecessor world and choices, and each promotion
 checks source location and TOE, preserves existing elements and representations,
 and leaves both deferred arrival groups pending. Terrain, topology, movement and
@@ -299,7 +307,8 @@ The development Host exposes operator-authenticated
 An operator/system transition binds source-verified geometric neighborhoods for
 `c3617` and `c3320` to the active source content and rebinds the existing
 World8 without moving units. The map artifact is pinned to
-`sha256:d60465ab4a1fdf9799b8f49e8a22768b6ddb69e305e8e854f3c524d0295caf35`.
+`sha256:4067e7396531806ff5ffed83e8ba6dd2866092ed36b84ec9f31dc13a6ac0f524`
+(changed under RUL-GRA-26, which changes the upstream Axis supplement identity it embeds via the independent catalog).
 The original Map C scan supports the six adjacent hexes around each location;
 terrain, route and hexside effects remain unknown. These edges do not grant a
 legal movement action or establish a complete map. Later independent-unit
@@ -318,7 +327,8 @@ The source catalog adds three scenario-listed independent Commonwealth units:
 Northumberland Fusiliers MG at `c3721`. Original scenario, OA, characteristics
 and counter evidence establish their locations, TOE, CPA and stack values. The
 new fixed content identity is
-`sha256:526b73bfc5933689b7bb90b5362ccb482b33e23dc7e85ad52047ea05e706f714`.
+`sha256:785a8643296f50d54de993c6c82b99445a7f1700f3c744ec92ebafe9ee6c8145`
+(changed under RUL-GRA-26).
 It retains the version 15 map artifact, earlier active units and pending groups;
 new Axis detachments remain blocked pending stack certification.
 It does not certify movement or game-start readiness.
@@ -390,7 +400,8 @@ The scenario order of battle identifies the four counters as independent,
 each with three gun TOE and 15 CPA. After placement, a system transition can
 promote selected units into the actual World8; it may be repeated as additional
 units are placed. The fixed source content identity is
-`sha256:730ff4b2080bc8f255178e7fcba1b74df96918cee46ed9efb146d2fbd7c8904b`.
+`sha256:aa31213766422d8a634ce09e92d1cdaaa97f3a3674785cc2b83e196294415852`
+(changed under RUL-GRA-26).
 The transition retains prior units, map evidence and pending arrivals without
 claiming native movement or a complete battlefield.
 
@@ -465,7 +476,8 @@ unresolved. Under Land §32.83(3), the printed light AA components on these
 Version 21 journals the source-bound owner placements and battlefield changes;
 version 22 promotes placed units into World8 with their source gun/AA TOE,
 preserving the prior world and pending arrivals. Its source content identity is
-`sha256:36ce3f5a3be45942e7823156638f35020c8ad6187bff714803ea40db8d6b56ed`.
+`sha256:05aafa2092adebf7d50d7d3f02d1d1dd68ccf75098390ba03e68a0e81edf3fb7`
+(changed under RUL-GRA-26).
 Neither transition completes setup, establishes control or starts the clock.
 
 The source journal currently retains bounded canonical checkpoint evidence for

@@ -26,6 +26,19 @@ public static class Cna1979GrazianiSourceFacts
     public const string ReconnaissanceComponentClassId = Cna1979Combat.ReconnaissanceComponentClassId;
     public const string AntiAirComponentClassId = "land.combat-component.anti-air";
     public const string AntiAirClassificationId = "land.combat-classification.anti-air";
+    // RUL-GRA-26: both CCNN division HQs (1-ccnn-hq, 4-ccnn-hq) carry one
+    // artillery TOE point from deployment (Axis OA p.17/p.18 "N" plus
+    // characteristics ID 'g', OA key p.4 §4.44b, characteristics p.26 §4.46b),
+    // but no checked source names its weapon. This sentinel is a deliberate,
+    // distinct "unknown" component type - never null (that is the readiness
+    // gap this ruling resolves) and never one of the real weapon component
+    // ids (e.g. the Legion HQs' "65-17-gun") that CampaignSourceGroupedZoc.
+    // TryDefensiveCloseAssaultRating or any other componentType-keyed consumer
+    // could mistake for a rated, usable gun. It has no case in that lookup, so
+    // a member carrying it correctly falls through to "unknown, don't guess a
+    // rating" exactly like any other unmatched (groupId, elementId,
+    // componentType, toe) combination.
+    public const string CcnnHqUnidentifiedArtilleryComponentType = "unidentified-artillery";
 
     private static ContentPrintedRating N(int value) => ContentPrintedRating.Number(value);
     private static ContentPrintedRating P(int value) => ContentPrintedRating.Parenthesized(value);
@@ -656,7 +669,12 @@ public static class Cna1979GrazianiSourceFacts
                 new RuleReference(AxisChartsSourceId, "oa-libyan-tank-command-p6")]),
         new ContentSourceTruckQuantities(10, 25, 10));
 
-    // The division HQ's gun type and the engineer's conditional combat rules remain unresolved.
+    // The division HQ's one artillery TOE point is recorded separately by
+    // CreateFirstCcnnToeCandidates/CcnnHqUnidentifiedArtillerySeed under
+    // RUL-GRA-26 - its weapon model remains permanently unidentified, so it
+    // is deliberately not a ContentElementCombatFacts/ContentCombatComponent
+    // entry here (that record requires a defensive rating no source supports).
+    // The engineer's conditional combat rules remain unresolved.
     public static IReadOnlyList<ContentElementCombatFacts> FirstCcnnCombatCandidates { get; } =
         Array.AsReadOnly(new[]
         {
@@ -686,7 +704,7 @@ public static class Cna1979GrazianiSourceFacts
                         ? component.ComponentId.EndsWith(".75-27-gun", StringComparison.Ordinal) ? 6
                             : component.ComponentId.EndsWith(".100-17-howitzer", StringComparison.Ordinal) ? 3 : 2
                         : component.MaximumToe, origin)));
-        }).ToArray());
+        }).Append(CcnnHqUnidentifiedArtillerySeed(scenarioId, "1-ccnn-hq", "oa-ccnn-p17")).ToArray());
 
     public static ContentInitialGroup FourthCcnnInitialChartCandidate { get; } = new(
         "4-ccnn-source-candidate", "axis", "c4507",
@@ -724,7 +742,7 @@ public static class Cna1979GrazianiSourceFacts
                         ? component.ComponentId.EndsWith(".75-18-gun-howitzer", StringComparison.Ordinal) ? 6
                             : component.ComponentId.EndsWith(".105-28-gun", StringComparison.Ordinal) ? 3 : 2
                         : component.MaximumToe, origin)));
-        }).ToArray());
+        }).Append(CcnnHqUnidentifiedArtillerySeed(scenarioId, "4-ccnn-hq", "oa-ccnn-p18")).ToArray());
 
     public static IReadOnlyList<ContentInitialPlacementCombatFacts> CreateLibyanDivisionSupportToeSeeds(string scenarioId)
     {
@@ -1373,6 +1391,23 @@ public static class Cna1979GrazianiSourceFacts
 
     private static ContentElementCombatFacts LibyanRegimentalHeadquartersFacts(string id) =>
         AxisRegimentalHeadquartersFacts(id, "oa-libyan-p5");
+
+    // RUL-GRA-26 planning seed: records the division HQ's one known artillery
+    // TOE point without inventing a weapon model, rating, or any other
+    // combat characteristic. This deliberately bypasses AxisWeaponFacts/
+    // ContentCombatComponent (which require a defensive rating) because no
+    // source supports assigning one; see CcnnHqUnidentifiedArtilleryComponentType.
+    private static ContentInitialPlacementCombatFacts CcnnHqUnidentifiedArtillerySeed(string scenarioId, string elementId, string oaLocator)
+    {
+        var origin = new ContentOrigin(ContentOriginKind.SourceDerived,
+        [
+            new RuleReference(AxisChartsSourceId, oaLocator),
+            new RuleReference(AxisChartsSourceId, "4.44b"),
+            new RuleReference(AxisChartsSourceId, "4.46b"),
+        ]);
+        return new ContentInitialPlacementCombatFacts(scenarioId, elementId,
+            [new ContentInitialComponentToe($"{elementId}.{CcnnHqUnidentifiedArtilleryComponentType}", 1, origin)]);
+    }
 
     private static ContentElementCombatFacts AxisRegimentalHeadquartersFacts(string id, string locator)
     {

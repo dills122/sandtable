@@ -17,7 +17,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceBardiaGarrisonRemainderPackArtifact
 {
     internal const string FormatId = "sandtable.source-bardia-garrison-remainder.v1";
-    internal const string ContentHash = "sha256:9997a2a1ed2e633f475c086f3d8ea4d760d03e342278c44c54a84de0d0e46c8d";
+    internal const string ContentHash = "sha256:eb9eac054deb78ec2da5e0b81bf964a2d21acb844665a379d8a3bc7e4c9ffd57"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash (via ContentSourceTobrukBardiaGarrisonPackArtifact).
     private readonly byte[] bytes;
 
     private ContentSourceBardiaGarrisonRemainderPackArtifact(ContentSourceTobrukBardiaGarrisonPackArtifact basis, byte[] bytes)

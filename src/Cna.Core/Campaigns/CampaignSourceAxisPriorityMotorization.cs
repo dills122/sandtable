@@ -12,7 +12,9 @@ namespace Cna.Core.Campaigns;
 internal sealed class CampaignSourceAxisPriorityMotorization
 {
     internal const string PolicyId = "graziani.axis-priority-motorization.maletti-detached.v1";
-    internal const string InitialHash = "sha256:8166dc3ab0cc7256a4d9a9c75b6641cb4df9b6f22a618e6e9eacf4374c22d729";
+    // Derived from (and so changes whenever) CampaignSourceAxisSupplementalForces.ContentHash
+    // changes - see RUL-GRA-26's note on that constant for the most recent reason.
+    internal const string InitialHash = "sha256:6697d603993a184628af8a7d6cf1f23dedfc0f268d513bc62f57c79a61e8a9b1";
     internal const string PoolId = "axis-c3617-attached";
     internal const string HistoricalParentId = "1-libyan-motor-regiment-hq";
     private static readonly string[] ProvenTargets =

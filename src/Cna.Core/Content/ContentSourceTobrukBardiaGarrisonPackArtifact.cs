@@ -21,7 +21,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceTobrukBardiaGarrisonPackArtifact
 {
     internal const string FormatId = "sandtable.source-tobruk-bardia-garrison.v1";
-    internal const string ContentHash = "sha256:c5b8b7ab39b146025f347d06877325f822f1bec84e01efb4f47a3d2e0ac2548f";
+    internal const string ContentHash = "sha256:6b6fe5626e3e2ba8d7cb62b2b1bd5cca3efe297dc46bd7b514c8af61ef59c133"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
 
     private ContentSourceTobrukBardiaGarrisonPackArtifact(ContentSourceCwFreeGunsPackArtifact basis, byte[] bytes)

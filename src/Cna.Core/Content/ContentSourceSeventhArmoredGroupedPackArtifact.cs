@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceSeventhArmoredGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-seventh-armored-grouped.v1";
-    internal const string ContentHash = "sha256:a07b37a12dd890a8ee468119f64273cee75a062a234c46ad487902b784b034d9";
+    internal const string ContentHash = "sha256:f1d411c062cc09c8401ec4189b73fa766b3a1727d7aa4d279f5a73df935ee037"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceSeventhArmoredGroupedPackArtifact(ContentSourceCireneMarmaricaGroupedPackArtifact basis, byte[] bytes)
     {

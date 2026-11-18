@@ -7,7 +7,7 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceSixteenthBrigadeGroupedPackArtifact
 {
     internal const string FormatId = "sandtable.source-sixteenth-brigade-grouped.v1";
-    internal const string ContentHash = "sha256:4a8731cc4906d85107ffd4650d7c7b2abd06bdd4efa45ca8f95fd4e3ef3a3673";
+    internal const string ContentHash = "sha256:b9cf1e19ad40bacfe4633df933fc4fbb79a281583ae9cfc277555190bfbba04a"; // RUL-GRA-26: derived from CampaignSourceAxisSupplementalForces.ContentHash.
     private readonly byte[] bytes;
     private ContentSourceSixteenthBrigadeGroupedPackArtifact(ContentSourceSeventhArmoredGroupedPackArtifact basis, byte[] bytes)
     {

@@ -8,10 +8,12 @@ namespace Cna.Core.Content;
 internal sealed class ContentSourceCcnnBatchPackArtifact
 {
     internal const string FormatId = "sandtable.source-grouped-extensions.v1";
-    internal const string CcnnHash = "sha256:7ba942011641992303537e680d68fe0f2fbb1fa6b431d9525100705941a1077a";
-    internal const string CombinedHash = "sha256:eafd1ad9b045123f73a1770975a9b73bff966814294ae377a4a8cf56792b8156";
-    internal const string CcnnArescaHash = "sha256:862ab1eece703a94a428dd7b0e23259741b351c7e6616cbcc2dadebf4cba5e74";
-    internal const string CombinedArescaHash = "sha256:eb9be2f8b4648b8a47dab8c7bdc2a62b2de8029ce8b58f67c06f61e645cb9639";
+    // All four derived from (and so changed when) CampaignSourceAxisSupplementalForces.ContentHash
+    // changed - see RUL-GRA-26's note on that constant for the most recent reason.
+    internal const string CcnnHash = "sha256:4e17559ae7a7358c9d13ff3bb29a7a2df02c507b31a8f8f2bb8a32d47f7d0203";
+    internal const string CombinedHash = "sha256:b3d74b6204dd8821da271bb381847fc5939732e84f3bd991f3e5e04340e0efd6";
+    internal const string CcnnArescaHash = "sha256:5d55910a8af9c03941b482dc6f215ebe2945a9dff63480a2eb537812d2b6f48c";
+    internal const string CombinedArescaHash = "sha256:a43434610293aa4f1f4eb484765d8a694fd697952f48bbc7b4e7f0e0481f04e5";
     private readonly byte[] bytes;
     private ContentSourceCcnnBatchPackArtifact(byte[] bytes) => this.bytes = bytes;
     internal byte[] CanonicalBytes => bytes.ToArray();
