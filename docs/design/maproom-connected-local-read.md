@@ -65,10 +65,9 @@ there is no persisted-storage key for a handoff to leak and none to clear. All
 per-seat state lives only in two in-memory places: `ConnectedWorkspace`'s own
 signals (`view`, `selectedId`, camera/fullscreen state) and `CampaignActionFlow`'s
 signals (`state`, `currentView`), both plain Angular `signal()`s with no
-persistence. `CampaignActionDraft` (`campaign-action-draft.ts`) is a separate,
-well-tested model that is **not** wired into any component today — the live
-action state machine is `CampaignActionFlow`, constructed by `ConnectedWorkspace`
-with no adapter and `admittedCapability` hardcoded `false`. That means `canSubmit`
+persistence. The live action state machine is `CampaignActionFlow`, constructed
+by `ConnectedWorkspace` with no adapter and `admittedCapability` hardcoded
+`false`. That means `canSubmit`
 is permanently false and the submit control is permanently disabled in the
 shipped app: there is no reachable "submitted, awaiting receipt" draft today, only
 an own-formation selection (`selectedId`) and its (always-disabled) legal-action
