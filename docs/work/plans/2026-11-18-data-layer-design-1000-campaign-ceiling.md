@@ -9,9 +9,12 @@ directory bootstrap under concurrent first-access — see
 [PR #429](https://github.com/dills122/sandtable/pull/429) — unrelated to
 scaling but found via this rollout's own verification. Steps 3-6 (hot/cold
 archival, sweep→per-grain reminders, snapshotting, load-test tuning) remain
-not started; see §11. RC remains local-only, single-player, low-scale and is
-**not** blocked on anything remaining in here landing — this is a post-RC
-scaling design.
+not started; see §11. **Superseded 2026-11-18: the "RC is local-only"
+assumption this whole document (and §3's SQLite-vs-Postgres conclusion
+specifically) was written against is no longer true — see
+[`2026-11-18-postgres-migration-design.md`](2026-11-18-postgres-migration-design.md).**
+Steps 1-2 above remain real, valid work regardless (schema migration and
+per-campaign isolation both carry forward into the new doc).
 
 **Scope note on sources:** everything below that describes current behavior
 was re-read directly from `src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.cs`
@@ -310,9 +313,23 @@ than something it has to work around.
 
 ## 3. Technology recommendation
 
-**Recommendation: keep SQLite, but change its topology from file-per-host to
-file-per-campaign-or-shard for the hot tier, plus a separate SQLite store for
-the cold tier. Do not move to Postgres.**
+**Superseded 2026-11-18 — the project's actual RC scope changed.** This
+section's "do not move to Postgres" conclusion depended entirely on the
+assumption stated in §3's third bullet below: "RC ships SQLite-based,
+local-only, no server process to administer." That assumption no longer
+holds — the project owner has confirmed the real target is a hosted,
+multi-user web app (minimum ~100 concurrent active campaigns), not a local
+single-player build. See
+[`2026-11-18-postgres-migration-design.md`](2026-11-18-postgres-migration-design.md)
+for the corrected recommendation (PostgreSQL + Marten). The rest of this
+section is kept below as the reasoning that was sound *under the old
+assumption* — §2's "N stores split by domain" principle and the per-campaign
+isolation argument both carry forward unchanged into the new doc; only the
+specific engine choice changes.
+
+~~**Recommendation: keep SQLite, but change its topology from file-per-host
+to file-per-campaign-or-shard for the hot tier, plus a separate SQLite store
+for the cold tier. Do not move to Postgres.**~~
 
 Reasoning, tied to §2 and this project's actual constraints:
 
@@ -832,10 +849,15 @@ not the bottleneck that actually dominates long-term size.**
 
 ## 11. Phased rollout plan
 
-**Nothing here blocks RC.** RC is local-only, single-player, SQLite-based,
+~~**Nothing here blocks RC.** RC is local-only, single-player, SQLite-based,
 and low-scale by its own definition (`docs/roadmap/pre-alpha-roadmap.md`
 MVP-GATE-04: "durable local lifecycle" for bounded local campaigns, not
-concurrent-at-scale hosting). The honest ordering:
+concurrent-at-scale hosting).~~ **Superseded 2026-11-18 — see the note at
+the top of this document.** RC's actual scope is now a hosted multi-user
+product; `MVP-GATE-04`'s "durable local lifecycle" framing needs the same
+correction wherever it's cited as a scope boundary. The ordering below still
+describes real, valid work (steps 1-2 are done); only the "this is all
+post-RC and doesn't matter yet" framing is wrong now:
 
 **Before/at RC (already in flight or already scoped, not new work from this
 document):**
