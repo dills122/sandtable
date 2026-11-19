@@ -87,7 +87,9 @@ late responses are isolated by seat generation.
 
 The first connected test uses an explicitly temporary synthetic rules-lab session. Durable
 publication and restore are later contract/provider gates, with external I/O coordinated outside
-authoritative grain turns. PostgreSQL is an evaluation candidate, not a selected production store.
+authoritative grain turns. PostgreSQL + Marten is the accepted direction for the durable campaign
+journal (`docs/work/plans/2026-11-18-postgres-migration-design.md`, issue #439); infrastructure
+foundation (Phase A) has landed, the actual journal migration (Phase C) has not.
 This lane does not activate private Combat or satisfy six-turn MVP acceptance.
 
 The [Proving Ground runbook](docs/runbooks/proving-ground.md) now defines a containerized

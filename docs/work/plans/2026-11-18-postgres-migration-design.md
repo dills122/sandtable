@@ -301,16 +301,31 @@ data-migration project.
 - **Backup/point-in-time-recovery policy.** Postgres's own WAL makes this far
   more mature than SQLite's story today; someone still has to configure
   retention/archiving. Not designed here.
-- **The exact hash-chain attachment mechanism on Marten events** (§3.3) —
-  needs verifying against Marten's current API, not assumed.
-- **Marten version/channel to pin** (9.x vs. 8.x; both had 2026 releases
-  found during research, no decision made between them here).
+- ~~**The exact hash-chain attachment mechanism on Marten events** (§3.3) —
+  needs verifying against Marten's current API, not assumed.~~ **Resolved in
+  Phase A (issue #439):** Marten's own opt-in event headers
+  (`StoreOptions.Events.MetadataConfig.HeadersEnabled`, set per-session via
+  `IDocumentSession.SetHeader`), verified against Marten 9.62.0's current API
+  and proven with a round-trip test
+  (`tests/Cna.OrleansHost.Tests/Persistence/MartenEventHeaderHashChainTests.cs`).
+  Not a companion table. This is still proof-of-concept scope — wiring
+  `prior_hash`/`record_hash` into the real campaign event schema is Phase C.
+- ~~**Marten version/channel to pin** (9.x vs. 8.x; both had 2026 releases
+  found during research, no decision made between them here).~~ **Resolved in
+  Phase A:** pinned to **Marten 9.62.0** — the latest stable release at
+  decision time (2026-11-16), and the 9.x line explicitly lists `net10.0`
+  compatibility where the 8.x line's NuGet listing does not. See
+  `Directory.Packages.props`.
 - **The benchmark owed since issue #330** ("Host scaling: benchmark sweep
   latency and transaction hold time...") — never done, carried forward doc
   to doc. This migration doesn't get to skip it either, just reframed for
   Postgres + Marten instead of SQLite.
 - **Exact CI/Testcontainers wiring** for §8's real-Postgres test story —
-  named as required, not implemented here.
+  named as required, not implemented here. Phase A's local/test story uses
+  Testcontainers directly in `Cna.OrleansHost.Tests` (Docker is already
+  present on this repo's `ubuntu-24.04` GitHub-hosted CI runners, so the new
+  tests should run there unmodified), but no CI workflow has been changed to
+  exercise them yet — confirming and wiring that in remains Phase D's job.
 
 ## 11. Recommendation
 

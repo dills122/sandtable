@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <Compile Include="../Shared/GrazianiSourceExcerpt.cs" Link="Shared/GrazianiSourceExcerpt.cs" />
     <Using Include="Xunit" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="xunit.v3.mtp-v2" />
     <ProjectReference Include="../../src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
     <ProjectReference Include="../Cna.OrleansHost.FoundationChild/Cna.OrleansHost.FoundationChild.csproj"
