@@ -1,6 +1,8 @@
 using Cna.Core.Campaigns;
 using Cna.OrleansHost;
 using Cna.OrleansHost.Api;
+using Cna.OrleansHost.Persistence;
+using Orleans.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,30 @@ if (!string.IsNullOrWhiteSpace(campaignJournalDirectory))
         services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>()));
     builder.Services.AddHostedService<CampaignCombatTimeoutService>();
 }
+// Phase C4 of issue #439 (docs/work/plans/2026-11-18-postgres-migration-design.md §4.1):
+// Microsoft.Orleans.Clustering.AdoNet / Microsoft.Orleans.Reminders.AdoNet against PostgreSQL
+// via Npgsql, for every environment except Development. This is Orleans' own infrastructure
+// bookkeeping (silo membership, reminder durability) -- a separate database from the hot/cold
+// Marten stores (design doc §2's "N stores split by domain"), configured here, never mixed with
+// campaign data. The connection string follows the same env-var-backed pattern as
+// SANDTABLE_POSTGRES_HOT_CONNECTION_STRING/SANDTABLE_POSTGRES_COLD_CONNECTION_STRING (see
+// .env.example).
+string? orleansConnectionString = null;
+if (!builder.Environment.IsDevelopment())
+{
+    orleansConnectionString = builder.Configuration["SANDTABLE_POSTGRES_ORLEANS_CONNECTION_STRING"];
+    if (string.IsNullOrWhiteSpace(orleansConnectionString))
+        throw new InvalidOperationException(
+            "SANDTABLE_POSTGRES_ORLEANS_CONNECTION_STRING is required outside Development. " +
+            "UseLocalhostClustering() is dev-only and cannot be used outside Development. " +
+            "Configure Microsoft.Orleans.Clustering.AdoNet/Reminders.AdoNet before deploying this host.");
+    // Orleans' ADO.NET providers assume the schema already exists (confirmed via each
+    // package's own README: no auto-migration, unlike Marten). Applying it here, guarded by
+    // OrleansAdoNetSchema's own existence check, makes repeat silo startups against an
+    // already-provisioned database a no-op while still standing up a brand-new one correctly.
+    await OrleansAdoNetSchema.EnsureSchemaAsync(orleansConnectionString, CancellationToken.None);
+}
+
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration
 builder.Host.UseOrleans(siloBuilder =>
 {
@@ -45,15 +71,27 @@ builder.Host.UseOrleans(siloBuilder =>
     }
     else
     {
-        // TODO: wire up a persistent clustering provider (e.g. Azure Table Storage,
-        // ADO.NET, or Kubernetes) before deploying outside local development. There is
-        // no production clustering provider configured yet, so fail loudly here instead
-        // of silently falling back to localhost clustering, which would misbehave (or
-        // simply not cluster) outside a single dev machine.
-        throw new InvalidOperationException(
-            "No production Orleans clustering provider is configured. " +
-            "UseLocalhostClustering() is dev-only and cannot be used outside Development. " +
-            "Configure a persistent clustering provider before deploying this host.");
+        // Explicit, non-"default" cluster/service identity rather than Orleans' own
+        // implicit defaults -- required once membership is shared via a real database
+        // rather than scoped to one dev process by UseLocalhostClustering().
+        siloBuilder.Configure<ClusterOptions>(options =>
+        {
+            options.ClusterId = builder.Configuration["Orleans:ClusterId"] ?? "sandtable-cluster";
+            options.ServiceId = builder.Configuration["Orleans:ServiceId"] ?? "sandtable-campaigns";
+        });
+        siloBuilder.UseAdoNetClustering(options =>
+        {
+            options.Invariant = "Npgsql";
+            options.ConnectionString = orleansConnectionString;
+        });
+        // §4.2: reminders here are a durability backstop only (coarse, minutes-scale --
+        // see CampaignRoundTimeoutGrain), never the primary deadline mechanism.
+        siloBuilder.AddReminders();
+        siloBuilder.UseAdoNetReminderService(options =>
+        {
+            options.Invariant = "Npgsql";
+            options.ConnectionString = orleansConnectionString;
+        });
     }
 });
 
