@@ -38,12 +38,25 @@ internal sealed partial class CampaignDurableAuthorityJournal
         ArgumentNullException.ThrowIfNull(backend);
         byte[]? pendingReferenceKey = null;
         byte[] NewReferenceKey() => pendingReferenceKey ??= backend.RandomBytes(32);
+        // Each harness call holds the backend's harness gate from load to flush -- the moral
+        // equivalent of the SQLite file's write lock (BEGIN IMMEDIATE + busy_timeout), so harness
+        // instances sharing one database serialize exactly as two connections to one file did. The
+        // production async path serializes differently (optimistic concurrency + retry in the store).
         return new(WorkingSetPath, backend.Clock, SchemaVersion, backend.ContentResolver, backend.RandomBytes,
             () =>
             {
-                var workingSet = Task.Run(() => backend.OpenAsync(null, NewReferenceKey, CancellationToken.None))
-                    .GetAwaiter().GetResult();
-                return new FlushOnDisposeConnection(workingSet);
+                backend.HarnessGate.Wait();
+                try
+                {
+                    var workingSet = Task.Run(() => backend.OpenAsync(null, NewReferenceKey, CancellationToken.None))
+                        .GetAwaiter().GetResult();
+                    return new FlushOnDisposeConnection(workingSet, backend.HarnessGate);
+                }
+                catch
+                {
+                    backend.HarnessGate.Release();
+                    throw;
+                }
             },
             backend.AuthenticateOperator);
     }
@@ -59,11 +72,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private sealed class FlushOnDisposeConnection : SqliteConnection
     {
         private readonly CampaignJournalWorkingSet workingSet;
+        private readonly SemaphoreSlim gate;
         private bool flushed;
 
-        internal FlushOnDisposeConnection(CampaignJournalWorkingSet workingSet) : base(workingSet.ConnectionString)
+        internal FlushOnDisposeConnection(CampaignJournalWorkingSet workingSet, SemaphoreSlim gate)
+            : base(workingSet.ConnectionString)
         {
             this.workingSet = workingSet;
+            this.gate = gate;
             Open();
         }
 
@@ -79,6 +95,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             finally
             {
                 workingSet.Dispose();
+                gate.Release();
             }
         }
     }

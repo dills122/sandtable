@@ -389,6 +389,32 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Null(database.Journal().GetSelectionRoundDeadlineMs(request.CampaignId));
     }
 
+    /// <summary>
+    /// The production async path retries a lost optimistic-concurrency race against fresh state,
+    /// reproducing SQLite's serialized outcome: two concurrent idempotent retries of one scheduled
+    /// arrival both receive the single committed reply (the Marten-store twin of
+    /// <c>ConcurrentScheduledArrivalRetriesCommitOnce</c>).
+    /// </summary>
+    [Fact]
+    public async Task MartenStoreConcurrentIdempotentRetriesSerializeLikeSqlite()
+    {
+        using var database = MartenJournalDatabase.Create(OperatorSecret);
+        var journal = database.Journal();
+        var request = ScheduledWorld6Request();
+        journal.CreateScheduledWorld6(request);
+        var credential = journal.RedeemSeatGrant(journal.IssueSeatGrant(request.CampaignId,
+            CampaignActionAudience.Axis, OperatorSecret))!;
+        var opening = Assert.Single(journal.QueryScheduledWorld6(credential));
+        var store = new CampaignDurableAuthorityJournalStore(database.Backend);
+        var replies = await Task.WhenAll(Enumerable.Range(0, 4).Select(_ =>
+            Task.Run(() => store.SubmitScheduledWorld6Async(credential, opening.Reference))));
+        Assert.NotNull(replies[0]);
+        Assert.All(replies, reply => Assert.Equal(replies[0], reply));
+        await using var query = database.Store.QuerySession();
+        var events = await query.Events.FetchStreamAsync(request.CampaignId, token: TestContext.Current.CancellationToken);
+        Assert.Equal(1 + 7, events.Count); // genesis + the seven steps SQLite commits once
+    }
+
     // ---- Grain path against the Marten store ----
 
     [Fact]
