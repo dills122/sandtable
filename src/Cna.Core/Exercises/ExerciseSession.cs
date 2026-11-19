@@ -71,7 +71,8 @@ public sealed class ExerciseSession
         IEnumerable<object>? repeatAssaultEvents = null,
         CampaignContactJournal? postRepeatBaseContacts = null,
         IEnumerable<object>? postRepeatEvents = null,
-        CampaignNativeCombatRbaCancellationV33? combatRbaCancellation = null)
+        CampaignNativeCombatRbaCancellationV33? combatRbaCancellation = null,
+        CampaignCombatAmmunitionLedgerV1? ammunitionLedger = null)
     {
         currentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         this.context = context ?? throw new ArgumentNullException(nameof(context));
@@ -372,7 +373,8 @@ public sealed class ExerciseSession
             var runtime = CampaignNativeRepeatAssaultRuntime.Replay(snapshot,
                 repeatCombatSelection, repeatMoveWorld,
                 combatAssaultResult.AfterRandomState, context,
-                repeatAssaultBaseContacts, prePostHistory, assaultEvents);
+                repeatAssaultBaseContacts, prePostHistory, assaultEvents,
+                ammunitionLedger);
             var assaultTerminalContacts = postRepeatBaseContacts ?? CurrentContacts;
             if (assaultTerminalContacts.AuthorityVersion
                     != runtime.Contacts.AuthorityVersion
@@ -465,6 +467,7 @@ public sealed class ExerciseSession
         CurrentCombatCustodyWorld = combatCustodyWorld;
         CurrentCombatCustodyState = combatCustodyState;
         CurrentCombatSuccessor = combatSuccessor;
+        CurrentAmmunitionLedger = ammunitionLedger;
     }
 
     internal ExerciseSession WithReserveReleaseEvent(
@@ -493,7 +496,8 @@ public sealed class ExerciseSession
             combatCustodyWorld: CurrentCombatCustodyWorld,
             combatCustodyState: CurrentCombatCustodyState,
             combatSuccessor: CurrentCombatSuccessor,
-            reserveReleaseEvents: [.. CurrentReserveReleaseEvents, reserveEvent]);
+            reserveReleaseEvents: [.. CurrentReserveReleaseEvents, reserveEvent],
+            ammunitionLedger: CurrentAmmunitionLedger);
 
     internal ExerciseSession WithCycleControlEvent(
         CampaignNativeCycleControlV28 control,
@@ -522,7 +526,8 @@ public sealed class ExerciseSession
             combatCustodyState: CurrentCombatCustodyState,
             combatSuccessor: CurrentCombatSuccessor,
             reserveReleaseEvents: CurrentReserveReleaseEvents,
-            cycleControl: control);
+            cycleControl: control,
+            ammunitionLedger: CurrentAmmunitionLedger);
 
     internal ExerciseSession WithRepeatMovementEvent(
         CampaignNativeRepeatMovementV29 movement,
@@ -554,7 +559,8 @@ public sealed class ExerciseSession
             reserveReleaseEvents: CurrentReserveReleaseEvents,
             cycleControl: CurrentCycleControl,
             repeatMove: movement,
-            repeatMoveWorld: world);
+            repeatMoveWorld: world,
+            ammunitionLedger: CurrentAmmunitionLedger);
 
     internal ExerciseSession WithRepeatBreakdownEvent(
         CampaignNativeRepeatBreakdownV30 breakdown,
@@ -586,7 +592,8 @@ public sealed class ExerciseSession
             cycleControl: CurrentCycleControl,
             repeatMove: CurrentRepeatMove,
             repeatMoveWorld: CurrentRepeatMoveWorld,
-            repeatBreakdown: breakdown);
+            repeatBreakdown: breakdown,
+            ammunitionLedger: CurrentAmmunitionLedger);
 
     internal ExerciseSession WithRepeatCombatSelectionEvent(
         CampaignNativeRepeatCombatDecisionV31 selection,
@@ -621,7 +628,8 @@ public sealed class ExerciseSession
             repeatBreakdown: CurrentRepeatBreakdown,
             repeatCombatSelection: selection,
             repeatAssaultBaseContacts: selection.Choice == "select-contact-assault"
-                ? contacts : null);
+                ? contacts : null,
+            ammunitionLedger: CurrentAmmunitionLedger);
 
     internal ExerciseSession WithRepeatNoAttackEvent(
         CampaignNativeRepeatCombatNoAttackV32 completion,
@@ -656,8 +664,20 @@ public sealed class ExerciseSession
             repeatBreakdown: CurrentRepeatBreakdown,
             repeatCombatSelection: CurrentRepeatCombatSelection,
             repeatNoAttack: completion,
-            postRepeatBaseContacts: contacts);
+            postRepeatBaseContacts: contacts,
+            ammunitionLedger: CurrentAmmunitionLedger);
 
+    // Perf seeding path (Phase 1 of #436): deliberately does NOT forward
+    // ammunitionLedger here. A second or later repeat cycle's own
+    // ammunition folding is done by CampaignNativePostRepeatRuntime's
+    // CampaignNativeRepeatAssaultRuntime.Replay calls, which this method
+    // does not participate in and which are not seeded by this change
+    // (out of this PR's scope). Leaving CurrentAmmunitionLedger null from
+    // this point on means any later reader (including the next ordinary
+    // CampaignExercises.Complete call) safely falls back to the
+    // from-genesis fold instead of carrying forward a value that may be
+    // stale by however many later-cycle Combat results this round still
+    // has ahead of it.
     internal ExerciseSession WithPostRepeatEvent(object campaignEvent,
         CampaignContactJournal contacts) => new(CurrentSnapshot, Context,
             CurrentHistory.Add(campaignEvent), contacts, CurrentCombatDecision,
@@ -696,9 +716,31 @@ public sealed class ExerciseSession
             postRepeatEvents: CurrentPostRepeatEvents.Append(campaignEvent));
 
     internal ExerciseSession WithRepeatAssaultEvent(object campaignEvent,
-        CampaignContactJournal contacts) => CurrentPostRepeat?.ActiveAssault is not null
-        ? WithPostRepeatEvent(campaignEvent, contacts)
-        : new(CurrentSnapshot, Context,
+        CampaignContactJournal contacts)
+    {
+        if (CurrentPostRepeat?.ActiveAssault is not null)
+            return WithPostRepeatEvent(campaignEvent, contacts);
+        // Perf seeding path (Phase 1 of #436): CurrentAmmunitionLedger is
+        // carried forward unchanged (still the pre-spend value used to
+        // build this engagement's CampaignNativeCombatAssaultResultV22)
+        // through every repeat-assault step except the World settlement
+        // that follows an accepted result -- the point this engagement's
+        // ammunition spend becomes final. Folding exactly that one
+        // CurrentRepeatAssault.Result event here, instead of only at the
+        // next read, keeps the invariant that a non-null
+        // CurrentAmmunitionLedger always reflects CurrentHistory as of
+        // this session, so a second repeat-assault within the same Combat
+        // round (ResolveRepeatedCombatAssault) can still seed from it
+        // without rescanning the full history. The fold still goes
+        // through CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents, so
+        // the result's ContentHash/SourceHash/PriorAmmunitionHash/
+        // AfterAmmunitionHash are re-validated, not trusted blindly.
+        var ammunitionLedger = campaignEvent is CampaignNativeCombatSettlementV24
+            ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                CurrentAmmunitionLedger ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(Context),
+                new object[] { CurrentRepeatAssault!.Result! })
+            : CurrentAmmunitionLedger;
+        return new(CurrentSnapshot, Context,
             CurrentHistory.Add(campaignEvent), contacts, CurrentCombatDecision,
             noAttackCompletion: CurrentNoAttackCompletion,
             combatBarrage: CurrentCombatBarrage,
@@ -729,7 +771,9 @@ public sealed class ExerciseSession
             repeatBreakdown: CurrentRepeatBreakdown,
             repeatCombatSelection: CurrentRepeatCombatSelection,
             repeatAssaultBaseContacts: CurrentRepeatAssaultBaseContacts,
-            repeatAssaultEvents: CurrentRepeatAssaultEvents.Append(campaignEvent));
+            repeatAssaultEvents: CurrentRepeatAssaultEvents.Append(campaignEvent),
+            ammunitionLedger: ammunitionLedger);
+    }
     internal CampaignPregameSourceState? Pregame { get; }
     internal CampaignSourceAuthorityState? SourceAuthority => SourceTurn is null ? sourceAuthorityState : null;
     internal CampaignSourceTurnAuthority? SourceTurn { get; }
@@ -953,6 +997,28 @@ public sealed class ExerciseSession
     internal CampaignWorldSnapshotV6? CurrentCombatCustodyWorld { get; }
     internal CampaignNativeCombatCustodyStateV25? CurrentCombatCustodyState { get; }
     internal CampaignNativeCombatSuccessorV26? CurrentCombatSuccessor { get; }
+    // Perf seeding path (Phase 1 of #436): a cache of
+    // CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context,
+    // CurrentHistory) as of the last point it was known current -- either
+    // this session's own clean ordinary-step boundary (populated by
+    // CampaignExercises.Complete) or carried forward through a single
+    // Combat round's steps (see the hot call sites in CampaignExercises.cs
+    // and CampaignNativeCombatForceEligibility/CampaignNativeRepeatAssaultRuntime).
+    // This is the one place in Cna.Core that deliberately duplicates a
+    // small piece of derived state outside the event log -- a pattern this
+    // type's own header comment says the engine avoids everywhere else.
+    // It is safe specifically because it is never trusted blindly: every
+    // fold through CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents
+    // re-validates the tail events against the running
+    // ContentHash/SourceHash/PriorAmmunitionHash/AfterAmmunitionHash hash
+    // chain, so a stale-but-wrong seed cannot silently corrupt a result --
+    // it would throw InvalidCampaignHistoryException. A path that cannot
+    // prove the seed is still current for this exact session (e.g. once a
+    // second or later repeat cycle is entered via CurrentPostRepeat, see
+    // WithPostRepeatEvent) leaves this null rather than forward a stale
+    // value, so a reader always either gets a current ledger or a null
+    // that forces the safe from-genesis fallback -- never a wrong answer.
+    internal CampaignCombatAmmunitionLedgerV1? CurrentAmmunitionLedger { get; }
     internal IReadOnlyList<CampaignNativeReserveReleaseEventV27> CurrentReserveReleaseEvents { get; }
     internal CampaignNativeReserveReleaseStateV27? CurrentReserveRelease { get; }
     internal CampaignNativeCycleControlV28? CurrentCycleControl { get; }

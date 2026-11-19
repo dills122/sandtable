@@ -125,6 +125,22 @@ public sealed class CampaignContactCombatSelectionCutTests
             .SerializeCanonical());
         Assert.Equal(canonical, CampaignCurrentEventSerializer.Serialize(
             CampaignCurrentEventSerializer.Deserialize(canonical)));
+        // #436 Phase 1: the seeded FromAcceptedEvents overload (used by the
+        // hot Combat call sites instead of rescanning full history) must
+        // fold this one accepted result to the exact same ledger as the
+        // from-genesis overload folding the same event, and
+        // Deserialize(SerializeCanonical()) must round-trip it unchanged.
+        var seededAfter = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+            ammunition, new object[] { result });
+        var genesisAfter = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+            context, new object[] { result });
+        Assert.Equal(genesisAfter.SerializeCanonical(), seededAfter.SerializeCanonical());
+        Assert.Equal(inputs.AfterAmmunition.SerializeCanonical(),
+            seededAfter.SerializeCanonical());
+        Assert.Equal(seededAfter.SerializeCanonical(), CampaignCombatAmmunitionLedgerV1
+            .Deserialize(seededAfter.SerializeCanonical()).SerializeCanonical());
+        Assert.Equal(0, CampaignCombatAmmunitionLedgerV1
+            .Deserialize(seededAfter.SerializeCanonical()).Remaining("axis-infantry"));
         var losses = CampaignNativeCombatLossAssessment.Project(result, inputs,
             refuseRetreat: false);
         Assert.Equal(inputs.Attacker.CommittedToe,

@@ -45,7 +45,32 @@ internal sealed class CampaignCombatAmmunitionLedgerV1
         CampaignContentContext context, IEnumerable<object> events)
     {
         ArgumentNullException.ThrowIfNull(events);
-        var current = CreateInitial(context);
+        return FoldForward(CreateInitial(context), events);
+    }
+
+    // Perf seeding path (Phase 1 of #436): callers that already hold a
+    // ledger known to be current as of some point in the history -- e.g.
+    // ExerciseSession.CurrentAmmunitionLedger, populated at a clean
+    // ordinary-step boundary or carried forward across a single Combat
+    // round -- fold forward only the events after that point instead of
+    // re-deriving from CreateInitial over the full accepted-event history.
+    // This does not weaken the per-event integrity checks below: every
+    // event in `events` is still validated against the running hash chain
+    // (ContentHash/SourceHash/PriorAmmunitionHash/AfterAmmunitionHash), so
+    // a caller cannot pass a wrong or tampered `seed` and have it silently
+    // accepted -- it only changes where the fold starts.
+    internal static CampaignCombatAmmunitionLedgerV1 FromAcceptedEvents(
+        CampaignCombatAmmunitionLedgerV1 seed, IEnumerable<object> events)
+    {
+        ArgumentNullException.ThrowIfNull(seed);
+        ArgumentNullException.ThrowIfNull(events);
+        return FoldForward(seed, events);
+    }
+
+    private static CampaignCombatAmmunitionLedgerV1 FoldForward(
+        CampaignCombatAmmunitionLedgerV1 seed, IEnumerable<object> events)
+    {
+        var current = seed;
         var expectedSpend = Cna.Core.Rules.Cna1979CombatAdjudication.Definition.Costs
             .CommittedToePerRole * Cna.Core.Rules.Cna1979CombatAdjudication.Definition.Costs
             .AmmunitionPointsPerToe;
@@ -113,5 +138,27 @@ internal sealed class CampaignCombatAmmunitionLedgerV1
             writer.WriteEndObject();
         }
         return stream.ToArray();
+    }
+
+    internal static CampaignCombatAmmunitionLedgerV1 Deserialize(byte[] bytes)
+    {
+        ArgumentNullException.ThrowIfNull(bytes);
+        using var document = JsonDocument.Parse(bytes);
+        var root = document.RootElement;
+        if (!root.TryGetProperty("contractVersion", out var contractVersionElement)
+            || contractVersionElement.GetInt32() != CurrentContractVersion)
+            throw new InvalidOperationException("Combat ammunition contract version is unsupported.");
+        var contentHash = root.GetProperty("contentHash").GetString()
+            ?? throw new InvalidOperationException("Combat ammunition content hash is missing.");
+        var sourceHash = root.GetProperty("sourceHash").GetString()
+            ?? throw new InvalidOperationException("Combat ammunition source hash is missing.");
+        var points = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var entry in root.GetProperty("ammunition").EnumerateArray())
+        {
+            var elementId = entry.GetProperty("elementId").GetString()
+                ?? throw new InvalidOperationException("Combat ammunition element id is missing.");
+            points[elementId] = entry.GetProperty("points").GetInt32();
+        }
+        return new CampaignCombatAmmunitionLedgerV1(contentHash, sourceHash, points);
     }
 }
