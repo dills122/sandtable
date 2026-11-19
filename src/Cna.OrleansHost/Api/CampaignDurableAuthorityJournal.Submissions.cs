@@ -3,6 +3,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Cna.OrleansHost.Timeouts;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -761,20 +762,30 @@ internal sealed partial class CampaignDurableAuthorityJournal
             AcceptedKind(kind, retreatMove), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (selectionRound is not null)
+        {
             UpdateSelectionRound(connection, transaction, selectionRound with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Selection);
+        }
         if (kind == CampaignOwnerOpeningKind.Movement)
             TryInitializeSelectionRound(connection, transaction, acceptedHead, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
         {
             UpdateRbaRound(connection, transaction, rbaRound! with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Rba);
             InitializeForceRound(connection, transaction, acceptedHead, seat.CampaignId,
                 rbaRound.HighWaterMs);
         }
         if (kind == CampaignOwnerOpeningKind.ReserveRelease
             && CampaignHostAdapter.IsNativeReserveReleaseEmpty(acceptedHead.Session))
+        {
             UpdateReserveRound(connection, transaction, reserveRound! with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Reserve);
+        }
         if (kind == CampaignOwnerOpeningKind.CycleControl)
+        {
             UpdateCycleRound(connection, transaction, cycleRound! with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Cycle);
+        }
         if (kind == CampaignOwnerOpeningKind.RepeatMovement)
             AppendNativeRepeatBreakdown(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.SecondMovementCompletion)
@@ -799,6 +810,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (kind == CampaignOwnerOpeningKind.Custody)
         {
             UpdateCustodyRound(connection, transaction, custodyRound! with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Custody);
             AppendNativeCombatSuccessor(connection, transaction, seat.CampaignId, acceptedHead);
         }
         if (kind == CampaignOwnerOpeningKind.ReserveRelease)
@@ -806,6 +818,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (kind == CampaignOwnerOpeningKind.PostAssaultRetreat)
         {
             UpdateRetreatRound(connection, transaction, retreatRound! with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Retreat);
             AppendWorldSettlement(connection, transaction, seat.CampaignId, acceptedHead);
         }
         // #394 extra-3: guarded against a second-side session whose stale
@@ -933,6 +946,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAcceptedStep.NativeCombatForceCompletionKind, null,
                 null, null, null, systemCommand, completion);
             UpdateForceRound(connection, transaction, forceRound! with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Force);
             AppendEmptyAntiArmor(connection, transaction, seat.CampaignId);
         }
         transaction.Commit();

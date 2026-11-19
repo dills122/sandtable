@@ -4,6 +4,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Cna.OrleansHost.Timeouts;
 
 namespace Cna.OrleansHost.Api;
 
@@ -185,6 +186,60 @@ internal sealed class CampaignDurableAuthorityJournalStore
         try { return CampaignDurableAuthorityJournal.OpenExisting(siblings[0], clock, contentResolver); }
         catch (InvalidOperationException) { return null; }
     }
+
+    /// <summary>
+    /// Drains the round-open/round-close signals <see cref="CampaignDurableAuthorityJournal"/>
+    /// recorded for <paramref name="campaignId"/> since the last drain. Phase C3a of issue #439:
+    /// the only consumer is <c>CampaignGrain</c>, which turns each signal into a real
+    /// <c>ICampaignRoundTimeoutGrain.ArmAsync</c>/<c>DisarmAsync</c> call after this store call's
+    /// own transaction has already committed -- see <see cref="CampaignDurableAuthorityJournal.pendingRoundTimerActions"/>'s
+    /// remarks for why that ordering matters.
+    /// </summary>
+    internal IReadOnlyList<(CampaignRoundKind RoundKind, long? DeadlineMs)> DrainPendingRoundTimerActions(
+        string campaignId) => JournalFor(campaignId, createIfMissing: false).DrainPendingRoundTimerActions();
+
+    /// <summary>
+    /// <see cref="Timeouts.ICampaignRoundDeadlineSink.GetDeadlineAsync"/>'s read side: the current
+    /// deadline for campaign <paramref name="campaignId"/>'s open round of <paramref
+    /// name="roundKind"/>, or <see langword="null"/> if none is open (or the campaign has no
+    /// durable journal yet -- a timeout grain can be armed and later queried for a campaign whose
+    /// file does not exist in this store instance, e.g. in an isolated test).
+    /// </summary>
+    internal long? GetRoundDeadlineMs(string campaignId, CampaignRoundKind roundKind)
+    {
+        CampaignDurableAuthorityJournal journal;
+        try { journal = JournalFor(campaignId, createIfMissing: false); }
+        catch (InvalidOperationException) { return null; }
+        return roundKind switch
+        {
+            CampaignRoundKind.Selection => journal.GetSelectionRoundDeadlineMs(campaignId),
+            CampaignRoundKind.Rba => journal.GetRbaRoundDeadlineMs(campaignId),
+            CampaignRoundKind.Force => journal.GetForceRoundDeadlineMs(campaignId),
+            CampaignRoundKind.Retreat => journal.GetRetreatRoundDeadlineMs(campaignId),
+            CampaignRoundKind.Custody => journal.GetCustodyRoundDeadlineMs(campaignId),
+            CampaignRoundKind.Reserve => journal.GetReserveRoundDeadlineMs(campaignId),
+            CampaignRoundKind.Cycle => journal.GetCycleRoundDeadlineMs(campaignId),
+            _ => throw new ArgumentOutOfRangeException(nameof(roundKind), roundKind, null),
+        };
+    }
+
+    /// <summary>
+    /// <see cref="Timeouts.ICampaignRoundDeadlineSink.TickAsync"/>'s eventual target, reached via
+    /// <c>CampaignGrain.TickRoundAsync</c>: the moral equivalent of
+    /// <see cref="CampaignCombatTimeoutService"/>'s per-lane <c>journal.TickXRound(campaignId)</c>
+    /// call, dispatched by round kind instead of by a dedicated per-lane delegate.
+    /// </summary>
+    internal bool TickRound(string campaignId, CampaignRoundKind roundKind) => roundKind switch
+    {
+        CampaignRoundKind.Selection => TickSelectionRound(campaignId),
+        CampaignRoundKind.Rba => TickRbaRound(campaignId),
+        CampaignRoundKind.Force => TickForceRound(campaignId),
+        CampaignRoundKind.Retreat => TickRetreatRound(campaignId),
+        CampaignRoundKind.Custody => TickCustodyRound(campaignId),
+        CampaignRoundKind.Reserve => TickReserveRound(campaignId),
+        CampaignRoundKind.Cycle => TickCycleRound(campaignId),
+        _ => throw new ArgumentOutOfRangeException(nameof(roundKind), roundKind, null),
+    };
 
     internal IReadOnlyList<string> CollectingSelectionCampaigns(string after, int limit) =>
         AnyJournal()?.CollectingSelectionCampaigns(after, limit) ?? [];

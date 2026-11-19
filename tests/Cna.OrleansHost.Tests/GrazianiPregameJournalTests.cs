@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -12,6 +13,7 @@ using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.OrleansHost.Api;
+using Cna.OrleansHost.Timeouts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -19,12 +21,52 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orleans.Hosting;
 
 namespace Cna.OrleansHost.Tests;
 
 public sealed class GrazianiPregameJournalTests
 {
     private const string Secret = "bb2ba979667134402906109cd92a6cf68427d84b58c30db5bcd0fae8bef692b1";
+
+    /// <summary>
+    /// Phase C3a of issue #439: <c>CampaignDurableOutwardApi</c>'s <c>/{campaignId}/actions</c>
+    /// route now dispatches through <c>ICampaignGrain</c>, so the one test in this file that
+    /// exercises that route needs a real Orleans silo backing it -- see
+    /// <c>CampaignDurableAuthorityJournalTests.StartOutwardApiSiloAsync</c>'s remarks for the
+    /// same pattern.
+    /// </summary>
+    private static async Task<IHost> StartOutwardApiSiloAsync(CampaignDurableAuthorityJournalStore store)
+    {
+        var siloBuilder = Host.CreateApplicationBuilder();
+        siloBuilder.Services.AddSingleton(store);
+        // See CampaignDurableAuthorityJournalTests.StartOutwardApiSiloAsync's remarks: the
+        // round-timeout grain CampaignGrain may arm/disarm needs this resolvable even when this
+        // test never exercises deadline behavior itself.
+        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+        siloBuilder.UseOrleans(silo =>
+        {
+            silo.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
+            silo.AddReminders();
+            silo.UseInMemoryReminderService();
+        });
+        var silo = siloBuilder.Build();
+        await silo.StartAsync(TestContext.Current.CancellationToken);
+        return silo;
+    }
+
+    private static async Task StopOutwardApiSiloAsync(IHost silo)
+    {
+        await silo.StopAsync(TestContext.Current.CancellationToken);
+        silo.Dispose();
+    }
+
+    private static int FreePort()
+    {
+        using var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        return ((IPEndPoint)listener.LocalEndpoint).Port;
+    }
 
     [Fact]
     public void OwnerSetupFinalizationSurvivesReplayWithoutExposingOpposingChoice()
@@ -1551,10 +1593,13 @@ public sealed class GrazianiPregameJournalTests
         var directory = Path.Combine(Path.GetTempPath(), "graziani-pregame-api-" + Guid.NewGuid().ToString("N"));
         var path = Path.Combine(directory, "campaign.sqlite");
         var journal = CampaignDurableAuthorityJournal.CreateNew(path, Secret);
+        var store = CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal);
+        var silo = await StartOutwardApiSiloAsync(store);
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        builder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal));
+        builder.Services.AddSingleton(store);
+        builder.Services.AddSingleton(silo.Services.GetRequiredService<IGrainFactory>());
         await using var app = builder.Build();
         app.MapDurableCampaignApi();
         await app.StartAsync(TestContext.Current.CancellationToken);
@@ -1880,6 +1925,7 @@ public sealed class GrazianiPregameJournalTests
         finally
         {
             await app.StopAsync(TestContext.Current.CancellationToken);
+            await StopOutwardApiSiloAsync(silo);
             if (Directory.Exists(directory)) Directory.Delete(directory, true);
         }
     }

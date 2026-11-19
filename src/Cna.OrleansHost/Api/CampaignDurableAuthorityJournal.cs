@@ -5,6 +5,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Cna.OrleansHost.Timeouts;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -15,6 +16,42 @@ namespace Cna.OrleansHost.Api;
 /// </summary>
 internal sealed partial class CampaignDurableAuthorityJournal
 {
+    /// <summary>
+    /// Round-open/round-close signals recorded by the seven <c>InitializeXRound</c> methods and by
+    /// <c>Submissions.cs</c>'s <c>UpdateXRound(... Status = "completed")</c> calls, for Phase C3a
+    /// of issue #439 (docs/work/plans/2026-11-18-postgres-migration-design.md §4.2). This list is
+    /// pure in-memory bookkeeping -- no I/O, no await -- so recording into it from deep inside a
+    /// SQLite transaction cannot break that transaction's atomicity or synchronous shape. Nothing
+    /// in this class drains or acts on it: <see cref="CampaignDurableAuthorityJournalStore"/>'s
+    /// <c>DrainPendingRoundTimerActions</c> exposes it to <c>CampaignGrain</c>, which is the only
+    /// caller with the <c>IGrainFactory</c> needed to actually arm/disarm a
+    /// <c>CampaignRoundTimeoutGrain</c> -- see that grain's own remarks for why arming must happen
+    /// after this transaction commits, not from inside it. A caller that never drains (e.g. a test
+    /// that constructs this journal directly, bypassing the grain) just leaves entries queued;
+    /// harmless, since nothing here reads the list back.
+    /// </summary>
+    private readonly List<(CampaignRoundKind RoundKind, long? DeadlineMs)> pendingRoundTimerActions = [];
+
+    /// <summary>Records that a round of <paramref name="roundKind"/> opened with this deadline.
+    /// Called from each of the seven <c>InitializeXRound</c> methods.</summary>
+    private void RecordRoundOpened(CampaignRoundKind roundKind, long deadlineMs) =>
+        pendingRoundTimerActions.Add((roundKind, deadlineMs));
+
+    /// <summary>Records that a round of <paramref name="roundKind"/> completed before its
+    /// deadline. Called from each <c>UpdateXRound(... Status = "completed")</c> site.</summary>
+    private void RecordRoundClosed(CampaignRoundKind roundKind) =>
+        pendingRoundTimerActions.Add((roundKind, null));
+
+    /// <summary>Drains (returns and clears) every round-timer signal recorded since the last
+    /// drain. See <see cref="CampaignDurableAuthorityJournalStore.DrainPendingRoundTimerActions"/>.</summary>
+    internal IReadOnlyList<(CampaignRoundKind RoundKind, long? DeadlineMs)> DrainPendingRoundTimerActions()
+    {
+        if (pendingRoundTimerActions.Count == 0) return [];
+        var drained = pendingRoundTimerActions.ToArray();
+        pendingRoundTimerActions.Clear();
+        return drained;
+    }
+
     private const int ApplicationId = 0x5343414A; // SCAJ
     private const int SchemaVersion = 14;
     // Host-identity store (operator_capability only -- reference_key stays per-campaign, see
@@ -989,7 +1026,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var acceptedHead = PersistAccepted(connection, transaction, campaignId, head,
             CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
         if (selectionRound is not null)
+        {
             UpdateSelectionRound(connection, transaction, selectionRound with { Status = "completed" });
+            RecordRoundClosed(CampaignRoundKind.Selection);
+        }
         TryInitializeSelectionRound(connection, transaction, acceptedHead, campaignId);
         transaction.Commit();
         return result;

@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Hosting;
+using Cna.OrleansHost.Timeouts;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -35,7 +36,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
             """;
         BindSelectionRound(insert, round);
         insert.ExecuteNonQuery();
+        RecordRoundOpened(CampaignRoundKind.Selection, round.DeadlineMs);
         _ = Load(connection, transaction, campaignId);
+    }
+
+    /// <summary>Current deadline for an open (status 'collecting') Selection round, if any --
+    /// <see cref="ICampaignRoundDeadlineSink.GetDeadlineAsync"/>'s read side. There is at most one
+    /// per campaign by construction (a new round cannot open while one is already collecting).</summary>
+    internal long? GetSelectionRoundDeadlineMs(string campaignId)
+    {
+        if (schemaVersion != SchemaVersion) return null;
+        using var connection = Connect(create: false);
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT deadline_ms FROM selection_rounds WHERE campaign_id=$id AND status='collecting' LIMIT 1";
+        query.Parameters.AddWithValue("$id", campaignId);
+        return query.ExecuteScalar() is long value ? value : null;
     }
 
     private static SelectionRound ReadActiveSelectionRound(SqliteConnection connection,
