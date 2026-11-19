@@ -1,5 +1,11 @@
 # Phase C3b (#439) fork: the journal holds durable state the Marten schema has no home for
 
+> **Superseded by the design spike**
+> [`2026-11-19-phase-c3b-durable-state-design-spike.md`](2026-11-19-phase-c3b-durable-state-design-spike.md).
+> The project owner asked for a spike to find the right storage shape before committing to this
+> doc's A/B/C. The fork below is left unedited, per this project's convention of keeping forks
+> visible.
+
 **Status: stop-and-report**, per issue #439's standing discipline ("stop-and-report on genuine
 architectural forks rather than guessing") and this phase's own brief (item 6). Written at the
 start of Phase C3b, after reading the design doc, C1/C2/C4/C3a code, and the journal in full. **No
