@@ -1,5 +1,6 @@
 using System.Globalization;
 using JasperFx.Events;
+using JasperFx.Events.Projections;
 using Marten;
 
 namespace Cna.OrleansHost.Persistence;
@@ -93,6 +94,21 @@ public static class CampaignEventStreamSchema
         ArgumentNullException.ThrowIfNull(options);
         options.Events.StreamIdentity = StreamIdentity.AsString;
         options.Events.AddEventType<CampaignAcceptedStepEvent>();
+
+        // Phase C2 (docs/work/plans/2026-11-18-postgres-migration-design.md §3.2): the
+        // campaign-state projection replacing the hand-rolled snapshot mechanism. Inline means
+        // Marten updates CampaignStateDocument in the same transaction as the event append.
+        // Verified empirically against Marten 9.62.0's actual behavior (its own XML doc comments
+        // are not enough here -- same discipline as this file's Append/expectedVersion remarks):
+        // ProjectionOptions.Snapshot<TDoc>(SnapshotLifecycle) registers a *self-aggregating*
+        // projection, which requires the conventional Create/Apply methods to live on TDoc itself
+        // -- it never references a separate SingleStreamProjection<TDoc,TId> subclass, so
+        // CampaignStateProjection's own Create/Apply methods were silently never consulted and
+        // registration failed at runtime with "No matching conventional Apply/Create/ShouldDelete
+        // methods for the CampaignStateDocument aggregate." The inherited
+        // ProjectionGraph.Add(IProjectionSource, ProjectionLifecycle, ...) call below is what
+        // actually wires up a distinct projection class.
+        options.Projections.Add(new CampaignStateProjection(), ProjectionLifecycle.Inline);
     }
 
     /// <summary>
