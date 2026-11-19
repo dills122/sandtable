@@ -131,24 +131,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void SelectionTimeoutLegacyThirteenRemainsReadOnly()
-    {
-        using var fixture = new JournalFixture();
-        var clock = new ManualClock();
-        var journal = fixture.Create(clock);
-        var (request, owner) = PrepareSelectionRound(journal);
-        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
-        connection.Open();
-        using var command = connection.CreateCommand();
-        command.CommandText = "DELETE FROM selection_rounds; PRAGMA user_version=13";
-        command.ExecuteNonQuery();
-        var legacy = fixture.Open(clock);
-        Assert.NotNull(legacy.ReadVerified(request.CampaignId));
-        Assert.False(legacy.TickSelectionRound(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => legacy.QueryCombatOwnerOpening(owner, "axis-infantry"));
-    }
-
-    [Fact]
     public void SelectionTimeoutRoundInsertFailureRollsBackEntry()
     {
         using var fixture = new JournalFixture();

@@ -104,15 +104,33 @@ internal static class RoundProjectionSupport
 // ---------------------------------------------------------------------------------------------
 
 public sealed record SelectionRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds,
-    string? PendingEntryHash);
+    string? PendingEntryHash)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class SelectionRoundsProjection : SingleStreamProjection<SelectionRoundsDocument, string>
 {
     public static SelectionRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new SelectionRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty, null),
-            @event, metadata);
+        Apply(CreateSelectionEmpty(metadata.StreamKey!), @event, metadata);
+
+    private static SelectionRoundsDocument CreateSelectionEmpty(string id) =>
+        new SelectionRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty, null);
+
+    public static SelectionRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateSelectionEmpty(metadata.StreamKey!);
 
     public static SelectionRoundsDocument Apply(SelectionRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "selection_rounds", metadata) };
+    }
+
+    private static SelectionRoundsDocument ApplyCore(SelectionRoundsDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata)
     {
         var step = RoundProjectionSupport.TryToStep(@event);
@@ -163,15 +181,33 @@ public sealed class SelectionRoundsProjection : SingleStreamProjection<Selection
 // ---------------------------------------------------------------------------------------------
 
 public sealed record ForceRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds,
-    ImmutableDictionary<string, string> ActiveDeclineByDecision);
+    ImmutableDictionary<string, string> ActiveDeclineByDecision)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class ForceRoundsProjection : SingleStreamProjection<ForceRoundsDocument, string>
 {
     public static ForceRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new ForceRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty,
-            ImmutableDictionary<string, string>.Empty), @event, metadata);
+        Apply(CreateForceEmpty(metadata.StreamKey!), @event, metadata);
+
+    private static ForceRoundsDocument CreateForceEmpty(string id) =>
+        new ForceRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty, ImmutableDictionary<string, string>.Empty);
+
+    public static ForceRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateForceEmpty(metadata.StreamKey!);
 
     public static ForceRoundsDocument Apply(ForceRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "force_rounds", metadata) };
+    }
+
+    private static ForceRoundsDocument ApplyCore(ForceRoundsDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata)
     {
         if (@event.ActionKind is not (CampaignHostAcceptedStep.ContactRbaDeclineKind
@@ -226,15 +262,33 @@ public sealed class ForceRoundsProjection : SingleStreamProjection<ForceRoundsDo
 // ---------------------------------------------------------------------------------------------
 
 public sealed record RbaRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds,
-    ImmutableDictionary<string, string> ActiveBarrageByDecision);
+    ImmutableDictionary<string, string> ActiveBarrageByDecision)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class RbaRoundsProjection : SingleStreamProjection<RbaRoundsDocument, string>
 {
     public static RbaRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new RbaRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty,
-            ImmutableDictionary<string, string>.Empty), @event, metadata);
+        Apply(CreateRbaEmpty(metadata.StreamKey!), @event, metadata);
 
-    public static RbaRoundsDocument Apply(RbaRoundsDocument current, CampaignAcceptedStepEvent @event, IEvent metadata)
+    private static RbaRoundsDocument CreateRbaEmpty(string id) =>
+        new RbaRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty, ImmutableDictionary<string, string>.Empty);
+
+    public static RbaRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateRbaEmpty(metadata.StreamKey!);
+
+    public static RbaRoundsDocument Apply(RbaRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "rba_rounds", metadata) };
+    }
+
+    private static RbaRoundsDocument ApplyCore(RbaRoundsDocument current, CampaignAcceptedStepEvent @event, IEvent metadata)
     {
         if (@event.ActionKind is not (CampaignHostAcceptedStep.NativeCombatBarrageKind
             or CampaignHostAcceptedStep.ContactRbaDeclineKind
@@ -282,15 +336,33 @@ public sealed class RbaRoundsProjection : SingleStreamProjection<RbaRoundsDocume
 // "priorEventHash" field, so no pending/active scratch state is needed.
 // ---------------------------------------------------------------------------------------------
 
-public sealed record CycleRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds);
+public sealed record CycleRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class CycleRoundsProjection : SingleStreamProjection<CycleRoundsDocument, string>
 {
     public static CycleRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new CycleRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty),
-            @event, metadata);
+        Apply(CreateCycleEmpty(metadata.StreamKey!), @event, metadata);
+
+    private static CycleRoundsDocument CreateCycleEmpty(string id) =>
+        new CycleRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty);
+
+    public static CycleRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateCycleEmpty(metadata.StreamKey!);
 
     public static CycleRoundsDocument Apply(CycleRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "cycle_rounds", metadata) };
+    }
+
+    private static CycleRoundsDocument ApplyCore(CycleRoundsDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata)
     {
         if (@event.ActionKind is not (CampaignHostAcceptedStep.NativeReserveReleaseCompletionKind
@@ -338,15 +410,33 @@ public sealed class CycleRoundsProjection : SingleStreamProjection<CycleRoundsDo
 // ---------------------------------------------------------------------------------------------
 
 public sealed record ReserveRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds,
-    string? ActiveEntryHash, bool Chosen);
+    string? ActiveEntryHash, bool Chosen)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class ReserveRoundsProjection : SingleStreamProjection<ReserveRoundsDocument, string>
 {
     public static ReserveRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new ReserveRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty, null, false),
-            @event, metadata);
+        Apply(CreateReserveEmpty(metadata.StreamKey!), @event, metadata);
+
+    private static ReserveRoundsDocument CreateReserveEmpty(string id) =>
+        new ReserveRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty, null, false);
+
+    public static ReserveRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateReserveEmpty(metadata.StreamKey!);
 
     public static ReserveRoundsDocument Apply(ReserveRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "reserve_rounds", metadata) };
+    }
+
+    private static ReserveRoundsDocument ApplyCore(ReserveRoundsDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata)
     {
         var isEntry = @event.ActionKind is CampaignHostAcceptedStep.NativeCombatNoAttackKind
@@ -409,15 +499,33 @@ public sealed class ReserveRoundsProjection : SingleStreamProjection<ReserveRoun
 // "settlementHash" field.
 // ---------------------------------------------------------------------------------------------
 
-public sealed record CustodyRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds);
+public sealed record CustodyRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class CustodyRoundsProjection : SingleStreamProjection<CustodyRoundsDocument, string>
 {
     public static CustodyRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new CustodyRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty),
-            @event, metadata);
+        Apply(CreateCustodyEmpty(metadata.StreamKey!), @event, metadata);
+
+    private static CustodyRoundsDocument CreateCustodyEmpty(string id) =>
+        new CustodyRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty);
+
+    public static CustodyRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateCustodyEmpty(metadata.StreamKey!);
 
     public static CustodyRoundsDocument Apply(CustodyRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "custody_rounds", metadata) };
+    }
+
+    private static CustodyRoundsDocument ApplyCore(CustodyRoundsDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata)
     {
         if (@event.ActionKind is not (CampaignHostAcceptedStep.NativeCombatSettlementKind
@@ -462,15 +570,33 @@ public sealed class CustodyRoundsProjection : SingleStreamProjection<CustodyRoun
 // "resultHash" field.
 // ---------------------------------------------------------------------------------------------
 
-public sealed record RetreatRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds);
+public sealed record RetreatRoundsDocument(string Id, ImmutableDictionary<string, RoundEntry> Rounds)
+{
+    /// <summary>Phase C3b: retained round rows folded from <see cref="CampaignRoundRowHeader"/>
+    /// event headers -- the journal's own round-table rows, timing columns included.</summary>
+    public ImmutableDictionary<string, RetainedRoundRow> Retained { get; init; } =
+        ImmutableDictionary<string, RetainedRoundRow>.Empty;
+}
 
 public sealed class RetreatRoundsProjection : SingleStreamProjection<RetreatRoundsDocument, string>
 {
     public static RetreatRoundsDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
-        Apply(new RetreatRoundsDocument(metadata.StreamKey!, ImmutableDictionary<string, RoundEntry>.Empty),
-            @event, metadata);
+        Apply(CreateRetreatEmpty(metadata.StreamKey!), @event, metadata);
+
+    private static RetreatRoundsDocument CreateRetreatEmpty(string id) =>
+        new RetreatRoundsDocument(id, ImmutableDictionary<string, RoundEntry>.Empty);
+
+    public static RetreatRoundsDocument Create(CampaignGenesisEvent @event, IEvent metadata) =>
+        CreateRetreatEmpty(metadata.StreamKey!);
 
     public static RetreatRoundsDocument Apply(RetreatRoundsDocument current, CampaignAcceptedStepEvent @event,
+        IEvent metadata)
+    {
+        var next = ApplyCore(current, @event, metadata);
+        return next with { Retained = CampaignRoundRowHeader.FoldRetained(next.Retained, "retreat_rounds", metadata) };
+    }
+
+    private static RetreatRoundsDocument ApplyCore(RetreatRoundsDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata)
     {
         if (@event.ActionKind is not (CampaignHostAcceptedStep.NativeCombatAssaultResultKind

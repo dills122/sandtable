@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Runtime.ExceptionServices;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
@@ -14,6 +15,15 @@ namespace Cna.OrleansHost.Api;
 /// (<c>docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md</c>).
 /// </summary>
 /// <remarks>
+/// <para><b>Phase C3b of issue #439: two backends, one contract.</b> The production store is now
+/// the Postgres + Marten backend (<see cref="CampaignDurableAuthorityJournalStore(CampaignJournalMartenBackend)"/>,
+/// wired in <c>Program.cs</c>): one Marten stream per campaign, keyed by the campaign id (C1's
+/// stream-identity convention), replacing the file-per-campaign routing below; every entry point is
+/// reached through its generated <c>*Async</c> twin (Marten 9.62 has no synchronous
+/// <c>SaveChanges</c>). The SQLite file constructor and the synchronous forwarders remain only as
+/// the test-side baseline the Marten store's equivalence was proven against
+/// (<c>CampaignDurableAuthorityJournalTests.MartenEquivalence.cs</c>); the host no longer accepts
+/// <c>CampaignJournal:Path</c>. The remarks below describe that file-backed baseline.</para>
 /// <para><b>Why this exists.</b> Before this change, one <see cref="CampaignDurableAuthorityJournal"/>
 /// instance -- opened once at host startup against one fixed path -- served every campaign on the
 /// host for its entire lifetime, because every campaign shared the one file that instance wrapped.
@@ -58,7 +68,62 @@ internal sealed class CampaignDurableAuthorityJournalStore
     private readonly TimeProvider clock;
     private readonly IContentPackV6Resolver? contentResolver;
     private readonly CampaignDurableAuthorityJournal? fixedJournal;
+    private readonly CampaignJournalMartenBackend? marten;
     private readonly ConcurrentDictionary<string, Lazy<CampaignDurableAuthorityJournal>> journals = new(StringComparer.Ordinal);
+    private readonly ConcurrentDictionary<string, List<(CampaignRoundKind RoundKind, long? DeadlineMs)>> martenTimerActions =
+        new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Phase C3b of issue #439: the production store, backed by Postgres + Marten
+    /// (<see cref="CampaignJournalMartenBackend"/>). One Marten stream per campaign, keyed by the
+    /// campaign id itself (C1's stream-identity convention), so "which store" routing is simply the
+    /// stream key -- there are no per-campaign files and nothing to cache. Async-only: every
+    /// <c>*Async</c> entry point loads that campaign's working set, runs the unchanged journal
+    /// method against it, and flushes the result back in one Postgres transaction.
+    /// </summary>
+    internal CampaignDurableAuthorityJournalStore(CampaignJournalMartenBackend backend)
+    {
+        marten = backend ?? throw new ArgumentNullException(nameof(backend));
+        clock = backend.Clock;
+        contentResolver = backend.ContentResolver;
+    }
+
+    /// <summary>True when this store's durable backend is Postgres + Marten.</summary>
+    internal bool IsMartenBacked => marten is not null;
+
+    /// <summary>
+    /// Runs <paramref name="body"/> against <paramref name="campaignId"/>'s journal. SQLite file
+    /// store: the existing per-campaign file instance, synchronously. Marten store: a fresh working
+    /// set of that one campaign; whatever the journal method committed is flushed back even when it
+    /// then throws (several journal paths deliberately commit a timeout and then reject the caller's
+    /// request), and the method's own exception is rethrown afterwards. A flush that loses an
+    /// optimistic-concurrency race throws <see cref="CampaignJournalConcurrencyException"/> instead.
+    /// </summary>
+    internal async Task<T> RunAsync<T>(string campaignId, bool createIfMissing,
+        Func<CampaignDurableAuthorityJournal, T> body, CancellationToken cancellationToken = default)
+    {
+        if (marten is null) return body(JournalFor(campaignId, createIfMissing));
+        RequireSafeCampaignId(campaignId);
+        using var workingSet = await marten.OpenAsync([campaignId], () => marten.RandomBytes(32), cancellationToken)
+            .ConfigureAwait(false);
+        if (!createIfMissing && !workingSet.CampaignExists(campaignId))
+            throw new InvalidOperationException($"Campaign '{campaignId}' has no durable journal.");
+        var journal = CampaignDurableAuthorityJournal.ForWorkingSet(workingSet.Connect, marten.AuthenticateOperator,
+            marten.Clock, marten.ContentResolver, marten.RandomBytes);
+        T result = default!;
+        ExceptionDispatchInfo? failure = null;
+        try { result = body(journal); }
+        catch (Exception exception) { failure = ExceptionDispatchInfo.Capture(exception); }
+        await workingSet.FlushAsync(cancellationToken).ConfigureAwait(false);
+        var actions = journal.DrainPendingRoundTimerActions();
+        if (actions.Count > 0)
+        {
+            var pending = martenTimerActions.GetOrAdd(campaignId, _ => []);
+            lock (pending) pending.AddRange(actions);
+        }
+        failure?.Throw();
+        return result;
+    }
 
     internal CampaignDurableAuthorityJournalStore(string directory, string operatorSecret,
         TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
@@ -110,6 +175,8 @@ internal sealed class CampaignDurableAuthorityJournalStore
     internal CampaignDurableAuthorityJournal JournalFor(string campaignId, bool createIfMissing)
     {
         if (fixedJournal is not null) return fixedJournal;
+        if (marten is not null)
+            throw new InvalidOperationException("The Marten-backed store is async-only; use its *Async entry points.");
         if (directory is null) throw new InvalidOperationException("Store has no backing directory.");
         if (journals.TryGetValue(campaignId, out var cached)) return cached.Value;
         var path = JournalPath(directory, campaignId);
@@ -161,7 +228,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
     /// single campaign -- see <see cref="CampaignDurableAuthorityJournal.AuthenticateOperatorAt"/>'s
     /// remarks (operator capability is host-identity state keyed by directory, not by campaign).
     /// </summary>
-    internal bool AuthenticateOperator(string secret) => fixedJournal is not null
+    internal bool AuthenticateOperator(string secret) => marten is not null
+        ? marten.AuthenticateOperator(secret)
+        : fixedJournal is not null
         ? fixedJournal.AuthenticateOperator(secret)
         : CampaignDurableAuthorityJournal.AuthenticateOperatorAt(
             directory ?? throw new InvalidOperationException("Store has no backing directory."), secret);
@@ -196,7 +265,12 @@ internal sealed class CampaignDurableAuthorityJournalStore
     /// remarks for why that ordering matters.
     /// </summary>
     internal IReadOnlyList<(CampaignRoundKind RoundKind, long? DeadlineMs)> DrainPendingRoundTimerActions(
-        string campaignId) => JournalFor(campaignId, createIfMissing: false).DrainPendingRoundTimerActions();
+        string campaignId)
+    {
+        if (marten is null) return JournalFor(campaignId, createIfMissing: false).DrainPendingRoundTimerActions();
+        if (!martenTimerActions.TryRemove(campaignId, out var pending)) return [];
+        lock (pending) return [.. pending];
+    }
 
     /// <summary>
     /// <see cref="Timeouts.ICampaignRoundDeadlineSink.GetDeadlineAsync"/>'s read side: the current
@@ -229,6 +303,65 @@ internal sealed class CampaignDurableAuthorityJournalStore
     /// <see cref="CampaignCombatTimeoutService"/>'s per-lane <c>journal.TickXRound(campaignId)</c>
     /// call, dispatched by round kind instead of by a dedicated per-lane delegate.
     /// </summary>
+    /// <summary>
+    /// Async twin of <see cref="GetRoundDeadlineMs"/>. Marten store: an O(1) read of that round
+    /// kind's C2 projection document (no stream fetch) -- the read side every timeout-grain
+    /// activation and reminder tick hits.
+    /// </summary>
+    internal async Task<long?> GetRoundDeadlineMsAsync(string campaignId, CampaignRoundKind roundKind,
+        CancellationToken cancellationToken = default)
+    {
+        if (marten is null) return GetRoundDeadlineMs(campaignId, roundKind);
+        RequireSafeCampaignId(campaignId);
+        return await marten.GetCollectingDeadlineMsAsync(campaignId, RoundTable(roundKind), cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private static string RoundTable(CampaignRoundKind roundKind) => roundKind switch
+    {
+        CampaignRoundKind.Selection => "selection_rounds",
+        CampaignRoundKind.Rba => "rba_rounds",
+        CampaignRoundKind.Force => "force_rounds",
+        CampaignRoundKind.Retreat => "retreat_rounds",
+        CampaignRoundKind.Custody => "custody_rounds",
+        CampaignRoundKind.Reserve => "reserve_rounds",
+        CampaignRoundKind.Cycle => "cycle_rounds",
+        _ => throw new ArgumentOutOfRangeException(nameof(roundKind), roundKind, null),
+    };
+
+    /// <summary>Async twin of <see cref="TickRound"/>.</summary>
+    internal Task<bool> TickRoundAsync(string campaignId, CampaignRoundKind roundKind) => roundKind switch
+    {
+        CampaignRoundKind.Selection => TickSelectionRoundAsync(campaignId),
+        CampaignRoundKind.Rba => TickRbaRoundAsync(campaignId),
+        CampaignRoundKind.Force => TickForceRoundAsync(campaignId),
+        CampaignRoundKind.Retreat => TickRetreatRoundAsync(campaignId),
+        CampaignRoundKind.Custody => TickCustodyRoundAsync(campaignId),
+        CampaignRoundKind.Reserve => TickReserveRoundAsync(campaignId),
+        CampaignRoundKind.Cycle => TickCycleRoundAsync(campaignId),
+        _ => throw new ArgumentOutOfRangeException(nameof(roundKind), roundKind, null),
+    };
+
+    /// <summary>
+    /// Async twin of <see cref="RedeemSeatGrant"/>. Seat grants are single-use: under SQLite two
+    /// racing redeemers were serialized by <c>BEGIN IMMEDIATE</c> and the loser saw a consumed grant
+    /// and got <see langword="null"/>. Under Marten both may read the unconsumed grant, but only one
+    /// seat-document write survives optimistic concurrency; the loser's
+    /// <see cref="CampaignJournalConcurrencyException"/> is mapped back to exactly that
+    /// <see langword="null"/> outcome here.
+    /// </summary>
+    internal async Task<CampaignSeatCredential?> RedeemSeatGrantAsync(CampaignSeatGrant grant)
+    {
+        try
+        {
+            return await RunAsync(grant.CampaignId, false, journal => journal.RedeemSeatGrant(grant)).ConfigureAwait(false);
+        }
+        catch (CampaignJournalConcurrencyException)
+        {
+            return null;
+        }
+    }
+
     internal bool TickRound(string campaignId, CampaignRoundKind roundKind) => roundKind switch
     {
         CampaignRoundKind.Selection => TickSelectionRound(campaignId),
@@ -721,4 +854,459 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal int AdmitAvailableSourceProfiles(string campaignId, string operatorSecret) =>
         JournalFor(campaignId, createIfMissing: false).AdmitAvailableSourceProfiles(campaignId, operatorSecret);
+
+    // <auto-generated-by-hand: async>
+    // Phase C3b of issue #439: the async twin of every forwarder above, generated mechanically from
+    // the block above (same generator discipline). Works against either backend: a SQLite file
+    // store answers synchronously; the Marten store loads a working set, runs the same journal
+    // method, and flushes it back (see RunAsync). Production callers use only these.
+    internal Task<bool> TickCustodyRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickCustodyRound(campaignId));
+
+    internal Task<bool> TickCycleRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickCycleRound(campaignId));
+
+    internal Task<bool> TickForceRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickForceRound(campaignId));
+
+    internal Task<CampaignOwnerOpening> QueryOwnerOpeningAsync(CampaignSeatCredential credential, string actingElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryOwnerOpening(credential, actingElementId));
+
+    internal Task<CampaignOwnerOpening> QueryPregameAxisSupplyOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryPregameAxisSupplyOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QueryPregameAxisSupplyFinishOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryPregameAxisSupplyFinishOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAxisDumpOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisDumpOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceCommonwealthSupplyOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCommonwealthSupplyOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceDummyOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceDummyOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceMotorizationOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceMotorizationOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceUnattachedCargoOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceUnattachedCargoOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceActionsOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceActionsOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAxisGt1SupplyOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisGt1SupplyOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceCommonwealthSupplyPlanOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCommonwealthSupplyPlanOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAutoblindaOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAutoblindaOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourcePriorityMotorizationOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourcePriorityMotorizationOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAttachedInitialLoadsOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAttachedInitialLoadsOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceInitialWrecksOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceInitialWrecksOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAxisFreeSetupOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisFreeSetupOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAxisCorpsSetupOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisCorpsSetupOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceMalettiHierarchyOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceMalettiHierarchyOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceGt2CorrectionOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceGt2CorrectionOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceCwPriorityCatalogOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCwPriorityCatalogOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceMatruhFormationOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceMatruhFormationOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceCwFreeGunsOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCwFreeGunsOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceAxisPriorityOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisPriorityOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySourceCairoSetupOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCairoSetupOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QueryCombatOwnerOpeningAsync(CampaignSeatCredential credential, string actingElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryCombatOwnerOpening(credential, actingElementId));
+
+    internal Task<CampaignOwnerOpening> QueryRbaOwnerOpeningAsync(CampaignSeatCredential credential, string defenderElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryRbaOwnerOpening(credential, defenderElementId));
+
+    internal Task<CampaignOwnerOpening> QueryForceOwnerOpeningAsync(CampaignSeatCredential credential, string elementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryForceOwnerOpening(credential, elementId));
+
+    internal Task<CampaignOwnerOpening> QueryPostAssaultRetreatOwnerOpeningAsync(CampaignSeatCredential credential, string defenderElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryPostAssaultRetreatOwnerOpening(credential, defenderElementId));
+
+    internal Task<CampaignOwnerOpening> QueryCustodyOwnerOpeningAsync(CampaignSeatCredential credential, string captorElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryCustodyOwnerOpening(credential, captorElementId));
+
+    internal Task<CampaignOwnerOpening> QueryReserveReleaseOwnerOpeningAsync(CampaignSeatCredential credential, string reserveElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryReserveReleaseOwnerOpening(credential, reserveElementId));
+
+    internal Task<CampaignOwnerOpening> QueryCycleControlOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryCycleControlOwnerOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QueryTruckConvoyPassOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryTruckConvoyPassOwnerOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QueryPostCombatPassOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryPostCombatPassOwnerOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySecondReserveOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySecondReserveOwnerOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QuerySecondMovementOwnerOpeningAsync(CampaignSeatCredential credential, string elementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySecondMovementOwnerOpening(credential, elementId));
+
+    internal Task<CampaignOwnerOpening> QuerySecondMovementCompletionOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySecondMovementCompletionOwnerOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QueryRepeatMovementOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryRepeatMovementOwnerOpening(credential));
+
+    internal Task<CampaignOwnerOpening> QueryRepeatCombatOwnerOpeningAsync(CampaignSeatCredential credential, string actingElementId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryRepeatCombatOwnerOpening(credential, actingElementId));
+
+    internal Task<bool> TickRbaRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickRbaRound(campaignId));
+
+    internal Task<bool> TickReserveRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickReserveRound(campaignId));
+
+    internal Task<bool> TickRetreatRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickRetreatRound(campaignId));
+
+    internal Task CreateScheduledWorld6Async(CampaignCreationRequest request) =>
+        RunAsync(request.CampaignId, true, journal => { journal.CreateScheduledWorld6(request); return true; });
+
+    internal Task<IReadOnlyList<ScheduledWorld6Offer>> QueryScheduledWorld6Async(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryScheduledWorld6(credential));
+
+    internal Task<byte[]?> SubmitScheduledWorld6Async(CampaignSeatCredential credential, string publicReference) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitScheduledWorld6(credential, publicReference));
+
+    internal Task<CampaignSeatGrant> IssueSeatGrantAsync(string campaignId, CampaignActionAudience audience, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.IssueSeatGrant(campaignId, audience, operatorSecret));
+
+    internal Task<CampaignSeatAuthority?> AuthenticateSeatAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.AuthenticateSeat(credential));
+
+    internal Task<byte[]> QuerySourceCounterContactsAsync(CampaignSeatCredential credential, string counterId) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCounterContacts(credential, counterId));
+
+    internal Task<bool> TickSelectionRoundAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.TickSelectionRound(campaignId));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerMovementAsync(CampaignSeatCredential credential, string actingElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerMovement(credential, actingElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitPregameAxisSupplyAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitPregameAxisSupply(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitPregameAxisSupplyFinishAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitPregameAxisSupplyFinish(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceAxisDumpAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceAxisDump(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceCommonwealthSupplyAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceCommonwealthSupply(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceDummyAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceDummy(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceMotorizationAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceMotorization(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceUnattachedCargoAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceUnattachedCargo(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceActionsAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceActions(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceAxisGt1SupplyAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceAxisGt1Supply(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceCommonwealthSupplyPlanAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceCommonwealthSupplyPlan(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceAutoblindaAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceAutoblinda(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourcePriorityMotorizationAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourcePriorityMotorization(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceAttachedInitialLoadsAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceAttachedInitialLoads(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> PlaceSourceInitialWreckAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.PlaceSourceInitialWreck(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> PlaceSourceAxisFreeUnitAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.PlaceSourceAxisFreeUnit(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> PlaceSourceAxisCorpsUnitAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.PlaceSourceAxisCorpsUnit(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceMalettiHierarchyAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceMalettiHierarchy(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceGt2CorrectionAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceGt2Correction(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceCwPriorityCatalogAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceCwPriorityCatalog(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceMatruhFormationAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceMatruhFormation(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> PlaceSourceCwFreeGunAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.PlaceSourceCwFreeGun(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceAxisPriorityAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceAxisPriority(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitSourceCairoUnitAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitSourceCairoUnit(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerCombatSelectionAsync(CampaignSeatCredential credential, string actingElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerCombatSelection(credential, actingElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRbaDeclineAsync(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRbaDecline(credential, defenderElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRbaMoveAsync(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRbaMove(credential, defenderElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerForceSealAsync(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerForceSeal(credential, elementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerPostAssaultRetreatAsync(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerPostAssaultRetreat(credential, defenderElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerCustodyAsync(CampaignSeatCredential credential, string captorElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerCustody(credential, captorElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerReserveReleaseAsync(CampaignSeatCredential credential, string reserveElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerReserveRelease(credential, reserveElementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerCycleControlAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerCycleControl(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerTruckConvoyPassAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerTruckConvoyPass(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerPostCombatPassAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerPostCombatPass(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondReserveAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondReserve(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondMovementAsync(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondMovement(credential, elementId, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondMovementCompletionAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondMovementCompletion(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRepeatMovementAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRepeatMovement(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRepeatCombatAsync(CampaignSeatCredential credential, string actingElementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRepeatCombat(credential, actingElementId, openingRevision, publicActionRef));
+
+    internal Task<ExerciseSession> CreateCampaignAsync(CampaignCreationRequest request, CampaignDecisionTimingConfigurationV1? timing = null) =>
+        RunAsync(request.CampaignId, true, journal => journal.CreateCampaign(request, timing));
+
+    internal Task<CampaignSourceSession> CreateCampaignAsync(CampaignCreationRequest request, ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization) =>
+        RunAsync(request.CampaignId, true, journal => journal.CreateCampaign(request, content, initialization));
+
+    internal Task<ExerciseSession> CreatePregameSourceCampaignAsync(CampaignCreationRequest request, ContentSourceScheduledCombatPackArtifact content, CampaignSourceInitialization initialization) =>
+        RunAsync(request.CampaignId, true, journal => journal.CreatePregameSourceCampaign(request, content, initialization));
+
+    internal Task<ExerciseSession> ReadVerifiedAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.ReadVerified(campaignId));
+
+    internal Task<CampaignSourceSession> ReadSourceVerifiedAsync(string campaignId) =>
+        RunAsync(campaignId, false, journal => journal.ReadSourceVerified(campaignId));
+
+    internal Task<ExerciseStepResult> AppendAsync(string campaignId, CampaignActionSubmission submission) =>
+        RunAsync(campaignId, false, journal => journal.Append(campaignId, submission));
+
+    internal Task<bool> AdmitSourceAxisSupplementAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceAxisSupplement(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCommonwealthSupplementAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCommonwealthSupplement(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourcePriorityMotorizationAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourcePriorityMotorization(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceAttachedInitialLoadsAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceAttachedInitialLoads(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceInitialWrecksAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceInitialWrecks(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceAxisFreeSetupAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceAxisFreeSetup(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceAxisCorpsSetupAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceAxisCorpsSetup(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceMalettiHierarchyAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceMalettiHierarchy(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceGt2CorrectionAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceGt2Correction(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCwPriorityCatalogAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCwPriorityCatalog(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCompactCheckpointAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCompactCheckpoint(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceFourthIndianWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceFourthIndianWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceMatruhGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceMatruhGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceMalettiGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceMalettiGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceLibyanGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceLibyanGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceItalianDivisionsGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceItalianDivisionsGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceSeventhArmoredGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceSeventhArmoredGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceSixteenthBrigadeGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceSixteenthBrigadeGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCatanzaroGroupedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCatanzaroGroupedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> StartSourceTurnAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.StartSourceTurn(campaignId, operatorSecret));
+
+    internal Task<bool> ResolveSourceInitiativeAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ResolveSourceInitiative(campaignId, operatorSecret));
+
+    internal Task<bool> CompleteSourceGt1SchedulingAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.CompleteSourceGt1Scheduling(campaignId, operatorSecret));
+
+    internal Task<bool> CompleteSourceGt1OrganizationAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.CompleteSourceGt1Organization(campaignId, operatorSecret));
+
+    internal Task<bool> CompleteSourceGt1StageOneArrivalsAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.CompleteSourceGt1StageOneArrivals(campaignId, operatorSecret));
+
+    internal Task<bool> CompleteSourceGt1StageOneFleetAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.CompleteSourceGt1StageOneFleet(campaignId, operatorSecret));
+
+    internal Task<bool> CompleteSourceGt1FirstBreakdownAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.CompleteSourceGt1FirstBreakdown(campaignId, operatorSecret));
+
+    internal Task<bool> ResolveSourceGt1WeatherAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ResolveSourceGt1Weather(campaignId, operatorSecret));
+
+    internal Task<bool> AnnounceSourceGt1Lane2Async(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AnnounceSourceGt1Lane2(campaignId, operatorSecret));
+
+    internal Task<bool> AnnounceSourceGt1Lane3Async(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AnnounceSourceGt1Lane3(campaignId, operatorSecret));
+
+    internal Task<bool> CorrectSourceSeventhShellAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.CorrectSourceSeventhShell(campaignId, operatorSecret));
+
+    internal Task<bool> ActivateSourceAxisMinorGarrisonsAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceAxisMinorGarrisons(campaignId, operatorSecret));
+
+    internal Task<bool> ActivateSourceAxisGarrisonRemainderAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceAxisGarrisonRemainder(campaignId, operatorSecret));
+
+    internal Task<bool> ActivateSourceGiarabubMotorMachineGunAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceGiarabubMotorMachineGun(campaignId, operatorSecret));
+
+    internal Task<bool> ActivateSourceCwFrontlineAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceCwFrontline(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceGiarabubMotorPlacementPolicyAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceGiarabubMotorPlacementPolicy(campaignId, operatorSecret));
+
+    internal Task<bool> AnnounceSourceGt1MultiLanesAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AnnounceSourceGt1MultiLanes(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceMatruhFormationAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceMatruhFormation(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCwFreeGunsAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCwFreeGuns(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceAxisPriorityMotorizationAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceAxisPriorityMotorization(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceAxisMinorGarrisonsAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceAxisMinorGarrisons(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceBattlefieldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceBattlefield(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCairoSetupAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCairoSetup(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceCairoWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCairoWorld(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceMalettiAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceMaletti(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceIndependentAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceIndependent(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceExpandedIndependentAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceExpandedIndependent(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceAxisFreeWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceAxisFreeWorld(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceAxisCorpsWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceAxisCorpsWorld(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceCertifiedMalettiWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceCertifiedMalettiWorld(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceMatruhDetachedWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceMatruhDetachedWorld(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceCwPriorityWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceCwPriorityWorld(campaignId, operatorSecret));
+
+    internal Task<bool> PromoteSourceCwFreeGunsWorldAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.PromoteSourceCwFreeGunsWorld(campaignId, operatorSecret));
+
+    internal Task<bool> AdmitSourceLocalMapAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceLocalMap(campaignId, operatorSecret));
+
+    internal Task<int> AdmitAvailableSourceProfilesAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitAvailableSourceProfiles(campaignId, operatorSecret));
 }

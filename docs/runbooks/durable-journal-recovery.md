@@ -7,6 +7,14 @@ procedure" requirement of `MVP-GATE-04` (durable local lifecycle) in
 and `CampaignDurableAuthorityJournalStore.cs`. It does not cover Maproom,
 the intelligence plane, or any other subsystem.
 
+> **Superseded storage topology (Phase C3b of issue #439).** The durable journal's store is now
+> PostgreSQL + Marten (`SANDTABLE_POSTGRES_HOT_CONNECTION_STRING`): one Marten stream per campaign
+> (genesis event + one event per accepted step, hash-chain headers per event), host operational
+> state as optimistic-concurrency Marten documents. `CampaignJournal:Path` is rejected at startup.
+> Crash recovery is Postgres transaction atomicity (each journal call is one `SaveChangesAsync`);
+> the SQLite file procedures below apply only to the test-side SQLite equivalence baseline. See
+> `docs/work/plans/2026-11-19-phase-c3b-durable-state-design-spike.md`.
+
 ## Topology (as of the per-campaign file split)
 
 Each campaign owns its own SQLite file under one configured directory

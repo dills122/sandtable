@@ -151,24 +151,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void CustodyTimeoutLegacyElevenRemainsReadOnly()
-    {
-        using var fixture = new JournalFixture();
-        var clock = new ManualClock();
-        var journal = fixture.Create(clock);
-        var (request, attacker, defender, defenderId) = PrepareCustodyRound(journal);
-        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
-        connection.Open();
-        using var command = connection.CreateCommand();
-        command.CommandText = "DELETE FROM custody_rounds; PRAGMA user_version=11";
-        command.ExecuteNonQuery();
-        var legacy = fixture.Open(clock);
-        Assert.NotNull(legacy.ReadVerified(request.CampaignId));
-        Assert.False(legacy.TickCustodyRound(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => CustodyOpening(legacy, attacker, defender, defenderId));
-    }
-
-    [Fact]
     public void CustodyTimeoutRoundInsertFailureRollsBackEntry()
     {
         using var fixture = new JournalFixture();

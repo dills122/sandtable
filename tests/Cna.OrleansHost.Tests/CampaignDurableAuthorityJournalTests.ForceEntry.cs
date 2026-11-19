@@ -48,31 +48,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void ForceEntryLegacyEightReadsLazyHistoryButStillVerifiesRba()
-    {
-        using var fixture = new JournalFixture();
-        var journal = fixture.Create(new ManualClock());
-        var (request, defender, defenderId) = PrepareRbaRound(journal);
-        var rba = journal.QueryRbaOwnerOpening(defender, defenderId);
-        Assert.True(journal.SubmitOwnerRbaDecline(defender, defenderId,
-            rba.Revision, rba.PublicActionRefs[^1]).IsAccepted);
-        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
-        connection.Open();
-        using var change = connection.CreateCommand();
-        change.CommandText = "DELETE FROM force_rounds; PRAGMA user_version=8";
-        change.ExecuteNonQuery();
-        var old = fixture.Open();
-        Assert.NotNull(old.ReadVerified(request.CampaignId));
-        Assert.False(old.TickForceRound(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => old.QueryForceOwnerOpening(defender, defenderId));
-        Assert.Throws<InvalidOperationException>(() => old.IssueSeatGrant(request.CampaignId,
-            CampaignActionAudience.Axis, OperatorSecret));
-        change.CommandText = "DELETE FROM rba_rounds";
-        change.ExecuteNonQuery();
-        Assert.Throws<InvalidOperationException>(() => old.ReadVerified(request.CampaignId));
-    }
-
-    [Fact]
     public void ForceEntryBindsValidatedDeclineTimeAndRejectsRehashedShift()
     {
         using var fixture = new JournalFixture();

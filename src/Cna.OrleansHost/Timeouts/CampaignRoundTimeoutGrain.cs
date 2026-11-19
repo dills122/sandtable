@@ -21,6 +21,15 @@ internal sealed class CampaignRoundTimeoutGrain(ICampaignRoundDeadlineSink sink,
     internal static readonly TimeSpan ReminderPeriod = TimeSpan.FromMinutes(3);
     internal const string ReminderName = "deadline-backstop";
 
+    /// <summary>
+    /// Phase C3b of issue #439: minimum re-arm delay after a timer tick that had no effect while
+    /// the same deadline is still open (e.g. the store's trusted clock has not yet reached a
+    /// deadline this grain's clock already passed). Re-arming at zero there is a hot loop of
+    /// write transactions against the campaign's store -- observed once owner-opening queries
+    /// started competing for the same campaign grain. Never delays a deadline that has not passed.
+    /// </summary>
+    internal static readonly TimeSpan NoEffectRetryDelay = TimeSpan.FromSeconds(1);
+
     private readonly string activationId = Guid.NewGuid().ToString("N");
     private string campaignId = null!;
     private CampaignRoundKind roundKind;
@@ -66,12 +75,13 @@ internal sealed class CampaignRoundTimeoutGrain(ICampaignRoundDeadlineSink sink,
 
     public Task<DateTimeOffset?> ArmedDeadlineForTestAsync() => Task.FromResult(armedDeadline);
 
-    private async Task ArmInternalAsync(DateTimeOffset deadlineUtc)
+    private async Task ArmInternalAsync(DateTimeOffset deadlineUtc, TimeSpan? minimumDelay = null)
     {
         armedDeadline = deadlineUtc;
         timer?.Dispose();
         var dueTime = deadlineUtc - clock.GetUtcNow();
-        if (dueTime < TimeSpan.Zero) dueTime = TimeSpan.Zero;
+        var floor = minimumDelay ?? TimeSpan.Zero;
+        if (dueTime < floor) dueTime = floor;
         // One-shot (Period = Timeout.InfiniteTimeSpan): this is the precise mechanism, armed
         // fresh for each deadline rather than ticking on a fixed cadence. Deliberately not
         // KeepAlive: if this grain idles out before the timer fires, that is an expected,
@@ -93,9 +103,11 @@ internal sealed class CampaignRoundTimeoutGrain(ICampaignRoundDeadlineSink sink,
 
     private async Task OnTimerFiredAsync(CancellationToken cancellationToken)
     {
+        var fired = armedDeadline;
+        var ticked = false;
         try
         {
-            _ = await sink.TickAsync(campaignId, roundKind, cancellationToken);
+            ticked = await sink.TickAsync(campaignId, roundKind, cancellationToken);
         }
         catch (Exception exception) when (exception is not OutOfMemoryException)
         {
@@ -105,7 +117,8 @@ internal sealed class CampaignRoundTimeoutGrain(ICampaignRoundDeadlineSink sink,
         // between the timer firing and this continuation running, or it may genuinely be done.
         // Re-derive from the sink rather than assuming either.
         var deadline = await sink.GetDeadlineAsync(campaignId, roundKind, cancellationToken);
-        if (deadline is { } value) await ArmInternalAsync(value);
+        if (deadline is { } value)
+            await ArmInternalAsync(value, !ticked && value == fired ? NoEffectRetryDelay : null);
         else await ClearAsync();
     }
 

@@ -74,6 +74,20 @@ public sealed class CampaignStateProjection : SingleStreamProjection<CampaignSta
     public static CampaignStateDocument Create(CampaignAcceptedStepEvent @event, IEvent metadata) =>
         FoldRaw(null, @event, metadata);
 
+    /// <summary>
+    /// Phase C3b: a journal-written stream starts with <see cref="CampaignGenesisEvent"/> (sequence
+    /// 0). The document then holds the pre-step-1 state: the initial snapshot and contacts, at the
+    /// chain's initial hash.
+    /// </summary>
+    public static CampaignStateDocument Create(CampaignGenesisEvent @event, IEvent metadata)
+    {
+        var (sequence, priorHash, recordHash) = CampaignEventStreamSchema.ReadStepHeaders(metadata);
+        var streamKey = metadata.StreamKey
+            ?? throw new InvalidOperationException("Campaign event has no string stream key.");
+        return new CampaignStateDocument(streamKey, sequence, priorHash, recordHash, "genesis", null,
+            @event.InitialSnapshot, @event.InitialContacts);
+    }
+
     /// <summary>Folds every subsequent event into the existing document.</summary>
     public static CampaignStateDocument Apply(CampaignStateDocument current, CampaignAcceptedStepEvent @event,
         IEvent metadata) => FoldRaw(current, @event, metadata);
@@ -85,17 +99,6 @@ public sealed class CampaignStateProjection : SingleStreamProjection<CampaignSta
         var streamKey = metadata.StreamKey
             ?? current?.Id
             ?? throw new InvalidOperationException("Campaign event has no string stream key.");
-        return new CampaignStateDocument(streamKey, sequence, priorHash, recordHash,
-            data.ActionKind, data.ActingElementId, data.SnapshotCheckpoint, data.CanonicalContacts);
-    }
-
-    private static CampaignStateDocument Fold(CampaignStateDocument? current, IEvent<CampaignAcceptedStepEvent> @event)
-    {
-        var (sequence, priorHash, recordHash) = CampaignEventStreamSchema.ReadStepHeaders(@event);
-        var streamKey = @event.StreamKey
-            ?? current?.Id
-            ?? throw new InvalidOperationException("Campaign event has no string stream key.");
-        var data = @event.Data;
         return new CampaignStateDocument(streamKey, sequence, priorHash, recordHash,
             data.ActionKind, data.ActingElementId, data.SnapshotCheckpoint, data.CanonicalContacts);
     }

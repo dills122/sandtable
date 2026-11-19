@@ -16,36 +16,37 @@ builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutRea
 builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
 builder.Services.AddSingleton<TemporaryOutwardActionIngress>();
 builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
-// CampaignJournal:Path is now a directory, not a single file: the design doc's §3
-// (docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md) moves the hot tier from
-// one SQLite file shared by every campaign to one file per campaign under this directory, to
-// remove the artificial cross-campaign lock contention §1.3 identifies (each campaign's grain is
-// already single-writer by Orleans's own model; only the shared file forced them to contend).
-// CampaignDurableAuthorityJournalStore resolves/creates each campaign's own file lazily, on first
-// use, and caches it for the life of the host -- see its own remarks for why
-// CampaignDurableAuthorityJournal itself did not need to change shape to support this.
-var campaignJournalDirectory = builder.Configuration["CampaignJournal:Path"];
-if (!string.IsNullOrWhiteSpace(campaignJournalDirectory))
+// Phase C3b of issue #439 (docs/work/plans/2026-11-19-phase-c3b-durable-state-design-spike.md):
+// the durable campaign journal's store is PostgreSQL + Marten -- the hot-tier database named by
+// SANDTABLE_POSTGRES_HOT_CONNECTION_STRING (see .env.example), one Marten stream per campaign keyed
+// by its campaign id, with host operational state (seats, openings, reference keys, open-round
+// high-water marks, operator capability) as optimistic-concurrency Marten documents. The former
+// file-per-campaign SQLite store (CampaignJournal:Path) is retired as a host configuration: its
+// class survives only as the test-side equivalence baseline the Marten store was proven against
+// (tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.MartenEquivalence.cs).
+var campaignJournalOperatorSecret = builder.Configuration["CampaignJournal:OperatorSecret"];
+var hotConnectionString = builder.Configuration["SANDTABLE_POSTGRES_HOT_CONNECTION_STRING"];
+if (!string.IsNullOrWhiteSpace(builder.Configuration["CampaignJournal:Path"]))
+    throw new InvalidOperationException(
+        "CampaignJournal:Path (the SQLite file store) is retired; configure " +
+        "SANDTABLE_POSTGRES_HOT_CONNECTION_STRING and CampaignJournal:OperatorSecret instead.");
+if (!string.IsNullOrWhiteSpace(hotConnectionString))
 {
-    var operatorSecret = builder.Configuration["CampaignJournal:OperatorSecret"];
-    if (string.IsNullOrWhiteSpace(operatorSecret))
+    if (string.IsNullOrWhiteSpace(campaignJournalOperatorSecret))
         throw new InvalidOperationException(
             "CampaignJournal:OperatorSecret is required when the durable journal is configured.");
-    builder.Services.AddSingleton(services => new CampaignDurableAuthorityJournalStore(
-        campaignJournalDirectory, operatorSecret,
-        services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>()));
-    // Phase C3a of issue #439 (docs/work/plans/2026-11-18-postgres-migration-design.md §4.2):
-    // real round-deadline enforcement now runs through CampaignGrain-armed
-    // CampaignRoundTimeoutGrain instances (one per campaign+round-kind), with this sink as the
-    // bridge to the still-SQLite journal (see SqliteCampaignRoundDeadlineSink's own remarks).
-    // CampaignCombatTimeoutService's cross-campaign sweep is retired (no longer registered) now
-    // that equivalence with this grain-based path is proven for all seven round kinds -- see
-    // tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.GrainEquivalence.cs and
-    // this phase's PR description. The class itself stays (not deleted): the equivalence tests
-    // still construct it directly as their sweep-path baseline, and
-    // tests/Cna.OrleansHost.FoundationChild's own cross-process harness still calls SweepOnce
-    // directly to drive its fixture.
-    builder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+    // Marten's default AutoCreate (CreateOrUpdate) provisions/extends the campaign schema on first
+    // use. Design doc §3.5's generated-migration-script workflow for production is Phase D's job.
+    var campaignDocumentStore = MartenStoreFactory.CreateStore(hotConnectionString, CampaignEventStreamSchema.Configure);
+    var campaignJournalBackend = await CampaignJournalMartenBackend.CreateAsync(campaignDocumentStore,
+        campaignJournalOperatorSecret, TimeProvider.System, Cna1979SyntheticContentResolver.Instance);
+    builder.Services.AddSingleton<Marten.IDocumentStore>(campaignDocumentStore);
+    builder.Services.AddSingleton(new CampaignDurableAuthorityJournalStore(campaignJournalBackend));
+    // Phase C3a's grain-local deadline enforcement (CampaignGrain-armed CampaignRoundTimeoutGrain
+    // instances, one per campaign+round-kind) now reads its durable deadlines from Marten through
+    // this sink (renamed from C3a's SqliteCampaignRoundDeadlineSink; contract unchanged).
+    // CampaignCombatTimeoutService's cross-campaign sweep stays retired (C3a).
+    builder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
 }
 // Phase C4 of issue #439 (docs/work/plans/2026-11-18-postgres-migration-design.md §4.1):
 // Microsoft.Orleans.Clustering.AdoNet / Microsoft.Orleans.Reminders.AdoNet against PostgreSQL

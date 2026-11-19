@@ -76,7 +76,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var prior = query.ExecuteScalar();
             epoch = prior is null ? 1 : checked((long)prior + 1);
         }
-        var secret = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
+        var secret = Convert.ToHexStringLower(randomBytes(32));
         var expires = checked(clock.GetUtcNow().ToUnixTimeMilliseconds()
             + (long)GrantLifetime.TotalMilliseconds);
         using (var upsert = connection.CreateCommand())
@@ -145,7 +145,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 }
             }
         }
-        var credentialSecret = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
+        var credentialSecret = Convert.ToHexStringLower(randomBytes(32));
         var expires = checked(clock.GetUtcNow().ToUnixTimeMilliseconds()
             + (long)CredentialLifetime.TotalMilliseconds);
         using (var update = connection.CreateCommand())
@@ -239,7 +239,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// connection/transaction the caller already has open against the per-campaign file, since
     /// operator capability no longer lives there.
     /// </summary>
-    private void RequireOperator(string secret) => RequireOperatorAt(HostIdentityPath(), secret);
+    private void RequireOperator(string secret)
+    {
+        // Phase C3b: a Marten-backed working set has no host-identity file beside it; the backend
+        // authenticates against its own host-scoped operator capability document instead.
+        if (operatorAuthenticator is not null)
+        {
+            if (!operatorAuthenticator(secret)) throw new UnauthorizedAccessException("Operator capability rejected.");
+            return;
+        }
+        RequireOperatorAt(HostIdentityPath(), secret);
+    }
 
     private static void RequireOperatorAt(string hostIdentityPath, string secret)
     {

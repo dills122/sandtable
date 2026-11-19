@@ -43,7 +43,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         // journal calls with grain-routed ones, a backlog from calls made before this silo
         // existed. That grain's own constructor needs ICampaignRoundDeadlineSink resolvable
         // even when this particular test never exercises deadline behavior itself.
-        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
         siloBuilder.UseOrleans(silo =>
         {
             silo.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
@@ -109,81 +109,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.Equal(1, command.ExecuteNonQuery());
         }
         Assert.Throws<InvalidOperationException>(() => reopened.ReadVerified(request.CampaignId));
-    }
-
-    [Fact]
-    public void SchemaFiveCampaignRemainsReadableButCannotAcquireImplicitTiming()
-    {
-        using var fixture = new JournalFixture();
-        var request = Request();
-        fixture.Create().CreateCampaign(request);
-        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
-        {
-            connection.Open();
-            byte[][] evidence;
-            using (var query = connection.CreateCommand())
-            {
-                query.CommandText = "SELECT creation_event,initial_snapshot,initial_contacts "
-                    + "FROM campaigns WHERE campaign_id=$id";
-                query.Parameters.AddWithValue("$id", request.CampaignId);
-                using var reader = query.ExecuteReader();
-                Assert.True(reader.Read());
-                evidence = [reader.GetFieldValue<byte[]>(0), reader.GetFieldValue<byte[]>(1),
-                    reader.GetFieldValue<byte[]>(2)];
-            }
-            using var stream = new MemoryStream();
-            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))
-            {
-                writer.Write("campaign-durable-authority-v2:creation");
-                writer.Write(request.ContractVersion);
-                writer.Write(request.CampaignId);
-                writer.Write(request.RulesetHash);
-                writer.Write(request.Seed);
-                writer.Write(request.SetupId);
-                writer.Write(request.SetupHash);
-                writer.Write(request.ContentPackId);
-                writer.Write(request.ContentHash);
-                writer.Write(request.ScenarioId);
-                foreach (var bytes in evidence)
-                {
-                    writer.Write(bytes.Length);
-                    writer.Write(bytes);
-                }
-            }
-            using (var update = connection.CreateCommand())
-            {
-                update.CommandText = "UPDATE campaigns SET head_hash=$hash WHERE campaign_id=$id";
-                update.Parameters.AddWithValue("$hash", "sha256:" + Convert.ToHexStringLower(
-                    System.Security.Cryptography.SHA256.HashData(stream.ToArray())));
-                update.Parameters.AddWithValue("$id", request.CampaignId);
-                Assert.Equal(1, update.ExecuteNonQuery());
-            }
-            using var change = connection.CreateCommand();
-            change.CommandText = "ALTER TABLE campaigns DROP COLUMN timing_configuration; PRAGMA user_version=5";
-            change.ExecuteNonQuery();
-        }
-        var legacy = fixture.Open();
-        Assert.NotNull(legacy.ReadVerified(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => legacy.CreateCampaign(request));
-    }
-
-    [Fact]
-    public void SchemaSixCampaignRetainsTimingButCannotCreateNewCampaign()
-    {
-        using var fixture = new JournalFixture();
-        var request = Request();
-        fixture.Create().CreateCampaign(request, Timing(request));
-        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
-        {
-            connection.Open();
-            using var change = connection.CreateCommand();
-            change.CommandText = "DROP TABLE force_rounds; PRAGMA user_version=6";
-            change.ExecuteNonQuery();
-        }
-        var previous = fixture.Open();
-        Assert.NotNull(previous.ReadVerified(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() =>
-            previous.CreateCampaign(CombatInfantryRequest(), Timing(CombatInfantryRequest())));
     }
 
     [Theory]
@@ -2373,12 +2298,33 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     {
         private readonly string directory = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
             "sandtable-authority-journal-" + Guid.NewGuid().ToString("N"));
+        private Persistence.MartenJournalDatabase? marten;
         internal string Path => System.IO.Path.Combine(directory, "campaign.sqlite");
-        internal CampaignDurableAuthorityJournal Create(TimeProvider? clock = null) =>
-            CampaignDurableAuthorityJournal.CreateNew(Path, OperatorSecret, clock);
-        internal CampaignDurableAuthorityJournal Open(TimeProvider? clock = null) =>
-            CampaignDurableAuthorityJournal.OpenExisting(Path, clock);
-        public void Dispose() => Directory.Delete(directory, recursive: true);
+
+        /// <summary>
+        /// Phase C3b equivalence gate: with <c>SANDTABLE_JOURNAL_TEST_BACKEND=marten</c> every test
+        /// using this fixture runs against a real Postgres (Testcontainers) Marten backend instead of
+        /// a SQLite file -- each journal call loading its state from Postgres and flushing it back.
+        /// </summary>
+        internal static bool UsesMarten =>
+            Environment.GetEnvironmentVariable("SANDTABLE_JOURNAL_TEST_BACKEND") == "marten";
+
+        internal CampaignDurableAuthorityJournal Create(TimeProvider? clock = null)
+        {
+            if (!UsesMarten) return CampaignDurableAuthorityJournal.CreateNew(Path, OperatorSecret, clock);
+            marten ??= Persistence.MartenJournalDatabase.Create(OperatorSecret, clock);
+            return marten.Journal(OperatorSecret, clock);
+        }
+
+        internal CampaignDurableAuthorityJournal Open(TimeProvider? clock = null) => UsesMarten
+            ? (marten ?? throw new InvalidOperationException("Journal is missing.")).Journal(OperatorSecret, clock)
+            : CampaignDurableAuthorityJournal.OpenExisting(Path, clock);
+
+        public void Dispose()
+        {
+            marten?.Dispose();
+            if (Directory.Exists(directory)) Directory.Delete(directory, recursive: true);
+        }
     }
 
     private sealed class ManualClock : TimeProvider

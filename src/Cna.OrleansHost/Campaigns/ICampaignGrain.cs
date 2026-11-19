@@ -22,7 +22,7 @@ namespace Cna.OrleansHost.Campaigns;
 /// <c>CampaignDurableAuthorityJournal.Submissions.cs</c>, dispatched here by the same
 /// <c>stage</c> string <c>CampaignDurableOutwardApi</c>'s <c>/{campaignId}/actions</c> endpoint
 /// already switched on) plus the seven <c>TickXRound</c> entry points (now reached only from
-/// <c>SqliteCampaignRoundDeadlineSink.TickAsync</c>, never from a cross-campaign sweep). Every
+/// <c>MartenCampaignRoundDeadlineSink.TickAsync</c>, never from a cross-campaign sweep). Every
 /// other durable-journal entry point -- reads, and the pregame/operator Admit*/Promote*/Activate*/
 /// Complete*/Resolve*/Announce*/Correct* progression calls -- is verified, by direct inspection of
 /// every <c>InitializeXRound</c>/<c>UpdateXRound(... Status = "completed")</c> call site, to never
@@ -47,9 +47,30 @@ internal interface ICampaignGrain : IGrainWithStringKey
     /// <summary>
     /// The moral equivalent of <c>CampaignCombatTimeoutService</c>'s per-lane
     /// <c>journal.TickXRound(campaignId)</c> call for this grain's campaign, reached from
-    /// <c>SqliteCampaignRoundDeadlineSink.TickAsync</c> instead of a cross-campaign sweep.
+    /// <c>MartenCampaignRoundDeadlineSink.TickAsync</c> instead of a cross-campaign sweep.
     /// </summary>
     Task<bool> TickRoundAsync(CampaignRoundKind roundKind);
+
+    /// <summary>
+    /// Phase C3b of issue #439: dispatches an owner-opening query (same stage strings
+    /// <c>CampaignDurableOutwardApi</c>'s <c>/{campaignId}/openings</c> endpoint switches on) behind
+    /// this grain's single-writer boundary, because those queries write durable state too (see
+    /// <c>CampaignGrain.QueryOwnerOpeningAsync</c>).
+    /// </summary>
+    Task<CampaignGrainOpeningResult> QueryOwnerOpeningAsync(string stage, CampaignSeatCredential credential,
+        string actingElementId);
+}
+
+/// <summary>Orleans-serializable projection of <c>CampaignOwnerOpening</c>.</summary>
+[GenerateSerializer]
+internal sealed record CampaignGrainOpeningResult
+{
+    [Id(0)] public string CampaignId { get; init; } = "";
+    [Id(1)] public Cna.Core.Actions.CampaignActionAudience Audience { get; init; }
+    [Id(2)] public string ActingElementId { get; init; } = "";
+    [Id(3)] public long Revision { get; init; }
+    [Id(4)] public byte[] VisibleBytes { get; init; } = [];
+    [Id(5)] public string[] PublicActionRefs { get; init; } = [];
 }
 
 /// <summary>
