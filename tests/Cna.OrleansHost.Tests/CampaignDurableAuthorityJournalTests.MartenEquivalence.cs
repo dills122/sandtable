@@ -54,7 +54,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         {
             var connection = new SqliteConnection(new SqliteConnectionStringBuilder
             {
-                DataSource = fixture.Path, Mode = SqliteOpenMode.ReadOnly, Pooling = false,
+                DataSource = fixture.Path,
+                Mode = SqliteOpenMode.ReadOnly,
+                Pooling = false,
             }.ToString());
             connection.Open();
             return connection;
