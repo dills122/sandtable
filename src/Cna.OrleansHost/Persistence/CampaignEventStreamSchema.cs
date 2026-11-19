@@ -58,6 +58,24 @@ namespace Cna.OrleansHost.Persistence;
 /// <see cref="SequenceHeaderKey"/> event header -- verifiable on every read
 /// (<see cref="ReadStepHeaders"/> returns both, deliberately) rather than assumed identical.
 /// Phase C3's load/replay path should assert the two agree, not read only one of them.</para>
+/// <para><b>C3b amendment: genesis at version 1, so <c>Version == sequence + 1</c>.</b> Phase C3b
+/// (<c>docs/work/plans/2026-11-19-phase-c3b-durable-state-design-spike.md</c> &#167;3.1) puts a
+/// <see cref="CampaignGenesisEvent"/> first in every journal-written campaign stream, carrying the
+/// <c>sequence</c> header <c>0</c>. Accepted step <i>n</i> therefore lives at stream version
+/// <i>n + 1</i>, and its expected-version argument is <i>n + 1</i> (still "the version after this
+/// append"). The explicit <c>sequence</c> header is exactly what makes this offset safe: the journal's
+/// loader asserts <c>sequence == Version - 1</c> for every event it reads. Streams written directly
+/// against this schema without a genesis event (C1/C2's own schema-level tests) keep
+/// <c>Version == sequence</c>; the projections accept either first-event type.</para>
+/// <para><b>C3b correction: headers are per event, never per session.</b> C1 shipped a
+/// session-scoped <c>SetStepHeaders(IDocumentSession, ...)</c>. Verified empirically against Marten
+/// 9.62.0: session headers are copied onto <i>every</i> event appended in that session's
+/// <c>SaveChangesAsync</c>, so any unit of work appending two or more steps (e.g. a Selection
+/// timeout cascading into no-attack and Reserve Release completion) would have stored the same
+/// <c>sequence</c>/<c>prior_hash</c>/<c>record_hash</c> on every one of them -- a corrupt hash
+/// chain. <see cref="BuildStepEvent"/> builds each event with its own headers instead
+/// (<c>EventGraph.BuildEvent</c> + <see cref="IEvent.SetHeader"/>, also verified to round-trip and to
+/// be visible to inline projections); the session-scoped helper is removed.</para>
 /// <para><b>Hash chain.</b> Reuses Phase A's already-proven mechanism unchanged
 /// (<see cref="MartenStoreFactory.CreateStore"/> turns on
 /// <c>StoreOptions.Events.MetadataConfig.HeadersEnabled</c>; see
@@ -65,7 +83,7 @@ namespace Cna.OrleansHost.Persistence;
 /// <see cref="RecordHashHeaderKey"/> are the same header keys that proof-of-concept test used,
 /// carrying the same <c>CampaignDurableAuthorityJournal.StepHash</c>-shaped values this project
 /// already computes. Attaching them to a session ahead of an append is this file's job
-/// (<see cref="SetStepHeaders"/>); computing the hash values themselves is unchanged, existing
+/// (<see cref="BuildStepEvent"/>); computing the hash values themselves is unchanged, existing
 /// logic this change does not touch.</para>
 /// </remarks>
 public static class CampaignEventStreamSchema
@@ -93,7 +111,17 @@ public static class CampaignEventStreamSchema
     {
         ArgumentNullException.ThrowIfNull(options);
         options.Events.StreamIdentity = StreamIdentity.AsString;
+        options.Events.AddEventType<CampaignGenesisEvent>();
         options.Events.AddEventType<CampaignAcceptedStepEvent>();
+
+        // Phase C3b: host operational state documents (seats, openings, reference key, open-round
+        // high-water marks, operator capability). Each type carries [UseOptimisticConcurrency];
+        // registering them here keeps every campaign store's schema in one place.
+        options.Schema.For<CampaignSeatDocument>().Index(document => document.CampaignId);
+        options.Schema.For<CampaignOwnerOpeningDocument>().Index(document => document.CampaignId);
+        options.Schema.For<CampaignReferenceKeyDocument>();
+        options.Schema.For<CampaignRoundHighWaterDocument>();
+        options.Schema.For<HostOperatorCapabilityDocument>();
 
         // Phase C2 (docs/work/plans/2026-11-18-postgres-migration-design.md §3.2): the
         // campaign-state projection replacing the hand-rolled snapshot mechanism. Inline means
@@ -125,28 +153,32 @@ public static class CampaignEventStreamSchema
     }
 
     /// <summary>
-    /// Sets the three headers one accepted step's Marten event carries (Phase A's
-    /// <c>prior_hash</c>/<c>record_hash</c> pair, plus the explicit <c>sequence</c>
-    /// belt-and-suspenders value) on <paramref name="session"/>, ahead of a
-    /// <c>StartStream</c>/<c>Append</c> call made on that same session. Marten headers are set
-    /// per-session, not per-event, and apply to whatever that session's next
-    /// <c>SaveChangesAsync</c> appends -- see <c>MartenEventHeaderHashChainTests</c> for the
-    /// proven round trip this mirrors.
+    /// Builds one stream event for <paramref name="data"/> carrying its own three step headers
+    /// (Phase A's <c>prior_hash</c>/<c>record_hash</c> pair plus the explicit <c>sequence</c>), and
+    /// any <paramref name="extraHeaders"/> (e.g. <see cref="CampaignRoundRowHeader.HeaderKey"/>).
+    /// Pass the result to <c>StartStream</c>/<c>Append</c>; Marten appends a pre-built
+    /// <see cref="IEvent"/> as-is, so several events in one save each keep their own headers.
     /// </summary>
-    public static void SetStepHeaders(IDocumentSession session, long sequence, string priorHash, string recordHash)
+    public static IEvent BuildStepEvent(IDocumentStore store, object data, long sequence, string priorHash,
+        string recordHash, IReadOnlyDictionary<string, string>? extraHeaders = null)
     {
-        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(store);
+        ArgumentNullException.ThrowIfNull(data);
         ArgumentException.ThrowIfNullOrWhiteSpace(priorHash);
         ArgumentException.ThrowIfNullOrWhiteSpace(recordHash);
-        session.SetHeader(SequenceHeaderKey, sequence.ToString(CultureInfo.InvariantCulture));
-        session.SetHeader(PriorHashHeaderKey, priorHash);
-        session.SetHeader(RecordHashHeaderKey, recordHash);
+        var @event = ((Marten.Events.EventGraph)store.Options.Events).BuildEvent(data);
+        @event.SetHeader(SequenceHeaderKey, sequence.ToString(CultureInfo.InvariantCulture));
+        @event.SetHeader(PriorHashHeaderKey, priorHash);
+        @event.SetHeader(RecordHashHeaderKey, recordHash);
+        if (extraHeaders is not null)
+            foreach (var (key, value) in extraHeaders) @event.SetHeader(key, value);
+        return @event;
     }
 
     /// <summary>
     /// Reads the three step headers back off a fetched <see cref="IEvent"/> (e.g. from
     /// <c>IQuerySession.Events.FetchStreamAsync</c>), as plain strings/longs -- the same shape
-    /// <see cref="SetStepHeaders"/> wrote them in, and the shape
+    /// <see cref="BuildStepEvent"/> wrote them in, and the shape
     /// <c>CampaignDurableAuthorityJournal</c>'s hash chain already works in (hex-suffixed
     /// <c>sha256:...</c> strings; decimal sequence).
     /// </summary>

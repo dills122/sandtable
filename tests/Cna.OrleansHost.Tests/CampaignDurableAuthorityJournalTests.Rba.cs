@@ -151,26 +151,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void RbaSchemaSevenReadsWithoutInventedDeadlineAndRejectsMutation()
-    {
-        using var fixture = new JournalFixture();
-        var request = Request();
-        fixture.Create().CreateCampaign(request, Timing(request));
-        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
-        {
-            connection.Open();
-            using var change = connection.CreateCommand();
-            change.CommandText = "DROP TABLE rba_rounds; PRAGMA user_version=7";
-            change.ExecuteNonQuery();
-        }
-        var previous = fixture.Open();
-        Assert.NotNull(previous.ReadVerified(request.CampaignId));
-        Assert.False(previous.TickRbaRound(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => previous.IssueSeatGrant(request.CampaignId,
-            CampaignActionAudience.Axis, OperatorSecret));
-    }
-
-    [Fact]
     public void RbaRetreatMovesAndRetriesRetainOriginalDeadline()
     {
         using var fixture = new JournalFixture();

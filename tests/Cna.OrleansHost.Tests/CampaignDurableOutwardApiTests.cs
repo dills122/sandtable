@@ -46,7 +46,7 @@ public sealed class CampaignDurableOutwardApiTests
         // See CampaignDurableAuthorityJournalTests.StartOutwardApiSiloAsync's remarks: the
         // round-timeout grain CampaignGrain may arm/disarm needs this resolvable even when this
         // test never exercises deadline behavior itself.
-        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
         siloBuilder.UseOrleans(silo =>
         {
             silo.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
@@ -250,10 +250,26 @@ public sealed class CampaignDurableOutwardApiTests
         var opponent = journal.RedeemSeatGrant(journal.IssueSeatGrant(request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
         var offer = Assert.Single(journal.QueryScheduledWorld6(axis));
         Assert.Empty(journal.QueryScheduledWorld6(opponent));
+        // Phase C3b of issue #439: /{campaignId}/openings now dispatches through ICampaignGrain
+        // (opening queries write durable state), so this route-level test needs a real silo too --
+        // same pattern as NormalCampaignRouteCreatesRedeemsAndOpensOnlyForCurrentSeat above.
+        var arrivalStore = CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal);
+        var siloBuilder = Host.CreateApplicationBuilder();
+        siloBuilder.Services.AddSingleton(arrivalStore);
+        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
+        siloBuilder.UseOrleans(silo =>
+        {
+            silo.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
+            silo.AddReminders();
+            silo.UseInMemoryReminderService();
+        });
+        using var silo = siloBuilder.Build();
+        await silo.StartAsync(TestContext.Current.CancellationToken);
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        builder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal));
+        builder.Services.AddSingleton(arrivalStore);
+        builder.Services.AddSingleton(silo.Services.GetRequiredService<IGrainFactory>());
         await using var app = builder.Build();
         app.MapDurableCampaignApi();
         await app.StartAsync(TestContext.Current.CancellationToken);

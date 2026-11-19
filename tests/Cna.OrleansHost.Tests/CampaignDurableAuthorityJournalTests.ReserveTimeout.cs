@@ -214,23 +214,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void ReserveTimeoutLegacyTenRetainsCycleRoundVerification()
-    {
-        using var fixture = new JournalFixture();
-        var journal = fixture.Create(new ManualClock());
-        var (request, _) = PrepareCycleRound(journal);
-        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
-        connection.Open();
-        using var change = connection.CreateCommand();
-        change.CommandText = "PRAGMA user_version=10";
-        change.ExecuteNonQuery();
-        Assert.NotNull(fixture.Open().ReadVerified(request.CampaignId));
-        change.CommandText = "DELETE FROM cycle_rounds";
-        change.ExecuteNonQuery();
-        Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(request.CampaignId));
-    }
-
-    [Fact]
     public void ReserveTimeoutAlteredRoundRejectsColdReplay()
     {
         using var fixture = new JournalFixture();
@@ -246,7 +229,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void ReserveTimeoutMissingRowRejectsAndLegacyTenRemainsReadOnly()
+    public void ReserveTimeoutMissingRowRejects()
     {
         using var fixture = new JournalFixture();
         var journal = fixture.Create(new ManualClock());
@@ -257,11 +240,5 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         change.CommandText = "DELETE FROM reserve_rounds";
         change.ExecuteNonQuery();
         Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(request.CampaignId));
-        change.CommandText = "PRAGMA user_version=10";
-        change.ExecuteNonQuery();
-        var legacy = fixture.Open();
-        Assert.NotNull(legacy.ReadVerified(request.CampaignId));
-        Assert.False(legacy.TickReserveRound(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => legacy.QueryReserveReleaseOwnerOpening(owner, "axis-infantry"));
     }
 }

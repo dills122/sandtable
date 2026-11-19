@@ -8,7 +8,7 @@ namespace Cna.OrleansHost.Persistence;
 /// columns that move elsewhere in the Marten shape: <c>campaign_id</c> becomes the stream's own
 /// string key (see <see cref="CampaignEventStreamSchema"/>), and <c>sequence</c>/<c>prior_hash</c>/
 /// <c>record_hash</c> become event headers (Phase A's proven mechanism, reused by
-/// <see cref="CampaignEventStreamSchema.SetStepHeaders"/>) rather than event body fields.
+/// <see cref="CampaignEventStreamSchema.BuildStepEvent"/>) rather than event body fields.
 /// </summary>
 /// <remarks>
 /// <para><b>Why one envelope instead of registering Cna.Core's ~40+ real event types

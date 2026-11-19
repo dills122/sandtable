@@ -104,14 +104,14 @@ public sealed class CampaignEventStreamSchemaTests
             var sequence = index + 1L;
             var recordHash = RecordHashFor(sequence);
             await using var session = store.LightweightSession();
-            CampaignEventStreamSchema.SetStepHeaders(session, sequence, priorHash, recordHash);
+            var built = CampaignEventStreamSchema.BuildStepEvent(store, steps[index], sequence, priorHash, recordHash);
             if (sequence == 1)
-                session.Events.StartStream(campaignId, steps[index]);
+                session.Events.StartStream(campaignId, built);
             else
                 // Verified empirically (see CampaignEventStreamSchema's remarks): expectedVersion
                 // here is the stream's version AFTER this append, i.e. exactly `sequence` -- not
                 // `sequence - 1`, despite what Append's own XML doc comment implies.
-                session.Events.Append(campaignId, sequence, steps[index]);
+                session.Events.Append(campaignId, sequence, built);
             await session.SaveChangesAsync(cancellationToken);
             priorHash = recordHash;
         }
@@ -168,14 +168,14 @@ public sealed class CampaignEventStreamSchemaTests
 
         await using (var session = store.LightweightSession())
         {
-            CampaignEventStreamSchema.SetStepHeaders(session, 1, GenesisHash, RecordHashFor(1));
-            session.Events.StartStream("campaign-c1-alpha", first);
+            session.Events.StartStream("campaign-c1-alpha",
+                CampaignEventStreamSchema.BuildStepEvent(store, first, 1, GenesisHash, RecordHashFor(1)));
             await session.SaveChangesAsync(cancellationToken);
         }
         await using (var session = store.LightweightSession())
         {
-            CampaignEventStreamSchema.SetStepHeaders(session, 1, GenesisHash, RecordHashFor(1));
-            session.Events.StartStream("campaign-c1-beta", second);
+            session.Events.StartStream("campaign-c1-beta",
+                CampaignEventStreamSchema.BuildStepEvent(store, second, 1, GenesisHash, RecordHashFor(1)));
             await session.SaveChangesAsync(cancellationToken);
         }
 
@@ -187,5 +187,49 @@ public sealed class CampaignEventStreamSchemaTests
         Assert.Single(betaEvents);
         Assert.Equal("element-moved", Assert.IsType<CampaignAcceptedStepEvent>(alphaEvents[0].Data).ActionKind);
         Assert.Equal("combat-assault-resolved", Assert.IsType<CampaignAcceptedStepEvent>(betaEvents[0].Data).ActionKind);
+    }
+
+    /// <summary>
+    /// Regression for the C1 header bug fixed in Phase C3b: C1's session-scoped
+    /// <c>SetStepHeaders</c> made Marten copy one header set onto every event of a save, so a unit of
+    /// work appending several steps (e.g. a timeout cascade) stored a duplicated <c>sequence</c> and a
+    /// broken <c>prior_hash</c>/<c>record_hash</c> chain. Three steps appended in ONE save must each
+    /// keep their own headers.
+    /// </summary>
+    [Fact]
+    public async Task SeveralStepsAppendedInOneSaveEachKeepTheirOwnHeaders()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var connectionString = await fixture.CreateDatabaseAsync("sandtable_c3b_multi_step_save");
+        using var store = BuildStore(connectionString);
+        const string campaignId = "campaign-c3b-multi-001";
+        var steps = Enumerable.Range(1, 3).Select(index => new CampaignAcceptedStepEvent($"step-{index}", null, null,
+            null, null, Bytes("{}"), Bytes($$"""{"eventType":"step-{{index}}"}"""), Bytes("{}"), Bytes("{}"),
+            Bytes("[]"))).ToArray();
+
+        await using (var session = store.LightweightSession())
+        {
+            session.Events.StartStream(campaignId,
+                CampaignEventStreamSchema.BuildStepEvent(store, steps[0], 1, GenesisHash, RecordHashFor(1)),
+                CampaignEventStreamSchema.BuildStepEvent(store, steps[1], 2, RecordHashFor(1), RecordHashFor(2)),
+                CampaignEventStreamSchema.BuildStepEvent(store, steps[2], 3, RecordHashFor(2), RecordHashFor(3)));
+            await session.SaveChangesAsync(cancellationToken);
+        }
+
+        await using var query = store.QuerySession();
+        var events = await query.Events.FetchStreamAsync(campaignId, token: cancellationToken);
+        Assert.Equal(3, events.Count);
+        var prior = GenesisHash;
+        for (var index = 0; index < events.Count; index++)
+        {
+            var (sequence, priorHash, recordHash) = CampaignEventStreamSchema.ReadStepHeaders(events[index]);
+            Assert.Equal(index + 1L, sequence);
+            Assert.Equal(prior, priorHash);
+            Assert.Equal(RecordHashFor(index + 1L), recordHash);
+            prior = recordHash;
+        }
+        var state = await query.LoadAsync<CampaignStateDocument>(campaignId, cancellationToken);
+        Assert.Equal(3, state!.Sequence);
+        Assert.Equal(RecordHashFor(3), state.RecordHash);
     }
 }

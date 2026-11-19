@@ -1,4 +1,5 @@
 using Orleans;
+using Orleans.Concurrency;
 using Orleans.Runtime;
 
 namespace Cna.OrleansHost.Timeouts;
@@ -46,6 +47,17 @@ internal interface ICampaignRoundTimeoutGrain : IGrainWithStringKey, IRemindable
     /// <paramref name="deadlineUtc"/> and a coarse backstop reminder. Idempotent: calling this
     /// again before the timer fires replaces the previous arming.
     /// </summary>
+    /// <remarks>
+    /// <c>[AlwaysInterleave]</c> (Phase C3b of issue #439): <c>CampaignGrain</c> awaits Arm/Disarm
+    /// inside its own turn, while this grain's timer callback awaits <c>CampaignGrain.TickRoundAsync</c>
+    /// (through the sink) inside its turn. Without interleaving, a timer firing while that campaign's
+    /// grain is mid-call is a two-grain await cycle that deadlocks until Orleans' 30s response
+    /// timeout -- reproduced once owner-opening queries started routing through <c>CampaignGrain</c>.
+    /// Arm/Disarm only replace the in-memory timer and the reminder registration, and the timer
+    /// callback re-derives its final state from the durable deadline after the tick, so letting them
+    /// interleave cannot leave a state the store does not justify.
+    /// </remarks>
+    [AlwaysInterleave]
     Task ArmAsync(DateTimeOffset deadlineUtc);
 
     /// <summary>
@@ -53,6 +65,8 @@ internal interface ICampaignRoundTimeoutGrain : IGrainWithStringKey, IRemindable
     /// Called once a round completes before its deadline, so nothing is left to re-arm on a
     /// later reactivation.
     /// </summary>
+    /// <remarks>See <see cref="ArmAsync"/>'s remarks on <c>[AlwaysInterleave]</c>.</remarks>
+    [AlwaysInterleave]
     Task DisarmAsync();
 
     /// <summary>Test-only inspection, same convention as <c>TemporaryCampaignGrain</c>'s

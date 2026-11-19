@@ -152,7 +152,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void CycleTimeoutMissingRoundRejectsAndLegacyNineRemainsReadOnly()
+    public void CycleTimeoutMissingRoundRejects()
     {
         using var fixture = new JournalFixture();
         var journal = fixture.Create(new ManualClock());
@@ -164,31 +164,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         change.ExecuteNonQuery();
         Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(request.CampaignId));
         Assert.Throws<InvalidOperationException>(() => journal.QueryCycleControlOwnerOpening(owner));
-        change.CommandText = "PRAGMA user_version=9";
-        change.ExecuteNonQuery();
-        var legacy = fixture.Open();
-        Assert.NotNull(legacy.ReadVerified(request.CampaignId));
-        Assert.False(legacy.TickCycleRound(request.CampaignId));
-        Assert.Throws<InvalidOperationException>(() => legacy.QueryCycleControlOwnerOpening(owner));
     }
 
-
-    [Fact]
-    public void CycleTimeoutLegacyNinePreservesForceEntryVerification()
-    {
-        using var fixture = new JournalFixture();
-        var journal = fixture.Create(new ManualClock());
-        var (request, _, _, _, _, _) = PrepareInfantryForceRound(journal, positive: true);
-        using var connection = new SqliteConnection($"Data Source={fixture.Path}");
-        connection.Open();
-        using var change = connection.CreateCommand();
-        change.CommandText = "PRAGMA user_version=9";
-        change.ExecuteNonQuery();
-        Assert.NotNull(fixture.Open().ReadVerified(request.CampaignId));
-        change.CommandText = "DELETE FROM force_rounds";
-        change.ExecuteNonQuery();
-        Assert.Throws<InvalidOperationException>(() => fixture.Open().ReadVerified(request.CampaignId));
-    }
 
     [Fact]
     public void CycleTimeoutSchedulerRotatesPastCorruptionWithoutOtherQueueStarvation()

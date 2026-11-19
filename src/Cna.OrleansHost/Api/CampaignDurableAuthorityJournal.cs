@@ -54,6 +54,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private const int ApplicationId = 0x5343414A; // SCAJ
     private const int SchemaVersion = 14;
+    private const int CurrentSchemaVersion = SchemaVersion;
     // Host-identity store (operator_capability only -- reference_key stays per-campaign, see
     // ReadReferenceKey's remarks): see EnsureHostIdentity's remarks.
     // A different extension than CampaignFileExtension so a directory listing for campaign files
@@ -82,23 +83,33 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private readonly int schemaVersion;
     private readonly IContentPackV6Resolver contentResolver;
 
+    // Phase C3b of issue #439: when non-null, this instance runs against a Marten-loaded in-memory
+    // working set (CampaignJournalWorkingSet) instead of a durable SQLite file -- see
+    // CampaignDurableAuthorityJournal.WorkingSet.cs. Every other line of journal logic is unchanged.
+    private readonly Func<SqliteConnection>? workingSetConnect;
+    private readonly Func<string, bool>? operatorAuthenticator;
+
+    /// <summary>
+    /// Randomness seam (DET-002: "identifiers and randomness are injectable and deterministic in
+    /// tests"). Production uses <see cref="RandomNumberGenerator.GetBytes(int)"/>; the Phase C3b
+    /// SQLite-vs-Marten equivalence tests inject one deterministic generator into both backends so
+    /// grant/credential secrets -- and therefore every downstream byte -- can be compared exactly.
+    /// </summary>
+    private readonly Func<int, byte[]> randomBytes;
+
     private CampaignDurableAuthorityJournal(string path, TimeProvider clock,
-        int schemaVersion = SchemaVersion, IContentPackV6Resolver? contentResolver = null)
+        int schemaVersion = SchemaVersion, IContentPackV6Resolver? contentResolver = null,
+        Func<int, byte[]>? randomBytes = null, Func<SqliteConnection>? workingSetConnect = null,
+        Func<string, bool>? operatorAuthenticator = null)
     {
         this.path = path;
         this.clock = clock;
         this.schemaVersion = schemaVersion;
         this.contentResolver = contentResolver ?? Cna1979SyntheticContentResolver.Instance;
+        this.randomBytes = randomBytes ?? RandomNumberGenerator.GetBytes;
+        this.workingSetConnect = workingSetConnect;
+        this.operatorAuthenticator = operatorAuthenticator;
     }
-
-    /// <summary>
-    /// Crash-safety test seam. When set, invoked with a checkpoint name at well-defined points
-    /// during <see cref="CreateNew"/> (see call sites below). Production code leaves this null.
-    /// Only ever set by the out-of-process crash-probe child (<c>Cna.OrleansHost.FoundationChild</c>);
-    /// never set from inside the main test process, because this is static mutable state and other
-    /// test classes call <see cref="CreateNew"/> concurrently under xUnit's default parallelization.
-    /// </summary>
-    internal static Action<string>? CreateNewCrashHook;
 
     private const string CreationTempInfix = ".creating-";
 
@@ -134,8 +145,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// and move it aside before a fresh journal can be created at that path.</para>
     /// </remarks>
     internal static CampaignDurableAuthorityJournal CreateNew(string absolutePath,
-        string operatorSecret, TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
+        string operatorSecret, TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null,
+        Func<int, byte[]>? randomBytes = null)
     {
+        randomBytes ??= RandomNumberGenerator.GetBytes;
         RequirePath(absolutePath);
         // Validate the secret's shape early and fail fast, before touching the filesystem.
         // EnsureHostIdentity (below) is what actually stores its digest, since operator
@@ -185,158 +198,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         try
         {
             using var connection = journal.Connect(create: true);
-            CreateNewCrashHook?.Invoke("after-temp-file-created");
             Execute(connection, "PRAGMA journal_mode=WAL");
             Execute(connection, "PRAGMA synchronous=FULL");
-            Execute(connection, """
-            CREATE TABLE campaigns (
-              campaign_id TEXT PRIMARY KEY, contract_version INTEGER NOT NULL,
-              ruleset_hash TEXT NOT NULL, seed TEXT NOT NULL, setup_id TEXT NOT NULL,
-              setup_hash TEXT NOT NULL, content_pack_id TEXT NOT NULL,
-              content_hash TEXT NOT NULL, scenario_id TEXT NOT NULL,
-              creation_event BLOB NOT NULL, initial_snapshot BLOB NOT NULL,
-              initial_contacts BLOB NOT NULL, timing_configuration BLOB NOT NULL,
-              head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE accepted_steps (
-              campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL,
-              action_kind TEXT NOT NULL, acting_element_id TEXT,
-              owner_public_ref TEXT, seat_epoch INTEGER, owner_revision INTEGER,
-              canonical_command BLOB NOT NULL, canonical_event BLOB NOT NULL,
-              canonical_receipt BLOB NOT NULL, snapshot_checkpoint BLOB NOT NULL,
-              canonical_contacts BLOB NOT NULL,
-              prior_hash TEXT NOT NULL, record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,sequence),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE UNIQUE INDEX accepted_owner_ref
-            ON accepted_steps(campaign_id,owner_public_ref)
-            WHERE owner_public_ref IS NOT NULL
-            """);
-            CreateNewCrashHook?.Invoke("mid-schema");
-            Execute(connection, """
-            CREATE TABLE seats (
-              campaign_id TEXT NOT NULL, side TEXT NOT NULL CHECK(side IN ('axis','commonwealth')),
-              epoch INTEGER NOT NULL CHECK(epoch>0),
-              grant_digest BLOB, grant_expires_ms INTEGER,
-              credential_digest BLOB, credential_expires_ms INTEGER,
-              PRIMARY KEY(campaign_id,side),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE reference_key (
-              singleton INTEGER PRIMARY KEY CHECK(singleton=1), secret BLOB NOT NULL
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE owner_openings (
-              campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
-              seat_epoch INTEGER NOT NULL, revision INTEGER NOT NULL,
-              visible_digest TEXT NOT NULL, visible_bytes BLOB NOT NULL,
-              authority_version INTEGER NOT NULL, action_count INTEGER NOT NULL,
-              PRIMARY KEY(campaign_id,side,acting_element_id),
-              FOREIGN KEY(campaign_id,side) REFERENCES seats(campaign_id,side)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE owner_actions (
-              campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
-              public_ref TEXT NOT NULL, ordinal INTEGER NOT NULL, core_action_id TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,side,acting_element_id,public_ref),
-              FOREIGN KEY(campaign_id,side,acting_element_id)
-                REFERENCES owner_openings(campaign_id,side,acting_element_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE force_rounds (
-              campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
-              decline_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','cancelled')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,decline_event_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE rba_rounds (
-              campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
-              barrage_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','cancelled')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,barrage_event_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE cycle_rounds (
-              campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
-              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,release_event_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE reserve_rounds (
-              campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
-              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,release_event_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE custody_rounds (
-              campaign_id TEXT NOT NULL, settlement_hash TEXT NOT NULL,
-              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,settlement_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE retreat_rounds (
-              campaign_id TEXT NOT NULL, result_hash TEXT NOT NULL,
-              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,result_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            Execute(connection, """
-            CREATE TABLE selection_rounds (
-              campaign_id TEXT NOT NULL, entry_hash TEXT NOT NULL,
-              entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
-              opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
-              high_water_ms INTEGER NOT NULL,
-              status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
-              record_hash TEXT NOT NULL,
-              PRIMARY KEY(campaign_id,entry_hash),
-              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-            )
-            """);
-            journal.EnsureRoundIndexes(connection);
+            CreateCurrentSchema(connection);
             using (var command = connection.CreateCommand())
             {
                 // Independently generated per campaign file -- not shared host-wide like
@@ -348,10 +212,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 // not (found by FreshProcessThirdCycleReserveRecoveryRetainsConvertedReserveAndIsIdempotent
                 // and similar tests that back up a single campaign file to a new location).
                 command.CommandText = "INSERT INTO reference_key VALUES (1,$secret)";
-                command.Parameters.AddWithValue("$secret", RandomNumberGenerator.GetBytes(32));
+                command.Parameters.AddWithValue("$secret", randomBytes(32));
                 command.ExecuteNonQuery();
             }
-            CreateNewCrashHook?.Invoke("before-version-marking");
             Execute(connection, $"PRAGMA application_id={ApplicationId}");
             Execute(connection, $"PRAGMA user_version={SchemaVersion}");
         }
@@ -368,7 +231,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
             // one self-contained file, never a main-file/WAL pair that a crash between two
             // separate renames could tear apart.
             CheckpointAndRemoveWalSidecars(tempPath);
-            CreateNewCrashHook?.Invoke("before-publish");
             // Atomic on the same volume. File.Move without `overwrite` also refuses to replace a
             // file that already exists at absolutePath, so this can never clobber real campaign
             // authority that showed up at the real path while we were initializing.
@@ -382,7 +244,167 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!OperatingSystem.IsWindows())
             File.SetUnixFileMode(absolutePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
-            contentResolver: contentResolver);
+            contentResolver: contentResolver, randomBytes: randomBytes);
+    }
+
+    /// <summary>
+    /// The current (<see cref="SchemaVersion"/>) journal schema: every table and round index
+    /// <see cref="CreateNew"/> creates. Extracted (unchanged) for Phase C3b of issue #439 so the
+    /// Marten backend's in-memory working set (<c>CampaignJournalWorkingSet</c>) runs the journal's
+    /// unchanged relational logic against exactly the same shape a durable file has.
+    /// </summary>
+    internal static void CreateCurrentSchema(SqliteConnection connection)
+    {
+        Execute(connection, """
+        CREATE TABLE campaigns (
+          campaign_id TEXT PRIMARY KEY, contract_version INTEGER NOT NULL,
+          ruleset_hash TEXT NOT NULL, seed TEXT NOT NULL, setup_id TEXT NOT NULL,
+          setup_hash TEXT NOT NULL, content_pack_id TEXT NOT NULL,
+          content_hash TEXT NOT NULL, scenario_id TEXT NOT NULL,
+          creation_event BLOB NOT NULL, initial_snapshot BLOB NOT NULL,
+          initial_contacts BLOB NOT NULL, timing_configuration BLOB NOT NULL,
+          head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE accepted_steps (
+          campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL,
+          action_kind TEXT NOT NULL, acting_element_id TEXT,
+          owner_public_ref TEXT, seat_epoch INTEGER, owner_revision INTEGER,
+          canonical_command BLOB NOT NULL, canonical_event BLOB NOT NULL,
+          canonical_receipt BLOB NOT NULL, snapshot_checkpoint BLOB NOT NULL,
+          canonical_contacts BLOB NOT NULL,
+          prior_hash TEXT NOT NULL, record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,sequence),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE UNIQUE INDEX accepted_owner_ref
+        ON accepted_steps(campaign_id,owner_public_ref)
+        WHERE owner_public_ref IS NOT NULL
+        """);
+        Execute(connection, """
+        CREATE TABLE seats (
+          campaign_id TEXT NOT NULL, side TEXT NOT NULL CHECK(side IN ('axis','commonwealth')),
+          epoch INTEGER NOT NULL CHECK(epoch>0),
+          grant_digest BLOB, grant_expires_ms INTEGER,
+          credential_digest BLOB, credential_expires_ms INTEGER,
+          PRIMARY KEY(campaign_id,side),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE reference_key (
+          singleton INTEGER PRIMARY KEY CHECK(singleton=1), secret BLOB NOT NULL
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE owner_openings (
+          campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
+          seat_epoch INTEGER NOT NULL, revision INTEGER NOT NULL,
+          visible_digest TEXT NOT NULL, visible_bytes BLOB NOT NULL,
+          authority_version INTEGER NOT NULL, action_count INTEGER NOT NULL,
+          PRIMARY KEY(campaign_id,side,acting_element_id),
+          FOREIGN KEY(campaign_id,side) REFERENCES seats(campaign_id,side)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE owner_actions (
+          campaign_id TEXT NOT NULL, side TEXT NOT NULL, acting_element_id TEXT NOT NULL,
+          public_ref TEXT NOT NULL, ordinal INTEGER NOT NULL, core_action_id TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,side,acting_element_id,public_ref),
+          FOREIGN KEY(campaign_id,side,acting_element_id)
+            REFERENCES owner_openings(campaign_id,side,acting_element_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE force_rounds (
+          campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
+          decline_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','cancelled')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,decline_event_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE rba_rounds (
+          campaign_id TEXT NOT NULL, decision_action_id TEXT NOT NULL,
+          barrage_event_hash TEXT NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','cancelled')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,barrage_event_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE cycle_rounds (
+          campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
+          entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,release_event_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE reserve_rounds (
+          campaign_id TEXT NOT NULL, release_event_hash TEXT NOT NULL,
+          entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,release_event_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE custody_rounds (
+          campaign_id TEXT NOT NULL, settlement_hash TEXT NOT NULL,
+          entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,settlement_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE retreat_rounds (
+          campaign_id TEXT NOT NULL, result_hash TEXT NOT NULL,
+          entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,result_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        Execute(connection, """
+        CREATE TABLE selection_rounds (
+          campaign_id TEXT NOT NULL, entry_hash TEXT NOT NULL,
+          entry_state_version INTEGER NOT NULL, configuration_hash TEXT NOT NULL,
+          opened_ms INTEGER NOT NULL, deadline_ms INTEGER NOT NULL,
+          high_water_ms INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK(status IN ('collecting','completed','timed-out')),
+          record_hash TEXT NOT NULL,
+          PRIMARY KEY(campaign_id,entry_hash),
+          FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+        )
+        """);
+        foreach (var table in new[] { "force", "rba", "cycle", "reserve", "custody", "retreat", "selection" })
+            Execute(connection, $"CREATE INDEX IF NOT EXISTS {table}_rounds_status_campaign "
+                + $"ON {table}_rounds(status,campaign_id)");
     }
 
     private static void TryDeleteCreationTempFiles(string tempPath)
@@ -482,278 +504,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
     }
 
     /// <summary>
-    /// A single explicit, numbered forward-migration step: given a connection already inside an
-    /// open transaction against a private temporary copy of the journal, mutates the schema/data in
-    /// place (<c>ALTER TABLE</c>, data transforms, etc.) to carry it from <see cref="FromVersion"/>
-    /// to <see cref="ToVersion"/>. Does not set <c>PRAGMA user_version</c> itself -- <see
-    /// cref="RunMigrations"/> does that once, after every applicable step has committed.
-    /// </summary>
-    internal readonly record struct MigrationStep(int FromVersion, int ToVersion,
-        Action<SqliteConnection, SqliteTransaction> Apply);
-
-    /// <summary>
-    /// Explicit, numbered forward-migration steps for the hot/live journal, applied in order by
-    /// <see cref="RunMigrations"/> when <see cref="OpenExisting"/> finds an on-disk file whose
-    /// <c>user_version</c> is behind <see cref="CurrentSchemaVersion"/> but still within this
-    /// mechanism's scope (some step's <see cref="MigrationStep.FromVersion"/>).
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Scope boundary</b> (answering issue #330's "Archives compatibility" checklist item):
-    /// this mechanism is for schema changes <b>from this point forward</b> only. The historical
-    /// versions recognized by <see cref="RetreatSchemaVersion"/> down through
-    /// <see cref="LegacySchemaVersion"/> predate this mechanism's introduction and are deliberately
-    /// left exactly as they were, on the existing parallel read-only legacy branches in
-    /// <see cref="Load"/> and the <c>schemaVersion != CurrentSchemaVersion</c> write-gates (e.g.
-    /// <see cref="RequireWritable"/>) -- this list never runs against them, and never will.
-    /// Retroactively migrating those historical versions is explicitly out of scope ("no implicit
-    /// migration or fabricated deadlines").</para>
-    /// <para>Empty in production today: nothing has changed <see cref="SchemaVersion"/>'s shape (14)
-    /// yet, so there is nothing to migrate from. A future real schema change bumps
-    /// <see cref="SchemaVersion"/> (and <see cref="CreateNew"/>'s DDL) to the new value and, in the
-    /// same change, registers a step here from the old value to the new one, so on-disk files
-    /// written under the old value get carried forward the next time they are opened. Tests register
-    /// throwaway steps through this same list (see <c>Cna.OrleansHost.FoundationChild</c>'s
-    /// migration-probe modes) to exercise the mechanism itself without waiting for a real schema
-    /// change -- always from a short-lived, single-purpose child process, never from inside the
-    /// shared test process, for the same reason <see cref="CreateNewCrashHook"/> is restricted that
-    /// way: this is static mutable state, and other test classes open journals concurrently under
-    /// xUnit's default parallelization.</para>
-    /// <para><b>Cold-tier note.</b> This registry and <see cref="RunMigrations"/> apply to the
-    /// hot/live journal only. The design doc
-    /// (<c>docs/work/plans/2026-11-18-data-layer-design-1000-campaign-ceiling.md</c> &#167;9)
-    /// proposes that a future cold/archived tier never migrates its records -- they are read forever
-    /// under whatever schema version they were written with, which is simpler and consistent with
-    /// never mutating archived data. That tier does not exist yet; a future implementer of it should
-    /// not assume this mechanism extends there.</para>
-    /// </remarks>
-    internal static readonly List<MigrationStep> MigrationSteps = [];
-
-    /// <summary>
-    /// Test-only accessor for <see cref="SchemaVersion"/> (today's baseline, before this
-    /// mechanism's introduction), so a migration-probe test registering a synthetic step doesn't
-    /// need to hardcode that baseline as a magic number -- and stays correct if it is ever bumped
-    /// for a real schema change.
-    /// </summary>
-    internal static int SchemaVersionForMigrationTests => SchemaVersion;
-
-    /// <summary>
-    /// The schema version <see cref="OpenExisting"/>'s migration mechanism treats as fully migrated:
-    /// <see cref="SchemaVersion"/> when <see cref="MigrationSteps"/> is empty (production today), or
-    /// the last registered step's <see cref="MigrationStep.ToVersion"/> otherwise. Every write-gate
-    /// that used to compare against <see cref="SchemaVersion"/> directly now compares against this
-    /// instead, so a freshly migrated file is treated identically to one created directly at the
-    /// newest version.
-    /// </summary>
-    private static int CurrentSchemaVersion => MigrationSteps.Count == 0
-        ? SchemaVersion : MigrationSteps[^1].ToVersion;
-
-    /// <summary>
-    /// True when <paramref name="version"/> is a version <see cref="MigrationSteps"/> knows how to
-    /// carry forward to <see cref="CurrentSchemaVersion"/> -- i.e. it equals some registered step's
-    /// <see cref="MigrationStep.FromVersion"/>. Also validates that the registered chain is
-    /// contiguous (each step's <see cref="MigrationStep.FromVersion"/> equal to the previous step's
-    /// <see cref="MigrationStep.ToVersion"/>, starting at <see cref="SchemaVersion"/>), so a caller
-    /// that gets <see langword="true"/> back can trust that running the chain always lands exactly on
-    /// <see cref="CurrentSchemaVersion"/>, never short of it.
-    /// </summary>
-    private static bool IsMigratableVersion(int version)
-    {
-        var expected = SchemaVersion;
-        var found = false;
-        foreach (var step in MigrationSteps)
-        {
-            if (step.FromVersion != expected)
-                throw new InvalidOperationException(
-                    "Registered migration steps are not a contiguous chain from SchemaVersion.");
-            if (step.FromVersion == version) found = true;
-            expected = step.ToVersion;
-        }
-        return found;
-    }
-
-    private const string MigrationTempInfix = ".migrating-";
-
-    /// <summary>
-    /// Crash-safety test seam for <see cref="RunMigrations"/>, invoked with a checkpoint name at
-    /// well-defined points (see call sites below) -- the migration analogue of
-    /// <see cref="CreateNewCrashHook"/>, with the same restriction: only ever set by an
-    /// out-of-process crash-probe child, never from inside the shared test process.
-    /// </summary>
-    internal static Action<string>? MigrationCrashHook;
-
-    /// <summary>
-    /// Carries an existing journal file forward from <paramref name="fromVersion"/> to
-    /// <see cref="CurrentSchemaVersion"/> by running every applicable <see cref="MigrationSteps"/>
-    /// entry in order, inside the same crash-safety envelope <see cref="CreateNew"/> uses for
-    /// first-time initialization.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>Crash safety (what this guarantees).</b> Every schema/data change this method makes
-    /// lives in a private temporary file in the same directory, built via SQLite's <c>VACUUM INTO</c>
-    /// against a read-only connection to <paramref name="absolutePath"/> -- which, per SQLite's own
-    /// documentation, never requires (and never takes) write access to the source database, and also
-    /// fully consolidates any not-yet-checkpointed write-ahead log content into the copy. So no
-    /// migration step, and no schema/data mutation of any kind, is ever applied to
-    /// <paramref name="absolutePath"/> directly -- only to the temporary copy. Every migration step
-    /// runs in its own committed transaction against that copy; only once every step has committed
-    /// and the temporary file has been fully WAL-checkpointed into a single self-contained file
-    /// (<see cref="CheckpointAndRemoveWalSidecars"/>, reused from <see cref="CreateNew"/>) does this
-    /// method atomically replace <paramref name="absolutePath"/> with it
-    /// (<see cref="File.Move(string, string, bool)"/> with <c>overwrite: true</c> -- atomic on the
-    /// same volume, the same guarantee <see cref="CreateNew"/>'s remarks describe for its own publish
-    /// step; the only difference here is a destination that already exists, which is exactly why
-    /// <c>overwrite: true</c> is needed instead of the no-overwrite publish <see cref="CreateNew"/>
-    /// uses). Immediately before that rename, this method also runs the same
-    /// <see cref="CheckpointAndRemoveWalSidecars"/> helper against <paramref name="absolutePath"/>
-    /// itself -- the one operation this method performs directly against the original file, and a
-    /// non-destructive one: a WAL checkpoint only persists already-committed data into the main file,
-    /// changing no logical content (same schema, same rows, same hash chain), so it does not
-    /// contradict "never half-migrated." It is required, not optional: <see cref="File.Move"/> only
-    /// replaces the main file, so a stale pre-migration <c>-wal</c>/<c>-shm</c> pair left sitting next
-    /// to the newly-published content would make SQLite replay that stale WAL (self-consistently
-    /// validated against its own matching <c>-shm</c>) over the new file's different page layout on
-    /// the very next open, corrupting reads of the migrated file -- a failure mode this method
-    /// verified by reproducing it before adding this step. If this process is interrupted at any
-    /// point before the rename completes, <paramref name="absolutePath"/> is left exactly as it was
-    /// before this call in every way that matters -- fully pre-migration, openable by the old logic
-    /// exactly as before -- never half-migrated. There is never a window where a partially migrated
-    /// file is visible at the real configured path.</para>
-    /// </remarks>
-    private static void RunMigrations(string absolutePath, int fromVersion)
-    {
-        var directory = Path.GetDirectoryName(absolutePath)!;
-        // An orphaned temp file from a previous interrupted migration attempt can never have been
-        // published to absolutePath -- nothing is published until it is fully built and verified --
-        // so it is always safe to clear before starting a fresh attempt, exactly like CreateNew's
-        // own orphan sweep.
-        TryDeleteOrphanedMigrationTempFiles(absolutePath, directory);
-        var tempPath = Path.Combine(directory,
-            Path.GetFileName(absolutePath) + MigrationTempInfix + Guid.NewGuid().ToString("N"));
-        try
-        {
-            using (var source = new SqliteConnection(new SqliteConnectionStringBuilder
-            {
-                DataSource = absolutePath,
-                Mode = SqliteOpenMode.ReadOnly,
-                Cache = SqliteCacheMode.Private,
-                Pooling = false,
-            }.ToString()))
-            {
-                source.Open();
-                using var vacuum = source.CreateCommand();
-                vacuum.CommandText = "VACUUM INTO $dest";
-                vacuum.Parameters.AddWithValue("$dest", tempPath);
-                vacuum.ExecuteNonQuery();
-            }
-            MigrationCrashHook?.Invoke("after-temp-snapshot-created");
-            using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder
-            {
-                DataSource = tempPath,
-                Mode = SqliteOpenMode.ReadWrite,
-                Cache = SqliteCacheMode.Private,
-                Pooling = false,
-            }.ToString()))
-            {
-                connection.Open();
-                Execute(connection, "PRAGMA journal_mode=WAL");
-                Execute(connection, "PRAGMA synchronous=FULL");
-                Execute(connection, "PRAGMA foreign_keys=ON");
-                var version = fromVersion;
-                var stepIndex = 0;
-                foreach (var step in MigrationSteps)
-                {
-                    if (step.FromVersion < version) continue;
-                    if (step.FromVersion != version)
-                        throw new InvalidOperationException(
-                            "Registered migration steps are not a contiguous chain from SchemaVersion.");
-                    using var transaction = connection.BeginTransaction(deferred: false);
-                    step.Apply(connection, transaction);
-                    transaction.Commit();
-                    version = step.ToVersion;
-                    stepIndex++;
-                    // Named by ordinal position, not by version number, so a crash-probe test can
-                    // reference a fixed checkpoint name without depending on SchemaVersion's actual
-                    // current value.
-                    MigrationCrashHook?.Invoke($"after-step-{stepIndex}");
-                }
-                if (version != CurrentSchemaVersion)
-                    throw new InvalidOperationException(
-                        "Migration steps did not reach the current schema version.");
-                MigrationCrashHook?.Invoke("before-version-marking");
-                Execute(connection, $"PRAGMA user_version={CurrentSchemaVersion}");
-            }
-        }
-        catch
-        {
-            TryDeleteMigrationTempFiles(tempPath);
-            throw;
-        }
-        if (!OperatingSystem.IsWindows())
-            File.SetUnixFileMode(tempPath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
-        try
-        {
-            // Same reasoning as CreateNew: consolidate the WAL into the single main file first, so
-            // the atomic rename below publishes one self-contained file, never a main-file/WAL pair
-            // a crash between two separate renames could tear apart.
-            CheckpointAndRemoveWalSidecars(tempPath);
-            // Also fold and clear any not-yet-checkpointed WAL content sitting at absolutePath's OWN
-            // sidecars (left over from ordinary prior use -- a live WAL-mode file commonly still has
-            // these). This is non-destructive: a WAL checkpoint only persists already-committed data
-            // into the main file, changing no logical content, so it does not conflict with "the
-            // original file is never half-migrated" -- it stays byte-for-byte equivalent in every way
-            // that matters (schema, rows, hash chain). It is required before the rename, not optional:
-            // File.Move only replaces the main file, so a stale pre-migration -wal/-shm pair left
-            // sitting next to the newly-published content would make SQLite replay that stale WAL
-            // (validated self-consistently against its own matching -shm) over the NEW file's
-            // different page layout on the very next open, corrupting reads of the migrated file --
-            // confirmed by reproduction during this change's own verification.
-            CheckpointAndRemoveWalSidecars(absolutePath);
-            MigrationCrashHook?.Invoke("before-publish");
-            // Atomic on the same volume, same as CreateNew's publish -- overwrite:true because,
-            // unlike CreateNew, the destination already exists (the pre-migration file being
-            // replaced).
-            File.Move(tempPath, absolutePath, overwrite: true);
-        }
-        catch
-        {
-            TryDeleteMigrationTempFiles(tempPath);
-            throw;
-        }
-        if (!OperatingSystem.IsWindows())
-            File.SetUnixFileMode(absolutePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
-    }
-
-    private static void TryDeleteMigrationTempFiles(string tempPath)
-    {
-        foreach (var candidate in new[] { tempPath, tempPath + "-wal", tempPath + "-shm", tempPath + "-journal" })
-        {
-            try { if (File.Exists(candidate)) File.Delete(candidate); }
-            catch
-            {
-                // Best effort -- see TryDeleteCreationTempFiles for the same reasoning: a temp file
-                // never published to absolutePath can never hold real campaign authority.
-            }
-        }
-    }
-
-    private static void TryDeleteOrphanedMigrationTempFiles(string absolutePath, string directory)
-    {
-        var prefix = Path.GetFileName(absolutePath) + MigrationTempInfix;
-        string[] entries;
-        try { entries = Directory.GetFiles(directory); }
-        catch { return; }
-        foreach (var entry in entries)
-        {
-            var name = Path.GetFileName(entry);
-            if (!name.StartsWith(prefix, StringComparison.Ordinal)) continue;
-            if (name.EndsWith("-wal", StringComparison.Ordinal) || name.EndsWith("-shm", StringComparison.Ordinal)
-                || name.EndsWith("-journal", StringComparison.Ordinal))
-                continue;
-            TryDeleteMigrationTempFiles(entry);
-        }
-    }
-
-    /// <summary>
     /// Operator-facing guidance for a file sitting at the configured journal path that this host
     /// will not touch automatically. Shared by <see cref="CreateNew"/> (refuses to run at all when
     /// something already exists there) and <see cref="OpenExisting"/> (refuses to guess at an
@@ -785,7 +535,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// recovery decision tree covering the states this cannot tell apart on its own.
     /// </remarks>
     internal static CampaignDurableAuthorityJournal OpenExisting(string absolutePath,
-        TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null)
+        TimeProvider? clock = null, IContentPackV6Resolver? contentResolver = null,
+        Func<int, byte[]>? randomBytes = null)
     {
         RequirePath(absolutePath);
         if (!File.Exists(absolutePath)) throw new InvalidOperationException("Journal is missing.");
@@ -815,15 +566,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     "database (it may be truncated, corrupted, or not a journal at all)."), ex);
             }
         }
-        // A version this mechanism knows how to carry forward (some registered step's FromVersion,
-        // short of CurrentSchemaVersion) is recognized even though it is not literally
-        // CurrentSchemaVersion or one of the historical legacy constants below -- it gets migrated
-        // in place, under crash safety, a few lines down.
-        var migratable = applicationId == ApplicationId && version != CurrentSchemaVersion
-            && IsMigratableVersion(version);
-        if (applicationId != ApplicationId
-            || (!migratable && version != CurrentSchemaVersion
-                && version is not (RetreatSchemaVersion or CustodySchemaVersion or ReserveSchemaVersion or CycleSchemaVersion or ForceEntrySchemaVersion or RbaSchemaVersion or ForceSchemaVersion or TimingSchemaVersion or LegacySchemaVersion)))
+        // Phase C3b of issue #439: the SQLite file store is now only the test-side equivalence
+        // baseline for the Marten store, so it recognizes exactly the current schema. The legacy
+        // read-only versions 5-13 and the forward-migration mechanism are dropped, not ported
+        // (design doc §3.5/§7: Marten owns schema evolution, and no real data exists).
+        if (applicationId != ApplicationId || version != CurrentSchemaVersion)
             throw new InvalidOperationException(RecoveryGuidance(absolutePath, applicationId == ApplicationId
                 ? $"The file's schema version ({version}) is not one this host build recognizes. " +
                   "This can mean the file was created by a newer host build, or that it never " +
@@ -832,13 +579,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   "version at all)."
                 : "The file does not carry this journal's application id; it is not recognized as " +
                   "a journal created by this host."));
-        if (migratable)
-        {
-            RunMigrations(absolutePath, version);
-            version = CurrentSchemaVersion;
-        }
         return new CampaignDurableAuthorityJournal(absolutePath, clock ?? TimeProvider.System,
-            version, contentResolver);
+            version, contentResolver, randomBytes);
     }
 
     internal ExerciseSession CreateCampaign(CampaignCreationRequest request,
@@ -2257,6 +1999,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private SqliteConnection Connect(bool create)
     {
+        if (workingSetConnect is not null)
+        {
+            // Phase C3b: the Marten backend's in-memory working set already carries the current
+            // schema (CreateCurrentSchema) and its round indexes; only the per-connection pragmas
+            // a file connection sets below still apply.
+            var workingSet = workingSetConnect();
+            Execute(workingSet, "PRAGMA foreign_keys=ON");
+            Execute(workingSet, "PRAGMA busy_timeout=5000");
+            return workingSet;
+        }
         // Pooling is deliberately off: PR #412 enabled it, but a pooled connection's native
         // handle stays parked after Dispose() in this Microsoft.Data.Sqlite build, which left
         // CreateNew's own post-write wal_checkpoint(TRUNCATE) unable to fully truncate the WAL
@@ -2466,6 +2218,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private List<string> CollectingAcrossSiblingFiles(string after, int limit,
         Func<CampaignDurableAuthorityJournal, string, int, IReadOnlyList<string>> queryOneFile)
     {
+        // A Marten working set holds exactly the campaigns it loaded; there are no sibling files.
+        if (workingSetConnect is not null) return [.. queryOneFile(this, after, limit)];
         var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
         string[] siblings;
         try { siblings = Directory.GetFiles(directory, "*" + CampaignFileExtension); }

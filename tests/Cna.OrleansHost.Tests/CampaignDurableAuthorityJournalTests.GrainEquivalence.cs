@@ -14,7 +14,7 @@ namespace Cna.OrleansHost.Tests;
 
 /// <summary>
 /// Phase C3a of issue #439, task item 4: proves the new grain-based path
-/// (<c>CampaignGrain</c>/<c>SqliteCampaignRoundDeadlineSink</c>/<c>CampaignRoundTimeoutGrain</c>)
+/// (<c>CampaignGrain</c>/<c>MartenCampaignRoundDeadlineSink</c>/<c>CampaignRoundTimeoutGrain</c>)
 /// produces the identical timeout outcome <c>CampaignCombatTimeoutService.SweepOnce</c> would, for
 /// a round that times out -- against a real, in-process Orleans silo (the same "real silo, no
 /// mocks" precedent <c>LocalGameApiTests.cs</c> and
@@ -31,7 +31,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddSingleton(store);
         builder.Services.AddSingleton(clock);
-        builder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+        builder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
         builder.UseOrleans(silo =>
         {
             silo.UseLocalhostClustering(siloPort: FreeGrainTestPort(), gatewayPort: 0);

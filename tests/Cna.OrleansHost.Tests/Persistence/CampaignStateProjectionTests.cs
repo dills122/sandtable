@@ -60,11 +60,11 @@ public sealed class CampaignStateProjectionTests
             var sequence = firstSequence + index;
             var recordHash = RecordHashFor(sequence);
             await using var session = store.LightweightSession();
-            CampaignEventStreamSchema.SetStepHeaders(session, sequence, priorHash, recordHash);
+            var built = CampaignEventStreamSchema.BuildStepEvent(store, steps[index], sequence, priorHash, recordHash);
             if (sequence == 1)
-                session.Events.StartStream(campaignId, steps[index]);
+                session.Events.StartStream(campaignId, built);
             else
-                session.Events.Append(campaignId, sequence, steps[index]);
+                session.Events.Append(campaignId, sequence, built);
             await session.SaveChangesAsync(cancellationToken);
             priorHash = recordHash;
         }

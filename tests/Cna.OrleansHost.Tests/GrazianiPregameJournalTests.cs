@@ -43,7 +43,7 @@ public sealed class GrazianiPregameJournalTests
         // See CampaignDurableAuthorityJournalTests.StartOutwardApiSiloAsync's remarks: the
         // round-timeout grain CampaignGrain may arm/disarm needs this resolvable even when this
         // test never exercises deadline behavior itself.
-        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
         siloBuilder.UseOrleans(silo =>
         {
             silo.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
