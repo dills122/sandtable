@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Hosting;
+using Cna.OrleansHost.Timeouts;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -53,7 +54,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
             """;
         BindReserveRound(insert, round);
         insert.ExecuteNonQuery();
+        RecordRoundOpened(CampaignRoundKind.Reserve, round.DeadlineMs);
         _ = Load(connection, transaction, campaignId);
+    }
+
+    /// <summary>Current deadline for an open (status 'collecting') Reserve round, if any -- see
+    /// <see cref="GetSelectionRoundDeadlineMs"/>'s remarks for the general shape.</summary>
+    internal long? GetReserveRoundDeadlineMs(string campaignId)
+    {
+        if (schemaVersion != SchemaVersion) return null;
+        using var connection = Connect(create: false);
+        using var query = connection.CreateCommand();
+        query.CommandText = "SELECT deadline_ms FROM reserve_rounds WHERE campaign_id=$id AND status='collecting' LIMIT 1";
+        query.Parameters.AddWithValue("$id", campaignId);
+        return query.ExecuteScalar() is long value ? value : null;
     }
 
     private static ReserveRound ReadActiveReserveRound(SqliteConnection connection,

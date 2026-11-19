@@ -5,6 +5,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Microsoft.Data.Sqlite;
+using Orleans;
 
 namespace Cna.OrleansHost.Api;
 
@@ -291,8 +292,19 @@ internal sealed record CampaignSeatGrant(string CampaignId, CampaignActionAudien
     public override string ToString() => $"CampaignSeatGrant({CampaignId},{Audience},{Epoch})";
 }
 
-internal sealed record CampaignSeatCredential(string CampaignId, CampaignActionAudience Audience,
-    long Epoch, string Secret, long ExpiresUnixMs)
+/// <summary>
+/// <c>[GenerateSerializer]</c>/<c>[Id]</c> added for Phase C3a of issue #439: this is the first
+/// use of this type as an Orleans grain-method parameter (<c>ICampaignGrain.SubmitOwnerActionAsync</c>),
+/// which requires a generated codec even for same-process calls -- Orleans grain calls always
+/// (de)serialize their arguments. Purely additive; no behavior change for any existing caller.
+/// </summary>
+[GenerateSerializer]
+internal sealed record CampaignSeatCredential(
+    [property: Id(0)] string CampaignId,
+    [property: Id(1)] CampaignActionAudience Audience,
+    [property: Id(2)] long Epoch,
+    [property: Id(3)] string Secret,
+    [property: Id(4)] long ExpiresUnixMs)
 {
     public override string ToString() => $"CampaignSeatCredential({CampaignId},{Audience},{Epoch})";
 }

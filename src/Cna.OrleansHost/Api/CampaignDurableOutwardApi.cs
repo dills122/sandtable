@@ -5,6 +5,8 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
+using Cna.OrleansHost.Campaigns;
+using Orleans;
 
 namespace Cna.OrleansHost.Api;
 
@@ -764,7 +766,7 @@ internal static class CampaignDurableOutwardApi
                 });
             }));
         api.MapPost("/{campaignId}/actions", async (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) =>
+            IGrainFactory grainFactory, string campaignId) =>
             await Execute(context, async () =>
             {
                 using var document = await ReadBody(context);
@@ -823,50 +825,33 @@ internal static class CampaignDurableOutwardApi
                     throw new JsonException("Invalid Axis priority motorization opening key.");
                 if (stage == "source-cairo-setup" && element != "land.graziani-commonwealth-cairo-setup")
                     throw new JsonException("Invalid Cairo setup opening key.");
-                var result = stage switch
-                {
-                    "pregame-axis-supply" => journal.SubmitPregameAxisSupply(credential, revision, reference),
-                    "pregame-axis-supply-finish" => journal.SubmitPregameAxisSupplyFinish(credential, revision, reference),
-                    "source-axis-dump" => journal.SubmitSourceAxisDump(credential, revision, reference),
-                    "source-commonwealth-supply" => journal.SubmitSourceCommonwealthSupply(credential, revision, reference),
-                    "source-dummy" => journal.SubmitSourceDummy(credential, revision, reference),
-                    "source-motorization" => journal.SubmitSourceMotorization(credential, revision, reference),
-                    "source-unattached-cargo" => journal.SubmitSourceUnattachedCargo(credential, revision, reference),
-                    "source-actions" => journal.SubmitSourceActions(credential, revision, reference),
-                    "source-axis-gt1-supply" => journal.SubmitSourceAxisGt1Supply(credential, revision, reference),
-                    "source-commonwealth-supply-plan" => journal.SubmitSourceCommonwealthSupplyPlan(credential, revision, reference),
-                    "source-autoblinda" => journal.SubmitSourceAutoblinda(credential, revision, reference),
-                    "source-priority-motorization" => journal.SubmitSourcePriorityMotorization(credential, revision, reference),
-                    "source-attached-initial-loads" => journal.SubmitSourceAttachedInitialLoads(credential, revision, reference),
-                    "source-initial-wrecks" => journal.PlaceSourceInitialWreck(credential, revision, reference),
-                    "source-axis-free-setup" => journal.PlaceSourceAxisFreeUnit(credential, revision, reference),
-                    "source-axis-corps-setup" => journal.PlaceSourceAxisCorpsUnit(credential, revision, reference),
-                    "source-maletti-hierarchy" => journal.SubmitSourceMalettiHierarchy(credential, revision, reference),
-                    "source-gt2-correction" => journal.SubmitSourceGt2Correction(credential, revision, reference),
-                    "source-cw-priority-catalog" => journal.SubmitSourceCwPriorityCatalog(credential, revision, reference),
-                    "source-matruh-formation" => journal.SubmitSourceMatruhFormation(credential, revision, reference),
-                    "source-cw-free-guns" => journal.PlaceSourceCwFreeGun(credential, revision, reference),
-                    "source-axis-priority-motorization" => journal.SubmitSourceAxisPriority(credential, revision, reference),
-                    "source-cairo-setup" => journal.SubmitSourceCairoUnit(credential, revision, reference),
-                    "movement" => journal.SubmitOwnerMovement(credential, element, revision, reference),
-                    "combat-selection" => journal.SubmitOwnerCombatSelection(credential, element, revision, reference),
-                    "rba-decline" => journal.SubmitOwnerRbaDecline(credential, element, revision, reference),
-                    "rba-move" => journal.SubmitOwnerRbaMove(credential, element, revision, reference),
-                    "force-assignment" => journal.SubmitOwnerForceSeal(credential, element, revision, reference),
-                    "post-assault-retreat" => journal.SubmitOwnerPostAssaultRetreat(credential, element, revision, reference),
-                    "custody" => journal.SubmitOwnerCustody(credential, element, revision, reference),
-                    "reserve-release" => journal.SubmitOwnerReserveRelease(credential, element, revision, reference),
-                    "cycle-control" => journal.SubmitOwnerCycleControl(credential, revision, reference),
-                    "truck-convoy-pass" => journal.SubmitOwnerTruckConvoyPass(credential, revision, reference),
-                    "post-combat-pass" => journal.SubmitOwnerPostCombatPass(credential, revision, reference),
-                    "second-reserve" => journal.SubmitOwnerSecondReserve(credential, revision, reference),
-                    "second-movement" => journal.SubmitOwnerSecondMovement(credential, element, revision, reference),
-                    "second-movement-completion" => journal.SubmitOwnerSecondMovementCompletion(credential, revision, reference),
-                    "repeat-movement" => journal.SubmitOwnerRepeatMovement(credential, revision, reference),
-                    "repeat-combat-selection" => journal.SubmitOwnerRepeatCombat(
-                        credential, element, revision, reference),
-                    _ => throw new JsonException("Unknown owner stage."),
-                };
+                // Phase C3a of issue #439: every stage below can open or close a combat round
+                // (they all funnel through CampaignDurableAuthorityJournal.Submissions.cs's one
+                // SubmitOwnerActionCore chokepoint), so this dispatch -- and the round-timeout
+                // grain arming/disarming it triggers -- now runs behind CampaignGrain's single-
+                // writer-per-campaign boundary instead of calling the store directly. See
+                // ICampaignGrain's remarks for the full stage-to-store-method mapping (moved
+                // there unchanged) and for which other store calls deliberately still bypass the
+                // grain.
+                var stageKnown = stage is "pregame-axis-supply" or "pregame-axis-supply-finish"
+                    or "source-axis-dump" or "source-commonwealth-supply" or "source-dummy"
+                    or "source-motorization" or "source-unattached-cargo" or "source-actions"
+                    or "source-axis-gt1-supply" or "source-commonwealth-supply-plan"
+                    or "source-autoblinda" or "source-priority-motorization"
+                    or "source-attached-initial-loads" or "source-initial-wrecks"
+                    or "source-axis-free-setup" or "source-axis-corps-setup"
+                    or "source-maletti-hierarchy" or "source-gt2-correction"
+                    or "source-cw-priority-catalog" or "source-matruh-formation"
+                    or "source-cw-free-guns" or "source-axis-priority-motorization"
+                    or "source-cairo-setup" or "movement" or "combat-selection"
+                    or "rba-decline" or "rba-move" or "force-assignment"
+                    or "post-assault-retreat" or "custody" or "reserve-release"
+                    or "cycle-control" or "truck-convoy-pass" or "post-combat-pass"
+                    or "second-reserve" or "second-movement" or "second-movement-completion"
+                    or "repeat-movement" or "repeat-combat-selection";
+                if (!stageKnown) throw new JsonException("Unknown owner stage.");
+                var result = await grainFactory.GetGrain<ICampaignGrain>(campaignId)
+                    .SubmitOwnerActionAsync(stage, credential, element, revision, reference);
                 return result.IsAccepted
                     ? Results.Json(new
                     {

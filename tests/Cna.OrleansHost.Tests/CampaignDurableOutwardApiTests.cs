@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Actions;
@@ -8,12 +9,15 @@ using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.OrleansHost;
 using Cna.OrleansHost.Api;
+using Cna.OrleansHost.Timeouts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Orleans.Hosting;
 
 namespace Cna.OrleansHost.Tests;
 
@@ -28,10 +32,34 @@ public sealed class CampaignDurableOutwardApiTests
         var directory = Path.Combine(Path.GetTempPath(), "sandtable-outward-" + Guid.NewGuid().ToString("N"));
         var journal = CampaignDurableAuthorityJournal.CreateNew(
             Path.Combine(directory, "campaign.sqlite"), OperatorSecret);
+        var store = CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal);
+        // Phase C3a of issue #439: the /{campaignId}/actions route now dispatches through
+        // ICampaignGrain, so this route-level test needs a real Orleans silo, same "real silo, no
+        // mocks" precedent as Timeouts/CampaignRoundTimeoutGrainTests.cs. Built as its own
+        // Host.CreateApplicationBuilder() silo (the pattern already proven in this test project
+        // and in CampaignDurableAuthorityJournalTests.GrainEquivalence.cs) rather than through
+        // this WebApplicationBuilder's own Host property, which does not resolve Orleans'
+        // UseOrleans extension in this project's current SDK/package configuration -- the silo's
+        // IGrainFactory is shared into the web app's own DI container below instead.
+        var siloBuilder = Host.CreateApplicationBuilder();
+        siloBuilder.Services.AddSingleton(store);
+        // See CampaignDurableAuthorityJournalTests.StartOutwardApiSiloAsync's remarks: the
+        // round-timeout grain CampaignGrain may arm/disarm needs this resolvable even when this
+        // test never exercises deadline behavior itself.
+        siloBuilder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
+        siloBuilder.UseOrleans(silo =>
+        {
+            silo.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
+            silo.AddReminders();
+            silo.UseInMemoryReminderService();
+        });
+        var silo = siloBuilder.Build();
+        await silo.StartAsync(TestContext.Current.CancellationToken);
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
-        builder.Services.AddSingleton(CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal));
+        builder.Services.AddSingleton(store);
+        builder.Services.AddSingleton(silo.Services.GetRequiredService<IGrainFactory>());
         await using var app = builder.Build();
         app.MapDurableCampaignApi();
         await app.StartAsync(TestContext.Current.CancellationToken);
@@ -202,6 +230,8 @@ public sealed class CampaignDurableOutwardApiTests
         finally
         {
             await app.StopAsync(TestContext.Current.CancellationToken);
+            await silo.StopAsync(TestContext.Current.CancellationToken);
+            silo.Dispose();
             Directory.Delete(directory, recursive: true);
         }
     }
@@ -284,6 +314,13 @@ public sealed class CampaignDurableOutwardApiTests
         Assert.True(reader.Read());
         return Enumerable.Range(0, reader.FieldCount).Select(index =>
             Convert.ToString(reader.GetValue(index), System.Globalization.CultureInfo.InvariantCulture)!).ToArray();
+    }
+
+    private static int FreePort()
+    {
+        using var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        return ((IPEndPoint)listener.LocalEndpoint).Port;
     }
 
     private static StringContent Body(string json) => new(json, Encoding.UTF8, "application/json");

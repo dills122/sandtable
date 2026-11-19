@@ -2,6 +2,7 @@ using Cna.Core.Campaigns;
 using Cna.OrleansHost;
 using Cna.OrleansHost.Api;
 using Cna.OrleansHost.Persistence;
+using Cna.OrleansHost.Timeouts;
 using Orleans.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +34,18 @@ if (!string.IsNullOrWhiteSpace(campaignJournalDirectory))
     builder.Services.AddSingleton(services => new CampaignDurableAuthorityJournalStore(
         campaignJournalDirectory, operatorSecret,
         services.GetRequiredService<TimeProvider>(), services.GetRequiredService<IContentPackV6Resolver>()));
-    builder.Services.AddHostedService<CampaignCombatTimeoutService>();
+    // Phase C3a of issue #439 (docs/work/plans/2026-11-18-postgres-migration-design.md §4.2):
+    // real round-deadline enforcement now runs through CampaignGrain-armed
+    // CampaignRoundTimeoutGrain instances (one per campaign+round-kind), with this sink as the
+    // bridge to the still-SQLite journal (see SqliteCampaignRoundDeadlineSink's own remarks).
+    // CampaignCombatTimeoutService's cross-campaign sweep is retired (no longer registered) now
+    // that equivalence with this grain-based path is proven for all seven round kinds -- see
+    // tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.GrainEquivalence.cs and
+    // this phase's PR description. The class itself stays (not deleted): the equivalence tests
+    // still construct it directly as their sweep-path baseline, and
+    // tests/Cna.OrleansHost.FoundationChild's own cross-process harness still calls SweepOnce
+    // directly to drive its fixture.
+    builder.Services.AddSingleton<ICampaignRoundDeadlineSink, SqliteCampaignRoundDeadlineSink>();
 }
 // Phase C4 of issue #439 (docs/work/plans/2026-11-18-postgres-migration-design.md §4.1):
 // Microsoft.Orleans.Clustering.AdoNet / Microsoft.Orleans.Reminders.AdoNet against PostgreSQL
