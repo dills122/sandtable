@@ -521,6 +521,9 @@
     "Cna.Core.Tests.Hosting.CampaignHostAdapterTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Hosting.CampaignHostAdapterResumeTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Observations.CampaignContactCombatSelectionCutTests": {
       "parts": 1
     },
@@ -4445,7 +4448,10 @@
     "2db69ad346dbbe39109b450a146f418a6f07016ead89392a6193463d8b58975a": 1,
     "23f0322e8a890610783524745878157ada936386059f0efae0a67b160fc32ecd": 1,
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": 6,
-    "00dc8b65f8fb78452aa4492509dfad99dcdef00f6d27c1c7eec51a844112b9f2": 1
+    "00dc8b65f8fb78452aa4492509dfad99dcdef00f6d27c1c7eec51a844112b9f2": 1,
+    "4bb4513b9c18ecf3a0b084a366bea20cb46f06ac4eed5e7e17a77ab38b1c23f7": 407,
+    "3e260d665539433177791ab2f803f05cf3875ab3ebbd50a139cc4a1b2b019419": 116,
+    "4966acacb3c3b99409137b76b168810185927fb0b83f32f1b733f746cbab55f2": 163
   },
   "provisional_rows": {
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new Cna1979HistoricalMapTests Malta column-00 NeighborsOf rows, pending hosted CI calibration",
@@ -4830,17 +4836,19 @@
     "aeb9bf257db8cf45baafab99b15ce7ac063824a45589fe59dc5bd58dfabeacd5": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
     "b90ce75908ec54c5279cf863164c6ad3fdc9c6e1c3043fb95bdff6ebf18d0257": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
     "2db69ad346dbbe39109b450a146f418a6f07016ead89392a6193463d8b58975a": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
-    "23f0322e8a890610783524745878157ada936386059f0efae0a67b160fc32ecd": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration"
+    "23f0322e8a890610783524745878157ada936386059f0efae0a67b160fc32ecd": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new 6th Australian Division close-assault rating rows, pending hosted CI calibration",
+    "4bb4513b9c18ecf3a0b084a366bea20cb46f06ac4eed5e7e17a77ab38b1c23f7": "2026-11-19 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class '*CampaignHostAdapterResumeTests*', dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CampaignHostAdapterResumeTests rows (resume-capable ImportStartedStream entry point, Phase B of #439), pending hosted CI calibration",
+    "3e260d665539433177791ab2f803f05cf3875ab3ebbd50a139cc4a1b2b019419": "2026-11-19 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class '*CampaignHostAdapterResumeTests*', dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CampaignHostAdapterResumeTests rows (resume-capable ImportStartedStream entry point, Phase B of #439), pending hosted CI calibration",
+    "4966acacb3c3b99409137b76b168810185927fb0b83f32f1b733f746cbab55f2": "2026-11-19 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class '*CampaignHostAdapterResumeTests*', dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CampaignHostAdapterResumeTests rows (resume-capable ImportStartedStream entry point, Phase B of #439), pending hosted CI calibration"
   },
   "supplemental_measurements": {
-    "source": "R03 native local .NET 10 Microsoft.Testing.Platform XML on isolated feature branch",
-    "rows": 307,
+    "source": "Local .NET 10 Microsoft.Testing.Platform XML, CampaignHostAdapterResumeTests (Phase B of #439)",
+    "rows": 3,
     "classes": [
-      "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatBreakdownCompletionTests",
-      "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatBreakdownParityTests"
+      "Cna.Core.Tests.Hosting.CampaignHostAdapterResumeTests"
     ],
     "configuration": "Release",
     "hosted": false,
-    "note": "Existing baseline rows and weights preserved; new rows measured in successful local XML reports. Hosted CI remains a separate gate."
+    "note": "New rows measured in a successful local XML report; existing baseline rows and weights preserved. Hosted CI remains a separate gate."
   }
 }
