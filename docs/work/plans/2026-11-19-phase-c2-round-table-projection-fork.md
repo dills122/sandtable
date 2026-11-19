@@ -1,10 +1,31 @@
 # Phase C2 (#439) fork: the seven round tables are not pure event folds
 
-**Status:** stop-and-report, per this project's standing discipline (issue #439's "Phase C
-breakdown" comment: "stop-and-report on genuine architectural forks rather than guessing").
-Written during Phase C2 implementation (campaign-state projection landed in the same change;
-see `src/Cna.OrleansHost/Persistence/CampaignStateProjection.cs`). No round-table projection code
-accompanies this document -- that is exactly the piece being held pending a decision.
+**Status: resolved.** The project owner reviewed this document (via the orchestration session,
+after the implementer's stop-and-report below) and explicitly chose **option 2 in §3**: build the
+seven round-table projections covering only the event-derivable fields (status, round-key hash
+bindings, `configuration_hash` where the stream happens to carry it), deliberately excluding
+`opened_ms`/`deadline_ms`/`high_water_ms`. The confirmed rationale: Phase C4's planned design
+(design doc §4.2) is an in-memory `RegisterGrainTimer` for real-time precision plus an Orleans
+Reminder as a durability backstop -- once C4 lands, live deadline state lives in the owning
+grain's own memory, not in a round-table read model, so these projections only ever need to own
+the part that *is* a durable record of what happened: status and bindings. Implemented in
+`src/Cna.OrleansHost/Persistence/CampaignRoundProjections.cs`, proven against real Postgres in
+`tests/Cna.OrleansHost.Tests/Persistence/CampaignRoundProjectionsTests.cs`. The original
+stop-and-report (below, unedited) is kept for the record, per this project's convention of
+keeping forks visible rather than deleting them once resolved -- including the one additional,
+smaller gap found while implementing the decision (§6 below): `configuration_hash` turned out to
+be only *partially* event-derivable too, same category of gap as the timing columns, just
+per-campaign-constant rather than continuously varying, and is handled the same way (populated
+when the stream happens to carry it, `null` otherwise) rather than silently assumed complete.
+
+---
+
+**Original status (superseded above):** stop-and-report, per this project's standing discipline
+(issue #439's "Phase C breakdown" comment: "stop-and-report on genuine architectural forks rather
+than guessing"). Written during Phase C2 implementation (campaign-state projection landed in the
+same change; see `src/Cna.OrleansHost/Persistence/CampaignStateProjection.cs`). No round-table
+projection code accompanies this document -- that is exactly the piece being held pending a
+decision.
 
 ## 1. What Phase C2 asked for
 
@@ -111,3 +132,60 @@ phase's implementer.
 genesis-vs-resumed-batches equivalence item 3 of this phase asked for. The seven round-table
 projections are held pending a decision among §3's three options (or an explicit acceptance of
 §4's "C4 will obsolete the timing columns anyway").
+
+---
+
+## 6. Resolution addendum — option 2 implemented, plus one more gap found along the way
+
+**Decision, as given to the implementer:** "go with option 2... User confirmed explicitly that
+this is intentional given Phase C4's planned timer+reminder hybrid (in-memory
+`RegisterGrainTimer` for real-time precision, Orleans Reminders as a durability backstop) — once
+C4 lands, live deadline state lives in the grain's memory, not in a round-table projection, so the
+projection only needs to own the event-derivable parts." This matches §4's prediction above
+exactly, now made explicit and accepted rather than assumed.
+
+**What got built.** Seven projections in `src/Cna.OrleansHost/Persistence/CampaignRoundProjections.cs`
+— `SelectionRoundsProjection`, `ForceRoundsProjection`, `RbaRoundsProjection`,
+`CycleRoundsProjection`, `ReserveRoundsProjection`, `CustodyRoundsProjection`,
+`RetreatRoundsProjection` — each a `SingleStreamProjection<TDoc, string>` holding one document per
+campaign, keyed internally by that round kind's own hash (`entry_hash`/`decline_event_hash`/
+`barrage_event_hash`/`release_event_hash`/`settlement_hash`/`result_hash`), carrying a shared
+`RoundEntry(Status, ConfigurationHash, EntryStateVersion, DecisionActionId)` shape. Registered
+inline alongside `CampaignStateProjection` in `CampaignEventStreamSchema.Configure`.
+
+**The "-unavailable" cases are handled uniformly.** Every one of the seven tables has exactly one
+reason string (`force-unavailable`, `rba-unavailable`, `selection-unavailable`,
+`cycle-control-unavailable`, `reserve-release-unavailable`, `custody-unavailable`,
+`retreat-unavailable`) meaning "timing was unavailable, so the hand-rolled table never got a row
+at all" (confirmed by reading every `InitializeXRound` function directly: each skips its `INSERT`
+entirely on that path). The projections reproduce this by optimistically adding a `"collecting"`
+entry at the round's opening event, then deleting it (instead of marking it terminal) if the
+closing event reports the unavailable reason — matching the real table's "never retained" outcome
+without needing to look ahead across events, which a one-event-at-a-time `Apply` cannot do anyway.
+Reserve rounds have one more such case ("empty": the round auto-completes with no explicit release
+choice, also never persisted in the hand-rolled table), handled the same way.
+
+**New, smaller gap found while implementing this, flagged rather than silently papered over:**
+`configuration_hash` turned out to be in the *same category* as the timing columns, just
+per-campaign-constant instead of continuously varying. The hand-rolled tables set it at round-open
+time from the campaign's live `authority.Timing.Hash` (read from the `campaigns` table, not from
+any per-step event) — re-confirmed by grep: the accepted-step stream only carries
+`configurationHash` explicitly inside each table's own timeout/cancellation event JSON, never on
+the ordinary completion path. These projections populate `RoundEntry.ConfigurationHash` exactly
+when the stream happens to carry it (i.e., for a round that timed out or was cancelled) and leave
+it `null` otherwise — not fabricated, not silently assumed complete. A consumer that needs
+`configuration_hash` for *every* round, including ones that completed normally, still needs the
+campaign's own stored timing configuration; that was true before this phase and remains true
+after it. See `CampaignRoundProjections.cs`'s own type-level remarks for the full detail.
+
+**Verification.** `tests/Cna.OrleansHost.Tests/Persistence/CampaignRoundProjectionsTests.cs`
+against real Postgres (Testcontainers): one fold-correctness test per table (entry through to its
+terminal status), the `-unavailable`/`empty` deletion behavior exercised on four of the seven
+(Force, Rba, Cycle, Reserve), configuration-hash capture on cancellation/timeout exercised on two
+(Force, Retreat), genesis-vs-resumed-batch equivalence demonstrated once (Force — the pattern is
+identical for the other five JSON-keyed tables, already proved once for the campaign-state
+projection, not repeated six more times), and Selection proven against a real campaign driven
+through the public `CampaignHostAdapter` API (its entry detection calls Cna.Core's own
+`QueryNativeCombatSelectionEntryBinding`, which needs a real engine-produced snapshot/breakdown
+payload no outside-Cna.Core test can hand-fabricate — the same `internal`-type boundary
+`CampaignAcceptedStepEvent`'s own remarks document).

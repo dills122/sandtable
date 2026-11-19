@@ -109,6 +109,19 @@ public static class CampaignEventStreamSchema
         // ProjectionGraph.Add(IProjectionSource, ProjectionLifecycle, ...) call below is what
         // actually wires up a distinct projection class.
         options.Projections.Add(new CampaignStateProjection(), ProjectionLifecycle.Inline);
+
+        // The seven round-table projections (same phase, same Inline lifecycle). Each covers only
+        // the event-derivable, non-timing fields -- see CampaignRoundProjections.cs's remarks and
+        // docs/work/plans/2026-11-19-phase-c2-round-table-projection-fork.md for why
+        // opened_ms/deadline_ms/high_water_ms are intentionally excluded (a deliberate,
+        // user-confirmed scope decision, not an oversight).
+        options.Projections.Add(new SelectionRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new ForceRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new RbaRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new CycleRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new ReserveRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new CustodyRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new RetreatRoundsProjection(), ProjectionLifecycle.Inline);
     }
 
     /// <summary>
