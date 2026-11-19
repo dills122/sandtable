@@ -10,7 +10,9 @@ namespace Cna.OrleansHost.Api;
 
 /// <summary>
 /// Raised when a working set's flush loses an optimistic-concurrency race (stream version, stream
-/// creation, or any host-state document version). Phase C3b's chosen mapping: an
+/// creation, or any host-state document version). The store first retries the whole unit of work
+/// against fresh state (<see cref="CampaignDurableAuthorityJournalStore.RunAsync{T}"/>, reproducing
+/// SQLite's serialization); only when retries are exhausted does this surface, as an
 /// <see cref="InvalidOperationException"/> carrying the exact message SQLite's head compare-and-swap
 /// failure used ("Campaign head changed before commit."), so every existing caller -- including
 /// <c>CampaignDurableOutwardApi</c>'s 409 "unavailable" mapping -- treats it exactly as before.
@@ -46,6 +48,13 @@ internal sealed class CampaignJournalMartenBackend
     internal TimeProvider Clock { get; }
     internal IContentPackV6Resolver? ContentResolver { get; }
     internal Func<int, byte[]> RandomBytes { get; }
+
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<IDocumentStore, SemaphoreSlim>
+        HarnessGates = new();
+
+    /// <summary>Per-database serialization gate for the synchronous test harness only (see
+    /// <see cref="CampaignDurableAuthorityJournal.ForMartenSynchronousHarness"/>).</summary>
+    internal SemaphoreSlim HarnessGate => HarnessGates.GetValue(Store, static _ => new SemaphoreSlim(1, 1));
 
     /// <summary>
     /// Builds the backend, ensuring the host-wide operator capability document exists -- the

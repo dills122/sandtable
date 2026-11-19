@@ -96,14 +96,46 @@ internal sealed class CampaignDurableAuthorityJournalStore
     /// store: the existing per-campaign file instance, synchronously. Marten store: a fresh working
     /// set of that one campaign; whatever the journal method committed is flushed back even when it
     /// then throws (several journal paths deliberately commit a timeout and then reject the caller's
-    /// request), and the method's own exception is rethrown afterwards. A flush that loses an
-    /// optimistic-concurrency race throws <see cref="CampaignJournalConcurrencyException"/> instead.
+    /// request), and the method's own exception is rethrown afterwards.
     /// </summary>
+    /// <remarks>
+    /// <b>Optimistic-concurrency conflicts are retried, reproducing SQLite's serialization.</b>
+    /// Under SQLite a second writer's <c>BEGIN IMMEDIATE</c> waited for the first to commit and then
+    /// ran against the committed state. Here, a flush that loses an optimistic-concurrency race
+    /// discards that attempt entirely (nothing of it reached Postgres) and re-runs the same journal
+    /// method against a freshly loaded working set -- i.e. serialized after the winner, with the
+    /// same deterministic journal logic. Only after <see cref="MaxConcurrencyAttempts"/> lost races
+    /// does <see cref="CampaignJournalConcurrencyException"/> surface (an
+    /// <see cref="InvalidOperationException"/> carrying SQLite's own head-CAS message, so callers
+    /// map it to 409 exactly as before). Found by the full journal suite run against Marten
+    /// (<c>ConcurrentScheduledArrivalRetriesCommitOnce</c>: two concurrent idempotent retries must
+    /// both receive the one committed reply, not a conflict).
+    /// </remarks>
     internal async Task<T> RunAsync<T>(string campaignId, bool createIfMissing,
         Func<CampaignDurableAuthorityJournal, T> body, CancellationToken cancellationToken = default)
     {
         if (marten is null) return body(JournalFor(campaignId, createIfMissing));
         RequireSafeCampaignId(campaignId);
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return await RunOnceAsync(campaignId, createIfMissing, body, cancellationToken).ConfigureAwait(false);
+            }
+            catch (CampaignJournalConcurrencyException) when (attempt < MaxConcurrencyAttempts)
+            {
+                // Lost the race; nothing of this attempt was persisted. Re-run against fresh state.
+            }
+        }
+    }
+
+    /// <summary>Attempts per call before an optimistic-concurrency conflict surfaces (see <see cref="RunAsync"/>).</summary>
+    internal const int MaxConcurrencyAttempts = 8;
+
+    private async Task<T> RunOnceAsync<T>(string campaignId, bool createIfMissing,
+        Func<CampaignDurableAuthorityJournal, T> body, CancellationToken cancellationToken)
+    {
+        var marten = this.marten!;
         using var workingSet = await marten.OpenAsync([campaignId], () => marten.RandomBytes(32), cancellationToken)
             .ConfigureAwait(false);
         if (!createIfMissing && !workingSet.CampaignExists(campaignId))
@@ -346,9 +378,11 @@ internal sealed class CampaignDurableAuthorityJournalStore
     /// Async twin of <see cref="RedeemSeatGrant"/>. Seat grants are single-use: under SQLite two
     /// racing redeemers were serialized by <c>BEGIN IMMEDIATE</c> and the loser saw a consumed grant
     /// and got <see langword="null"/>. Under Marten both may read the unconsumed grant, but only one
-    /// seat-document write survives optimistic concurrency; the loser's
-    /// <see cref="CampaignJournalConcurrencyException"/> is mapped back to exactly that
-    /// <see langword="null"/> outcome here.
+    /// seat-document write survives optimistic concurrency. The loser is retried by
+    /// <see cref="RunAsync"/> against fresh state, sees the consumed grant and returns
+    /// <see langword="null"/> -- SQLite's outcome. Should retries ever be exhausted, the surfacing
+    /// <see cref="CampaignJournalConcurrencyException"/> is mapped to that same
+    /// <see langword="null"/> here rather than a 409.
     /// </summary>
     internal async Task<CampaignSeatCredential?> RedeemSeatGrantAsync(CampaignSeatGrant grant)
     {
