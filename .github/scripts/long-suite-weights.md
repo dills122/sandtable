@@ -900,3 +900,25 @@ hosted exact-head CI remains the acceptance gate.
 | `GrazianiSourceAuthorityTests.DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn` (renamed; replaces `DescribeUnresolvedSourcesNamesTheOneRealRemainingRatingGap`) | `3523b0178dd2` | 69114 |
 
 Commands: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignSourceGroupedZocTests --report-xunit-xml --results-directory /private/tmp/sandtable-pr414-weights-timing` (29 passed, 0 failed, 0 skipped) and `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method "*DescribeUnresolvedSourcesNoLongerNamesAnyRatingGapNowThatArescaIsWiredIn*" --report-xunit-xml --results-directory /private/tmp/sandtable-pr414-graziani-timing` (1 passed, 0 failed, 0 skipped). `IntegratingEveryAdmittedClusterBeforeOwnerFinalizationRevealsRealRemainingBlockers` (same name, assertions updated from 4 to 3 blockers) was also reconfirmed passing and its existing row hash left unchanged per the existing-entries-preserved convention. `python3 .github/scripts/long_suite_partition_test.py` (35 tests) passed locally against the merged manifest.
+
+## Resume-capable `ImportStartedStream` entry point (Phase B of #439, 2026-11-19)
+
+Phase B of issue #439 (the snapshotting design doc's §5.3 `Cna.Core` changes,
+storage-agnostic) refactors `CampaignHostAdapter.ImportStartedStream` into a thin
+genesis-seed check plus a shared `AdmitAcceptedStepsStream` fold, and adds a new
+public `CampaignHostAdapter.ImportResumed` entry point that seeds the same fold from
+an already-constructed `ExerciseSession` plus a tail-only `steps` list instead of a
+fresh `Create(request, resolver)` call. `Import`/`ImportWithContentResolver`/
+`ImportPregameSource`/`ImportPregameSourceStream` are unchanged call sites into the
+same shared fold — zero behavior change, confirmed by the existing
+`CampaignHostAdapterTests` passing unmodified. Adds one new class,
+`CampaignHostAdapterResumeTests`, with three new `[Fact]` rows (one ordinary suite
+part); no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `CampaignHostAdapterResumeTests.ResumedTailReplayMatchesFullGenesisReplayAtCleanBoundary` | `4bb4513b9c18` | 407 |
+| `CampaignHostAdapterResumeTests.ResumedImportRejectsTamperedTailStepExactlyLikeFreshReplay` | `3e260d665539` | 116 |
+| `CampaignHostAdapterResumeTests.ResumedImportValidatesContactRecordsLikeFreshReplayAndRejectsTampering` | `4966acacb3c3` | 163 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class '*CampaignHostAdapterResumeTests*' --report-xunit-xml --results-directory <local-dir>` (3 passed, 0 failed, 0 skipped) on a macOS arm64 .NET 10 Release local run on 2026-11-19 — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. `python3 .github/scripts/local_tests.py fast-01 --dry-run` (full live discovery across `Cna.Core.Tests` plus `make_plan`) and `python3 .github/scripts/long_suite_partition_test.py` (35 tests) both passed locally against the merged manifest.

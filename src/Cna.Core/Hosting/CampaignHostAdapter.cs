@@ -2707,6 +2707,33 @@ public static class CampaignHostAdapter
             steps.Select((step, index) => (step, stepContactRecords?[index])), initialContactRecords, timing, false);
     }
 
+    /// <summary>
+    /// Re-adjudicates only the tail of a trusted private transcript, starting from an
+    /// already-constructed clean-boundary <see cref="ExerciseSession"/> seed (e.g. a verified
+    /// snapshot resumed by a caller elsewhere) instead of a fresh <see cref="Create"/> call.
+    /// The caller is responsible for having independently verified <paramref name="seedSession"/>
+    /// itself and for passing only the steps after the seed's position — this method performs no
+    /// deserialization and does not re-derive the seed from anything. <paramref name="steps"/>
+    /// still goes through the exact same admission switch as <see cref="ImportStartedStream"/>'s
+    /// from-genesis replay (via the shared <see cref="AdmitAcceptedStepsStream"/>), so resuming
+    /// changes only where the fold starts, not how each subsequent step is admitted.
+    /// </summary>
+    public static CampaignHostImportResult ImportResumed(
+        ExerciseSession seedSession,
+        IReadOnlyList<CampaignHostAcceptedStep> steps,
+        IReadOnlyList<byte[]>? initialContactRecords = null,
+        IReadOnlyList<IReadOnlyList<byte[]>>? stepContactRecords = null,
+        CampaignDecisionTimingConfigurationV1? timing = null)
+    {
+        ArgumentNullException.ThrowIfNull(seedSession);
+        ArgumentNullException.ThrowIfNull(steps);
+        if ((initialContactRecords is null) != (stepContactRecords is null)
+            || (stepContactRecords is not null && stepContactRecords.Count != steps.Count))
+            return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+        return AdmitAcceptedStepsStream(seedSession,
+            steps.Select((step, index) => (step, stepContactRecords?[index])), initialContactRecords, timing, false);
+    }
+
     private static CampaignHostImportResult ImportStartedStream(
         ExerciseStartResult started, ReadOnlyMemory<byte> creationEvent, ReadOnlyMemory<byte> initialSnapshot,
         IEnumerable<(CampaignHostAcceptedStep Step, IReadOnlyList<byte[]>? Contacts)> steps,
@@ -2717,7 +2744,20 @@ public static class CampaignHostAdapter
             || !initialSnapshot.Span.SequenceEqual(started.InitialSnapshotBytes))
             return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
 
-        var session = started.Session!;
+        return AdmitAcceptedStepsStream(started.Session!, steps, initialContactRecords, timing, sourceOnly);
+    }
+
+    /// <summary>
+    /// Folds <paramref name="steps"/> forward from <paramref name="session"/> through the shared
+    /// step-admission switch, used identically by a from-genesis replay
+    /// (<see cref="ImportStartedStream"/>, seeded by a fresh <see cref="Create"/> call) and by a
+    /// resumed replay (<see cref="ImportResumed"/>, seeded by an already-constructed session).
+    /// </summary>
+    private static CampaignHostImportResult AdmitAcceptedStepsStream(
+        ExerciseSession session,
+        IEnumerable<(CampaignHostAcceptedStep Step, IReadOnlyList<byte[]>? Contacts)> steps,
+        IReadOnlyList<byte[]>? initialContactRecords, CampaignDecisionTimingConfigurationV1? timing, bool sourceOnly)
+    {
         if (initialContactRecords is not null
             && !ContactRecordsMatch(session.CurrentContacts.Records, initialContactRecords))
             return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidCreation);
