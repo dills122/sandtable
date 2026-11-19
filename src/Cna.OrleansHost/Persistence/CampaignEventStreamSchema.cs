@@ -1,5 +1,6 @@
 using System.Globalization;
 using JasperFx.Events;
+using JasperFx.Events.Projections;
 using Marten;
 
 namespace Cna.OrleansHost.Persistence;
@@ -93,6 +94,34 @@ public static class CampaignEventStreamSchema
         ArgumentNullException.ThrowIfNull(options);
         options.Events.StreamIdentity = StreamIdentity.AsString;
         options.Events.AddEventType<CampaignAcceptedStepEvent>();
+
+        // Phase C2 (docs/work/plans/2026-11-18-postgres-migration-design.md §3.2): the
+        // campaign-state projection replacing the hand-rolled snapshot mechanism. Inline means
+        // Marten updates CampaignStateDocument in the same transaction as the event append.
+        // Verified empirically against Marten 9.62.0's actual behavior (its own XML doc comments
+        // are not enough here -- same discipline as this file's Append/expectedVersion remarks):
+        // ProjectionOptions.Snapshot<TDoc>(SnapshotLifecycle) registers a *self-aggregating*
+        // projection, which requires the conventional Create/Apply methods to live on TDoc itself
+        // -- it never references a separate SingleStreamProjection<TDoc,TId> subclass, so
+        // CampaignStateProjection's own Create/Apply methods were silently never consulted and
+        // registration failed at runtime with "No matching conventional Apply/Create/ShouldDelete
+        // methods for the CampaignStateDocument aggregate." The inherited
+        // ProjectionGraph.Add(IProjectionSource, ProjectionLifecycle, ...) call below is what
+        // actually wires up a distinct projection class.
+        options.Projections.Add(new CampaignStateProjection(), ProjectionLifecycle.Inline);
+
+        // The seven round-table projections (same phase, same Inline lifecycle). Each covers only
+        // the event-derivable, non-timing fields -- see CampaignRoundProjections.cs's remarks and
+        // docs/work/plans/2026-11-19-phase-c2-round-table-projection-fork.md for why
+        // opened_ms/deadline_ms/high_water_ms are intentionally excluded (a deliberate,
+        // user-confirmed scope decision, not an oversight).
+        options.Projections.Add(new SelectionRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new ForceRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new RbaRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new CycleRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new ReserveRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new CustodyRoundsProjection(), ProjectionLifecycle.Inline);
+        options.Projections.Add(new RetreatRoundsProjection(), ProjectionLifecycle.Inline);
     }
 
     /// <summary>
