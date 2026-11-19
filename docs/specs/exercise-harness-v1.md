@@ -97,11 +97,21 @@ unsupported.
 
 ## Commands
 
+> **Runnable fixtures after the Breakdown migration.** The `*.v2.json` fixtures and the
+> non-Breakdown `*.paired.v1.json` fixtures named in the prose below are frozen historical inputs:
+> they are retained byte-for-byte for identity history, and admission now rejects them with
+> `manifest-invalid` (exit 2) before any campaign is created
+> (`FrozenHistoricalFixtureIsRejectedBeforeCurrentExecution`). The command blocks in this section
+> use their current `*.breakdown.v1.json` counterparts, which run against the
+> `rules-lab.breakdown.*` setups. Every other `<name>.v2.json` maps to `<name>.breakdown.v1.json`,
+> and every `<name>.paired.v1.json` maps to `<name>.paired.breakdown.v1.json`, in the same
+> directory. Accepted-action and check counts quoted below describe the historical v2 runs.
+
 The implemented single-Exercise command is:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.v2.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -110,7 +120,7 @@ a clean baseline and therefore fails closed unless the checkout has no tracked o
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v2.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -162,7 +172,7 @@ The checked command is:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj --no-build -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.movement.serial.v2.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.movement.serial.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -187,7 +197,7 @@ The implemented serial-Maneuver command uses the checked Task 014 serial fixture
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v2.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -199,7 +209,7 @@ The optional paired command uses the same CLI grammar with its separate manifest
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-policy.paired.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
