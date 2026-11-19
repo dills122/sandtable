@@ -13,18 +13,29 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
         CampaignCombatSelectionFrame selection,
         CampaignContentContext context,
         CampaignContactJournal contacts,
-        IReadOnlyList<object> priorHistory)
+        IReadOnlyList<object> priorHistory,
+        CampaignCombatAmmunitionLedgerV1? ammunitionSeed)
     {
         Selection = selection;
         Context = context;
         Contacts = contacts;
         PriorHistory = priorHistory;
+        AmmunitionSeed = ammunitionSeed;
     }
 
     internal CampaignCombatSelectionFrame Selection { get; }
     internal CampaignContentContext Context { get; }
     internal CampaignContactJournal Contacts { get; private set; }
     private IReadOnlyList<object> PriorHistory { get; }
+    // Perf seeding path (Phase 1 of #436): when the caller (ExerciseSession)
+    // already knows an ammunition ledger current as of PriorHistory, this
+    // lets the Result step below seed from it with an empty fold instead
+    // of rescanning PriorHistory from genesis. Null (the default, used by
+    // every caller this PR does not touch -- CampaignNativePostRepeatRuntime
+    // and the from-genesis ReconstructOne/test callers) keeps the original
+    // full-history fold, so this is purely additive: no existing caller's
+    // behavior changes.
+    private CampaignCombatAmmunitionLedgerV1? AmmunitionSeed { get; }
     internal CampaignNativeCombatBarrageV14? Barrage { get; private set; }
     private readonly List<CampaignNativeCombatRetreatMoveV16> retreatMoves = [];
     private readonly List<CampaignWorldSnapshotV6> retreatWorlds = [];
@@ -74,7 +85,8 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
         CampaignContentContext context,
         CampaignContactJournal contactsAfterSelection,
         IReadOnlyList<object> priorHistory,
-        IEnumerable<object> events)
+        IEnumerable<object> events,
+        CampaignCombatAmmunitionLedgerV1? ammunitionSeed = null)
     {
         ArgumentNullException.ThrowIfNull(events);
         var retained = events.ToArray();
@@ -89,7 +101,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             throw new InvalidCampaignHistoryException(
                 "Repeated assault lacks accepted same-cut contact authority.");
         var runtime = new CampaignNativeRepeatAssaultRuntime(frame, context,
-            contactsAfterSelection, priorHistory);
+            contactsAfterSelection, priorHistory, ammunitionSeed);
         foreach (var item in retained)
             runtime.Apply(item);
         return runtime;
@@ -223,8 +235,9 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             if (item is not CampaignNativeCombatAssaultResultV22 result)
                 throw new InvalidCampaignHistoryException(
                     "Repeated assault needs an accepted Close Assault result.");
-            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
-                Context, PriorHistory);
+            var ammunition = AmmunitionSeed is { } seeded
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(seeded, [])
+                : CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context, PriorHistory);
             var inputs = CampaignNativeCombatAssaultInputs.Create(Selection,
                 ForceCompletion!, AntiArmor, seals, RetreatWorld ?? Selection.World,
                 Context, ammunition);

@@ -4444,7 +4444,8 @@ public static class CampaignExercises
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
             var contacts = session.CurrentContacts.AdvanceNativeCombatSelection(selected);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
-                session.CurrentHistory.Add(selected.Decision), contacts, selected);
+                session.CurrentHistory.Add(selected.Decision), contacts, selected,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var receipt = new CampaignActionAcceptanceReceipt(session.CurrentSnapshot.CampaignId,
                 session.CurrentSnapshot.StateVersion, selected.StateVersion,
                 selected.Decision.PositionId, submission.Audience, submission.ActionId);
@@ -4549,7 +4550,8 @@ public static class CampaignExercises
             {
                 var selected = new CampaignNativeCombatDecisionStateV12(session.CurrentSnapshot, initial);
                 var contacts = session.CurrentContacts.AdvanceNativeCombatSelection(selected);
-                next = new ExerciseSession(session.CurrentSnapshot, session.Context, session.CurrentHistory.Add(initial), contacts, selected);
+                next = new ExerciseSession(session.CurrentSnapshot, session.Context, session.CurrentHistory.Add(initial), contacts, selected,
+                    ammunitionLedger: session.CurrentAmmunitionLedger);
                 bytes = initial.SerializeCanonical();
                 state = selected.SerializeCanonical();
                 evidence = initial.Evidence;
@@ -4584,7 +4586,8 @@ public static class CampaignExercises
             var completion = CampaignNativeCombatNoAttackCompletionV13.Create(selected, session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
-                session.CurrentHistory.Add(completion), contacts, selected, completion);
+                session.CurrentHistory.Add(completion), contacts, selected, completion,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 selected.StateVersion, completion.StateVersion,
                 completion.NextPositionId, CampaignActionAudience.System,
@@ -4662,7 +4665,8 @@ public static class CampaignExercises
             var barrage = CampaignNativeCombatBarrageV14.Create(selected, session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatBarrage(barrage);
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
-                session.CurrentHistory.Add(barrage), contacts, selected, combatBarrage: barrage);
+                session.CurrentHistory.Add(barrage), contacts, selected, combatBarrage: barrage,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 selected.StateVersion, barrage.StateVersion, barrage.NextPositionId,
                 CampaignActionAudience.System,
@@ -4728,7 +4732,8 @@ public static class CampaignExercises
                 combatRetreatMove: session.CurrentCombatRetreatMove,
                 combatRetreatWorld: session.CurrentCombatRetreatWorld,
                 combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
-                combatRetreatMoves: session.CurrentCombatRetreatMoves);
+                combatRetreatMoves: session.CurrentCombatRetreatMoves,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 decline.PriorStateVersion, decline.StateVersion, decline.PositionId,
                 submission.Audience, submission.ActionId);
@@ -4861,7 +4866,8 @@ public static class CampaignExercises
                 combatRetreatWorld: session.CurrentCombatRetreatWorld,
                 combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
                 combatRetreatMoves: session.CurrentCombatRetreatMoves,
-                combatForceSeals: seals);
+                combatForceSeals: seals,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var previous in session.CurrentCombatForceSeals)
                 priorState = previous.SerializeStateCanonical(priorState);
@@ -4909,7 +4915,8 @@ public static class CampaignExercises
                 combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
                 combatRetreatMoves: session.CurrentCombatRetreatMoves,
                 combatForceSeals: session.CurrentCombatForceSeals,
-                combatForceCompletion: completion);
+                combatForceCompletion: completion,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var seal in session.CurrentCombatForceSeals)
                 priorState = seal.SerializeStateCanonical(priorState);
@@ -5045,7 +5052,8 @@ public static class CampaignExercises
                     combatRetreatWorld: session.CurrentCombatRetreatWorld,
                     combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
                     combatRetreatMoves: session.CurrentCombatRetreatMoves,
-                    combatRbaCancellation: cancellation);
+                    combatRbaCancellation: cancellation,
+                    ammunitionLedger: session.CurrentAmmunitionLedger);
             var priorState = repeated is not null
                 ? move is null ? barrage.SerializeStateCanonical(selected) : repeated.SerializeRetreatMoveState()
                 : move is null ? barrage.SerializeStateCanonical(selected) : SerializeRetreatMoveState(session);
@@ -5123,7 +5131,8 @@ public static class CampaignExercises
                 combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts,
                 combatRetreatMoves: session.CurrentCombatRetreatMoves,
                 combatForceSeals: session.CurrentCombatForceSeals,
-                combatForceCancellation: cancellation);
+                combatForceCancellation: cancellation,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var seal in session.CurrentCombatForceSeals)
                 priorState = seal.SerializeStateCanonical(priorState);
@@ -5156,7 +5165,7 @@ public static class CampaignExercises
             return CampaignNativeCombatForceEligibility.CanCompleteAssault(
                 selected, decline,
                 session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
-                session.Context, session.CurrentHistory);
+                session.Context, session.CurrentAmmunitionLedger);
         }
         catch (Exception exception) when (exception is ArgumentException
             or InvalidOperationException or InvalidCampaignHistoryException)
@@ -5244,7 +5253,8 @@ public static class CampaignExercises
                 combatForceSeals: session.CurrentCombatForceSeals,
                 combatForceCompletion: session.CurrentCombatForceCompletion,
                 combatForceCancellation: session.CurrentCombatForceCancellation,
-                combatAntiArmor: antiArmor);
+                combatAntiArmor: antiArmor,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var seal in session.CurrentCombatForceSeals)
                 priorState = seal.SerializeStateCanonical(priorState);
@@ -5336,7 +5346,8 @@ public static class CampaignExercises
                 combatForceSeals: session.CurrentCombatForceSeals,
                 combatForceCancellation: session.CurrentCombatForceCancellation,
                 combatAntiArmor: antiArmor,
-                combatCancelledAssault: cancelledAssault);
+                combatCancelledAssault: cancelledAssault,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var seal in session.CurrentCombatForceSeals)
                 priorState = seal.SerializeStateCanonical(priorState);
@@ -5415,8 +5426,20 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
-            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
-                session.Context, session.CurrentHistory);
+            // Perf seeding path (Phase 1 of #436): seed from the session's
+            // own carried ammunition ledger (fresh as of this round's last
+            // clean boundary or last repeat settlement -- see
+            // ExerciseSession.CurrentAmmunitionLedger) instead of rescanning
+            // the full accepted-event history on every Combat result. No
+            // Combat result can have been accepted since that ledger was
+            // captured without this exact session reflecting it (nothing
+            // else advances CurrentCombatAssaultResult), so there is no
+            // tail to fold here -- CreateInitial only applies to the very
+            // first Combat result in a campaign, or after a later repeat
+            // cycle that intentionally left the ledger null (see
+            // ExerciseSession.WithPostRepeatEvent).
+            var ammunition = session.CurrentAmmunitionLedger
+                ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(session.Context);
             var inputs = CampaignNativeCombatAssaultInputs.Create(selected, completion,
                 antiArmor, session.CurrentCombatForceSeals,
                 session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
@@ -5436,7 +5459,14 @@ public static class CampaignExercises
                 combatForceCompletion: completion,
                 combatAntiArmor: antiArmor,
                 combatAssaultResult: result,
-                combatPaidWorld: inputs.PaidWorld);
+                combatPaidWorld: inputs.PaidWorld,
+                // ammunition is the pre-spend ledger used to build `inputs`
+                // above; it stays the session's CurrentAmmunitionLedger
+                // unchanged until SettleNativeCombatWorld folds the spend
+                // once settlement is accepted, since that function needs
+                // to re-derive the same pre-spend `inputs` to verify the
+                // already-accepted result.
+                ammunitionLedger: ammunition);
             var priorState = SerializeRetreatDeclineState(session);
             foreach (var seal in session.CurrentCombatForceSeals)
                 priorState = seal.SerializeStateCanonical(priorState);
@@ -5466,8 +5496,11 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
-            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
-                session.Context, session.CurrentHistory);
+            // Perf seeding path (Phase 1 of #436): see the matching
+            // comment in ResolveNativeCombatAssault -- same reasoning
+            // applies to the repeated-assault path.
+            var ammunition = session.CurrentAmmunitionLedger
+                ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(session.Context);
             var inputs = CampaignNativeCombatAssaultInputs.Create(selected,
                 runtime.ForceCompletion!, runtime.AntiArmor,
                 runtime.Seals, runtime.RetreatWorld ?? selected.World,
@@ -5722,7 +5755,8 @@ public static class CampaignExercises
             combatAntiArmor: session.CurrentCombatAntiArmor,
             combatAssaultResult: result,
             combatPaidWorld: session.CurrentCombatPaidWorld,
-            combatPostResultRetreat: retreat);
+            combatPostResultRetreat: retreat,
+            ammunitionLedger: session.CurrentAmmunitionLedger);
         var bytes = retreat.SerializeCanonical();
         var receipt = new CampaignActionAcceptanceReceipt(result.CampaignId,
             retreat.PriorStateVersion, retreat.StateVersion,
@@ -5750,10 +5784,19 @@ public static class CampaignExercises
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
-            var priorHistory = session.CurrentHistory.Take(
-                session.CurrentHistory.Count - 2);
-            var ammunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
-                session.Context, priorHistory);
+            // Perf seeding path (Phase 1 of #436): this needs the exact
+            // same pre-spend ledger ResolveNativeCombatAssault used to
+            // build `inputs` for `result` (so the re-derived `inputs` here
+            // match, letting settlement/World projection reproduce
+            // deterministically) -- that is exactly
+            // session.CurrentAmmunitionLedger, which ResolveNativeCombatAssault
+            // deliberately left unchanged (pre-spend) on this session
+            // rather than folding the result's spend in immediately. The
+            // old `priorHistory = CurrentHistory.Take(Count - 2)` rescan
+            // existed only to exclude `result` itself from the fold for
+            // the same reason; seeding removes the need for it entirely.
+            var ammunition = session.CurrentAmmunitionLedger
+                ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(session.Context);
             var inputs = CampaignNativeCombatAssaultInputs.Create(selected,
                 session.CurrentCombatForceCompletion!, session.CurrentCombatAntiArmor!,
                 session.CurrentCombatForceSeals,
@@ -5766,6 +5809,16 @@ public static class CampaignExercises
             var contacts = session.CurrentContacts.AdvanceNativeCombatSettlement(
                 inputs.PaidWorld, projected.World, retreat, settlement,
                 session.Context);
+            // This settlement is the point this engagement's ammunition
+            // spend becomes final, so fold exactly the one accepted
+            // `result` event forward now -- an O(1) fold re-validated
+            // against the hash chain (see
+            // CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents), not a
+            // blindly-trusted value -- so the next engagement in this
+            // round (a repeat) can keep seeding from
+            // CurrentAmmunitionLedger instead of rescanning.
+            var settledAmmunition = CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                ammunition, new object[] { result });
             var successor = new ExerciseSession(session.CurrentSnapshot, session.Context,
                 session.CurrentHistory.Add(settlement), contacts, selected,
                 combatBarrage: session.CurrentCombatBarrage,
@@ -5781,7 +5834,8 @@ public static class CampaignExercises
                 combatPaidWorld: inputs.PaidWorld,
                 combatPostResultRetreat: retreat,
                 combatSettlement: settlement,
-                combatSettledWorld: projected.World);
+                combatSettledWorld: projected.World,
+                ammunitionLedger: settledAmmunition);
             var bytes = settlement.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(result.CampaignId,
                 settlement.PriorStateVersion, settlement.StateVersion,
@@ -6100,7 +6154,8 @@ public static class CampaignExercises
             combatSettlement: settlement, combatSettledWorld: settledWorld,
             combatCustodyDisposition: disposition,
             combatCustodyWorld: projection.World,
-            combatCustodyState: projection.Custody);
+            combatCustodyState: projection.Custody,
+            ammunitionLedger: session.CurrentAmmunitionLedger);
         var bytes = disposition.SerializeCanonical();
         var receipt = new CampaignActionAcceptanceReceipt(settlement.CampaignId,
             disposition.PriorStateVersion, disposition.StateVersion,
@@ -6160,7 +6215,8 @@ public static class CampaignExercises
                 combatCustodyDisposition: custody,
                 combatCustodyWorld: world,
                 combatCustodyState: session.CurrentCombatCustodyState,
-                combatSuccessor: successorEvent);
+                combatSuccessor: successorEvent,
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var bytes = successorEvent.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(
                 successorEvent.CampaignId, successorEvent.PriorStateVersion,
@@ -6998,7 +7054,8 @@ public static class CampaignExercises
                 combatBarrage: barrage, combatRetreatMove: movement, combatRetreatWorld: world,
                 combatRetreatPriorContacts: session.CurrentCombatRetreatPriorContacts
                     ?? session.CurrentContacts,
-                combatRetreatMoves: session.CurrentCombatRetreatMoves.Append(movement));
+                combatRetreatMoves: session.CurrentCombatRetreatMoves.Append(movement),
+                ammunitionLedger: session.CurrentAmmunitionLedger);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 movement.PriorStateVersion, movement.StateVersion, movement.PositionId,
                 submission.Audience, submission.ActionId);
@@ -7097,7 +7154,28 @@ public static class CampaignExercises
             _ => session.CurrentContacts.AdvanceNonMovement(
                 session.CurrentSnapshot, execution.SuccessorSnapshot!),
         };
-        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts);
+        // Perf seeding path (Phase 1 of #436): every ordinary step is a
+        // clean boundary, so where Combat ammunition is even meaningful
+        // for this content (not every scenario pins a Combat source) this
+        // hands the next session a correct, up-to-date ledger -- the hot
+        // Combat call sites below trust it instead of rescanning the full
+        // accepted-event history themselves. The fallback deliberately
+        // re-derives from genesis (not CreateInitial) rather than assuming
+        // a null ledger means "no Combat yet": a second or later repeat
+        // cycle within a round (see ExerciseSession.WithPostRepeatEvent)
+        // leaves CurrentAmmunitionLedger null on purpose once it can no
+        // longer prove the carried value is current, and this is where
+        // that self-heals -- at the cost of one full rescan, not a wrong
+        // ammunition count carried forward indefinitely. Content with no
+        // pinned Combat source (CreateInitial's own precondition) never
+        // reaches the hot Combat call sites either, so staying null there
+        // is correct, not just a missed optimization.
+        var ammunitionLedger = session.CurrentAmmunitionLedger
+            ?? (session.Context.ArtifactV6 is not null && session.Context.CombatSource is not null
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(session.Context, session.CurrentHistory)
+                : null);
+        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history, contacts,
+            ammunitionLedger: ammunitionLedger);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,
             CampaignCurrentEventSerializer.Serialize(execution.AcceptedEvent!),
