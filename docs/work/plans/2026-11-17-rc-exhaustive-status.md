@@ -204,6 +204,28 @@ this session — still open, still queued with codex. `MVP-GATE-01`/`02`/`05`/
 Still open from this session's own work, not yet actioned: file the
 Reserve-Release follow-up issue (#394's explicitly-deferred scope).
 
+## 12. 2026-11-18, same day — RC scope correction
+
+**`MVP-GATE-04`'s definition above ("durable local lifecycle," "bounded
+local campaigns") is now wrong as a scope boundary, confirmed directly by
+the project owner.** The actual RC target is a hosted, multi-user web app
+(minimum ~100 concurrent active campaigns), not a local single-player
+build — local play is the engine-testing harness, not the product. This
+came out of a dedicated data-layer design discussion
+([`2026-11-18-postgres-migration-design.md`](2026-11-18-postgres-migration-design.md))
+that reopened the data-layer doc's own §3 "do not move to Postgres"
+conclusion, which depended specifically on the now-false local-only
+assumption. See that doc for the corrected direction (PostgreSQL + Marten).
+
+This does not retroactively invalidate anything else tracked in this status
+doc — `MVP-GATE-01`/`02`/`03`/`05`/`06`/`07` and everything in §§1-11 above
+are unaffected by the storage engine. It specifically means: `MVP-GATE-04`'s
+own definition needs rewriting (not done here — this is a pointer, not the
+rewrite), issue #436 Phase 2 (snapshotting against SQLite) is held and will
+be re-scoped against Marten rather than proceeding in its original form, and
+any future reference to "RC is local-only" anywhere in this project's docs
+should be treated as stale until corrected.
+
 ## Honest bottom line
 
 `MVP-GATE-03` (six-turn authority) is the gate getting the most direct
