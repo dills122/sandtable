@@ -1,4 +1,5 @@
 using Cna.ExerciseRunner.Artifacts;
+using Cna.ExerciseRunner.Controllers;
 using Cna.ExerciseRunner.Execution;
 using Cna.ExerciseRunner.Tests.Artifacts;
 
@@ -79,6 +80,54 @@ public sealed class ExerciseRunCoordinatorTests : IDisposable
         var bundle = ExerciseBundleReader.Read(Assert.IsType<string>(result.CompletedBundlePath));
         Assert.Equal(ArtifactBundleProfile.FailedIdentified, bundle.Manifest.Profile);
         Assert.Null(bundle.SeedLedger);
+    }
+
+    [Fact]
+    public void ANaturallyFailedNoUniqueLegalActionRunProducesAStrictlyReadableBundle()
+    {
+        // Regression for a second-side-combat simulation sweep finding: pushing the checked
+        // Reaction/adjacent-contact fixture's terminal boundary past first-side Breakdown and
+        // Combat into the second player's own Combat position-determination (never previously
+        // exercised -- every checked manifest stops at or before first-side Breakdown) runs out
+        // of legal actions for every audience once the Runner's generic first-by-action-id
+        // fallback outruns the fixture's content before the second side acts, producing a
+        // genuine failed-executed/no-unique-legal-action run. The strict semantic reader must
+        // still accept that bundle: it previously rejected every real no-unique-legal-action
+        // (and controller-failed/illegal-action) failed-executed bundle because its validity
+        // check compared the terminal decision check's StepOrdinal/Audience against defaulted
+        // nulls that no genuine decision check ever has.
+        var manifest = new ExerciseManifest(
+            ExerciseManifest.CurrentContractVersion,
+            "second-side-combat.no-unique-legal-action-regression",
+            "rules-lab.breakdown.reaction.adjacent.v1",
+            "sha256:977695c69112f752fddc2f2ca48da71d9d8b4aa38c8c589ff4370044ca61a200",
+            "rules-lab.content.breakdown-reaction.adjacent.v1",
+            "sha256:8dc4a1fa9aa6fc244eefe3343d473f6ea547e76ca2f1035461e0996f2bd3a56b",
+            "breakdown-reaction-adjacent",
+            Cna.Core.Rules.Cna1979Ruleset.Manifest.Hash,
+            "land.position.operation-1.second-player.movement-and-combat.combat.position-determination",
+            40,
+            0,
+            ExerciseBuildMode.Exploratory,
+            ExerciseConfidentiality.TrustedAuthority,
+            ExerciseDetail.Forensic,
+            new ExerciseControllerManifest(
+                ExerciseControllerPolicy.ReactionAllByActionId,
+                ExerciseControllerPolicy.ReactionAllByActionId,
+                ExerciseControllerPolicy.ReactionAllByActionId),
+            null);
+        var identity = ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed);
+
+        var result = ExerciseRunCoordinator.Execute(Request(
+            manifest,
+            identity,
+            TestContext.Current.CancellationToken));
+
+        Assert.Equal(ExerciseProcessExitCode.NoUniqueLegalAction, result.ExitCode);
+        var bundle = ExerciseBundleReader.Read(Assert.IsType<string>(result.CompletedBundlePath));
+        Assert.Equal(ArtifactBundleProfile.FailedExecuted, bundle.Manifest.Profile);
+        var failed = Assert.IsType<ExerciseFailed>(bundle.RunResult.Completion);
+        Assert.Equal(ExerciseFailureCategory.NoUniqueLegalAction, failed.Failure.Category);
     }
 
     public void Dispose()
