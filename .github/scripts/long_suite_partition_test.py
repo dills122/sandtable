@@ -96,10 +96,10 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual('4', command[command.index('--max-threads') + 1])
 
     def test_formatting_remains_in_required_dependency_closure(self):
-        # orleans and the p01-* proof families run nightly only (see
-        # ci-nightly-heavy.yml) and are never part of this dependency closure
-        # on pull_request or push.
-        required = ('prepare', 'tests', 'format')
+        # The p01-* proof families run nightly only (see ci-nightly-heavy.yml)
+        # and are never part of this dependency closure on pull_request or
+        # push; orleans is required on both (Phase D of #439).
+        required = ('prepare', 'tests', 'format', 'orleans')
         good = {key: {'result': 'success'} for key in required}
         suites.validate_dependencies(good)
         for key in good:
@@ -109,7 +109,7 @@ class EvidenceTests(unittest.TestCase):
         for missing in required:
             with self.subTest(missing=missing), self.assertRaises(ValueError):
                 suites.validate_dependencies({key: value for key, value in good.items() if key != missing})
-        for extra in ('orleans', 'p01-paid-fresh-aggregate'):
+        for extra in ('p01-paid-fresh-aggregate',):
             with self.subTest(extra=extra), self.assertRaises(ValueError):
                 suites.validate_dependencies(dict(good, **{extra: {'result': 'success'}}))
 
@@ -177,6 +177,7 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
         import r02_partition as r02
         from ci_group_runner import RESOURCE_POLICY
         self.needs['format'] = {'result': 'success'}
+        self.needs['orleans'] = {'result': 'success'}
         core = self.proof['legacy_core_rows']
         classes = sorted({row[1].rsplit('.', 1)[0] for row in core})
         self.weights = {'schema_version': 1, 'classes': {}, 'rows': {suites.row_key(row): 1000 for row in core}}
@@ -357,10 +358,15 @@ class WorkflowTests(unittest.TestCase):
         # not a literal array, so both triggers share one job definition.
         self.assertIn("shard: ${{ fromJSON(needs.prepare.outputs.shards) }}", text)
         self.assertIn('max-parallel: 17', text)
-        # orleans and p01-* are gone from ci.yml's dependency closure entirely
-        # (they run nightly only - see ci-nightly-heavy.yml), on every trigger.
-        self.assertIn('needs: [prepare, tests, format]', text)
-        self.assertNotIn('\n  orleans:', text)
+        # p01-* are gone from ci.yml's dependency closure entirely (nightly
+        # only - see ci-nightly-heavy.yml); orleans gates every trigger again,
+        # excluding only the nightly soak row and the KnownIssue=446 rows.
+        self.assertIn('needs: [prepare, tests, format, orleans]', text)
+        orleans_job = text.split('\n  orleans:', 1)[1].split('\n  verify:', 1)[0]
+        self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', orleans_job)
+        self.assertIn('python3 .github/scripts/verify_orleans_results.py', orleans_job)
+        self.assertIn('--filter-not-trait "KnownIssue=446"', orleans_job)
+        self.assertNotIn('continue-on-error', orleans_job)
         self.assertNotIn('\n  p01-', text)
         self.assertIn('--exclude-shards "$EXCLUDE_SHARDS"', text)
         self.assertIn('EXCLUDE_SHARDS: ${{ needs.prepare.outputs.excluded_shards }}', text)

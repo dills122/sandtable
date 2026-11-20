@@ -22,9 +22,10 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
   DOTNET_NOLOGO: "1"
   TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
-  # orleans and the p01-* proof families (and their proof-source-SHA handling)
-  # moved to .github/workflows/ci-nightly-heavy.yml (schedule-only); nothing
-  # in this file needs P01_PROOF_SOURCE_SHA any more.
+  # The p01-* proof families (and their proof-source-SHA handling) moved to
+  # .github/workflows/ci-nightly-heavy.yml (schedule-only); nothing in this
+  # file needs P01_PROOF_SOURCE_SHA any more. orleans runs here again (Phase D
+  # of #439) and also stays in the nightly file.
 
 jobs:
   format:
@@ -165,8 +166,49 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  orleans:
+    # Phase D of #439 (docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md §1):
+    # Cna.OrleansHost.Tests holds every Postgres+Marten (Testcontainers) test of the durable
+    # campaign journal, and since #373 it ran nightly only -- so #443-#450 merged with none of
+    # it gating a PR. It gates PR/push again. Testcontainers drives the GitHub-hosted runner's own
+    # Docker daemon, so no services: block is needed. Excluded rows, each still run nightly:
+    # the ~30m Graziani replay soak (orleans-slow.yml) and the rows tagged KnownIssue=446 --
+    # the open, pre-existing Combat settlement bug (issue #446), not a storage regression.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - name: Restore and build Orleans host tests
+        run: |
+          dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
+          dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
+      - name: Run and verify Orleans host rows
+        timeout-minutes: 30
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/orleans-results
+          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" --filter-not-trait "KnownIssue=446" 2>&1 | tee artifacts/orleans-results/console.log
+          python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
+      - name: Retain Orleans test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: orleans-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/orleans-results
+          if-no-files-found: error
+          retention-days: 14
+
   verify:
-    needs: [prepare, tests, format]
+    needs: [prepare, tests, format, orleans]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
