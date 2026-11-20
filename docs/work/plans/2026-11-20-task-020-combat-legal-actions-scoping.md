@@ -59,7 +59,7 @@ unsupported profiles/terminals before decisions; keep old readers and recovery. 
 | T020-Q4 | Core public-ref derivation | v2: refs "derive only from approved owner-visible values and Host-issued opening identity". Exercise has no Host. Slice 1 uses a visible-values-only derivation (digest + ordinal + stage + element + audience + campaign) and keeps the type `internal`. Owner should confirm this is the in-process subset, with Host HMAC layered on top, before it becomes public. | **Resolved 2026-11-19 (owner, relayed):** confirmed acceptable as the in-process subset for now; Host HMAC layering is required before anything goes public (020D). |
 | T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. | **Resolved 2026-11-20 (owner, relayed):** the existing `CampaignContactCustodyOwnerVisibleCutV1` field set (`campaignId`, `captorElementId`, `captiveQuantity`, `offers[kind, route]`) is the allowlist; no change. Custody built in 020A3 (§7c). The 020B draft verifier still treats `custody` as uncovered; the draft has not been extended. |
 | T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. | **Resolved 2026-11-20 (owner, relayed):** RBA movement stays excluded (outside `CMB-POL-001`, which adopts decline-only RBA). Build RBA decline-only; do not build movement. Building decline-only raised a codec question; see §7c. |
-| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. | **Resolved 2026-11-20 (owner, relayed):** exclude contacts with no Force slot from Selection's assault offers; the audience surface must not offer them. |
+| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. | **Resolved 2026-11-20 (owner, relayed), revised the same day:** the first ruling (exclude the offer) conflicted with the fog rule (§7e); the owner then chose option (c): keep the Selection offer unchanged and rely on the existing V19 `force-unavailable` System cancellation downstream. Confirmed by tests in §7e. |
 | T020-Q6 | Host/Core mapping duplication | Slice 1 duplicates the Host's re-project/byte-compare/ordinal-map rule in Core. Long-term the Host should consume the Core mapping (021 or a follow-up), or the two can diverge. | **Resolved 2026-11-19 (owner, relayed):** deferred to 020D; not fixed now. |
 
 ## 4. Proposed breakdown
@@ -290,10 +290,32 @@ outward boundary leaks it. No forced/surprise mechanic, no new rejection categor
 | `NoAdmittedWorldCanStackTwoSameSideCombatElements` | The same three stacks in a live World fail `CampaignWorldV6Validator`, and ZOC derivation refuses them. |
 | `SelectionInvariantNamesTheBoundedProfile` | Pins the invariant message. |
 
-## 7e. Q8 (non-combat-unit contact) — stopped on a side-safety conflict
+## 7e. Q8 (non-combat-unit contact) — option (c) confirmed
 
-The ruling says to exclude contacts with no Force slot from Selection's assault offers. Building
-it would break the fog rule the v2 spec states for offers:
+**Outcome (2026-11-20).** The owner chose option (c) below. No Selection change and no new
+activation rejection. `CombatNonCombatContactForceUnavailableTests` (2 rows) confirms the existing
+path on the Truck fixture, where the adjacent contact is bound to `commonwealth-truck`:
+
+- Selection offers assault + finish; offer presence does not inspect the hidden defender.
+- After Barrage and RBA decline, `CanCompleteNativeCombatForceAssignment` is false and the
+  defender has no Force decision.
+- The System step the Host appends before opening a Force round,
+  `CancelNativeCombatForceAssignment(..., -1, -1, -1, null, "force-unavailable")`, is accepted with
+  no seals. Anti Armor and the cancelled-assault successor follow into same-slot Reserve Release,
+  and reconstruction verifies at the cancellation and at Reserve Release.
+- Recorded for Exercise/Runner adopters (022): before that System step, the attacker's own Force
+  cut still projects. The Host appends the step before opening any Force round; an in-process
+  driver must do the same.
+
+**Gap found and fixed.** After any Force cancellation (V19 `force-unavailable` or timeout), Core's
+private Force cut still projects and only submission rejects it, so the 020A1 audience Force stage
+offered an unsubmittable seal. The Force stage now returns no decision once its round is cancelled
+(repeat-assault rounds checked against their own cancellation). Core adjudication, the private cut,
+events and the Host are unchanged.
+
+**Original analysis (kept for the record).** The first ruling said to exclude contacts with no
+Force slot from Selection's assault offers. Building it would have broken the fog rule the v2 spec
+states for offers:
 
 - Every contact the current Core issues is at `CampaignContactIdentification.Presence` (e.g.
   `CampaignContactAdjacencySource`). The observer knows only that something is in that hex.
@@ -312,9 +334,7 @@ Options for the owner:
   detection rule that does not exist yet);
 - (b) make non-combat contacts a bounded-profile activation rejection, like 020C (singleton-infantry
   content has no truck-bound reachable contacts, but several rules-lab fixtures do);
-- (c) keep the offer and the existing V19 `force-unavailable` System cancellation.
-
-Nothing for Q8 is built.
+- (c) keep the offer and the existing V19 `force-unavailable` System cancellation. **(chosen)**
 
 ## 7f. 020D status
 
