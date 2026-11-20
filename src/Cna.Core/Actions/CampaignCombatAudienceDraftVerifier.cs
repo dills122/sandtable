@@ -4,16 +4,17 @@ using System.Text.RegularExpressions;
 
 namespace Cna.Core.Actions;
 
-// Task 020B (DRAFT for owner review; not frozen). Byte-level verifier for the audience decision and
-// outcome envelopes produced by CampaignCombatAudienceDecisions, checked against the draft schema in
-// docs/specs/combat-audience-decision-draft-v1.schema.json. Covers Selection, Force Assignment,
+// Frozen combat-audience-decision-v1 (CMB-CON-005 successor; owner sign-off 2026-11-20; originally the
+// Task 020B draft). Byte-level verifier for the audience decision and
+// outcome envelopes produced by CampaignCombatAudienceDecisions, checked against the frozen schema in
+// docs/specs/combat-audience-decision-v1.schema.json. Covers Selection, Force Assignment,
 // Reserve Release, Cycle Control, decline-only RBA (020A4) and captor Custody (020A3). Any other
 // stage fails as uncovered.
 
-/// <summary>Checks one decision or outcome byte string against the draft successor contract.</summary>
+/// <summary>Checks one decision or outcome byte string against the frozen successor contract.</summary>
 internal static partial class CampaignCombatAudienceDraftVerifier
 {
-    public const string ContractId = "combat-audience-decision-draft-v1";
+    public const string ContractId = "combat-audience-decision-v1";
 
     public static readonly IReadOnlyList<string> DecisionFields =
     [
@@ -312,10 +313,10 @@ internal static partial class CampaignCombatAudienceDraftVerifier
             case CampaignCombatAudienceDecisions.ReserveReleaseStage:
             case CampaignCombatAudienceDecisions.CycleControlStage:
                 {
-                    // These cuts carry no contact observation (revision 0; T020-Q4 accepted subset).
-                    // Their side uses the V27/V28 enum spelling, recorded as observed.
-                    if (Text(visible, "side") != (audience == "axis" ? "Axis" : "Commonwealth"))
-                        failures.Add("visible-binding");
+                    // These cuts carry no contact observation (revision 0; owner-accepted at freeze).
+                    // Side is lowercase like every other cut since the 2026-11-20 freeze; the legacy
+                    // enum spelling (Axis/Commonwealth) is rejected.
+                    if (Text(visible, "side") != audience) failures.Add("visible-binding");
                     if (revision != 0) failures.Add("audience-revision");
                     if (stage == CampaignCombatAudienceDecisions.ReserveReleaseStage
                         ? Text(visible, "elementId") != actor

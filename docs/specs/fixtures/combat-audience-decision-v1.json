@@ -1,12 +1,12 @@
 {
-  "contract": "combat-audience-decision-draft-v1",
-  "status": "DRAFT for owner review. Not frozen; freezing is an owner action.",
+  "contract": "combat-audience-decision-v1",
+  "status": "Frozen v1 (CMB-CON-005 successor), owner sign-off 2026-11-20. Covers the Core decision envelope only; Host HMAC wrapping is not separately frozen.",
   "successorOf": "CMB-CON-005",
   "envelopes": {
     "rejected": "{\"contractVersion\":1,\"outcome\":\"rejected\"}",
     "acceptedExample": {
       "source": "cycle-control-axis offerRefs[0]",
-      "utf8": "{\"contractVersion\":1,\"outcome\":\"accepted\",\"offerRef\":\"cmbref.v1.26d67548b33ed5757c905b310d956feddbbbebfe836b22ff36043da83f76d5a8\"}"
+      "utf8": "{\"contractVersion\":1,\"outcome\":\"accepted\",\"offerRef\":\"cmbref.v1.39f5888aed8831e17e1fe1ba39a5dcb2f670af3b3a1759ec6c5a3347d7968028\"}"
     }
   },
   "goldens": [
@@ -67,8 +67,8 @@
         "prefix": "CombatCycleDisclosureReserveCycleTests.AtReserveRelease (trusted Combat path to first owned Reserve Release member)"
       },
       "decisionLength": 638,
-      "decisionSha256": "sha256:f590a4614c0170c345ebc2938595ada527dffea6aa6b6cf4304571d132e52f14",
-      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"reserve-release\",\"actingElementId\":\"axis-infantry-second\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:44507b3f23452c3079ac9b51936e409aadfb2fc79f5288c58d472d9c79cbf44d\",\"visible\":{\"contractVersion\":27,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"Axis\",\"cycleOrdinal\":1,\"elementId\":\"axis-infantry-second\",\"reserveStatus\":\"ReserveI\",\"choices\":[\"ReleaseI\",\"ConvertToII\"]},\"offerRefs\":[\"cmbref.v1.fda41a1a16612212f721afbd9e62d067865bc508a363f4c4f9780b6c968872b1\",\"cmbref.v1.78dc2a579ab09a150ad84e7a2bfc21582fda1e1ddfa442d310a6fc56ff23e177\"]}"
+      "decisionSha256": "sha256:d4476e99130ab10e81cd7d62c6aaccff94a1558c3a10843da515e041410bbea5",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"reserve-release\",\"actingElementId\":\"axis-infantry-second\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:6922967e619f9c8db8cf8bd928dbb4204da777b00ebb25d2f39279624028e814\",\"visible\":{\"contractVersion\":27,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"axis\",\"cycleOrdinal\":1,\"elementId\":\"axis-infantry-second\",\"reserveStatus\":\"ReserveI\",\"choices\":[\"ReleaseI\",\"ConvertToII\"]},\"offerRefs\":[\"cmbref.v1.e4c0f341781af8111d0c4244056e120ed023dd24119dc5d10594ca80247b4490\",\"cmbref.v1.74651fef0dd8142e3e5368ea864db0004b0141d7715ac2aecfc6b5bab91aac54\"]}"
     },
     {
       "id": "cycle-control-axis",
@@ -82,8 +82,8 @@
         "prefix": "reserve-release-axis, then audience Reserve choice ordinal 0, then CompleteNativeReserveRelease"
       },
       "decisionLength": 560,
-      "decisionSha256": "sha256:a8e409f9441e42f02dae6330ae49713465acd7ef0c72dc8795df83dd615d7654",
-      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"cycle-control\",\"actingElementId\":\"cycle-control\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:91ff32d527e4f6a84154a504b16f8422eb449d4fa19280a0f1ce10a793282a4c\",\"visible\":{\"contractVersion\":28,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"Axis\",\"cycleOrdinal\":1,\"choices\":[\"Repeat\",\"Finish\"]},\"offerRefs\":[\"cmbref.v1.26d67548b33ed5757c905b310d956feddbbbebfe836b22ff36043da83f76d5a8\",\"cmbref.v1.d706e4100ddea276a718b16d402366cf1e1556e4882a1a68392536e7cc95f64c\"]}"
+      "decisionSha256": "sha256:6e6bb38d9fbdade7a220edae8da3407ffd64b6b66fd096335a066b446abff8f6",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"cycle-control\",\"actingElementId\":\"cycle-control\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:430a0c4fb86cabee2987733fdff8dd936897580900a491c67b62a19d4b96c324\",\"visible\":{\"contractVersion\":28,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"axis\",\"cycleOrdinal\":1,\"choices\":[\"Repeat\",\"Finish\"]},\"offerRefs\":[\"cmbref.v1.39f5888aed8831e17e1fe1ba39a5dcb2f670af3b3a1759ec6c5a3347d7968028\",\"cmbref.v1.03f671b768c2969a4ec3bc8a6164edfd221bdbd8b5b1bddfe531f18a520ab783\"]}"
     },
     {
       "id": "rba-decline-commonwealth",

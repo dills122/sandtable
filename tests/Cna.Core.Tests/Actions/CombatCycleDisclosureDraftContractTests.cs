@@ -9,18 +9,18 @@ using Cna.Core.Tests.Campaigns;
 namespace Cna.Core.Tests.Actions;
 
 /// <summary>
-/// Task 020B (DRAFT for owner review; not frozen): the draft CMB-CON-005 successor schema, goldens,
-/// rejection vectors and verifier for Selection, Force Assignment, Reserve Release, Cycle Control and
-/// decline-only RBA (020A4). Custody is not yet modeled; forced/surprise and the non-combat-unit
-/// disposition need no visible-byte rule under the 2026-11-20 rulings (T020-Q2/Q8).
+/// Frozen combat-audience-decision-v1 (CMB-CON-005 successor; owner sign-off 2026-11-20): schema, goldens,
+/// rejection vectors and verifier for Selection, Force Assignment, Reserve Release, Cycle Control,
+/// decline-only RBA and Custody. Forced/surprise and the non-combat-unit disposition need no
+/// visible-byte rule under the 2026-11-20 rulings (T020-Q2/Q8).
 /// </summary>
 public sealed class CombatCycleDisclosureDraftContractTests
 {
-    private const string FixturePath = "docs/specs/fixtures/combat-audience-decision-draft-v1.json";
-    private const string SchemaPath = "docs/specs/combat-audience-decision-draft-v1.schema.json";
+    private const string FixturePath = "docs/specs/fixtures/combat-audience-decision-v1.json";
+    private const string SchemaPath = "docs/specs/combat-audience-decision-v1.schema.json";
 
     [Fact]
-    public void DraftSchemaMatchesTheVerifierRulesAndStaysUnfrozen()
+    public void FrozenSchemaMatchesTheVerifierRules()
     {
         using var schema = JsonDocument.Parse(CombatActualPaidAssaultTests.Dependency(SchemaPath));
         var root = schema.RootElement;
@@ -45,8 +45,8 @@ public sealed class CombatCycleDisclosureDraftContractTests
         foreach (var document in new[] { root, Fixture().RootElement })
         {
             var status = document.GetProperty("status").GetString()!;
-            Assert.StartsWith("DRAFT", status, StringComparison.Ordinal);
-            Assert.Contains("Not frozen", status, StringComparison.Ordinal);
+            Assert.StartsWith("Frozen v1 (CMB-CON-005 successor)", status, StringComparison.Ordinal);
+            Assert.DoesNotContain("DRAFT", status, StringComparison.Ordinal);
         }
     }
 
@@ -218,9 +218,15 @@ public sealed class CombatCycleDisclosureDraftContractTests
             Visible(value)["elementId"] = "axis-infantry";
             Resign(value);
         });
+        // The legacy V27 enum spelling is no longer accepted (lowercase since the freeze).
         AssertCaught(golden, "visible-binding", value =>
         {
-            Visible(value)["side"] = "axis";
+            Visible(value)["side"] = "Axis";
+            Resign(value);
+        });
+        AssertCaught(golden, "visible-binding", value =>
+        {
+            Visible(value)["side"] = "commonwealth";
             Resign(value);
         });
         AssertCaught(golden, "offer-shape", value =>
@@ -238,6 +244,12 @@ public sealed class CombatCycleDisclosureDraftContractTests
         AssertCaught(golden, "acting-subject", value =>
         {
             value["actingElementId"] = "axis-infantry";
+            Resign(value);
+        });
+        // The legacy V28 enum spelling is no longer accepted (lowercase since the freeze).
+        AssertCaught(golden, "visible-binding", value =>
+        {
+            Visible(value)["side"] = "Axis";
             Resign(value);
         });
         AssertCaught(golden, "offer-count", value =>

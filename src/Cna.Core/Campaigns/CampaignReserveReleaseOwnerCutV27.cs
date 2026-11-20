@@ -17,10 +17,14 @@ internal sealed class CampaignReserveReleaseOwnerCutV27
         Side = side;
         CycleOrdinal = cycleOrdinal;
         Member = member;
-        VisibleBytes = SerializeVisible();
+        VisibleBytes = SerializeVisible(lowercaseSide: true);
+        // CMB-CON-005 successor freeze (2026-11-20): outward bytes spell the side lowercase like every
+        // other owner cut. The private action-ID preimage keeps the original enum spelling, so action
+        // IDs in retained contact-reserve-release-choice commands and receipts still replay (DET-001).
+        var actionPreimage = SerializeVisible(lowercaseSide: false);
         ActionIds = Array.AsReadOnly(member.Choices.Select(choice =>
             "sha256:" + Convert.ToHexStringLower(SHA256.HashData(
-                (byte[])[.. VisibleBytes, 0, .. Encoding.UTF8.GetBytes(choice.ToString())]))).ToArray());
+                (byte[])[.. actionPreimage, 0, .. Encoding.UTF8.GetBytes(choice.ToString())]))).ToArray());
     }
 
     internal string CampaignId { get; }
@@ -45,7 +49,7 @@ internal sealed class CampaignReserveReleaseOwnerCutV27
         return new(state.CampaignId, side, state.CycleOrdinal, member);
     }
 
-    private byte[] SerializeVisible()
+    private byte[] SerializeVisible(bool lowercaseSide)
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
@@ -54,7 +58,8 @@ internal sealed class CampaignReserveReleaseOwnerCutV27
             writer.WriteNumber("contractVersion", CampaignNativeReserveReleaseEventV27.CurrentContractVersion);
             writer.WriteString("campaignId", ContentContractGuards.RequireStableId(
                 CampaignId, nameof(CampaignId)));
-            writer.WriteString("side", Side.ToString());
+            writer.WriteString("side", lowercaseSide
+                ? CampaignSnapshotSerializer.FormatSide(Side) : Side.ToString());
             writer.WriteNumber("cycleOrdinal", CycleOrdinal);
             writer.WriteString("elementId", ContentContractGuards.RequireStableId(
                 Member.ElementId, nameof(Member.ElementId)));

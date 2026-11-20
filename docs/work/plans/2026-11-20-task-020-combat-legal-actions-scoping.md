@@ -203,9 +203,9 @@ The fixture path uses `rules-lab.breakdown.reaction.combat-double-fresh.v1` (sam
 
 Per the Q1 ruling (2026-11-19). **Draft only: not frozen, not reviewed.** The owner freezes.
 
-- [Draft spec](../../specs/combat-audience-decision-draft-v1.md),
-  [ordered schema](../../specs/combat-audience-decision-draft-v1.schema.json),
-  [goldens + rejection vectors](../../specs/fixtures/combat-audience-decision-draft-v1.json).
+- [Draft spec](../../specs/combat-audience-decision-v1.md),
+  [ordered schema](../../specs/combat-audience-decision-v1.schema.json),
+  [goldens + rejection vectors](../../specs/fixtures/combat-audience-decision-v1.json).
 - Verifier `src/Cna.Core/Actions/CampaignCombatAudienceDraftVerifier.cs` (internal; no runtime caller).
 - Covers Selection, Force Assignment (both owners), Reserve Release, Cycle Control and the
   decision/outcome envelopes: five goldens, 40 rejection vectors reused from the 020A tests.
@@ -466,13 +466,30 @@ internal Core surface. The proof is split:
 outward `rba-move` before declining. That last test is tagged `KnownIssue=446` (excluded from CI). It
 fails at the later second-cycle Force seal, both with this change and on unmodified `main`.
 
+## 7k. CMB-CON-005 successor frozen (owner sign-off 2026-11-20)
+
+- **Side spelling fixed first.** V27 Reserve Release and V28 Cycle Control visible cuts now spell
+  `side` lowercase, like every other owner cut. Their private action IDs are SHA-256 over the visible
+  bytes and are matched by Host import when retained `contact-reserve-release-choice` /
+  `contact-cycle-control` steps replay, so a plain change would have broken cold replay of existing
+  durable campaigns (DET-001). The action-ID preimage therefore keeps the original enum spelling;
+  `SideSpellingFixKeepsRetainedReserveAndCycleActionIds` pins the IDs captured from `main` at
+  `513391c7`. The verifier now requires lowercase; two goldens and the accepted-envelope example were
+  regenerated; tamper tests reject the legacy spelling.
+- **Frozen.** The draft is renamed `combat-audience-decision-v1` (spec, schema, fixture; contract id
+  in the verifier) with status "Frozen v1 (CMB-CON-005 successor), owner sign-off 2026-11-20", scope
+  the Core decision/outcome envelopes only. Owner-accepted defaults recorded in the spec: revision 0
+  with digest-only fencing for Reserve Release/Cycle Control/Custody; the decline-only RBA field list;
+  Custody's side-less cut. Any later byte change needs `combat-audience-decision-v2`.
+
 ## 8. Still pending
 
 Covered (dormant Core surface, internal): Selection (first-side initial cut), Force Assignment (both
-seal orders), Reserve Release, Cycle Control, Custody, decline-only RBA. The 020B draft covers all six
-(§7b, §7g, §7h). The Host dev route serves the same bytes for all six, pinned by parity tests (§7j).
+seal orders), Reserve Release, Cycle Control, Custody, decline-only RBA. All six are in the frozen
+`combat-audience-decision-v1` contract (§7k). The Host dev route serves the same bytes for all six,
+pinned by parity tests (§7j).
 
-Before 020D: the owner's freeze of the 020B draft (Core envelope only). Not built (owner: later
-phase): RBA movement, post-assault Retreat, repeat V31 and second-side V47 selection, and the
-Host-calls-Core cutover. Assigned elsewhere: capability manifest (021, Q3). Also open:
-terminal-reason disclosure pairs, Exercise/Runner adoption (022–024), and all independent review.
+020D (making the surface public) is the next step. Not built (owner: later phase): RBA movement,
+post-assault Retreat, repeat V31 and second-side V47 selection, and the Host-calls-Core cutover.
+Assigned elsewhere: capability manifest (021, Q3). Also open: terminal-reason disclosure pairs,
+Exercise/Runner adoption (022–024), and all independent review.

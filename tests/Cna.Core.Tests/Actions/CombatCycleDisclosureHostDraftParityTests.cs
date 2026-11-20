@@ -91,6 +91,37 @@ public sealed class CombatCycleDisclosureHostDraftParityTests
             (command, _) => CampaignHostAdapter.SubmitNativeCycleControl(control, command));
     }
 
+    [Fact]
+    public void SideSpellingFixKeepsRetainedReserveAndCycleActionIds()
+    {
+        // CMB-CON-005 freeze (2026-11-20): V27/V28 owner cuts now spell side lowercase outward, but the
+        // private action IDs that retained contact-reserve-release-choice / contact-cycle-control
+        // commands and receipts carry must not change (DET-001). These IDs were captured from main at
+        // 513391c7, before the spelling fix, on this exact path.
+        var reserve = CombatCycleDisclosureReserveCycleTests.AtReserveRelease("campaign-legacy-action-ids", 6);
+        var release = CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft(reserve,
+            CampaignActionAudience.Axis, "axis-infantry-second");
+        Assert.Equal(
+        [
+            "sha256:6d259255e58bf37b7c71b72d5d4e53f0b49e594b3f39b87d659e9c42cf6e8409",
+            "sha256:247ff4adf1a9bc05ff756dfe91b584489f93803ef0085f6aedf689a35bfeb4bb",
+        ], release.PrivateActionIds);
+        Assert.Contains("\"side\":\"axis\"", System.Text.Encoding.UTF8.GetString(release.VisibleBytes),
+            StringComparison.Ordinal);
+        var decision = CampaignCombatAudienceDecisions.QueryReserveRelease(reserve,
+            CampaignActionAudience.Axis, "axis-infantry-second")!;
+        var control = CombatCycleDisclosureReserveCycleTests.Complete(
+            CampaignCombatAudienceDecisions.Submit(reserve, decision.Choose(0)).TrustedStep!.SuccessorSession!);
+        var cycle = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(control, CampaignActionAudience.Axis);
+        Assert.Equal(
+        [
+            "sha256:5776ff4f5961f29720712c2210621f631fd1bfeee9fa87d6fd98f39953e191dc",
+            "sha256:5df6a8186fb502a817168c241385748b00399cc2d1bb4c52c0bb151e313d205f",
+        ], cycle.PrivateActionIds);
+        Assert.Contains("\"side\":\"axis\"", System.Text.Encoding.UTF8.GetString(cycle.VisibleBytes),
+            StringComparison.Ordinal);
+    }
+
     private static void AssertParity(ExerciseSession session, CampaignCombatAudienceDecision decision,
         byte[] draftVisible, IReadOnlyList<string> draftActionIds,
         Func<CampaignActionSubmission, int, ExerciseStepResult> submitDraft)

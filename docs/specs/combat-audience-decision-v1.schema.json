@@ -1,6 +1,6 @@
 {
-  "contract": "combat-audience-decision-draft-v1",
-  "status": "DRAFT for owner review. Not frozen; freezing is an owner action.",
+  "contract": "combat-audience-decision-v1",
+  "status": "Frozen v1 (CMB-CON-005 successor), owner sign-off 2026-11-20. Covers the Core decision envelope only; Host HMAC wrapping is not separately frozen.",
   "successorOf": "CMB-CON-005",
   "note": "Ordered field/type descriptor, not JSON Schema. All listed fields are mandatory and appear in the listed order. Bytes are compact UTF-8 as written by System.Text.Json Utf8JsonWriter defaults.",
   "decisionFields": [
@@ -21,7 +21,7 @@
     "sha256": "\"sha256:\" + 64 lowercase hex over the exact visible value bytes",
     "OfferRef": "\"cmbref.v1.\" + 64 lowercase hex = SHA-256(RefPreimage)",
     "RefPreimage": "compact JSON {domain:\"sandtable.combat-audience-ref.v1\", campaignId, audience, stage, actingElementId, visibleDigest, ordinal:int}",
-    "Submission": "contractVersion:int=1 campaignId:id audience:Audience stage:Stage actingElementId:id audienceRevision:long visibleDigest:sha256 offerRef:OfferRef (in-process record; no wire bytes are defined by this draft)",
+    "Submission": "contractVersion:int=1 campaignId:id audience:Audience stage:Stage actingElementId:id audienceRevision:long visibleDigest:sha256 offerRef:OfferRef (in-process record; this contract defines no submission wire bytes)",
     "Outcome": "{\"contractVersion\":1,\"outcome\":\"rejected\"} | {\"contractVersion\":1,\"outcome\":\"accepted\",\"offerRef\":OfferRef}",
     "AssaultOffer": "kind:\"select-contact-assault\" actingElementId:id contactHandle:id apparentLocationId:id",
     "FinishOffer": "kind:\"finish-combat-without-attack\" actingElementId:id",
@@ -77,7 +77,7 @@
         "choices"
       ],
       "audienceRevision": "0 (no contact observation; visible digest is the only fence; T020-Q4 in-process subset)",
-      "side": "enum spelling \"Axis\" | \"Commonwealth\" (as emitted by V27; differs from the lowercase contact cuts)",
+      "side": "lowercase audience name (normalized at freeze; the private action-ID preimage keeps the legacy enum spelling)",
       "offers": "len(choices), distinct; elementId = actingElementId"
     },
     "cycle-control": {
@@ -90,7 +90,7 @@
         "choices"
       ],
       "audienceRevision": "0 (no contact observation; visible digest is the only fence; T020-Q4 in-process subset)",
-      "side": "enum spelling \"Axis\" | \"Commonwealth\" (as emitted by V28)",
+      "side": "lowercase audience name (normalized at freeze; the private action-ID preimage keeps the legacy enum spelling)",
       "offers": "len(choices), distinct; actingElementId = \"cycle-control\""
     },
     "rba-decline": {
