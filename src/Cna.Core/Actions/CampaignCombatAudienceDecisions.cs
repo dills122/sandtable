@@ -8,14 +8,18 @@ using Cna.Core.Visibility;
 
 namespace Cna.Core.Actions;
 
-// Task 020A0 (dormant): Core-owned audience-safe Combat decision surface. It is the
-// in-process counterpart of the Host owner opening (CampaignDurableAuthorityJournal.Openings):
-// the outward record carries only owner-visible values and the side contact audience revision,
-// never the private authority version, Core action IDs or bound defender. Internal until the
-// CMB-CON-005 successor is frozen; see docs/work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md.
+// Task 020: Core-owned audience-safe Combat decision surface. It is the in-process counterpart
+// of the Host owner opening (CampaignDurableAuthorityJournal.Openings): the outward record carries
+// only owner-visible values and the side contact audience revision, never the private authority
+// version, Core action IDs or bound defender. Its bytes are the frozen combat-audience-decision-v1
+// contract (docs/specs/combat-audience-decision-v1.md). Since 020D (2026-11-20) the four types
+// below are public C# API for later in-process consumers (021/022); constructors, the trusted
+// successor step, the ref derivation and the private projection stay internal, and
+// AuthorityBoundaryTests pins the exact public member set. Public C# visibility is not HTTP
+// exposure: the Host route stays loopback-only Development (scoping doc §7l).
 
 /// <summary>One audience-safe Combat decision derived from a single authority cut.</summary>
-internal sealed class CampaignCombatAudienceDecision
+public sealed class CampaignCombatAudienceDecision
 {
     public const int CurrentContractVersion = 1;
     private readonly byte[] visibleBytes;
@@ -76,7 +80,7 @@ internal sealed class CampaignCombatAudienceDecision
 }
 
 /// <summary>Audience submission: names an offered public ref against the opened visible cut.</summary>
-internal sealed record CampaignCombatAudienceSubmission(
+public sealed record CampaignCombatAudienceSubmission(
     int ContractVersion,
     string CampaignId,
     CampaignActionAudience Audience,
@@ -93,7 +97,7 @@ internal sealed record CampaignCombatAudienceSubmission(
 /// Outcome of an audience submission. The outward envelope names only the accepted ref, or one
 /// generic rejection. The successor step stays with the trusted in-process caller.
 /// </summary>
-internal sealed class CampaignCombatAudienceSubmissionResult
+public sealed class CampaignCombatAudienceSubmissionResult
 {
     private CampaignCombatAudienceSubmissionResult(string? acceptedRef, ExerciseStepResult? trustedStep)
     {
@@ -129,7 +133,7 @@ internal sealed class CampaignCombatAudienceSubmissionResult
     internal static readonly CampaignCombatAudienceSubmissionResult Rejected = new(null, null);
 }
 
-internal static class CampaignCombatAudienceDecisions
+public static class CampaignCombatAudienceDecisions
 {
     public const string SelectionStage = "combat-selection";
     public const string ForceAssignmentStage = "force-assignment";

@@ -58,6 +58,35 @@ public sealed class CombatCycleDisclosureTests
     }
 
     [Fact]
+    public void PublicSurfaceAloneOpensAndSubmitsASelection()
+    {
+        // Task 020D: a consumer without Core friend access gets only public members. It must be
+        // able to open, choose by ref and submit, and see only the frozen outward envelopes.
+        var session = AdvanceToCombat("campaign-disclosure-public-surface", 12345);
+        var decision = CampaignCombatAudienceDecisions.QuerySelection(session,
+            CampaignActionAudience.Axis, Actor)!;
+        CampaignCombatAudienceSubmission Submission(string offerRef) => new(
+            CampaignCombatAudienceSubmission.CurrentContractVersion, decision.CampaignId,
+            decision.Audience, decision.Stage, decision.ActingElementId, decision.AudienceRevision,
+            decision.VisibleDigest, offerRef);
+
+        var forged = CampaignCombatAudienceDecisions.Submit(session,
+            Submission("cmbref.v1." + new string('0', 64)));
+        Assert.False(forged.IsAccepted);
+        Assert.Equal("{\"contractVersion\":1,\"outcome\":\"rejected\"}",
+            Encoding.UTF8.GetString(forged.SerializeOutwardCanonical()));
+        var wrongAudience = CampaignCombatAudienceDecisions.Submit(session,
+            Submission(decision.OfferRefs[0]) with { Audience = CampaignActionAudience.Commonwealth });
+        Assert.Equal(forged.SerializeOutwardCanonical(), wrongAudience.SerializeOutwardCanonical());
+
+        var accepted = CampaignCombatAudienceDecisions.Submit(session, Submission(decision.OfferRefs[0]));
+        Assert.True(accepted.IsAccepted);
+        Assert.Equal(decision.OfferRefs[0], accepted.AcceptedRef);
+        Assert.Equal($"{{\"contractVersion\":1,\"outcome\":\"accepted\",\"offerRef\":\"{decision.OfferRefs[0]}\"}}",
+            Encoding.UTF8.GetString(accepted.SerializeOutwardCanonical()));
+    }
+
+    [Fact]
     public void AcceptedAudienceSelectionUsesTheUnchangedPrivateAdjudication()
     {
         var session = AdvanceToCombat("campaign-disclosure-accept", 12345);

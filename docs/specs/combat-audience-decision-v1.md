@@ -8,6 +8,11 @@ separately frozen (owner ruling 2026-11-20). Drafted as Task 020B (T020-Q1, 2026
 [Task 020 scoping doc](../work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md). No
 independent review is claimed. Freezing does not by itself make the surface public; that is 020D.
 
+**020D (2026-11-20):** the four Core types are now public C# API; their bytes are unchanged. Public
+visibility is not HTTP exposure. The Host route stays loopback-only Development, and Combat HTTP
+exposure is the deferred 020-HTTP phase
+([scoping §7l](../work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md#7l-020d--public-core-surface-http-exposure-deferred-owner-ruling-2026-11-20-option-c)).
+
 Artifacts:
 
 - [ordered schema](combat-audience-decision-v1.schema.json) (field/type descriptor, not JSON Schema)
@@ -17,7 +22,7 @@ Artifacts:
 
 These pin the bytes the dormant Core audience surface
 (`src/Cna.Core/Actions/CampaignCombatAudienceDecisions.cs`, 020A0–020A2) already emits. They add no
-behavior, change no event, snapshot or canonical byte, and keep every type `internal`. The prose
+behavior and change no event, snapshot or canonical byte. The types were `internal` until 020D. The prose
 contract stays [Combat contact side projection v2](combat-contact-side-projection-v2.md).
 
 ## What is covered
