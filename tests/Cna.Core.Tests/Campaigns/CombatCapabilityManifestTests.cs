@@ -86,10 +86,14 @@ public sealed class CombatCapabilityManifestTests
     [Fact]
     public void CoveredFamiliesUseExactlyTheFrozenStagesAndDurableStepKinds()
     {
-        var frozenStages = typeof(CampaignCombatAudienceDecisions)
-            .GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
-            .Where(field => field.IsLiteral && field.Name.EndsWith("Stage", StringComparison.Ordinal))
-            .Select(field => (string)field.GetRawConstantValue()!).ToHashSet();
+        // Manifest v1 records coverage by the six v1 stages only (fixed list). Contract-v2 stages
+        // added by Task 020E are covered by manifest v2, not by rewriting v1.
+        var frozenStages = new HashSet<string>(StringComparer.Ordinal)
+        {
+            CampaignCombatAudienceDecisions.SelectionStage, CampaignCombatAudienceDecisions.ForceAssignmentStage,
+            CampaignCombatAudienceDecisions.ReserveReleaseStage, CampaignCombatAudienceDecisions.CycleControlStage,
+            CampaignCombatAudienceDecisions.CustodyStage, CampaignCombatAudienceDecisions.RbaDeclineStage,
+        };
         var stepKinds = typeof(CampaignHostAcceptedStep)
             .GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
             .Where(field => field.IsLiteral && field.Name.EndsWith("Kind", StringComparison.Ordinal))
@@ -100,7 +104,7 @@ public sealed class CombatCapabilityManifestTests
         Assert.All(covered, coverage => Assert.Contains(coverage.Handler, stepKinds));
         Assert.Equal(frozenStages.Order(StringComparer.Ordinal),
             covered.Select(value => value.AudienceStage).Distinct().Order(StringComparer.Ordinal));
-        // No uncovered family names a frozen stage: the Host stage names have no audience decision.
+        // No uncovered family names a v1 stage: in v1 these Host stage names had no audience decision.
         foreach (var family in UncoveredWhenAssaultCapable)
             Assert.DoesNotContain(family, frozenStages);
     }
