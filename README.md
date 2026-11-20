@@ -41,17 +41,29 @@ Later releases can add the Air and Logistics Games, longer scenarios, the full 1
 remote multiplayer, and optional AI commanders. AI is intended to advise or play a side. It will not
 decide the rules or change campaign state on its own.
 
-The proposed [durable Orleans hosting plan](docs/work/plans/2026-10-24-orleans-hosting.md)
-records the path to multi-server campaigns and capacity benchmarks. Production hosting and
-capacity limits remain unimplemented.
+The [durable Orleans hosting plan](docs/work/plans/2026-10-24-orleans-hosting.md) records the
+path to multi-server campaigns. Its storage and scheduling groundwork has landed:
+
+- The durable campaign journal runs on PostgreSQL + Marten
+  ([migration design](docs/work/plans/2026-11-18-postgres-migration-design.md),
+  [issue #439](https://github.com/dills122/sandtable/issues/439)).
+- Outside Development, Orleans clustering and reminders use Postgres through AdoNet, so the Host
+  is no longer limited to a single dev machine for clustering.
+- A measured [capacity budget](docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md)
+  supports about 100 active campaigns per silo with histories under about 50 accepted steps. It
+  requires Server GC and a capped Postgres connection pool.
+
+There is still no released deployment: publication certification and release packaging remain
+open.
 
 ## Tech stack
 
 **Simulation engine and backend.** C# on .NET 10, run locally through .NET Aspire. Campaign hosting
-runs on Orleans grains backed by SQLite. The rules engine (`Cna.Core`) has no dependency on either
-of those: it is pure, in-process C# so it can be tested and replayed in isolation. An Intelligence
-Gateway speaks gRPC, keeping any future model-backed opponent on the other side of a firm boundary
-from authoritative game state.
+runs on Orleans grains. The durable campaign journal is stored in PostgreSQL through Marten, and
+round deadlines are enforced by per-campaign Orleans grain timers with a reminder backstop. The
+rules engine (`Cna.Core`) has no dependency on any of that: it is pure, in-process C# so it can be
+tested and replayed in isolation. An Intelligence Gateway speaks gRPC, keeping any future
+model-backed opponent on the other side of a firm boundary from authoritative game state.
 
 **Maproom (the UI).** Angular 22 with Angular Material and the CDK, Tailwind for styling, NgRx
 Signals for state, Reactive Forms through `@ngx-formly`, and Vite as the build tool. Storybook,
@@ -68,7 +80,7 @@ outside any UI.
 | Path | What lives there |
 | --- | --- |
 | `src/Cna.Core` | The deterministic rules engine. No I/O, no UI, no network. |
-| `src/Cna.OrleansHost` | Campaign hosting: Orleans grains, durable SQLite-backed state, the trusted server side. |
+| `src/Cna.OrleansHost` | Campaign hosting: Orleans grains, the durable PostgreSQL + Marten campaign journal, the trusted server side. |
 | `src/Cna.AppHost` | .NET Aspire entry point that wires up the local development service stack. |
 | `src/Cna.Maproom` | The Angular frontend: map, orders, formation ledger. See its own [README](src/Cna.Maproom/README.md). |
 | `src/Cna.Game.Contracts` | The typed HTTP contract between Maproom and the host, including a generated client. |
@@ -78,104 +90,6 @@ outside any UI.
 | `docs/` | Specs, design docs, research notes, and the current roadmap. |
 
 ## Where things stand
-
-See the [RC checklist](docs/work/plans/2026-10-24-rc-checklist.md) for current
-implementation evidence, open release gates and explicit pass criteria.
-The [six-turn working inventory](docs/work/plans/2026-11-12-graziani-playable-rc-inventory.md)
-maps scenario obligations and the remaining path to a playable release. The
-[setup draft](docs/specs/graziani-setup-draft.md) records open admission decisions;
-a source-neutral [scheduled-arrival index](docs/specs/scheduled-arrival-index-v1.md)
-now has synthetic tests but does not yet provide campaign arrival authority. A
-[synthetic obligation laboratory](docs/specs/scheduled-arrival-lab-v1.md) exercises
-owner choices, other obligations and replay without advancing a campaign. A
-[content draft analyzer](docs/specs/campaign-scheduled-arrival-content-draft-v1.md)
-checks deferred units against real content definitions without admitting them.
-A [draft identity and world contribution](docs/specs/campaign-arrival-draft-identity-v1.md)
-bind candidate content and materialize synthetic arrival values without campaign authority.
-An internal [arrival replay draft](docs/specs/campaign-arrival-replay-draft-v1.md)
-exercises canonical event bytes and receipt recovery without providing durable campaign storage.
-The [synthetic arrival profile](docs/specs/campaign-synthetic-arrival-profile-v1.md)
-fixes one repository-owned fixture; it is not an admitted campaign setup.
-An isolated [synthetic arrival phase](docs/specs/campaign-synthetic-arrival-phase-v1.md)
-exercises a Land-sequence transition, side-specific offers and replayed checkpoints.
-An internal [World6 arrival cut](docs/specs/campaign-arrival-world6-successor-v1.md)
-and [durable journal path](docs/specs/campaign-scheduled-world6-durable-host-v1.md)
-exercise synthetic creation, replay and owner receipt recovery. New journal records retain
-native preamble event bytes while older digest-only records remain readable; no public campaign
-route uses this cut.
-The production [scenario content model](docs/specs/campaign-scenario-arrival-content-v1.md)
-can describe sourced scheduled arrivals and grouped initial counters. Its versioned content
-formats preserve and hash those records, source-listed truck quantities, partial combat and weapon-source facts, and TOE seeds; legacy formats
-reject the new records. An internal [initial world constructor](docs/specs/campaign-world-v8.md)
-places grouped counters and retains deferred arrivals using those records; it does not
-admit a campaign. The normal durable journal can now persist and cold-replay a
-[source-backed initial world](docs/specs/campaign-source-creation-v1.md) with its
-pending groups and exact content bytes. This initialization-only path does not
-execute arrivals or make a scenario playable. Historical campaign admission remains unsupported.
-The production `Cna1979GrazianiCairoSourceExcerpt` builder provides the source-backed
-Cairo excerpt used in tests; its map and formation data remain incomplete.
-A separate provisional pre-game setup slice records an Axis GT2 supply availability
-roll and partial lane allocations through the normal session and durable Host journal.
-The development-only local API exposes that slice to an authenticated Axis seat.
-An operator can create it without uploading a content pack via
-`POST /api/v2/campaigns/pregame-source/graziani`; see
-[the pre-game supply spec](docs/specs/graziani-pregame-supply-v1.md) for its
-required initialization fields and incomplete, provisional scope.
-The [version 4 source authority](docs/specs/graziani-source-authority-v4.md) commits
-that plan and records bounded, private Axis and Commonwealth supply setup choices
-in the same journal, with source-backed initial-force evidence.
-Optional operator [source-force upgrades](docs/specs/graziani-source-forces-v5.md)
-retain further historical Axis and Commonwealth evidence, player setup choices,
-and selected source-backed units in the World8 state. Grouped formations, map and
-logistics remain incomplete. These upgrades cannot complete setup, advance the
-campaign, or execute the Polish arrival.
-The Commonwealth can confirm a source-backed 4th Indian Division grouping and
-reserve its existing motor pool for Central India Horse. The same grouped source
-world can retain the confirmed Matruh garrison and Maletti, including their selected
-detachments, and propose both Libyan divisions for Axis confirmation. This state is
-replayable but is not yet accepted by native movement or combat.
-The Host can also admit proposed 62 Marmarica, 63 Cirene and 64 Catanzaro groups for Axis
-confirmation, and 7th Armored and 16th Brigade groups for Commonwealth
-confirmation, through normal source setup actions and journal replay.
-Axis can optionally preplan GT3–4 supply arrivals in September through the same
-setup actions; those arrivals are in October. Other convoy cargo remains
-unresolved; no delivery is implied.
-Both owners can finish or reopen setup privately. A source-turn authority now
-retains the grouped state and random stream and includes bounded GT1 planning,
-tactical-shipping declines, initiative declaration, weather, selected convoy
-deliveries and a single-hex Polish arrival. Its start gate still rejects the
-incomplete historical map, control and contact coverage, so those turn and
-arrival transitions cannot yet be reached through a real campaign.
-After Australian training is interrupted and both sides finish opening
-Organization choices, a journaled GT1 completion step applies the provisional
-no-prior-construction ruling; the existing campaign-start gate still applies.
-GT1 stage-one convoy arrivals can then close only after all due Axis lanes are
-delivered, no units remain due, and the Commonwealth has skipped opening supply.
-The following stage-one fleet step applies the scenario's GT1 movement ban and
-undamaged starting state; later fleet operations remain unsupported.
-The first acting player can then decline reserve designation and enter its
-movement segment through the normal owner-action interface. Version-3 turns
-also let that player finish movement and advance to breakdown determination.
-The bounded no-breakdown successor supports either no movement or the exact
-4th Indian opening move; other movement histories remain blocked there.
-A [pinned historical map transcription](docs/specs/graziani-historical-map-transcription.md)
-now supplies the opening-road and Cairo-entry consistency checks, and resolves
-same-sheet contact geometry for map-bound source turns. Apart from the three
-verified C/D crossings below, remaining seam edges and grouped control are unadmitted.
-New source-turn checkpoints bind the pinned map identity and three provisionally
-approved C/D crossings; legacy turn records retain their original geometry
-and checkpoint version during replay. General cross-sheet movement remains blocked.
-Supported source setup choices can also be queried and submitted through the normal legal-action
-interface; the owning player receives its setup context and provisional rulings.
-The Commonwealth can assign the initial 1 RTR and 11 Hussars truck pools and
-choose their initial loads through this interface. Finishing with empty trucks
-clears their load-specific blocker; loaded-truck consumption and detachment
-remain unsupported. Other blockers still prevent source-turn start.
-The optional compact source checkpoint reduces new journal rows while retaining a
-requirement to replay the complete journal from genesis.
-Normal gameplay creation and journal replay can use a supplied, identity-checked Content 6
-resolver; the default Host still uses the synthetic catalog, and resolver content must remain
-available across restarts.
 
 > [!IMPORTANT]
 > Sandtable is a tested pre-alpha simulation engine, not yet a playable adaptation of the published
@@ -189,30 +103,171 @@ available across restarts.
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and evidence bundles, all from the CLI. |
 | User interface (Maproom) | Angular foundation, local read-only preview, plus a wired but unreachable action-submission path | A synthetic fixture study and a local, URL-backed campaign read mode. A real HTTP action-submission adapter and a real backend trust signal (bootstrap's `actionSubmissionTrusted`) are now wired end to end into `canSubmit` and covered by a browser test. No mounted route yet advances a campaign past its first System-only decision, so the bundled fixture never reaches a human decision point: nothing is actually clickable yet. |
 | Published scenario | Source data in progress | Six-turn Graziani's Offensive is the first target; historical campaign admission and the required Combat loop remain incomplete. |
-| Durable save and resume | Local durable Host implemented; product gate open | SQLite journal and cold replay support bounded local campaigns; schema 14 persists Selection, RBA, Force, Retreat, Custody, Reserve Release and cycle-control deadlines at decision entry; background fallback needs no owner query. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
+| Durable save and resume | Durable Host implemented; product gate open | PostgreSQL + Marten journal and cold replay support bounded campaigns. Journal schema 14 persists Selection, RBA, Force, Retreat, Custody, Reserve Release and cycle-control deadlines at decision entry. Per-campaign Orleans grain timers, backed by reminders, expire those deadlines without any owner query. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
 | Model-backed commanders | Scaffold only | The gateway and worker processes exist. No model provider is configured, and AI will not hold authority over the rules. |
 
-In plain terms: you can build the engine, run the full test suite, launch the Aspire service stack,
-and simulate the currently checked Movement, Reaction, and Breakdown paths. Native Combat is
-implemented for bounded local paths; public certification remains open. You cannot yet play a public campaign end to end.
-When an initiative holder elects to act last, the normal Combat owner and its
-timeout use the recorded first-acting side; older decisions remain replayable.
-World6 now calculates source-qualified ZOC, although its admitted content profile
-still excludes the stacks needed to produce one. Historical armor,
-reconnaissance and anti-tank ratings can contribute to that calculation without
-being admitted for combat; artillery position and player-safe ZOC disclosure
-remain open.
-An owner can explicitly pass the first side's convoy, rail, towing, maintenance
-and patrol phases through the normal journal; the checkpoint then reaches the
-second side's Reserve Designation. That side can designate eligible units and
-complete its reserve phase through the same journal. An eligible unit can then
-move one hex and stop, with contacts and any Reaction window retained through
-replay. An explicit owner completion advances to Breakdown when no Reaction is
-pending. Reaction handling, Breakdown and those optional activities remain incomplete.
+### In plain terms
+
+What you can do today:
+
+- build the engine and run the full test suite
+- launch the Aspire service stack
+- simulate the currently checked Movement, Reaction, and Breakdown paths
+- exercise native Combat on bounded local paths (public Combat certification remains open)
+
+**You cannot yet play a public campaign end to end.**
+
+Recent rule-path changes:
+
+- **Acting last.** When an initiative holder elects to act last, the normal Combat owner and its
+  timeout use the recorded first-acting side. Older decisions remain replayable.
+- **Zones of control (World6).** World6 can calculate source-qualified ZOC, but its admitted content
+  profile still excludes the stacks needed to produce one. Historical armor, reconnaissance and
+  anti-tank ratings can feed that calculation without being admitted for combat. Artillery
+  position and player-safe ZOC disclosure remain open.
+- **The second acting side.** Through the normal journal:
+  1. An owner can explicitly pass the first side's convoy, rail, towing, maintenance and patrol
+     phases. The checkpoint then reaches the second side's Reserve Designation.
+  2. The second side can designate eligible units and complete its reserve phase.
+  3. An eligible unit can move one hex and stop. Contacts and any Reaction window are retained
+     through replay.
+  4. An explicit owner completion advances to Breakdown when no Reaction is pending. A bounded
+     no-breakdown step (V46) then leads into the second side's Combat selection (V47).
+
+  Still incomplete: Reaction handling after a second-side move, vehicle breakdown, and the optional
+  convoy, rail, towing, maintenance and patrol activities themselves.
+- **Exercise Runner and Combat.** Runner setups still stop at Combat entry
+  ([#448](https://github.com/dills122/sandtable/issues/448)). Task 020 is adding a Core-owned,
+  audience-safe Combat decision surface so the runner can eventually drive full games through
+  Combat. That work is partial and not certified; see the
+  [Task 020 scoping note](docs/work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md).
+
 The [October 24 baseline evidence matrix](docs/work/reviews/2026-10-24-rc-baseline-evidence.md)
 separates these paths from original P01 certification and remaining release gates.
 
-For full detail on every contract, every merged slice, and every open gate, see the
+### Graziani's Offensive: scenario and setup progress
+
+The first published scenario is being assembled from source data. Most of this work is internal,
+synthetic, or development-only. None of it makes the scenario playable yet, and historical
+campaign admission remains unsupported.
+
+Planning documents:
+
+- The [RC checklist](docs/work/plans/2026-10-24-rc-checklist.md) holds current implementation
+  evidence, open release gates and explicit pass criteria.
+- The [six-turn working inventory](docs/work/plans/2026-11-12-graziani-playable-rc-inventory.md)
+  maps scenario obligations and the remaining path to a playable release.
+- The [setup draft](docs/specs/graziani-setup-draft.md) records open admission decisions.
+
+**Scheduled arrivals (synthetic and internal groundwork).**
+
+- A source-neutral [scheduled-arrival index](docs/specs/scheduled-arrival-index-v1.md) has
+  synthetic tests but does not yet provide campaign arrival authority.
+- A [synthetic obligation laboratory](docs/specs/scheduled-arrival-lab-v1.md) exercises owner
+  choices, other obligations and replay without advancing a campaign.
+- A [content draft analyzer](docs/specs/campaign-scheduled-arrival-content-draft-v1.md) checks
+  deferred units against real content definitions without admitting them.
+- A [draft identity and world contribution](docs/specs/campaign-arrival-draft-identity-v1.md)
+  binds candidate content and materializes synthetic arrival values, without campaign authority.
+- An internal [arrival replay draft](docs/specs/campaign-arrival-replay-draft-v1.md) exercises
+  canonical event bytes and receipt recovery. It does not provide durable campaign storage.
+- The [synthetic arrival profile](docs/specs/campaign-synthetic-arrival-profile-v1.md) fixes one
+  repository-owned fixture. It is not an admitted campaign setup.
+- An isolated [synthetic arrival phase](docs/specs/campaign-synthetic-arrival-phase-v1.md)
+  exercises a Land-sequence transition, side-specific offers and replayed checkpoints.
+- An internal [World6 arrival cut](docs/specs/campaign-arrival-world6-successor-v1.md) and
+  [durable journal path](docs/specs/campaign-scheduled-world6-durable-host-v1.md) exercise
+  synthetic creation, replay and owner receipt recovery. New journal records retain native
+  preamble event bytes; older digest-only records remain readable. No public campaign route uses
+  this cut.
+
+**Scenario content and the initial world.**
+
+- The production [scenario content model](docs/specs/campaign-scenario-arrival-content-v1.md) can
+  describe sourced scheduled arrivals and grouped initial counters. Its versioned content formats
+  preserve and hash those records, plus source-listed truck quantities, partial combat and
+  weapon-source facts, and TOE seeds. Legacy formats reject the new records.
+- An internal [initial world constructor](docs/specs/campaign-world-v8.md) places grouped counters
+  and retains deferred arrivals from those records. It does not admit a campaign.
+- The normal durable journal can persist and cold-replay a
+  [source-backed initial world](docs/specs/campaign-source-creation-v1.md) with its pending groups
+  and exact content bytes. This path covers initialization only: it does not execute arrivals or
+  make a scenario playable.
+- The production `Cna1979GrazianiCairoSourceExcerpt` builder provides the source-backed Cairo
+  excerpt used in tests. Its map and formation data remain incomplete.
+
+**Pre-game setup (provisional).**
+
+- A provisional pre-game slice records an Axis GT2 supply availability roll and partial lane
+  allocations through the normal session and durable Host journal.
+- The development-only local API exposes that slice to an authenticated Axis seat. An operator can
+  create it without uploading a content pack via `POST /api/v2/campaigns/pregame-source/graziani`.
+  The [pre-game supply spec](docs/specs/graziani-pregame-supply-v1.md) lists its required
+  initialization fields and its incomplete, provisional scope.
+- The [version 4 source authority](docs/specs/graziani-source-authority-v4.md) commits that plan
+  and records bounded, private Axis and Commonwealth supply setup choices in the same journal,
+  with source-backed initial-force evidence.
+- Optional operator [source-force upgrades](docs/specs/graziani-source-forces-v5.md) retain further
+  historical Axis and Commonwealth evidence, player setup choices, and selected source-backed
+  units in the World8 state. They cannot complete setup, advance the campaign, or execute the
+  Polish arrival. Grouped formations, map and logistics remain incomplete.
+- Formation groupings available through normal source setup actions and journal replay:
+  - The Commonwealth can confirm a source-backed 4th Indian Division grouping and reserve its
+    existing motor pool for Central India Horse.
+  - The same grouped source world can retain the confirmed Matruh garrison and Maletti, including
+    their selected detachments, and propose both Libyan divisions for Axis confirmation.
+  - The Host can admit proposed 62 Marmarica, 63 Cirene and 64 Catanzaro groups for Axis
+    confirmation, and 7th Armored and 16th Brigade groups for Commonwealth confirmation.
+
+  The 4th Indian, Matruh, Maletti and Libyan grouping state is replayable but is not yet accepted
+  by native movement or combat.
+- Axis can optionally preplan GT3–4 supply arrivals in September through the same setup actions;
+  those arrivals land in October. Other convoy cargo remains unresolved, and no delivery is
+  implied.
+- Both owners can finish or reopen setup privately.
+- Supported source setup choices can also be queried and submitted through the normal legal-action
+  interface; the owning player receives its setup context and provisional rulings.
+- Through that interface the Commonwealth can assign the initial 1 RTR and 11 Hussars truck pools
+  and choose their initial loads. Finishing with empty trucks clears their load-specific blocker.
+  Loaded-truck consumption and detachment remain unsupported, and other blockers still prevent
+  the source turn from starting.
+
+**The first game turn (source-turn authority).** A source-turn authority retains the grouped
+state and random stream. It includes bounded GT1 planning, tactical-shipping declines, initiative
+declaration, weather, selected convoy deliveries and a single-hex Polish arrival. **Its start
+gate still rejects the incomplete historical map, control and contact coverage, so none of the
+steps below can yet be reached through a real campaign.**
+
+1. After Australian training is interrupted and both sides finish opening Organization choices, a
+   journaled GT1 completion step applies the provisional no-prior-construction ruling.
+2. GT1 stage-one convoy arrivals can close only after all due Axis lanes are delivered, no units
+   remain due, and the Commonwealth has skipped opening supply.
+3. The following stage-one fleet step applies the scenario's GT1 movement ban and undamaged
+   starting state. Later fleet operations remain unsupported.
+4. The first acting player can decline reserve designation and enter its movement segment through
+   the normal owner-action interface. Version-3 turns also let that player finish movement and
+   advance to breakdown determination.
+5. The bounded no-breakdown successor supports either no movement or the exact 4th Indian opening
+   move. Other movement histories remain blocked there.
+
+**Map.** A [pinned historical map transcription](docs/specs/graziani-historical-map-transcription.md)
+supplies the opening-road and Cairo-entry consistency checks, and resolves same-sheet contact
+geometry for map-bound source turns. New source-turn checkpoints bind the pinned map identity and
+three provisionally approved C/D crossings; legacy turn records keep their original geometry and
+checkpoint version during replay. Apart from those three crossings, remaining seam edges and
+grouped control are unadmitted, and general cross-sheet movement remains blocked.
+
+**Journal and content plumbing.**
+
+- The optional compact source checkpoint reduces new journal rows, but the complete journal must
+  still be replayed from genesis.
+- Normal gameplay creation and journal replay can use a supplied, identity-checked Content 6
+  resolver. The default Host still uses the synthetic catalog, and resolver content must remain
+  available across restarts.
+
+### Further detail
+
+For every contract, every merged slice, and every open gate, see the
 [current roadmap](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates), the
 [first-release audit](docs/research/2026-10-05-first-release-audit.md), and the
 [Combat implementation plan](docs/design/combat-cycle-implementation-plan.md).
@@ -224,7 +279,8 @@ For full detail on every contract, every merged slice, and every open gate, see 
 - [.NET SDK 10.0.302 or later in the .NET 10 feature band](https://dotnet.microsoft.com/en-us/download/dotnet/10.0), pinned in `global.json`
 - [Just](https://just.systems/), optional; the commands below assume it
 - Git
-- Docker, only if you want the containerized Proving Ground preview
+- Docker, for the `Cna.OrleansHost` tests (they start a disposable PostgreSQL container through
+  Testcontainers) and for the containerized Proving Ground preview
 
 Check your SDK with `dotnet --version`. This repo uses Microsoft.Testing.Platform's native runner,
 so `dotnet test` needs `--solution` for the whole solution or `--project` for one test project. A
@@ -258,6 +314,12 @@ This opens the Aspire dashboard at the URL printed in the terminal, showing the 
 Decision Worker, and Intelligence Gateway. It launches the development service stack, not a
 playable Maproom on its own. Stop with <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 AppHost uses Aspire SDK 13.6.5. Builds may report ASPIRE010 when the optional CLI bundle is disabled.
+
+The durable campaign journal is off unless `SANDTABLE_POSTGRES_HOT_CONNECTION_STRING` and
+`CampaignJournal:OperatorSecret` are set. Copy [`.env.example`](.env.example) to `.env` for local
+Postgres values. Outside Development the Host also requires
+`SANDTABLE_POSTGRES_ORLEANS_CONNECTION_STRING` for clustering and reminders; Development keeps
+localhost clustering.
 
 ### Run the Maproom UI
 
@@ -343,11 +405,15 @@ some of which currently fail due to known source-pin drift. Check the
 [verification inventory](docs/research/combat-verification-pin-maintenance.md) before treating an
 older passing run as current evidence on Combat contracts specifically.
 
-CI now runs in three tiers. Pull requests run only the `fast-*`/`r02-*`/`exercise`/`contracts`
-shards (`long-*` excluded) to keep the required pipeline fast, with a target under ten minutes.
-Pushes to `main` run the unchanged full suite as the post-merge safety net. Orleans and the six
-`p01-*` proof families no longer run on either trigger; they run nightly on a schedule
-(`.github/workflows/ci-nightly-heavy.yml`). Adding a large test class may require updating the
+CI runs in three tiers:
+
+- **Pull requests** run only the `fast-*`/`r02-*`/`exercise`/`contracts` shards (`long-*`
+  excluded), targeting under ten minutes.
+- **Pushes to `main`** run the full suite as the post-merge safety net.
+- **Nightly** (`.github/workflows/ci-nightly-heavy.yml`) runs Orleans and the six `p01-*` proof
+  families, which no longer run on either trigger above.
+
+Adding a large test class may require updating the
 [long-suite manifest](.github/scripts/long-suite-weights.md). An optional, label-triggered PR
 review pass for high-risk changes is also available; see the
 [runbook](docs/runbooks/optional-code-review.md). It supplements ordinary CI and review, and does
@@ -381,13 +447,14 @@ not replace either.
 
 ## Further reading
 
-- [Private Combat evidence revisions](docs/specs/combat-evidence-revisions-v1.md): frozen legacy/PR334/Snapshot dependency sets, replay compatibility, consumption-time rechecks, and explicit original P01 archive selection.
-
 - [Documentation index](docs/README.md): every spec, design doc, and research note
 - [Technical design](tech-design.md): architecture, authority boundaries, integration rationale
 - [Naming and vocabulary](naming-overview.md): what things are called and why
 - [Contributor guide](CONTRIBUTING.md): the full branch, verification, and PR workflow
 - [Roadmap](docs/roadmap/pre-alpha-roadmap.md): current checkpoint and what is gated behind what
+- [Private Combat evidence revisions](docs/specs/combat-evidence-revisions-v1.md): frozen
+  legacy/PR334/Snapshot dependency sets, replay compatibility, consumption-time rechecks, and
+  explicit original P01 archive selection
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers. Maproom
 > shows.

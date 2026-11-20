@@ -26,9 +26,27 @@ Core chunks reuse existing tests and CI allocation without changing runtime boun
 
 The [architecture record](docs/design/durable-orleans-campaign-hosting.md) and
 [phased plan](docs/work/plans/2026-10-24-orleans-hosting.md) describe durable campaign grains,
-shared transactional storage, deadlines, migration and capacity gates. These are proposals;
-current SQLite and temporary grain paths remain unchanged. Reconcile the remote-I/O boundary
-explicitly before implementing durable grains.
+shared transactional storage, deadlines, migration and capacity gates. Issue #439 has since
+implemented the storage and scheduling parts:
+
+- The durable campaign journal moved off SQLite onto PostgreSQL + Marten: one event stream per
+  campaign plus optimistic-concurrency documents, through `CampaignDurableAuthorityJournal`,
+  `CampaignDurableAuthorityJournalStore` and `CampaignJournalWorkingSet`. The working set is a
+  process-private, in-memory relational scratch copy for one unit of work; it is not a store, and
+  each unit of work flushes to Postgres in one transaction. The former SQLite file store survives
+  only as the test-side equivalence baseline.
+- Outside Development, Orleans clustering and reminders run against Postgres through AdoNet
+  (PR #444), so the Host is no longer limited to a single dev machine for clustering. Development
+  keeps localhost clustering.
+- Round deadlines no longer use a cross-campaign sweep (`CampaignCombatTimeoutService` was retired
+  in Phase C3a). Each campaign arms per-round-kind `CampaignRoundTimeoutGrain` timers, with a
+  coarse Orleans reminder as a durability backstop.
+- The [Phase D benchmark](docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md)
+  records the supported budget: about 100 active campaigns per silo, histories under about 50
+  accepted steps, Server GC, and a capped Postgres connection pool.
+
+`Cna.Core` keeps no persistence dependency. Read the architecture record's remote-I/O policy gate
+before changing how grains await storage.
 
 ## Project website
 
@@ -87,17 +105,18 @@ late responses are isolated by seat generation.
 
 The first connected test uses an explicitly temporary synthetic rules-lab session. Durable
 publication and restore are later contract/provider gates, with external I/O coordinated outside
-authoritative grain turns. PostgreSQL + Marten is the accepted direction for the durable campaign
-journal (`docs/work/plans/2026-11-18-postgres-migration-design.md`, issue #439); infrastructure
-foundation (Phase A) has landed, the actual journal migration (Phase C) has not.
+authoritative grain turns. The durable campaign journal now runs on PostgreSQL + Marten
+(`docs/work/plans/2026-11-18-postgres-migration-design.md`, issue #439, completed through
+PRs #440–#445, #447 and #450).
 This lane does not activate private Combat or satisfy six-turn MVP acceptance.
 
 The [Proving Ground runbook](docs/runbooks/proving-ground.md) now defines a containerized
 Development preview: one built Angular shell and one single-silo Orleans host, both bound to host
 loopback. It deliberately omits database, gateway and worker from the minimal human-order path.
 Bounded local browser bootstrap, single-fixture creation, seat grants and initial read exist.
-Public action submission, receipt lookup and durable save do not. Production clustering and
-durable publication/restore remain gates before a Kubernetes deployment can replace this profile.
+Public action submission, receipt lookup and durable save do not. Production clustering is now
+configured outside Development (Postgres AdoNet, above); durable publication/restore remains a
+gate before a Kubernetes deployment can replace this profile.
 
 The [Field Atlas design system](docs/design/maproom-design-system-v0.md) starts with minimal semantic
 tokens and controls, then evolves through an operational map, order workflow and dense formation
@@ -893,7 +912,7 @@ and an internal owner movement cut binds its contact view and visible movement o
 to the same authority version. The trusted Host adapter receives canonical owner-visible
 bytes separately from the private authority fence and Core action map. The normal Host's
 [durable authority journal](docs/specs/campaign-durable-authority-journal-v1.md) now retains
-canonical creation and accepted-step evidence in SQLite, commits each step with its head,
+canonical creation and accepted-step evidence in its PostgreSQL + Marten store, commits each step with its head,
 atomically retains the corresponding canonical contact records, and requires full Core replay
 and contact comparison before a cold read or next append. Its durable side grants
 and credentials are bound to revocable seat epochs. An internal owner-opening query stores
@@ -908,7 +927,7 @@ record the exact Barrage successor and verify the resulting V12 checkpoint throu
 Host import replay. For an accepted voluntary finish, Core now records one V13 System event with
 the five exact remaining no-attack structural successors through same-slot Reserve Release entry;
 replay rejects forged or omitted positions and preserves prior World and contact records. The
-normal Host commits owner decision and System completion in one SQLite transaction, then returns
+normal Host commits owner decision and System completion in one journal transaction, then returns
 the owner's retained receipt across restart. A selected infantry assault takes a V14 System
 no-effect Barrage step to the same-slot Retreat Before Assault position. Core replay verifies
 its source capability and exact route, and Host retains both steps atomically. Defender
@@ -936,7 +955,7 @@ Core V17 records two owner-only seals at Force Assignment. Core V18 System
 completion then reaches Anti Armor. Normal Host retains each accepted seal
 under its own seat, opaque ref and cold-replay receipt, appending V18 with the
 second seal atomically. Normal campaign creation now accepts an explicit seven-window
-timing configuration, serializes its exact rules/content-bound bytes into SQLite schema 14, and binds them in
+timing configuration, serializes its exact rules/content-bound bytes into journal schema 14, and binds them in
 the initial journal hash. Existing schema-5/6/7/8/9/10/11/12/13 journals remain read-only; mutation
 requires schema 14. Missing configuration triggers Selection no-selection at entry;
 no later Force Assignment opening or seal is offered.
@@ -944,8 +963,8 @@ The normal Host stores a shared Force Assignment round for both seats with trust
 deadline and high-water times. It gates each seal, retains a Core V19 cancellation after
 deadline or clock failure, and verifies round status and evidence on cold replay.
 Schema 14 creates the Force round atomically with accepted RBA decline, using the
-trusted timestamp from its RBA gate and the pinned Force budget. The hosted combat
-timeout service sweeps collecting rounds even when neither owner queries an opening.
+trusted timestamp from its RBA gate and the pinned Force budget. Per-campaign
+`CampaignRoundTimeoutGrain` timers expire collecting rounds even when neither owner queries an opening.
 Queries and restarts cannot renew the entry deadline; a missing round rejects.
 Cold verification binds Force opening time to the completed RBA round’s retained
 trusted high-water timestamp.
@@ -1088,7 +1107,7 @@ assault uses a retained reducer rooted in V31's actual World, random cursor,
 and same-cut contact journal. It replays V14, defender V16 move or V15 decline,
 two V17 seals, V18/V20/V22,
 defender V23, V24 World settlement, V25 custody, and V26/V27/V28 continuation.
-The normal Host uses existing authenticated seats and SQLite event kinds;
+The normal Host uses existing authenticated seats and journal event kinds;
 historical V11 is not replaced. A registered two-attacker content regression
 shows a fresh reserve unit completing the second assault while spent or damaged
 first attackers remain subject to ordinary resource rules. The local HTTP owner

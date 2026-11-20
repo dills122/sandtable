@@ -195,7 +195,7 @@ Normal campaign timing configuration is an explicit seven-window parent
 binding retained in the durable Host journal; absent configuration blocks
 Force Assignment opening and seals. Schema-5/6/7/8/9/10/11/12/13 journals stay read-only. Schema 14 retains one shared Force round for both seats at accepted RBA decline;
 trusted deadline/high-water checks close incomplete rounds through Core V19 without
-inventing an owner seal. The combat timeout service ticks these persisted Force
+inventing an owner seal. Per-campaign round timeout grains tick these persisted Force
 rounds even when neither owner queries an opening. The entry deadline never resets
 on query or restart. Schema 14 also retains an RBA round at Barrage entry.
 Background expiry records native V33 `combat-rba-cancelled`, preserving retreat
@@ -207,8 +207,8 @@ V19 System cancellation before a Force round exists when the selected contact
 has no payable pinned role pair or timing envelope; it does not alter visible offer presence.
 V34 names the explicit System cycle timeout: completed Reserve Release starts
 a durable deadline, and expiry finishes the phase without fabricating an owner
-choice or changing World/RNG. The combat timeout service keeps cycle-control
-pagination separate from Selection, RBA, Force, Retreat, Custody and Reserve Release.
+choice or changing World/RNG. Cycle-control deadlines use their own per-campaign
+round timeout grain, separate from Selection, RBA, Force, Retreat, Custody and Reserve Release.
 V38 names explicit System Selection timeout: `no-selection` binds initial or
 repeated decision entry, then uses native no-work continuation without an owner
 choice. Its System identity is distinct from V12/V31 owner selection bytes.
