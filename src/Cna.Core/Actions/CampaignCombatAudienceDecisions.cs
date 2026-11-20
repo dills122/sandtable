@@ -325,6 +325,13 @@ internal static class CampaignCombatAudienceDecisions
                     }
                 case ForceAssignmentStage:
                     {
+                        // A cancelled Force round (timeout or V19 force-unavailable) offers nothing.
+                        // The private cut still projects after cancellation and only submission
+                        // rejects it; the audience surface must not show an unsubmittable offer.
+                        var cancelled = session.CurrentRepeatAssault is { Decline: not null, ForceCompletion: null } repeat
+                            ? repeat.ForceCancellation is not null
+                            : session.CurrentCombatForceCancellation is not null;
+                        if (cancelled) return null;
                         var cut = CampaignExercises.QueryContactForceAssignmentCut(session, side);
                         if (cut.SealOffer.ElementId != actingElementId || cut.OwnerSide != side) return null;
                         observation = cut.ContactObservation;
