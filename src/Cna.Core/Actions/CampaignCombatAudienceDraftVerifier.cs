@@ -6,9 +6,8 @@ namespace Cna.Core.Actions;
 
 // Task 020B (DRAFT for owner review; not frozen). Byte-level verifier for the audience decision and
 // outcome envelopes produced by CampaignCombatAudienceDecisions, checked against the draft schema in
-// docs/specs/combat-audience-decision-draft-v1.schema.json. Covers only the four built round kinds.
-// Custody (T020-Q5), forced/surprise transitions (T020-Q2) and the non-combat-unit Selection
-// disposition (T020-Q8) are unresolved and deliberately not modeled: an uncovered stage fails.
+// docs/specs/combat-audience-decision-draft-v1.schema.json. Covers Selection, Force Assignment,
+// Reserve Release, Cycle Control and decline-only RBA (020A4). Any other stage fails as uncovered.
 
 /// <summary>Checks one decision or outcome byte string against the draft successor contract.</summary>
 internal static partial class CampaignCombatAudienceDraftVerifier
@@ -44,6 +43,13 @@ internal static partial class CampaignCombatAudienceDraftVerifier
             [
                 "contractVersion", "campaignId", "side", "cycleOrdinal", "choices",
             ]),
+            // 020A4: decline-only RBA codec (CampaignContactRbaDeclineOwnerVisibleCutV1). It has no
+            // moveOffers, locations, edges or initiallyAdjacentToKnownEnemy field by design.
+            [CampaignCombatAudienceDecisions.RbaDeclineStage] = (1,
+            [
+                "contractVersion", "campaignId", "side", "positionId", "defenderFormationId",
+                "contactAudienceRevision", "contactObservation", "ownElements", "declineOffer",
+            ]),
         };
 
     /// <summary>Property names that must not appear anywhere in outward bytes.</summary>
@@ -59,6 +65,7 @@ internal static partial class CampaignCombatAudienceDraftVerifier
     public static readonly IReadOnlyList<string> FinishOfferFields = ["kind", "actingElementId"];
     public static readonly IReadOnlyList<string> SealOfferFields =
         ["kind", "role", "elementId", "componentId", "committedToe"];
+    public static readonly IReadOnlyList<string> DeclineOfferFields = ["kind", "elementId"];
 
     public static readonly string RejectedOutcome = "{\"contractVersion\":1,\"outcome\":\"rejected\"}";
 
@@ -242,6 +249,24 @@ internal static partial class CampaignCombatAudienceDraftVerifier
                     }
                     if (Text(seal, "elementId") != actor || Text(seal, "role") != Text(visible, "role"))
                         failures.Add("offer-binding");
+                    return 1;
+                }
+            case CampaignCombatAudienceDecisions.RbaDeclineStage:
+                {
+                    if (Text(visible, "side") != audience) failures.Add("visible-binding");
+                    if (!TryLong(visible, "contactAudienceRevision", out var contactRevision)
+                        || contactRevision != revision || revision < 1)
+                        failures.Add("audience-revision");
+                    CheckObservation(visible, campaignId, audience, revision, failures);
+                    if (!visible.TryGetProperty("declineOffer", out var decline)
+                        || decline.ValueKind != JsonValueKind.Object
+                        || !Names(decline).SequenceEqual(DeclineOfferFields)
+                        || Text(decline, "kind") != "decline-retreat-before-assault")
+                    {
+                        failures.Add("offer-shape");
+                        return 1;
+                    }
+                    if (Text(decline, "elementId") != actor) failures.Add("offer-binding");
                     return 1;
                 }
             case CampaignCombatAudienceDecisions.ReserveReleaseStage:

@@ -10,8 +10,9 @@ namespace Cna.Core.Tests.Actions;
 
 /// <summary>
 /// Task 020B (DRAFT for owner review; not frozen): the draft CMB-CON-005 successor schema, goldens,
-/// rejection vectors and verifier for the four built round kinds. Custody, forced/surprise and the
-/// non-combat-unit disposition are unresolved (T020-Q5/Q2/Q8) and intentionally absent.
+/// rejection vectors and verifier for Selection, Force Assignment, Reserve Release, Cycle Control and
+/// decline-only RBA (020A4). Custody is not yet modeled; forced/surprise and the non-combat-unit
+/// disposition need no visible-byte rule under the 2026-11-20 rulings (T020-Q2/Q8).
 /// </summary>
 public sealed class CombatCycleDisclosureDraftContractTests
 {
@@ -104,8 +105,11 @@ public sealed class CombatCycleDisclosureDraftContractTests
             CampaignCombatAudienceDecisions.Submit(reserve, reserveDecision.Choose(0)).TrustedStep!.SuccessorSession!);
         var forceOther = CampaignCombatAudienceDecisions.QueryForceAssignment(force,
             CampaignActionAudience.Commonwealth, "commonwealth-infantry")!;
+        var rba = CombatCycleDisclosureRbaDeclineTests.AtRba("campaign-con005-draft-rba", 12345);
         (string Stage, ExerciseSession Session, CampaignCombatAudienceDecision Decision)[] cases =
         [
+            ("rba-decline", rba, CampaignCombatAudienceDecisions.QueryRbaDecline(rba,
+                CampaignActionAudience.Commonwealth, "commonwealth-infantry")!),
             ("combat-selection", selection, CampaignCombatAudienceDecisions.QuerySelection(selection,
                 CampaignActionAudience.Axis, "axis-infantry")!),
             ("force-assignment", force, CampaignCombatAudienceDecisions.QueryForceAssignment(force,
@@ -240,6 +244,39 @@ public sealed class CombatCycleDisclosureDraftContractTests
         });
     }
 
+    [Fact]
+    public void VerifierCatchesTamperedRbaDeclineCuts()
+    {
+        var golden = GoldenBytes(Golden(Fixture(), "rba-decline-commonwealth"));
+        AssertCommonTampers(golden, "contactObservation");
+        AssertCaught(golden, "offer-binding", value =>
+        {
+            Visible(value)["declineOffer"]!["elementId"] = "commonwealth-truck";
+            Resign(value);
+        });
+        AssertCaught(golden, "offer-shape", value =>
+        {
+            Visible(value)["declineOffer"]!["kind"] = "retreat-before-assault-move";
+            Resign(value);
+        });
+        // A move offer smuggled into the decline-only codec is a field-set violation.
+        AssertCaught(golden, "visible-fields", value =>
+        {
+            Visible(value)["moveOffers"] = new JsonArray();
+            Resign(value);
+        });
+        AssertCaught(golden, "visible-binding", value =>
+        {
+            Visible(value)["side"] = "axis";
+            Resign(value);
+        });
+        AssertCaught(golden, "audience-revision", value =>
+        {
+            Visible(value)["contactAudienceRevision"] = 99;
+            Resign(value);
+        });
+    }
+
     // Tampers every covered round kind must reject. `nestedObject` names a visible sub-object used
     // to plant a private field without also changing the visible top-level field list.
     private static void AssertCommonTampers(byte[] golden, string? nestedObject)
@@ -364,6 +401,14 @@ public sealed class CombatCycleDisclosureDraftContractTests
                         valid.Audience, valid.ActingElementId).PrivateCombatActionIds[0],
                 },
                 "other-owner-ref" => valid with { OfferRef = forceOther.OfferRefs[0] },
+                "rba-private-decline-action-id" => valid with
+                {
+                    OfferRef = CampaignExercises.QueryContactRbaCut(session).DeclineOffer.ActionId,
+                },
+                "rba-private-move-action-id" => valid with
+                {
+                    OfferRef = CampaignExercises.QueryContactRbaCut(session).MoveOffers[0].ActionId,
+                },
                 "other-owner-digest" => valid with { VisibleDigest = forceOther.VisibleDigest },
                 var other => throw new InvalidOperationException($"Unknown derivation {other}."),
             };
@@ -401,8 +446,11 @@ public sealed class CombatCycleDisclosureDraftContractTests
             CampaignActionAudience.Axis, "axis-infantry-second")!;
         var cycle = CombatCycleDisclosureReserveCycleTests.Complete(
             CampaignCombatAudienceDecisions.Submit(reserve, reserveDecision.Choose(0)).TrustedStep!.SuccessorSession!);
+        var rba = CombatCycleDisclosureRbaDeclineTests.AtRba("campaign-con005-draft-rba", 12345);
         return new(StringComparer.Ordinal)
         {
+            ["rba-decline-commonwealth"] = CampaignCombatAudienceDecisions.QueryRbaDecline(rba,
+                CampaignActionAudience.Commonwealth, "commonwealth-infantry")!,
             ["selection-axis-first-cut"] = CampaignCombatAudienceDecisions.QuerySelection(selection,
                 CampaignActionAudience.Axis, "axis-infantry")!,
             ["force-assignment-axis"] = CampaignCombatAudienceDecisions.QueryForceAssignment(force,

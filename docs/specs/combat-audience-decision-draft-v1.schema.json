@@ -17,7 +17,7 @@
   "objects": {
     "Decision": "contractVersion:int=1 campaignId:id audience:Audience stage:Stage actingElementId:id audienceRevision:long visibleDigest:sha256 visible:Visible<stage> offerRefs:OfferRef[1..]",
     "Audience": "\"axis\" | \"commonwealth\"",
-    "Stage": "\"combat-selection\" | \"force-assignment\" | \"reserve-release\" | \"cycle-control\"",
+    "Stage": "\"combat-selection\" | \"force-assignment\" | \"reserve-release\" | \"cycle-control\" | \"rba-decline\"",
     "sha256": "\"sha256:\" + 64 lowercase hex over the exact visible value bytes",
     "OfferRef": "\"cmbref.v1.\" + 64 lowercase hex = SHA-256(RefPreimage)",
     "RefPreimage": "compact JSON {domain:\"sandtable.combat-audience-ref.v1\", campaignId, audience, stage, actingElementId, visibleDigest, ordinal:int}",
@@ -25,7 +25,8 @@
     "Outcome": "{\"contractVersion\":1,\"outcome\":\"rejected\"} | {\"contractVersion\":1,\"outcome\":\"accepted\",\"offerRef\":OfferRef}",
     "AssaultOffer": "kind:\"select-contact-assault\" actingElementId:id contactHandle:id apparentLocationId:id",
     "FinishOffer": "kind:\"finish-combat-without-attack\" actingElementId:id",
-    "SealOffer": "kind:\"seal-combat-force-assignment\" role:id elementId:id componentId:id committedToe:int"
+    "SealOffer": "kind:\"seal-combat-force-assignment\" role:id elementId:id componentId:id committedToe:int",
+    "DeclineOffer": "kind:\"decline-retreat-before-assault\" elementId:id"
   },
   "stages": {
     "combat-selection": {
@@ -90,6 +91,23 @@
       "audienceRevision": "0 (no contact observation; visible digest is the only fence; T020-Q4 in-process subset)",
       "side": "enum spelling \"Axis\" | \"Commonwealth\" (as emitted by V28)",
       "offers": "len(choices), distinct; actingElementId = \"cycle-control\""
+    },
+    "rba-decline": {
+      "visibleContractVersion": 1,
+      "visibleFields": [
+        "contractVersion",
+        "campaignId",
+        "side",
+        "positionId",
+        "defenderFormationId",
+        "contactAudienceRevision",
+        "contactObservation",
+        "ownElements",
+        "declineOffer"
+      ],
+      "audienceRevision": "contact: >= 1; equals visible.contactAudienceRevision and visible.contactObservation.audienceRevision",
+      "side": "lowercase audience name (bound defender's side)",
+      "offers": "exactly 1 (declineOffer); declineOffer.elementId = actingElementId. Codec CampaignContactRbaDeclineOwnerVisibleCutV1 (020A4, T020-Q7 option b): no moveOffers, locations, edges or initiallyAdjacentToKnownEnemy"
     }
   },
   "forbiddenKeys": [
@@ -107,13 +125,13 @@
     "seed"
   ],
   "notCovered": [
-    { "stage": "custody", "reason": "T020-Q5 custody/replacement inference allowlist unresolved" },
-    { "stage": "retreat-before-assault", "reason": "deferred by owner (T020-Q7 unseen-encounter policy)" },
+    { "stage": "custody", "reason": "T020-Q5 resolved 2026-11-20 (V1 captor cut is the allowlist); the custody stage is built in the Core audience surface (#457) but not yet modeled in this draft" },
+    { "stage": "retreat-before-assault", "reason": "RBA movement is outside the bounded CMB-POL-001 profile (T020-Q7 ruled 2026-11-20); only decline-only RBA is covered, as rba-decline" },
     { "stage": "post-assault-retreat", "reason": "not built; likely T020-Q7 family, unchecked" },
     { "stage": "repeat-movement", "reason": "not built in the Core audience surface" },
     { "stage": "repeat-combat-selection", "reason": "not built; T020-Q8 applies to Selection generally" },
-    { "transition": "forced and surprise Combat", "reason": "T020-Q2 unresolved; no transition is modeled" },
-    { "disposition": "contact bound to a non-combat unit", "reason": "T020-Q8 unresolved; the verifier cannot tell from visible bytes whether a Selection target has a Force slot" },
+    { "transition": "forced and surprise Combat", "reason": "T020-Q2 ruled 2026-11-20: out of the bounded profile and rejected at content admission; no transition is modeled" },
+    { "disposition": "contact bound to a non-combat unit", "reason": "T020-Q8 ruled 2026-11-20 (option c): the Selection offer stays; the downstream V19 force-unavailable System cancellation handles it, so no visible-byte rule applies" },
     { "manifest": "closed capability manifest", "reason": "T020-Q3 assigned to Task 021" },
     { "binding": "Host HMAC public refs", "reason": "T020-Q4: Core visible-values-only refs are the in-process subset; Host HMAC layering precedes 020D" }
   ]

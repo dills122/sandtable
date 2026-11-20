@@ -138,6 +138,8 @@ internal static class CampaignCombatAudienceDecisions
     /// <summary>Cycle control belongs to the side, not an element; this fixed subject names it.</summary>
     public const string CycleControlSubject = "cycle-control";
     public const string CustodyStage = "custody";
+    /// <summary>Decline-only Retreat Before Assault (bounded CMB-POL-001; T020-Q7 option b).</summary>
+    public const string RbaDeclineStage = "rba-decline";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -158,6 +160,11 @@ internal static class CampaignCombatAudienceDecisions
     public static CampaignCombatAudienceDecision? QueryReserveRelease(ExerciseSession session,
         CampaignActionAudience audience, string reserveElementId) =>
         Query(session, audience, ReserveReleaseStage, reserveElementId);
+
+    /// <summary>Bound defender's decline-only Retreat Before Assault decision (020A4).</summary>
+    public static CampaignCombatAudienceDecision? QueryRbaDecline(ExerciseSession session,
+        CampaignActionAudience audience, string defenderElementId) =>
+        Query(session, audience, RbaDeclineStage, defenderElementId);
 
     /// <summary>Repeat-or-finish decision after completed Reserve Release (020A2).</summary>
     public static CampaignCombatAudienceDecision? QueryCycleControl(ExerciseSession session,
@@ -225,6 +232,8 @@ internal static class CampaignCombatAudienceDecisions
                     command, decision.ActingElementId),
                 CycleControlStage => CampaignHostAdapter.SubmitNativeCycleControl(session, command),
                 CustodyStage => CampaignHostAdapter.SubmitNativeCombatCustody(session, command,
+                    decision.ActingElementId),
+                RbaDeclineStage => CampaignHostAdapter.SubmitContactDefenderRbaDecline(session, command,
                     decision.ActingElementId),
                 _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
             };
@@ -298,6 +307,17 @@ internal static class CampaignCombatAudienceDecisions
                             audience, actingElementId);
                         visible = draft.VisibleBytes;
                         privateIds = draft.PrivateActionIds.ToArray();
+                        break;
+                    }
+                case RbaDeclineStage:
+                    {
+                        // Only the bound defender's own decline; Core move offers are never exposed
+                        // or mapped (RBA movement is outside the bounded profile).
+                        var cut = CampaignExercises.QueryContactRbaCut(session);
+                        if (cut.DefenderSide != side || cut.DefenderElementId != actingElementId) return null;
+                        observation = cut.ContactObservation;
+                        visible = CampaignContactRbaDeclineOwnerVisibleCutV1.SerializeCanonical(cut);
+                        privateIds = [cut.DeclineOffer.ActionId];
                         break;
                     }
                 case CycleControlStage:

@@ -58,7 +58,7 @@ unsupported profiles/terminals before decisions; keep old readers and recovery. 
 | T020-Q3 | Closed capability manifest at activation | No `CapabilityManifest` exists in Core. Shape, family list and restore revalidation are unspecified beyond the fog spike's prose. Probably 021-owned, but the plan lists "capability-closure negatives" under 020 verification. Owner should assign. | **Resolved 2026-11-19 (owner, relayed):** assigned to Task 021, not 020. |
 | T020-Q4 | Core public-ref derivation | v2: refs "derive only from approved owner-visible values and Host-issued opening identity". Exercise has no Host. Slice 1 uses a visible-values-only derivation (digest + ordinal + stage + element + audience + campaign) and keeps the type `internal`. Owner should confirm this is the in-process subset, with Host HMAC layered on top, before it becomes public. | **Resolved 2026-11-19 (owner, relayed):** confirmed acceptable as the in-process subset for now; Host HMAC layering is required before anything goes public (020D). |
 | T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. | **Resolved 2026-11-20 (owner, relayed):** the existing `CampaignContactCustodyOwnerVisibleCutV1` field set (`campaignId`, `captorElementId`, `captiveQuantity`, `offers[kind, route]`) is the allowlist; no change. Custody built in 020A3 (§7c). The 020B draft verifier still treats `custody` as uncovered; the draft has not been extended. |
-| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. | **Resolved 2026-11-20 (owner, relayed):** RBA movement stays excluded (outside `CMB-POL-001`, which adopts decline-only RBA). Build RBA decline-only; do not build movement. Building decline-only raised a codec question; see §7c. |
+| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. | **Resolved 2026-11-20 (owner, relayed):** RBA movement stays excluded (outside `CMB-POL-001`, which adopts decline-only RBA). Build RBA decline-only; do not build movement. Building decline-only raised a codec question (§7c); the owner chose option (b), a new decline-only codec, built in 020A4 (§7g). |
 | T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. | **Resolved 2026-11-20 (owner, relayed), revised the same day:** the first ruling (exclude the offer) conflicted with the fog rule (§7e); the owner then chose option (c): keep the Selection offer unchanged and rely on the existing V19 `force-unavailable` System cancellation downstream. Confirmed by tests in §7e. |
 | T020-Q6 | Host/Core mapping duplication | Slice 1 duplicates the Host's re-project/byte-compare/ordinal-map rule in Core. Long-term the Host should consume the Core mapping (021 or a follow-up), or the two can diverge. | **Resolved 2026-11-19 (owner, relayed):** deferred to 020D; not fixed now. |
 
@@ -244,7 +244,7 @@ visible digest is the fence (same rule as Reserve Release / Cycle Control).
 Fixture: `rules-lab.breakdown.reaction.combat-double-fresh.v1`; seeds 5 and 20 capture with Axis
 as captor (found by a one-off local probe over seeds 1–40; only those two captured).
 
-**RBA decline-only (stopped).** The existing defender cut
+**RBA decline-only (stopped here; resolved by option (b), see §7g).** The existing defender cut
 `CampaignContactRetreatBeforeAssaultOwnerVisibleCutV1` always serializes a `moveOffers` array, and in
 the bounded fixture that array is non-empty (Core derives one-edge moves). "Same pattern as the
 other four" would publish those bytes, which then advertise move offers that have no ref. The
@@ -256,7 +256,7 @@ alternatives each need an owner call:
 - (c) change Core's bounded-profile RBA cut to derive no move offers under `CMB-POL-001` (changes
   existing V1 bytes and the Host's dev-route RBA opening).
 
-Nothing for RBA is built.
+Nothing for RBA was built in 020A3.
 
 ## 7d. Slice 020C — bounded-profile ZOC rejection (Q2)
 
@@ -340,17 +340,32 @@ Options for the owner:
 
 Not unblocked. The plan's hard gate for outward Task 020 work is a **frozen** `CMB-CON-005`
 successor. The 020B artifacts are a draft for owner review, not frozen. Q4's ruling also requires
-Host HMAC layering before anything goes public. The draft does not yet cover Custody, and RBA
-decline-only (§7c) and Q8 (§7e) are unresolved.
+Host HMAC layering before anything goes public. The draft does not yet model Custody. Q8 is
+settled (§7e) and RBA decline-only is built (§7g).
 
-## 8. Still pending after 020A0/020A1/020A2/020B-draft
+## 7g. Slice 020A4 — decline-only RBA (Q7 option b)
+
+- New codec `CampaignContactRbaDeclineOwnerVisibleCutV1`: `contractVersion, campaignId, side,
+  positionId, defenderFormationId, contactAudienceRevision, contactObservation, ownElements,
+  declineOffer`. It drops `moveOffers`, `locations`, `edges` and `initiallyAdjacentToKnownEnemy`,
+  which only serve RBA movement. The field selection is an author choice for owner review.
+- Internal `rba-decline` stage (`QueryRbaDecline`): bound defender's seat and element only; one ref
+  for the decline via the unchanged `SubmitContactDefenderRbaDecline`. Core's RBA move derivation is
+  unchanged and its move offers are never published or mapped.
+- `CombatCycleDisclosureRbaDeclineTests`, 5 rows: no moves published although Core derives them;
+  private-path parity and reconstruction; 13 rejection causes plus cross-entry share one envelope;
+  a timed-out RBA window offers nothing; seed-fork equality with cross-fork acceptance.
+- 020B draft extended (still DRAFT, not frozen): spec, schema, golden `rba-decline-commonwealth`,
+  14 rejection vectors, verifier rules and `VerifierCatchesTamperedRbaDeclineCuts`.
+
+## 8. Still pending
 
 Covered (dormant, internal): Selection (first-side initial cut), Force Assignment (both seal
-orders), Reserve Release, Cycle Control. These are every round kind not blocked on an owner ruling.
-Draft freeze artifacts exist for these four (§7b); freezing is the owner's action.
+orders), Reserve Release, Cycle Control, Custody, decline-only RBA. Draft freeze artifacts cover all
+of these except Custody (§7b, §7g); freezing is the owner's action.
 
-Waiting on owner rulings: RBA (deferred, Q7), Custody (Q5), post-assault Retreat (likely Q7-family,
-unchecked), repeat V31 and second-side V47 selection (Q8 applies to Selection generally),
-forced/surprise (C, Q2). Assigned elsewhere: capability manifest (021, Q3), Host HMAC and Host
-consolidation (020D, Q4/Q6). Also open: owner freeze of the 020B draft, terminal-reason disclosure
-pairs, Exercise/Runner adoption (022–024), and all independent review.
+Not built: RBA movement (outside `CMB-POL-001`), post-assault Retreat (likely raises the Q7-family
+unseen-encounter question, unchecked), repeat V31 and second-side V47 selection. Assigned elsewhere:
+capability manifest (021, Q3), Host HMAC and Host consolidation (020D, Q4/Q6). Also open: Custody in
+the 020B draft, owner freeze of the draft, terminal-reason disclosure pairs, Exercise/Runner
+adoption (022–024), and all independent review.
