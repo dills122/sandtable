@@ -158,6 +158,8 @@ public static class CampaignCombatAudienceDecisions
     public const string RbaDeclineStage = "rba-decline";
     /// <summary>Bound defender's one-hex retreat or explicit refusal after an assault result (020E1, v2).</summary>
     public const string PostAssaultRetreatStage = "post-assault-retreat";
+    /// <summary>Repeated-cycle Combat selection (Core V31) after a repeated Movement (020E2, v2).</summary>
+    public const string RepeatCombatSelectionStage = "repeat-combat-selection";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -193,6 +195,11 @@ public static class CampaignCombatAudienceDecisions
     public static CampaignCombatAudienceDecision? QueryPostAssaultRetreat(ExerciseSession session,
         CampaignActionAudience audience, string defenderElementId) =>
         Query(session, audience, PostAssaultRetreatStage, defenderElementId);
+
+    /// <summary>Repeated-cycle Combat selection decision (020E2, contract v2 superset).</summary>
+    public static CampaignCombatAudienceDecision? QueryRepeatCombatSelection(ExerciseSession session,
+        CampaignActionAudience audience, string actingElementId) =>
+        Query(session, audience, RepeatCombatSelectionStage, actingElementId);
 
     /// <summary>Captor custody disposition for an accepted capture (020A3).</summary>
     public static CampaignCombatAudienceDecision? QueryCustody(ExerciseSession session,
@@ -260,6 +267,8 @@ public static class CampaignCombatAudienceDecisions
                     decision.ActingElementId),
                 PostAssaultRetreatStage => CampaignHostAdapter.SubmitContactPostAssaultRetreat(session,
                     command, decision.ActingElementId),
+                RepeatCombatSelectionStage => CampaignHostAdapter.SubmitNativeRepeatCombat(session,
+                    command, decision.ActingElementId),
                 _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
             };
         }
@@ -280,7 +289,8 @@ public static class CampaignCombatAudienceDecisions
     {
         SelectionStage or ForceAssignmentStage or ReserveReleaseStage or CycleControlStage
             or CustodyStage or RbaDeclineStage => CampaignCombatAudienceDecision.CurrentContractVersion,
-        PostAssaultRetreatStage => CampaignCombatAudienceDecision.SuccessorContractVersion,
+        PostAssaultRetreatStage or RepeatCombatSelectionStage
+            => CampaignCombatAudienceDecision.SuccessorContractVersion,
         _ => throw new ArgumentOutOfRangeException(nameof(stage)),
     };
 
@@ -371,6 +381,22 @@ public static class CampaignCombatAudienceDecisions
                             .OrderBy(value => value.DestinationLocationId, StringComparer.Ordinal)
                             .Select(value => value.ActionId)
                             .Append(cut.RefuseOffer.ActionId)
+                            .ToArray();
+                        break;
+                    }
+                case RepeatCombatSelectionStage:
+                    {
+                        // T020-Q8 applies as for first-cycle Selection (owner, 2026-11-20): an offer on
+                        // a contact bound to a non-combat unit stays; the downstream force-unavailable
+                        // System cancellation handles it. Ordinal order matches the Host draft.
+                        var cut = CampaignExercises.QueryNativeRepeatCombatCut(session, side, actingElementId);
+                        observation = cut.Observation;
+                        visible = cut.VisibleBytes;
+                        privateIds = cut.AssaultOffers
+                            .OrderBy(value => value.ContactHandle, StringComparer.Ordinal)
+                            .ThenBy(value => value.ApparentLocationId, StringComparer.Ordinal)
+                            .Select(value => value.ActionId)
+                            .Append(cut.FinishOffer.ActionId)
                             .ToArray();
                         break;
                     }
