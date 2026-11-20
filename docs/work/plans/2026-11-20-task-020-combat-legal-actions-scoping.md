@@ -697,6 +697,30 @@ after an assault result that requires a retreat.
 - **Task 021 note:** 021A0's `FrozenStageSetIsExactlyTheSixFrozenRoundKinds` reflects over every
   public `*Stage` constant. It will need the new v2 stage(s) once this merges.
 
+## 7p. Slice 020E2 — repeated Combat selection (V31, contract v2 superset)
+
+The new stage is `repeat-combat-selection` (`QueryRepeatCombatSelection`), owned by the acting side
+after Cycle Control `Repeat`, one repeated Movement and the System repeated Breakdown.
+
+- **Visible cut:** the existing `CampaignRepeatCombatOwnerCutV31` the Host already serves. Side is
+  lowercase. It carries the contact observation, so the revision is the side contact revision.
+- **Offers:** current-contact assaults ordered by contact handle, then apparent location, then finish.
+  This is the Host draft's order.
+- **Envelope:** `contractVersion:2`.
+- **T020-Q8:** applies unchanged (owner, 2026-11-20). An offer on a contact bound to a non-combat unit
+  stays, and the downstream force-unavailable System cancellation handles it. No visible-byte rule is
+  added. No bounded fixture reaches that case in a repeat cycle, so it is not separately tested.
+- **Tests** (`CombatCycleDisclosureRepeatCombatTests`, seed 6 double-fresh, reached through the
+  audience surface's own Reserve Release and Cycle Control `Repeat`):
+  - the decision is byte-equal to the Host draft, and every assault targets a current contact;
+  - it carries no private fields and goes only to the acting side;
+  - the v1 `combat-selection` stage serves nothing here, and the v1 verifier rejects the bytes as
+    `stage-uncovered`;
+  - every offer gives Host-identical V31 evidence and reconstructs;
+  - a consumed ref is rejected;
+  - ten rejection causes share one envelope;
+  - seeds 6 and 7 give byte-equal decisions, and a ref opened on one fork is accepted on the other.
+
 ## 8. Still pending
 
 Covered (Core surface, public C# API since 020D, §7l): Selection (first-side initial cut), Force Assignment (both
