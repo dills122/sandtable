@@ -59,6 +59,9 @@
     "Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Actions.CombatBoundedProfileZocTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Campaigns.AuthorityBoundaryTests": {
       "parts": 1
     },
@@ -4495,7 +4498,11 @@
     "a206c4ff924246ad71a31bf411707ee8106a19b29baff2ff23662782fb0e1dac": 680,
     "1fce505dd5f8f88b3e3d68619431c7ad617c059573f35fe0d22fce84636367db": 230,
     "6995b2c2754ebc22e0d96ddfdef01a59d0898f50f01d71dd0be13a42820d0bd2": 195,
-    "15cec3d49f6b6a111807fd4b0ec09227db8664f241a54f8e1b923de986982729": 178
+    "15cec3d49f6b6a111807fd4b0ec09227db8664f241a54f8e1b923de986982729": 178,
+    "5a54eaf7b0ee3203110f163b162ed7dbb26c3c8913da9027b774df4fb007f96e": 7,
+    "5f564c900ad84fd3430adf4c2a8c9cad70c284cd9d8936473b6cf1793849e4d0": 139,
+    "496b39cb697037507d1ab6a9207166807c1c47f7460a863bb8d5367d458ccaa4": 248,
+    "98f19b369ff2db140c1d8841746938f547bf57537697c1d712ed2f1fb1935fc3": 49
   },
   "provisional_rows": {
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new Cna1979HistoricalMapTests Malta column-00 NeighborsOf rows, pending hosted CI calibration",
@@ -4912,13 +4919,17 @@
     "a206c4ff924246ad71a31bf411707ee8106a19b29baff2ff23662782fb0e1dac": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatCycleDisclosureCustodyTests rows (Task 020A3), pending hosted CI calibration",
     "1fce505dd5f8f88b3e3d68619431c7ad617c059573f35fe0d22fce84636367db": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatCycleDisclosureCustodyTests rows (Task 020A3), pending hosted CI calibration",
     "6995b2c2754ebc22e0d96ddfdef01a59d0898f50f01d71dd0be13a42820d0bd2": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatCycleDisclosureCustodyTests rows (Task 020A3), pending hosted CI calibration",
-    "15cec3d49f6b6a111807fd4b0ec09227db8664f241a54f8e1b923de986982729": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatCycleDisclosureCustodyTests rows (Task 020A3), pending hosted CI calibration"
+    "15cec3d49f6b6a111807fd4b0ec09227db8664f241a54f8e1b923de986982729": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatCycleDisclosureCustodyTests rows (Task 020A3), pending hosted CI calibration",
+    "5a54eaf7b0ee3203110f163b162ed7dbb26c3c8913da9027b774df4fb007f96e": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatBoundedProfileZocTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatBoundedProfileZocTests rows (Task 020C), pending hosted CI calibration",
+    "5f564c900ad84fd3430adf4c2a8c9cad70c284cd9d8936473b6cf1793849e4d0": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatBoundedProfileZocTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatBoundedProfileZocTests rows (Task 020C), pending hosted CI calibration",
+    "496b39cb697037507d1ab6a9207166807c1c47f7460a863bb8d5367d458ccaa4": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatBoundedProfileZocTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatBoundedProfileZocTests rows (Task 020C), pending hosted CI calibration",
+    "98f19b369ff2db140c1d8841746938f547bf57537697c1d712ed2f1fb1935fc3": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatBoundedProfileZocTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml); new CombatBoundedProfileZocTests rows (Task 020C), pending hosted CI calibration"
   },
   "supplemental_measurements": {
-    "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureCustodyTests (Task 020A3)",
-    "rows": 5,
+    "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatBoundedProfileZocTests (Task 020C)",
+    "rows": 4,
     "classes": [
-      "Cna.Core.Tests.Actions.CombatCycleDisclosureCustodyTests"
+      "Cna.Core.Tests.Actions.CombatBoundedProfileZocTests"
     ],
     "configuration": "Release",
     "hosted": false,

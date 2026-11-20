@@ -258,6 +258,71 @@ alternatives each need an owner call:
 
 Nothing for RBA is built.
 
+## 7d. Slice 020C — bounded-profile ZOC rejection (Q2)
+
+**Reachability check (done before changing anything).** The ruling holds for every admitted
+V6 contact campaign, not just the singleton fixtures:
+
+- A ZOC source needs more than one stacking point in a hex
+  (`CampaignElementMovedV3Factory.DeriveZocAuthority`: `if (stacking <= 1) continue;`).
+- Only `land.organization.battalion` has stacking authority (value 1); any other organization is
+  unsupported.
+- **Activation-time rejection already exists:** `ContentPackV6Validator` raises `BRK-CERT-003`
+  ("Same-side co-located combat and headquarters leaves may total at most one battalion") and
+  treats unsupported organizations as stacking 2, so such content is never admitted.
+- `CampaignWorldV6Validator` rejects any later World with two same-side non-truck elements in one
+  hex, and `DeriveZocAuthority` refuses an invalid World before deriving anything.
+- Therefore the selection cut's positive-ZOC branch is unreachable for admitted content; nothing
+  is silently swallowed.
+
+**Change.** Both throw sites in `CampaignContactCombatSelectionCut` now use one named invariant,
+`"Unsupported: positive opposing ZOC exceeds the bounded Combat profile."`, with a comment citing
+the activation gates. It stays a defensive `InvalidOperationException`: the audience surface maps it
+to "no decision", Exercise submission to `InvalidAuthority`, and the Host to "No owner opening"; no
+outward boundary leaks it. No forced/surprise mechanic, no new rejection category, no Host change.
+
+`CombatBoundedProfileZocTests`, 4 rows, local Debug + Release pass:
+
+| Test | Evidence |
+| --- | --- |
+| `EveryAdmittedBreakdownSetupStartsWithoutAnyZocSource` | All 18 breakdown setups, both sides: zero ZOC sources and controlled hexes at creation. |
+| `ContentAdmissionRejectsCoLocatedSameSideBattalions` | For double-fresh, double and battalion-matrix content: co-locating two same-side battalions fails `ContentPackV6Validator` with `BRK-CERT-003`, and canonical serialization refuses it. |
+| `NoAdmittedWorldCanStackTwoSameSideCombatElements` | The same three stacks in a live World fail `CampaignWorldV6Validator`, and ZOC derivation refuses them. |
+| `SelectionInvariantNamesTheBoundedProfile` | Pins the invariant message. |
+
+## 7e. Q8 (non-combat-unit contact) — stopped on a side-safety conflict
+
+The ruling says to exclude contacts with no Force slot from Selection's assault offers. Building
+it would break the fog rule the v2 spec states for offers:
+
+- Every contact the current Core issues is at `CampaignContactIdentification.Presence` (e.g.
+  `CampaignContactAdjacencySource`). The observer knows only that something is in that hex.
+- Whether the bound unit has a combat component is hidden. v2: "Contact offer presence remains
+  side-visible and does not inspect the hidden defender resources."
+- Dropping the offer for a truck-bound contact (Truck fixture: `commonwealth-truck`) tells the
+  attacker that contact is non-combat.
+- It also fits neither codec choice: filtering the V2 owner-visible bytes changes them by hidden
+  state; keeping the bytes publishes an assault offer with no ref.
+- Fixing it in Core offer generation instead would change V12 decision semantics that retained
+  histories replay (e.g. the Truck-setup selection in `CampaignContactCombatSelectionCutTests`).
+
+Options for the owner:
+
+- (a) exclude only when the contact's identification already reveals the bound unit type (needs a
+  detection rule that does not exist yet);
+- (b) make non-combat contacts a bounded-profile activation rejection, like 020C (singleton-infantry
+  content has no truck-bound reachable contacts, but several rules-lab fixtures do);
+- (c) keep the offer and the existing V19 `force-unavailable` System cancellation.
+
+Nothing for Q8 is built.
+
+## 7f. 020D status
+
+Not unblocked. The plan's hard gate for outward Task 020 work is a **frozen** `CMB-CON-005`
+successor. The 020B artifacts are a draft for owner review, not frozen. Q4's ruling also requires
+Host HMAC layering before anything goes public. The draft does not yet cover Custody, and RBA
+decline-only (§7c) and Q8 (§7e) are unresolved.
+
 ## 8. Still pending after 020A0/020A1/020A2/020B-draft
 
 Covered (dormant, internal): Selection (first-side initial cut), Force Assignment (both seal
