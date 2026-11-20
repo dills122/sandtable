@@ -721,6 +721,46 @@ after Cycle Control `Repeat`, one repeated Movement and the System repeated Brea
   - ten rejection causes share one envelope;
   - seeds 6 and 7 give byte-equal decisions, and a ref opened on one fork is accepted on the other.
 
+## 7q. Slice 020E3 — repeated Movement (V29, contract v2 superset)
+
+The new stage is `repeat-movement` (`QueryRepeatMovement`). There is one decision per side after Cycle
+Control `Repeat`, with the fixed subject `repeat-movement`, the same pattern as Cycle Control.
+
+- **Visible cut:** `CampaignRepeatMovementOwnerCutV29`.
+- **Offers:** the Host draft's move offers.
+- **Envelope:** `contractVersion:2`.
+- **Staleness:** the cut carries no contact observation, so the revision is 0 and the visible digest
+  is the only fence (owner ruling 2026-11-20).
+
+**Side spelling (owner ruling, verified first).**
+
+- *Change:* V29 wrote `side` with `LandSide.ToString()` ("Axis"). It now writes lowercase via
+  `CampaignSnapshotSerializer.FormatSide`, matching every other owner cut and the v1 freeze's V27/V28
+  fix.
+- *Why replay is safe:* unlike V27/V28, V29 action IDs are not hashes of the visible bytes. They are
+  `MoveElementAction` semantic IDs: kind plus element, origin, destination and cost
+  (`CampaignActionCandidate`). The V29 event carries no visible-byte digest. Host import replays a
+  retained `contact-repeat-movement` step by matching its action ID against the re-derived draft.
+  So no preimage split was needed, and retained histories replay unchanged (DET-001).
+- *Test:* `SideSpellingFixKeepsRetainedRepeatMovementActionIds` pins the two action IDs captured from
+  `main` `c1e0a613` (before the fix) on the seed 6 double-fresh path.
+- *Operational effect:* a Host repeated-Movement opening issued before deploy, and not yet answered,
+  now differs from the re-projected bytes. Its submission gets the one generic rejection, and the
+  owner re-opens at the next revision. The v1 freeze had the same effect for V27/V28.
+
+**Tests** (`CombatCycleDisclosureRepeatMovementTests`, seed 6 double-fresh, Cycle Control `Repeat`
+accepted through the audience surface):
+
+- byte parity with the Host draft, with lowercase side and revision 0;
+- no private fields;
+- only the acting side and the fixed subject receive it;
+- the v1 verifier rejects the bytes as `stage-uncovered`;
+- every offer gives Host-identical V29 evidence and reconstructs;
+- a consumed ref is rejected;
+- eleven rejection causes share one envelope;
+- seeds 6 and 7 give byte-equal decisions, and a ref opened on one fork is accepted on the other;
+- the legacy action-ID pin above.
+
 ## 8. Still pending
 
 Covered (Core surface, public C# API since 020D, §7l): Selection (first-side initial cut), Force Assignment (both
@@ -728,14 +768,26 @@ seal orders), Reserve Release, Cycle Control, Custody, decline-only RBA. All six
 `combat-audience-decision-v1` contract (§7k). The Host dev route serves the same bytes for all six,
 pinned by parity tests (§7j).
 
-020D is built under the owner's option (c) scoping (§7l): Core C# visibility only. Deferred by owner
-ruling, each to a named later phase:
+020D is built under the owner's option (c) scoping (§7l): Core C# visibility only.
+
+The post-020D required stages are built, as v2 superset stages unless noted:
+
+| Slice | Stage | Status |
+| --- | --- | --- |
+| 020E0 | second-side Selection (V47) | already v1 `combat-selection`; proof only |
+| 020E1 | `post-assault-retreat` | built |
+| 020E2 | `repeat-combat-selection` | built |
+| 020E3 | `repeat-movement` | built |
+
+Next is 020E4: the v2 contract artifacts (schema, goldens, rejection vectors, verifier) for owner
+freeze, plus Host/Core parity for the new stages.
+
+Deferred by owner ruling, each to a named later phase:
 
 - **020-HTTP:** Combat HTTP exposure outside Development, after 021/023 (§7l).
 - **Host-calls-Core cutover (Q6):** with 021/022.
-- **Terminal-reason disclosure pairs:** later phase (ruled 2026-11-20; not required for 020D).
-- **Not built (later phase):** RBA movement, post-assault Retreat, repeat V31 and second-side V47
-  selection.
+- **Terminal-reason disclosure pairs:** later phase.
+- **RBA movement:** excluded under T020-Q7.
 
 Assigned elsewhere: capability manifest (021, Q3) and Exercise/Runner adoption (022–024). Still open:
 the Checkpoint I privacy/admission review and all independent review. Nothing here claims Task 020
