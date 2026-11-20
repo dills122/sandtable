@@ -598,6 +598,14 @@
       "declaredMembers": ["ActingElementId"]
     },
     {
+      "name": "Cna.Core.Actions.CompleteCombatNoAttackAction",
+      "declaredMembers": []
+    },
+    {
+      "name": "Cna.Core.Actions.CompleteCombatBarrageAction",
+      "declaredMembers": []
+    },
+    {
       "name": "Cna.Core.Actions.RetreatBeforeAssaultMoveAction",
       "declaredMembers": ["CostBreakdown", "DestinationLocationId", "ElementId", "OriginLocationId"]
     },

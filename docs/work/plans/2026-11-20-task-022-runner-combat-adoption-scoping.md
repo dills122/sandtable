@@ -141,6 +141,10 @@ pins. Neither was changed.
   - Files: `src/Cna.Core/Exercises/CampaignCombatExerciseActions.cs` (new),
     `src/Cna.Core/Actions/CombatExerciseSystemActions.cs` (new), `CampaignExercises.cs`,
     `CampaignLegalActionSet.cs`.
+  - The two new candidate types are registered in `user-space-disclosure-manifest.v1.json` and
+    `.v2.json` with no declared members. Every candidate type reachable from a legal-action set is
+    in those closed allowlists, as was done for the existing Combat candidates. They disclose no
+    new field. This is still a disclosure-manifest edit for owner review.
 - **Runner** `CoreExerciseExecutionRuntime.WithCombat` and
   `ReadjudicationVerifier.Verify(..., includeCombat: true)`, both internal. The controller policies
   are unchanged: existing policies pick the lowest action ID, so assault vs finish is
