@@ -98,7 +98,7 @@ existing roadmap gates; no scope reduction is inferred from finishing Combat.
 | MVP-GATE-06 full playthrough | Not demonstrated | Two independently checked complete six-turn games, including save/resume and correct victory, reproduce from seeds/events; no reachable unsupported mechanics; retain build/content/test hashes. |
 | MVP-GATE-07 delivery | Open | Approved distribution/rights/notices; CI-built versioned package with hashes and supported-platform matrix; fresh-machine launch/create/play/save/quit/resume smoke; backup/save location/compatibility instructions. |
 
-MVP-GATE-07 note: the Orleans Host has no production clustering provider configured and cannot run outside a single dev machine.
+MVP-GATE-07 note: superseded 2026-11-19 by PR #444 (Phase C4 of #439), which configures Orleans AdoNet clustering/reminders against Postgres for non-Development environments; the Orleans Host is no longer limited to a single dev machine for clustering. Distribution/rights/packaging/fresh-machine-smoke evidence for this gate remains open regardless.
 
 ### November 13 scenario and arrival working packet
 

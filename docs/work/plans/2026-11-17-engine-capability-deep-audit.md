@@ -192,11 +192,13 @@ and found zero remaining hits. Not re-flagging; confirming closure instead.
    scoped to seat A's draft are gone. Acceptance: one new, currently-failing
    (or currently-nonexistent-assertion) e2e test that would catch exactly
    the gap described above, passing once real invalidation logic lands.
-2. **Add one line to the `MVP-GATE-07` delivery-scope note** (wherever that
-   lives — the RC checklist or roadmap) stating plainly that the Orleans
-   Host has no production clustering provider configured and cannot run
-   outside a single dev machine, so a future reader doesn't rediscover this
-   from a production outage.
+2. **Superseded 2026-11-20:** this recommendation assumed the Orleans Host
+   had no production clustering provider. PR #444 (merged 2026-11-19, Phase
+   C4 of #439) configured Orleans AdoNet clustering/reminders against
+   Postgres for non-Development environments, so that gap is closed. The
+   `MVP-GATE-07` note in the RC checklist has been corrected to reflect
+   this; distribution/rights/packaging/fresh-machine-smoke evidence for
+   that gate remains open.
 3. **One grep-and-read pass confirming every hexside feature ID used in the
    admitted Graziani map resolves against `Cna1979Zoc`'s `TopologyAuthority`
    list** — a half-day verification task, not a feature, with a clear
