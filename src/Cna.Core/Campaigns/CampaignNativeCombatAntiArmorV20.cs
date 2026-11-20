@@ -25,10 +25,12 @@ internal sealed record CampaignNativeCombatAntiArmorV20(
         var components = context.ArtifactV6?.Definition.ElementCombatFacts
             .SelectMany(facts => facts.Components).ToArray();
         if ((completion is null) == (cancellation is null)
-            || components is not { Length: > 0 }
-            || components.Any(component => component.ComponentClassId
-                    != Cna1979Combat.InfantryComponentClassId))
+            || components is not { Length: > 0 })
             throw new InvalidOperationException("Anti Armor requires one retained infantry-only Force outcome.");
+        // Defensive bounded-profile invariant (Task 021A2): unreachable for admitted content, because
+        // Content V6 admission refuses any non-infantry component class (BRK-CERT-004).
+        if (components.Any(component => component.ComponentClassId != Cna1979Combat.InfantryComponentClassId))
+            throw new InvalidOperationException(CampaignCombatCapabilityAdmission.NonInfantryExceedsBoundedProfile);
         var priorVersion = completion?.StateVersion ?? cancellation!.StateVersion;
         var positionId = completion?.NextPositionId ?? cancellation!.NextPositionId;
         var priorEvent = completion?.SerializeCanonical() ?? cancellation!.SerializeCanonical();
