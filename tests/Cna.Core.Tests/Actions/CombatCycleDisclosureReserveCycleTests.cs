@@ -175,6 +175,32 @@ public sealed class CombatCycleDisclosureReserveCycleTests
     // the first owned Reserve Release member. Pre-Release Combat steps are outside this slice.
     internal static ExerciseSession AtReserveRelease(string campaignId, ulong seed)
     {
+        var session = AtAssaultResult(campaignId, seed);
+        if (session.CurrentCombatAssaultResult!.Facts.RequiredRetreat == 1)
+        {
+            var cut = CampaignExercises.QueryContactPostResultRetreatCut(session);
+            session = Accept(CampaignExercises.SubmitContactPostResultRetreat(session,
+                Command(session, CampaignActionAudience.Commonwealth, cut.RefuseOffer.ActionId), cut.DefenderElementId));
+        }
+        else session = Accept(CampaignHostAdapter.CompleteNoPostAssaultRetreat(session));
+        session = Accept(CampaignHostAdapter.SettleNativeCombatWorld(session));
+        var custody = CampaignExercises.QueryNativeCombatCustodyCut(session);
+        if (custody is not null)
+        {
+            var unguarded = custody.Choices.Single(value => value.Kind == "leave-unguarded");
+            session = Accept(CampaignExercises.SubmitNativeCombatCustody(session,
+                Command(session, CampaignActionAudience.Axis, unguarded.ActionId)));
+        }
+        else session = Accept(CampaignHostAdapter.CompleteNoNativeCombatCustody(session));
+        session = Accept(CampaignHostAdapter.CompleteNativeCombatSuccessor(session));
+        Assert.NotEmpty(CampaignExercises.QueryNativeReserveReleaseState(session).Pending(session.Context));
+        return session;
+    }
+
+    // The same trusted path stopped at the first assault result (Axis infantry assaults the
+    // north-east contact; the defender declines RBA; both seal full TOE).
+    internal static ExerciseSession AtAssaultResult(string campaignId, ulong seed)
+    {
         var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
             value.SetupId == "rules-lab.breakdown.reaction.combat-double-fresh.v1"));
         var request = new CampaignCreationRequest(1, campaignId, Cna1979Ruleset.Manifest.Hash,
@@ -211,26 +237,7 @@ public sealed class CombatCycleDisclosureReserveCycleTests
         }
         session = Accept(CampaignHostAdapter.CompleteNativeCombatForceAssignment(session));
         session = Accept(CampaignHostAdapter.CompleteNativeCombatAntiArmor(session));
-        session = Accept(CampaignHostAdapter.ResolveNativeCombatAssault(session));
-        if (session.CurrentCombatAssaultResult!.Facts.RequiredRetreat == 1)
-        {
-            var cut = CampaignExercises.QueryContactPostResultRetreatCut(session);
-            session = Accept(CampaignExercises.SubmitContactPostResultRetreat(session,
-                Command(session, CampaignActionAudience.Commonwealth, cut.RefuseOffer.ActionId), cut.DefenderElementId));
-        }
-        else session = Accept(CampaignHostAdapter.CompleteNoPostAssaultRetreat(session));
-        session = Accept(CampaignHostAdapter.SettleNativeCombatWorld(session));
-        var custody = CampaignExercises.QueryNativeCombatCustodyCut(session);
-        if (custody is not null)
-        {
-            var unguarded = custody.Choices.Single(value => value.Kind == "leave-unguarded");
-            session = Accept(CampaignExercises.SubmitNativeCombatCustody(session,
-                Command(session, CampaignActionAudience.Axis, unguarded.ActionId)));
-        }
-        else session = Accept(CampaignHostAdapter.CompleteNoNativeCombatCustody(session));
-        session = Accept(CampaignHostAdapter.CompleteNativeCombatSuccessor(session));
-        Assert.NotEmpty(CampaignExercises.QueryNativeReserveReleaseState(session).Pending(session.Context));
-        return session;
+        return Accept(CampaignHostAdapter.ResolveNativeCombatAssault(session));
     }
 
     private static CampaignActionSubmission Command(ExerciseSession session, CampaignActionAudience audience, string action)
