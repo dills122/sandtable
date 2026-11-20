@@ -1,0 +1,335 @@
+{
+  "contract": "combat-audience-decision-draft-v1",
+  "status": "DRAFT for owner review. Not frozen; freezing is an owner action.",
+  "successorOf": "CMB-CON-005",
+  "envelopes": {
+    "rejected": "{\"contractVersion\":1,\"outcome\":\"rejected\"}",
+    "acceptedExample": {
+      "source": "cycle-control-axis offerRefs[0]",
+      "utf8": "{\"contractVersion\":1,\"outcome\":\"accepted\",\"offerRef\":\"cmbref.v1.26d67548b33ed5757c905b310d956feddbbbebfe836b22ff36043da83f76d5a8\"}"
+    }
+  },
+  "goldens": [
+    {
+      "id": "selection-axis-first-cut",
+      "stage": "combat-selection",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-assault.v1",
+        "campaignId": "campaign-con005-draft-selection",
+        "seed": 12345,
+        "audience": "axis",
+        "actingElementId": "axis-infantry",
+        "prefix": "CombatCycleDisclosureForceTests.AdvanceToCombat (completes Movement; first Combat Position Determination cut)"
+      },
+      "decisionLength": 3662,
+      "decisionSha256": "sha256:d55c9a44cada1f7d086c674475d21cfce4b64dc20c7b1dbac8181e974f2413f3",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-selection\",\"audience\":\"axis\",\"stage\":\"combat-selection\",\"actingElementId\":\"axis-infantry\",\"audienceRevision\":1,\"visibleDigest\":\"sha256:1a1e3d73cdd3d343cefa2101be95c183b3a6d806d95970e6c0b3372bbec26cdc\",\"visible\":{\"contractVersion\":2,\"campaignId\":\"campaign-con005-draft-selection\",\"side\":\"axis\",\"actingFormationId\":\"axis-infantry.formation\",\"contactAudienceRevision\":1,\"contactObservation\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-selection\",\"side\":\"axis\",\"actingFormationId\":\"axis-infantry.formation\",\"audienceRevision\":1,\"contacts\":[{\"handle\":\"c-48353a32c486-00000001\",\"observerFormationId\":\"axis-infantry.formation\",\"apparentLocationId\":\"north-east\",\"identification\":\"presence\",\"access\":\"observer\",\"isCurrent\":true}],\"currentTargets\":[{\"actingFormationId\":\"axis-infantry.formation\",\"contactHandle\":\"c-48353a32c486-00000001\",\"apparentLocationId\":\"north-east\"}]},\"locations\":[{\"locationId\":\"center\",\"terrainId\":\"land.terrain.desert\"},{\"locationId\":\"east\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"north\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"north-east\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"north-west\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"south\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"south-east\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"south-west\",\"terrainId\":\"land.terrain.clear\"},{\"locationId\":\"west\",\"terrainId\":\"land.terrain.clear\"}],\"edges\":[{\"firstLocationId\":\"center\",\"secondLocationId\":\"east\",\"features\":[{\"featureId\":\"land.edge.ridge\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"center\",\"secondLocationId\":\"west\",\"features\":[{\"featureId\":\"land.edge.slope\",\"directionFromLocationId\":\"west\"}]},{\"firstLocationId\":\"east\",\"secondLocationId\":\"north-east\",\"features\":[{\"featureId\":\"land.edge.road\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"east\",\"secondLocationId\":\"south-east\",\"features\":[{\"featureId\":\"land.edge.track\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"north\",\"secondLocationId\":\"north-east\",\"features\":[{\"featureId\":\"land.edge.road\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"north\",\"secondLocationId\":\"north-west\",\"features\":[{\"featureId\":\"land.edge.road\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"north-west\",\"secondLocationId\":\"west\",\"features\":[{\"featureId\":\"land.edge.road\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"south\",\"secondLocationId\":\"south-east\",\"features\":[{\"featureId\":\"land.edge.track\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"south\",\"secondLocationId\":\"south-west\",\"features\":[{\"featureId\":\"land.edge.track\",\"directionFromLocationId\":null}]},{\"firstLocationId\":\"south-west\",\"secondLocationId\":\"west\",\"features\":[{\"featureId\":\"land.edge.track\",\"directionFromLocationId\":null}]}],\"ownElements\":[{\"elementId\":\"axis-infantry\",\"parentFormationId\":\"axis-infantry.formation\",\"organizationId\":\"land.organization.battalion\",\"baseCapabilityPointAllowance\":10,\"currentLocationId\":\"north\",\"reserveStatus\":\"none\",\"mobilityId\":\"land.mobility.non-motorized\",\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownRisk\":null}],\"assaultOffers\":[{\"kind\":\"select-contact-assault\",\"actingElementId\":\"axis-infantry\",\"contactHandle\":\"c-48353a32c486-00000001\",\"apparentLocationId\":\"north-east\"}],\"finishOffer\":{\"kind\":\"finish-combat-without-attack\",\"actingElementId\":\"axis-infantry\"}},\"offerRefs\":[\"cmbref.v1.b83ec192d58499719d56427cc08cfbc1e7b6a2ebb009c93c55470a903997587f\",\"cmbref.v1.57bc75d74bcaf143ed17e2ce264405cb03c72bd7111471913cebc529eee62101\"]}"
+    },
+    {
+      "id": "force-assignment-axis",
+      "stage": "force-assignment",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-assault.v1",
+        "campaignId": "campaign-con005-draft-force",
+        "seed": 12345,
+        "audience": "axis",
+        "actingElementId": "axis-infantry",
+        "prefix": "CombatCycleDisclosureForceTests.AdvanceToForce (Selection ordinal 0, Barrage, RBA decline); no seal yet"
+      },
+      "decisionLength": 1623,
+      "decisionSha256": "sha256:5b1ab5651564ef4b17a7a065a09ba9872142903fd15d079561db14544d9939c3",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-force\",\"audience\":\"axis\",\"stage\":\"force-assignment\",\"actingElementId\":\"axis-infantry\",\"audienceRevision\":1,\"visibleDigest\":\"sha256:05686cfcb47a0eab21f0b8befaff6143d95e6fc76e1dd87c730c9764321e2396\",\"visible\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-force\",\"side\":\"axis\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"role\":\"attacker\",\"contactObservation\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-force\",\"side\":\"axis\",\"actingFormationId\":\"axis-infantry.formation\",\"audienceRevision\":1,\"contacts\":[{\"handle\":\"c-b2acd1132ec8-00000001\",\"observerFormationId\":\"axis-infantry.formation\",\"apparentLocationId\":\"north-east\",\"identification\":\"presence\",\"access\":\"observer\",\"isCurrent\":true}],\"currentTargets\":[{\"actingFormationId\":\"axis-infantry.formation\",\"contactHandle\":\"c-b2acd1132ec8-00000001\",\"apparentLocationId\":\"north-east\"}]},\"ownElements\":[{\"elementId\":\"axis-infantry\",\"parentFormationId\":\"axis-infantry.formation\",\"organizationId\":\"land.organization.battalion\",\"baseCapabilityPointAllowance\":10,\"currentLocationId\":\"north\",\"reserveStatus\":\"none\",\"mobilityId\":\"land.mobility.non-motorized\",\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownRisk\":null}],\"sealOffer\":{\"kind\":\"seal-combat-force-assignment\",\"role\":\"attacker\",\"elementId\":\"axis-infantry\",\"componentId\":\"axis-infantry.toe\",\"committedToe\":10}},\"offerRefs\":[\"cmbref.v1.172c9d15fecd83a840e18fe224303f58a8023a9449eb02ccbc7cde2746997a61\"]}"
+    },
+    {
+      "id": "force-assignment-commonwealth",
+      "stage": "force-assignment",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-assault.v1",
+        "campaignId": "campaign-con005-draft-force",
+        "seed": 12345,
+        "audience": "commonwealth",
+        "actingElementId": "commonwealth-infantry",
+        "prefix": "same cut as force-assignment-axis"
+      },
+      "decisionLength": 1706,
+      "decisionSha256": "sha256:a09e18fa8b0b95b326fb53d62c489f4679a70597ffd3b56c4dbe7459bef2b108",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-force\",\"audience\":\"commonwealth\",\"stage\":\"force-assignment\",\"actingElementId\":\"commonwealth-infantry\",\"audienceRevision\":1,\"visibleDigest\":\"sha256:4048d853ded0a7984663318f62b0a8e3bb1f603989f3710f1495516a832147c8\",\"visible\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-force\",\"side\":\"commonwealth\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"role\":\"defender\",\"contactObservation\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-force\",\"side\":\"commonwealth\",\"actingFormationId\":\"commonwealth-infantry.formation\",\"audienceRevision\":1,\"contacts\":[{\"handle\":\"c-8f7ea36899f6-00000001\",\"observerFormationId\":\"commonwealth-infantry.formation\",\"apparentLocationId\":\"north\",\"identification\":\"presence\",\"access\":\"observer\",\"isCurrent\":true}],\"currentTargets\":[{\"actingFormationId\":\"commonwealth-infantry.formation\",\"contactHandle\":\"c-8f7ea36899f6-00000001\",\"apparentLocationId\":\"north\"}]},\"ownElements\":[{\"elementId\":\"commonwealth-infantry\",\"parentFormationId\":\"commonwealth-infantry.formation\",\"organizationId\":\"land.organization.battalion\",\"baseCapabilityPointAllowance\":10,\"currentLocationId\":\"north-east\",\"reserveStatus\":\"none\",\"mobilityId\":\"land.mobility.non-motorized\",\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownRisk\":null}],\"sealOffer\":{\"kind\":\"seal-combat-force-assignment\",\"role\":\"defender\",\"elementId\":\"commonwealth-infantry\",\"componentId\":\"commonwealth-infantry.toe\",\"committedToe\":10}},\"offerRefs\":[\"cmbref.v1.e9b4ff9d1d001d72cbcf8a39d4c31ae272e165215d0b1ffc84f6a1a86c2344bf\"]}"
+    },
+    {
+      "id": "reserve-release-axis",
+      "stage": "reserve-release",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-double-fresh.v1",
+        "campaignId": "campaign-con005-draft-reserve",
+        "seed": 6,
+        "audience": "axis",
+        "actingElementId": "axis-infantry-second",
+        "prefix": "CombatCycleDisclosureReserveCycleTests.AtReserveRelease (trusted Combat path to first owned Reserve Release member)"
+      },
+      "decisionLength": 638,
+      "decisionSha256": "sha256:f590a4614c0170c345ebc2938595ada527dffea6aa6b6cf4304571d132e52f14",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"reserve-release\",\"actingElementId\":\"axis-infantry-second\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:44507b3f23452c3079ac9b51936e409aadfb2fc79f5288c58d472d9c79cbf44d\",\"visible\":{\"contractVersion\":27,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"Axis\",\"cycleOrdinal\":1,\"elementId\":\"axis-infantry-second\",\"reserveStatus\":\"ReserveI\",\"choices\":[\"ReleaseI\",\"ConvertToII\"]},\"offerRefs\":[\"cmbref.v1.fda41a1a16612212f721afbd9e62d067865bc508a363f4c4f9780b6c968872b1\",\"cmbref.v1.78dc2a579ab09a150ad84e7a2bfc21582fda1e1ddfa442d310a6fc56ff23e177\"]}"
+    },
+    {
+      "id": "cycle-control-axis",
+      "stage": "cycle-control",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-double-fresh.v1",
+        "campaignId": "campaign-con005-draft-reserve",
+        "seed": 6,
+        "audience": "axis",
+        "actingElementId": "cycle-control",
+        "prefix": "reserve-release-axis, then audience Reserve choice ordinal 0, then CompleteNativeReserveRelease"
+      },
+      "decisionLength": 560,
+      "decisionSha256": "sha256:a8e409f9441e42f02dae6330ae49713465acd7ef0c72dc8795df83dd615d7654",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"cycle-control\",\"actingElementId\":\"cycle-control\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:91ff32d527e4f6a84154a504b16f8422eb449d4fa19280a0f1ce10a793282a4c\",\"visible\":{\"contractVersion\":28,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"Axis\",\"cycleOrdinal\":1,\"choices\":[\"Repeat\",\"Finish\"]},\"offerRefs\":[\"cmbref.v1.26d67548b33ed5757c905b310d956feddbbbebfe836b22ff36043da83f76d5a8\",\"cmbref.v1.d706e4100ddea276a718b16d402366cf1e1556e4882a1a68392536e7cc95f64c\"]}"
+    }
+  ],
+  "rejectionVectors": {
+    "combat-selection": [
+      {
+        "id": "forged-ref",
+        "field": "offerRef",
+        "value": "cmbref.v1.0000000000000000000000000000000000000000000000000000000000000000",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "raw-core-action-id",
+        "field": "offerRef",
+        "derive": "private-action-id-ordinal-0",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "opponent-audience",
+        "field": "audience",
+        "value": "commonwealth",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "system-audience",
+        "field": "audience",
+        "value": "system",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "unknown-own-element",
+        "field": "actingElementId",
+        "value": "axis-truck",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "opponent-element",
+        "field": "actingElementId",
+        "value": "commonwealth-infantry",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "revision-plus-one",
+        "field": "audienceRevision",
+        "derive": "increment",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "forged-digest",
+        "field": "visibleDigest",
+        "value": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "rba-stage",
+        "field": "stage",
+        "value": "retreat-before-assault",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-campaign",
+        "field": "campaignId",
+        "value": "another-campaign",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "contract-version-two",
+        "field": "contractVersion",
+        "value": 2,
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "empty-ref",
+        "field": "offerRef",
+        "value": "",
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "replay-after-accept",
+        "replay": true,
+        "source": "CombatCycleDisclosureTests.EveryRejectionCauseSharesOneOutwardEnvelope"
+      }
+    ],
+    "force-assignment": [
+      {
+        "id": "forged-ref",
+        "field": "offerRef",
+        "value": "cmbref.v1.0000000000000000000000000000000000000000000000000000000000000000",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-owner-ref",
+        "field": "offerRef",
+        "derive": "other-owner-ref",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "opponent-audience",
+        "field": "audience",
+        "value": "commonwealth",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "defender-element",
+        "field": "actingElementId",
+        "value": "commonwealth-infantry",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "revision-plus-one",
+        "field": "audienceRevision",
+        "derive": "increment",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-owner-digest",
+        "field": "visibleDigest",
+        "derive": "other-owner-digest",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "selection-stage",
+        "field": "stage",
+        "value": "combat-selection",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-campaign",
+        "field": "campaignId",
+        "value": "another-campaign",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "cross-entry-selection",
+        "entry": "SubmitSelection",
+        "source": "CombatCycleDisclosureForceTests.EveryForceRejectionCauseSharesOneOutwardEnvelope"
+      }
+    ],
+    "reserve-release": [
+      {
+        "id": "forged-ref",
+        "field": "offerRef",
+        "value": "cmbref.v1.0000000000000000000000000000000000000000000000000000000000000000",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "opponent-audience",
+        "field": "audience",
+        "value": "commonwealth",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "wrong-acting-element",
+        "field": "actingElementId",
+        "value": "axis-infantry",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "revision-one",
+        "field": "audienceRevision",
+        "value": 1,
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "forged-digest",
+        "field": "visibleDigest",
+        "value": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-stage-cycle-control",
+        "field": "stage",
+        "value": "cycle-control",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "force-stage",
+        "field": "stage",
+        "value": "force-assignment",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-campaign",
+        "field": "campaignId",
+        "value": "another-campaign",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "cross-entry-selection",
+        "entry": "SubmitSelection",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      }
+    ],
+    "cycle-control": [
+      {
+        "id": "forged-ref",
+        "field": "offerRef",
+        "value": "cmbref.v1.0000000000000000000000000000000000000000000000000000000000000000",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "opponent-audience",
+        "field": "audience",
+        "value": "commonwealth",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "wrong-acting-element",
+        "field": "actingElementId",
+        "value": "axis-infantry",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "revision-one",
+        "field": "audienceRevision",
+        "value": 1,
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "forged-digest",
+        "field": "visibleDigest",
+        "value": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-stage-reserve-release",
+        "field": "stage",
+        "value": "reserve-release",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "force-stage",
+        "field": "stage",
+        "value": "force-assignment",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-campaign",
+        "field": "campaignId",
+        "value": "another-campaign",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "cross-entry-selection",
+        "entry": "SubmitSelection",
+        "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      }
+    ]
+  }
+}

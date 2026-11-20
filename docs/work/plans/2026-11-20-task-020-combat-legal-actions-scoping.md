@@ -46,20 +46,21 @@ unsupported profiles/terminals before decisions; keep old readers and recovery. 
 4. **The successor is not contract-frozen** by the roadmap's own definition (spec + schema/fixtures +
    failure-sensitive oracle). v2 has prose only; no schema, golden bytes, vectors, or verifier.
    Freezing is an owner decision (`User review precedes moving beyond a checkpoint when its
-   contract boundary changes`).
+   contract boundary changes`). Update 2026-11-19: a *draft* schema/goldens/vectors/verifier now
+   exists for the four built round kinds (§7b); it is still not frozen.
 
 ## 3. Open items the frozen docs do not resolve (stop-and-report)
 
-| ID | Gap | Why it needs a ruling |
-| --- | --- | --- |
-| T020-Q1 | Successor freeze of `CMB-CON-005` (v2) | Plan gate. Agent can draft schema/goldens, cannot declare frozen. |
-| T020-Q2 | Forced/surprise Combat | Land 10.3 mandatory attack in opposing ZOC. Current Core **throws** (`"Positive ZOC needs a contact-safe Combat projection."`) at runtime instead of rejecting at activation. v2 §"Forced and surprise contact" states the requirement but pins no source-backed detection/forced-choice/interruption behavior. Needs a source ruling before implementation. |
-| T020-Q3 | Closed capability manifest at activation | No `CapabilityManifest` exists in Core. Shape, family list and restore revalidation are unspecified beyond the fog spike's prose. Probably 021-owned, but the plan lists "capability-closure negatives" under 020 verification. Owner should assign. |
-| T020-Q4 | Core public-ref derivation | v2: refs "derive only from approved owner-visible values and Host-issued opening identity". Exercise has no Host. Slice 1 uses a visible-values-only derivation (digest + ordinal + stage + element + audience + campaign) and keeps the type `internal`. Owner should confirm this is the in-process subset, with Host HMAC layered on top, before it becomes public. |
-| T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. |
-| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. |
-| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. |
-| T020-Q6 | Host/Core mapping duplication | Slice 1 duplicates the Host's re-project/byte-compare/ordinal-map rule in Core. Long-term the Host should consume the Core mapping (021 or a follow-up), or the two can diverge. |
+| ID | Gap | Why it needs a ruling | Status |
+| --- | --- | --- | --- |
+| T020-Q1 | Successor freeze of `CMB-CON-005` (v2) | Plan gate. Agent can draft schema/goldens, cannot declare frozen. | **Resolved 2026-11-19 (owner, relayed):** draft the freeze artifacts now for owner review; the owner performs the freeze. Draft in §7b. Not frozen. |
+| T020-Q2 | Forced/surprise Combat | Land 10.3 mandatory attack in opposing ZOC. Current Core **throws** (`"Positive ZOC needs a contact-safe Combat projection."`) at runtime instead of rejecting at activation. v2 §"Forced and surprise contact" states the requirement but pins no source-backed detection/forced-choice/interruption behavior. Needs a source ruling before implementation. | **Open** (owner considering). |
+| T020-Q3 | Closed capability manifest at activation | No `CapabilityManifest` exists in Core. Shape, family list and restore revalidation are unspecified beyond the fog spike's prose. Probably 021-owned, but the plan lists "capability-closure negatives" under 020 verification. Owner should assign. | **Resolved 2026-11-19 (owner, relayed):** assigned to Task 021, not 020. |
+| T020-Q4 | Core public-ref derivation | v2: refs "derive only from approved owner-visible values and Host-issued opening identity". Exercise has no Host. Slice 1 uses a visible-values-only derivation (digest + ordinal + stage + element + audience + campaign) and keeps the type `internal`. Owner should confirm this is the in-process subset, with Host HMAC layered on top, before it becomes public. | **Resolved 2026-11-19 (owner, relayed):** confirmed acceptable as the in-process subset for now; Host HMAC layering is required before anything goes public (020D). |
+| T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. | **Open** (owner considering). Custody stays out of 020A2 and 020B. |
+| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. | RBA deferred by owner (2026-11-20, §7); Q7 not pursued. |
+| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. | **Open** (owner considering). |
+| T020-Q6 | Host/Core mapping duplication | Slice 1 duplicates the Host's re-project/byte-compare/ordinal-map rule in Core. Long-term the Host should consume the Core mapping (021 or a follow-up), or the two can diverge. | **Resolved 2026-11-19 (owner, relayed):** deferred to 020D; not fixed now. |
 
 ## 4. Proposed breakdown
 
@@ -71,10 +72,10 @@ acceptance. Children marked *dormant* stay `internal` until T020-Q1 is resolved.
 | **020A0** (this slice, dormant) | Core audience-safe decision/submission surface for **Selection** (first-side initial cut): typed decision keyed by contact audience revision, visible-only refs, same-cut submit mapping, one generic rejection envelope; `CombatCycleDisclosure` hidden-fork tests. | 019 path present |
 | 020A1 (dormant) | Same surface for RBA (move/decline) and Force Assignment (both seal orders: first seal must not change the other owner's decision bytes). | A0 |
 | 020A2 (dormant) | Post-assault Retreat, Custody (after Q5 allowlist), Reserve Release, Cycle Control; repeat-combat V31 and second-side V47 selection. | A1, Q5 |
-| 020B | Draft frozen artifacts for the successor: schema + canonical goldens + rejection vectors + verifier for every owner-visible cut and the decision/rejection envelopes. Owner freezes. | A0–A2, Q1 |
+| 020B | Draft frozen artifacts for the successor: schema + canonical goldens + rejection vectors + verifier for every owner-visible cut and the decision/rejection envelopes. Owner freezes. Draft for the four built round kinds landed (§7b); Custody pending Q5. | A0–A2, Q1 (resolved) |
 | 020C | Forced/surprise Combat transitions per ruling; replace runtime throw with activation rejection. | Q2 ruling |
-| 020D | Make the A-surface public; Host consumes Core mapping (Q6). Terminal-reason and seal-order disclosure pairs end-to-end. | B, C, Q4 |
-| 021 | Capability manifest admission and ordinary activation (per plan), if Q3 assigns it there. | 020 |
+| 020D | Make the A-surface public; layer Host HMAC refs over the Core subset (Q4 ruling); Host consumes Core mapping (Q6, deferred here). Terminal-reason and seal-order disclosure pairs end-to-end. | B, C |
+| 021 | Capability manifest admission and ordinary activation (per plan); Q3 assigns the manifest here. | 020 |
 
 ### Why Selection first
 
@@ -198,13 +199,40 @@ Retreat, repeat V31 and second-side V47 selection are not in this slice.
 The fixture path uses `rules-lab.breakdown.reaction.combat-double-fresh.v1` (same trusted path as
 `CampaignNativeSelectionTimeoutTests`); pre-Release Combat steps go through the existing trusted API.
 
-## 8. Still pending after 020A0/020A1/020A2
+## 7b. Slice 020B (draft) — successor freeze artifacts for owner review
+
+Per the Q1 ruling (2026-11-19). **Draft only: not frozen, not reviewed.** The owner freezes.
+
+- [Draft spec](../../specs/combat-audience-decision-draft-v1.md),
+  [ordered schema](../../specs/combat-audience-decision-draft-v1.schema.json),
+  [goldens + rejection vectors](../../specs/fixtures/combat-audience-decision-draft-v1.json).
+- Verifier `src/Cna.Core/Actions/CampaignCombatAudienceDraftVerifier.cs` (internal; no runtime caller).
+- Covers Selection, Force Assignment (both owners), Reserve Release, Cycle Control and the
+  decision/outcome envelopes: five goldens, 40 rejection vectors reused from the 020A tests.
+- Not covered, by design: Custody (Q5), forced/surprise transitions (Q2), non-combat-unit
+  disposition (Q8), unbuilt round kinds (RBA, post-assault Retreat, V31/V47), Host HMAC (Q4, 020D),
+  capability manifest (Q3, 021). The verifier fails `custody` as an uncovered stage.
+
+`CombatCycleDisclosureDraftContractTests`, 7 rows, local Debug pass:
+
+| Test | Evidence |
+| --- | --- |
+| `DraftSchemaMatchesTheVerifierRulesAndStaysUnfrozen` | Schema decision fields, per-stage visible fields/versions and private-key denylist equal the verifier's; `custody` is listed only as a gap; schema and fixture status say DRAFT / Not frozen. |
+| `GoldensReproduceFromCurrentCoreAndConform` | Every golden is reproduced byte-for-byte from current Core (length + SHA-256) and verifies; rejection and accepted envelopes verify; accepted ref unknown to another decision, extra outcome field, malformed ref are caught. |
+| `RejectionVectorsYieldTheGoldenRejectionEnvelopeForEveryCoveredStage` | All 40 vectors applied to a live cut return the golden rejection bytes with no trusted step; the valid submission is then accepted and its outcome verifies. |
+| `VerifierCatchesTampered{Selection,ForceAssignment,ReserveRelease,CycleControl}Cuts` | Per round kind: 18 shared tampers (digest fence, forged/raw/missing/duplicate refs, field order, injected private field, version, audience, uncovered `custody` stage, campaign/revision/visible-version/visible-field drift re-signed, nested private field re-signed, indented bytes, truncated bytes) plus stage-specific re-signed tampers (stale assault target, offer binding, offer count, seal shape, side, choices). |
+
+Mutation check (local, not committed): disabling the verifier's ref-derivation and offer-target
+checks fails all four tamper tests.
+
+## 8. Still pending after 020A0/020A1/020A2/020B-draft
 
 Covered (dormant, internal): Selection (first-side initial cut), Force Assignment (both seal
 orders), Reserve Release, Cycle Control. These are every round kind not blocked on an owner ruling.
+Draft freeze artifacts exist for these four (§7b); freezing is the owner's action.
 
 Waiting on owner rulings: RBA (deferred, Q7), Custody (Q5), post-assault Retreat (likely Q7-family,
-unchecked), repeat V31 and second-side V47 selection (Q8 applies to Selection generally).
-Also open: successor freeze artifacts (B, Q1), forced/surprise (C, Q2), capability manifest (Q3),
-publication and Host consolidation (D, Q4/Q6), terminal-reason disclosure pairs, Exercise/Runner
-adoption (022–024), and all independent review.
+unchecked), repeat V31 and second-side V47 selection (Q8 applies to Selection generally),
+forced/surprise (C, Q2). Assigned elsewhere: capability manifest (021, Q3), Host HMAC and Host
+consolidation (020D, Q4/Q6). Also open: owner freeze of the 020B draft, terminal-reason disclosure
+pairs, Exercise/Runner adoption (022–024), and all independent review.

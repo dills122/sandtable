@@ -141,7 +141,7 @@ public sealed class CombatCycleDisclosureReserveCycleTests
             leftDecision.OfferRefs.Count - 1)).IsAccepted);
     }
 
-    private static ExerciseSession Complete(ExerciseSession session)
+    internal static ExerciseSession Complete(ExerciseSession session)
     {
         var completed = CampaignHostAdapter.CompleteNativeReserveRelease(session);
         Assert.True(completed.IsAccepted, completed.RejectionReason.ToString());
@@ -173,7 +173,7 @@ public sealed class CombatCycleDisclosureReserveCycleTests
 
     // Same trusted path as CampaignNativeSelectionTimeoutTests.AtSelection(repeated: true), stopped at
     // the first owned Reserve Release member. Pre-Release Combat steps are outside this slice.
-    private static ExerciseSession AtReserveRelease(string campaignId, ulong seed)
+    internal static ExerciseSession AtReserveRelease(string campaignId, ulong seed)
     {
         var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
             value.SetupId == "rules-lab.breakdown.reaction.combat-double-fresh.v1"));
