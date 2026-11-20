@@ -5,6 +5,10 @@ supersedes the World-derived apparent-enemy fields of the historical
 [v1 projection](combat-side-projection-v1.md) for new campaigns. It is not an
 alternative fog mode. Freeze this contract with the native Combat action and
 normal Host route before any outward `CMB-TASK-020` activation.
+Draft (not frozen) schema, goldens, rejection vectors and verifier for the
+Core audience decision subset are in
+[combat-audience-decision-draft-v1](combat-audience-decision-draft-v1.md),
+for owner review.
 
 ## One authority cut
 

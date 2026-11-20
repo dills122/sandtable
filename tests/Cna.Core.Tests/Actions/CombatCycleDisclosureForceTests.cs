@@ -172,7 +172,7 @@ public sealed class CombatCycleDisclosureForceTests
 
     // The Truck setup's adjacent contact is bound to a truck with no combat component, which has
     // no Force slot (a documented v2 gap). The 10-TOE infantry assault setup reaches Force.
-    private static ExerciseSession AdvanceToCombat(string campaignId, ulong seed)
+    internal static ExerciseSession AdvanceToCombat(string campaignId, ulong seed)
     {
         var setup = CampaignSetupSnapshotV6.FromDefinition(
             Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
@@ -207,7 +207,7 @@ public sealed class CombatCycleDisclosureForceTests
         throw new InvalidOperationException("Combat position was not reached.");
     }
 
-    private static ExerciseSession AdvanceToForce(string campaignId, ulong seed)
+    internal static ExerciseSession AdvanceToForce(string campaignId, ulong seed)
     {
         var session = AdvanceToCombat(campaignId, seed);
         var selection = CampaignCombatAudienceDecisions.QuerySelection(session,
