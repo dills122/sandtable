@@ -84,6 +84,21 @@
       "decisionLength": 560,
       "decisionSha256": "sha256:a8e409f9441e42f02dae6330ae49713465acd7ef0c72dc8795df83dd615d7654",
       "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-reserve\",\"audience\":\"axis\",\"stage\":\"cycle-control\",\"actingElementId\":\"cycle-control\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:91ff32d527e4f6a84154a504b16f8422eb449d4fa19280a0f1ce10a793282a4c\",\"visible\":{\"contractVersion\":28,\"campaignId\":\"campaign-con005-draft-reserve\",\"side\":\"Axis\",\"cycleOrdinal\":1,\"choices\":[\"Repeat\",\"Finish\"]},\"offerRefs\":[\"cmbref.v1.26d67548b33ed5757c905b310d956feddbbbebfe836b22ff36043da83f76d5a8\",\"cmbref.v1.d706e4100ddea276a718b16d402366cf1e1556e4882a1a68392536e7cc95f64c\"]}"
+    },
+    {
+      "id": "rba-decline-commonwealth",
+      "stage": "rba-decline",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-assault.v1",
+        "campaignId": "campaign-con005-draft-rba",
+        "seed": 12345,
+        "audience": "commonwealth",
+        "actingElementId": "commonwealth-infantry",
+        "prefix": "CombatCycleDisclosureRbaDeclineTests.AtRba (Selection ordinal 0, Barrage); Core still derives move offers, none are published"
+      },
+      "decisionLength": 1694,
+      "decisionSha256": "sha256:223ce028977225bf4bb0e0cf8a32c6bf4b46e94a70710148237cfed9715befd0",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-rba\",\"audience\":\"commonwealth\",\"stage\":\"rba-decline\",\"actingElementId\":\"commonwealth-infantry\",\"audienceRevision\":1,\"visibleDigest\":\"sha256:4cc73d0a8db89ac0028ffc429ae26a0ad73ea9a8fbd82b59a5a72b4663b57156\",\"visible\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-rba\",\"side\":\"commonwealth\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"defenderFormationId\":\"commonwealth-infantry.formation\",\"contactAudienceRevision\":1,\"contactObservation\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-rba\",\"side\":\"commonwealth\",\"actingFormationId\":\"commonwealth-infantry.formation\",\"audienceRevision\":1,\"contacts\":[{\"handle\":\"c-01adcd057ed1-00000001\",\"observerFormationId\":\"commonwealth-infantry.formation\",\"apparentLocationId\":\"north\",\"identification\":\"presence\",\"access\":\"observer\",\"isCurrent\":true}],\"currentTargets\":[{\"actingFormationId\":\"commonwealth-infantry.formation\",\"contactHandle\":\"c-01adcd057ed1-00000001\",\"apparentLocationId\":\"north\"}]},\"ownElements\":[{\"elementId\":\"commonwealth-infantry\",\"parentFormationId\":\"commonwealth-infantry.formation\",\"organizationId\":\"land.organization.battalion\",\"baseCapabilityPointAllowance\":10,\"currentLocationId\":\"north-east\",\"reserveStatus\":\"none\",\"mobilityId\":\"land.mobility.non-motorized\",\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownRisk\":null}],\"declineOffer\":{\"kind\":\"decline-retreat-before-assault\",\"elementId\":\"commonwealth-infantry\"}},\"offerRefs\":[\"cmbref.v1.c650bf8358f28f8bd4e7f3eb59f92ce298f23c7e24ec78bcfe1c92f9916e4364\"]}"
     }
   ],
   "rejectionVectors": {
@@ -329,6 +344,91 @@
         "id": "cross-entry-selection",
         "entry": "SubmitSelection",
         "source": "CombatCycleDisclosureReserveCycleTests.EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope"
+      }
+    ],
+    "rba-decline": [
+      {
+        "id": "forged-ref",
+        "field": "offerRef",
+        "value": "cmbref.v1.0000000000000000000000000000000000000000000000000000000000000000",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "raw-core-decline-id",
+        "field": "offerRef",
+        "derive": "rba-private-decline-action-id",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "raw-core-move-id",
+        "field": "offerRef",
+        "derive": "rba-private-move-action-id",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "attacker-audience",
+        "field": "audience",
+        "value": "axis",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "system-audience",
+        "field": "audience",
+        "value": "system",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "attacker-element",
+        "field": "actingElementId",
+        "value": "axis-infantry",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-own-element",
+        "field": "actingElementId",
+        "value": "commonwealth-truck",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "revision-plus-one",
+        "field": "audienceRevision",
+        "derive": "increment",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "foreign-digest",
+        "field": "visibleDigest",
+        "value": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "full-rba-stage",
+        "field": "stage",
+        "value": "retreat-before-assault",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "force-stage",
+        "field": "stage",
+        "value": "force-assignment",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-campaign",
+        "field": "campaignId",
+        "value": "another-campaign",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "contract-version-2",
+        "field": "contractVersion",
+        "value": 2,
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "cross-entry-selection",
+        "entry": "SubmitSelection",
+        "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
       }
     ]
   }

@@ -19,7 +19,7 @@ contract stays [Combat contact side projection v2](combat-contact-side-projectio
 
 ## What is covered
 
-Four owner-visible round kinds, plus the shared decision and outcome envelopes:
+Five owner-visible round kinds, plus the shared decision and outcome envelopes:
 
 | Stage | Visible cut | Revision | Offers | Golden |
 | --- | --- | --- | --- | --- |
@@ -27,6 +27,15 @@ Four owner-visible round kinds, plus the shared decision and outcome envelopes:
 | `force-assignment` | `CampaignContactForceAssignmentOwnerVisibleCutV1` (v1) | side contact audience revision (≥ 1) | one seal | `force-assignment-axis`, `force-assignment-commonwealth` (same cut) |
 | `reserve-release` | `CampaignReserveReleaseOwnerCutV27` (v27) | 0 | `choices` | `reserve-release-axis` |
 | `cycle-control` | `CampaignCycleControlOwnerCutV28` (v28) | 0 | `choices` | `cycle-control-axis` |
+| `rba-decline` | `CampaignContactRbaDeclineOwnerVisibleCutV1` (v1, new in 020A4) | side contact audience revision (≥ 1) | one decline | `rba-decline-commonwealth` |
+
+`rba-decline` is the bounded decline-only Retreat Before Assault decision (`CMB-POL-001`; T020-Q7
+ruled 2026-11-20, option b). Its codec is separate from the full
+`CampaignContactRetreatBeforeAssaultOwnerVisibleCutV1`. It keeps campaign, side, position, defender
+formation, contact revision, contact observation, the defender's own element and the decline offer.
+It drops `moveOffers`, `locations`, `edges` and `initiallyAdjacentToKnownEnemy`, which only serve
+RBA movement, so every listed offer is takeable. Core's RBA move derivation is unchanged; its move
+offers are never published or mapped. The field selection is an author choice for owner review.
 
 Decision envelope: `contractVersion:1`, `campaignId`, `audience` (`axis`/`commonwealth`), `stage`,
 `actingElementId` (`cycle-control` for Cycle Control), `audienceRevision`, `visibleDigest`
@@ -43,7 +52,8 @@ non-combat-unit contact) and `rules-lab.breakdown.reaction.combat-double-fresh.v
 and Cycle Control). Each golden row records setup, campaign ID, seed, audience and prefix.
 
 Rejection vectors reuse the existing per-round-kind enumerations verbatim (each vector names its
-source test): 13 Selection, 9 Force Assignment, 9 Reserve Release, 9 Cycle Control. Cycle Control has
+source test): 13 Selection, 9 Force Assignment, 9 Reserve Release, 9 Cycle Control, 14 decline-only
+RBA (including the raw Core decline and move action IDs used as refs). Cycle Control has
 no enumeration of its own in 020A2; it uses the Reserve/Cycle list with the cross-stage vector
 pointing at `reserve-release` instead of itself.
 
@@ -75,10 +85,10 @@ Each gap is an unresolved owner ruling or unbuilt surface. No placeholder conten
 
 | Not covered | Reason |
 | --- | --- |
-| Custody cut, custody/replacement inferences | T020-Q5 allowlist open. The verifier rejects `custody` as uncovered. |
-| Forced and surprise Combat transitions | T020-Q2 open. No transition, interruption or forced-choice shape is modeled. |
-| Contact bound to a non-combat unit | T020-Q8 open. Visible bytes cannot show whether a Selection target has a Force slot, so the verifier cannot check it; goldens avoid that case. |
-| RBA, post-assault Retreat, repeat Movement/Selection (V31), second-side Selection (V47) | Not built in the Core audience surface (RBA deferred by owner; others pending). |
+| Custody cut | T020-Q5 resolved 2026-11-20 (the V1 captor cut is the allowlist). The custody stage is built in the Core audience surface (#457) but not yet modeled here; the verifier still rejects `custody` as uncovered. |
+| Forced and surprise Combat transitions | T020-Q2 ruled 2026-11-20: out of the bounded profile and rejected at content admission (`BRK-CERT-003`); no transition is modeled. |
+| Contact bound to a non-combat unit | T020-Q8 ruled 2026-11-20 (option c): the Selection offer stays and the downstream V19 `force-unavailable` System cancellation handles it, so no visible-byte rule applies. Goldens still use an infantry-bound contact. |
+| RBA movement, post-assault Retreat, repeat Movement/Selection (V31), second-side Selection (V47) | RBA movement is outside `CMB-POL-001` (T020-Q7); the others are not built in the Core audience surface. |
 | Capability manifest | T020-Q3 ruled to Task 021. |
 | Host HMAC refs and Host/Core mapping consolidation | T020-Q4 (Core visible-values-only refs accepted as the in-process subset; Host HMAC precedes 020D) and T020-Q6 (deferred to 020D). |
 | Notification bytes, terminal-reason disclosure pairs | No outward notification exists yet; terminal-reason pairs are 020D. |
