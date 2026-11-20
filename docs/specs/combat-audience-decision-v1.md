@@ -1,15 +1,18 @@
-# Combat audience decision — draft CMB-CON-005 successor artifacts (draft v1)
+# Combat audience decision contract v1 (`CMB-CON-005` successor)
 
-**Status: DRAFT for owner review. Not frozen.** No independent review has run. Freezing is the
-owner's own action; nothing in this file, its schema, fixture, verifier or tests performs or implies
-it. Task 020B, per the [Task 020 scoping doc](../work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md)
-(T020-Q1 ruling, 2026-11-19: draft now, owner freezes).
+**Status:** contract frozen 2026-11-20 by owner sign-off (relayed), as the `CMB-CON-005`
+successor for the six round kinds 020D ships. Freeze scope is the in-process Core decision and
+outcome envelopes only; the Host's seat-bound HMAC wrapping of the same visible bytes is not
+separately frozen (owner ruling 2026-11-20). Drafted as Task 020B (T020-Q1, 2026-11-19), extended in
+020A3/020A4 and the Custody draft step, per the
+[Task 020 scoping doc](../work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md). No
+independent review is claimed. Freezing does not by itself make the surface public; that is 020D.
 
 Artifacts:
 
-- [ordered schema](combat-audience-decision-draft-v1.schema.json) (field/type descriptor, not JSON Schema)
-- [goldens and rejection vectors](fixtures/combat-audience-decision-draft-v1.json)
-- verifier: `src/Cna.Core/Actions/CampaignCombatAudienceDraftVerifier.cs` (internal)
+- [ordered schema](combat-audience-decision-v1.schema.json) (field/type descriptor, not JSON Schema)
+- [goldens and rejection vectors](fixtures/combat-audience-decision-v1.json)
+- verifier: `src/Cna.Core/Actions/CampaignCombatAudienceDraftVerifier.cs` (internal; class name kept from the draft stage)
 - oracle tests: `tests/Cna.Core.Tests/Actions/CombatCycleDisclosureDraftContractTests.cs`
 
 These pin the bytes the dormant Core audience surface
@@ -51,7 +54,7 @@ Decision envelope: `contractVersion:1`, `campaignId`, `audience` (`axis`/`common
 `cmbref.v1.` + SHA-256 of a compact JSON preimage of domain, campaign, audience, stage, acting
 element, visible digest and ordinal. Outcome envelope: exactly
 `{"contractVersion":1,"outcome":"rejected"}` for every rejection cause, or the accepted form naming
-the submitted ref. Submissions are an in-process record; this draft defines no submission wire bytes
+the submitted ref. Submissions are an in-process record; this contract defines no submission wire bytes
 (the Host route has its own v2 body).
 
 Golden paths are the existing 020A fixtures: `rules-lab.breakdown.reaction.combat-assault.v1`
@@ -101,12 +104,31 @@ Each gap is an unresolved owner ruling or unbuilt surface. No placeholder conten
 | Host HMAC refs, Host wire envelope and Host/Core mapping consolidation | Owner ruling 2026-11-20: the freeze covers the Core decision envelope only. The Host's existing seat-bound HMAC refs wrap the same visible bytes and need no separate freeze; Host openings are pinned to these bytes by parity tests (Task 020D prerequisite). The Host-calls-Core cutover (T020-Q6) is deferred. |
 | Notification bytes, terminal-reason disclosure pairs | No outward notification exists yet; terminal-reason pairs are 020D. |
 
-## Observations for the owner (not changed here)
+## Owner-accepted defaults at freeze (2026-11-20)
 
-- Reserve Release and Cycle Control cuts spell `side` as `Axis`/`Commonwealth` (enum `ToString`);
-  Selection and Force use lowercase. The draft pins the bytes as emitted. Unifying them would change
-  V27/V28 visible bytes and is an owner decision.
-- Reserve Release and Cycle Control report `audienceRevision: 0` and fence on the visible digest
-  only (author interpretation recorded in 020A2, within the T020-Q4 in-process subset).
-- The goldens pin current Core output. Any change to these visible cuts or the ref preimage fails the
-  golden test; that is intended for a freeze candidate.
+These were flagged for review before the freeze and accepted as-is by the owner; they are deliberate
+contract choices, not oversights:
+
+- `audienceRevision: 0` with the visible digest as the only staleness fence for Reserve Release,
+  Cycle Control and Custody (none of these cuts carries a contact observation).
+- The decline-only RBA codec's field list (`CampaignContactRbaDeclineOwnerVisibleCutV1`), originally an
+  author choice.
+- Custody's visible cut carries no `side`; the audience is bound by the ref preimage and Core's
+  captor-seat check.
+
+## Change made at freeze
+
+- Reserve Release (V27) and Cycle Control (V28) visible cuts now spell `side` lowercase
+  (`axis`/`commonwealth`), matching every other owner cut; the verifier rejects the old enum spelling.
+  Their private action IDs are still derived from the original enum-spelled preimage, so action IDs in
+  retained `contact-reserve-release-choice` / `contact-cycle-control` commands and receipts are
+  unchanged and existing histories replay (DET-001). `CombatCycleDisclosureHostDraftParityTests`
+  pins the pre-fix action IDs. The `reserve-release-axis` and `cycle-control-axis` goldens and the
+  accepted-envelope example were regenerated; golden campaign IDs keep their historical
+  `campaign-con005-draft-*` names.
+
+## Compatibility rule
+
+The goldens pin current Core output. Any change to these visible cuts, the decision envelope or the
+ref preimage fails the golden test and needs a new contract version (`combat-audience-decision-v2`),
+never an in-place edit of v1 bytes.

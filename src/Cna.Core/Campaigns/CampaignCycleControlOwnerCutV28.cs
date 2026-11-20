@@ -16,10 +16,14 @@ internal sealed class CampaignCycleControlOwnerCutV28
         Side = side;
         CycleOrdinal = cycleOrdinal;
         Choices = Array.AsReadOnly(choices.ToArray());
-        VisibleBytes = SerializeVisible();
+        VisibleBytes = SerializeVisible(lowercaseSide: true);
+        // CMB-CON-005 successor freeze (2026-11-20): outward bytes spell the side lowercase like every
+        // other owner cut. The private action-ID preimage keeps the original enum spelling, so action
+        // IDs in retained contact-cycle-control commands and receipts still replay (DET-001).
+        var actionPreimage = SerializeVisible(lowercaseSide: false);
         ActionIds = Array.AsReadOnly(Choices.Select(choice =>
             "sha256:" + Convert.ToHexStringLower(SHA256.HashData(
-                (byte[])[.. VisibleBytes, 0, .. Encoding.UTF8.GetBytes(choice.ToString())])))
+                (byte[])[.. actionPreimage, 0, .. Encoding.UTF8.GetBytes(choice.ToString())])))
             .ToArray());
     }
 
@@ -51,7 +55,7 @@ internal sealed class CampaignCycleControlOwnerCutV28
         return new(release.CampaignId, side, release.CycleOrdinal, choices);
     }
 
-    private byte[] SerializeVisible()
+    private byte[] SerializeVisible(bool lowercaseSide)
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
@@ -60,7 +64,8 @@ internal sealed class CampaignCycleControlOwnerCutV28
             writer.WriteNumber("contractVersion", CampaignNativeCycleControlV28.CurrentContractVersion);
             writer.WriteString("campaignId", ContentContractGuards.RequireStableId(
                 CampaignId, nameof(CampaignId)));
-            writer.WriteString("side", Side.ToString());
+            writer.WriteString("side", lowercaseSide
+                ? CampaignSnapshotSerializer.FormatSide(Side) : Side.ToString());
             writer.WriteNumber("cycleOrdinal", CycleOrdinal);
             writer.WriteStartArray("choices");
             foreach (var choice in Choices)
