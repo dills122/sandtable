@@ -245,3 +245,53 @@ Neighbor suites: `Cna.Core.Tests.Actions.CombatCycle*`, `AuthorityBoundaryTests`
 `CombatBoundedProfileZocTests` and the new class, 66/66 local Debug. `dotnet format
 --verify-no-changes` clean on both new files. Timing rows added to
 `.github/scripts/long-suite-weights.json`; partition tests 35/35.
+
+## 9. Slice 021A2 (dormant part) — admission gate built; wiring stopped on T021-Q5
+
+Attribution note: from 021A2 on, commits use the owner's fixed session trailer (`Claude Sonnet 5`);
+the 021A0/021A1 commits were amended to it.
+
+**Built (internal, no runtime caller):**
+
+- `src/Cna.Core/Campaigns/CampaignCombatCapabilityAdmission.cs`: `Admit(rulesetHash, setup, artifact)`
+  derives the manifest and admits only a closed one; `Admit(manifest)` re-reads the bytes through the
+  strict register reader first, so a manifest built outside derivation cannot pass. Every failure
+  (uncovered family, unknown or dropped family, forged closure, foreign ruleset, mismatched setup and
+  content, missing input) returns one shared result whose outward reason is the existing public
+  `CampaignCreationRejectionReason.UnsupportedCapabilityProfile`. No new outward vocabulary or bytes.
+- Barrage V14 and Anti Armor V20: the infantry-only check is split out and throws the named invariant
+  `"Unsupported: non-infantry combat component exceeds the bounded Combat profile."`, citing
+  `BRK-CERT-004` (same pattern as 020C's ZOC invariant). The other conditions keep their old messages.
+  No event, codec or accepted-path behavior changes; nothing asserted on the old message.
+
+**Finding: register v1 can admit nothing.** `second-side-combat-selection` is reachable for every
+configuration and has no frozen disclosure, so `uncovered` is its only legal disposition and no
+readable v1 manifest can be closed. The first positive admission needs a register successor
+(manifest v2) after the 020E disclosure work (another agent) covers post-assault Retreat and repeat
+selection, plus either second-side disclosure or an owner-ruled proof that it is unreachable. Until
+then the positive branch of `Admit` has no reachable test.
+
+**Stopped (stop-and-report):**
+
+- **T021-Q5, where the gate runs.** Every option changes behavior for existing campaigns, because
+  every current setup is rejected: (a) at creation, all 18 breakdown setups stop being creatable,
+  breaking the Movement/Reaction/Breakdown suites and the Host dev route; (b) at Combat entry, every
+  native Combat test and the Host Combat route stop at Position Determination; (c) a new explicit
+  Combat activation step leaves existing creation untouched and gates only campaigns that opt in,
+  but adds a new step and probably a new event. A dormant gate cannot choose among these.
+- **T021-Q3, persistence**, gates restore revalidation (021A3) as before.
+- **What "certified" means** for activation stays open; the gate requires only closure.
+
+`CombatCapabilityAdmissionTests`, 4 rows, local Debug + Release pass:
+
+| Test | Evidence |
+| --- | --- |
+| `EveryBreakdownSetupIsRejectedWithTheExistingCapabilityReason` | All 18 setups rejected, no manifest, reason `UnsupportedCapabilityProfile`. |
+| `EveryRejectionCauseIsIndistinguishable` | 11 causes (real uncovered, null setup, null content, foreign ruleset, two setup/content mismatches, derived manifest, forged closed manifest, unknown family, dropped family, null manifest) return the same shared rejection. |
+| `NoRegisterVersionOneManifestCanBeAdmitted` | Exactly one family (`second-side-combat-selection`) can only be `uncovered`. |
+| `NonInfantryInvariantIsNamedAndAdmittedContentNeverTripsIt` | Invariant text pinned; every catalog component is infantry. |
+
+Neighbor suites: `Actions.Combat*`, `Campaigns.CombatCapability*`, `AuthorityBoundaryTests` 72/72;
+`Campaigns.CampaignNative*`, `Campaigns.CampaignContact*`, `Visibility.*` 49/49 (these drive Barrage
+and Anti Armor). `dotnet format --verify-no-changes` clean on all four touched code files. Timing rows
+added; partition tests pass.
