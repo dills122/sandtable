@@ -54,12 +54,12 @@ unsupported profiles/terminals before decisions; keep old readers and recovery. 
 | ID | Gap | Why it needs a ruling | Status |
 | --- | --- | --- | --- |
 | T020-Q1 | Successor freeze of `CMB-CON-005` (v2) | Plan gate. Agent can draft schema/goldens, cannot declare frozen. | **Resolved 2026-11-19 (owner, relayed):** draft the freeze artifacts now for owner review; the owner performs the freeze. Draft in §7b. Not frozen. |
-| T020-Q2 | Forced/surprise Combat | Land 10.3 mandatory attack in opposing ZOC. Current Core **throws** (`"Positive ZOC needs a contact-safe Combat projection."`) at runtime instead of rejecting at activation. v2 §"Forced and surprise contact" states the requirement but pins no source-backed detection/forced-choice/interruption behavior. Needs a source ruling before implementation. | **Open** (owner considering). |
+| T020-Q2 | Forced/surprise Combat | Land 10.3 mandatory attack in opposing ZOC. Current Core **throws** (`"Positive ZOC needs a contact-safe Combat projection."`) at runtime instead of rejecting at activation. v2 §"Forced and surprise contact" states the requirement but pins no source-backed detection/forced-choice/interruption behavior. Needs a source ruling before implementation. | **Resolved 2026-11-20 (owner, relayed):** out of scope for the bounded certified content. Per `combat-p01-ac003-bounded-profile-decision-proposal.md` ("Mandatory ZOC assault, Holding Off and forced retreat \| Source condition not met by current one-stacking-point occupied hexes") it does not arise in singleton-infantry content. 020C replaces the runtime throw with a clean activation-time "unsupported, exceeds bounded profile" rejection, after verifying the throw is unreachable in that content. No forced/surprise mechanic is designed. |
 | T020-Q3 | Closed capability manifest at activation | No `CapabilityManifest` exists in Core. Shape, family list and restore revalidation are unspecified beyond the fog spike's prose. Probably 021-owned, but the plan lists "capability-closure negatives" under 020 verification. Owner should assign. | **Resolved 2026-11-19 (owner, relayed):** assigned to Task 021, not 020. |
 | T020-Q4 | Core public-ref derivation | v2: refs "derive only from approved owner-visible values and Host-issued opening identity". Exercise has no Host. Slice 1 uses a visible-values-only derivation (digest + ordinal + stage + element + audience + campaign) and keeps the type `internal`. Owner should confirm this is the in-process subset, with Host HMAC layered on top, before it becomes public. | **Resolved 2026-11-19 (owner, relayed):** confirmed acceptable as the in-process subset for now; Host HMAC layering is required before anything goes public (020D). |
-| T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. | **Open** (owner considering). Custody stays out of 020A2 and 020B. |
-| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. | RBA deferred by owner (2026-11-20, §7); Q7 not pursued. |
-| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. | **Open** (owner considering). |
+| T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. | **Resolved 2026-11-20 (owner, relayed):** the existing `CampaignContactCustodyOwnerVisibleCutV1` field set (`campaignId`, `captorElementId`, `captiveQuantity`, `offers[kind, route]`) is the allowlist; no change. Custody built in 020A3 (§7c). The 020B draft verifier still treats `custody` as uncovered; the draft has not been extended. |
+| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. | **Resolved 2026-11-20 (owner, relayed):** RBA movement stays excluded (outside `CMB-POL-001`, which adopts decline-only RBA). Build RBA decline-only; do not build movement. Building decline-only raised a codec question; see §7c. |
+| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. | **Resolved 2026-11-20 (owner, relayed):** exclude contacts with no Force slot from Selection's assault offers; the audience surface must not offer them. |
 | T020-Q6 | Host/Core mapping duplication | Slice 1 duplicates the Host's re-project/byte-compare/ordinal-map rule in Core. Long-term the Host should consume the Core mapping (021 or a follow-up), or the two can diverge. | **Resolved 2026-11-19 (owner, relayed):** deferred to 020D; not fixed now. |
 
 ## 4. Proposed breakdown
@@ -224,6 +224,39 @@ Per the Q1 ruling (2026-11-19). **Draft only: not frozen, not reviewed.** The ow
 
 Mutation check (local, not committed): disabling the verifier's ref-derivation and offer-target
 checks fails all four tamper tests.
+
+## 7c. Slice 020A3 — Custody built; RBA decline-only stopped on a codec fork
+
+**Custody (built, dormant).** New `custody` stage over `CampaignHostAdapter.QueryContactCustodyOwnerDraft`
+(the confirmed Q5 allowlist bytes, unchanged), delegating to the unchanged
+`SubmitNativeCombatCustody`. The cut carries no contact observation, so revision is 0 and the
+visible digest is the fence (same rule as Reserve Release / Cycle Control).
+`CombatCycleDisclosureCustodyTests`, 5 rows, local Debug + Release pass:
+
+| Test | Evidence |
+| --- | --- |
+| `CustodyDecisionMatchesHostDraftAndCarriesOnlyTheAllowlistedFields` | Bytes equal Host draft; visible top-level fields are exactly `contractVersion, campaignId, captorElementId, captiveQuantity, offers` and each offer exactly `kind, route`; no victim element, lot, settlement hash or private ID in outward bytes; opponent/victim/wrong element/System unavailable. |
+| `NoCaptureYieldsNoCustodyDecision` | A no-capture history gives no Custody decision for either side. |
+| `AcceptedCustodyChoiceUsesTheUnchangedPrivateAdjudication` | Both choices (relocate-and-guard, leave-unguarded): event/snapshot/receipt equal the private path; reconstruction verifies; retry rejected; decision closed after acceptance. |
+| `EveryCustodyRejectionCauseSharesOneOutwardEnvelope` | 11 invalid submissions plus cross-entry-point: identical rejection. |
+| `CustodyDecisionsEncodeNoSettlementPrivateFacts` | Two capture histories (seeds 5/20) with different private streams and settlement hashes: byte-equal decisions; cross-fork acceptance. Non-leak check only. |
+
+Fixture: `rules-lab.breakdown.reaction.combat-double-fresh.v1`; seeds 5 and 20 capture with Axis
+as captor (found by a one-off local probe over seeds 1–40; only those two captured).
+
+**RBA decline-only (stopped).** The existing defender cut
+`CampaignContactRetreatBeforeAssaultOwnerVisibleCutV1` always serializes a `moveOffers` array, and in
+the bounded fixture that array is non-empty (Core derives one-edge moves). "Same pattern as the
+other four" would publish those bytes, which then advertise move offers that have no ref. The
+alternatives each need an owner call:
+
+- (a) reuse V1 bytes unchanged and issue a ref only for the decline (outward bytes list
+  unselectable moves);
+- (b) add a decline-only visible codec (new outward shape; would also need the 020B draft extended);
+- (c) change Core's bounded-profile RBA cut to derive no move offers under `CMB-POL-001` (changes
+  existing V1 bytes and the Host's dev-route RBA opening).
+
+Nothing for RBA is built.
 
 ## 8. Still pending after 020A0/020A1/020A2/020B-draft
 

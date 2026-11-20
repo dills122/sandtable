@@ -137,6 +137,7 @@ internal static class CampaignCombatAudienceDecisions
     public const string CycleControlStage = "cycle-control";
     /// <summary>Cycle control belongs to the side, not an element; this fixed subject names it.</summary>
     public const string CycleControlSubject = "cycle-control";
+    public const string CustodyStage = "custody";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -162,6 +163,11 @@ internal static class CampaignCombatAudienceDecisions
     public static CampaignCombatAudienceDecision? QueryCycleControl(ExerciseSession session,
         CampaignActionAudience audience) =>
         Query(session, audience, CycleControlStage, CycleControlSubject);
+
+    /// <summary>Captor custody disposition for an accepted capture (020A3).</summary>
+    public static CampaignCombatAudienceDecision? QueryCustody(ExerciseSession session,
+        CampaignActionAudience audience, string captorElementId) =>
+        Query(session, audience, CustodyStage, captorElementId);
 
     public static CampaignCombatAudienceDecision? Query(ExerciseSession session,
         CampaignActionAudience audience, string stage, string actingElementId) =>
@@ -218,6 +224,8 @@ internal static class CampaignCombatAudienceDecisions
                 ReserveReleaseStage => CampaignHostAdapter.SubmitNativeReserveReleaseChoice(session,
                     command, decision.ActingElementId),
                 CycleControlStage => CampaignHostAdapter.SubmitNativeCycleControl(session, command),
+                CustodyStage => CampaignHostAdapter.SubmitNativeCombatCustody(session, command,
+                    decision.ActingElementId),
                 _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
             };
         }
@@ -282,6 +290,16 @@ internal static class CampaignCombatAudienceDecisions
                         privateIds = draft.PrivateActionIds.ToArray();
                         break;
                     }
+                case CustodyStage:
+                    {
+                        // T020-Q5 (resolved 2026-11-20): the existing V1 captor cut field set is the
+                        // custody inference allowlist; no field is added or removed here.
+                        var draft = CampaignHostAdapter.QueryContactCustodyOwnerDraft(session,
+                            audience, actingElementId);
+                        visible = draft.VisibleBytes;
+                        privateIds = draft.PrivateActionIds.ToArray();
+                        break;
+                    }
                 case CycleControlStage:
                     {
                         if (actingElementId != CycleControlSubject) return null;
@@ -323,9 +341,9 @@ internal static class CampaignCombatAudienceDecisions
             return null;
         }
         if (observation is not null && observation.Side != side) return null;
-        // Contact-bound stages carry the side contact audience revision. Reserve Release and Cycle
-        // Control cuts carry no contact observation; they report revision 0 and rely on the visible
-        // digest as the only fence (author interpretation pending owner ruling, T020-Q4).
+        // Contact-bound stages carry the side contact audience revision. Reserve Release, Cycle
+        // Control and Custody cuts carry no contact observation; they report revision 0 and rely
+        // on the visible digest as the only fence (in-process subset accepted under T020-Q4).
         var campaignId = observation?.CampaignId ?? CampaignExercises.QueryCheckpoint(session).CampaignId;
         var revision = observation?.AudienceRevision ?? 0;
         var digest = Digest(visible);
