@@ -29,8 +29,8 @@ internal sealed class CampaignCombatCapabilityAdmissionResult
 // a configuration is admitted only with a closed capability manifest; any uncovered or unknown family,
 // or any configuration the manifest cannot be derived for, rejects before a Combat decision. Where it
 // is called (campaign creation, Combat entry, or an explicit activation step) is T021-Q5 and is not
-// decided here; restore revalidation (Q3) is 021A3. Today every admitted setup is rejected (T021-Q1
-// option c), because post-assault retreat and the repeat cycle have no frozen audience disclosure.
+// decided here; restore revalidation (Q3) is 021A3. It derives the latest manifest version (v2 since
+// 021A1b). See the scoping doc §9-§10 for which configurations that admits.
 internal static class CampaignCombatCapabilityAdmission
 {
     /// <summary>Shared bounded-profile invariant for the Barrage V14 and Anti Armor V20 handlers.</summary>
@@ -44,7 +44,8 @@ internal static class CampaignCombatCapabilityAdmission
         CampaignCombatCapabilityManifest manifest;
         try
         {
-            manifest = CampaignCombatCapabilityManifest.Derive(rulesetHash, setup, artifact);
+            manifest = CampaignCombatCapabilityManifest.Derive(rulesetHash, setup, artifact,
+                CampaignCombatCapabilityManifest.LatestContractVersion);
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {

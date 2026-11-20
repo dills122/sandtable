@@ -7,24 +7,51 @@ namespace Cna.Core.Tests.Campaigns;
 
 /// <summary>
 /// Task 021A2 (dormant, internal): the activation gate over the closed capability manifest. Not
-/// wired into creation, Combat entry or restore (T021-Q5/Q3 open). Owner ruling T021-Q1 option c:
-/// today's content must be rejected.
+/// wired into creation, Combat entry or restore (T021-Q5/Q3 open). It derives the latest manifest
+/// (v2 since 021A1b). Under v1 every setup was rejected (T021-Q1 option c).
 /// </summary>
 public sealed class CombatCapabilityAdmissionTests
 {
     private const string DoubleFresh = "rules-lab.breakdown.reaction.combat-double-fresh.v1";
 
+    // Task 021A1b: the first admissions. Each is a configuration where one side fields no element with a
+    // combat component, so no assault result is reachable (CombatCapabilityAudienceTraceTests measures
+    // that these reach Combat with a public finish-only Selection decision).
+    private static readonly string[] AdmittedSetups =
+    [
+        "rules-lab.breakdown.reaction.noncombat.v1",
+        "rules-lab.breakdown.truck-cost.v1",
+        "rules-lab.breakdown.truck-one-point.v1",
+    ];
+
     [Fact]
-    public void EveryBreakdownSetupIsRejectedWithTheExistingCapabilityReason()
+    public void OnlyConfigurationsWithoutAReachableAssaultResultAreAdmitted()
     {
+        var admitted = new List<string>();
         foreach (var definition in Cna1979BreakdownSetupCatalog.Definitions)
         {
             var (setup, artifact) = Configuration(definition.SetupId);
             var result = CampaignCombatCapabilityAdmission.Admit(Cna1979Ruleset.Manifest.Hash, setup, artifact);
-            Assert.False(result.IsAdmitted, definition.SetupId);
-            Assert.Null(result.Manifest);
-            Assert.Equal(CampaignCreationRejectionReason.UnsupportedCapabilityProfile, result.RejectionReason);
+            if (result.IsAdmitted)
+            {
+                admitted.Add(definition.SetupId);
+                Assert.Equal(CampaignCreationRejectionReason.None, result.RejectionReason);
+                var manifest = result.Manifest!;
+                Assert.Equal(CampaignCombatCapabilityManifest.VersionTwo, manifest.ContractVersion);
+                Assert.True(manifest.IsClosed);
+                Assert.True(CampaignCombatCapabilityManifest.Revalidate(manifest.SerializeCanonical(),
+                    Cna1979Ruleset.Manifest.Hash, setup, artifact));
+                // Under v1 the same configuration is not closed: second-side selection was uncovered.
+                Assert.False(CampaignCombatCapabilityManifest.Derive(Cna1979Ruleset.Manifest.Hash, setup, artifact)
+                    .IsClosed);
+            }
+            else
+            {
+                Assert.Null(result.Manifest);
+                Assert.Equal(CampaignCreationRejectionReason.UnsupportedCapabilityProfile, result.RejectionReason);
+            }
         }
+        Assert.Equal(AdmittedSetups.Order(StringComparer.Ordinal), admitted.Order(StringComparer.Ordinal));
     }
 
     [Fact]

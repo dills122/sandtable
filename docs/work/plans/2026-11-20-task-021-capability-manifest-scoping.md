@@ -295,3 +295,65 @@ Neighbor suites: `Actions.Combat*`, `Campaigns.CombatCapability*`, `AuthorityBou
 `Campaigns.CampaignNative*`, `Campaigns.CampaignContact*`, `Visibility.*` 49/49 (these drive Barrage
 and Anti Armor). `dotnet format --verify-no-changes` clean on all four touched code files. Timing rows
 added; partition tests pass.
+
+## 10. Slice 021A1b — manifest v2 and the first admissions (2026-11-20)
+
+Context: Task 020E merged (main `7ccfc473`): contract-v2 stages `post-assault-retreat`,
+`repeat-combat-selection` and `repeat-movement`; 020E0 shows the second side's own first selection
+(Core V47) is served by the v1 `combat-selection` stage. #467/#468/#472 were rebased onto it, and their
+three tests that reflected over every public stage now use the fixed six-stage v1 list (the 021A0
+retreat test keeps its finding: v1 alone could not disclose the decision before its own Reserve
+Release golden; it now asserts that decision is served only by a contract-v2 stage).
+
+**Built (dormant, internal):** manifest **v2** (`sandtable.combat-capability-manifest.v2`), a v1
+superset: same 23 family IDs and order; v1 bytes and its pin unchanged. `Derive(..., version)`, the
+reader and `Revalidate` are version-aware; the admission gate derives the latest version (v2).
+
+| Family | v1 | v2 | Basis |
+| --- | --- | --- | --- |
+| `post-assault-retreat` | uncovered | covered (`post-assault-retreat`, v2) | 020E1; trace below |
+| `repeat-movement` | uncovered | covered (`repeat-movement`, v2) | 020E3; trace below |
+| `repeat-combat-selection` | uncovered | covered (`repeat-combat-selection`, v2) | 020E2; trace below |
+| `second-side-combat-selection` | uncovered | covered (`combat-selection`, v1) | 020E0; `CombatCycleDisclosureSecondSideTests` re-run here, 4/4 pass on `7ccfc473` |
+| `two-runtime-assaults` | uncovered | **uncovered** | finding 1 below |
+| `released-reserve-offensive-combat` | uncovered | **uncovered** | not demonstrated (fail-closed) |
+
+**Real-data result: yes, a manifest is admittable for the first time, but only in a narrow case.**
+Re-deriving v2 for all 18 breakdown setups:
+
+- **Admitted (3):** `rules-lab.breakdown.reaction.noncombat.v1`, `rules-lab.breakdown.truck-cost.v1`,
+  `rules-lab.breakdown.truck-one-point.v1`. In each, one side fields no element with a combat component,
+  so no assault result is reachable. Measured over seeds 1, 2, 3, 5, 6: every run reaches the Combat
+  position, the acting side gets a public Selection decision with **no assault offer** (no contact), and
+  finish → System no-attack → Reserve Release → Cycle Control is served end to end by public decisions.
+  So the first admissions are configurations where Combat reduces to finish-without-attack.
+- **Rejected (15):** every assault-capable setup stays open on exactly `two-runtime-assaults` and
+  `released-reserve-offensive-combat`.
+
+**Finding 1 (stop-and-report): a repeated assault on the spent first pair has no handler.** On
+`combat-double-fresh` (seeds 5, 6, 11, 14) every owner decision through the first assault, Reserve
+Release, Cycle Control Repeat, repeated Movement, repeated selection, the repeated RBA decline and both
+repeated Force seals is served and accepted through the public surface. But the only repeated assault
+offered is the first pair again, whose roles no longer meet the bounded profile's full-TOE/Cohesion/CP/
+ammo bounds after the first result (`CampaignNativeCombatAssaultInputs`: "Assault role lacks
+source-backed resources"). The Host applies the V19 `force-unavailable` pre-check only to initial rounds
+(`IsInitialNativeCombatForceRound`), so a repeat Force round opens and seals; then the V21 cancellation
+and the V22 result both refuse. In the Host, `AppendEmptyAntiArmor` returns silently at that point, so
+the campaign would stall with no next step. Pinned by
+`RepeatedAssaultOnTheSpentFirstPairHasNoResultOrCancellationHandler`; not fixed (Core/Host Combat logic,
+outside Task 021). Possibly related to issue #446 (different symptom). This is why
+`two-runtime-assaults` stays uncovered.
+
+**Resolved by reading (flag from 021A1):** the Host's `native-second-combat-no-attack` step (#394) is
+the System completion after the second side's own V47 finish decision, the same shape as V13 after a
+first-side finish. It does not stand in for an owner choice.
+
+Still open: Q5 (where the gate runs), Q3 (persistence), what "certified" means, and Q6.
+
+Tests (local Debug + Release): `CombatCapabilityManifestV2Tests` 5, `CombatCapabilityAudienceTraceTests`
+8 (4 seed traces, the handler gap, 3 admitted setups), `CombatCapabilityAdmissionTests` 4 (now: exactly
+the three setups above are admitted, with a closed, revalidating v2 manifest that is not closed under
+v1). Neighbor suites `Campaigns.CombatCapability*`, `Actions.Combat*`, `AuthorityBoundaryTests`,
+`Campaigns.CampaignNative*`, `Campaigns.CampaignContact*`: 153/153. Mutation check: removing the v2
+second-side override fails 6 tests. v2 double-fresh hash pinned as a draft
+(`sha256:9bc704fe…2fff1`).

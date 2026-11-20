@@ -11,8 +11,8 @@ namespace Cna.Core.Campaigns;
 // System action and an adjudication handler; an unknown or uncovered family fails closure.
 // Register sources and every disposition are listed in
 // docs/work/plans/2026-11-20-task-021-capability-manifest-scoping.md §7. Activation and restore
-// wiring belong to 021A2/021A3. Today's Combat-capable content correctly fails closure (owner
-// ruling T021-Q1 option c): post-assault retreat and the repeat cycle have no frozen disclosure.
+// wiring belong to 021A2/021A3. Under v1, today's Combat-capable content fails closure (owner ruling
+// T021-Q1 option c). v2 (021A1b) covers the contract-v2 stages; see RegisterV2.
 
 internal enum CampaignCombatCapabilityDisposition
 {
@@ -36,14 +36,25 @@ internal sealed record CampaignCombatCapabilityFamily(string FamilyId,
 
 internal sealed class CampaignCombatCapabilityManifest
 {
-    public const int CurrentContractVersion = 1;
-    public const string ManifestId = "sandtable.combat-capability-manifest.v1";
+    public const int VersionOne = 1;
+    /// <summary>Task 021A1b: v1 superset over the contract-v2 audience stages (Task 020E).</summary>
+    public const int VersionTwo = 2;
+    public const int LatestContractVersion = VersionTwo;
+
+    public static string ManifestIdFor(int contractVersion) => contractVersion switch
+    {
+        VersionOne => "sandtable.combat-capability-manifest.v1",
+        VersionTwo => "sandtable.combat-capability-manifest.v2",
+        _ => throw new ArgumentOutOfRangeException(nameof(contractVersion)),
+    };
 
     private readonly byte[] canonicalBytes;
 
-    private CampaignCombatCapabilityManifest(string rulesetHash, string setupId, string setupHash,
-        ContentPackV6Identity pack, string capabilityProfileId, IReadOnlyList<CampaignCombatCapabilityFamily> families)
+    private CampaignCombatCapabilityManifest(int contractVersion, string rulesetHash, string setupId,
+        string setupHash, ContentPackV6Identity pack, string capabilityProfileId,
+        IReadOnlyList<CampaignCombatCapabilityFamily> families)
     {
+        ContractVersion = contractVersion;
         RulesetHash = rulesetHash;
         SetupId = setupId;
         SetupHash = setupHash;
@@ -54,6 +65,7 @@ internal sealed class CampaignCombatCapabilityManifest
         Hash = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(canonicalBytes));
     }
 
+    public int ContractVersion { get; }
     public string RulesetHash { get; }
     public string SetupId { get; }
     public string SetupHash { get; }
@@ -73,8 +85,9 @@ internal sealed class CampaignCombatCapabilityManifest
     /// a setup that does not pin exactly this content, or content that fails V6 admission.
     /// </summary>
     public static CampaignCombatCapabilityManifest Derive(string rulesetHash, CampaignSetupSnapshotV6 setup,
-        ContentPackV6Artifact artifact)
+        ContentPackV6Artifact artifact, int contractVersion = VersionOne)
     {
+        var register = RegisterFor(contractVersion);
         ArgumentNullException.ThrowIfNull(setup);
         ArgumentNullException.ThrowIfNull(artifact);
         if (!Cna1979Ruleset.IsCanonicalHash(rulesetHash))
@@ -83,8 +96,8 @@ internal sealed class CampaignCombatCapabilityManifest
             || setup.CapabilityProfileId != artifact.Definition.CapabilityProfileId
             || !ContentPackV6Validator.Validate(artifact.Definition).IsValid)
             throw new ArgumentException("Setup and content do not form an admitted configuration.", nameof(setup));
-        return new CampaignCombatCapabilityManifest(rulesetHash, setup.SetupId, setup.SetupHash, artifact.Identity,
-            artifact.Definition.CapabilityProfileId, DeriveFamilies(artifact.Definition));
+        return new CampaignCombatCapabilityManifest(contractVersion, rulesetHash, setup.SetupId, setup.SetupHash,
+            artifact.Identity, artifact.Definition.CapabilityProfileId, Resolve(register, artifact.Definition));
     }
 
     /// <summary>Restore revalidation primitive: retained bytes must equal a fresh derivation.</summary>
@@ -93,8 +106,8 @@ internal sealed class CampaignCombatCapabilityManifest
     {
         try
         {
-            CampaignCombatCapabilityManifestCodec.Read(retained);
-            return retained.SequenceEqual(Derive(rulesetHash, setup, artifact).canonicalBytes);
+            var read = CampaignCombatCapabilityManifestCodec.Read(retained);
+            return retained.SequenceEqual(Derive(rulesetHash, setup, artifact, read.ContractVersion).canonicalBytes);
         }
         catch (Exception exception) when (exception is JsonException or ArgumentException)
         {
@@ -103,11 +116,16 @@ internal sealed class CampaignCombatCapabilityManifest
     }
 
     internal static CampaignCombatCapabilityManifest FromParts(string rulesetHash, string setupId, string setupHash,
-        ContentPackV6Identity pack, string capabilityProfileId, IReadOnlyList<CampaignCombatCapabilityFamily> families) =>
-        new(rulesetHash, setupId, setupHash, pack, capabilityProfileId, families);
+        ContentPackV6Identity pack, string capabilityProfileId, IReadOnlyList<CampaignCombatCapabilityFamily> families,
+        int contractVersion = VersionOne) =>
+        new(contractVersion, rulesetHash, setupId, setupHash, pack, capabilityProfileId, families);
 
     /// <summary>Family dispositions from content facts alone, in register order.</summary>
-    internal static IReadOnlyList<CampaignCombatCapabilityFamily> DeriveFamilies(ContentPackV6Definition definition)
+    internal static IReadOnlyList<CampaignCombatCapabilityFamily> DeriveFamilies(ContentPackV6Definition definition,
+        int contractVersion = VersionOne) => Resolve(RegisterFor(contractVersion), definition);
+
+    private static CampaignCombatCapabilityFamily[] Resolve(RegisterEntry[] register,
+        ContentPackV6Definition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
         var facts = definition.ElementCombatFacts.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
@@ -122,13 +140,26 @@ internal sealed class CampaignCombatCapabilityManifest
         var nonInfantry = combatElements.SelectMany(element => facts[element.ElementId].Components)
             .Any(component => component.ComponentClassId != Cna1979Combat.InfantryComponentClassId);
         var motorizedCombat = combatElements.Any(element => element.MobilityId == Cna1979Movement.MotorizedMobilityId);
-        return Register.Select(entry => entry.Resolve(assaultResultReachable, nonInfantry, motorizedCombat)).ToArray();
+        return register.Select(entry => entry.Resolve(assaultResultReachable, nonInfantry, motorizedCombat)).ToArray();
     }
 
-    internal static IReadOnlyList<string> FamilyIds => Register.Select(value => value.FamilyId).ToArray();
+    internal static IReadOnlyList<string> FamilyIds => FamilyIdsFor(VersionOne);
 
-    internal static CampaignCombatCapabilityCoverage? CoverageOf(string familyId) =>
-        Register.Single(value => value.FamilyId == familyId).Coverage;
+    internal static IReadOnlyList<string> FamilyIdsFor(int contractVersion) =>
+        RegisterFor(contractVersion).Select(value => value.FamilyId).ToArray();
+
+    internal static CampaignCombatCapabilityCoverage? CoverageOf(string familyId, int contractVersion = VersionOne) =>
+        Entry(familyId, contractVersion).Coverage;
+
+    private static RegisterEntry Entry(string familyId, int contractVersion) =>
+        RegisterFor(contractVersion).Single(value => value.FamilyId == familyId);
+
+    private static RegisterEntry[] RegisterFor(int contractVersion) => contractVersion switch
+    {
+        VersionOne => Register,
+        VersionTwo => RegisterV2,
+        _ => throw new ArgumentOutOfRangeException(nameof(contractVersion)),
+    };
 
     private enum Reach { Always, AssaultResult, NonInfantryComponent, MotorizedCombatElement, Never }
 
@@ -161,12 +192,12 @@ internal sealed class CampaignCombatCapabilityManifest
                 && disposition == CampaignCombatCapabilityDisposition.SourceConditionAbsent;
     }
 
-    internal static string AuthorityOf(string familyId) =>
-        Register.Single(value => value.FamilyId == familyId).Authority;
+    internal static string AuthorityOf(string familyId, int contractVersion = VersionOne) =>
+        Entry(familyId, contractVersion).Authority;
 
     /// <summary>Whether the register can produce this disposition for this family at all.</summary>
-    internal static bool Allows(string familyId, CampaignCombatCapabilityDisposition disposition) =>
-        Register.Single(value => value.FamilyId == familyId).Allows(disposition);
+    internal static bool Allows(string familyId, CampaignCombatCapabilityDisposition disposition,
+        int contractVersion = VersionOne) => Entry(familyId, contractVersion).Allows(disposition);
 
     private static CampaignCombatCapabilityCoverage Frozen(string stage, string action, string handler) =>
         new(stage, action, handler);
@@ -232,6 +263,51 @@ internal sealed class CampaignCombatCapabilityManifest
         new("voluntary-surrender", CampaignCombatCapabilityDisposition.PolicyExcluded, Reach.Never,
             "CMB-POL-009"),
     ];
+
+    // Manifest v2 (Task 021A1b): the v1 register with the families the contract-v2 audience stages
+    // (Task 020E) now disclose, plus second-side selection, which the v1 combat-selection stage already
+    // serves (Task 020E0, re-verified in 021A1b). The repeated-assault capabilities stay uncovered:
+    // the 021A1b trace found a repeated assault on a spent role pair with no result or cancellation
+    // handler. Same family IDs and order as v1; v1 bytes and pin are unchanged.
+    private static readonly RegisterEntry[] RegisterV2 = Register.Select(entry => entry.FamilyId switch
+    {
+        "post-assault-retreat" => entry with
+        {
+            WhenReachable = CampaignCombatCapabilityDisposition.Covered,
+            Authority = "combat-audience-decision v2 superset (Task 020E1); T020-Q9",
+            Coverage = Frozen("post-assault-retreat", "retreat-move|refuse-retreat", "contact-post-assault-retreat"),
+        },
+        "repeat-movement" => entry with
+        {
+            WhenReachable = CampaignCombatCapabilityDisposition.Covered,
+            Authority = "combat-audience-decision v2 superset (Task 020E3)",
+            Coverage = Frozen("repeat-movement", "repeat-move", "contact-repeat-movement"),
+        },
+        "repeat-combat-selection" => entry with
+        {
+            WhenReachable = CampaignCombatCapabilityDisposition.Covered,
+            Authority = "combat-audience-decision v2 superset (Task 020E2); T020-Q8",
+            Coverage = Frozen("repeat-combat-selection", "select-close-assault|finish-without-attack",
+                "contact-repeat-combat-selection"),
+        },
+        "second-side-combat-selection" => entry with
+        {
+            WhenReachable = CampaignCombatCapabilityDisposition.Covered,
+            Authority = "combat-audience-decision-v1 combat-selection serves Core V47 (Task 020E0; 021A1b)",
+            Coverage = Frozen("combat-selection", "select-close-assault|finish-without-attack", "contact-combat-selection"),
+        },
+        "two-runtime-assaults" => entry with
+        {
+            Authority = "Task004 handoff deferred; a repeated assault on a spent role pair has no result "
+                + "or cancellation handler (021A1b trace)",
+        },
+        "released-reserve-offensive-combat" => entry with
+        {
+            Authority = "Task004 handoff deferred; a released-unit assault is not demonstrated through the "
+                + "audience surface (fail-closed)",
+        },
+        _ => entry,
+    }).ToArray();
 }
 
 internal static class CampaignCombatCapabilityManifestCodec
@@ -261,8 +337,8 @@ internal static class CampaignCombatCapabilityManifestCodec
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", CampaignCombatCapabilityManifest.CurrentContractVersion);
-            writer.WriteString("manifestId", CampaignCombatCapabilityManifest.ManifestId);
+            writer.WriteNumber("contractVersion", manifest.ContractVersion);
+            writer.WriteString("manifestId", CampaignCombatCapabilityManifest.ManifestIdFor(manifest.ContractVersion));
             writer.WriteString("rulesetHash", manifest.RulesetHash);
             writer.WriteString("setupId", manifest.SetupId);
             writer.WriteString("setupHash", manifest.SetupHash);
@@ -312,8 +388,9 @@ internal static class CampaignCombatCapabilityManifestCodec
             using var document = JsonDocument.Parse(bytes.ToArray(), new JsonDocumentOptions { MaxDepth = 8 });
             var root = document.RootElement;
             RequireFields(root, TopFields);
-            if (root.GetProperty("contractVersion").GetInt32() != CampaignCombatCapabilityManifest.CurrentContractVersion
-                || root.GetProperty("manifestId").GetString() != CampaignCombatCapabilityManifest.ManifestId)
+            var version = root.GetProperty("contractVersion").GetInt32();
+            if (version is not (CampaignCombatCapabilityManifest.VersionOne or CampaignCombatCapabilityManifest.VersionTwo)
+                || root.GetProperty("manifestId").GetString() != CampaignCombatCapabilityManifest.ManifestIdFor(version))
                 throw new JsonException("Unsupported Combat capability manifest version.");
             var content = root.GetProperty("content");
             RequireFields(content, ContentFields);
@@ -321,23 +398,23 @@ internal static class CampaignCombatCapabilityManifestCodec
                 content.GetProperty("formatId").GetString()!, content.GetProperty("packId").GetString()!,
                 content.GetProperty("rulesetId").GetString()!, content.GetProperty("hash").GetString()!);
             var families = root.GetProperty("families").EnumerateArray().Select(ReadFamily).ToArray();
-            if (!families.Select(value => value.FamilyId).SequenceEqual(CampaignCombatCapabilityManifest.FamilyIds,
+            if (!families.Select(value => value.FamilyId).SequenceEqual(CampaignCombatCapabilityManifest.FamilyIdsFor(version),
                     StringComparer.Ordinal))
                 throw new JsonException("Combat capability manifest family set is not the closed register.");
             foreach (var family in families)
             {
-                if (!CampaignCombatCapabilityManifest.Allows(family.FamilyId, family.Disposition)
-                    || family.Authority != CampaignCombatCapabilityManifest.AuthorityOf(family.FamilyId))
+                if (!CampaignCombatCapabilityManifest.Allows(family.FamilyId, family.Disposition, version)
+                    || family.Authority != CampaignCombatCapabilityManifest.AuthorityOf(family.FamilyId, version))
                     throw new JsonException($"Combat capability family '{family.FamilyId}' has an unregistered disposition.");
                 var expected = family.Disposition == CampaignCombatCapabilityDisposition.Covered
-                    ? CampaignCombatCapabilityManifest.CoverageOf(family.FamilyId) : null;
+                    ? CampaignCombatCapabilityManifest.CoverageOf(family.FamilyId, version) : null;
                 if (family.Coverage != expected || family.Disposition == CampaignCombatCapabilityDisposition.Covered
                         && expected is null)
                     throw new JsonException($"Combat capability family '{family.FamilyId}' has unregistered coverage.");
             }
             var manifest = CampaignCombatCapabilityManifest.FromParts(root.GetProperty("rulesetHash").GetString()!,
                 root.GetProperty("setupId").GetString()!, root.GetProperty("setupHash").GetString()!, pack,
-                content.GetProperty("capabilityProfileId").GetString()!, families);
+                content.GetProperty("capabilityProfileId").GetString()!, families, version);
             if (!bytes.SequenceEqual(manifest.SerializeCanonical()))
                 throw new JsonException("Combat capability manifest is not canonical.");
             return manifest;
