@@ -13,6 +13,11 @@ internal sealed record CampaignContactCombatSelectionCut(
     IReadOnlyList<SelectContactAssaultAction> AssaultOffers,
     FinishCombatWithoutAttackAction? FinishOffer)
 {
+    // Defensive invariant only: unreachable for admitted content (see Project). Callers map it to
+    // "no decision available" (audience surface) or "no owner opening" (Host); never a crash path.
+    internal const string PositiveZocExceedsBoundedProfile =
+        "Unsupported: positive opposing ZOC exceeds the bounded Combat profile.";
+
     public bool MayFinishWithoutAttack => FinishOffer is not null;
 
     public static CampaignContactCombatSelectionCut Project(CampaignSnapshotV11 snapshot,
@@ -40,9 +45,12 @@ internal sealed record CampaignContactCombatSelectionCut(
             owner.ContactObservation.ActingFormationId,
             owner.ActingElement.CurrentLocationId, owner.Edges,
             owner.ContactObservation.CurrentTargets);
-        // Land 10.3 makes attack mandatory in an opposing ZOC. The currently admitted
-        // V6 world has no positive ZOC source; future worlds must derive this from
-        // their own certified source facts before they can offer a voluntary finish.
+        // Land 10.3 makes attack mandatory in an opposing ZOC. Forced/surprise Combat is out of
+        // the bounded profile (T020-Q2, ruled 2026-11-20). It is rejected at activation:
+        // ContentPackV6Validator (BRK-CERT-003) admits only battalion organizations (stacking 1)
+        // and at most one same-side combat/HQ battalion per hex, and CampaignWorldV6Validator
+        // rejects any later World with two same-side combat elements in one hex. A ZOC source
+        // needs more than one stacking point in a hex, so no admitted World reaches this branch.
         var opposing = side == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
         var mayFinish = false;
         if (context.ArtifactV6 is { } artifact)
@@ -50,7 +58,7 @@ internal sealed record CampaignContactCombatSelectionCut(
             var enemyControl = CampaignElementMovedV3Factory.DeriveZocAuthority(
                 snapshot.World, artifact, context.Scenario, opposing);
             if (enemyControl.SourceRepresentationIds.Count != 0 || enemyControl.ControlledLocationIds.Count != 0)
-                throw new InvalidOperationException("Positive ZOC needs a contact-safe Combat projection.");
+                throw new InvalidOperationException(PositiveZocExceedsBoundedProfile);
             mayFinish = true;
         }
         return new(snapshot.StateVersion, owner, Array.AsReadOnly(offers),
@@ -78,7 +86,7 @@ internal sealed record CampaignContactCombatSelectionCut(
         var enemyControl = CampaignElementMovedV3Factory.DeriveZocAuthority(
             world, context.ArtifactV6!, context.Scenario, opposing);
         if (enemyControl.SourceRepresentationIds.Count != 0 || enemyControl.ControlledLocationIds.Count != 0)
-            throw new InvalidOperationException("Positive ZOC needs a contact-safe Combat projection.");
+            throw new InvalidOperationException(PositiveZocExceedsBoundedProfile);
         return new(contacts.AuthorityVersion, owner, Array.AsReadOnly(offers),
             new FinishCombatWithoutAttackAction(actingElementId));
     }
