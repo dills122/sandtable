@@ -200,6 +200,11 @@ The fixture path uses `rules-lab.breakdown.reaction.combat-double-fresh.v1` (sam
 
 ## 8. Still pending after 020A0/020A1/020A2
 
-All other round kinds (A1/A2), successor freeze artifacts (B), forced/surprise (C), publication
-and Host consolidation (D), seal-order/terminal-reason disclosure pairs, capability manifest,
-custody inference allowlist, Exercise/Runner adoption (022–024), and all independent review.
+Covered (dormant, internal): Selection (first-side initial cut), Force Assignment (both seal
+orders), Reserve Release, Cycle Control. These are every round kind not blocked on an owner ruling.
+
+Waiting on owner rulings: RBA (deferred, Q7), Custody (Q5), post-assault Retreat (likely Q7-family,
+unchecked), repeat V31 and second-side V47 selection (Q8 applies to Selection generally).
+Also open: successor freeze artifacts (B, Q1), forced/surprise (C, Q2), capability manifest (Q3),
+publication and Host consolidation (D, Q4/Q6), terminal-reason disclosure pairs, Exercise/Runner
+adoption (022–024), and all independent review.
