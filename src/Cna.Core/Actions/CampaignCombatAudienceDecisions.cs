@@ -160,6 +160,10 @@ public static class CampaignCombatAudienceDecisions
     public const string PostAssaultRetreatStage = "post-assault-retreat";
     /// <summary>Repeated-cycle Combat selection (Core V31) after a repeated Movement (020E2, v2).</summary>
     public const string RepeatCombatSelectionStage = "repeat-combat-selection";
+    /// <summary>Repeated-cycle Movement (Core V29) after Cycle Control Repeat (020E3, v2).</summary>
+    public const string RepeatMovementStage = "repeat-movement";
+    /// <summary>Repeated Movement belongs to the side, not an element; this fixed subject names it.</summary>
+    public const string RepeatMovementSubject = "repeat-movement";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -200,6 +204,11 @@ public static class CampaignCombatAudienceDecisions
     public static CampaignCombatAudienceDecision? QueryRepeatCombatSelection(ExerciseSession session,
         CampaignActionAudience audience, string actingElementId) =>
         Query(session, audience, RepeatCombatSelectionStage, actingElementId);
+
+    /// <summary>Repeated-cycle Movement decision after Cycle Control Repeat (020E3, contract v2 superset).</summary>
+    public static CampaignCombatAudienceDecision? QueryRepeatMovement(ExerciseSession session,
+        CampaignActionAudience audience) =>
+        Query(session, audience, RepeatMovementStage, RepeatMovementSubject);
 
     /// <summary>Captor custody disposition for an accepted capture (020A3).</summary>
     public static CampaignCombatAudienceDecision? QueryCustody(ExerciseSession session,
@@ -269,6 +278,7 @@ public static class CampaignCombatAudienceDecisions
                     command, decision.ActingElementId),
                 RepeatCombatSelectionStage => CampaignHostAdapter.SubmitNativeRepeatCombat(session,
                     command, decision.ActingElementId),
+                RepeatMovementStage => CampaignHostAdapter.SubmitNativeRepeatMovement(session, command),
                 _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
             };
         }
@@ -289,7 +299,7 @@ public static class CampaignCombatAudienceDecisions
     {
         SelectionStage or ForceAssignmentStage or ReserveReleaseStage or CycleControlStage
             or CustodyStage or RbaDeclineStage => CampaignCombatAudienceDecision.CurrentContractVersion,
-        PostAssaultRetreatStage or RepeatCombatSelectionStage
+        PostAssaultRetreatStage or RepeatCombatSelectionStage or RepeatMovementStage
             => CampaignCombatAudienceDecision.SuccessorContractVersion,
         _ => throw new ArgumentOutOfRangeException(nameof(stage)),
     };
@@ -400,6 +410,17 @@ public static class CampaignCombatAudienceDecisions
                             .ToArray();
                         break;
                     }
+                case RepeatMovementStage:
+                    {
+                        // One decision per side, like Cycle Control. The cut carries no contact
+                        // observation: revision 0 and the visible digest as the only fence (owner
+                        // ruling 2026-11-20, same default as Reserve Release/Cycle Control/Custody).
+                        if (actingElementId != RepeatMovementSubject) return null;
+                        var draft = CampaignHostAdapter.QueryNativeRepeatMovementOwnerDraft(session, audience);
+                        visible = draft.VisibleBytes;
+                        privateIds = draft.PrivateActionIds.ToArray();
+                        break;
+                    }
                 case CycleControlStage:
                     {
                         if (actingElementId != CycleControlSubject) return null;
@@ -449,8 +470,9 @@ public static class CampaignCombatAudienceDecisions
         }
         if (observation is not null && observation.Side != side) return null;
         // Contact-bound stages carry the side contact audience revision. Reserve Release, Cycle
-        // Control and Custody cuts carry no contact observation; they report revision 0 and rely
-        // on the visible digest as the only fence (in-process subset accepted under T020-Q4).
+        // Control, Custody and repeated Movement cuts carry no contact observation; they report
+        // revision 0 and rely on the visible digest as the only fence (in-process subset accepted
+        // under T020-Q4; extended to repeated Movement by owner ruling 2026-11-20).
         var campaignId = observation?.CampaignId ?? CampaignExercises.QueryCheckpoint(session).CampaignId;
         var revision = observation?.AudienceRevision ?? 0;
         var digest = Digest(visible);

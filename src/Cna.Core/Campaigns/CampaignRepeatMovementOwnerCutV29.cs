@@ -54,7 +54,11 @@ internal sealed class CampaignRepeatMovementOwnerCutV29
             writer.WriteNumber("contractVersion", CampaignNativeRepeatMovementV29.CurrentContractVersion);
             writer.WriteString("campaignId", ContentContractGuards.RequireStableId(
                 CampaignId, nameof(CampaignId)));
-            writer.WriteString("side", Side.ToString());
+            // Task 020E3 (owner ruling 2026-11-20): lowercase side, matching every other owner cut and
+            // the v1 freeze's V27/V28 fix. Unlike V27/V28, V29 action IDs are MoveElementAction
+            // semantic IDs, not hashes of these bytes, so retained repeated-Movement steps replay
+            // unchanged (DET-001; pinned by CombatCycleDisclosureRepeatMovementTests).
+            writer.WriteString("side", CampaignSnapshotSerializer.FormatSide(Side));
             writer.WriteNumber("cycleOrdinal", CycleOrdinal);
             writer.WriteStartArray("offers");
             foreach (var offer in Offers)
