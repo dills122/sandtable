@@ -17,7 +17,7 @@
   "objects": {
     "Decision": "contractVersion:int=1 campaignId:id audience:Audience stage:Stage actingElementId:id audienceRevision:long visibleDigest:sha256 visible:Visible<stage> offerRefs:OfferRef[1..]",
     "Audience": "\"axis\" | \"commonwealth\"",
-    "Stage": "\"combat-selection\" | \"force-assignment\" | \"reserve-release\" | \"cycle-control\" | \"rba-decline\"",
+    "Stage": "\"combat-selection\" | \"force-assignment\" | \"reserve-release\" | \"cycle-control\" | \"rba-decline\" | \"custody\"",
     "sha256": "\"sha256:\" + 64 lowercase hex over the exact visible value bytes",
     "OfferRef": "\"cmbref.v1.\" + 64 lowercase hex = SHA-256(RefPreimage)",
     "RefPreimage": "compact JSON {domain:\"sandtable.combat-audience-ref.v1\", campaignId, audience, stage, actingElementId, visibleDigest, ordinal:int}",
@@ -26,7 +26,8 @@
     "AssaultOffer": "kind:\"select-contact-assault\" actingElementId:id contactHandle:id apparentLocationId:id",
     "FinishOffer": "kind:\"finish-combat-without-attack\" actingElementId:id",
     "SealOffer": "kind:\"seal-combat-force-assignment\" role:id elementId:id componentId:id committedToe:int",
-    "DeclineOffer": "kind:\"decline-retreat-before-assault\" elementId:id"
+    "DeclineOffer": "kind:\"decline-retreat-before-assault\" elementId:id",
+    "CustodyOffer": "kind:\"relocate-and-guard\" | \"leave-unguarded\" route:id[1..16]"
   },
   "stages": {
     "combat-selection": {
@@ -108,6 +109,19 @@
       "audienceRevision": "contact: >= 1; equals visible.contactAudienceRevision and visible.contactObservation.audienceRevision",
       "side": "lowercase audience name (bound defender's side)",
       "offers": "exactly 1 (declineOffer); declineOffer.elementId = actingElementId. Codec CampaignContactRbaDeclineOwnerVisibleCutV1 (020A4, T020-Q7 option b): no moveOffers, locations, edges or initiallyAdjacentToKnownEnemy"
+    },
+    "custody": {
+      "visibleContractVersion": 1,
+      "visibleFields": [
+        "contractVersion",
+        "campaignId",
+        "captorElementId",
+        "captiveQuantity",
+        "offers"
+      ],
+      "audienceRevision": "0 (no contact observation; visible digest is the only fence; T020-Q4 in-process subset)",
+      "side": "absent (the V1 captor cut carries no side; the audience is bound only through the ref preimage and the Core seat check)",
+      "offers": "len(offers), 1..2 distinct kinds, each CustodyOffer; captorElementId = actingElementId; captiveQuantity 1..10. Field set is the T020-Q5 allowlist (ruled 2026-11-20): no victim element, lot, settlement hash or guard detail"
     }
   },
   "forbiddenKeys": [
@@ -125,7 +139,6 @@
     "seed"
   ],
   "notCovered": [
-    { "stage": "custody", "reason": "T020-Q5 resolved 2026-11-20 (V1 captor cut is the allowlist); the custody stage is built in the Core audience surface (#457) but not yet modeled in this draft" },
     { "stage": "retreat-before-assault", "reason": "RBA movement is outside the bounded CMB-POL-001 profile (T020-Q7 ruled 2026-11-20); only decline-only RBA is covered, as rba-decline" },
     { "stage": "post-assault-retreat", "reason": "not built; likely T020-Q7 family, unchecked" },
     { "stage": "repeat-movement", "reason": "not built in the Core audience surface" },

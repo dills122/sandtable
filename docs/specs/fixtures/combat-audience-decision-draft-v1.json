@@ -99,6 +99,21 @@
       "decisionLength": 1694,
       "decisionSha256": "sha256:223ce028977225bf4bb0e0cf8a32c6bf4b46e94a70710148237cfed9715befd0",
       "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-rba\",\"audience\":\"commonwealth\",\"stage\":\"rba-decline\",\"actingElementId\":\"commonwealth-infantry\",\"audienceRevision\":1,\"visibleDigest\":\"sha256:4cc73d0a8db89ac0028ffc429ae26a0ad73ea9a8fbd82b59a5a72b4663b57156\",\"visible\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-rba\",\"side\":\"commonwealth\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"defenderFormationId\":\"commonwealth-infantry.formation\",\"contactAudienceRevision\":1,\"contactObservation\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-rba\",\"side\":\"commonwealth\",\"actingFormationId\":\"commonwealth-infantry.formation\",\"audienceRevision\":1,\"contacts\":[{\"handle\":\"c-01adcd057ed1-00000001\",\"observerFormationId\":\"commonwealth-infantry.formation\",\"apparentLocationId\":\"north\",\"identification\":\"presence\",\"access\":\"observer\",\"isCurrent\":true}],\"currentTargets\":[{\"actingFormationId\":\"commonwealth-infantry.formation\",\"contactHandle\":\"c-01adcd057ed1-00000001\",\"apparentLocationId\":\"north\"}]},\"ownElements\":[{\"elementId\":\"commonwealth-infantry\",\"parentFormationId\":\"commonwealth-infantry.formation\",\"organizationId\":\"land.organization.battalion\",\"baseCapabilityPointAllowance\":10,\"currentLocationId\":\"north-east\",\"reserveStatus\":\"none\",\"mobilityId\":\"land.mobility.non-motorized\",\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownRisk\":null}],\"declineOffer\":{\"kind\":\"decline-retreat-before-assault\",\"elementId\":\"commonwealth-infantry\"}},\"offerRefs\":[\"cmbref.v1.c650bf8358f28f8bd4e7f3eb59f92ce298f23c7e24ec78bcfe1c92f9916e4364\"]}"
+    },
+    {
+      "id": "custody-axis",
+      "stage": "custody",
+      "path": {
+        "setupId": "rules-lab.breakdown.reaction.combat-double-fresh.v1",
+        "campaignId": "campaign-con005-draft-custody",
+        "seed": 5,
+        "audience": "axis",
+        "actingElementId": "axis-infantry",
+        "prefix": "CombatCycleDisclosureCustodyTests.AtCustody (assault through World settlement; Axis captures one TOE)"
+      },
+      "decisionLength": 668,
+      "decisionSha256": "sha256:3d58de3c1812c2cab77b8cf7e1f966973d7714e0c40d88701a29445052bb97f3",
+      "decisionUtf8": "{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-custody\",\"audience\":\"axis\",\"stage\":\"custody\",\"actingElementId\":\"axis-infantry\",\"audienceRevision\":0,\"visibleDigest\":\"sha256:061dc3c090d7acf381e3c045eb47a4fbb827514683ab4f6587977101aed210d3\",\"visible\":{\"contractVersion\":1,\"campaignId\":\"campaign-con005-draft-custody\",\"captorElementId\":\"axis-infantry\",\"captiveQuantity\":1,\"offers\":[{\"kind\":\"relocate-and-guard\",\"route\":[\"north-east\",\"north\"]},{\"kind\":\"leave-unguarded\",\"route\":[\"north-east\"]}]},\"offerRefs\":[\"cmbref.v1.b01b700ae3ca2f695ef4297c0e36b2c1fb0e7cef732cd1f7a426a015b05474cd\",\"cmbref.v1.625ebd4bfd23ac33b5bdf5f68e8ba4398497db8342cd0b5baf0ab4451ffdc1e5\"]}"
     }
   ],
   "rejectionVectors": {
@@ -429,6 +444,79 @@
         "id": "cross-entry-selection",
         "entry": "SubmitSelection",
         "source": "CombatCycleDisclosureRbaDeclineTests.EveryRbaDeclineRejectionCauseSharesOneOutwardEnvelope"
+      }
+    ],
+    "custody": [
+      {
+        "id": "forged-ref",
+        "field": "offerRef",
+        "value": "cmbref.v1.0000000000000000000000000000000000000000000000000000000000000000",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "opponent-audience",
+        "field": "audience",
+        "value": "commonwealth",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "system-audience",
+        "field": "audience",
+        "value": "system",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "victim-element",
+        "field": "actingElementId",
+        "derive": "custody-victim-element",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-own-element",
+        "field": "actingElementId",
+        "value": "axis-infantry-second",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "revision-one",
+        "field": "audienceRevision",
+        "value": 1,
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "foreign-digest",
+        "field": "visibleDigest",
+        "value": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "reserve-release-stage",
+        "field": "stage",
+        "value": "reserve-release",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "selection-stage",
+        "field": "stage",
+        "value": "combat-selection",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "other-campaign",
+        "field": "campaignId",
+        "value": "another-campaign",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "contract-version-2",
+        "field": "contractVersion",
+        "value": 2,
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
+      },
+      {
+        "id": "cross-entry-selection",
+        "entry": "SubmitSelection",
+        "source": "CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope"
       }
     ]
   }

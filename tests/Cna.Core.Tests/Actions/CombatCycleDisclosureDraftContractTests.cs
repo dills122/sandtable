@@ -40,7 +40,7 @@ public sealed class CombatCycleDisclosureDraftContractTests
         var gaps = root.GetProperty("notCovered").EnumerateArray()
             .Where(value => value.TryGetProperty("stage", out _))
             .Select(value => value.GetProperty("stage").GetString()!).ToArray();
-        Assert.Contains("custody", gaps);
+        Assert.Contains("post-assault-retreat", gaps);
         Assert.Empty(gaps.Intersect(CampaignCombatAudienceDraftVerifier.VisibleCuts.Keys));
         foreach (var document in new[] { root, Fixture().RootElement })
         {
@@ -106,8 +106,11 @@ public sealed class CombatCycleDisclosureDraftContractTests
         var forceOther = CampaignCombatAudienceDecisions.QueryForceAssignment(force,
             CampaignActionAudience.Commonwealth, "commonwealth-infantry")!;
         var rba = CombatCycleDisclosureRbaDeclineTests.AtRba("campaign-con005-draft-rba", 12345);
+        var custody = CombatCycleDisclosureCustodyTests.AtCustody("campaign-con005-draft-custody", 5, out _);
         (string Stage, ExerciseSession Session, CampaignCombatAudienceDecision Decision)[] cases =
         [
+            ("custody", custody, CampaignCombatAudienceDecisions.QueryCustody(custody,
+                CampaignActionAudience.Axis, "axis-infantry")!),
             ("rba-decline", rba, CampaignCombatAudienceDecisions.QueryRbaDecline(rba,
                 CampaignActionAudience.Commonwealth, "commonwealth-infantry")!),
             ("combat-selection", selection, CampaignCombatAudienceDecisions.QuerySelection(selection,
@@ -245,6 +248,49 @@ public sealed class CombatCycleDisclosureDraftContractTests
     }
 
     [Fact]
+    public void VerifierCatchesTamperedCustodyCuts()
+    {
+        var golden = GoldenBytes(Golden(Fixture(), "custody-axis"));
+        AssertCommonTampers(golden, null);
+        AssertCaught(golden, "visible-binding", value =>
+        {
+            Visible(value)["captorElementId"] = "axis-infantry-second";
+            Resign(value);
+        });
+        AssertCaught(golden, "visible-binding", value =>
+        {
+            Visible(value)["captiveQuantity"] = 0;
+            Resign(value);
+        });
+        AssertCaught(golden, "offer-shape", value =>
+        {
+            Visible(value)["offers"]![0]!["kind"] = "release-captives";
+            Resign(value);
+        });
+        AssertCaught(golden, "offer-shape", value =>
+        {
+            Visible(value)["offers"]![1]!["kind"] = Visible(value)["offers"]![0]!["kind"]!.GetValue<string>();
+            Resign(value);
+        });
+        AssertCaught(golden, "offer-shape", value =>
+        {
+            Visible(value)["offers"]![0]!["route"] = new JsonArray();
+            Resign(value);
+        });
+        // Allowlist (T020-Q5): a victim or settlement field is a field-set violation, re-signed.
+        AssertCaught(golden, "visible-fields", value =>
+        {
+            Visible(value)["victimElementId"] = "commonwealth-infantry";
+            Resign(value);
+        });
+        AssertCaught(golden, "offer-shape", value =>
+        {
+            Visible(value)["offers"]![0]!["lotId"] = "lot-1";
+            Resign(value);
+        });
+    }
+
+    [Fact]
     public void VerifierCatchesTamperedRbaDeclineCuts()
     {
         var golden = GoldenBytes(Golden(Fixture(), "rba-decline-commonwealth"));
@@ -301,7 +347,7 @@ public sealed class CombatCycleDisclosureDraftContractTests
         AssertCaught(golden, "audience", value => value["audience"] = "system");
         AssertCaught(golden, "stage-uncovered", value =>
         {
-            value["stage"] = "custody";
+            value["stage"] = "post-assault-retreat";
             Resign(value);
         });
         AssertCaught(golden, "visible-binding", value =>
@@ -321,7 +367,8 @@ public sealed class CombatCycleDisclosureDraftContractTests
         });
         AssertCaught(golden, "visible-fields", value =>
         {
-            Visible(value).Remove("side");
+            // campaignId is the one top-level visible field every covered cut carries (Custody has no side).
+            Visible(value).Remove("campaignId");
             Resign(value);
         });
         AssertCaught(golden, "forbidden-field", value =>
@@ -409,6 +456,10 @@ public sealed class CombatCycleDisclosureDraftContractTests
                 {
                     OfferRef = CampaignExercises.QueryContactRbaCut(session).MoveOffers[0].ActionId,
                 },
+                "custody-victim-element" => valid with
+                {
+                    ActingElementId = CampaignExercises.QueryNativeCombatCustodyCut(session)!.VictimElementId,
+                },
                 "other-owner-digest" => valid with { VisibleDigest = forceOther.VisibleDigest },
                 var other => throw new InvalidOperationException($"Unknown derivation {other}."),
             };
@@ -447,8 +498,11 @@ public sealed class CombatCycleDisclosureDraftContractTests
         var cycle = CombatCycleDisclosureReserveCycleTests.Complete(
             CampaignCombatAudienceDecisions.Submit(reserve, reserveDecision.Choose(0)).TrustedStep!.SuccessorSession!);
         var rba = CombatCycleDisclosureRbaDeclineTests.AtRba("campaign-con005-draft-rba", 12345);
+        var custody = CombatCycleDisclosureCustodyTests.AtCustody("campaign-con005-draft-custody", 5, out _);
         return new(StringComparer.Ordinal)
         {
+            ["custody-axis"] = CampaignCombatAudienceDecisions.QueryCustody(custody,
+                CampaignActionAudience.Axis, "axis-infantry")!,
             ["rba-decline-commonwealth"] = CampaignCombatAudienceDecisions.QueryRbaDecline(rba,
                 CampaignActionAudience.Commonwealth, "commonwealth-infantry")!,
             ["selection-axis-first-cut"] = CampaignCombatAudienceDecisions.QuerySelection(selection,
