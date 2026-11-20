@@ -3898,6 +3898,33 @@ public static class CampaignExercises
             audience);
     }
 
+    /// <summary>
+    /// Task 022A (#448): <see cref="Query"/> plus the first-cycle Combat steps the trusted in-process
+    /// Exercise harness can drive (first-side Selection and the System step that follows it).
+    /// Outside that range it returns exactly what <see cref="Query"/> returns. Test-harness
+    /// capability only: the Host does not call it, and it is not Combat activation or certification.
+    /// </summary>
+    public static CampaignLegalActionQueryResult QueryWithCombat(
+        ExerciseSession session,
+        CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return CampaignCombatExerciseActions.Query(session, audience) ?? Query(session, audience);
+    }
+
+    /// <summary>
+    /// Task 022A (#448): <see cref="Submit"/> for actions offered by <see cref="QueryWithCombat"/>.
+    /// Each accepted Combat step is the unchanged trusted Core step with exactly one event.
+    /// </summary>
+    public static ExerciseStepResult SubmitWithCombat(
+        ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        return CampaignCombatExerciseActions.Submit(session, submission) ?? Submit(session, submission);
+    }
+
     // #394 gap 2: CurrentCombatDecision never clears across the second-side
     // boundary (by design -- see ExerciseSession's remarks), so once any
     // first-side Combat decision has ever been made this must check the

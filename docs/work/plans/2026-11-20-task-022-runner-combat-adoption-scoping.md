@@ -1,6 +1,7 @@
 # Tasks 022–024 — Runner Combat adoption: scoping and frontier evidence (2026-11-20)
 
-**Status:** author scoping plus one test-only evidence slice (022A0). No independent review has run.
+**Status:** author scoping, a test-only evidence slice (022A0), and the first Core/Runner slice
+(022A, §8, owner chose option A on 2026-11-20). No independent review has run.
 
 **This is test-harness work only.** It is not Combat activation, certification or a product feature,
 and it does not depend on Task 021. Task 021's capability manifest protects ordinary production
@@ -8,10 +9,13 @@ Core authority. `Cna.ExerciseRunner` is a separate CLI-only, deterministic, rule
 ([exercise harness](../../specs/exercise-harness-v1.md)). Nothing here claims Combat is "Ready",
 "certified" or "activated". Tracks [#448](https://github.com/dills122/sandtable/issues/448).
 
-**Outcome of this slice:** the Runner still stops at Combat entry. Driving it through Combat with
-only the public Combat audience surface is blocked by Core API gaps (§4). Closing them is Core work
-that another agent owns, so this slice reports them and does not patch Core. Owner decision needed
-(§5).
+**022A0 outcome:** with only the public Combat audience surface, the Runner could not get past Combat
+entry because of Core API gaps (§4). The owner chose option A (§5).
+
+**022A outcome (§8):** Runner executions with the staged Combat runtime now get past
+`combat.position-determination` for the first time. They drive first-side Selection and the System
+step after it (Barrage or no-attack), with reconstruction and readjudication verified. Bundles and the
+CLI stay on the old path until T022-Q8/Q9 are ruled.
 
 ## 1. What the plan actually assigns to 022–024
 
@@ -48,7 +52,7 @@ for every audience, so the controller reports `no-active-audience` and the run f
 `Rejected(InvalidState)` (`session.CurrentCombatDecision is not null`), which the Runner would treat
 as an authority-query invariant failure.
 
-## 3. Evidence (022A0, `CombatFrontierEvidenceTests`)
+## 3. Evidence (022A0; kept in `CombatSelectionRunnerTests`)
 
 Runs from `Cna.ExerciseRunner.Tests`, which has no Core friend access, so it sees exactly what a
 Runner sees. Manifests are built in the test (no checked scenario added): `reaction-all-by-action-id`
@@ -105,5 +109,82 @@ Q3.
 
 ## 7. What 022A0 changed
 
-- Added `tests/Cna.ExerciseRunner.Tests/Execution/CombatFrontierEvidenceTests.cs` (3 test cases).
+- Added Runner-side frontier evidence tests (now folded into `CombatSelectionRunnerTests`).
 - Not touched: Core, Runner source, manifests, scenarios, frozen contracts, Host.
+
+## 8. Slice 022A — trusted Exercise Combat path, first-cycle Selection
+
+Owner ruling (2026-11-20, relayed): option A, built in Core now. Start with first-cycle v1 stages.
+Do not change the frozen `combat-audience-decision-v1` contract or the 020D `AuthorityBoundaryTests`
+pins. Neither was changed.
+
+### Built
+
+- **Core** `CampaignExercises.QueryWithCombat` / `SubmitWithCombat` (public). Outside the range
+  below they return exactly what `Query` / `Submit` return. `Query` and `Submit` themselves are
+  unchanged, so the Host's generic route, which calls `Submit`, cannot reach any Combat step through
+  them.
+  - **Selection.** At first-side Combat Position Determination, when the ordinary query offers
+    nothing to anyone, the acting side gets the union of every own element's Selection offers
+    (`select-contact-assault`, `finish-combat-without-attack`). These are the existing internal
+    candidates from `QueryContactOwnerCombatCut`. Submission delegates to the unchanged
+    `SubmitContactOwnerCombatSelection`. An owner may open Selection for any own element; the first
+    accepted one closes the cut. This matches the Host, which opens per `(side, element)`.
+  - **System step.** After a finish, System gets `complete-combat-no-attack`; after an assault,
+    `complete-combat-barrage`. These are the same steps the Host appends
+    (`CompleteNativeCombatNoAttack` / `CompleteNativeCombatBarrage`). Each candidate's action ID is
+    SHA-256 over the step's event bytes, which is the receipt ID the existing step already reports.
+  - **Frontier.** At the cut right after that System step, every audience gets an empty set, so the
+    Runner reports `no-unique-legal-action` there honestly.
+  - Candidates use a new policy, `sandtable.legal-actions.combat-exercise.v1`, and the two System
+    kinds are rejected under any other policy.
+  - Files: `src/Cna.Core/Exercises/CampaignCombatExerciseActions.cs` (new),
+    `src/Cna.Core/Actions/CombatExerciseSystemActions.cs` (new), `CampaignExercises.cs`,
+    `CampaignLegalActionSet.cs`.
+- **Runner** `CoreExerciseExecutionRuntime.WithCombat` and
+  `ReadjudicationVerifier.Verify(..., includeCombat: true)`, both internal. The controller policies
+  are unchanged: existing policies pick the lowest action ID, so assault vs finish is
+  deterministic but depends on the Exercise-derived campaign ID. The CLI and the public
+  `ExerciseExecutor.Execute(manifest)` still use the ordinary runtime (see Q8/Q9).
+
+### Evidence (milestone)
+
+`CombatSelectionRunnerTests` (9 cases), seed 6:
+
+| Setup / policy / Exercise ID | Steps after Combat entry | Terminal reached |
+| --- | --- | --- |
+| `combat-assault` / `reaction-all-by-action-id` / `combat-selection.c` | Axis `combat-selection-decided` (V12) → System `combat-barrage-no-effect` (V14) | `combat.retreat-before-assault` |
+| `combat-assault` / `first-by-action-id` / `combat-selection.a` | Axis V12 finish → System `combat-no-attack-completed` (V13) | `reserve-release` |
+| `combat-double-fresh` / `reaction-all-by-action-id` / `combat-selection.a` | V12 assault → V14 Barrage | `combat.retreat-before-assault` |
+| `combat-double-fresh` / `first-by-action-id` / `combat-selection.a` | V12 finish → V13 no-attack | `reserve-release` |
+
+Every run succeeds at its terminal, with one event per step, reconstruction verified and
+Combat-path readjudication verified. The ordinary readjudication path cannot replay them. Repeated
+runs are byte-identical. With an unreachable terminal, the run ends `no-unique-legal-action` at the
+frontier, with every audience query valid and empty.
+
+`CampaignCombatExerciseActionsTests` (Core, 6 cases):
+
+- outside Combat, `QueryWithCombat`/`SubmitWithCombat` equal `Query`/`Submit` at every step to
+  Combat entry;
+- the entry offer count equals the sum of the frozen audience surface's per-element Selection offers;
+- accepted Selection and System steps have the same event and snapshot bytes as the audience
+  surface's trusted step and the Host adapter;
+- the frontier offers nothing, and plain `Query` still rejects there;
+- six rejection causes return no step;
+- the System kinds are confined to their policy.
+
+### New findings
+
+| ID | Finding | Slice choice (owner review needed) |
+| --- | --- | --- |
+| T022-Q7 | The existing V12 Selection receipt names the decision's own position (`combat.position-determination`) as `ResultingPositionId`. The successor checkpoint is the decision's `NextPositionId` (`combat.barrage`). Every other Combat step's receipt names its next position. The Runner's checkpoint-continuity check fails on it. | The Host persists and returns that receipt, so Core's step is unchanged. Only `SubmitWithCombat` re-issues the receipt with the successor checkpoint position; event, snapshot, versions, audience and action ID are unchanged. Alternative: fix the V12 receipt in Core (changes Host-returned receipts). |
+| T022-Q8 | A Combat step's snapshot checkpoint is a Combat state document, not a campaign snapshot V11. The bundle's `final-snapshot` reader (`ExerciseEvidenceCodec.DeserializeSnapshot` → `CampaignExercises.ReadCheckpoint`) admits only V11, and Core has no public reader for Combat state documents. A Combat-terminal or post-Combat-failure run therefore cannot publish a bundle: the writer fails closed with `artifact-failed`. Enabling Combat for the CLI broke `ANaturallyFailedNoUniqueLegalActionRunProducesAStrictlyReadableBundle` this way. | Combat is staged off for the CLI. Bundle readback of Combat states is plan Task 023 ("strict child bundle readback") and needs a schema decision. |
+| T022-Q9 | How a manifest opts into Combat: a new controller policy token, a manifest field, or always-on once Q8 lands. | Runner-internal runtime switch for now; no manifest or contract change. |
+
+### Not done in 022A
+
+RBA decline, Force (both seals, plus the V19 `force-unavailable` System cancel), Anti Armor,
+result/settlement, Custody, Reserve Release, Cycle Control, the timeouts, and every v2 stage.
+Combat-aware controller policies, the occurrence-aware terminal (Q4), and the CLI/bundle path
+(Q8/Q9) are also not done.
