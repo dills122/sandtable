@@ -601,6 +601,102 @@ the second side's Combat position it shows:
 No stage, byte or v1 artifact changes. The v1 spec's "not covered" row for V47 is left as frozen
 text; the v2 artifacts will list V47 under `combat-selection`.
 
+## 7n. T020-Q9 — post-assault retreat into an unseen opposing unit: structurally unreachable
+
+**Question.** `CampaignContactRetreatAfterAssaultCut` excludes a destination only if it holds a known
+contact target or an own combat unit. If an unseen opposing unit could stand in an offered hex, the
+retreat would have no defined encounter outcome. This is the same family as T020-Q7, where the owner
+excluded RBA movement. As for Q2, reachability was checked before asking the owner for a ruling.
+
+**Structural answer: unreachable in the bounded profile.**
+
+1. Post-assault retreat is exactly one hex (`CMB-POL-001`, certified one-hex retreat geometry). The
+   cut offers only neighbors of the defender's current location, so every offered destination is
+   adjacent to the defender.
+2. Contacts follow the permanent adjacent-contact rule `sandtable.visibility.adjacent-contact.v1`
+   (`CampaignContactAdjacencySource`): every opposing representation adjacent to, or co-located
+   with, any representation of a formation is a current contact of that formation.
+3. That rule is re-derived for each moved or placed representation against every observer, on every
+   event in the bounded profile that places or moves one:
+   - creation;
+   - ordinary and reaction movement (`ElementMovedV3`, `ReactingElementMovedV2`);
+   - RBA retreat move (V16);
+   - post-assault retreat settlement (V24, when `moved`);
+   - second-side movement (V44);
+   - repeated movement (V29).
+
+   Every other Combat, Reserve, cycle and pass event changes no representation location, and only
+   advances the authority version. Custody guards are companion state at the captor's location,
+   not new or moved World representations.
+4. So an opposing unit in an offered hex is adjacent to the defender, hence a current target of the
+   defender's formation at its true location, and the cut already excludes that hex. An unseen
+   occupant cannot be offered.
+
+**Empirical check.** `CombatRetreatUnseenEncounterReachabilityTests` drives every bounded `.combat-`
+fixture to its first Combat position. It branches on every acting element and assault offer and runs
+each through RBA decline, Force, Anti Armor and the result. At every result that requires a retreat
+it asserts:
+
+- no offered destination holds any opposing unit;
+- every opposing unit adjacent to the defender's formation is a current target at its true location.
+
+A local 60-seed run covered 5 fixtures × 60 seeds:
+
+| Fixture | Retreat cuts |
+| --- | --- |
+| combat-assault | 11 |
+| combat-double | 11 |
+| combat-double-fresh | 11 (matching 021A0) |
+| combat-triple | 22 |
+| combat-infantry | 0 |
+| **Total** | **55** |
+
+Those 55 cuts offered 44 moves and had 66 adjacent opposing units, all known. There were zero
+violations. The committed test runs 12 seeds per fixture to stay fast in CI.
+
+**Scope limits.**
+
+- The sweep covers first-cycle, first-side assaults only.
+- Retreats after repeated assaults (V31) and second-side assaults rely on the same structural
+  argument: their movement events (V29, V44) also re-derive contacts.
+- An eliminated or captured opposing unit can leave a stale current target, which could exclude a
+  hex that is actually empty. That is the opposite direction (a hidden absence, not a hidden
+  occupant) and outside Q9.
+
+**Status: resolved as unreachable (author finding, 2026-11-20)**, pending the coordinator's
+confirmation with the owner, as for Q2. 020E1 proceeds.
+
+## 7o. Slice 020E1 — post-assault Retreat decision (contract v2 superset)
+
+The new stage is `post-assault-retreat` (`QueryPostAssaultRetreat`), owned by the bound defender
+after an assault result that requires a retreat.
+
+- **Visible cut:** the existing `CampaignContactRetreatAfterAssaultOwnerVisibleCutV1` the Host already
+  serves. Its side is lowercase, and it carries the contact observation, so the audience revision is
+  the side contact revision (≥ 1).
+- **Offers:** the source-directed one-hex moves ordered by destination, then explicit refusal. This
+  is the Host draft's order.
+- **Envelope:** `contractVersion:2`, the first stage of the v2 superset. The envelope fields, ref
+  preimage and outcome envelopes are unchanged; the outcome stays `contractVersion:1`. A submission
+  must carry its decision's envelope version. A v1 submission against a v2 decision, and the reverse,
+  gets the one generic rejection.
+- **Unchanged:** the six v1 stages still emit version 1, and every frozen golden still passes.
+- **Public surface:** adds `PostAssaultRetreatStage`, `QueryPostAssaultRetreat`,
+  `CampaignCombatAudienceDecision.SuccessorContractVersion` and
+  `CampaignCombatAudienceDecisions.ContractVersionFor(stage)`. `AuthorityBoundaryTests` pins them.
+- **Tests** (`CombatCycleDisclosurePostAssaultRetreatTests`, seed 6 double-fresh):
+  - the decision is byte-equal to the Host draft, carries no private fields, and goes only to the
+    bound defender;
+  - the frozen v1 verifier still rejects it as `stage-uncovered`;
+  - every offer (move and refusal) gives Host-identical V23 evidence and reconstructs;
+  - a consumed ref is rejected;
+  - twelve rejection causes share one envelope, including a version-1 submission;
+  - seed 5 (no retreat) opens nothing;
+  - two seeds that both require a retreat give byte-equal decisions, and a ref opened on one fork is
+    accepted on the other.
+- **Task 021 note:** 021A0's `FrozenStageSetIsExactlyTheSixFrozenRoundKinds` reflects over every
+  public `*Stage` constant. It will need the new v2 stage(s) once this merges.
+
 ## 8. Still pending
 
 Covered (Core surface, public C# API since 020D, §7l): Selection (first-side initial cut), Force Assignment (both

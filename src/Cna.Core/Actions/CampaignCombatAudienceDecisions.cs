@@ -11,8 +11,10 @@ namespace Cna.Core.Actions;
 // Task 020: Core-owned audience-safe Combat decision surface. It is the in-process counterpart
 // of the Host owner opening (CampaignDurableAuthorityJournal.Openings): the outward record carries
 // only owner-visible values and the side contact audience revision, never the private authority
-// version, Core action IDs or bound defender. Its bytes are the frozen combat-audience-decision-v1
-// contract (docs/specs/combat-audience-decision-v1.md). Since 020D (2026-11-20) the four types
+// version, Core action IDs or bound defender. The six v1 stages' bytes are the frozen
+// combat-audience-decision-v1 contract (docs/specs/combat-audience-decision-v1.md); stages added after
+// it (020E, owner ruling: v2 superset) carry envelope contractVersion 2 and leave v1 bytes untouched.
+// Since 020D (2026-11-20) the four types
 // below are public C# API for later in-process consumers (021/022); constructors, the trusted
 // successor step, the ref derivation and the private projection stay internal, and
 // AuthorityBoundaryTests pins the exact public member set. Public C# visibility is not HTTP
@@ -21,7 +23,13 @@ namespace Cna.Core.Actions;
 /// <summary>One audience-safe Combat decision derived from a single authority cut.</summary>
 public sealed class CampaignCombatAudienceDecision
 {
+    /// <summary>Envelope version of the six frozen combat-audience-decision-v1 stages.</summary>
     public const int CurrentContractVersion = 1;
+    /// <summary>
+    /// Envelope version of the stages the v2 superset adds (owner ruling 2026-11-20, option a). The
+    /// six v1 stages keep version 1 and byte-identical envelopes.
+    /// </summary>
+    public const int SuccessorContractVersion = 2;
     private readonly byte[] visibleBytes;
     private readonly string[] offerRefs;
 
@@ -29,7 +37,7 @@ public sealed class CampaignCombatAudienceDecision
         string stage, string actingElementId, long audienceRevision, byte[] visibleBytes,
         IReadOnlyList<string> offerRefs)
     {
-        ContractVersion = CurrentContractVersion;
+        ContractVersion = CampaignCombatAudienceDecisions.ContractVersionFor(stage);
         CampaignId = campaignId;
         Audience = audience;
         Stage = stage;
@@ -75,7 +83,7 @@ public sealed class CampaignCombatAudienceDecision
     }
 
     internal CampaignCombatAudienceSubmission Choose(int ordinal) => new(
-        CampaignCombatAudienceSubmission.CurrentContractVersion, CampaignId, Audience, Stage,
+        ContractVersion, CampaignId, Audience, Stage,
         ActingElementId, AudienceRevision, VisibleDigest, offerRefs[ordinal]);
 }
 
@@ -90,6 +98,10 @@ public sealed record CampaignCombatAudienceSubmission(
     string VisibleDigest,
     string OfferRef)
 {
+    /// <summary>
+    /// v1 submission version. A submission must carry its decision's envelope version: 1 for the six
+    /// v1 stages, <see cref="CampaignCombatAudienceDecision.SuccessorContractVersion"/> for v2 stages.
+    /// </summary>
     public const int CurrentContractVersion = 1;
 }
 
@@ -144,6 +156,8 @@ public static class CampaignCombatAudienceDecisions
     public const string CustodyStage = "custody";
     /// <summary>Decline-only Retreat Before Assault (bounded CMB-POL-001; T020-Q7 option b).</summary>
     public const string RbaDeclineStage = "rba-decline";
+    /// <summary>Bound defender's one-hex retreat or explicit refusal after an assault result (020E1, v2).</summary>
+    public const string PostAssaultRetreatStage = "post-assault-retreat";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -175,6 +189,11 @@ public static class CampaignCombatAudienceDecisions
         CampaignActionAudience audience) =>
         Query(session, audience, CycleControlStage, CycleControlSubject);
 
+    /// <summary>Bound defender's post-assault retreat decision (020E1, contract v2 superset).</summary>
+    public static CampaignCombatAudienceDecision? QueryPostAssaultRetreat(ExerciseSession session,
+        CampaignActionAudience audience, string defenderElementId) =>
+        Query(session, audience, PostAssaultRetreatStage, defenderElementId);
+
     /// <summary>Captor custody disposition for an accepted capture (020A3).</summary>
     public static CampaignCombatAudienceDecision? QueryCustody(ExerciseSession session,
         CampaignActionAudience audience, string captorElementId) =>
@@ -198,7 +217,6 @@ public static class CampaignCombatAudienceDecisions
         CampaignCombatAudienceSubmission submission)
     {
         if (session is null || submission is null
-            || submission.ContractVersion != CampaignCombatAudienceSubmission.CurrentContractVersion
             || string.IsNullOrWhiteSpace(submission.OfferRef))
             return CampaignCombatAudienceSubmissionResult.Rejected;
         var projected = Project(session, submission.Audience, submission.Stage, submission.ActingElementId);
@@ -206,7 +224,8 @@ public static class CampaignCombatAudienceDecisions
         var decision = current.Decision;
         // Same-cut rule: a timely ref stays valid while the owner-visible bytes are unchanged, even
         // if private authority has advanced. Anything else is one generic rejection.
-        if (submission.CampaignId != decision.CampaignId
+        if (submission.ContractVersion != decision.ContractVersion
+            || submission.CampaignId != decision.CampaignId
             || submission.AudienceRevision != decision.AudienceRevision
             || submission.VisibleDigest != decision.VisibleDigest)
             return CampaignCombatAudienceSubmissionResult.Rejected;
@@ -239,6 +258,8 @@ public static class CampaignCombatAudienceDecisions
                     decision.ActingElementId),
                 RbaDeclineStage => CampaignHostAdapter.SubmitContactDefenderRbaDecline(session, command,
                     decision.ActingElementId),
+                PostAssaultRetreatStage => CampaignHostAdapter.SubmitContactPostAssaultRetreat(session,
+                    command, decision.ActingElementId),
                 _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
             };
         }
@@ -250,6 +271,18 @@ public static class CampaignCombatAudienceDecisions
             ? CampaignCombatAudienceSubmissionResult.Accepted(submission.OfferRef, step)
             : CampaignCombatAudienceSubmissionResult.Rejected;
     }
+
+    /// <summary>
+    /// Envelope contract version for a stage: 1 for the six frozen v1 stages, 2 for the stages the
+    /// v2 superset adds. Unknown stages have no version.
+    /// </summary>
+    public static int ContractVersionFor(string stage) => stage switch
+    {
+        SelectionStage or ForceAssignmentStage or ReserveReleaseStage or CycleControlStage
+            or CustodyStage or RbaDeclineStage => CampaignCombatAudienceDecision.CurrentContractVersion,
+        PostAssaultRetreatStage => CampaignCombatAudienceDecision.SuccessorContractVersion,
+        _ => throw new ArgumentOutOfRangeException(nameof(stage)),
+    };
 
     internal static string AudienceName(CampaignActionAudience audience) => audience switch
     {
@@ -322,6 +355,23 @@ public static class CampaignCombatAudienceDecisions
                         observation = cut.ContactObservation;
                         visible = CampaignContactRbaDeclineOwnerVisibleCutV1.SerializeCanonical(cut);
                         privateIds = [cut.DeclineOffer.ActionId];
+                        break;
+                    }
+                case PostAssaultRetreatStage:
+                    {
+                        // Defender-only, after an assault result that requires a retreat. Offers are
+                        // the source-directed one-hex moves plus explicit refusal, in the Host draft's
+                        // order. T020-Q9 (scoping §7n): an offered hex cannot hold an unseen opposing
+                        // unit, because every opposing unit adjacent to the defender is a contact.
+                        var cut = CampaignExercises.QueryContactPostResultRetreatCut(session);
+                        if (cut.DefenderSide != side || cut.DefenderElementId != actingElementId) return null;
+                        observation = cut.ContactObservation;
+                        visible = CampaignContactRetreatAfterAssaultOwnerVisibleCutV1.SerializeCanonical(cut);
+                        privateIds = cut.MoveOffers
+                            .OrderBy(value => value.DestinationLocationId, StringComparer.Ordinal)
+                            .Select(value => value.ActionId)
+                            .Append(cut.RefuseOffer.ActionId)
+                            .ToArray();
                         break;
                     }
                 case CycleControlStage:
