@@ -1014,6 +1014,27 @@ public static class CampaignHostAdapter
                 .Select(value => value.ActionId).Append(cut.DeclineOffer.ActionId).ToArray());
     }
 
+    /// <summary>
+    /// Trusted decline-only defender draft (Task 020D; T020-Q7 option b, owner ruling 2026-11-20):
+    /// the bounded <c>CMB-POL-001</c> profile adopts decline-only RBA, so the Host's RBA opening
+    /// publishes <see cref="CampaignContactRbaDeclineOwnerVisibleCutV1"/> bytes and maps exactly one
+    /// action, the decline. Core still derives move offers; they are never published or mapped. The
+    /// bytes equal the Core audience surface's <c>rba-decline</c> decision visible bytes.
+    /// </summary>
+    public static CampaignHostContactRbaOwnerDraft QueryContactRbaDeclineOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string defenderElementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var cut = CampaignExercises.QueryContactRbaCut(session);
+        var defenderAudience = cut.DefenderSide == LandSide.Axis
+            ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        if (audience != defenderAudience || defenderElementId != cut.DefenderElementId)
+            throw new InvalidOperationException("Only the bound defender may receive this retreat cut.");
+        return new CampaignHostContactRbaOwnerDraft(cut.AuthorityVersion,
+            CampaignContactRbaDeclineOwnerVisibleCutV1.SerializeCanonical(cut),
+            [cut.DeclineOffer.ActionId]);
+    }
+
     /// <summary>Trusted post-result defender draft; Core action IDs stay in Host custody.</summary>
     public static CampaignHostContactPostAssaultRetreatOwnerDraft
         QueryContactPostAssaultRetreatOwnerDraft(ExerciseSession session,

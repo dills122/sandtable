@@ -670,9 +670,6 @@ internal sealed class CampaignDurableAuthorityJournalStore
     internal CampaignOwnerSubmissionResult SubmitOwnerRbaDecline(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerRbaDecline(credential, defenderElementId, openingRevision, publicActionRef);
 
-    internal CampaignOwnerSubmissionResult SubmitOwnerRbaMove(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerRbaMove(credential, defenderElementId, openingRevision, publicActionRef);
-
     internal CampaignOwnerSubmissionResult SubmitOwnerForceSeal(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerForceSeal(credential, elementId, openingRevision, publicActionRef);
 
@@ -1124,9 +1121,6 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRbaDeclineAsync(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRbaDecline(credential, defenderElementId, openingRevision, publicActionRef));
-
-    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRbaMoveAsync(CampaignSeatCredential credential, string defenderElementId, long openingRevision, string publicActionRef) =>
-        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRbaMove(credential, defenderElementId, openingRevision, publicActionRef));
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerForceSealAsync(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerForceSeal(credential, elementId, openingRevision, publicActionRef));

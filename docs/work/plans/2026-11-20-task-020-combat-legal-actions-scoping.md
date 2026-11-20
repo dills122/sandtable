@@ -343,7 +343,8 @@ successor. The 020B artifacts are a draft for owner review, not frozen. Q4's rul
 Host HMAC layering before anything goes public. Q8 is settled (§7e), RBA decline-only is built
 (§7g), and the draft now models Custody (§7h). The owner chose (2026-11-20) to ship 020D with the six
 covered round kinds; post-assault Retreat and repeat/second-side selection follow in a later phase.
-Remaining before 020D: the Host-layering decisions in §7i, then the owner's freeze.
+The Host-layering decisions are ruled (§7i) and the decline-only Host RBA route plus parity
+tests are built (§7j). Remaining before 020D: the owner's freeze of the draft.
 
 ## 7g. Slice 020A4 — decline-only RBA (Q7 option b)
 
@@ -417,16 +418,61 @@ consolidation) needs owner decisions:
    path and parity tests pin it to the Core surface. (a) removes the duplicate rule (Q6); (b) changes
    nothing durable.
 
-Stage naming also differs (Host `retreat-before-assault` vs Core `rba-decline`). Nothing in the Host
-was changed.
+Stage naming also differs (Host `retreat-before-assault` vs Core `rba-decline`).
+
+**Owner rulings (2026-11-20, relayed):** (1) freeze the Core decision envelope only; the Host's HMAC
+wrapping of the same bytes needs no separate freeze. (2) Replace the Host RBA route with the
+decline-only codec. (3) Option (b): parity tests first; defer the Host-calls-Core swap, the trusted
+adapter and any Host storage change. Built in §7j.
+
+## 7j. 020D prerequisite — decline-only Host RBA route and Host/Core parity
+
+**Host RBA route replaced (production-facing dev-route change).**
+
+- New public trusted adapter `CampaignHostAdapter.QueryContactRbaDeclineOwnerDraft`:
+  `CampaignContactRbaDeclineOwnerVisibleCutV1` bytes and exactly one action, the decline; bound
+  defender seat and element only. The old `QueryContactRbaOwnerDraft` (full V1 cut with moves) stays
+  in Core but no Host route serves it.
+- The Host `retreat-before-assault` opening and its submission re-projection use the decline-only
+  draft, so the opening carries one HMAC ref and no `moveOffers`.
+- The owner `rba-move` path is removed end to end: outward stage name (now refused as an unknown
+  stage, HTTP 400), grain dispatch, store and journal methods, and the `retreatMove` branch. Every
+  accepted Host RBA submission is now a `contact-rba-decline` step that closes the RBA round.
+- Unchanged: the HMAC key, ref preimage and fixed-time check; Host storage documents; the
+  `contact-rba-move` accepted-step kind and its import, so retained histories with moves still
+  replay (covered in Core by `CampaignContactCombatSelectionCutTests`, which imports such steps).
+- `combat-contact-side-projection-v2.md` updated to the decline-only route.
+
+**Parity (option b), two hops.** Core friend access is deliberately limited to `Cna.Core.Tests`
+(`AuthorityBoundaryTests.OnlyTestsReceiveCoreFriendAccess`), so the Host tests cannot call the
+internal Core surface. The proof is split:
+
+- Host hop (`Cna.OrleansHost.Tests`, `CampaignDurableAuthorityJournalTests.AudienceParity.cs`):
+  `HostOpeningsMatchAdapterDraftsFromSelectionThroughCycleControl` walks one durable campaign (seed 5,
+  capture) through Selection, decline-only RBA, both Force seals, Custody and Cycle Control;
+  `HostReserveReleaseOpeningMatchesAdapterDraft` covers Reserve Release (seed 50, double contact).
+  Each Host opening's visible bytes and offer count equal the adapter draft's; refs are `act.` HMAC
+  refs; and each Host-accepted action records the same canonical event as the direct adapter
+  submission on the same pre-state. The first Force seal leaves the other owner's opening unchanged.
+- Core hop (`CombatCycleDisclosureHostDraftParityTests`, 5 rows): for all six round kinds, the
+  adapter draft equals the Core audience decision (bytes, offer count) and, ordinal by ordinal,
+  submitting draft action `i` and Core decision ref `i` produce identical event, snapshot checkpoint
+  and receipt.
+
+**Rewritten Host tests (move path retired).** `DefenderRetreatMoveAndExplicitStopColdReplayThroughOwnerSeat`
+→ `DefenderRbaOpeningIsDeclineOnlyAndExplicitStopColdReplaysThroughOwnerSeat`;
+`RbaRetreatMovesAndRetriesRetainOriginalDeadline` → `RbaDeclineOnlyOpeningIsStableAndExpiresAtOriginalDeadline`;
+`SecondContactAssaultEntersBarrageAndColdReplays` now asserts the decline-only opening and a refused
+outward `rba-move` before declining. That last test is tagged `KnownIssue=446` (excluded from CI). It
+fails at the later second-cycle Force seal, both with this change and on unmodified `main`.
 
 ## 8. Still pending
 
-Covered (dormant, internal): Selection (first-side initial cut), Force Assignment (both seal
-orders), Reserve Release, Cycle Control, Custody, decline-only RBA. The 020B draft covers all six
-(§7b, §7g, §7h); freezing is the owner's action.
+Covered (dormant Core surface, internal): Selection (first-side initial cut), Force Assignment (both
+seal orders), Reserve Release, Cycle Control, Custody, decline-only RBA. The 020B draft covers all six
+(§7b, §7g, §7h). The Host dev route serves the same bytes for all six, pinned by parity tests (§7j).
 
-Not built (owner: later phase): RBA movement (outside `CMB-POL-001`), post-assault Retreat, repeat
-V31 and second-side V47 selection. Assigned elsewhere: capability manifest (021, Q3). Open: Host
-layering decisions (§7i), owner freeze of the draft, terminal-reason disclosure pairs,
-Exercise/Runner adoption (022–024), and all independent review.
+Before 020D: the owner's freeze of the 020B draft (Core envelope only). Not built (owner: later
+phase): RBA movement, post-assault Retreat, repeat V31 and second-side V47 selection, and the
+Host-calls-Core cutover. Assigned elsewhere: capability manifest (021, Q3). Also open:
+terminal-reason disclosure pairs, Exercise/Runner adoption (022–024), and all independent review.

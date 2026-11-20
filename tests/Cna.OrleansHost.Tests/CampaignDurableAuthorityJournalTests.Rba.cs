@@ -151,7 +151,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void RbaRetreatMovesAndRetriesRetainOriginalDeadline()
+    public void RbaDeclineOnlyOpeningIsStableAndExpiresAtOriginalDeadline()
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
@@ -167,48 +167,24 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             journal.ReadVerified(request.CampaignId), CampaignActionAudience.Commonwealth);
         var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
+        // 020D (owner ruling 2026-11-20): the Host RBA route is decline-only. Core still derives
+        // moves for this defender; none are published or mapped, and nothing a defender can submit
+        // changes the opening, so it stays byte-stable until the original deadline cancels it.
         var opening = journal.QueryRbaOwnerOpening(defender, defenderId);
-        Assert.True(opening.PublicActionRefs.Count > 1);
-        var startingSession = journal.ReadVerified(request.CampaignId);
-        var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(startingSession,
-            CampaignActionAudience.Commonwealth, defenderId);
-        var moveOrdinal = Enumerable.Range(0, draft.PrivateActionIds.Count - 1).First(index =>
-        {
-            var candidate = CampaignHostAdapter.SubmitContactDefenderRbaMove(startingSession,
-                new CampaignActionSubmission(1, request.CampaignId,
-                    CampaignExercises.QueryCheckpoint(startingSession).StateVersion,
-                    CampaignExercises.QueryCheckpoint(startingSession).PositionId,
-                    CampaignActionAudience.Commonwealth, draft.PrivateActionIds[index]),
-                defenderId);
-            return candidate.IsAccepted
-                && CampaignHostAdapter.QueryContactRbaOwnerDraft(candidate.SuccessorSession!,
-                    CampaignActionAudience.Commonwealth, defenderId).PrivateActionIds.Count > 1;
-        });
-        var moveRef = opening.PublicActionRefs[moveOrdinal];
+        Assert.True(CampaignHostAdapter.QueryContactRbaOwnerDraft(journal.ReadVerified(request.CampaignId),
+            CampaignActionAudience.Commonwealth, defenderId).PrivateActionIds.Count > 1);
+        Assert.Single(opening.PublicActionRefs);
         Assert.False(journal.SubmitOwnerRbaDecline(defender, defenderId,
-            opening.Revision, moveRef).IsAccepted);
+            opening.Revision, combatOpening.PublicActionRefs[0]).IsAccepted);
         clock.Advance(TimeSpan.FromSeconds(10));
-        var moved = journal.SubmitOwnerRbaMove(defender, defenderId,
-            opening.Revision, moveRef);
-        Assert.True(moved.IsAccepted);
         var cold = fixture.Open(clock);
-        Assert.Equal(moved.CanonicalReceipt,
-            cold.SubmitOwnerRbaMove(defender, defenderId,
-                opening.Revision, moveRef).CanonicalReceipt);
-        var afterMove = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterMove).ContractVersion);
-        Assert.True(CampaignExercises.Reconstruct(afterMove).IsVerified);
-        var next = cold.QueryRbaOwnerOpening(defender, defenderId);
-        Assert.True(next.Revision > opening.Revision);
-        Assert.True(next.PublicActionRefs.Count > 1);
-        clock.Advance(TimeSpan.FromSeconds(10));
-        var repeated = cold.SubmitOwnerRbaMove(defender, defenderId,
-            next.Revision, next.PublicActionRefs[0]);
-        Assert.True(repeated.IsAccepted);
-        var afterRepeat = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterRepeat).ContractVersion);
-        Assert.True(CampaignExercises.Reconstruct(afterRepeat).IsVerified);
-        clock.Advance(TimeSpan.FromSeconds(10));
+        var again = cold.QueryRbaOwnerOpening(defender, defenderId);
+        Assert.Equal(opening.Revision, again.Revision);
+        Assert.Equal(opening.VisibleBytes, again.VisibleBytes);
+        Assert.Equal(opening.PublicActionRefs, again.PublicActionRefs);
+        clock.Advance(TimeSpan.FromMilliseconds(19_999));
+        Assert.False(cold.TickRbaRound(request.CampaignId));
+        clock.Advance(TimeSpan.FromMilliseconds(1));
         Assert.True(cold.TickRbaRound(request.CampaignId));
         AssertRbaCancellationOnly(fixture.Path);
         Assert.True(CampaignExercises.Reconstruct(cold.ReadVerified(request.CampaignId)).IsVerified);
@@ -216,7 +192,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         connection.Open();
         using var query = connection.CreateCommand();
         query.CommandText = "SELECT COUNT(*) FROM accepted_steps WHERE action_kind='contact-rba-move'";
-        Assert.Equal(2L, query.ExecuteScalar());
+        Assert.Equal(0L, query.ExecuteScalar());
     }
 
     [Theory]
