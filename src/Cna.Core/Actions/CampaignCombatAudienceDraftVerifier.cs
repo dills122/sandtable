@@ -7,7 +7,8 @@ namespace Cna.Core.Actions;
 // Task 020B (DRAFT for owner review; not frozen). Byte-level verifier for the audience decision and
 // outcome envelopes produced by CampaignCombatAudienceDecisions, checked against the draft schema in
 // docs/specs/combat-audience-decision-draft-v1.schema.json. Covers Selection, Force Assignment,
-// Reserve Release, Cycle Control and decline-only RBA (020A4). Any other stage fails as uncovered.
+// Reserve Release, Cycle Control, decline-only RBA (020A4) and captor Custody (020A3). Any other
+// stage fails as uncovered.
 
 /// <summary>Checks one decision or outcome byte string against the draft successor contract.</summary>
 internal static partial class CampaignCombatAudienceDraftVerifier
@@ -50,6 +51,12 @@ internal static partial class CampaignCombatAudienceDraftVerifier
                 "contractVersion", "campaignId", "side", "positionId", "defenderFormationId",
                 "contactAudienceRevision", "contactObservation", "ownElements", "declineOffer",
             ]),
+            // 020A3 captor Custody (CampaignContactCustodyOwnerVisibleCutV1). Its field set is the
+            // T020-Q5 allowlist (ruled 2026-11-20). No side and no contact observation.
+            [CampaignCombatAudienceDecisions.CustodyStage] = (1,
+            [
+                "contractVersion", "campaignId", "captorElementId", "captiveQuantity", "offers",
+            ]),
         };
 
     /// <summary>Property names that must not appear anywhere in outward bytes.</summary>
@@ -66,6 +73,8 @@ internal static partial class CampaignCombatAudienceDraftVerifier
     public static readonly IReadOnlyList<string> SealOfferFields =
         ["kind", "role", "elementId", "componentId", "committedToe"];
     public static readonly IReadOnlyList<string> DeclineOfferFields = ["kind", "elementId"];
+    public static readonly IReadOnlyList<string> CustodyOfferFields = ["kind", "route"];
+    public static readonly IReadOnlyList<string> CustodyOfferKinds = ["relocate-and-guard", "leave-unguarded"];
 
     public static readonly string RejectedOutcome = "{\"contractVersion\":1,\"outcome\":\"rejected\"}";
 
@@ -250,6 +259,37 @@ internal static partial class CampaignCombatAudienceDraftVerifier
                     if (Text(seal, "elementId") != actor || Text(seal, "role") != Text(visible, "role"))
                         failures.Add("offer-binding");
                     return 1;
+                }
+            case CampaignCombatAudienceDecisions.CustodyStage:
+                {
+                    // Allowlisted captor cut: revision 0 (no contact observation), the captor is the
+                    // acting element, 1-10 captives, 1-2 distinct offers each with a 1-16 hex route.
+                    // The cut carries no side, so the audience cannot be cross-checked from bytes.
+                    if (revision != 0) failures.Add("audience-revision");
+                    if (Text(visible, "captorElementId") != actor) failures.Add("visible-binding");
+                    if (!TryInt(visible, "captiveQuantity", out var quantity) || quantity is < 1 or > 10)
+                        failures.Add("visible-binding");
+                    if (!visible.TryGetProperty("offers", out var offers) || offers.ValueKind != JsonValueKind.Array)
+                    {
+                        failures.Add("offer-shape");
+                        return -1;
+                    }
+                    var kinds = new List<string?>();
+                    foreach (var offer in offers.EnumerateArray())
+                    {
+                        if (offer.ValueKind != JsonValueKind.Object
+                            || !Names(offer).SequenceEqual(CustodyOfferFields)
+                            || !CustodyOfferKinds.Contains(Text(offer, "kind"), StringComparer.Ordinal)
+                            || !offer.TryGetProperty("route", out var route) || route.ValueKind != JsonValueKind.Array
+                            || route.GetArrayLength() is < 1 or > 16
+                            || route.EnumerateArray().Any(value => value.ValueKind != JsonValueKind.String
+                                || string.IsNullOrWhiteSpace(value.GetString())))
+                            failures.Add("offer-shape");
+                        kinds.Add(offer.ValueKind == JsonValueKind.Object ? Text(offer, "kind") : null);
+                    }
+                    if (kinds.Count is < 1 or > 2 || kinds.Distinct(StringComparer.Ordinal).Count() != kinds.Count)
+                        failures.Add("offer-shape");
+                    return kinds.Count;
                 }
             case CampaignCombatAudienceDecisions.RbaDeclineStage:
                 {

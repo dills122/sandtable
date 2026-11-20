@@ -340,8 +340,10 @@ Options for the owner:
 
 Not unblocked. The plan's hard gate for outward Task 020 work is a **frozen** `CMB-CON-005`
 successor. The 020B artifacts are a draft for owner review, not frozen. Q4's ruling also requires
-Host HMAC layering before anything goes public. The draft does not yet model Custody. Q8 is
-settled (§7e) and RBA decline-only is built (§7g).
+Host HMAC layering before anything goes public. Q8 is settled (§7e), RBA decline-only is built
+(§7g), and the draft now models Custody (§7h). The owner chose (2026-11-20) to ship 020D with the six
+covered round kinds; post-assault Retreat and repeat/second-side selection follow in a later phase.
+Remaining before 020D: the Host-layering decisions in §7i, then the owner's freeze.
 
 ## 7g. Slice 020A4 — decline-only RBA (Q7 option b)
 
@@ -358,14 +360,73 @@ settled (§7e) and RBA decline-only is built (§7g).
 - 020B draft extended (still DRAFT, not frozen): spec, schema, golden `rba-decline-commonwealth`,
   14 rejection vectors, verifier rules and `VerifierCatchesTamperedRbaDeclineCuts`.
 
+## 7h. 020B draft — Custody added
+
+- Verifier: `custody` stage, visible v1 fields `contractVersion, campaignId, captorElementId,
+  captiveQuantity, offers` (the Q5 allowlist). Rules: revision 0; `captorElementId` = acting element;
+  `captiveQuantity` 1–10; 1–2 offers with distinct kinds from `relocate-and-guard`/`leave-unguarded`,
+  each exactly `kind, route` with a 1–16 hex route. The cut has no side, so the audience is bound only
+  by the ref preimage and Core's captor-seat check.
+- Schema `custody` stage and `CustodyOffer`; spec table/prose; golden `custody-axis` (668 bytes,
+  combat-double-fresh seed 5); 12 rejection vectors reused from
+  `CombatCycleDisclosureCustodyTests.EveryCustodyRejectionCauseSharesOneOutwardEnvelope`;
+  `VerifierCatchesTamperedCustodyCuts` (shared tampers plus captor, quantity, kind, duplicate kind,
+  empty route, smuggled `victimElementId`, smuggled `lotId`).
+- The shared "uncovered stage" tamper and the schema gap check now use `post-assault-retreat`; the
+  shared missing-field tamper now removes `campaignId` (the field every covered cut has).
+
+## 7i. Host HMAC layering (the deferred half of Q4) — analysis; stopped before Host changes
+
+**What exists.** The Host already layers HMAC over the same owner-visible bytes the Core audience
+surface emits:
+
+- Key: one 32-byte secret per campaign (`CampaignReferenceKeyDocument`, SQLite `reference_key`),
+  never written to the event stream.
+- Opening: re-projects a `CampaignHostAdapter.Query*OwnerDraft`, keeps an opening revision per
+  `(campaign, side, actingElementId)` that increments whenever the visible bytes or seat epoch
+  change, and stores `(publicRef, ordinal, coreActionId)` rows (`CampaignOwnerOpeningDocument`).
+- Ref: `"act." + hex(HMAC-SHA256(key, "campaign-owner-ref-v1" | campaignId | side | actingElementId
+  | seatEpoch | openingRevision | visibleDigest | ordinal))`.
+- Submission: authenticate the seat, re-project, require byte-equal visible bytes, map the stored
+  ordinal to the current Core action ID, recompute the HMAC and compare in fixed time, then submit
+  the internal command. Wire: `{contractVersion:2, campaignId, audience, stage, actingElementId,
+  revision, visibleCutBase64, publicActionRefs}`.
+
+**Finding.** For Selection, Force, Reserve Release, Cycle Control and Custody, the Host draft's
+visible bytes are byte-identical to the Core decision's visible bytes (each 020A test asserts it),
+and the Host's re-project/compare/ordinal rule is the same-cut rule Core uses. So the HMAC mechanism
+itself needs no new crypto or identity binding: the same key, preimage and fixed-time check cover
+these stages unchanged. The seat epoch and opening revision are stronger fences than Core's
+contact revision, which sits inside the visible bytes anyway.
+
+**What is not a simple extension.** Wiring that mechanism to the Core surface (the Q6
+consolidation) needs owner decisions:
+
+1. **Which wire is frozen.** The 020B draft freezes the in-process Core decision envelope (Core refs,
+   `audienceRevision`, `visibleDigest`) and explicitly defines no submission wire. The public bytes
+   would be the Host v2 opening/action body above, with HMAC refs. Should the successor freeze also
+   cover that Host wire envelope (and its rejection body), or only the Core envelope?
+2. **RBA on the Host route.** The Host's `retreat-before-assault` opening still publishes the full
+   V1 cut with move offers and accepts `rba-move`. Under `CMB-POL-001` and Q7 the public RBA opening
+   would be the decline-only codec, which removes `rba-move` from the route and changes its bytes.
+   Replace, or keep both behind a profile check?
+3. **How the Host consumes Core.** Either (a) the Host calls the Core audience surface (needs a
+   trusted public adapter for it; `CampaignCombatAudienceDecisions` is internal; owner-action rows
+   would store Core refs instead of Core action IDs; Core must also hand back the internal command
+   for durable accepted-step persistence and cold-replay import), or (b) the Host keeps its draft
+   path and parity tests pin it to the Core surface. (a) removes the duplicate rule (Q6); (b) changes
+   nothing durable.
+
+Stage naming also differs (Host `retreat-before-assault` vs Core `rba-decline`). Nothing in the Host
+was changed.
+
 ## 8. Still pending
 
 Covered (dormant, internal): Selection (first-side initial cut), Force Assignment (both seal
-orders), Reserve Release, Cycle Control, Custody, decline-only RBA. Draft freeze artifacts cover all
-of these except Custody (§7b, §7g); freezing is the owner's action.
+orders), Reserve Release, Cycle Control, Custody, decline-only RBA. The 020B draft covers all six
+(§7b, §7g, §7h); freezing is the owner's action.
 
-Not built: RBA movement (outside `CMB-POL-001`), post-assault Retreat (likely raises the Q7-family
-unseen-encounter question, unchecked), repeat V31 and second-side V47 selection. Assigned elsewhere:
-capability manifest (021, Q3), Host HMAC and Host consolidation (020D, Q4/Q6). Also open: Custody in
-the 020B draft, owner freeze of the draft, terminal-reason disclosure pairs, Exercise/Runner
-adoption (022–024), and all independent review.
+Not built (owner: later phase): RBA movement (outside `CMB-POL-001`), post-assault Retreat, repeat
+V31 and second-side V47 selection. Assigned elsewhere: capability manifest (021, Q3). Open: Host
+layering decisions (§7i), owner freeze of the draft, terminal-reason disclosure pairs,
+Exercise/Runner adoption (022–024), and all independent review.

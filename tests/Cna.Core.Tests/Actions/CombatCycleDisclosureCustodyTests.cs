@@ -143,7 +143,7 @@ public sealed class CombatCycleDisclosureCustodyTests
     }
 
     // Same trusted path as CombatCycleDisclosureReserveCycleTests, stopped after World settlement.
-    private static ExerciseSession AtCustody(string campaignId, ulong seed, out bool refusedRetreat)
+    internal static ExerciseSession AtCustody(string campaignId, ulong seed, out bool refusedRetreat)
     {
         var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
             value.SetupId == "rules-lab.breakdown.reaction.combat-double-fresh.v1"));
