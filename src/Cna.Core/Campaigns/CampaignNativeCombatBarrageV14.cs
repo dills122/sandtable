@@ -24,10 +24,13 @@ internal sealed record CampaignNativeCombatBarrageV14(
         ArgumentNullException.ThrowIfNull(context);
         if (selected.Decision.Choice != "select-contact-assault"
             || selected.Decision.BoundRepresentationId is null
-            || context.ArtifactV6 is not { } artifact
-            || artifact.Definition.ElementCombatFacts.SelectMany(facts => facts.Components)
-                .Any(component => component.ComponentClassId != Cna1979Combat.InfantryComponentClassId))
+            || context.ArtifactV6 is not { } artifact)
             throw new InvalidOperationException("Selected barrage lacks supported infantry-only authority.");
+        // Defensive bounded-profile invariant (Task 021A2): unreachable for admitted content, because
+        // Content V6 admission refuses any non-infantry component class (BRK-CERT-004).
+        if (artifact.Definition.ElementCombatFacts.SelectMany(facts => facts.Components)
+                .Any(component => component.ComponentClassId != Cna1979Combat.InfantryComponentClassId))
+            throw new InvalidOperationException(CampaignCombatCapabilityAdmission.NonInfantryExceedsBoundedProfile);
 
         var position = Cna1979LandSequenceV4.CreateTurn(
             selected.PriorSnapshot.CurrentPosition.SequencePosition!.GameTurn)
