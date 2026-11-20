@@ -98,7 +98,7 @@ Each gap is an unresolved owner ruling or unbuilt surface. No placeholder conten
 | Contact bound to a non-combat unit | T020-Q8 ruled 2026-11-20 (option c): the Selection offer stays and the downstream V19 `force-unavailable` System cancellation handles it, so no visible-byte rule applies. Goldens still use an infantry-bound contact. |
 | RBA movement, post-assault Retreat, repeat Movement/Selection (V31), second-side Selection (V47) | RBA movement is outside `CMB-POL-001` (T020-Q7). The owner chose (2026-11-20) to ship 020D with the six covered kinds and add the others in a later phase. |
 | Capability manifest | T020-Q3 ruled to Task 021. |
-| Host HMAC refs and Host/Core mapping consolidation | T020-Q4 (Core visible-values-only refs accepted as the in-process subset; Host HMAC precedes 020D) and T020-Q6 (deferred to 020D). |
+| Host HMAC refs, Host wire envelope and Host/Core mapping consolidation | Owner ruling 2026-11-20: the freeze covers the Core decision envelope only. The Host's existing seat-bound HMAC refs wrap the same visible bytes and need no separate freeze; Host openings are pinned to these bytes by parity tests (Task 020D prerequisite). The Host-calls-Core cutover (T020-Q6) is deferred. |
 | Notification bytes, terminal-reason disclosure pairs | No outward notification exists yet; terminal-reason pairs are 020D. |
 
 ## Observations for the owner (not changed here)

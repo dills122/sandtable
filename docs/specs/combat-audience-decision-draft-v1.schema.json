@@ -146,6 +146,6 @@
     { "transition": "forced and surprise Combat", "reason": "T020-Q2 ruled 2026-11-20: out of the bounded profile and rejected at content admission; no transition is modeled" },
     { "disposition": "contact bound to a non-combat unit", "reason": "T020-Q8 ruled 2026-11-20 (option c): the Selection offer stays; the downstream V19 force-unavailable System cancellation handles it, so no visible-byte rule applies" },
     { "manifest": "closed capability manifest", "reason": "T020-Q3 assigned to Task 021" },
-    { "binding": "Host HMAC public refs", "reason": "T020-Q4: Core visible-values-only refs are the in-process subset; Host HMAC layering precedes 020D" }
+    { "binding": "Host HMAC public refs and Host wire envelope", "reason": "Owner ruling 2026-11-20: freeze covers the Core envelope only; Host HMAC refs wrap the same visible bytes (pinned by Host/Core parity tests) and need no separate freeze; Host-calls-Core cutover deferred" }
   ]
 }
