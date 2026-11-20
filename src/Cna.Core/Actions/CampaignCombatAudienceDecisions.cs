@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.Core.Visibility;
 
@@ -132,6 +133,10 @@ internal static class CampaignCombatAudienceDecisions
 {
     public const string SelectionStage = "combat-selection";
     public const string ForceAssignmentStage = "force-assignment";
+    public const string ReserveReleaseStage = "reserve-release";
+    public const string CycleControlStage = "cycle-control";
+    /// <summary>Cycle control belongs to the side, not an element; this fixed subject names it.</summary>
+    public const string CycleControlSubject = "cycle-control";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -147,6 +152,16 @@ internal static class CampaignCombatAudienceDecisions
     public static CampaignCombatAudienceDecision? QueryForceAssignment(ExerciseSession session,
         CampaignActionAudience audience, string elementId) =>
         Query(session, audience, ForceAssignmentStage, elementId);
+
+    /// <summary>Next ordered owned Reserve Release member decision (020A2).</summary>
+    public static CampaignCombatAudienceDecision? QueryReserveRelease(ExerciseSession session,
+        CampaignActionAudience audience, string reserveElementId) =>
+        Query(session, audience, ReserveReleaseStage, reserveElementId);
+
+    /// <summary>Repeat-or-finish decision after completed Reserve Release (020A2).</summary>
+    public static CampaignCombatAudienceDecision? QueryCycleControl(ExerciseSession session,
+        CampaignActionAudience audience) =>
+        Query(session, audience, CycleControlStage, CycleControlSubject);
 
     public static CampaignCombatAudienceDecision? Query(ExerciseSession session,
         CampaignActionAudience audience, string stage, string actingElementId) =>
@@ -200,6 +215,9 @@ internal static class CampaignCombatAudienceDecisions
                     command, decision.ActingElementId),
                 ForceAssignmentStage => CampaignExercises.SubmitContactOwnerForceSeal(session,
                     command, decision.ActingElementId),
+                ReserveReleaseStage => CampaignHostAdapter.SubmitNativeReserveReleaseChoice(session,
+                    command, decision.ActingElementId),
+                CycleControlStage => CampaignHostAdapter.SubmitNativeCycleControl(session, command),
                 _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
             };
         }
@@ -249,13 +267,29 @@ internal static class CampaignCombatAudienceDecisions
             || audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
             return null;
         var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
-        CampaignContactObservationV1 observation;
+        CampaignContactObservationV1? observation = null;
         byte[] visible;
         string[] privateIds;
         try
         {
             switch (stage)
             {
+                case ReserveReleaseStage:
+                    {
+                        var draft = CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft(session,
+                            audience, actingElementId);
+                        visible = draft.VisibleBytes;
+                        privateIds = draft.PrivateActionIds.ToArray();
+                        break;
+                    }
+                case CycleControlStage:
+                    {
+                        if (actingElementId != CycleControlSubject) return null;
+                        var draft = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(session, audience);
+                        visible = draft.VisibleBytes;
+                        privateIds = draft.PrivateActionIds.ToArray();
+                        break;
+                    }
                 case SelectionStage:
                     {
                         var cut = CampaignExercises.QueryContactOwnerCombatCut(session, side, actingElementId);
@@ -288,13 +322,17 @@ internal static class CampaignCombatAudienceDecisions
         {
             return null;
         }
-        if (observation.Side != side) return null;
-        var campaignId = observation.CampaignId;
+        if (observation is not null && observation.Side != side) return null;
+        // Contact-bound stages carry the side contact audience revision. Reserve Release and Cycle
+        // Control cuts carry no contact observation; they report revision 0 and rely on the visible
+        // digest as the only fence (author interpretation pending owner ruling, T020-Q4).
+        var campaignId = observation?.CampaignId ?? CampaignExercises.QueryCheckpoint(session).CampaignId;
+        var revision = observation?.AudienceRevision ?? 0;
         var digest = Digest(visible);
         var stageId = stage!;
         var refs = privateIds.Select((_, index) => Reference(campaignId, audience,
             stageId, actingElementId, digest, index)).ToArray();
         return (new CampaignCombatAudienceDecision(campaignId, audience, stageId,
-            actingElementId, observation.AudienceRevision, visible, refs), privateIds);
+            actingElementId, revision, visible, refs), privateIds);
     }
 }

@@ -169,7 +169,36 @@ RBA surface that mirrors today's Core offers with an explicit "unseen encounter 
 (c) defer RBA and continue with post-assault Retreat/Reserve Release/Cycle Control (post-assault
 Retreat likely raises the same encounter question — not yet checked).
 
-## 8. Still pending after 020A0/020A1
+Owner disposition (2026-11-20, relayed): RBA **deferred**; Q7 not pursued; no internal-mirror RBA.
+
+## 7a. Slice 020A2 (partial) — Reserve Release and Cycle Control built
+
+Scope per owner: 020A2 minus RBA/Force (done or deferred) and minus Custody (Q5). Post-assault
+Retreat, repeat V31 and second-side V47 selection are not in this slice.
+
+- New stages `reserve-release` and `cycle-control` reuse `CampaignHostAdapter.QueryNativeReserveReleaseOwnerDraft` /
+  `QueryNativeCycleControlOwnerDraft` for visible bytes and private IDs (so their existing guards apply),
+  and delegate to the unchanged `SubmitNativeReserveReleaseChoice` / `SubmitNativeCycleControl`.
+- Cycle Control is side-owned; it uses the fixed subject `cycle-control` as its acting identity.
+- These two cuts carry no contact observation. Author choice: the decision reports
+  `audienceRevision: 0` and relies on the visible digest as its only fence. This is an
+  interpretation under **T020-Q4**, not a ruling.
+- Side-safety check by reading: the V28 Repeat witness (`CampaignCycleContinuationMovementWitnessV28`)
+  reads own elements and *known* contacts only; V27 pending members derive from own settled World.
+
+`CombatCycleDisclosureReserveCycleTests`, 4 rows, local Debug + Release pass:
+
+| Test | Evidence |
+| --- | --- |
+| `ReserveReleaseDecisionMatchesHostDraftAndCarriesNoPrivateFields` | Bytes equal Host draft; refs = choices; no private IDs/authority/hash fields; opponent, wrong member, System unavailable; Cycle Control unavailable before completion. |
+| `AcceptedReserveAndCycleChoicesUseTheUnchangedPrivateAdjudication` | Every Reserve choice and every Cycle choice (Repeat and Finish): event/snapshot/receipt equal the private path; retry rejected; reconstruction verifies; opponent and wrong-subject Cycle queries unavailable. |
+| `EveryReserveAndCycleRejectionCauseSharesOneOutwardEnvelope` | 8 invalid submissions plus cross-entry-point submission: identical rejection. |
+| `ReserveAndCycleDecisionsEncodeNoSettlementOrOpponentFacts` | Seed fork (seeds 6/7): byte-equal Reserve and Cycle decisions; cross-fork acceptance. A non-leak check, not an equal-visible-history proof. |
+
+The fixture path uses `rules-lab.breakdown.reaction.combat-double-fresh.v1` (same trusted path as
+`CampaignNativeSelectionTimeoutTests`); pre-Release Combat steps go through the existing trusted API.
+
+## 8. Still pending after 020A0/020A1/020A2
 
 All other round kinds (A1/A2), successor freeze artifacts (B), forced/surprise (C), publication
 and Host consolidation (D), seal-order/terminal-reason disclosure pairs, capability manifest,
