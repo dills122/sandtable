@@ -583,15 +583,16 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var westDefender = CampaignHostAdapter.QueryContactRbaDefenderId(
             session, CampaignActionAudience.Commonwealth);
         Assert.Equal("commonwealth-infantry-west", westDefender);
+        // 020D: the Host RBA route is decline-only (CMB-POL-001). One ref, no move offers, and the
+        // retired rba-move action stage is refused before reaching the grain.
         var rba = cold.QueryRbaOwnerOpening(defender, westDefender);
-        Assert.True(rba.PublicActionRefs.Count > 1);
-        await outward.Submit(defender, westDefender,
-            "retreat-before-assault", "rba-move", rba,
-            rba.PublicActionRefs[0]);
-        var afterMove = fixture.Open(clock).ReadVerified(request.CampaignId);
-        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterMove).ContractVersion);
-        Assert.True(CampaignExercises.Reconstruct(afterMove).IsVerified);
-        rba = cold.QueryRbaOwnerOpening(defender, westDefender);
+        Assert.Single(rba.PublicActionRefs);
+        Assert.DoesNotContain("moveOffers", System.Text.Encoding.UTF8.GetString(rba.VisibleBytes),
+            StringComparison.Ordinal);
+        Assert.Equal(HttpStatusCode.BadRequest, await outward.SubmitStatus(defender, westDefender,
+            "rba-move", rba.Revision, rba.PublicActionRefs[0]));
+        Assert.Equal(14, CampaignExercises.QueryCheckpoint(fixture.Open(clock)
+            .ReadVerified(request.CampaignId)).ContractVersion);
         await outward.Submit(defender, westDefender,
             "retreat-before-assault", "rba-decline", rba,
             rba.PublicActionRefs[^1]);
@@ -1140,7 +1141,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public void DefenderRetreatMoveAndExplicitStopColdReplayThroughOwnerSeat()
+    public void DefenderRbaOpeningIsDeclineOnlyAndExplicitStopColdReplaysThroughOwnerSeat()
     {
         using var fixture = new JournalFixture();
         var journal = fixture.Create();
@@ -1156,49 +1157,26 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var defender = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
         var opening = journal.QueryRbaOwnerOpening(defender, defenderId);
-        Assert.True(opening.PublicActionRefs.Count > 1);
+        // 020D: Core still derives move offers for this defender, but the Host opening publishes
+        // only the decline-only codec and maps exactly one ref.
         var startingSession = journal.ReadVerified(request.CampaignId);
-        var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(startingSession,
+        Assert.True(CampaignHostAdapter.QueryContactRbaOwnerDraft(startingSession,
+            CampaignActionAudience.Commonwealth, defenderId).PrivateActionIds.Count > 1);
+        var declineDraft = CampaignHostAdapter.QueryContactRbaDeclineOwnerDraft(startingSession,
             CampaignActionAudience.Commonwealth, defenderId);
-        var moveOrdinal = Enumerable.Range(0, draft.PrivateActionIds.Count - 1).First(index =>
-        {
-            var candidate = CampaignHostAdapter.SubmitContactDefenderRbaMove(startingSession,
-                new CampaignActionSubmission(1, request.CampaignId,
-                    CampaignExercises.QueryCheckpoint(startingSession).StateVersion,
-                    CampaignExercises.QueryCheckpoint(startingSession).PositionId,
-                    CampaignActionAudience.Commonwealth, draft.PrivateActionIds[index]),
-                defenderId);
-            return candidate.IsAccepted
-                && CampaignHostAdapter.QueryContactRbaOwnerDraft(candidate.SuccessorSession!,
-                    CampaignActionAudience.Commonwealth, defenderId).PrivateActionIds.Count > 1;
-        });
-        var moveRef = opening.PublicActionRefs[moveOrdinal];
+        Assert.Equal(declineDraft.VisibleBytes, opening.VisibleBytes);
+        Assert.Single(opening.PublicActionRefs);
+        Assert.Single(declineDraft.PrivateActionIds);
+        Assert.DoesNotContain("moveOffers", System.Text.Encoding.UTF8.GetString(opening.VisibleBytes),
+            StringComparison.Ordinal);
         Assert.False(journal.SubmitOwnerRbaDecline(defender, defenderId,
-            opening.Revision, moveRef).IsAccepted);
-        var moved = journal.SubmitOwnerRbaMove(defender, defenderId,
-            opening.Revision, moveRef);
-        Assert.True(moved.IsAccepted);
-        var cold = fixture.Open();
-        Assert.Equal(moved.CanonicalReceipt,
-            cold.SubmitOwnerRbaMove(defender, defenderId,
-                opening.Revision, moveRef).CanonicalReceipt);
-        var afterMove = cold.ReadVerified(request.CampaignId);
-        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterMove).ContractVersion);
-        Assert.True(CampaignExercises.Reconstruct(afterMove).IsVerified);
-        var next = cold.QueryRbaOwnerOpening(defender, defenderId);
-        Assert.True(next.Revision > opening.Revision);
-        Assert.True(next.PublicActionRefs.Count > 1);
-        var repeated = cold.SubmitOwnerRbaMove(defender, defenderId,
-            next.Revision, next.PublicActionRefs[0]);
-        Assert.True(repeated.IsAccepted);
-        var afterRepeat = fixture.Open().ReadVerified(request.CampaignId);
-        Assert.Equal(16, CampaignExercises.QueryCheckpoint(afterRepeat).ContractVersion);
-        Assert.True(CampaignExercises.Reconstruct(afterRepeat).IsVerified);
-        var finalOpening = cold.QueryRbaOwnerOpening(defender, defenderId);
-        Assert.True(finalOpening.Revision > next.Revision);
-        var stopped = cold.SubmitOwnerRbaDecline(defender, defenderId,
-            finalOpening.Revision, finalOpening.PublicActionRefs[^1]);
+            opening.Revision, "act." + new string('0', 64)).IsAccepted);
+        var stopped = journal.SubmitOwnerRbaDecline(defender, defenderId,
+            opening.Revision, opening.PublicActionRefs[0]);
         Assert.True(stopped.IsAccepted);
+        var cold = fixture.Open();
+        Assert.Equal(stopped.CanonicalReceipt, cold.SubmitOwnerRbaDecline(defender, defenderId,
+            opening.Revision, opening.PublicActionRefs[0]).CanonicalReceipt);
         var final = fixture.Open().ReadVerified(request.CampaignId);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(final).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(final).IsVerified);
@@ -2094,6 +2072,33 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.Equal(HttpStatusCode.OK, retried.StatusCode);
             Assert.Equal(receipt, await retried.Content.ReadAsStringAsync(
                 TestContext.Current.CancellationToken));
+        }
+
+        // Posts one action body and returns the HTTP status without asserting success (020D: the
+        // retired rba-move action stage must be refused by the outward route).
+        internal async Task<HttpStatusCode> SubmitStatus(CampaignSeatCredential credential, string actor,
+            string actionStage, long openingRevision, string reference)
+        {
+            var actionBody = JsonSerializer.Serialize(new
+            {
+                contractVersion = 2,
+                credential = new
+                {
+                    campaignId = credential.CampaignId,
+                    audience = credential.Audience == CampaignActionAudience.Axis ? "axis" : "commonwealth",
+                    epoch = credential.Epoch,
+                    secret = credential.Secret,
+                    expiresUnixMs = credential.ExpiresUnixMs,
+                },
+                stage = actionStage,
+                actingElementId = actor,
+                openingRevision,
+                publicActionRef = reference,
+            });
+            using var submitted = await client.PostAsync($"/api/v2/campaigns/{campaignId}/actions",
+                new StringContent(actionBody, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            return submitted.StatusCode;
         }
 
         public async ValueTask DisposeAsync()

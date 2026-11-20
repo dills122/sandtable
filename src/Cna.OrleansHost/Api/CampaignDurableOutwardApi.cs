@@ -806,7 +806,7 @@ internal static class CampaignDurableOutwardApi
                     or "source-cw-priority-catalog" or "source-matruh-formation"
                     or "source-cw-free-guns" or "source-axis-priority-motorization"
                     or "source-cairo-setup" or "movement" or "combat-selection"
-                    or "rba-decline" or "rba-move" or "force-assignment"
+                    or "rba-decline" or "force-assignment"
                     or "post-assault-retreat" or "custody" or "reserve-release"
                     or "cycle-control" or "truck-convoy-pass" or "post-combat-pass"
                     or "second-reserve" or "second-movement" or "second-movement-completion"

@@ -367,7 +367,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
             else if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
             {
-                var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(authority.Session,
+                var draft = CampaignHostAdapter.QueryContactRbaDeclineOwnerDraft(authority.Session,
                     seat.Audience, actingElementId);
                 visible = draft.VisibleBytes;
                 authorityVersion = draft.AuthorityVersion;

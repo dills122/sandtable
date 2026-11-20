@@ -145,10 +145,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.RetreatBeforeAssault);
 
-    internal CampaignOwnerSubmissionResult SubmitOwnerRbaMove(CampaignSeatCredential credential,
-        string defenderElementId, long openingRevision, string publicActionRef) =>
-        SubmitOwnerActionCore(credential, defenderElementId, openingRevision, publicActionRef,
-            CampaignOwnerOpeningKind.RetreatBeforeAssault, retreatMove: true);
+    // Task 020D (owner ruling 2026-11-20): the Host RBA route is decline-only under the bounded
+    // CMB-POL-001 profile. There is no owner RBA move submission; retained contact-rba-move steps
+    // from earlier histories still replay through CampaignHostAdapter import.
 
     internal CampaignOwnerSubmissionResult SubmitOwnerForceSeal(CampaignSeatCredential credential,
         string elementId, long openingRevision, string publicActionRef) =>
@@ -217,7 +216,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private CampaignOwnerSubmissionResult SubmitOwnerActionCore(CampaignSeatCredential credential,
         string actingElementId, long openingRevision, string publicActionRef,
-        CampaignOwnerOpeningKind kind, bool retreatMove = false)
+        CampaignOwnerOpeningKind kind)
     {
         RequireWritable();
         ArgumentNullException.ThrowIfNull(credential);
@@ -243,7 +242,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                   AND seat_epoch=$epoch AND owner_revision=$revision
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
-            retry.Parameters.AddWithValue("$kind", AcceptedKind(kind, retreatMove));
+            retry.Parameters.AddWithValue("$kind", AcceptedKind(kind));
             retry.Parameters.AddWithValue("$element", actingElementId);
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
@@ -463,7 +462,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
             else if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
             {
-                var draft = CampaignHostAdapter.QueryContactRbaOwnerDraft(head.Session,
+                var draft = CampaignHostAdapter.QueryContactRbaDeclineOwnerDraft(head.Session,
                     seat.Audience, actingElementId);
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
@@ -641,11 +640,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitContactOwnerCombatSelection(head.Session,
                     submission, actingElementId),
             CampaignOwnerOpeningKind.RetreatBeforeAssault =>
-                retreatMove
-                    ? CampaignHostAdapter.SubmitContactDefenderRbaMove(head.Session,
-                        submission, actingElementId)
-                    : CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
-                        submission, actingElementId),
+                CampaignHostAdapter.SubmitContactDefenderRbaDecline(head.Session,
+                    submission, actingElementId),
             CampaignOwnerOpeningKind.ForceAssignment =>
                 CampaignHostAdapter.SubmitContactOwnerForceSeal(head.Session,
                     submission, actingElementId),
@@ -759,7 +755,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
         }
         var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
-            AcceptedKind(kind, retreatMove), actingElementId,
+            AcceptedKind(kind), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (selectionRound is not null)
         {
@@ -768,7 +764,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         if (kind == CampaignOwnerOpeningKind.Movement)
             TryInitializeSelectionRound(connection, transaction, acceptedHead, seat.CampaignId);
-        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault && !retreatMove)
+        if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
         {
             UpdateRbaRound(connection, transaction, rbaRound! with { Status = "completed" });
             RecordRoundClosed(CampaignRoundKind.Rba);
@@ -971,62 +967,59 @@ internal sealed partial class CampaignDurableAuthorityJournal
         InitializeSelectionRound(connection, transaction, completedHead, campaignId);
     }
 
-    private static string AcceptedKind(CampaignOwnerOpeningKind kind,
-        bool retreatMove = false) => kind switch
-        {
-            CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
-            CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
-            CampaignOwnerOpeningKind.RetreatBeforeAssault => retreatMove
-                ? CampaignHostAcceptedStep.ContactRbaMoveKind
-                : CampaignHostAcceptedStep.ContactRbaDeclineKind,
-            CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,
-            CampaignOwnerOpeningKind.PostAssaultRetreat =>
-                CampaignHostAcceptedStep.ContactPostAssaultRetreatKind,
-            CampaignOwnerOpeningKind.Custody =>
-                CampaignHostAcceptedStep.ContactCombatCustodyKind,
-            CampaignOwnerOpeningKind.ReserveRelease =>
-                CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind,
-            CampaignOwnerOpeningKind.CycleControl =>
-                CampaignHostAcceptedStep.ContactCycleControlKind,
-            CampaignOwnerOpeningKind.TruckConvoyPass =>
-                CampaignHostAcceptedStep.ContactTruckConvoyPassKind,
-            CampaignOwnerOpeningKind.PostCombatPass =>
-                CampaignHostAcceptedStep.ContactPostCombatPassKind,
-            CampaignOwnerOpeningKind.SecondReserve =>
-                CampaignHostAcceptedStep.ContactSecondReserveKind,
-            CampaignOwnerOpeningKind.SecondMovement =>
-                CampaignHostAcceptedStep.ContactSecondMovementKind,
-            CampaignOwnerOpeningKind.SecondMovementCompletion =>
-                CampaignHostAcceptedStep.ContactSecondMovementCompletionKind,
-            CampaignOwnerOpeningKind.RepeatMovement =>
-                CampaignHostAcceptedStep.ContactRepeatMovementKind,
-            CampaignOwnerOpeningKind.RepeatCombatSelection =>
-                CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind,
-            CampaignOwnerOpeningKind.PregameAxisSupply => CampaignHostAcceptedStep.PregameAxisSupplyKind,
-            CampaignOwnerOpeningKind.PregameAxisSupplyFinish => CampaignHostAcceptedStep.PregameAxisSupplyFinishKind,
-            CampaignOwnerOpeningKind.SourceAxisDump => CampaignHostAcceptedStep.SourceAxisDumpKind,
-            CampaignOwnerOpeningKind.SourceCommonwealthSupply => CampaignHostAcceptedStep.SourceCommonwealthSupplyKind,
-            CampaignOwnerOpeningKind.SourceDummy => CampaignHostAcceptedStep.SourceDummyKind,
-            CampaignOwnerOpeningKind.SourceMotorization => CampaignHostAcceptedStep.SourceMotorizationKind,
-            CampaignOwnerOpeningKind.SourceUnattachedCargo => CampaignHostAcceptedStep.SourceUnattachedCargoKind,
-            CampaignOwnerOpeningKind.SourceActions => CampaignHostAcceptedStep.SourceActionsKind,
-            CampaignOwnerOpeningKind.SourceAxisGt1Supply => CampaignHostAcceptedStep.SourceAxisGt1SupplyKind,
-            CampaignOwnerOpeningKind.SourceCommonwealthSupplyPlan => CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind,
-            CampaignOwnerOpeningKind.SourceAutoblinda => CampaignHostAcceptedStep.SourceAutoblindaKind,
-            CampaignOwnerOpeningKind.SourcePriorityMotorization => CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind,
-            CampaignOwnerOpeningKind.SourceAttachedInitialLoads => CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind,
-            CampaignOwnerOpeningKind.SourceInitialWrecks => CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind,
-            CampaignOwnerOpeningKind.SourceAxisFreeSetup => CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind,
-            CampaignOwnerOpeningKind.SourceAxisCorpsSetup => CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind,
-            CampaignOwnerOpeningKind.SourceMalettiHierarchy => CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind,
-            CampaignOwnerOpeningKind.SourceGt2Correction => CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind,
-            CampaignOwnerOpeningKind.SourceCwPriorityCatalog => CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind,
-            CampaignOwnerOpeningKind.SourceMatruhFormation => CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind,
-            CampaignOwnerOpeningKind.SourceCwFreeGuns => CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind,
-            CampaignOwnerOpeningKind.SourceAxisPriority => CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind,
-            CampaignOwnerOpeningKind.SourceCairoSetup => CampaignHostAcceptedStep.SourceCairoUnitKind,
-            _ => throw new ArgumentOutOfRangeException(nameof(kind)),
-        };
+    private static string AcceptedKind(CampaignOwnerOpeningKind kind) => kind switch
+    {
+        CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
+        CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
+        CampaignOwnerOpeningKind.RetreatBeforeAssault => CampaignHostAcceptedStep.ContactRbaDeclineKind,
+        CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,
+        CampaignOwnerOpeningKind.PostAssaultRetreat =>
+            CampaignHostAcceptedStep.ContactPostAssaultRetreatKind,
+        CampaignOwnerOpeningKind.Custody =>
+            CampaignHostAcceptedStep.ContactCombatCustodyKind,
+        CampaignOwnerOpeningKind.ReserveRelease =>
+            CampaignHostAcceptedStep.ContactReserveReleaseChoiceKind,
+        CampaignOwnerOpeningKind.CycleControl =>
+            CampaignHostAcceptedStep.ContactCycleControlKind,
+        CampaignOwnerOpeningKind.TruckConvoyPass =>
+            CampaignHostAcceptedStep.ContactTruckConvoyPassKind,
+        CampaignOwnerOpeningKind.PostCombatPass =>
+            CampaignHostAcceptedStep.ContactPostCombatPassKind,
+        CampaignOwnerOpeningKind.SecondReserve =>
+            CampaignHostAcceptedStep.ContactSecondReserveKind,
+        CampaignOwnerOpeningKind.SecondMovement =>
+            CampaignHostAcceptedStep.ContactSecondMovementKind,
+        CampaignOwnerOpeningKind.SecondMovementCompletion =>
+            CampaignHostAcceptedStep.ContactSecondMovementCompletionKind,
+        CampaignOwnerOpeningKind.RepeatMovement =>
+            CampaignHostAcceptedStep.ContactRepeatMovementKind,
+        CampaignOwnerOpeningKind.RepeatCombatSelection =>
+            CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind,
+        CampaignOwnerOpeningKind.PregameAxisSupply => CampaignHostAcceptedStep.PregameAxisSupplyKind,
+        CampaignOwnerOpeningKind.PregameAxisSupplyFinish => CampaignHostAcceptedStep.PregameAxisSupplyFinishKind,
+        CampaignOwnerOpeningKind.SourceAxisDump => CampaignHostAcceptedStep.SourceAxisDumpKind,
+        CampaignOwnerOpeningKind.SourceCommonwealthSupply => CampaignHostAcceptedStep.SourceCommonwealthSupplyKind,
+        CampaignOwnerOpeningKind.SourceDummy => CampaignHostAcceptedStep.SourceDummyKind,
+        CampaignOwnerOpeningKind.SourceMotorization => CampaignHostAcceptedStep.SourceMotorizationKind,
+        CampaignOwnerOpeningKind.SourceUnattachedCargo => CampaignHostAcceptedStep.SourceUnattachedCargoKind,
+        CampaignOwnerOpeningKind.SourceActions => CampaignHostAcceptedStep.SourceActionsKind,
+        CampaignOwnerOpeningKind.SourceAxisGt1Supply => CampaignHostAcceptedStep.SourceAxisGt1SupplyKind,
+        CampaignOwnerOpeningKind.SourceCommonwealthSupplyPlan => CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind,
+        CampaignOwnerOpeningKind.SourceAutoblinda => CampaignHostAcceptedStep.SourceAutoblindaKind,
+        CampaignOwnerOpeningKind.SourcePriorityMotorization => CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind,
+        CampaignOwnerOpeningKind.SourceAttachedInitialLoads => CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind,
+        CampaignOwnerOpeningKind.SourceInitialWrecks => CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind,
+        CampaignOwnerOpeningKind.SourceAxisFreeSetup => CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind,
+        CampaignOwnerOpeningKind.SourceAxisCorpsSetup => CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind,
+        CampaignOwnerOpeningKind.SourceMalettiHierarchy => CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind,
+        CampaignOwnerOpeningKind.SourceGt2Correction => CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind,
+        CampaignOwnerOpeningKind.SourceCwPriorityCatalog => CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind,
+        CampaignOwnerOpeningKind.SourceMatruhFormation => CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind,
+        CampaignOwnerOpeningKind.SourceCwFreeGuns => CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind,
+        CampaignOwnerOpeningKind.SourceAxisPriority => CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind,
+        CampaignOwnerOpeningKind.SourceCairoSetup => CampaignHostAcceptedStep.SourceCairoUnitKind,
+        _ => throw new ArgumentOutOfRangeException(nameof(kind)),
+    };
 
     private static bool IsPublicReference(string? value)
     {

@@ -262,8 +262,13 @@ ordered public action references. Supported stage names are `movement`,
 `repeat-movement`, and `repeat-combat-selection`. `POST /{campaignId}/actions`
 takes the same credential,
 stage, acting element, opening revision, and public action reference.
-Retreat-before-assault submissions use `rba-decline` or `rba-move`; other
-submission names match opening names. The response acknowledges the public
+Retreat-before-assault submissions use `rba-decline`; other
+submission names match opening names. Since Task 020D (owner ruling
+2026-11-20, bounded `CMB-POL-001` decline-only RBA) the `retreat-before-assault`
+opening serves the decline-only `CampaignContactRbaDeclineOwnerVisibleCutV1`
+bytes with exactly one public reference, and the former `rba-move` submission
+name is refused as an unknown stage. Retained `contact-rba-move` steps from
+earlier histories still replay. The response acknowledges the public
 reference and owner revision only. It never serializes the retained internal
 Core receipt, private action ID, authority version, or hidden-state hash.
 Exact accepted retries return the same outward acknowledgement. Invalid
