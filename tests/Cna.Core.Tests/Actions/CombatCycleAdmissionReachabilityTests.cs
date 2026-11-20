@@ -13,8 +13,9 @@ namespace Cna.Core.Tests.Actions;
 /// profile reaches through ordinary Core authority, compared with the six round kinds the frozen
 /// <c>combat-audience-decision-v1</c> contract can serve. The fog spike's activation rule requires
 /// every reachable family to have a defined disclosure and owner action before a campaign is
-/// activated. These tests pin where that closure currently fails, so the capability manifest work
-/// in Task 021 starts from measured reachability rather than assumed coverage.
+/// activated. These tests pin where v1 alone fails that closure, so the capability manifest work
+/// in Task 021 starts from measured reachability rather than assumed coverage. Task 020E later
+/// served these decisions with contract-v2 stages; the v1-only evidence here stays true.
 /// </summary>
 public sealed class CombatCycleAdmissionReachabilityTests
 {
@@ -37,20 +38,21 @@ public sealed class CombatCycleAdmissionReachabilityTests
     ];
 
     [Fact]
-    public void FrozenStageSetIsExactlyTheSixFrozenRoundKinds()
+    public void TheSixV1StagesAreDeclaredOnThePublicSurface()
     {
-        // Guard for the evidence below: if a stage is added to the public surface, this class must be
-        // revisited, because the uncovered-decision assertions enumerate the frozen set.
+        // Guard for the evidence below, which enumerates the six v1 stages explicitly. The public
+        // surface also declares later stages (contract v2, Task 020E); they are deliberately not part
+        // of this list, because the finding here is what v1 alone could serve.
         var declared = typeof(CampaignCombatAudienceDecisions)
             .GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
             .Where(field => field.IsLiteral && field.Name.EndsWith("Stage", StringComparison.Ordinal))
-            .Select(field => (string)field.GetRawConstantValue()!)
-            .Order(StringComparer.Ordinal).ToArray();
-        Assert.Equal(FrozenStages.Order(StringComparer.Ordinal).ToArray(), declared);
+            .Select(field => (string)field.GetRawConstantValue()!).ToHashSet(StringComparer.Ordinal);
+        Assert.Equal(6, FrozenStages.Distinct(StringComparer.Ordinal).Count());
+        Assert.All(FrozenStages, stage => Assert.Contains(stage, declared));
     }
 
     [Fact]
-    public void FrozenReserveReleaseIsReachedOnlyThroughAnUncoveredPostAssaultRetreatDecision()
+    public void FrozenReserveReleaseIsReachedOnlyThroughAPostAssaultRetreatDecisionOutsideV1()
     {
         // Seed 6 is the frozen `reserve-release-axis` / `cycle-control-axis` golden path
         // (combat-audience-decision-v1 fixture). Its assault result requires a defender retreat.
@@ -67,13 +69,15 @@ public sealed class CombatCycleAdmissionReachabilityTests
             CampaignActionAudience.Commonwealth, cut.DefenderElementId);
         Assert.NotEmpty(draft.PrivateActionIds);
 
-        // The frozen audience surface offers nothing at this cut, for either side or any subject,
-        // and has no stage for it.
+        // No v1 stage serves this cut, for either side or any subject: the v1 contract alone could
+        // not disclose the decision that precedes its own Reserve Release golden. (Since Task 020E1 a
+        // contract-v2 stage serves it; that is the coverage the capability manifest v2 records.)
         AssertNoFrozenDecision(session);
-        Assert.Null(CampaignCombatAudienceDecisions.Query(session, CampaignActionAudience.Commonwealth,
-            "post-assault-retreat", cut.DefenderElementId));
+        Assert.Equal(CampaignCombatAudienceDecision.SuccessorContractVersion,
+            CampaignCombatAudienceDecisions.Query(session, CampaignActionAudience.Commonwealth,
+                CampaignCombatAudienceDecisions.PostAssaultRetreatStage, cut.DefenderElementId)!.ContractVersion);
 
-        // The golden Reserve Release decision exists only after that uncovered owner choice is made
+        // The golden Reserve Release decision exists only after that owner choice is made
         // (refusal, as on the golden path), followed by the ordinary System settlement steps.
         session = Accept(CampaignExercises.SubmitContactPostResultRetreat(session,
             Command(session, CampaignActionAudience.Commonwealth, cut.RefuseOffer.ActionId), cut.DefenderElementId));
@@ -92,7 +96,7 @@ public sealed class CombatCycleAdmissionReachabilityTests
     }
 
     [Fact]
-    public void FrozenCycleControlOffersRepeatIntoUncoveredRepeatMovementAndSelection()
+    public void FrozenCycleControlOffersRepeatIntoRepeatMovementAndSelectionOutsideV1()
     {
         // Seed 6 is the frozen `reserve-release-axis` / `cycle-control-axis` golden path.
         var session = CombatCycleDisclosureReserveCycleTests.AtReserveRelease("campaign-admission-reach-repeat", 6);
@@ -110,12 +114,12 @@ public sealed class CombatCycleAdmissionReachabilityTests
         Assert.True(repeat >= 0, "Bounded content offers Repeat at the frozen Cycle Control cut.");
         session = Accepted(CampaignCombatAudienceDecisions.Submit(session, control.Choose(repeat)));
 
-        // Next: an owner repeated-Movement decision that the frozen surface cannot serve.
+        // Next: an owner repeated-Movement decision that no v1 stage serves.
         var moves = CampaignHostAdapter.QueryNativeRepeatMovementOwnerDraft(session, CampaignActionAudience.Axis);
         Assert.NotEmpty(moves.PrivateActionIds);
         AssertNoFrozenDecision(session);
 
-        // After the move and System Breakdown: an owner repeated Combat selection, also uncovered.
+        // After the move and System Breakdown: an owner repeated Combat selection, also outside v1.
         session = Accept(CampaignHostAdapter.SubmitNativeRepeatMovement(session,
             Command(session, CampaignActionAudience.Axis, moves.PrivateActionIds[0])));
         session = Accept(CampaignHostAdapter.CompleteNativeRepeatBreakdown(session));
