@@ -131,6 +131,7 @@ internal sealed class CampaignCombatAudienceSubmissionResult
 internal static class CampaignCombatAudienceDecisions
 {
     public const string SelectionStage = "combat-selection";
+    public const string ForceAssignmentStage = "force-assignment";
     private const string RefDomain = "sandtable.combat-audience-ref.v1";
     private const string RefPrefix = "cmbref.v1.";
 
@@ -139,21 +140,36 @@ internal static class CampaignCombatAudienceDecisions
     /// every reason a decision is unavailable, so the caller cannot distinguish hidden causes.
     /// </summary>
     public static CampaignCombatAudienceDecision? QuerySelection(ExerciseSession session,
-        CampaignActionAudience audience, string actingElementId)
-    {
-        var projected = ProjectSelection(session, audience, actingElementId);
-        return projected?.Decision;
-    }
+        CampaignActionAudience audience, string actingElementId) =>
+        Query(session, audience, SelectionStage, actingElementId);
+
+    /// <summary>Owner Force Assignment seal decision; the other owner's seal never changes it.</summary>
+    public static CampaignCombatAudienceDecision? QueryForceAssignment(ExerciseSession session,
+        CampaignActionAudience audience, string elementId) =>
+        Query(session, audience, ForceAssignmentStage, elementId);
+
+    public static CampaignCombatAudienceDecision? Query(ExerciseSession session,
+        CampaignActionAudience audience, string stage, string actingElementId) =>
+        Project(session, audience, stage, actingElementId)?.Decision;
 
     public static CampaignCombatAudienceSubmissionResult SubmitSelection(ExerciseSession session,
+        CampaignCombatAudienceSubmission submission) =>
+        submission?.Stage == SelectionStage ? Submit(session, submission)
+            : CampaignCombatAudienceSubmissionResult.Rejected;
+
+    public static CampaignCombatAudienceSubmissionResult SubmitForceAssignment(ExerciseSession session,
+        CampaignCombatAudienceSubmission submission) =>
+        submission?.Stage == ForceAssignmentStage ? Submit(session, submission)
+            : CampaignCombatAudienceSubmissionResult.Rejected;
+
+    public static CampaignCombatAudienceSubmissionResult Submit(ExerciseSession session,
         CampaignCombatAudienceSubmission submission)
     {
         if (session is null || submission is null
             || submission.ContractVersion != CampaignCombatAudienceSubmission.CurrentContractVersion
-            || submission.Stage != SelectionStage
             || string.IsNullOrWhiteSpace(submission.OfferRef))
             return CampaignCombatAudienceSubmissionResult.Rejected;
-        var projected = ProjectSelection(session, submission.Audience, submission.ActingElementId);
+        var projected = Project(session, submission.Audience, submission.Stage, submission.ActingElementId);
         if (projected is not { } current) return CampaignCombatAudienceSubmissionResult.Rejected;
         var decision = current.Decision;
         // Same-cut rule: a timely ref stays valid while the owner-visible bytes are unchanged, even
@@ -175,11 +191,17 @@ internal static class CampaignCombatAudienceDecisions
         try
         {
             var checkpoint = CampaignExercises.QueryCheckpoint(session);
-            step = CampaignExercises.SubmitContactOwnerCombatSelection(session,
-                new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
-                    decision.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
-                    decision.Audience, current.PrivateActionIds[ordinal]),
-                decision.ActingElementId);
+            var command = new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+                decision.CampaignId, checkpoint.StateVersion, checkpoint.PositionId,
+                decision.Audience, current.PrivateActionIds[ordinal]);
+            step = decision.Stage switch
+            {
+                SelectionStage => CampaignExercises.SubmitContactOwnerCombatSelection(session,
+                    command, decision.ActingElementId),
+                ForceAssignmentStage => CampaignExercises.SubmitContactOwnerForceSeal(session,
+                    command, decision.ActingElementId),
+                _ => throw new InvalidOperationException("Unsupported Combat audience stage."),
+            };
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
@@ -220,37 +242,59 @@ internal static class CampaignCombatAudienceDecisions
     }
 
     private static (CampaignCombatAudienceDecision Decision, IReadOnlyList<string> PrivateActionIds)?
-        ProjectSelection(ExerciseSession? session, CampaignActionAudience audience, string? actingElementId)
+        Project(ExerciseSession? session, CampaignActionAudience audience, string? stage,
+            string? actingElementId)
     {
         if (session is null || string.IsNullOrWhiteSpace(actingElementId)
             || audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth))
             return null;
         var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
-        CampaignContactCombatSelectionCut cut;
+        CampaignContactObservationV1 observation;
+        byte[] visible;
+        string[] privateIds;
         try
         {
-            cut = CampaignExercises.QueryContactOwnerCombatCut(session, side, actingElementId);
+            switch (stage)
+            {
+                case SelectionStage:
+                    {
+                        var cut = CampaignExercises.QueryContactOwnerCombatCut(session, side, actingElementId);
+                        observation = cut.OwnerCut.ContactObservation;
+                        visible = CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(cut);
+                        // Ordinal order matches CampaignHostAdapter.QueryContactCombatOwnerDraft so both
+                        // surfaces enumerate the same offers in the same order.
+                        privateIds = cut.AssaultOffers
+                            .OrderBy(value => value.ContactHandle, StringComparer.Ordinal)
+                            .ThenBy(value => value.ApparentLocationId, StringComparer.Ordinal)
+                            .Select(value => value.ActionId)
+                            .Concat(cut.FinishOffer is { } finish ? [finish.ActionId] : [])
+                            .ToArray();
+                        break;
+                    }
+                case ForceAssignmentStage:
+                    {
+                        var cut = CampaignExercises.QueryContactForceAssignmentCut(session, side);
+                        if (cut.SealOffer.ElementId != actingElementId || cut.OwnerSide != side) return null;
+                        observation = cut.ContactObservation;
+                        visible = CampaignContactForceAssignmentOwnerVisibleCutV1.SerializeCanonical(cut);
+                        privateIds = [cut.SealOffer.ActionId];
+                        break;
+                    }
+                default:
+                    return null;
+            }
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             return null;
         }
-        var observation = cut.OwnerCut.ContactObservation;
         if (observation.Side != side) return null;
-        var visible = CampaignContactCombatOwnerVisibleCutV2.SerializeCanonical(cut);
-        // Ordinal order matches CampaignHostAdapter.QueryContactCombatOwnerDraft so both surfaces
-        // enumerate the same offers in the same order.
-        var privateIds = cut.AssaultOffers
-            .OrderBy(value => value.ContactHandle, StringComparer.Ordinal)
-            .ThenBy(value => value.ApparentLocationId, StringComparer.Ordinal)
-            .Select(value => value.ActionId)
-            .Concat(cut.FinishOffer is { } finish ? [finish.ActionId] : [])
-            .ToArray();
         var campaignId = observation.CampaignId;
         var digest = Digest(visible);
+        var stageId = stage!;
         var refs = privateIds.Select((_, index) => Reference(campaignId, audience,
-            SelectionStage, actingElementId, digest, index)).ToArray();
-        return (new CampaignCombatAudienceDecision(campaignId, audience, SelectionStage,
+            stageId, actingElementId, digest, index)).ToArray();
+        return (new CampaignCombatAudienceDecision(campaignId, audience, stageId,
             actingElementId, observation.AudienceRevision, visible, refs), privateIds);
     }
 }
