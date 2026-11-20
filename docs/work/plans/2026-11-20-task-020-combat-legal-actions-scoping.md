@@ -538,6 +538,69 @@ sequenced after 021 and a verified 023 trace. Scope when it starts:
 
 Until then the Development, loopback and same-origin gate stays exactly as it is.
 
+## 7m. Required stages after 020D (owner rulings 2026-11-20) and slice 020E0
+
+Task 021's reachability evidence (021A0) showed that bounded play reaches owner decisions the frozen
+six stages cannot serve. Seed 6, the frozen Reserve Release golden path, requires a defender
+post-assault Retreat first, and Cycle Control's own `Repeat` leads into repeated Movement and repeated
+Combat selection. The owner ruled these required, not deferrable:
+
+- post-assault Retreat (defender-owned);
+- repeated Movement (V29);
+- repeated Combat selection (V31);
+- second-side Combat selection (V47).
+
+**Compatibility check.** The v1 compatibility rule alone does not forbid new stages. But the frozen v1
+artifacts define a closed stage set:
+
+- the status line scopes v1 to "the six round kinds";
+- the spec says any other stage, e.g. `post-assault-retreat`, fails `stage-uncovered`;
+- the schema's `notCovered` list names `post-assault-retreat`, `repeat-movement` and
+  `repeat-combat-selection`;
+- the frozen contract tests assert that rejection.
+
+Adding the stages in place would therefore edit frozen v1. Reported as a fork; the owner ruled:
+
+| Ruling | Decision |
+| --- | --- |
+| Contract form | (a) **v2 superset**. New stages carry `contractVersion:2`; the six v1 stages stay byte-identical with `contractVersion:1`, untouched. v2 artifacts (020E4) follow the stage slices, for owner freeze. |
+| V29 side spelling | Normalize to lowercase, after confirming V29 action IDs are not derived from the visible bytes. |
+| V29 staleness | Revision 0 with the visible digest as the only fence, the same default as Reserve Release, Cycle Control and Custody. |
+| T020-Q8 for V31 | Applies unchanged: keep the offer and rely on V19-style cancellation. |
+
+Core stage names match the Host's: `post-assault-retreat`, `repeat-movement`,
+`repeat-combat-selection`.
+
+| Slice | Content |
+| --- | --- |
+| 020E0 | V47 proof (test-only) |
+| 020E1 | post-assault Retreat (after the T020-Q9 reachability check) |
+| 020E2 | V31 |
+| 020E3 | V29 |
+| 020E4 | v2 contract artifacts |
+
+**020E0 — second-side Selection is already a v1 `combat-selection` decision (test-only).** Core has
+no separate second-side stage, and the Host maps it under `combat-selection`. Core's
+`QueryContactOwnerCombatCut` switches to `ProjectSecondCombat` once the second side's Breakdown is
+retained, which emits the same V2 owner cut, and `SubmitContactOwnerCombatSelection` accepts the
+second side through the same path. `CombatCycleDisclosureSecondSideTests` drives this path on the
+frozen double-fresh fixture (seed 6): first-side Reserve Release, Cycle Control `Finish`, Truck Convoy
+and post-Combat passes, then the second side's Reserve, Movement completion and System Breakdown. At
+the second side's Combat position it shows:
+
+- the Commonwealth decision has two offers (one current-contact assault plus finish) and is
+  byte-equal to the Host draft;
+- the frozen v1 verifier accepts its bytes unchanged;
+- both offers are accepted and produce Host-identical evidence, and each accepted event is a
+  `CampaignNativeSecondCombatDecisionV47` that reconstructs;
+- a consumed ref is rejected;
+- every rejection cause gets the one generic envelope, including a `contractVersion:2` submission;
+- the other side and System receive nothing;
+- seeds 6 and 7 give byte-equal decisions, and a ref opened on one fork is accepted on the other.
+
+No stage, byte or v1 artifact changes. The v1 spec's "not covered" row for V47 is left as frozen
+text; the v2 artifacts will list V47 under `combat-selection`.
+
 ## 8. Still pending
 
 Covered (Core surface, public C# API since 020D, §7l): Selection (first-side initial cut), Force Assignment (both
