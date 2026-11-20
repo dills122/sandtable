@@ -838,6 +838,9 @@
     },
     "Cna.Core.Tests.Actions.CombatCycleAdmissionReachabilityTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4570,7 +4573,16 @@
     "4b48da12318014e72388757b2d0617c2e579c00e0a4f838ee0f05aac5c5967d0": 183,
     "ca43aceb2c868e384f7eeb9f006a7832b4dbc4ce5005668d22682f408e90a7f0": 12,
     "1065d6c6223e70446dd81ce8810a71ee69c7b7ad508ca4978114070bfc7dfc8d": 638,
-    "87e5031eda72c3bc2301b4f9a5e2fdcd9e7f8ceffa0714df1ab0da88484409ca": 986
+    "87e5031eda72c3bc2301b4f9a5e2fdcd9e7f8ceffa0714df1ab0da88484409ca": 986,
+    "84f3595ecca7bed4b45c72775f3e4fcea0acac3d5fe57f1bb92e841bea7bf986": 71,
+    "117c66bc9f60bb7a9b12d84f0dc9fd4255030b7cf907499b96232575b1d16267": 1,
+    "7e810cc3d07e24e7c6c7071113c9a3b8f09112c34a76c474fa242829ad0d89a4": 15,
+    "60eaf93cd68def7e9287316bd349eec184f65495400b95f2f4e70dd273012038": 5,
+    "b26dbbe5f7f1c9929da2b9eae61d36b36b20cadb48449bb99d4a4e688d347f84": 2,
+    "3efd83cc57b60fc5b6a02fa70a229bc7530d35c8893aa726f49aa81efa2a158c": 2,
+    "7e376b12b781d5f4bf84ae7b5ff6d393a0e24aab1e496cdc6cd8486df81913af": 5,
+    "6c4782ff4ff323440c7795e23a6f4b2f2f2cd888c5ab325588558ea636cccd08": 18,
+    "902238e59ea0d6020a4db4ef7096f269284ab3201601b0f2f2b9b920a91da6e5": 1
   },
   "provisional_rows": {
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new Cna1979HistoricalMapTests Malta column-00 NeighborsOf rows, pending hosted CI calibration",
@@ -5032,7 +5044,16 @@
     "4b48da12318014e72388757b2d0617c2e579c00e0a4f838ee0f05aac5c5967d0": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleDisclosureRepeatMovementTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCycleDisclosureRepeatMovementTests rows (Task 020E3), pending hosted CI calibration",
     "ca43aceb2c868e384f7eeb9f006a7832b4dbc4ce5005668d22682f408e90a7f0": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleAdmissionReachabilityTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCycleAdmissionReachabilityTests rows (Task 021A0), pending hosted CI calibration",
     "1065d6c6223e70446dd81ce8810a71ee69c7b7ad508ca4978114070bfc7dfc8d": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleAdmissionReachabilityTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCycleAdmissionReachabilityTests rows (Task 021A0), pending hosted CI calibration",
-    "87e5031eda72c3bc2301b4f9a5e2fdcd9e7f8ceffa0714df1ab0da88484409ca": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleAdmissionReachabilityTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCycleAdmissionReachabilityTests rows (Task 021A0), pending hosted CI calibration"
+    "87e5031eda72c3bc2301b4f9a5e2fdcd9e7f8ceffa0714df1ab0da88484409ca": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Actions.CombatCycleAdmissionReachabilityTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCycleAdmissionReachabilityTests rows (Task 021A0), pending hosted CI calibration",
+    "84f3595ecca7bed4b45c72775f3e4fcea0acac3d5fe57f1bb92e841bea7bf986": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "117c66bc9f60bb7a9b12d84f0dc9fd4255030b7cf907499b96232575b1d16267": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "7e810cc3d07e24e7c6c7071113c9a3b8f09112c34a76c474fa242829ad0d89a4": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "60eaf93cd68def7e9287316bd349eec184f65495400b95f2f4e70dd273012038": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "b26dbbe5f7f1c9929da2b9eae61d36b36b20cadb48449bb99d4a4e688d347f84": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "3efd83cc57b60fc5b6a02fa70a229bc7530d35c8893aa726f49aa81efa2a158c": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "7e376b12b781d5f4bf84ae7b5ff6d393a0e24aab1e496cdc6cd8486df81913af": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "6c4782ff4ff323440c7795e23a6f4b2f2f2cd888c5ab325588558ea636cccd08": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration",
+    "902238e59ea0d6020a4db4ef7096f269284ab3201601b0f2f2b9b920a91da6e5": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Campaigns.CombatCapabilityManifestTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CombatCapabilityManifestTests rows (Task 021A1), pending hosted CI calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
