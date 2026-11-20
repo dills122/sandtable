@@ -482,14 +482,78 @@ fails at the later second-cycle Force seal, both with this change and on unmodif
   with digest-only fencing for Reserve Release/Cycle Control/Custody; the decline-only RBA field list;
   Custody's side-less cut. Any later byte change needs `combat-audience-decision-v2`.
 
+## 7l. 020D — public Core surface; HTTP exposure deferred (owner ruling 2026-11-20, option c)
+
+**What "public" means here.** Before building, the Host gate on `/api/v2/campaigns` was checked
+(`src/Cna.OrleansHost/Program.cs`, `src/Cna.OrleansHost/Api/CampaignDurableOutwardApi.cs`). It has
+four layers: the `CampaignJournal:EnableOutwardApi` flag (off by default); `MapDurableCampaignApi`
+throws outside Development; middleware returns 403 to any non-loopback caller or a request without
+positive same-origin evidence (#319); and credentials are an operator-secret header for admin
+routes and seat-grant/credential secrets in the JSON body for owner routes. The Host registers no
+authentication, rate limiting, HTTPS/HSTS or CORS, so loopback is the only network boundary. The
+route group also carries about 50 operator-only setup routes and stages outside the frozen contract.
+The plan already says "the opt-in loopback Development route is not public Combat activation", and
+`HOST-PUB-001` gates production hosting. In the plan, 020D's "public" is the Core API that 021
+activates and 022 Exercise / 023 Runner consume. The owner chose option (c): Core visibility now,
+HTTP exposure later as its own phase.
+
+**Built (020D).** `CampaignCombatAudienceDecision`, `CampaignCombatAudienceSubmission`,
+`CampaignCombatAudienceSubmissionResult` and `CampaignCombatAudienceDecisions` are `public`. No bytes,
+behavior, events or snapshots change; the frozen `combat-audience-decision-v1` goldens still pass.
+These stay internal:
+
+- decision and result constructors (only Core mints them);
+- the trusted successor step (`TrustedStep`);
+- ref derivation, digest and audience-name helpers, and the private projection with its action IDs;
+- `Choose(ordinal)`;
+- `CampaignCombatAudienceDraftVerifier`.
+
+`AuthorityBoundaryTests` adds three guards:
+
+- exactly these four Core types match `CombatAudience`, and the verifier is not visible;
+- the full public member list is pinned;
+- no public signature names anything beyond `CampaignActionAudience`, `ExerciseSession`, the four
+  types and plain BCL types; decision/result have no public constructor; `TrustedStep` is not public.
+
+Making `TrustedStep` or `Reference` public fails two of them (checked). The existing guards are
+unchanged: raw authority types non-public, friend access only for `Cna.Core.Tests`, only Runner and
+Host reference Core. `PublicSurfaceAloneOpensAndSubmitsASelection` opens, rejects a forged ref and
+a cross-audience submission with the one rejection envelope, and accepts using public members only.
+
+**Q6 stays deferred** (owner, restated): the Host still derives its openings through its own path,
+pinned to the same bytes by the §7j parity tests. The public Core types have no production consumer
+until the 021/022 cutover; that is expected.
+
+**Deferred as a named phase: 020-HTTP (Combat HTTP exposure outside Development).** Not abandoned;
+sequenced after 021 and a verified 023 trace. Scope when it starts:
+
+1. a separate route for exactly the frozen round kinds, with a stage allowlist, instead of lifting
+   the gate on the whole `/api/v2/campaigns` group;
+2. real owner authentication and session handling, replacing operator-delivered seat grants as the
+   only seat path;
+3. TLS, rate limiting and abuse protection on that route;
+4. a decision on where operator setup and admin routes may run;
+5. `HOST-PUB-001` durable-provider, crash, fencing and lost-response evidence before any production
+   hosting.
+
+Until then the Development, loopback and same-origin gate stays exactly as it is.
+
 ## 8. Still pending
 
-Covered (dormant Core surface, internal): Selection (first-side initial cut), Force Assignment (both
+Covered (Core surface, public C# API since 020D, §7l): Selection (first-side initial cut), Force Assignment (both
 seal orders), Reserve Release, Cycle Control, Custody, decline-only RBA. All six are in the frozen
 `combat-audience-decision-v1` contract (§7k). The Host dev route serves the same bytes for all six,
 pinned by parity tests (§7j).
 
-020D (making the surface public) is the next step. Not built (owner: later phase): RBA movement,
-post-assault Retreat, repeat V31 and second-side V47 selection, and the Host-calls-Core cutover.
-Assigned elsewhere: capability manifest (021, Q3). Also open: terminal-reason disclosure pairs,
-Exercise/Runner adoption (022–024), and all independent review.
+020D is built under the owner's option (c) scoping (§7l): Core C# visibility only. Deferred by owner
+ruling, each to a named later phase:
+
+- **020-HTTP:** Combat HTTP exposure outside Development, after 021/023 (§7l).
+- **Host-calls-Core cutover (Q6):** with 021/022.
+- **Terminal-reason disclosure pairs:** later phase (ruled 2026-11-20; not required for 020D).
+- **Not built (later phase):** RBA movement, post-assault Retreat, repeat V31 and second-side V47
+  selection.
+
+Assigned elsewhere: capability manifest (021, Q3) and Exercise/Runner adoption (022–024). Still open:
+the Checkpoint I privacy/admission review and all independent review. Nothing here claims Task 020
+is certified or accepted.
