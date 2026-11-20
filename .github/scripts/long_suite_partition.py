@@ -61,10 +61,11 @@ def validate_plan(plan, rows, weights):
 
 def validate_dependencies(needs):
     from test_partition import require
-    # orleans and the p01-* proof families run on a nightly schedule only
-    # (see .github/workflows/ci-nightly-heavy.yml); they are not part of the
-    # pull_request/push dependency closure on either trigger.
-    required = {'prepare', 'tests', 'format'}
+    # The p01-* proof families run on a nightly schedule only (see
+    # .github/workflows/ci-nightly-heavy.yml) and are not part of the
+    # pull_request/push dependency closure. orleans (the Postgres+Marten host
+    # suite) is required again on both triggers (Phase D of #439).
+    required = {'prepare', 'tests', 'format', 'orleans'}
     require(set(needs) == required and all(needs[key]['result'] == 'success' for key in needs), 'Failed/cancelled/skipped/missing required dependency')
     return True
 

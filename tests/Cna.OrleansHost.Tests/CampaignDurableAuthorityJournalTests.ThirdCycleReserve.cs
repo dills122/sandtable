@@ -18,6 +18,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         ["axis-infantry:ConvertToII", "axis-infantry-second:ReleaseI",
             "axis-infantry:RetainII", "axis-infantry-third:ReleaseII"];
 
+    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

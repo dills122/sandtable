@@ -16,6 +16,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     private static readonly string[] RepeatedRetreatRollbackTables =
         ["campaigns", "accepted_steps", "retreat_rounds", "custody_rounds", "reserve_rounds", "cycle_rounds", "owner_actions"];
 
+    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

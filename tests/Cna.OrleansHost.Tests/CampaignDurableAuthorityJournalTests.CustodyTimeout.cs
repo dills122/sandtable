@@ -190,6 +190,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Contains(request.CampaignId, journal.CollectingCustodyCampaigns("", 16));
         Assert.Equal(0, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-custody-timeout"));
     }
+    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Fact]
     public void CustodyTimeoutAllowsGenuineRepeatedAssaultColdReplay()
     {
