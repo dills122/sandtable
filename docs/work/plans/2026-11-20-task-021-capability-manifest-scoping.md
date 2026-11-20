@@ -56,9 +56,11 @@ validate submissions and support restore. The design source says something diffe
     advertised" still holds.
 - **Capability checks happen at runtime, not at activation.** Barrage V14 and Anti Armor V20 throw
   if the campaign content has any non-infantry component; the selection cut has the 020C ZOC
-  invariant. Content V6 admission requires combat components but does not (by my reading of
-  `ContentPackV6Validator`) restrict their class to infantry; all 44 fixture components are infantry.
-  Not verified: whether another V6 codec restricts the class.
+  invariant. *Checked in 021A1:* Content V6 admission does restrict the class. `ContentPackV6Validator`
+  calls the V5 compatibility check, whose component vocabulary (`Cna1979Combat.ComponentClasses`)
+  holds only infantry; an armored component fails with `BRK-CERT-004` and no V6 artifact can carry
+  it. Creation also pins the setup's exact pack (`setup.Content.Pack == artifact.Identity`). So, as
+  with ZOC in 020C, these throws are unreachable for admitted content (not a live gap).
 - **Content-admission precedent for "reject before play":** 020C showed `BRK-CERT-003` and
   `CampaignWorldV6Validator` make positive ZOC unreachable, which is the kind of proof the manifest
   generalizes.
@@ -103,6 +105,10 @@ Consequences:
 
 ## 4. Open items (stop-and-report)
 
+Status (2026-11-20): **Q1 resolved by the owner (option c)**, relayed. **Q2 and Q4 grounded from
+existing decisions without a new ruling** (§7); the author choices inside that grounding are
+listed for owner review. Q3, Q5 and Q6 stay open; they gate 021A2/021A3, not 021A1.
+
 | ID | Gap | Why it needs a ruling | Options |
 | --- | --- | --- | --- |
 | **T021-Q1** (blocking) | Reachable owner decisions outside the frozen contract: post-assault Retreat, repeat Movement, repeat Combat selection (§3); second-side Selection unverified. | Closure cannot pass, so 021 cannot activate anything without changing a prior owner sequencing decision. | (a) Pull those round kinds forward into an audience contract successor before 021 activation (extends 020 scope). (b) Restrict the bounded profile so they are unreachable (needs a source-backed rule, e.g. Finish-only cycle control; post-assault retreat is result-driven and cannot be removed without a rules change). (c) Build the manifest machinery dormant now and let it correctly reject today's content; activation waits for (a). |
@@ -118,13 +124,13 @@ Consequences:
 | --- | --- | --- |
 | **021A0** (this slice) | Evidence only: reachability of owner decisions vs the frozen contract (§3). | — |
 | 021A1 (dormant, internal) | Manifest model: closed family register, per-family disposition with coverage triple (disclosure stage, owner/System action, handler), canonical bytes and hash, derivation from ruleset + setup + content. Unknown-family and mutation negatives (delete family, flip class, unknown family). | Q4, Q2 |
-| 021A2 | Activation admission: compute at creation/activation; uncovered or unknown family rejects with one generic result before any Combat decision. Replace runtime capability throws (Barrage V14, Anti Armor V20) with an activation-time proof, as 020C did for ZOC. | A1, Q5 |
+| 021A2 | Activation admission: compute at creation/activation; uncovered or unknown family rejects with one generic result before any Combat decision. Name the Barrage V14 / Anti Armor V20 throws as bounded-profile invariants citing `BRK-CERT-004`, as 020C did for ZOC (they are unreachable, §2). | A1, Q5 |
 | 021A3 | Restore/replay revalidation: `Reconstruct`, snapshot admission and Host cold replay recompute and compare the frozen closure; changed derivation or rules/config rejects before another turn. Disabled admission still recovers (`CMB-PRO-AC-012`). | A2, Q3 |
 | 021B | `CombatCycleAdmission`: ordinary entry-to-terminal traces using only the public audience surface (empty, settled assault, repeat), dormant/active separation, historical-reader compatibility. | A3, **Q1** |
 | 021C | AC evidence index for the 021-planned ACs; Activation-tier full gate; Checkpoint I privacy/admission review (owner). | B |
 
-Only 021A0 is possible without rulings. 021A1 is the next slice once Q4 (and the Q2 identity) is
-ruled; it can stay internal and dormant like 020A0.
+Only 021A0 was possible without rulings. 021A1 is built (§8) on the Q1 ruling and the Q2/Q4
+grounding in §7.
 
 ## 6. Slice 021A0 — what was built
 
@@ -133,3 +139,109 @@ ruled; it can stay internal and dormant like 020A0.
 
 Local evidence (Debug, 2026-11-20): the new class passes 3/3; `dotnet format --verify-no-changes`
 clean on the new file. Neighbor and CI results are recorded in the PR.
+
+## 7. Q2 and Q4 grounded from existing decisions (2026-11-20)
+
+The coordinator asked for the same check Task 020 used for its Q2: whether an answer already follows
+from decided or documented material. For the parts 021A1 needs, it does. The parts that do not are
+left open and named below.
+
+### Q2: which capability the manifest describes
+
+- **Path: the native contact Combat path (Rules9 + Content V6).** Grounds: the fog spike makes
+  contact-based fog "the only Combat visibility path"; the plan's runtime row and status line
+  describe that path as the permanent Core/Host implementation; Task 021 depends on Task 020, whose
+  frozen `combat-audience-decision-v1` surface exists only on that path. The dormant V7/Rules10
+  chain has no audience surface, so it cannot be what 021 activates against that contract.
+- **Identity: no new profile ID.** The manifest records the content's own `capabilityProfileId`
+  (`sandtable.capability.breakdown-truck-battalion.v1` for every breakdown setup) and identifies
+  itself by a codec ID, `sandtable.combat-capability-manifest.v1`. It does not reuse
+  `sandtable.capability.combat-cycle-infantry.v1`, which belongs to Content V7.
+- **Still open (not needed by 021A1):** what "certified" means for activation. The manifest has no
+  certification field and makes no certification claim. That question moves to 021A2 with Q5.
+
+### Q4: the family register
+
+Built only from sources that are already frozen or owner-ruled. Nothing is taken from the pending
+AC-003 register except its intent (named classes, unknown fails closed).
+
+| Source | Status | What it supplies |
+| --- | --- | --- |
+| Host stage names, [contact side projection v2](../../specs/combat-contact-side-projection-v2.md) | Implemented route vocabulary | IDs of the native owner decision families: `combat-selection`, `retreat-before-assault`, `force-assignment`, `post-assault-retreat`, `custody`, `reserve-release`, `cycle-control`, `repeat-movement`, `repeat-combat-selection`. |
+| [combat-audience-decision-v1](../../specs/combat-audience-decision-v1.md) | Frozen | Which of those have a disclosure (the six stages). |
+| Task 004 handoff exclusions (`verify-combat-authority-composition-v1.py`) | Accepted at checkpoint B | 11 capability IDs and their reasons. |
+| `CMB-POL-001`, `-008`, `-009`; T020-Q2, Q5, Q7, Q8 | Owner-accepted | Decline-only RBA, terminal, voluntary-surrender exclusion, ZOC/forced out of profile, custody allowlist, non-combat contact path. |
+| `BRK-CERT-003`, `BRK-CERT-004` | Content V6 admission | Why ZOC and non-infantry components are unreachable for admitted content. |
+| 021A0 evidence | Measured | Which owner decisions are reached without a frozen stage. |
+
+Five dispositions: `covered` (frozen stage + action + durable step kind), `uncovered` (fails
+closure), `policy-excluded` (named owner policy), `source-condition-absent` (an admission or content
+fact makes it unreachable), `outside-combat-scope` (not a Combat-sequence family).
+
+Author choices inside this grounding, flagged for owner review (none blocks 021A1, all are dormant):
+
+1. **Two extra decision families.** `noncombat-contact-assault` records T020-Q8 option (c) as a
+   covered path (Selection offer + V19 `force-unavailable`). `second-side-combat-selection` (V47) is
+   `uncovered` and fail-closed because no evidence proves it unreachable. Related finding, not
+   investigated further: the Host records a `native-second-combat-no-attack` System step for the
+   second side's "voluntary-finish auto-continuation" (#394) with no owner opening. If that step
+   stands in for an owner's finish choice, it conflicts with the separation the AC-003 proposal
+   draws between an owner finish and System closure. Recorded for owner review only.
+2. **Five handoff IDs are `outside-combat-scope`.** `multiple-opportunity-reaction`,
+   `positive-vehicle-breakdown`, `general-resupply`, `new-phase-slot-execution` and
+   `hosted-intelligence` concern pre-Combat Reaction/Breakdown (the V6 content profile's own scope),
+   logistics, post-terminal phases (`CMB-POL-008` terminal is same-slot Truck Convoy entry) or
+   hosting. Calling them "excluded" would be wrong for V6, where truck Breakdown is the profile's
+   purpose.
+3. **Two handoff IDs map to the repeat cycle.** `two-runtime-assaults` and
+   `released-reserve-offensive-combat` are implemented natively (V29/V31) but have no frozen
+   disclosure, so they are `uncovered` whenever an assault result is reachable. They overlap
+   `repeat-movement` / `repeat-combat-selection`; closure is the same either way.
+4. **Reachability predicates are content-level and fail-closed.** "Assault result reachable" means
+   both sides field an element with a combat component (a component-less contact is cancelled before
+   a result, per T020-Q8). `motorized-retreat` needs a motorized combat element; `gun-armor-combat`
+   needs a non-infantry component. Anything not proven unreachable stays reachable.
+
+## 8. Slice 021A1 — manifest model built (dormant, internal)
+
+- `src/Cna.Core/Campaigns/CampaignCombatCapabilityManifest.cs` (internal; no runtime caller):
+  - closed 23-family register in canonical order; each family has a fixed authority string and, when
+    covered, a fixed coverage triple (frozen audience stage, action, durable accepted-step kind);
+  - `Derive(rulesetHash, setup, artifact)`: requires the canonical Rules9 hash, a setup that pins
+    exactly this pack and profile, and valid V6 content; dispositions come from content facts;
+  - canonical compact JSON bytes and `sha256:` hash; `closed` is true only with no `uncovered` family;
+  - strict reader: exact ordered fields, exactly the register (unknown, missing, renamed, reordered
+    or duplicated family fails), only dispositions the register can produce for that family, only
+    the registered authority and coverage, canonical re-encoding, no stale `closed` bit;
+  - `Revalidate(bytes, …)`: the restore primitive for 021A3; retained bytes must equal a fresh
+    derivation.
+- Nothing is wired into creation, snapshot admission, `Reconstruct` or the Host. No event, snapshot,
+  frozen contract or canonical byte changes.
+
+Result on today's content (owner ruling T021-Q1 option c): every one of the 18 breakdown setups fails
+closure. On `combat-double-fresh` the uncovered families are exactly `post-assault-retreat`,
+`repeat-movement`, `repeat-combat-selection`, `second-side-combat-selection`,
+`two-runtime-assaults` and `released-reserve-offensive-combat`.
+
+`CombatCapabilityManifestTests`, 9 rows, local Debug + Release pass:
+
+| Test | Evidence |
+| --- | --- |
+| `EveryBreakdownSetupDerivesTheClosedRegisterDeterministically` | All 18 setups: register order, deterministic bytes, reader round-trip, revalidation, hash shape, content profile recorded, coverage present iff covered. |
+| `TodaysContentFailsClosureOnlyOnTheUncoveredRoundKinds` | Every setup not closed; uncovered set is within the expected set and always includes the fail-closed second side; double-fresh exact set; absent/excluded families as above. |
+| `CoveredFamiliesUseExactlyTheFrozenStagesAndDurableStepKinds` | Covered stages are exactly the six frozen stages; handlers are existing `CampaignHostAcceptedStep` kinds; no uncovered family ID is a frozen stage. |
+| `NonInfantryComponentIsRefusedAtAdmissionAndStillDerivesUncovered` | Armored component: V6 validation fails only with `BRK-CERT-004` on `componentClassId`; no artifact can be built; derivation still marks `gun-armor-combat` uncovered. |
+| `MotorizedCombatElementMakesMotorizedRetreatReachable` | Motorized infantry fails V6 validation; derivation marks `motorized-retreat` uncovered. |
+| `OneSidedCombatContentMakesAssaultResultFamiliesAbsent` | No Commonwealth combat component: assault-result families become absent; only the second side stays uncovered. |
+| `StrictReaderRejectsEveryRegisterMutation` | 20 JSON mutations (delete, unknown, rename, reorder, duplicate family; policy/absent/always-reachable/uncovered disposition flips; unknown disposition; coverage changed, invented or removed; authority changed; stale `closed`; extra field; manifest ID; version; field order) plus indented, truncated and empty bytes: all rejected. |
+| `RevalidationRejectsAnyDriftFromAFreshDerivation` | A canonical, register-legal flip passes the reader but fails revalidation; another setup's manifest, a foreign ruleset, another configuration and a tampered setup hash fail; mismatched content refuses derivation. |
+| `DoubleFreshManifestBytesArePinned` | Draft pin of the double-fresh manifest hash (not frozen; owner decides). |
+
+Mutation check (local, not committed): disabling the reader's disposition/authority check fails
+`StrictReaderRejectsEveryRegisterMutation`; making `Revalidate` always succeed fails
+`RevalidationRejectsAnyDriftFromAFreshDerivation`.
+
+Neighbor suites: `Cna.Core.Tests.Actions.CombatCycle*`, `AuthorityBoundaryTests`,
+`CombatBoundedProfileZocTests` and the new class, 66/66 local Debug. `dotnet format
+--verify-no-changes` clean on both new files. Timing rows added to
+`.github/scripts/long-suite-weights.json`; partition tests 35/35.
