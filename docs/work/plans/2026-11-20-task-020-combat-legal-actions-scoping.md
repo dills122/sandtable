@@ -57,6 +57,8 @@ unsupported profiles/terminals before decisions; keep old readers and recovery. 
 | T020-Q3 | Closed capability manifest at activation | No `CapabilityManifest` exists in Core. Shape, family list and restore revalidation are unspecified beyond the fog spike's prose. Probably 021-owned, but the plan lists "capability-closure negatives" under 020 verification. Owner should assign. |
 | T020-Q4 | Core public-ref derivation | v2: refs "derive only from approved owner-visible values and Host-issued opening identity". Exercise has no Host. Slice 1 uses a visible-values-only derivation (digest + ordinal + stage + element + audience + campaign) and keeps the type `internal`. Owner should confirm this is the in-process subset, with Host HMAC layered on top, before it becomes public. |
 | T020-Q5 | Custody/replacement inference allowlist | Plan requires "allowlisted custody/replacement inferences". No allowlist document exists; custody cut bytes currently carry whatever `CampaignContactCustodyOwnerVisibleCutV1` emits. Needs an explicit list. |
+| T020-Q7 | RBA unseen-encounter policy (added in 020A1) | v2 requires it "before an outward opening"; RBA moves into hexes with unseen enemies have no defined outcome. See §7. |
+| T020-Q8 | Contact bound to a non-combat unit (added in 020A1) | Selection offers an assault that has no Force slot; v2 requires a source-backed disposition before outward issuance. See §7. |
 | T020-Q6 | Host/Core mapping duplication | Slice 1 duplicates the Host's re-project/byte-compare/ordinal-map rule in Core. Long-term the Host should consume the Core mapping (021 or a follow-up), or the two can diverge. |
 
 ## 4. Proposed breakdown
@@ -128,7 +130,46 @@ Notes from building the tests:
   was a test-construction error, not a leak; the fork is now built synthetically with both journals
   initialized identically.
 
-## 7. Still pending after 020A0
+## 7. Slice 020A1 — Force Assignment built; RBA stopped
+
+**Force Assignment (built, dormant).** `CampaignCombatAudienceDecisions` now dispatches by stage
+(`combat-selection`, `force-assignment`); `QueryForceAssignment`/`SubmitForceAssignment` reuse the
+same decision, ref and rejection rules over `CampaignContactForceAssignmentOwnerVisibleCutV1` and
+delegate to the unchanged `SubmitContactOwnerForceSeal`. Selection behavior is unchanged (020A0 tests
+pass unmodified). `CombatCycleDisclosureForceTests`, 6 rows, local Debug pass:
+
+| Test | Evidence |
+| --- | --- |
+| `ForceDecisionsMatchHostDraftsAndCarryNoPrivateFields` | Both owners: bytes equal Host draft, one ref, no private fields; cross-owner element/audience, System, and Selection-stage queries all unavailable. |
+| `FirstSealLeavesTheOtherOwnersDecisionAndRefUnchanged(attackerFirst: true/false)` | Both seal orders: the other owner's decision bytes/revision/ref are byte-identical after the first seal advances private authority; the pre-seal ref is accepted afterward; sealed owner's retry is the generic rejection; two seals reconstruct and System completion is accepted. |
+| `AcceptedAudienceSealUsesTheUnchangedPrivateAdjudication` | Event, snapshot checkpoint and receipt equal the private-ID path for both owners. |
+| `EveryForceRejectionCauseSharesOneOutwardEnvelope` | 8 invalid submissions via both `SubmitForceAssignment` and `Submit`, plus a Force submission through `SubmitSelection`: identical rejection. |
+| `ForceDecisionsAreEqualAcrossAHiddenRandomFork` | Seed-forked campaigns: both owners' decisions byte-equal; cross-fork ref accepted. |
+
+Fixture note: the Truck setup's adjacent contact is bound to `commonwealth-truck`, which has no
+combat component and therefore no Force slot. Force tests use `rules-lab.breakdown.reaction.combat-assault.v1`.
+This is the v2 spec's own open item ("a contact bound to a unit with no combat component has no
+Force Assignment candidate; normal contact selection must gain a source-backed non-infantry
+disposition before outward Combat issuance"). It also bears on Selection: the Selection surface
+currently offers an assault on such a contact. Logged as **T020-Q8**.
+
+**RBA (stopped, not built).** RBA decline alone is mechanically simple, but the RBA decision must
+expose the full Core offer set (moves + decline), and RBA moves hit an unresolved ruling:
+
+- v2 spec: "An unseen encounter policy remains to complete before an outward opening."
+- Code: `CampaignContactRetreatBeforeAssaultCut.DeriveOneEdgeMoves` excludes only *known* contact
+  hexes (by design: "Hidden opposing occupancy never controls offer presence"), and
+  `CampaignNativeCombatRetreatMovement` has no hidden-occupancy branch. So a defender can be offered,
+  and accepted into, a hex holding an unseen enemy, with no defined encounter/interruption outcome.
+- What happens then (surprise contact, interruption, rejection) is a source/rules ruling of the same
+  family as Q2. Logged as **T020-Q7**. It is not Q5 (custody allowlist).
+
+Options for the owner: (a) rule the unseen-encounter policy, then build RBA; (b) authorize a dormant
+RBA surface that mirrors today's Core offers with an explicit "unseen encounter unresolved" caveat;
+(c) defer RBA and continue with post-assault Retreat/Reserve Release/Cycle Control (post-assault
+Retreat likely raises the same encounter question — not yet checked).
+
+## 8. Still pending after 020A0/020A1
 
 All other round kinds (A1/A2), successor freeze artifacts (B), forced/surprise (C), publication
 and Host consolidation (D), seal-order/terminal-reason disclosure pairs, capability manifest,
