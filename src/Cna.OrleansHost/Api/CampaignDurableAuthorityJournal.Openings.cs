@@ -7,6 +7,7 @@ namespace Cna.OrleansHost.Api;
 
 internal sealed partial class CampaignDurableAuthorityJournal
 {
+    private const string InitiativeOrderOpeningKey = "land.initiative-order";
     private const string CycleControlOpeningKey = "land.cycle-control";
     private const string TruckConvoyPassOpeningKey = "land.truck-convoy-pass";
     private const string PostCombatPassOpeningKey = "land.post-combat-pass";
@@ -44,6 +45,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
     internal CampaignOwnerOpening QueryOwnerOpening(CampaignSeatCredential credential,
         string actingElementId) => QueryOwnerOpeningCore(credential, actingElementId,
             CampaignOwnerOpeningKind.Movement);
+
+    /// <summary>
+    /// The preamble's "who acts first" choice (land.phase.initiative-declaration): offered
+    /// only to the side that won initiative. Release-blocking gap found during the
+    /// Movement/ZOC/Reaction/Breakdown adversarial audit -- previously reachable only via
+    /// the raw, non-HTTP CampaignDurableAuthorityJournal.Append/legal-action-set path used
+    /// by tests and the Exercise Harness, never by a real player.
+    /// </summary>
+    internal CampaignOwnerOpening QueryInitiativeOrderOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, InitiativeOrderOpeningKey, CampaignOwnerOpeningKind.InitiativeOrder);
 
     internal CampaignOwnerOpening QueryPregameAxisSupplyOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, PregameAxisSupplyOpeningKey, CampaignOwnerOpeningKind.PregameAxisSupply);
@@ -412,6 +423,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.InitiativeOrder)
+            {
+                var draft = CampaignHostAdapter.QueryInitiativeOrderOwnerDraft(authority.Session, seat.Audience);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(authority.Session, seat.Audience);
@@ -677,6 +695,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 internal enum CampaignOwnerOpeningKind
 {
     Movement,
+    InitiativeOrder,
     CombatSelection,
     RetreatBeforeAssault,
     ForceAssignment,
