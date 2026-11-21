@@ -215,6 +215,57 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         FinishSecondSideOperationStage(fixture, clock, request, commonwealth);
     }
 
+    // Item 1' (owner release bar): from campaign creation, the first side
+    // assaults and resolves, finishes and passes its post-Combat phases; the
+    // second side then takes its own Reserve, Movement, Breakdown and Combat
+    // and finishes its block. Operation Stage 1 ends at the next stage's
+    // initiative declaration, with every step cold-replay verified.
+    [Fact]
+    public void BothSidesPlayACompleteOperationStageOne()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var journal = fixture.Create(clock);
+        var (request, axis, commonwealth, defenderId, attackerForce, defenderForce) =
+            PrepareInfantryForceRound(journal, positive: true);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(axis, "axis-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(journal.SubmitOwnerForceSeal(commonwealth, defenderId,
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-assault-result"));
+
+        var control = fixture.Open(clock).QueryCycleControlOwnerOpening(axis);
+        Assert.True(fixture.Open(clock).SubmitOwnerCycleControl(axis, control.Revision,
+            control.PublicActionRefs[^1]).IsAccepted);
+        var convoy = fixture.Open(clock).QueryTruckConvoyPassOwnerOpening(axis);
+        Assert.True(fixture.Open(clock).SubmitOwnerTruckConvoyPass(axis, convoy.Revision,
+            convoy.PublicActionRefs[0]).IsAccepted);
+        for (var index = 0; index < 4; index++)
+        {
+            var phase = fixture.Open(clock).QueryPostCombatPassOwnerOpening(axis);
+            Assert.True(fixture.Open(clock).SubmitOwnerPostCombatPass(axis, phase.Revision,
+                Assert.Single(phase.PublicActionRefs)).IsAccepted);
+        }
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal("land.position.operation-1.second-player.reserve-designation",
+            CampaignExercises.QueryCheckpoint(cold).PositionId);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+
+        var secondReserve = fixture.Open(clock).QuerySecondReserveOwnerOpening(commonwealth);
+        Assert.True(fixture.Open(clock).SubmitOwnerSecondReserve(commonwealth, secondReserve.Revision,
+            secondReserve.PublicActionRefs[^1]).IsAccepted);
+        var movementCompletion = fixture.Open(clock).QuerySecondMovementCompletionOwnerOpening(commonwealth);
+        Assert.True(fixture.Open(clock).SubmitOwnerSecondMovementCompletion(commonwealth,
+            movementCompletion.Revision, Assert.Single(movementCompletion.PublicActionRefs)).IsAccepted);
+        var selection = fixture.Open(clock).QueryCombatOwnerOpening(commonwealth, defenderId);
+        Assert.True(fixture.Open(clock).SubmitOwnerCombatSelection(commonwealth, defenderId,
+            selection.Revision, selection.PublicActionRefs[^1]).IsAccepted);
+        FinishSecondSideOperationStage(fixture, clock, request, commonwealth);
+        Assert.Equal(2, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-truck-convoy-pass"));
+    }
+
     private static string StepKinds(string path, string campaignId)
     {
         using var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={path}");
