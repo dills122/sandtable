@@ -602,6 +602,10 @@
       "declaredMembers": []
     },
     {
+      "name": "Cna.Core.Actions.CombatExerciseOwnerChoiceAction",
+      "declaredMembers": []
+    },
+    {
       "name": "Cna.Core.Actions.RetreatBeforeAssaultMoveAction",
       "declaredMembers": ["CostBreakdown", "DestinationLocationId", "ElementId", "OriginLocationId"]
     },

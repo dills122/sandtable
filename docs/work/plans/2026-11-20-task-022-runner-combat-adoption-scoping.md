@@ -258,3 +258,51 @@ All runs verify reconstruction and Combat-path readjudication.
 No-retreat System step (retreat is v2, excluded), settlement, Custody (v1 owner or System
 no-custody), successor, Reserve Release (owner choices plus System completion) and Cycle Control
 (Finish only; Repeat leads to v2 repeated Movement). That closes a full first-cycle loop.
+
+## 10. Slice 022C: full first-cycle loop
+
+This slice is test-harness only: it is not activation, and it covers v1 stages only.
+
+### Built
+
+- **Core.** After the V22 result, the harness now follows the Host's continuation order:
+  - With no required retreat, the System no-retreat completion runs, then World settlement.
+  - Next comes Custody: the bound captor's owner choice, or the System no-custody completion.
+  - Then the System successor runs.
+  - After any of the result, the cancelled assault or the no-attack completion, Reserve Release follows. Each pending member of the acting side gets an owner choice, in the Host's order. When no member is pending, the System Reserve Release completion runs.
+  - Cycle Control comes last, with both choices offered: Repeat and Finish.
+- **Frontier.** The harness offers nothing once Cycle Control is decided:
+  - Finish leads to the Truck Convoy phase.
+  - Repeat leads to repeated Movement, which is a contract-v2 stage and not covered.
+  - A result that requires a post-assault retreat also stops (contract-v2 stage).
+- **Owner choices.** The cuts for Custody, Reserve Release and Cycle Control already compute their Core action IDs. These choices are offered as a new internal type, `CombatExerciseOwnerChoiceAction`.
+  - The kind names the choice, for example `combat-cycle-control-finish` or `combat-reserve-release-release-i`.
+  - The action ID is carried over unchanged through a new internal precomputed-ID constructor on `CampaignActionCandidate`.
+  - Submission goes through the unchanged Host-adapter steps.
+  - The type is registered in both disclosure manifests with no declared members.
+
+### Evidence: the milestone
+
+`CombatSelectionRunnerTests` covers 5 Runner rows, all ending at `truck-convoy-movement` after one full first-cycle loop. Reconstruction and Combat-path readjudication are verified on each.
+
+| Run | Path |
+| --- | --- |
+| combat-double-fresh, reaction-all, seeds 5 and 6 | Selection, then Barrage, RBA decline, both seals and V18. Then V20, V22 result, no-retreat, settlement, no-custody, successor. Then Reserve Release completion and Cycle Control Finish. |
+| combat-assault, reaction-all | Truck-bound assault, then V19 force-unavailable, V20 and V21. Then Reserve Release and Cycle Control. |
+| combat-assault and combat-double-fresh, first-by-action-id | Finish, then V13, Reserve Release (with a member choice on double-fresh) and Cycle Control. |
+
+Seed 7 stops honestly at `combat.close-assault`, because its result requires a retreat.
+
+`CampaignCombatExerciseAssaultTests` (Core, 6 cases):
+
+- **Loop parity.** The full loop on seeds 5 and 20 includes the captor's owner Custody choice. At every step, the event and snapshot match the direct Host-adapter step on the same session.
+- **Cycle Control.** It offers exactly the draft's Repeat and Finish action IDs. Repeat leads to an empty frontier.
+
+### New findings
+
+- **T022-Q7 also covers one System step.** The V26 successor receipt names its own cut (`combat.close-assault`), while the checkpoint is `reserve-release`.
+  - The re-issued receipts are now V12, V15, V17 and V26.
+  - The Core test pins that list, and every other covered step's receipt passes through unchanged.
+- **Controller choice is hash-driven.** With the existing policies, Reserve Release and Cycle Control take the lowest action ID.
+  - For example, first-by-action-id takes Finish on these fixtures.
+  - A Combat-aware policy (for example, "release reserves and repeat") is the next Runner-side slice once the owner rules on Q9 and Q10.

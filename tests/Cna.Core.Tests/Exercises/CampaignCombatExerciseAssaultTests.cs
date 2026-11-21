@@ -1,15 +1,21 @@
 using Cna.Core.Actions;
+using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Cna.Core.Rules;
+using Cna.Core.Setups;
 using Cna.Core.Tests.Actions;
 
 namespace Cna.Core.Tests.Exercises;
 
-// Task 022B (#448): decline-only RBA, Force Assignment, Anti Armor and the result or cancelled
-// assault through the trusted Exercise path. Every accepted step must equal the trusted Core step the
-// Host appends at the same cut. Test-harness capability only; not Combat activation or certification.
+// Tasks 022B/022C (#448): the first-cycle Combat loop through the trusted Exercise path: decline-only
+// RBA, Force Assignment, Anti Armor, the result or cancelled assault, settlement, Custody, Reserve
+// Release and Cycle Control. Every accepted step must equal the trusted Core step the Host appends at
+// the same cut. Test-harness capability only; not Combat activation or certification.
 public sealed class CampaignCombatExerciseAssaultTests
 {
+    private const string Prefix = "land.position.operation-1.first-player.";
+
     private static readonly string[] Payable =
     [
         "select-contact-assault", "complete-combat-barrage", "decline-retreat-before-assault",
@@ -23,30 +29,80 @@ public sealed class CampaignCombatExerciseAssaultTests
         "cancel-combat-force-unavailable", "complete-combat-anti-armor", "complete-combat-cancelled-assault",
     ];
 
+    private static readonly string[] Settled = ["complete-combat-no-retreat", "settle-combat-world"];
+
+    private static readonly string[] ReissuedReceiptKinds =
+    [
+        "select-contact-assault", "decline-retreat-before-assault", "seal-combat-force-assignment",
+        "complete-combat-successor",
+    ];
+
     [Theory]
     [InlineData(6)]
     [InlineData(12345)]
     public void EveryEntryAssaultFollowsTheHostOrchestrationToItsFrontier(ulong seed)
     {
         var entry = CombatCycleDisclosureForceTests.AdvanceToCombat($"campaign-022b-entry-{seed}", seed);
-        var axis = CampaignExercises.QueryWithCombat(entry, CampaignActionAudience.Axis).ActionSet!;
-        var assaults = axis.Candidates.OfType<SelectContactAssaultAction>().ToArray();
+        var assaults = CampaignExercises.QueryWithCombat(entry, CampaignActionAudience.Axis).ActionSet!
+            .Candidates.OfType<SelectContactAssaultAction>().ToArray();
         Assert.NotEmpty(assaults);
-        var paths = new List<string>();
+        var results = 0;
         foreach (var assault in assaults)
         {
             var (kinds, frontier) = Drive(entry, assault.ActionId);
-            Assert.True(kinds.SequenceEqual(Payable) || kinds.SequenceEqual(Unpayable), string.Join(" > ", kinds));
-            paths.Add(kinds[^1]);
-            Assert.True(CampaignExercises.Reconstruct(frontier).IsVerified);
-            var position = CampaignExercises.QueryCheckpoint(frontier).PositionId;
-            Assert.EndsWith(kinds[^1] == "resolve-combat-assault" ? ".combat.close-assault" : ".reserve-release",
-                position, StringComparison.Ordinal);
-            Assert.All(Enum.GetValues<CampaignActionAudience>(), audience =>
-                Assert.Empty(CampaignExercises.QueryWithCombat(frontier, audience).ActionSet!.Candidates));
+            var payable = kinds.Take(Payable.Length).SequenceEqual(Payable);
+            Assert.True(payable || kinds.Take(Unpayable.Length).SequenceEqual(Unpayable), string.Join(" > ", kinds));
+            results += payable ? 1 : 0;
+            AssertFrontier(frontier, kinds);
         }
         // The fixture's infantry pair is payable (020A1's Force fixture).
-        Assert.Contains("resolve-combat-assault", paths);
+        Assert.True(results > 0);
+    }
+
+    [Theory]
+    [InlineData(5)]
+    [InlineData(20)]
+    public void FullFirstCycleLoopMatchesTheHostOrchestration(ulong seed)
+    {
+        // combat-double-fresh with a designated second infantry: a fresh, payable pair, no required
+        // retreat, a capture with the captor's owner Custody choice (seeds 5 and 20, as in 020A3), and
+        // Reserve Release member choices.
+        var entry = AtCombatPosition($"campaign-022c-loop-{seed}", seed);
+        var assault = CampaignExercises.QueryWithCombat(entry, CampaignActionAudience.Axis).ActionSet!
+            .Candidates.OfType<SelectContactAssaultAction>().Single(value => value.ActingElementId == "axis-infantry");
+        var (kinds, frontier) = Drive(entry, assault.ActionId);
+        Assert.Equal(Payable, kinds.Take(Payable.Length));
+        AssertFrontier(frontier, kinds);
+        Assert.Equal(Settled, kinds.Skip(Payable.Length).Take(Settled.Length));
+        Assert.Contains(kinds, kind => kind.StartsWith("combat-custody-", StringComparison.Ordinal));
+        Assert.Contains("complete-combat-successor", kinds);
+        Assert.Contains("complete-combat-reserve-release", kinds);
+        Assert.Contains(kinds, kind => kind.StartsWith("combat-reserve-release-", StringComparison.Ordinal));
+        Assert.Equal("combat-cycle-control-finish", kinds[^1]);
+    }
+
+    [Fact]
+    public void CycleControlOffersRepeatAndFinishAndRepeatStopsAtTheRepeatedMovementFrontier()
+    {
+        var entry = AtCombatPosition("campaign-022c-repeat", 5);
+        var assault = CampaignExercises.QueryWithCombat(entry, CampaignActionAudience.Axis).ActionSet!
+            .Candidates.OfType<SelectContactAssaultAction>().Single(value => value.ActingElementId == "axis-infantry");
+        // Releasing the reserve gives Cycle Control a Repeat choice (the 020A2/020E path).
+        var (kinds, session) = Drive(entry, assault.ActionId, stopAtCycleControl: true, releaseReserve: true);
+        Assert.Contains("combat-reserve-release-release-i", kinds);
+        var control = CampaignExercises.QueryWithCombat(session, CampaignActionAudience.Axis).ActionSet!;
+        Assert.Equal(["combat-cycle-control-finish", "combat-cycle-control-repeat"],
+            control.Candidates.Select(value => value.Kind).Order(StringComparer.Ordinal));
+        var draft = CampaignHostAdapter.QueryNativeCycleControlOwnerDraft(session, CampaignActionAudience.Axis);
+        Assert.Equal(draft.PrivateActionIds.Order(StringComparer.Ordinal),
+            control.Candidates.Select(value => value.ActionId).Order(StringComparer.Ordinal));
+        var repeat = control.Candidates.Single(value => value.Kind == "combat-cycle-control-repeat");
+        var repeated = CampaignExercises.SubmitWithCombat(session, Command(session, CampaignActionAudience.Axis, repeat.ActionId));
+        Assert.True(repeated.IsAccepted, repeated.RejectionReason.ToString());
+        // Repeated Movement is a contract-v2 stage: not covered, so the harness offers nothing.
+        Assert.All(Enum.GetValues<CampaignActionAudience>(), audience =>
+            Assert.Empty(CampaignExercises.QueryWithCombat(repeated.SuccessorSession!, audience).ActionSet!.Candidates));
+        Assert.True(CampaignExercises.Reconstruct(repeated.SuccessorSession!).IsVerified);
     }
 
     [Fact]
@@ -87,6 +143,22 @@ public sealed class CampaignCombatExerciseAssaultTests
         Assert.Equal(WithoutChainLink(axisFirst), WithoutChainLink(commonwealthFirst));
     }
 
+    private static void AssertFrontier(ExerciseSession frontier, IReadOnlyList<string> kinds)
+    {
+        Assert.True(CampaignExercises.Reconstruct(frontier).IsVerified);
+        Assert.All(Enum.GetValues<CampaignActionAudience>(), audience =>
+            Assert.Empty(CampaignExercises.QueryWithCombat(frontier, audience).ActionSet!.Candidates));
+        var position = CampaignExercises.QueryCheckpoint(frontier).PositionId;
+        if (kinds[^1] == "resolve-combat-assault")
+            // A required post-assault retreat (contract-v2 stage) stops the loop at the result.
+            Assert.Equal(Prefix + "movement-and-combat.combat.close-assault", position);
+        else
+        {
+            Assert.Equal("combat-cycle-control-finish", kinds[^1]);
+            Assert.Equal(Prefix + "truck-convoy-movement", position);
+        }
+    }
+
     private static string WithoutChainLink(byte[] resultEvent)
     {
         var node = System.Text.Json.Nodes.JsonNode.Parse(resultEvent)!.AsObject();
@@ -94,13 +166,15 @@ public sealed class CampaignCombatExerciseAssaultTests
         return node.ToJsonString();
     }
 
-    // Drives one entry assault with the Host's order: a single offered audience each step, except the
-    // two simultaneous seals (Axis first). Each accepted step is compared with the direct trusted step.
-    private static (List<string> Kinds, ExerciseSession Frontier) Drive(ExerciseSession session, string assaultId)
+    // Drives one entry assault in the Host's order: a single offered audience each step, except the
+    // two simultaneous seals (Axis first); an owner choice takes the lowest action ID, except Cycle
+    // Control, which takes Finish. Each accepted step is compared with the direct trusted step.
+    private static (List<string> Kinds, ExerciseSession Frontier) Drive(ExerciseSession session, string assaultId,
+        bool stopAtCycleControl = false, bool releaseReserve = false)
     {
         var kinds = new List<string> { "select-contact-assault" };
         session = Step(session, CampaignActionAudience.Axis, assaultId);
-        for (var index = 0; index < 12; index++)
+        for (var index = 0; index < 40; index++)
         {
             var sets = Enum.GetValues<CampaignActionAudience>()
                 .Select(audience => CampaignExercises.QueryWithCombat(session, audience).ActionSet!)
@@ -109,7 +183,15 @@ public sealed class CampaignCombatExerciseAssaultTests
             if (sets.Length == 0) return (kinds, session);
             Assert.True(sets.Length == 1 || sets.All(set => set.Candidates.Single().Kind == "seal-combat-force-assignment"));
             var set = sets[0];
-            var candidate = Assert.Single(set.Candidates);
+            if (stopAtCycleControl && set.Candidates.Any(value => value.Kind.StartsWith("combat-cycle-control-",
+                    StringComparison.Ordinal)))
+                return (kinds, session);
+            var candidate = set.Candidates.FirstOrDefault(value => value.Kind == "combat-cycle-control-finish")
+                ?? (releaseReserve
+                    ? set.Candidates.FirstOrDefault(value => value.Kind == "combat-reserve-release-release-i")
+                    : null)
+                ?? set.Candidates.OrderBy(value => value.ActionId, StringComparer.Ordinal).First();
+            Assert.True(set.Candidates.Count == 1 || candidate is CombatExerciseOwnerChoiceAction, candidate.Kind);
             var direct = Direct(session, set, candidate);
             var submitted = CampaignExercises.SubmitWithCombat(session, Command(session, set.Audience, candidate.ActionId));
             Assert.True(submitted.IsAccepted, $"{candidate.Kind}: {submitted.RejectionReason}");
@@ -117,33 +199,40 @@ public sealed class CampaignCombatExerciseAssaultTests
             Assert.Equal(direct.Evidence!.EventRecords, submitted.Evidence!.EventRecords);
             Assert.Equal(direct.Evidence.SnapshotCheckpoint, submitted.Evidence.SnapshotCheckpoint);
             var directReceipt = direct.Evidence.Receipt;
-            if (set.Audience == CampaignActionAudience.System) Assert.Equal(directReceipt, submitted.Evidence.Receipt);
-            else
+            var receipt = submitted.Evidence.Receipt;
+            Assert.Equal((directReceipt.CampaignId, directReceipt.PriorStateVersion, directReceipt.CommittedStateVersion,
+                    directReceipt.Audience, directReceipt.ActionId),
+                (receipt.CampaignId, receipt.PriorStateVersion, receipt.CommittedStateVersion, receipt.Audience,
+                    receipt.ActionId));
+            // T022-Q7: the harness re-issues only receipts that name the step's own cut.
+            var successor = CampaignExercises.QueryCheckpoint(submitted.SuccessorSession!).PositionId;
+            Assert.Equal(successor, receipt.ResultingPositionId);
+            if (directReceipt.ResultingPositionId != successor)
             {
-                // T022-Q7: owner-decision receipts name the cut the decision was taken at; only the
-                // harness re-issues the resulting position as the successor checkpoint.
                 Assert.Equal(set.PositionId, directReceipt.ResultingPositionId);
-                var receipt = submitted.Evidence.Receipt;
-                Assert.Equal((directReceipt.CampaignId, directReceipt.PriorStateVersion, directReceipt.CommittedStateVersion,
-                        directReceipt.Audience, directReceipt.ActionId),
-                    (receipt.CampaignId, receipt.PriorStateVersion, receipt.CommittedStateVersion, receipt.Audience,
-                        receipt.ActionId));
+                Assert.Contains(candidate.Kind, ReissuedReceiptKinds);
             }
-            Assert.Equal(CampaignExercises.QueryCheckpoint(submitted.SuccessorSession!).PositionId,
-                submitted.Evidence.Receipt.ResultingPositionId);
             kinds.Add(candidate.Kind);
             session = submitted.SuccessorSession!;
         }
         throw new InvalidOperationException("No frontier within the covered steps.");
     }
 
-    private static ExerciseStepResult Direct(ExerciseSession session, CampaignLegalActionSet set, CampaignActionCandidate candidate) =>
-        candidate switch
+    private static ExerciseStepResult Direct(ExerciseSession session, CampaignLegalActionSet set, CampaignActionCandidate candidate)
+    {
+        var command = Command(session, set.Audience, candidate.ActionId);
+        return candidate switch
         {
-            DeclineRetreatBeforeAssaultAction decline => CampaignHostAdapter.SubmitContactDefenderRbaDecline(session,
-                Command(session, set.Audience, decline.ActionId), decline.ElementId),
-            SealCombatForceAssignmentAction seal => CampaignHostAdapter.SubmitContactOwnerForceSeal(session,
-                Command(session, set.Audience, seal.ActionId), seal.ElementId),
+            DeclineRetreatBeforeAssaultAction decline =>
+                CampaignHostAdapter.SubmitContactDefenderRbaDecline(session, command, decline.ElementId),
+            SealCombatForceAssignmentAction seal =>
+                CampaignHostAdapter.SubmitContactOwnerForceSeal(session, command, seal.ElementId),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.CustodyStage } custody =>
+                CampaignHostAdapter.SubmitNativeCombatCustody(session, command, custody.SubjectId),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.ReserveReleaseStage } release =>
+                CampaignHostAdapter.SubmitNativeReserveReleaseChoice(session, command, release.SubjectId),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.CycleControlStage } =>
+                CampaignHostAdapter.SubmitNativeCycleControl(session, command),
             _ => candidate.Kind switch
             {
                 "complete-combat-barrage" => CampaignHostAdapter.CompleteNativeCombatBarrage(session),
@@ -153,9 +242,40 @@ public sealed class CampaignCombatExerciseAssaultTests
                 "complete-combat-anti-armor" => CampaignHostAdapter.CompleteNativeCombatAntiArmor(session),
                 "complete-combat-cancelled-assault" => CampaignHostAdapter.CompleteNativeCombatCancelledAssault(session),
                 "resolve-combat-assault" => CampaignHostAdapter.ResolveNativeCombatAssault(session),
+                "complete-combat-no-retreat" => CampaignHostAdapter.CompleteNoPostAssaultRetreat(session),
+                "settle-combat-world" => CampaignHostAdapter.SettleNativeCombatWorld(session),
+                "complete-combat-no-custody" => CampaignHostAdapter.CompleteNoNativeCombatCustody(session),
+                "complete-combat-successor" => CampaignHostAdapter.CompleteNativeCombatSuccessor(session),
+                "complete-combat-reserve-release" => CampaignHostAdapter.CompleteNativeReserveRelease(session),
                 _ => throw new InvalidOperationException(candidate.Kind),
             },
         };
+    }
+
+    private static ExerciseSession AtCombatPosition(string campaignId, ulong seed)
+    {
+        var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions.Single(value =>
+            value.SetupId == "rules-lab.breakdown.reaction.combat-double-fresh.v1"));
+        var session = CampaignExercises.Begin(new CampaignCreationRequest(1, campaignId, Cna1979Ruleset.Manifest.Hash,
+            seed, setup.SetupId, setup.SetupHash, setup.Content.Pack.PackId, setup.Content.Pack.Hash,
+            setup.Content.ScenarioId)).Session!;
+        var reserveDesignated = false;
+        for (var index = 0; index < 80; index++)
+        {
+            var position = session.CurrentSnapshot.CurrentPosition.SequenceContext;
+            if (position.SegmentId == LandSegmentIds.Combat && position.StepId == LandStepIds.PositionDetermination)
+                return session;
+            var set = Enum.GetValues<CampaignActionAudience>().Select(audience => CampaignExercises.Query(session, audience).ActionSet)
+                .First(value => value?.Candidates.Count > 0)!;
+            var reserve = !reserveDesignated ? set.Candidates.OfType<DesignateReserveAction>()
+                .FirstOrDefault(value => value.ElementId == "axis-infantry-second") : null;
+            var action = reserve ?? set.Candidates.FirstOrDefault(value => value is not MoveElementAction) ?? set.Candidates[0];
+            if (reserve is not null) reserveDesignated = true;
+            session = CampaignExercises.Submit(session, new CampaignActionSubmission(1, set.CampaignId,
+                set.StateVersion, set.PositionId, set.Audience, action.ActionId)).SuccessorSession!;
+        }
+        throw new InvalidOperationException("Combat position was not reached.");
+    }
 
     private static string Single(ExerciseSession session, CampaignActionAudience audience) =>
         Assert.Single(CampaignExercises.QueryWithCombat(session, audience).ActionSet!.Candidates).ActionId;

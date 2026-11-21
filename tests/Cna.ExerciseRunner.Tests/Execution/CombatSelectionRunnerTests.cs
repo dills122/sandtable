@@ -9,8 +9,9 @@ using Cna.ExerciseRunner.Execution;
 
 namespace Cna.ExerciseRunner.Tests.Execution;
 
-// Tasks 022A0/022A/022B (issue #448): the Runner drives first-cycle Combat (Selection, decline-only
-// RBA, Force, Anti Armor and the result or cancelled assault) through the trusted Exercise path
+// Tasks 022A0-022C (issue #448): the Runner drives one full first-cycle Combat loop (Selection,
+// decline-only RBA, Force, Anti Armor, the result or cancelled assault, settlement, Custody,
+// Reserve Release and Cycle Control) through the trusted Exercise path
 // (CampaignExercises.QueryWithCombat/SubmitWithCombat).
 // Test-harness capability only: not Combat activation or certification, independent of Task 021.
 // See docs/work/plans/2026-11-20-task-022-runner-combat-adoption-scoping.md.
@@ -57,31 +58,42 @@ public sealed class CombatSelectionRunnerTests : IDisposable
         Guid.NewGuid().ToString("N"));
 
     private const string CloseAssault = Prefix + "combat.close-assault";
-    private static readonly string[] Finish = ["Axis:combat-selection-decided", "System:combat-no-attack-completed"];
+    private const string TruckConvoy = "land.position.operation-1.first-player.truck-convoy-movement";
+    private const string Released = "System:reserve-release-completed";
+    private const string Cycle = "Axis:movement-combat-cycle-control";
+    private static readonly string[] Finish =
+        ["Axis:combat-selection-decided", "System:combat-no-attack-completed", Released, Cycle];
+    private static readonly string[] FinishWithReserve =
+    [
+        "Axis:combat-selection-decided", "System:combat-no-attack-completed", "Axis:reserve-release-member-choice",
+        Released, Cycle,
+    ];
     private static readonly string[] Cancelled =
     [
         "Axis:combat-selection-decided", "System:combat-barrage-no-effect", "Commonwealth:combat-rba-declined",
         "System:combat-force-cancelled", "System:combat-anti-armor-completed", "System:combat-cancelled-assault-completed",
+        Released, Cycle,
     ];
-    // T022-Q4 evidence: Anti Armor and the assault result share the close-assault position, so a
-    // position-only terminal stops before the result. The frontier test below reaches the result.
-    private static readonly string[] ToCloseAssault =
+    private static readonly string[] Resolved =
     [
         "Axis:combat-selection-decided", "System:combat-barrage-no-effect", "Commonwealth:combat-rba-declined",
         "Axis:combat-force-sealed", "Commonwealth:combat-force-sealed", "System:combat-force-completed",
-        "System:combat-anti-armor-completed",
+        "System:combat-anti-armor-completed", "System:combat-assault-resolved", "System:combat-post-result-retreat-decided",
+        "System:combat-world-settled", "System:combat-custody-disposed", "System:combat-sequence-resumed", Released, Cycle,
     ];
 
     // The existing policies pick the lowest action ID, and offer IDs depend on the Exercise-derived
     // campaign ID, so the Exercise ID pins which offer (assault or finish) each run takes.
     // combat-assault's assault is truck-bound (T020-Q8), so it takes the force-unavailable cancel.
+    // Every row runs one full first-cycle loop: Combat, Reserve Release and Cycle Control, ending at
+    // the Truck Convoy phase.
     public static TheoryData<string, string, string, ulong, string, string[]> Paths => new()
     {
-        { "assault", "first-by-action-id", "a", 6, ReserveRelease, Finish },
-        { "assault", "reaction-all-by-action-id", "c", 6, ReserveRelease, Cancelled },
-        { "double-fresh", "first-by-action-id", "a", 6, ReserveRelease, Finish },
-        { "double-fresh", "reaction-all-by-action-id", "c", 5, CloseAssault, ToCloseAssault },
-        { "double-fresh", "reaction-all-by-action-id", "c", 6, CloseAssault, ToCloseAssault },
+        { "assault", "first-by-action-id", "a", 6, TruckConvoy, Finish },
+        { "assault", "reaction-all-by-action-id", "c", 6, TruckConvoy, Cancelled },
+        { "double-fresh", "first-by-action-id", "a", 6, TruckConvoy, FinishWithReserve },
+        { "double-fresh", "reaction-all-by-action-id", "c", 5, TruckConvoy, Resolved },
+        { "double-fresh", "reaction-all-by-action-id", "c", 6, TruckConvoy, Resolved },
     };
 
     [Theory]
@@ -105,6 +117,7 @@ public sealed class CombatSelectionRunnerTests : IDisposable
         var combat = result.Steps.Skip(entry).ToArray();
         Assert.Equal(combatEvents, combat.Select(step => $"{step.Audience}:{EventType(step)}"));
         Assert.Equal(Prefix + "combat.barrage", combat[0].Receipt.ResultingPositionId);
+        Assert.Contains(Prefix + "reserve-release", combat.Select(step => step.Receipt.ResultingPositionId));
         Assert.Equal(terminal, combat[^1].Receipt.ResultingPositionId);
         // Every step before Selection is the unchanged pre-Combat path.
         Assert.DoesNotContain(result.Steps.Take(entry), step => step.PriorPositionId.Contains(".combat.", StringComparison.Ordinal));
@@ -142,7 +155,7 @@ public sealed class CombatSelectionRunnerTests : IDisposable
     [Fact]
     public void RepeatedRunsAreByteIdentical()
     {
-        var manifest = Manifest(DoubleFresh, "reaction-all-by-action-id", "c", CloseAssault);
+        var manifest = Manifest(DoubleFresh, "reaction-all-by-action-id", "c", TruckConvoy, 5);
         var first = ExecuteWithCombat(manifest);
         var second = ExecuteWithCombat(manifest);
         Assert.Equal(first.Steps.Count, second.Steps.Count);
@@ -152,21 +165,22 @@ public sealed class CombatSelectionRunnerTests : IDisposable
     }
 
     [Theory]
-    [InlineData("assault", "reaction-all-by-action-id", "c", ReserveRelease, "combat-cancelled-assault-completed")]
-    [InlineData("assault", "first-by-action-id", "a", ReserveRelease, "combat-no-attack-completed")]
-    [InlineData("double-fresh", "reaction-all-by-action-id", "c", CloseAssault, "combat-assault-resolved")]
+    [InlineData("assault", "reaction-all-by-action-id", "c", 6, TruckConvoy, "movement-combat-cycle-control")]
+    [InlineData("double-fresh", "reaction-all-by-action-id", "c", 6, TruckConvoy, "movement-combat-cycle-control")]
+    // Seed 7's result requires a post-assault retreat, a contract-v2 owner stage the harness does not cover.
+    [InlineData("double-fresh", "reaction-all-by-action-id", "c", 7, CloseAssault, "combat-assault-resolved")]
     public void UnsupportedNextCombatStepIsAnHonestNoLegalActionFrontier(string setup, string policy, string variant,
-        string frontier, string lastEvent)
+        ulong seed, string frontier, string lastEvent)
     {
         var result = ExecuteWithCombat(Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant,
-            "land.position.unreachable"));
+            "land.position.unreachable", seed));
 
         Assert.Equal(ExerciseFailureCategory.NoUniqueLegalAction, result.FailureCategory);
         var failed = Assert.Single(result.FailedDecisions);
         Assert.Equal(frontier, failed.PositionId);
         Assert.Equal(lastEvent, EventType(result.Steps[^1]));
         Assert.True(result.Steps.Count > 0 && CampaignExercises.Reconstruct(Replay(
-            Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant, "land.position.unreachable"),
+            Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant, "land.position.unreachable", seed),
             result)).IsVerified);
         Assert.All(failed.Queries, query =>
         {
