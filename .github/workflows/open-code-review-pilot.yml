@@ -30,7 +30,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: alibaba/open-code-review@b1dcffb0729f3f2e3e47170968a5014a2e035580 # v1.13.7
+      - uses: alibaba/open-code-review@f921d6a0de3b71befce15d8edf589cd3609968fa # v1.13.12
         env:
           OCR_NO_UPDATE: '1'
         with:
