@@ -6751,8 +6751,11 @@ public static class CampaignExercises
         {
             if (secondSide.TruckConvoyPass is not null)
                 throw new InvalidOperationException("Truck Convoy has already been passed.");
-            if (secondSide is not { Release: { } secondRelease,
-                    Control.Choice: CampaignNativeCycleControlChoiceV28.Finish })
+            if (secondSide is not
+                {
+                    Release: { } secondRelease,
+                    Control.Choice: CampaignNativeCycleControlChoiceV28.Finish
+                })
                 throw new InvalidOperationException("Truck Convoy requires a finished cycle.");
             return (secondRelease, secondSide.Control);
         }
