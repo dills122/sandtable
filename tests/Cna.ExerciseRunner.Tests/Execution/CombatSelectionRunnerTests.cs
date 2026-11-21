@@ -9,8 +9,9 @@ using Cna.ExerciseRunner.Execution;
 
 namespace Cna.ExerciseRunner.Tests.Execution;
 
-// Tasks 022A0/022A (issue #448): the Runner drives first-cycle Combat Selection and the System step
-// after it through the trusted Exercise path (CampaignExercises.QueryWithCombat/SubmitWithCombat).
+// Tasks 022A0/022A/022B (issue #448): the Runner drives first-cycle Combat (Selection, decline-only
+// RBA, Force, Anti Armor and the result or cancelled assault) through the trusted Exercise path
+// (CampaignExercises.QueryWithCombat/SubmitWithCombat).
 // Test-harness capability only: not Combat activation or certification, independent of Task 021.
 // See docs/work/plans/2026-11-20-task-022-runner-combat-adoption-scoping.md.
 public sealed class CombatSelectionRunnerTests : IDisposable
@@ -55,22 +56,40 @@ public sealed class CombatSelectionRunnerTests : IDisposable
         "combat-runner-tests",
         Guid.NewGuid().ToString("N"));
 
+    private const string CloseAssault = Prefix + "combat.close-assault";
+    private static readonly string[] Finish = ["Axis:combat-selection-decided", "System:combat-no-attack-completed"];
+    private static readonly string[] Cancelled =
+    [
+        "Axis:combat-selection-decided", "System:combat-barrage-no-effect", "Commonwealth:combat-rba-declined",
+        "System:combat-force-cancelled", "System:combat-anti-armor-completed", "System:combat-cancelled-assault-completed",
+    ];
+    // T022-Q4 evidence: Anti Armor and the assault result share the close-assault position, so a
+    // position-only terminal stops before the result. The frontier test below reaches the result.
+    private static readonly string[] ToCloseAssault =
+    [
+        "Axis:combat-selection-decided", "System:combat-barrage-no-effect", "Commonwealth:combat-rba-declined",
+        "Axis:combat-force-sealed", "Commonwealth:combat-force-sealed", "System:combat-force-completed",
+        "System:combat-anti-armor-completed",
+    ];
+
     // The existing policies pick the lowest action ID, and offer IDs depend on the Exercise-derived
     // campaign ID, so the Exercise ID pins which offer (assault or finish) each run takes.
-    public static TheoryData<string, string, string, string, string> Paths => new()
+    // combat-assault's assault is truck-bound (T020-Q8), so it takes the force-unavailable cancel.
+    public static TheoryData<string, string, string, ulong, string, string[]> Paths => new()
     {
-        { "assault", "reaction-all-by-action-id", "c", RetreatBeforeAssault, "combat-barrage-no-effect" },
-        { "assault", "first-by-action-id", "a", ReserveRelease, "combat-no-attack-completed" },
-        { "double-fresh", "reaction-all-by-action-id", "a", RetreatBeforeAssault, "combat-barrage-no-effect" },
-        { "double-fresh", "first-by-action-id", "a", ReserveRelease, "combat-no-attack-completed" },
+        { "assault", "first-by-action-id", "a", 6, ReserveRelease, Finish },
+        { "assault", "reaction-all-by-action-id", "c", 6, ReserveRelease, Cancelled },
+        { "double-fresh", "first-by-action-id", "a", 6, ReserveRelease, Finish },
+        { "double-fresh", "reaction-all-by-action-id", "c", 5, CloseAssault, ToCloseAssault },
+        { "double-fresh", "reaction-all-by-action-id", "c", 6, CloseAssault, ToCloseAssault },
     };
 
     [Theory]
     [MemberData(nameof(Paths))]
-    public void RunnerAdvancesPastCombatEntryThroughSelectionAndItsSystemStep(
-        string setup, string policy, string variant, string terminal, string systemEvent)
+    public void RunnerDrivesFirstCycleCombatToItsCoveredFrontier(
+        string setup, string policy, string variant, ulong seed, string terminal, string[] combatEvents)
     {
-        var manifest = Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant, terminal);
+        var manifest = Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant, terminal, seed);
         var result = ExecuteWithCombat(manifest);
 
         Assert.True(result.IsSucceeded, Encoding.UTF8.GetString(ExerciseRunResultCodec.Serialize(result.RunResult)));
@@ -81,23 +100,49 @@ public sealed class CombatSelectionRunnerTests : IDisposable
         Assert.False(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
         Assert.All(result.Steps, step => Assert.Single(step.EventRecords));
 
-        var selection = result.Steps[^2];
-        var system = result.Steps[^1];
-        Assert.Equal(CombatEntry, selection.PriorPositionId);
-        Assert.Equal(CampaignActionAudience.Axis, selection.Audience);
-        Assert.Equal(Prefix + "combat.barrage", selection.Receipt.ResultingPositionId);
-        Assert.Equal("combat-selection-decided", EventType(selection));
-        Assert.Equal(CampaignActionAudience.System, system.Audience);
-        Assert.Equal(terminal, system.Receipt.ResultingPositionId);
-        Assert.Equal(systemEvent, EventType(system));
+        var entry = result.Steps.ToList().FindIndex(step => step.PriorPositionId == CombatEntry);
+        Assert.True(entry > 0);
+        var combat = result.Steps.Skip(entry).ToArray();
+        Assert.Equal(combatEvents, combat.Select(step => $"{step.Audience}:{EventType(step)}"));
+        Assert.Equal(Prefix + "combat.barrage", combat[0].Receipt.ResultingPositionId);
+        Assert.Equal(terminal, combat[^1].Receipt.ResultingPositionId);
         // Every step before Selection is the unchanged pre-Combat path.
-        Assert.DoesNotContain(result.Steps.SkipLast(2), step => step.PriorPositionId.Contains(".combat.", StringComparison.Ordinal));
+        Assert.DoesNotContain(result.Steps.Take(entry), step => step.PriorPositionId.Contains(".combat.", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void SimultaneousForceSealsAreTakenInFixedAudienceOrderOnly()
+    {
+        var policies = new ExerciseControllerManifest(
+            ExerciseControllerPolicy.FirstByActionId,
+            ExerciseControllerPolicy.FirstByActionId,
+            ExerciseControllerPolicy.FirstByActionId);
+        static Cna.ExerciseRunner.Controllers.ExerciseControllerActionSet Set(CampaignActionAudience audience, params string[] kinds) =>
+            new(audience, kinds.Select((kind, index) => new Cna.ExerciseRunner.Controllers.ExerciseControllerCandidate(
+                Cna.ExerciseRunner.Controllers.ExerciseControllerCandidate.CurrentContractVersion,
+                $"sha256:{audience}-{index}", kind, null)));
+        var seals = Cna.ExerciseRunner.Controllers.ExerciseController.Select(policies,
+        [
+            Set(CampaignActionAudience.System),
+            Set(CampaignActionAudience.Axis, "seal-combat-force-assignment"),
+            Set(CampaignActionAudience.Commonwealth, "seal-combat-force-assignment"),
+        ]);
+        Assert.Equal(CampaignActionAudience.Axis, seals.Audience);
+        Assert.Equal("sha256:Axis-0", seals.ActionId);
+        // Any other simultaneous offer still fails closed.
+        Assert.Equal(Cna.ExerciseRunner.Controllers.ExerciseControllerSelectionFailure.MultipleActiveAudiences,
+            Cna.ExerciseRunner.Controllers.ExerciseController.Select(policies,
+            [
+                Set(CampaignActionAudience.System),
+                Set(CampaignActionAudience.Axis, "seal-combat-force-assignment"),
+                Set(CampaignActionAudience.Commonwealth, "decline-retreat-before-assault"),
+            ]).FailureReason);
     }
 
     [Fact]
     public void RepeatedRunsAreByteIdentical()
     {
-        var manifest = Manifest(Assault, "reaction-all-by-action-id", "c", RetreatBeforeAssault);
+        var manifest = Manifest(DoubleFresh, "reaction-all-by-action-id", "c", CloseAssault);
         var first = ExecuteWithCombat(manifest);
         var second = ExecuteWithCombat(manifest);
         Assert.Equal(first.Steps.Count, second.Steps.Count);
@@ -107,15 +152,22 @@ public sealed class CombatSelectionRunnerTests : IDisposable
     }
 
     [Theory]
-    [InlineData("reaction-all-by-action-id", "c", RetreatBeforeAssault)]
-    [InlineData("first-by-action-id", "a", ReserveRelease)]
-    public void UnsupportedNextCombatStepIsAnHonestNoLegalActionFrontier(string policy, string variant, string frontier)
+    [InlineData("assault", "reaction-all-by-action-id", "c", ReserveRelease, "combat-cancelled-assault-completed")]
+    [InlineData("assault", "first-by-action-id", "a", ReserveRelease, "combat-no-attack-completed")]
+    [InlineData("double-fresh", "reaction-all-by-action-id", "c", CloseAssault, "combat-assault-resolved")]
+    public void UnsupportedNextCombatStepIsAnHonestNoLegalActionFrontier(string setup, string policy, string variant,
+        string frontier, string lastEvent)
     {
-        var result = ExecuteWithCombat(Manifest(Assault, policy, variant, "land.position.unreachable"));
+        var result = ExecuteWithCombat(Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant,
+            "land.position.unreachable"));
 
         Assert.Equal(ExerciseFailureCategory.NoUniqueLegalAction, result.FailureCategory);
         var failed = Assert.Single(result.FailedDecisions);
         Assert.Equal(frontier, failed.PositionId);
+        Assert.Equal(lastEvent, EventType(result.Steps[^1]));
+        Assert.True(result.Steps.Count > 0 && CampaignExercises.Reconstruct(Replay(
+            Manifest(setup == "assault" ? Assault : DoubleFresh, policy, variant, "land.position.unreachable"),
+            result)).IsVerified);
         Assert.All(failed.Queries, query =>
         {
             Assert.Equal(0, query.CandidateCount);
@@ -208,9 +260,10 @@ public sealed class CombatSelectionRunnerTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static ExerciseManifest Manifest(Setup setup, string policy, string variant, string terminal) =>
+    private static ExerciseManifest Manifest(Setup setup, string policy, string variant, string terminal,
+        ulong seed = 6) =>
         ExerciseManifestCodec.Deserialize(Encoding.UTF8.GetBytes($$"""
-            {"contractVersion":2,"exerciseId":"combat-selection.{{variant}}","setupId":"{{setup.SetupId}}","setupHash":"{{setup.SetupHash}}","contentPackId":"{{setup.ContentPackId}}","contentHash":"{{setup.ContentHash}}","scenarioId":"{{setup.ScenarioId}}","rulesetHash":"17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a","terminalBoundary":"{{terminal}}","maximumSteps":200,"rootSeed":6,"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"compact","controllers":{"system":"{{policy}}","axis":"{{policy}}","commonwealth":"{{policy}}"},"assertFailureCategory":null}
+            {"contractVersion":2,"exerciseId":"combat-selection.{{variant}}","setupId":"{{setup.SetupId}}","setupHash":"{{setup.SetupHash}}","contentPackId":"{{setup.ContentPackId}}","contentHash":"{{setup.ContentHash}}","scenarioId":"{{setup.ScenarioId}}","rulesetHash":"17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a","terminalBoundary":"{{terminal}}","maximumSteps":200,"rootSeed":{{seed}},"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"compact","controllers":{"system":"{{policy}}","axis":"{{policy}}","commonwealth":"{{policy}}"},"assertFailureCategory":null}
             """));
 
     private static ExerciseExecutionResult ExecuteWithCombat(ExerciseManifest manifest) =>

@@ -104,14 +104,15 @@ public sealed record CampaignLegalActionSet
         else if (policyId == CombatExercisePolicyId)
         {
             if (audience == CampaignActionAudience.System
-                    ? copy.Any(candidate => candidate is not (CompleteCombatNoAttackAction or CompleteCombatBarrageAction))
-                    : copy.Any(candidate => candidate is not (SelectContactAssaultAction or FinishCombatWithoutAttackAction)))
+                    ? copy.Any(candidate => candidate is not CombatExerciseSystemAction)
+                    : copy.Any(candidate => candidate is not (SelectContactAssaultAction or FinishCombatWithoutAttackAction
+                        or DeclineRetreatBeforeAssaultAction or SealCombatForceAssignmentAction)))
                 throw new ArgumentException("Combat Exercise policy requires first-cycle Combat candidates for the audience.", nameof(candidates));
         }
         else if (hasPregameCandidate || copy.Any(candidate => candidate is CampaignSourceSetupAction or CampaignSourceTurnAction))
             throw new ArgumentException("Pre-game candidates require the pre-game policy.", nameof(candidates));
         if (policyId != CombatExercisePolicyId
-            && copy.Any(candidate => candidate is CompleteCombatNoAttackAction or CompleteCombatBarrageAction))
+            && copy.Any(candidate => candidate is CombatExerciseSystemAction))
             throw new ArgumentException("Combat Exercise System steps require the Combat Exercise policy.", nameof(candidates));
 
         ContractVersion = CurrentContractVersion;

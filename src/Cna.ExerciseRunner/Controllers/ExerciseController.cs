@@ -165,6 +165,8 @@ public sealed class ExerciseControllerSelection
 
 public static partial class ExerciseController
 {
+    private const string SealCombatForceKind = "seal-combat-force-assignment";
+
     private static readonly CampaignActionAudience[] AudienceOrder =
     [
         CampaignActionAudience.System,
@@ -189,6 +191,13 @@ public static partial class ExerciseController
         if (active.Length == 0)
             return ExerciseControllerSelection.Failed(
                 ExerciseControllerSelectionFailure.NoActiveAudience);
+        // Task 022B (T022-Q10, author convention for owner review): both owners' Combat Force seals
+        // are open at once. Seals are hidden and order-independent (020A1: the first seal never
+        // changes the other owner's decision), so every policy seals in fixed audience order.
+        if (active.Length > 1 && active.All(set => set.Audience != CampaignActionAudience.System
+                && set.Candidates.Count == 1
+                && string.Equals(set.Candidates[0].Kind, SealCombatForceKind, StringComparison.Ordinal)))
+            return ExerciseControllerSelection.Selected(active[0].Audience, active[0].Candidates[0].ActionId);
         if (active.Length != 1)
             return ExerciseControllerSelection.Failed(
                 ExerciseControllerSelectionFailure.MultipleActiveAudiences);

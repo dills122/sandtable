@@ -192,3 +192,69 @@ RBA decline, Force (both seals, plus the V19 `force-unavailable` System cancel),
 result/settlement, Custody, Reserve Release, Cycle Control, the timeouts, and every v2 stage.
 Combat-aware controller policies, the occurrence-aware terminal (Q4), and the CLI/bundle path
 (Q8/Q9) are also not done.
+
+## 9. Slice 022B — RBA decline, Force, Anti Armor, result (first cycle)
+
+Owner direction (2026-11-20): broaden coverage one round kind at a time, using v1 stages only.
+Test-harness only, as before.
+
+### Built
+
+- **Core** (`CampaignCombatExerciseActions.cs`): the first-cycle assault path follows the Host's
+  orchestration order (`CampaignDurableAuthorityJournal.Submissions`/`ForceRounds`). Each step is the
+  unchanged trusted Core step:
+  1. Barrage.
+  2. Decline-only RBA for the bound defender. RBA moves are never offered (`CMB-POL-001`, T020-Q7).
+  3. Force Assignment. If the round cannot be paid, System gets the V19 `force-unavailable`
+     cancellation (the Host's pre-opening check) and no owner gets a seal. Otherwise both owners'
+     seals are offered at once; the System Force completion follows the second seal.
+  4. System Anti Armor.
+  5. System V21 cancelled assault, or V22 assault result.
+  6. The cut after V21 (Reserve Release) or V22 (post-result retreat) offers nothing; that is the
+     frontier.
+  - Repeat cycles, the second side, RBA/Force timeouts and RBA movement stay uncovered.
+- The two 022A System candidate types are folded into one internal `CombatExerciseSystemAction`
+  with a kind per step. Both disclosure manifests list it with no declared members.
+- **Runner** (`ExerciseController`): when the only active offers are one Force seal per owner,
+  every policy takes them in fixed audience order (Axis, then Commonwealth). Any other multi-audience
+  cut still fails closed.
+
+### Evidence
+
+`CombatSelectionRunnerTests` (12 cases, staged Combat runtime):
+
+| Setup / policy / Exercise ID / seed | Combat steps driven by the Runner | Ends at |
+| --- | --- | --- |
+| combat-double-fresh / reaction-all / `.c` / 5, 6 | V12 assault → Barrage → RBA decline → Axis seal → Commonwealth seal → V18 → V20 → **V22 result** | `combat.close-assault`, then `no-unique-legal-action` |
+| combat-assault / reaction-all / `.c` / 6 | V12 assault (truck-bound) → Barrage → RBA decline → **V19 force-unavailable** → V20 → V21 cancelled assault | `reserve-release` |
+| combat-assault and combat-double-fresh / first-by-action-id / `.a` | V12 finish → V13 no-attack | `reserve-release` |
+
+All runs verify reconstruction and Combat-path readjudication.
+
+`CampaignCombatExerciseAssaultTests` (Core, 3 cases):
+
+- Every assault offered at entry on combat-assault (seeds 6 and 12345) follows either the payable
+  or the unpayable sequence. Each step's event and snapshot equal the direct Host-adapter step on
+  the same session.
+- Both seal orders are accepted, and the first seal leaves the other owner's offer unchanged. The
+  V22 results differ only in `priorAntiArmorHash`, the event-chain link.
+
+### New findings
+
+- **T022-Q7 is broader than Selection.** Every owner-decision receipt (V12 Selection, V15 RBA
+  decline, V17 Force seal) names the cut the decision was taken at; every System receipt names the
+  next position. It looks like a deliberate Core convention, not a Selection bug. The harness keeps
+  re-issuing owner receipts with the successor checkpoint. The owner should confirm the convention,
+  or rule that the Runner's continuity check accept it.
+- **T022-Q4 evidence.** Anti Armor and the V22 result share `combat.close-assault`, so a
+  position-only terminal stops before the result.
+- **T022-Q10 (new, author convention).** The Runner takes simultaneous Force seals in fixed audience
+  order. Seals are hidden and order-independent in outcome (020A1, and the test above), but the
+  event chain records the order, so runs only ever exercise Axis-first. Alternatives: a policy
+  token for seal order, or Core offering seals sequentially.
+
+### Next (022C)
+
+No-retreat System step (retreat is v2, excluded), settlement, Custody (v1 owner or System
+no-custody), successor, Reserve Release (owner choices plus System completion) and Cycle Control
+(Finish only; Repeat leads to v2 repeated Movement). That closes a full first-cycle loop.
