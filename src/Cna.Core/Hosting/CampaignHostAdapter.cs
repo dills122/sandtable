@@ -1314,6 +1314,20 @@ public static class CampaignHostAdapter
         && session.CurrentCombatForceCompletion is null
         && session.CurrentCombatForceCancellation is null;
 
+    /// <summary>
+    /// #476: a repeated-cycle Force round about to open (decline accepted, no seal, not yet completed
+    /// or cancelled). The Host applies the same pre-opening force-unavailable check as for
+    /// <see cref="IsInitialNativeCombatForceRound"/>.
+    /// </summary>
+    public static bool IsRepeatedNativeCombatForceRound(ExerciseSession session) =>
+        session.CurrentRepeatAssault is
+        {
+            Decline: not null,
+            ForceCompletion: null,
+            ForceCancellation: null,
+            Seals.Count: 0,
+        };
+
     public static ExerciseStepResult CompleteNativeCombatAntiArmor(ExerciseSession session) =>
         CampaignExercises.CompleteNativeCombatAntiArmor(session);
 
