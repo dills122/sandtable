@@ -24,6 +24,9 @@ public enum CampaignActionSubmissionRejectionReason
     StaleState,
     UnexpectedPosition,
     ActionNotLegal,
+    // The choice is a source-legal rule edge the engine has not built yet;
+    // it stays visible in the legal set and is refused explicitly (FID-002).
+    RuleNotImplemented,
 }
 
 public sealed record CampaignActionAcceptanceReceipt

@@ -674,7 +674,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             _ => CampaignHostAdapter.SubmitContactOwnerMovement(head.Session,
                 submission, actingElementId),
         };
-        if (!result.IsAccepted) return CampaignOwnerSubmissionResult.Rejected();
+        if (!result.IsAccepted)
+            return result.RejectionReason == CampaignActionSubmissionRejectionReason.RuleNotImplemented
+                ? CampaignOwnerSubmissionResult.RuleNotImplemented()
+                : CampaignOwnerSubmissionResult.Rejected();
         RbaRound? rbaRound = null;
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
         {
@@ -841,24 +844,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // auto-continuation above. Uses the side-correct
         // IsNativeSecondCombatVoluntaryFinish/CompleteSecondCombatNoAttack
         // pair (extra-3) instead of the first-side checks, which would read
-        // whatever the *first* side chose, not this decision.
-        //
-        // Deliberately stops here: CompleteSecondCombatNoAttack persists the
-        // second-side no-attack completion (CurrentSecondNoAttackCompletion)
-        // durably and atomically, but this PR does NOT call
-        // AppendEmptyReserveRelease for it. That helper ultimately reaches
-        // CampaignExercises.QueryNativeReserveReleaseState, whose only lazy
-        // initializer for CurrentReserveRelease
-        // (InitializeAfterInitialNoAttack) is keyed to the FIRST side's
-        // CurrentCombatDecision/CurrentNoAttackCompletion -- there is no
-        // second-side-keyed initializer yet. Calling it here would either
-        // silently resolve the stale first-side Reserve Release state (wrong)
-        // or throw from deep inside a shared helper with no clear message
-        // (confusing). So the second side's decision and no-attack completion
-        // are accepted, persisted, and cold-replayable, but the campaign does
-        // not auto-advance into Reserve Release/Cycle Control past this point
-        // yet -- that is the explicit, intentional follow-up this PR leaves
-        // for #394's next pass, not a silent gap.
+        // whatever the *first* side chose, not this decision. The second
+        // side's own Reserve Release then follows from its V13 completion.
         else if (kind == CampaignOwnerOpeningKind.CombatSelection
             && CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(result.SuccessorSession!))
         {
@@ -868,17 +855,34 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var systemHead = Load(connection, transaction, seat.CampaignId);
             var systemCommand = CampaignHostAdapter.SecondCombatNoAttackCommand(
                 systemHead.Session, noAttack);
-            PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+            var reserveHead = PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
                 CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind, null,
                 null, null, null, systemCommand, noAttack);
+            // The second side's own Reserve Release now initializes from its
+            // V13 completion (CampaignNativeReserveReleaseStateV27.InitializeAfterSecondNoAttack).
+            AppendEmptyReserveRelease(connection, transaction, seat.CampaignId, reserveHead);
         }
-        // #394 extra-2: a second-side "select-contact-assault" pick is
-        // likewise accepted and persisted by the submission itself, with no
-        // auto-continuation here -- second-side Barrage/Retreat/Custody/
-        // Settlement resolution is out of this PR's scope (see the PR
-        // description). Guarded the same way as the voluntary-finish check
-        // above so a stale first-side "select-contact-assault" pick can
-        // never alias onto this second-side submission either.
+        // A second-side assault pick enters its own Barrage exactly like the
+        // first side's: the V14-V26 stages replay from the V47 selection
+        // (CampaignNativeRepeatAssaultRuntime.ReplaySecond) and open the
+        // defender's RBA round.
+        else if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
+            && CampaignHostAdapter.IsNativeSecondCombatSelectedAssault(result.SuccessorSession!))
+        {
+            var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);
+            if (!barrage.IsAccepted)
+                throw new InvalidOperationException("Accepted second-side assault cannot complete Barrage.");
+            var systemHead = Load(connection, transaction, seat.CampaignId);
+            var systemCommand = CampaignHostAdapter.NativeCombatBarrageCommand(
+                systemHead.Session, barrage);
+            var barrageHead = PersistAccepted(connection, transaction, seat.CampaignId, systemHead,
+                CampaignHostAcceptedStep.NativeCombatBarrageKind, null,
+                null, null, null, systemCommand, barrage);
+            InitializeRbaRound(connection, transaction, barrageHead, seat.CampaignId);
+        }
+        // Guarded so a stale first-side "select-contact-assault" pick can
+        // never alias onto a second-side submission.
         else if (kind == CampaignOwnerOpeningKind.CombatSelection
             && !CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
             && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
@@ -1038,14 +1042,25 @@ internal sealed class CampaignOwnerSubmissionResult
 {
     private readonly byte[]? canonicalReceipt;
 
-    private CampaignOwnerSubmissionResult(byte[]? canonicalReceipt) =>
+    private CampaignOwnerSubmissionResult(byte[]? canonicalReceipt, string? rejectionCode = null)
+    {
         this.canonicalReceipt = canonicalReceipt?.ToArray();
+        RejectionCode = rejectionCode;
+    }
+
+    internal const string RuleNotImplementedCode = "rule-not-implemented";
 
     internal static CampaignOwnerSubmissionResult Accepted(byte[] canonicalReceipt) =>
         new(canonicalReceipt);
 
     internal static CampaignOwnerSubmissionResult Rejected() => new(null);
 
+    // A source-legal choice the engine has not built yet (FID-002): refused,
+    // but distinguishable from an illegal or stale submission.
+    internal static CampaignOwnerSubmissionResult RuleNotImplemented() =>
+        new(null, RuleNotImplementedCode);
+
     public bool IsAccepted => canonicalReceipt is not null;
+    public string? RejectionCode { get; }
     public byte[]? CanonicalReceipt => canonicalReceipt?.ToArray();
 }

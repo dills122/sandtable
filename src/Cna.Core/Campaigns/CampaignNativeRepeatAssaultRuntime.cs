@@ -6,7 +6,9 @@ namespace Cna.Core.Campaigns;
 
 // Replays the Combat stages following a selected later-cycle assault from the
 // accepted V31 cut. It uses the retained World and random cursor, not a
-// reconstructed first-cycle snapshot.
+// reconstructed first-cycle snapshot. The same V14-V26 stages also follow the
+// second acting side's own V47 assault selection (ReplaySecond); only the
+// Reserve Release initializers differ, since V47 has no V31 cycle record.
 internal sealed class CampaignNativeRepeatAssaultRuntime
 {
     private CampaignNativeRepeatAssaultRuntime(
@@ -14,16 +16,28 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
         CampaignContentContext context,
         CampaignContactJournal contacts,
         IReadOnlyList<object> priorHistory,
-        CampaignCombatAmmunitionLedgerV1? ammunitionSeed)
+        CampaignCombatAmmunitionLedgerV1? ammunitionSeed,
+        bool isSecondSide = false)
     {
         Selection = selection;
         Context = context;
         Contacts = contacts;
+        BaseContacts = contacts;
         PriorHistory = priorHistory;
         AmmunitionSeed = ammunitionSeed;
+        IsSecondSide = isSecondSide;
     }
 
     internal CampaignCombatSelectionFrame Selection { get; }
+    internal bool IsSecondSide { get; }
+    // A second-side voluntary finish carries only its V13 completion and the
+    // following Reserve Release / cycle control; it never enters Barrage.
+    internal bool IsSecondSideFinish =>
+        IsSecondSide && Selection.Decision.Choice == "finish-combat-without-attack";
+    internal CampaignNativeCombatNoAttackCompletionV13? NoAttack { get; private set; }
+    private CampaignContactJournal BaseContacts { get; }
+    private readonly List<object> events = [];
+    internal IReadOnlyList<object> Events => events;
     internal CampaignContentContext Context { get; }
     internal CampaignContactJournal Contacts { get; private set; }
     private IReadOnlyList<object> PriorHistory { get; }
@@ -76,6 +90,11 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
     internal CampaignNativeCombatSuccessorV26? Successor { get; private set; }
     internal CampaignNativeReserveReleaseStateV27? Release { get; private set; }
     internal CampaignNativeCycleControlV28? Control { get; private set; }
+    // The second acting side's own post-Combat phases (V41 then V42 passes)
+    // after its Finish edge. A first-side later cycle never retains these.
+    internal CampaignNativeTruckConvoyPassV41? TruckConvoyPass { get; private set; }
+    private readonly List<CampaignNativePostCombatPassV42> postCombatPasses = [];
+    internal IReadOnlyList<CampaignNativePostCombatPassV42> PostCombatPasses => postCombatPasses;
 
     internal static CampaignNativeRepeatAssaultRuntime Replay(
         CampaignSnapshotV11 initial,
@@ -103,12 +122,78 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
         var runtime = new CampaignNativeRepeatAssaultRuntime(frame, context,
             contactsAfterSelection, priorHistory, ammunitionSeed);
         foreach (var item in retained)
-            runtime.Apply(item);
+            runtime.ApplyRetained(item);
         return runtime;
+    }
+
+    // The second acting side's assault after its own V47 selection. The frame
+    // carries the second side's retained World and the campaign's latest
+    // Combat random cursor; its PriorSnapshot supplies only turn-wide facts.
+    internal static CampaignNativeRepeatAssaultRuntime ReplaySecond(
+        CampaignCombatSelectionFrame frame,
+        CampaignContentContext context,
+        CampaignContactJournal contactsAfterSelection,
+        IReadOnlyList<object> priorHistory,
+        IEnumerable<object> events)
+    {
+        ArgumentNullException.ThrowIfNull(frame);
+        ArgumentNullException.ThrowIfNull(events);
+        var retained = events.ToArray();
+        if (retained.Length > 1024)
+            throw new InvalidCampaignHistoryException(
+                "Second-side assault history exceeds its retained event bound.");
+        if (frame.IsRepeat || frame.Decision.Choice is not ("select-contact-assault"
+                or "finish-combat-without-attack")
+            || contactsAfterSelection.CampaignId != frame.CampaignId
+            || contactsAfterSelection.AuthorityVersion != frame.StateVersion)
+            throw new InvalidCampaignHistoryException(
+                "Second-side assault lacks accepted same-cut contact authority.");
+        var runtime = new CampaignNativeRepeatAssaultRuntime(frame, context,
+            contactsAfterSelection, priorHistory, null, isSecondSide: true);
+        foreach (var item in retained)
+            runtime.ApplyRetained(item);
+        return runtime;
+    }
+
+    // Re-verifies the whole retained stage chain with one more accepted event.
+    internal CampaignNativeRepeatAssaultRuntime Advance(object item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        var runtime = new CampaignNativeRepeatAssaultRuntime(Selection, Context,
+            BaseContacts, PriorHistory, AmmunitionSeed, IsSecondSide);
+        foreach (var retained in events.Append(item))
+            runtime.ApplyRetained(retained);
+        return runtime;
+    }
+
+    private void ApplyRetained(object item)
+    {
+        Apply(item);
+        events.Add(item);
     }
 
     private void Apply(object item)
     {
+        if (IsSecondSideFinish)
+        {
+            if (NoAttack is not null)
+            {
+                ApplyReleaseOrControl(item);
+                return;
+            }
+            if (item is not CampaignNativeCombatNoAttackCompletionV13 completion)
+                throw new InvalidCampaignHistoryException(
+                    "Second-side voluntary finish must complete without attack.");
+            var expected = CampaignNativeCombatNoAttackCompletionV13.Create(Selection, Context);
+            if (!completion.SerializeCanonical().AsSpan().SequenceEqual(expected.SerializeCanonical()))
+                throw new InvalidCampaignHistoryException(
+                    "Second-side no-attack completion differs from Core replay.");
+            NoAttack = expected;
+            Contacts = Contacts.AdvanceNativeCombatNoAttackCompletion(expected);
+            Release = CampaignNativeReserveReleaseStateV27.InitializeAfterSecondNoAttack(
+                Selection, expected, Context);
+            return;
+        }
         if (Barrage is null)
         {
             if (item is not CampaignNativeCombatBarrageV14 barrage)
@@ -129,8 +214,13 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             RbaCancellation = CampaignNativeCombatRbaCancellationV33.Replay(
                 Selection, Barrage, retreatMoves.LastOrDefault(), rbaCancellation.SerializeCanonical());
             Contacts = Contacts.AdvanceNativeCombatRbaCancellation(RbaCancellation);
-            Release = CampaignNativeReserveReleaseStateV27.InitializeAfterRepeatRbaCancellation(
-                Selection, RbaCancellation, RetreatWorld ?? Selection.World, Context);
+            Release = IsSecondSide
+                ? CampaignNativeReserveReleaseStateV27.InitializeAfterSecondCompletion(
+                    Selection, RbaCancellation.StateVersion, RbaCancellation.NextPositionId,
+                    CampaignNativeReserveReleaseEventV27.Hash(RbaCancellation.SerializeCanonical()),
+                    RetreatWorld ?? Selection.World, Context)
+                : CampaignNativeReserveReleaseStateV27.InitializeAfterRepeatRbaCancellation(
+                    Selection, RbaCancellation, RetreatWorld ?? Selection.World, Context);
             return;
         }
         if (Decline is null)
@@ -219,7 +309,12 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             CancelledAssault = CampaignNativeCombatCancelledAssaultV21.Replay(
                 Selection, AntiArmor, cancelled.SerializeCanonical());
             Contacts = Contacts.AdvanceNativeCombatCancelledAssault(CancelledAssault);
-            Release = CampaignNativeReserveReleaseStateV27
+            Release = IsSecondSide
+                ? CampaignNativeReserveReleaseStateV27.InitializeAfterSecondCompletion(
+                    Selection, CancelledAssault.StateVersion, CancelledAssault.NextPositionId,
+                    CampaignNativeReserveReleaseEventV27.Hash(CancelledAssault.SerializeCanonical()),
+                    RetreatWorld ?? Selection.World, Context)
+                : CampaignNativeReserveReleaseStateV27
                 .InitializeAfterRepeatCancelledAssault(
                     Selection, CancelledAssault, RetreatWorld ?? Selection.World,
                     Context);
@@ -303,9 +398,12 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
             Contacts = Contacts.AdvanceNativeCombatSuccessor(Successor);
             var projection = CampaignNativeCombatSuccessorV26.Project(Selection,
                 Result!, Settlement!, Custody, CustodyWorld!, CustodyState, Context);
-            Release = CampaignNativeReserveReleaseStateV27.InitializeAfterRepeatAssault(
-                CampaignNativeRepeatCombatDecisionV31.Deserialize(
-                    Selection.CanonicalSelection), Successor, projection, Context);
+            Release = IsSecondSide
+                ? CampaignNativeReserveReleaseStateV27.InitializeAfterSecondAssault(
+                    Selection, Successor, projection, Context)
+                : CampaignNativeReserveReleaseStateV27.InitializeAfterRepeatAssault(
+                    CampaignNativeRepeatCombatDecisionV31.Deserialize(
+                        Selection.CanonicalSelection), Successor, projection, Context);
             return;
         }
         ApplyReleaseOrControl(item);
@@ -313,6 +411,11 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
 
     private void ApplyReleaseOrControl(object item)
     {
+        if (IsSecondSide && Control is { Choice: CampaignNativeCycleControlChoiceV28.Finish } finished)
+        {
+            ApplySecondSidePhase(item, finished);
+            return;
+        }
         if (item is CampaignNativeReserveReleaseEventV27 releaseEvent)
         {
             if (Control is not null)
@@ -332,5 +435,35 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
         }
         throw new InvalidCampaignHistoryException(
             "Repeated assault stage is not yet supported by the normal campaign.");
+    }
+
+    private void ApplySecondSidePhase(object item, CampaignNativeCycleControlV28 finished)
+    {
+        var side = Selection.Decision.Side;
+        if (TruckConvoyPass is null)
+        {
+            if (item is not CampaignNativeTruckConvoyPassV41 convoy)
+                throw new InvalidCampaignHistoryException(
+                    "Second-side Finish must enter its own Truck Convoy Movement.");
+            var expected = CampaignNativeTruckConvoyPassV41.Create(Release!, finished, side,
+                Contacts.AuthorityVersion);
+            if (!convoy.SerializeCanonical().AsSpan().SequenceEqual(expected.SerializeCanonical()))
+                throw new InvalidCampaignHistoryException(
+                    "Second-side Truck Convoy pass differs from Core replay.");
+            TruckConvoyPass = expected;
+            Contacts = Contacts.AdvanceTruckConvoyPass(expected);
+            return;
+        }
+        if (item is not CampaignNativePostCombatPassV42 passed)
+            throw new InvalidCampaignHistoryException(
+                "Second-side post-Combat phases accept only an owner pass.");
+        object predecessor = postCombatPasses.Count == 0 ? TruckConvoyPass : postCombatPasses[^1];
+        var replayed = CampaignNativePostCombatPassV42.Create(predecessor, side,
+            Selection.PriorSnapshot.Setup.InitialGameTurn, Contacts.AuthorityVersion);
+        if (!passed.SerializeCanonical().AsSpan().SequenceEqual(replayed.SerializeCanonical()))
+            throw new InvalidCampaignHistoryException(
+                "Second-side post-Combat pass differs from Core replay.");
+        postCombatPasses.Add(replayed);
+        Contacts = Contacts.AdvancePostCombatPass(replayed);
     }
 }

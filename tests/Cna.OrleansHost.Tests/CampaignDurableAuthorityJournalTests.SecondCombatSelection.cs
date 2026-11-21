@@ -109,9 +109,10 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     // axis-infantry contact.
     private static (CampaignCreationRequest Request, CampaignSeatCredential Axis,
         CampaignSeatCredential Commonwealth) AdvanceToSecondCombatSelectionWithAdjacentEnemy(
-            CampaignDurableAuthorityJournal journal)
+            CampaignDurableAuthorityJournal journal, CampaignCreationRequest? payable = null,
+            string? secondReserveElementId = null)
     {
-        var request = CombatInfantryRequest();
+        var request = payable ?? CombatInfantryRequest();
         AdvanceToContactCombat(journal, request, Timing(request), preserveAdjacentInfantry: true);
         var axis = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Axis, OperatorSecret))!;
@@ -142,6 +143,17 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         // designated -- same closed path AdvanceToSecondCombatSelection uses,
         // so commonwealth-infantry is never pulled into reserve and stays on
         // the map, still adjacent to axis-infantry.
+        if (secondReserveElementId is not null)
+        {
+            var designation = journal.QuerySecondReserveOwnerOpening(commonwealth);
+            using var choices = JsonDocument.Parse(designation.VisibleBytes);
+            var index = Enumerable.Range(0, choices.RootElement.GetProperty("choices").GetArrayLength())
+                .Single(value => choices.RootElement.GetProperty("choices")[value]
+                    .GetProperty("elementId").GetString() == secondReserveElementId);
+            if (!journal.SubmitOwnerSecondReserve(commonwealth, designation.Revision,
+                    designation.PublicActionRefs[index]).IsAccepted)
+                throw new InvalidOperationException("Second Reserve designation was not accepted.");
+        }
         var secondReserve = journal.QuerySecondReserveOwnerOpening(commonwealth);
         if (!journal.SubmitOwnerSecondReserve(commonwealth, secondReserve.Revision,
                 secondReserve.PublicActionRefs[^1]).IsAccepted)
@@ -177,9 +189,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var finishRef = opening.PublicActionRefs[^1];
         // The first side's own (unrelated) voluntary finish earlier in this
         // same test already produced one "native-reserve-release-completion"
-        // step -- capture that baseline so the later assertion checks that
-        // the second side's own no-attack does NOT add another one, rather
-        // than asserting a campaign-wide count of zero.
+        // step -- capture that baseline so the later assertion counts only
+        // the second side's own completion.
         var reserveReleaseCountBeforeSecondSide = CountAcceptedStep(fixture.Path, request.CampaignId,
             "native-reserve-release-completion");
 
@@ -234,8 +245,15 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.NotNull(secondNoAttackProperty.GetValue(verified));
         Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId,
             "native-second-combat-no-attack"));
-        Assert.Equal(reserveReleaseCountBeforeSecondSide, CountAcceptedStep(fixture.Path, request.CampaignId,
+        // The second side's no-attack now opens its own Reserve Release
+        // (InitializeAfterSecondNoAttack), which completes empty and leaves
+        // the second side's Cycle Control pending.
+        Assert.Equal(reserveReleaseCountBeforeSecondSide + 1, CountAcceptedStep(fixture.Path, request.CampaignId,
             "native-reserve-release-completion"));
+        var released = CampaignExercises.QueryCheckpoint(verified);
+        Assert.Equal(27, released.ContractVersion);
+        Assert.Equal("land.position.operation-1.second-player.movement-and-combat.reserve-release",
+            released.PositionId);
     }
 
     // Note: this fixture's second side never ends up adjacent to a visible

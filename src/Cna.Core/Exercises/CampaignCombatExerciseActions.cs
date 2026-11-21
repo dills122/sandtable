@@ -130,7 +130,9 @@ internal static class CampaignCombatExerciseActions
     {
         if (session is null || session.Pregame is not null || session.SourceAuthority is not null
             || session.SourceTurn is not null
-            || session.CurrentRepeatAssault is not null || session.CurrentPostRepeat is not null
+            // The second side's own assault runtime is classified by SecondPlayer below.
+            || (session.CurrentRepeatAssault is not null && session.CurrentSecondAssault is null)
+            || session.CurrentPostRepeat is not null
             || session.Context.ArtifactV6 is null)
             return new(Stage.None);
         // 022D: after the first side's Cycle Control Finish, the second player's phase.

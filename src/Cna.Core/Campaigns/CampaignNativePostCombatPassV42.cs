@@ -28,7 +28,10 @@ internal sealed record CampaignNativePostCombatPassV42(
         if (side != priorSide || contactVersion != version)
             throw new InvalidOperationException("Post-combat pass belongs to the acting side and current cut.");
         var position = Cna1979LandSequenceV4.CreateTurn(gameTurn).Single(value => value.PositionId == positionId);
-        if (position.ActorRole != LandActorRole.FirstActingSide
+        // Both acting sides pass their own rail, repair and patrol phases. The
+        // second side's patrol pass ends Operation Stage 1's last side-block;
+        // nothing past its successor position is admitted this release.
+        if (position.ActorRole is not (LandActorRole.FirstActingSide or LandActorRole.SecondActingSide)
             || !(position.PhaseId is LandPhaseIds.CommonwealthRailMovement or LandPhaseIds.Patrol
                 || position.PhaseId == LandPhaseIds.Repair
                     && position.SegmentId is LandSegmentIds.Towing or LandSegmentIds.Maintenance))

@@ -2075,6 +2075,12 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         // Posts one action body and returns the HTTP status without asserting success (020D: the
         // retired rba-move action stage must be refused by the outward route).
         internal async Task<HttpStatusCode> SubmitStatus(CampaignSeatCredential credential, string actor,
+            string actionStage, long openingRevision, string reference) =>
+            (await SubmitResponse(credential, actor, actionStage, openingRevision, reference)).Status;
+
+        // Status and body of one action post, without asserting success.
+        internal async Task<(HttpStatusCode Status, string Body)> SubmitResponse(
+            CampaignSeatCredential credential, string actor,
             string actionStage, long openingRevision, string reference)
         {
             var actionBody = JsonSerializer.Serialize(new
@@ -2096,7 +2102,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             using var submitted = await client.PostAsync($"/api/v2/campaigns/{campaignId}/actions",
                 new StringContent(actionBody, Encoding.UTF8, "application/json"),
                 TestContext.Current.CancellationToken);
-            return submitted.StatusCode;
+            return (submitted.StatusCode, await submitted.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
         }
 
         public async ValueTask DisposeAsync()
