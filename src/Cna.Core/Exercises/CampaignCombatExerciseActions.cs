@@ -44,6 +44,8 @@ internal static class CampaignCombatExerciseActions
         Custody,
         ReserveRelease,
         CycleControl,
+        SecondPlayerPhase,
+        SecondSelection,
         System,
         Frontier,
     }
@@ -104,7 +106,8 @@ internal static class CampaignCombatExerciseActions
 
     // T022-Q7 (open, author choice for owner review): some receipts report the cut the step was taken
     // at as ResultingPositionId, while the successor's checkpoint is the next position: the owner
-    // decisions V12 Selection, V15 RBA decline and V17 Force seal, and the System V26 successor. The
+    // decisions V12/V47 Selection, V15 RBA decline, V17 Force seal and V45 second-side Movement
+    // completion, and the System V26 successor. The
     // other covered steps' receipts already name the successor checkpoint and pass through unchanged.
     // The Host persists and returns these receipts, so they are left unchanged there; this harness
     // path alone re-issues an owner receipt with the successor checkpoint position so the Runner's
@@ -126,10 +129,14 @@ internal static class CampaignCombatExerciseActions
     private static Cut Classify(ExerciseSession session)
     {
         if (session is null || session.Pregame is not null || session.SourceAuthority is not null
-            || session.SourceTurn is not null || session.CurrentSecondBreakdown is not null
+            || session.SourceTurn is not null
             || session.CurrentRepeatAssault is not null || session.CurrentPostRepeat is not null
             || session.Context.ArtifactV6 is null)
             return new(Stage.None);
+        // 022D: after the first side's Cycle Control Finish, the second player's phase.
+        if (session.CurrentCycleControl is { Choice: CampaignNativeCycleControlChoiceV28.Finish })
+            return SecondPlayer(session);
+        if (session.CurrentSecondBreakdown is not null) return new(Stage.None);
         if (session.CurrentCombatDecision is not { } selected)
             return IsFirstSideCombatEntry(session.CurrentSnapshot)
                 // Only where the ordinary legal-action query offers nothing to anyone.
@@ -199,6 +206,27 @@ internal static class CampaignCombatExerciseActions
             : AfterCombat(session, stateVersion);
     }
 
+    // 022D: the second player's phase after the first side finishes, in the Host's order: Truck
+    // Convoy pass, post-Combat pass, second-side Reserve designation, second-side Movement and its
+    // completion, the System second-side Breakdown, second-side Combat Selection (V47), then the
+    // System no-attack completion after a finish. A second-side assault has no Core continuation
+    // (Barrage onward is out of scope there, as on the Host), and the second side's no-attack
+    // completion does not open Reserve Release; both stop at an empty frontier.
+    private static Cut SecondPlayer(ExerciseSession session)
+    {
+        if (session.CurrentSecondCombatDecision is not null)
+            return CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(session)
+                && session.CurrentSecondNoAttackCompletion is null
+                    ? new(Stage.System, CampaignExercises.CompleteSecondCombatNoAttack,
+                        CombatExerciseSystemAction.SecondNoAttackKind)
+                    : new(Stage.Frontier);
+        if (session.CurrentSecondBreakdown is not null) return new(Stage.SecondSelection);
+        if (session.CurrentSecondMovementCompletion is not null)
+            return new(Stage.System, CampaignExercises.CompleteSecondBreakdown,
+                CombatExerciseSystemAction.SecondBreakdownKind);
+        return new(Stage.SecondPlayerPhase);
+    }
+
     // Reserve Release, then Cycle Control, in the order the Host opens them
     // (AppendEmptyReserveRelease, then the Cycle Control round).
     private static Cut AfterCombat(ExerciseSession session, long stateVersion)
@@ -244,6 +272,8 @@ internal static class CampaignCombatExerciseActions
             Stage.Custody => CustodyOffers(session, side),
             Stage.ReserveRelease => ReserveReleaseOffers(session, side),
             Stage.CycleControl => CycleControlOffers(session, side),
+            Stage.SecondPlayerPhase => SecondPlayerOffers(session, audience),
+            Stage.SecondSelection => SelectionOffers(session, side),
             _ => [],
         };
     }
@@ -317,6 +347,70 @@ internal static class CampaignCombatExerciseActions
                     Kebab(choice.ToString()), CombatExerciseOwnerChoiceAction.CycleControlStage, actionId),
                 (ExerciseStepResult?)null))
             .ToList();
+    }
+
+    // Second player's owner steps. Each draft's offer is kept only if the unchanged trusted step
+    // accepts it for this audience (the step is pure over the immutable session), so the offer set
+    // and its owning side are exactly what Core admits.
+    private static List<(CampaignActionCandidate, ExerciseStepResult?)> SecondPlayerOffers(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        CampaignActionSubmission Command(string actionId) => new(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, audience, actionId);
+        var offers = new List<(CampaignActionCandidate, ExerciseStepResult?)>();
+        void Offer(Func<IEnumerable<(CampaignActionCandidate Candidate, Func<CampaignActionSubmission, ExerciseStepResult> Submit)>> draft)
+        {
+            try
+            {
+                foreach (var (candidate, submit) in draft())
+                {
+                    var step = submit(Command(candidate.ActionId));
+                    if (step.IsAccepted && step.Evidence!.EventRecords.Count == 1)
+                        offers.Add((candidate, step));
+                }
+            }
+            catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+            {
+                // That step is not open at this cut for this audience.
+            }
+        }
+        Offer(() => CampaignHostAdapter.QueryTruckConvoyPassOwnerDraft(session, audience).PrivateActionIds
+            .Select(id => ((CampaignActionCandidate)new CombatExerciseOwnerChoiceAction(
+                CombatExerciseOwnerChoiceAction.TruckConvoyPassStage, "pass", CombatExerciseOwnerChoiceAction.TruckConvoyPassStage, id),
+                (Func<CampaignActionSubmission, ExerciseStepResult>)(command =>
+                    CampaignHostAdapter.SubmitTruckConvoyPass(session, command)))));
+        Offer(() => CampaignHostAdapter.QueryPostCombatPassOwnerDraft(session, audience).PrivateActionIds
+            .Select(id => ((CampaignActionCandidate)new CombatExerciseOwnerChoiceAction(
+                CombatExerciseOwnerChoiceAction.PostCombatPassStage, "finish-without-activity",
+                CombatExerciseOwnerChoiceAction.PostCombatPassStage, id),
+                (Func<CampaignActionSubmission, ExerciseStepResult>)(command =>
+                    CampaignHostAdapter.SubmitPostCombatPass(session, command)))));
+        // Second-side Reserve offers are the ordinary typed Reserve designation candidates, so the
+        // Runner's Reserve policies apply to them unchanged.
+        var reserveCandidates = session.CurrentSnapshot.World.Elements
+            .Select(value => (CampaignActionCandidate)new DesignateReserveAction(value.ElementId))
+            .Append(new CompleteReserveDesignationAction())
+            .ToDictionary(value => value.ActionId, StringComparer.Ordinal);
+        Offer(() => CampaignHostAdapter.QuerySecondReserveOwnerDraft(session, audience).PrivateActionIds
+            .Where(reserveCandidates.ContainsKey)
+            .Select(id => (reserveCandidates[id],
+                (Func<CampaignActionSubmission, ExerciseStepResult>)(command =>
+                    CampaignHostAdapter.SubmitSecondReserve(session, command)))));
+        foreach (var element in session.CurrentSnapshot.World.Elements.Select(value => value.ElementId)
+            .Order(StringComparer.Ordinal))
+            Offer(() => CampaignHostAdapter.QuerySecondMovementOwnerDraft(session, audience, element).PrivateActionIds
+                .Select(id => ((CampaignActionCandidate)new CombatExerciseOwnerChoiceAction(
+                    CombatExerciseOwnerChoiceAction.SecondMovementStage, "move", element, id),
+                    (Func<CampaignActionSubmission, ExerciseStepResult>)(command =>
+                        CampaignHostAdapter.SubmitSecondMovement(session, command, element)))));
+        Offer(() => CampaignHostAdapter.QuerySecondMovementCompletionOwnerDraft(session, audience).PrivateActionIds
+            .Select(id => ((CampaignActionCandidate)new CombatExerciseOwnerChoiceAction(
+                CombatExerciseOwnerChoiceAction.SecondMovementCompletionStage, "complete-movement",
+                CombatExerciseOwnerChoiceAction.SecondMovementCompletionStage, id),
+                (Func<CampaignActionSubmission, ExerciseStepResult>)(command =>
+                    CampaignHostAdapter.SubmitSecondMovementCompletion(session, command)))));
+        return offers;
     }
 
     // "ConvertToII" -> "convert-to-ii", "Finish" -> "finish".

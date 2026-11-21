@@ -15,6 +15,7 @@ namespace Cna.Core.Tests.Exercises;
 public sealed class CampaignCombatExerciseAssaultTests
 {
     private const string Prefix = "land.position.operation-1.first-player.";
+    private const string SecondPrefix = "land.position.operation-1.second-player.";
 
     private static readonly string[] Payable =
     [
@@ -31,10 +32,14 @@ public sealed class CampaignCombatExerciseAssaultTests
 
     private static readonly string[] Settled = ["complete-combat-no-retreat", "settle-combat-world"];
 
+    private static readonly string[] SecondPlayerPrefix =
+        ["combat-truck-convoy-pass-pass", "combat-post-combat-pass-finish-without-activity"];
+
     private static readonly string[] ReissuedReceiptKinds =
     [
-        "select-contact-assault", "decline-retreat-before-assault", "seal-combat-force-assignment",
-        "complete-combat-successor",
+        "select-contact-assault", "finish-combat-without-attack", "decline-retreat-before-assault",
+        "seal-combat-force-assignment", "complete-combat-successor",
+        "combat-second-movement-completion-complete-movement",
     ];
 
     [Theory]
@@ -78,7 +83,11 @@ public sealed class CampaignCombatExerciseAssaultTests
         Assert.Contains("complete-combat-successor", kinds);
         Assert.Contains("complete-combat-reserve-release", kinds);
         Assert.Contains(kinds, kind => kind.StartsWith("combat-reserve-release-", StringComparison.Ordinal));
-        Assert.Equal("combat-cycle-control-finish", kinds[^1]);
+        // 022D: after Cycle Control Finish the second player's phase follows.
+        var finish = kinds.IndexOf("combat-cycle-control-finish");
+        Assert.True(finish > 0);
+        Assert.Equal(SecondPlayerPrefix, kinds.Skip(finish + 1).Take(SecondPlayerPrefix.Length));
+        Assert.Contains("complete-second-side-breakdown", kinds);
     }
 
     [Fact]
@@ -152,10 +161,14 @@ public sealed class CampaignCombatExerciseAssaultTests
         if (kinds[^1] == "resolve-combat-assault")
             // A required post-assault retreat (contract-v2 stage) stops the loop at the result.
             Assert.Equal(Prefix + "movement-and-combat.combat.close-assault", position);
+        else if (kinds[^1] == "complete-second-side-combat-no-attack")
+            // The second side's no-attack completion opens no Reserve Release in Core (022D frontier).
+            Assert.Equal(SecondPrefix + "movement-and-combat.reserve-release", position);
         else
         {
-            Assert.Equal("combat-cycle-control-finish", kinds[^1]);
-            Assert.Equal(Prefix + "truck-convoy-movement", position);
+            // A second-side assault has no Core continuation past its Selection (022D frontier).
+            Assert.Equal("select-contact-assault", kinds[^1]);
+            Assert.Equal(SecondPrefix + "movement-and-combat.combat.barrage", position);
         }
     }
 
@@ -174,14 +187,15 @@ public sealed class CampaignCombatExerciseAssaultTests
     {
         var kinds = new List<string> { "select-contact-assault" };
         session = Step(session, CampaignActionAudience.Axis, assaultId);
-        for (var index = 0; index < 40; index++)
+        for (var index = 0; index < 80; index++)
         {
             var sets = Enum.GetValues<CampaignActionAudience>()
                 .Select(audience => CampaignExercises.QueryWithCombat(session, audience).ActionSet!)
                 .Where(set => set.Candidates.Count > 0)
                 .ToArray();
             if (sets.Length == 0) return (kinds, session);
-            Assert.True(sets.Length == 1 || sets.All(set => set.Candidates.Single().Kind == "seal-combat-force-assignment"));
+            Assert.True(sets.Length == 1 || sets.All(set => set.Candidates.Single().Kind == "seal-combat-force-assignment"),
+                string.Join(" | ", sets.Select(set => set.Audience + ":" + string.Join(",", set.Candidates.Select(value => value.Kind)))));
             var set = sets[0];
             if (stopAtCycleControl && set.Candidates.Any(value => value.Kind.StartsWith("combat-cycle-control-",
                     StringComparison.Ordinal)))
@@ -191,7 +205,9 @@ public sealed class CampaignCombatExerciseAssaultTests
                     ? set.Candidates.FirstOrDefault(value => value.Kind == "combat-reserve-release-release-i")
                     : null)
                 ?? set.Candidates.OrderBy(value => value.ActionId, StringComparer.Ordinal).First();
-            Assert.True(set.Candidates.Count == 1 || candidate is CombatExerciseOwnerChoiceAction, candidate.Kind);
+            Assert.True(set.Candidates.Count == 1 || candidate is CombatExerciseOwnerChoiceAction
+                or DesignateReserveAction or CompleteReserveDesignationAction or SelectContactAssaultAction
+                or FinishCombatWithoutAttackAction, candidate.Kind);
             var direct = Direct(session, set, candidate);
             var submitted = CampaignExercises.SubmitWithCombat(session, Command(session, set.Audience, candidate.ActionId));
             Assert.True(submitted.IsAccepted, $"{candidate.Kind}: {submitted.RejectionReason}");
@@ -233,6 +249,20 @@ public sealed class CampaignCombatExerciseAssaultTests
                 CampaignHostAdapter.SubmitNativeReserveReleaseChoice(session, command, release.SubjectId),
             CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.CycleControlStage } =>
                 CampaignHostAdapter.SubmitNativeCycleControl(session, command),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.TruckConvoyPassStage } =>
+                CampaignHostAdapter.SubmitTruckConvoyPass(session, command),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.PostCombatPassStage } =>
+                CampaignHostAdapter.SubmitPostCombatPass(session, command),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.SecondMovementStage } move =>
+                CampaignHostAdapter.SubmitSecondMovement(session, command, move.SubjectId),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.SecondMovementCompletionStage } =>
+                CampaignHostAdapter.SubmitSecondMovementCompletion(session, command),
+            DesignateReserveAction or CompleteReserveDesignationAction =>
+                CampaignHostAdapter.SubmitSecondReserve(session, command),
+            SelectContactAssaultAction assault =>
+                CampaignHostAdapter.SubmitContactOwnerCombatSelection(session, command, assault.ActingElementId),
+            FinishCombatWithoutAttackAction finish =>
+                CampaignHostAdapter.SubmitContactOwnerCombatSelection(session, command, finish.ActingElementId),
             _ => candidate.Kind switch
             {
                 "complete-combat-barrage" => CampaignHostAdapter.CompleteNativeCombatBarrage(session),
@@ -247,6 +277,8 @@ public sealed class CampaignCombatExerciseAssaultTests
                 "complete-combat-no-custody" => CampaignHostAdapter.CompleteNoNativeCombatCustody(session),
                 "complete-combat-successor" => CampaignHostAdapter.CompleteNativeCombatSuccessor(session),
                 "complete-combat-reserve-release" => CampaignHostAdapter.CompleteNativeReserveRelease(session),
+                "complete-second-side-breakdown" => CampaignHostAdapter.CompleteSecondBreakdown(session),
+                "complete-second-side-combat-no-attack" => CampaignHostAdapter.CompleteSecondCombatNoAttack(session),
                 _ => throw new InvalidOperationException(candidate.Kind),
             },
         };

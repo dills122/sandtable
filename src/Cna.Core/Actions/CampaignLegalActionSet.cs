@@ -107,7 +107,8 @@ public sealed record CampaignLegalActionSet
                     ? copy.Any(candidate => candidate is not CombatExerciseSystemAction)
                     : copy.Any(candidate => candidate is not (SelectContactAssaultAction or FinishCombatWithoutAttackAction
                         or DeclineRetreatBeforeAssaultAction or SealCombatForceAssignmentAction
-                        or CombatExerciseOwnerChoiceAction)))
+                        or CombatExerciseOwnerChoiceAction or DesignateReserveAction
+                        or CompleteReserveDesignationAction)))
                 throw new ArgumentException("Combat Exercise policy requires first-cycle Combat candidates for the audience.", nameof(candidates));
         }
         else if (hasPregameCandidate || copy.Any(candidate => candidate is CampaignSourceSetupAction or CampaignSourceTurnAction))

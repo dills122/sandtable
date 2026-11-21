@@ -118,8 +118,8 @@ public sealed class ExerciseCanonicalEventRecord
 
 public static class ExerciseEvidenceCodec
 {
-    // Task 023A (Harness v1 interim amendment): the closed set of first-cycle Combat event types the
-    // Combat-aware Exercise path can publish. Each needs canonical JSON with contractVersion,
+    // Task 023A (Harness v1 interim amendment): the closed set of Combat event types the
+    // Combat-aware Exercise path can publish (first cycle, then the second player's phase). Each needs canonical JSON with contractVersion,
     // campaignId and priorStateVersion; its bytes are authenticated by replay, not by a decoder.
     private static readonly HashSet<string> ReplayAuthenticatedCombatEventTypes = new(StringComparer.Ordinal)
     {
@@ -129,6 +129,10 @@ public static class ExerciseEvidenceCodec
         "combat-post-result-retreat-decided", "combat-world-settled", "combat-custody-disposed",
         "combat-sequence-resumed", "reserve-release-member-choice", "reserve-release-completed",
         "movement-combat-cycle-control",
+        // 022D: the second player's phase after the first side's Cycle Control Finish.
+        "truck-convoy-movement-passed", "post-combat-phase-passed", "second-reserve-decided",
+        "second-element-moved-and-stopped", "second-movement-completed", "second-breakdown-completed",
+        "second-combat-selection-decided",
     };
 
     private static readonly string[] AcceptedActionProperties =
