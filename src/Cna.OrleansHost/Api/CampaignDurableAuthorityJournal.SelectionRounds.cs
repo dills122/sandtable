@@ -223,6 +223,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void AppendSelectionNoAttack(SqliteConnection connection, SqliteTransaction transaction,
         string campaignId, Loaded authority)
     {
+        // The second side's V48 timeout completes through its own no-attack.
+        if (CampaignHostAdapter.IsSecondSideCombatPending(authority.Session)
+            && CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(authority.Session))
+        {
+            var secondNoAttack = CampaignHostAdapter.CompleteSecondCombatNoAttack(authority.Session);
+            if (!secondNoAttack.IsAccepted)
+                throw new InvalidOperationException("Second-side selection timeout cannot complete no-attack Combat.");
+            var secondCompleted = PersistAccepted(connection, transaction, campaignId, authority,
+                CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind, null, null, null, null,
+                CampaignHostAdapter.SecondCombatNoAttackCommand(authority.Session, secondNoAttack), secondNoAttack);
+            AppendEmptyReserveRelease(connection, transaction, campaignId, secondCompleted);
+            return;
+        }
         var repeated = CampaignHostAdapter.IsNativeRepeatCombatVoluntaryFinish(authority.Session);
         var accepted = repeated
             ? CampaignHostAdapter.CompleteNativeRepeatCombatNoAttack(authority.Session)

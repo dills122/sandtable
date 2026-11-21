@@ -20,7 +20,9 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
 
     internal byte[] SerializeCanonical()
     {
-        if (ContractVersion is not (38 or 40) || (ContractVersion == 40 && CycleOrdinal != 1)
+        if (ContractVersion is not (38 or 40 or CampaignNativeSecondCombatSelectionTimeoutV48.CurrentContractVersion)
+            || (ContractVersion is 40 or CampaignNativeSecondCombatSelectionTimeoutV48.CurrentContractVersion
+                && CycleOrdinal != 1)
             || PriorStateVersion < 1 || CycleOrdinal < 1 || !Enum.IsDefined(Side)
             || !IsHash(EntryHash) || !IsHash(WorldHash) || !IsHash(ConfigurationHash)
             || Reason is not ("deadline" or "clock-unavailable" or "clock-regression"
@@ -39,7 +41,7 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
         {
             writer.WriteStartObject();
             writer.WriteNumber("contractVersion", ContractVersion);
-            writer.WriteString("eventType", "combat-selection-timeout");
+            writer.WriteString("eventType", EventType(ContractVersion));
             writer.WriteString("campaignId", ContentContractGuards.RequireStableId(CampaignId, nameof(CampaignId)));
             writer.WriteNumber("priorStateVersion", PriorStateVersion);
             writer.WriteNumber("cycleOrdinal", CycleOrdinal);
@@ -75,8 +77,8 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
             fields.Add("reason");
             CampaignSnapshotSerializer.RequireProperties(root, fields.ToArray());
             var contractVersion = root.GetProperty("contractVersion").GetInt32();
-            if (contractVersion is not (38 or 40)
-                || root.GetProperty("eventType").GetString() != "combat-selection-timeout"
+            if (contractVersion is not (38 or 40 or CampaignNativeSecondCombatSelectionTimeoutV48.CurrentContractVersion)
+                || root.GetProperty("eventType").GetString() != EventType(contractVersion)
                 || root.GetProperty("fallback").GetString() != "no-selection") throw new JsonException("Unknown selection timeout.");
             var result = new CampaignSelectionTimeoutEvidenceV38(root.GetProperty("campaignId").GetString()!,
                 root.GetProperty("priorStateVersion").GetInt64(), root.GetProperty("cycleOrdinal").GetInt32(),
@@ -93,6 +95,12 @@ internal sealed record CampaignSelectionTimeoutEvidenceV38(
             or KeyNotFoundException or FormatException or NullReferenceException)
         { throw new JsonException("Invalid selection timeout.", exception); }
     }
+
+    // V38/V40 are the first acting side's timeouts; V48 is the second acting
+    // side's own first-cycle timeout, which has no V11 snapshot to bind.
+    private static string EventType(int contractVersion) =>
+        contractVersion == CampaignNativeSecondCombatSelectionTimeoutV48.CurrentContractVersion
+            ? CampaignNativeSecondCombatSelectionTimeoutV48.EventTypeId : "combat-selection-timeout";
 
     internal static IEnumerable<string> ActingElements(CampaignContentContext context, LandSide side) =>
         context.ArtifactV6!.Definition.LegacyDefinition.Elements
@@ -185,5 +193,52 @@ internal sealed record CampaignNativeRepeatCombatSelectionTimeoutV38(CampaignSel
             legalFinish.PositionId, legalFinish.NextPositionId, release.ActingSide,
             CampaignSelectionTimeoutEvidenceV38.Digest(breakdown.SerializeCanonical()), CampaignNativeCombatPaidWorldV22.Hash(world),
             configurationHash, opened, deadline, highWater, observed, reason));
+    }
+}
+
+// The second acting side's Combat Selection timeout (owner ruling 2026-11-21,
+// Option A): the same no-selection fallback as V38, bound to the second
+// Breakdown (V46) that opened the round, then completed without attack.
+internal sealed record CampaignNativeSecondCombatSelectionTimeoutV48(CampaignSelectionTimeoutEvidenceV38 Evidence)
+    : CampaignNativeSecondCombatDecisionV47(CurrentContractVersion, Evidence.CampaignId, Evidence.PriorStateVersion,
+        Evidence.PositionId, Evidence.NextPositionId, "finish-combat-without-attack", Evidence.Side, "system",
+        null, null, null, Evidence.Hash)
+{
+    internal new const int CurrentContractVersion = 48;
+    internal const string EventTypeId = "second-combat-selection-timeout";
+
+    internal override byte[] SerializeCanonical() => Evidence.ContractVersion == CurrentContractVersion
+        ? Evidence.SerializeCanonical() : throw new JsonException("Second-side selection timeout requires V48.");
+
+    internal static CampaignNativeSecondCombatSelectionTimeoutV48 Create(
+        CampaignNativeSecondBreakdownV46 breakdown, CampaignWorldSnapshotV6 world, LandSequencePosition position,
+        CampaignContentContext context, CampaignContactJournal contacts, string configurationHash,
+        long opened, long deadline, long highWater, long? observed, string reason)
+    {
+        ArgumentNullException.ThrowIfNull(breakdown);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (contacts.CampaignId != breakdown.CampaignId || contacts.AuthorityVersion != breakdown.StateVersion
+            || position.PositionId != breakdown.NextPositionId)
+            throw new InvalidOperationException("Second-side selection timeout requires the second Breakdown cut.");
+        // The fallback is the source-legal voluntary finish some own element is offered.
+        var legal = CampaignSelectionTimeoutEvidenceV38.ActingElements(context, breakdown.Side).Any(element =>
+        {
+            try
+            {
+                return CampaignContactCombatSelectionCut.ProjectSecondCombat(world, position, context, contacts,
+                    breakdown.Side, element).FinishOffer is not null;
+            }
+            catch (InvalidOperationException) { return false; }
+        });
+        if (!legal) throw new InvalidOperationException("No source-legal second-side selection fallback.");
+        var catalogPosition = new LandSequencePosition(position.ContractVersion, position.PositionId,
+            position.GameTurn, position.OperationStage, position.StageId, position.PhaseId,
+            position.SegmentId, position.StepId, position.ActorRole, null, position.Sources);
+        var next = Cna1979LandSequenceV4.GetNext(catalogPosition);
+        return new(new CampaignSelectionTimeoutEvidenceV38(breakdown.CampaignId, breakdown.StateVersion, 1,
+            position.PositionId, next.PositionId, breakdown.Side,
+            CampaignSelectionTimeoutEvidenceV38.Digest(breakdown.SerializeCanonical()),
+            CampaignNativeCombatPaidWorldV22.Hash(world), configurationHash, opened, deadline, highWater,
+            observed, reason, CurrentContractVersion));
     }
 }
