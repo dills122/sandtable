@@ -51,11 +51,12 @@ public sealed class CombatCapabilityAudienceTraceTests
 
     // Finding behind manifest v2's `two-runtime-assaults` = uncovered. The only repeated assault the
     // bounded fixture offers is the first pair again; after the first result its roles no longer meet
-    // the bounded profile's full-TOE/Cohesion/CP/ammo bounds. The Host skips the V19 force-unavailable
-    // check for repeat rounds (IsInitialNativeCombatForceRound is false), so the round opens and both
-    // seals are accepted, and then neither the V21 cancellation nor the V22 result accepts: no
-    // adjudication handler applies. Recorded, not fixed (Core/Host Combat logic, outside Task 021).
-    // When it is fixed, this test fails and manifest v2's disposition must be revisited.
+    // the bounded profile's full-TOE/Cohesion/CP/ammo bounds. Once both seals are accepted on such a
+    // round, neither the V21 cancellation nor the V22 result accepts. #476 (fixed 2026-11-20): the
+    // Host now applies the V19 force-unavailable pre-check to repeated rounds too
+    // (IsRepeatedNativeCombatForceRound), so ordinary play no longer opens this round; see
+    // CombatRepeatedForceUnavailableTests. This test still pins the unhandled sealed state that the
+    // pre-check now keeps unreachable. Manifest v2's disposition is unchanged and awaits owner review.
     [Fact]
     public void RepeatedAssaultOnTheSpentFirstPairHasNoResultOrCancellationHandler()
     {

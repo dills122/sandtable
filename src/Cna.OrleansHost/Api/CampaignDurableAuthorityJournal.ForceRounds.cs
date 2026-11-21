@@ -83,7 +83,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void InitializeForceRound(SqliteConnection connection,
         SqliteTransaction transaction, Loaded authority, string campaignId, long opened)
     {
-        if (CampaignHostAdapter.IsInitialNativeCombatForceRound(authority.Session)
+        // #476: repeated rounds get the same pre-opening check, so an unpayable repeated assault
+        // takes the V19 force-unavailable cancellation instead of opening a round that cannot settle.
+        if ((CampaignHostAdapter.IsInitialNativeCombatForceRound(authority.Session)
+                || CampaignHostAdapter.IsRepeatedNativeCombatForceRound(authority.Session))
             && (authority.Timing is null
                 || !CampaignHostAdapter.CanCompleteNativeCombatForceAssignment(authority.Session)))
         {
