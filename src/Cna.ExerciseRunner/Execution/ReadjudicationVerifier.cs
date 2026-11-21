@@ -6,18 +6,10 @@ namespace Cna.ExerciseRunner.Execution;
 
 public static class ReadjudicationVerifier
 {
+    // Task 023A: replays through the same Combat-aware surface as CoreExerciseExecutionRuntime.
     public static ReadjudicationProof Verify(
         ExerciseManifest manifest,
-        ExerciseExecutionResult expected) =>
-        Verify(manifest, expected, includeCombat: false);
-
-    // Task 022A: includeCombat replays through CampaignExercises.QueryWithCombat/SubmitWithCombat,
-    // matching CoreExerciseExecutionRuntime.WithCombat. Staged, Runner-internal opt-in until a
-    // manifest-level opt-in and Combat-state bundle readback exist (T022-Q8/Q9).
-    internal static ReadjudicationProof Verify(
-        ExerciseManifest manifest,
-        ExerciseExecutionResult expected,
-        bool includeCombat)
+        ExerciseExecutionResult expected)
     {
         ArgumentNullException.ThrowIfNull(manifest);
         ArgumentNullException.ThrowIfNull(expected);
@@ -40,9 +32,7 @@ public static class ReadjudicationVerifier
         for (var index = 0; index < expected.Steps.Count; index++)
         {
             var recorded = expected.Steps[index];
-            var query = includeCombat
-                ? CampaignExercises.QueryWithCombat(session, recorded.Audience)
-                : CampaignExercises.Query(session, recorded.Audience);
+            var query = CampaignExercises.QueryWithCombat(session, recorded.Audience);
             var candidate = query.ActionSet?.Candidates.SingleOrDefault(value => string.Equals(
                 value.ActionId,
                 recorded.ActionId,
@@ -59,9 +49,7 @@ public static class ReadjudicationVerifier
                 set.PositionId,
                 set.Audience,
                 candidate.ActionId);
-            var submitted = includeCombat
-                ? CampaignExercises.SubmitWithCombat(session, submission)
-                : CampaignExercises.Submit(session, submission);
+            var submitted = CampaignExercises.SubmitWithCombat(session, submission);
             if (!submitted.IsAccepted)
             {
                 break;
@@ -76,9 +64,7 @@ public static class ReadjudicationVerifier
             session = submitted.SuccessorSession!;
         }
 
-        var terminalQuery = includeCombat
-            ? CampaignExercises.QueryWithCombat(session, CampaignActionAudience.System)
-            : CampaignExercises.Query(session, CampaignActionAudience.System);
+        var terminalQuery = CampaignExercises.QueryWithCombat(session, CampaignActionAudience.System);
         if (!terminalQuery.IsSuccessful
             || !string.Equals(
                 terminalQuery.ActionSet!.PositionId,

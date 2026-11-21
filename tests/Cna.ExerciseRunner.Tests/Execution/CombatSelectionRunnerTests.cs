@@ -107,9 +107,7 @@ public sealed class CombatSelectionRunnerTests : IDisposable
         Assert.True(result.IsSucceeded, Encoding.UTF8.GetString(ExerciseRunResultCodec.Serialize(result.RunResult)));
         Assert.Equal(terminal, result.BoundaryPositionId);
         Assert.True(result.Reconstruction!.IsVerified);
-        Assert.True(ReadjudicationVerifier.Verify(manifest, result, includeCombat: true).IsVerified);
-        // The ordinary re-adjudication path cannot replay a Combat step.
-        Assert.False(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
+        Assert.True(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
         Assert.All(result.Steps, step => Assert.Single(step.EventRecords));
 
         var entry = result.Steps.ToList().FindIndex(step => step.PriorPositionId == CombatEntry);
@@ -190,42 +188,6 @@ public sealed class CombatSelectionRunnerTests : IDisposable
     }
 
     [Fact]
-    public void TheCliAndDefaultExecutorKeepTheOrdinaryCombatEntryFrontier()
-    {
-        // Staged opt-in (T022-Q8/Q9): a Combat step's snapshot checkpoint is a Combat state
-        // document, and the bundle's final-snapshot reader admits only campaign snapshot V11. Until
-        // that readback and a manifest opt-in are ruled, the CLI and the public executor keep the
-        // pre-022A behavior and still write a strictly readable failed bundle at Combat entry.
-        var manifest = Manifest(Assault, "reaction-all-by-action-id", "c", "land.position.unreachable");
-        var combat = ExecuteWithCombat(Manifest(Assault, "reaction-all-by-action-id", "c", RetreatBeforeAssault));
-        Assert.True(combat.IsSucceeded);
-        Assert.Throws<JsonException>(() => ExerciseEvidenceCodec.DeserializeSnapshot(combat.FinalSnapshot));
-
-        var ordinary = ExerciseExecutor.Execute(manifest, TestContext.Current.CancellationToken);
-        Assert.Equal(ExerciseFailureCategory.NoUniqueLegalAction, ordinary.FailureCategory);
-        Assert.Equal(CombatEntry, Assert.Single(ordinary.FailedDecisions).PositionId);
-
-        var relative = Path.Combine(repositoryManifestDirectory, "combat-assault.json");
-        var path = Path.Combine(FindRepositoryRoot(AppContext.BaseDirectory), relative);
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        File.WriteAllBytes(path, ExerciseManifestCodec.Serialize(manifest));
-        var output = new StringWriter();
-        var error = new StringWriter();
-
-        var exitCode = ExerciseRunCommand.Execute(
-            ["exercise", "run", "--manifest", relative, "--artifact-root", Path.Combine(temp, "artifacts")],
-            output,
-            error,
-            TestContext.Current.CancellationToken);
-
-        Assert.Equal(ExerciseProcessExitCode.NoUniqueLegalAction, exitCode);
-        var bundlePath = output.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Single(value => value.StartsWith("bundle=", StringComparison.Ordinal))["bundle=".Length..];
-        var bundle = ExerciseBundleReader.Read(bundlePath);
-        Assert.Equal(ArtifactBundleProfile.FailedExecuted, bundle.Manifest.Profile);
-    }
-
-    [Fact]
     public void PublicAudienceSubmissionIsAcceptedButGivesTheRunnerNoSuccessorOrEvidence()
     {
         // 022A0 evidence for why the trusted Exercise path exists: the frozen audience surface
@@ -280,8 +242,9 @@ public sealed class CombatSelectionRunnerTests : IDisposable
             {"contractVersion":2,"exerciseId":"combat-selection.{{variant}}","setupId":"{{setup.SetupId}}","setupHash":"{{setup.SetupHash}}","contentPackId":"{{setup.ContentPackId}}","contentHash":"{{setup.ContentHash}}","scenarioId":"{{setup.ScenarioId}}","rulesetHash":"17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a","terminalBoundary":"{{terminal}}","maximumSteps":200,"rootSeed":{{seed}},"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"compact","controllers":{"system":"{{policy}}","axis":"{{policy}}","commonwealth":"{{policy}}"},"assertFailureCategory":null}
             """));
 
+    // Task 023A: the default executor is Combat-aware (Combat always on).
     private static ExerciseExecutionResult ExecuteWithCombat(ExerciseManifest manifest) =>
-        ExerciseExecutor.Execute(manifest, CoreExerciseExecutionRuntime.WithCombat, TestContext.Current.CancellationToken);
+        ExerciseExecutor.Execute(manifest, TestContext.Current.CancellationToken);
 
     private static ExerciseSession Replay(ExerciseManifest manifest, ExerciseExecutionResult result)
     {

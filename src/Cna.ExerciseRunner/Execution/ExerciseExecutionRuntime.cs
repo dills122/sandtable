@@ -67,24 +67,15 @@ internal interface IExerciseExecutionRuntime
     ReconstructionProof Reconstruct(ExerciseSession session);
 }
 
+// Task 023A (#448; owner ruling 2026-11-21: Harness v1 interim amendment, Combat always on): the
+// Runner's legal-action surface is CampaignExercises.QueryWithCombat/SubmitWithCombat, which equals
+// Query/Submit outside first-cycle Combat. Test-harness capability only, not Combat activation.
 internal sealed class CoreExerciseExecutionRuntime : IExerciseExecutionRuntime
 {
-    private readonly bool includeCombat;
+    internal static CoreExerciseExecutionRuntime Instance { get; } = new();
 
-    internal static CoreExerciseExecutionRuntime Instance { get; } = new(includeCombat: false);
-
-    /// <summary>
-    /// Task 022A (#448): also drives first-cycle Combat Selection and its System step through
-    /// CampaignExercises.QueryWithCombat/SubmitWithCombat. Test-harness capability only, not Combat
-    /// activation. Staged as a Runner-internal opt-in: the CLI and checked manifests keep
-    /// <see cref="Instance"/> until a manifest opt-in (T022-Q9) and bundle readback of Combat-state
-    /// snapshots (T022-Q8) are ruled.
-    /// </summary>
-    internal static CoreExerciseExecutionRuntime WithCombat { get; } = new(includeCombat: true);
-
-    private CoreExerciseExecutionRuntime(bool includeCombat)
+    private CoreExerciseExecutionRuntime()
     {
-        this.includeCombat = includeCombat;
     }
 
     public ExerciseStartResult Begin(CampaignCreationRequest request) =>
@@ -96,9 +87,7 @@ internal sealed class CoreExerciseExecutionRuntime : IExerciseExecutionRuntime
     public ExerciseRuntimeQueryResult Query(
         ExerciseSession session,
         CampaignActionAudience audience) =>
-        ExerciseRuntimeQueryResult.From(includeCombat
-            ? CampaignExercises.QueryWithCombat(session, audience)
-            : CampaignExercises.Query(session, audience));
+        ExerciseRuntimeQueryResult.From(CampaignExercises.QueryWithCombat(session, audience));
 
     public ExerciseControllerSelection Select(
         ExerciseControllerManifest policies,
@@ -108,9 +97,7 @@ internal sealed class CoreExerciseExecutionRuntime : IExerciseExecutionRuntime
     public ExerciseRuntimeStepResult Submit(
         ExerciseSession session,
         CampaignActionSubmission submission) =>
-        ExerciseRuntimeStepResult.From(includeCombat
-            ? CampaignExercises.SubmitWithCombat(session, submission)
-            : CampaignExercises.Submit(session, submission));
+        ExerciseRuntimeStepResult.From(CampaignExercises.SubmitWithCombat(session, submission));
 
     public ReconstructionProof Reconstruct(ExerciseSession session) =>
         ReconstructionProof.From(CampaignExercises.Reconstruct(session));
