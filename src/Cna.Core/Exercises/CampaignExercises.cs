@@ -5112,10 +5112,7 @@ public static class CampaignExercises
                 ForceCancellation: null,
                 Seals.Count: < 2
             })
-            return configuration is null
-                ? ExerciseStepResult.Rejected(
-                    CampaignActionSubmissionRejectionReason.InvalidAuthority)
-                : CancelRepeatedForceAssignment(session, configuration,
+            return CancelRepeatedForceAssignment(session, configuration,
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds,
                 highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason);
         if (session.CurrentCombatDecision is not { } selected
@@ -5182,6 +5179,26 @@ public static class CampaignExercises
         ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        // #476: a repeated round is checked against its own selection, decline and World, with the
+        // same eligibility rule the repeated result (CampaignNativeCombatAssaultInputs) applies.
+        if (session.CurrentRepeatAssault is { } repeat)
+        {
+            if (repeat.Decline is not { } repeatDecline
+                || repeat.ForceCompletion is not null
+                || repeat.ForceCancellation is not null)
+                return false;
+            try
+            {
+                return CampaignNativeCombatForceEligibility.CanCompleteAssault(repeat.Selection,
+                    repeatDecline, repeat.RetreatWorld ?? repeat.Selection.World, session.Context,
+                    session.CurrentAmmunitionLedger);
+            }
+            catch (Exception exception) when (exception is ArgumentException
+                or InvalidOperationException or InvalidCampaignHistoryException)
+            {
+                return false;
+            }
+        }
         if (session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
             || session.CurrentCombatForceCompletion is not null
@@ -5202,17 +5219,26 @@ public static class CampaignExercises
     }
 
     private static ExerciseStepResult CancelRepeatedForceAssignment(
-        ExerciseSession session, CampaignDecisionTimingConfigurationV1 configuration,
+        ExerciseSession session, CampaignDecisionTimingConfigurationV1? configuration,
         long openedAtUnixMilliseconds, long deadlineUnixMilliseconds,
         long highWaterUnixMilliseconds, long? cancelledAtUnixMilliseconds,
         string reason)
     {
         var runtime = session.CurrentRepeatAssault!;
         var selected = runtime.Selection;
-        if (configuration.RulesetHash != selected.PriorSnapshot.RulesetHash
-            || openedAtUnixMilliseconds < 0
-            || deadlineUnixMilliseconds - openedAtUnixMilliseconds
-                != configuration.Budget("force-assignment")
+        // #476 (owner ruling 2026-11-20): a repeated round accepts the same V19 force-unavailable
+        // cancellation as the initial round: no clock evidence, and with timing authority only when
+        // the round cannot be paid. It also requires that no seal exists yet, the invariant the Host
+        // verifies for force-unavailable (no retained seal). Timed cancellations are unchanged.
+        var unavailable = reason == "force-unavailable";
+        if ((configuration is not null
+                && configuration.RulesetHash != selected.PriorSnapshot.RulesetHash)
+            || (unavailable
+                ? openedAtUnixMilliseconds != -1 || deadlineUnixMilliseconds != -1
+                    || highWaterUnixMilliseconds != -1 || runtime.Seals.Count != 0
+                : configuration is null || openedAtUnixMilliseconds < 0
+                    || deadlineUnixMilliseconds - openedAtUnixMilliseconds
+                        != configuration.Budget("force-assignment"))
             || session.CurrentContacts.AuthorityVersion
                 != (runtime.Seals.Count == 0
                     ? runtime.Decline!.StateVersion : runtime.Seals[^1].StateVersion))
@@ -5220,9 +5246,15 @@ public static class CampaignExercises
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
+            if (unavailable && configuration is not null
+                && CanCompleteNativeCombatForceAssignment(session))
+                return ExerciseStepResult.Rejected(
+                    CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var cancellation = CampaignNativeCombatForceCancellationV19.Create(
                 selected, runtime.Decline!, runtime.Seals,
-                configuration.Hash, openedAtUnixMilliseconds,
+                configuration?.Hash
+                    ?? CampaignNativeCombatForceCancellationV19.NoTimingConfigurationHash,
+                openedAtUnixMilliseconds,
                 deadlineUnixMilliseconds, highWaterUnixMilliseconds,
                 cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts
