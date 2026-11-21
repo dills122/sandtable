@@ -14,8 +14,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     [Theory]
     [InlineData(true, false)]
     [InlineData(false, false)]
-    [InlineData(true, true, Traits = ["KnownIssue", "446"])] // https://github.com/dills122/sandtable/issues/446
-    [InlineData(false, true, Traits = ["KnownIssue", "446"])] // https://github.com/dills122/sandtable/issues/446
+    [InlineData(true, true)]
+    [InlineData(false, true)]
     public void EntryClockFailureAtCustodyOrRetreatEntryKeepsPaidHistory(
         bool custody, bool repeated)
     {

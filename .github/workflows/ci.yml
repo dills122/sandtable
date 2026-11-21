@@ -171,9 +171,9 @@ jobs:
     # Cna.OrleansHost.Tests holds every Postgres+Marten (Testcontainers) test of the durable
     # campaign journal, and since #373 it ran nightly only -- so #443-#450 merged with none of
     # it gating a PR. It gates PR/push again. Testcontainers drives the GitHub-hosted runner's own
-    # Docker daemon, so no services: block is needed. Excluded rows, each still run nightly:
-    # the ~30m Graziani replay soak (orleans-slow.yml) and the rows tagged KnownIssue=446 --
-    # the open, pre-existing Combat settlement bug (issue #446), not a storage regression.
+    # Docker daemon, so no services: block is needed. Excluded row, still run nightly:
+    # the ~30m Graziani replay soak (orleans-slow.yml). The former KnownIssue=446 rows gate
+    # again since the #446 ammunition-seed fix.
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -196,7 +196,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts/orleans-results
-          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" --filter-not-trait "KnownIssue=446" 2>&1 | tee artifacts/orleans-results/console.log
+          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" 2>&1 | tee artifacts/orleans-results/console.log
           python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
       - name: Retain Orleans test results
         if: ${{ always() }}

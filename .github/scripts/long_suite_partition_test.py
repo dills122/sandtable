@@ -360,12 +360,12 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('max-parallel: 17', text)
         # p01-* are gone from ci.yml's dependency closure entirely (nightly
         # only - see ci-nightly-heavy.yml); orleans gates every trigger again,
-        # excluding only the nightly soak row and the KnownIssue=446 rows.
+        # excluding only the nightly soak row (the #446 rows gate again).
         self.assertIn('needs: [prepare, tests, format, orleans]', text)
         orleans_job = text.split('\n  orleans:', 1)[1].split('\n  verify:', 1)[0]
         self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', orleans_job)
         self.assertIn('python3 .github/scripts/verify_orleans_results.py', orleans_job)
-        self.assertIn('--filter-not-trait "KnownIssue=446"', orleans_job)
+        self.assertNotIn('--filter-not-trait', orleans_job)
         self.assertNotIn('continue-on-error', orleans_job)
         self.assertNotIn('\n  p01-', text)
         self.assertIn('--exclude-shards "$EXCLUDE_SHARDS"', text)

@@ -531,7 +531,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.True(CampaignExercises.Reconstruct(nextCycleSession).IsVerified);
     }
 
-    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Fact]
     public async Task SecondContactAssaultEntersBarrageAndColdReplays()
     {
@@ -622,7 +621,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.True(CampaignExercises.Reconstruct(afterFinish).IsVerified);
     }
 
-    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Theory]
     [InlineData(true, -1)]
     [InlineData(false, -1)]

@@ -181,7 +181,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(0, CountAcceptedStep(fixture.Path, request.CampaignId, "native-combat-retreat-timeout"));
     }
 
-    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Fact]
     public void RetreatTimeoutAllowsGenuineRepeatedAssaultColdReplay()
     {

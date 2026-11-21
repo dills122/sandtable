@@ -292,7 +292,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Empty(journal.CollectingRbaCampaigns("", 16));
     }
 
-    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
