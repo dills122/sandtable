@@ -8,6 +8,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const string InitiativeOrderOpeningKey = "land.initiative-order";
+    private const string ReserveDesignationOpeningKey = "land.reserve-designation";
     private const string CycleControlOpeningKey = "land.cycle-control";
     private const string TruckConvoyPassOpeningKey = "land.truck-convoy-pass";
     private const string PostCombatPassOpeningKey = "land.post-combat-pass";
@@ -55,6 +56,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// </summary>
     internal CampaignOwnerOpening QueryInitiativeOrderOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, InitiativeOrderOpeningKey, CampaignOwnerOpeningKind.InitiativeOrder);
+
+    /// <summary>
+    /// The first acting side's own Reserve Designation (land.phase.reserve-designation,
+    /// Operation Stage 1): the same gap class as InitiativeOrder, found and reported during
+    /// the Movement/ZOC/Reaction/Breakdown adversarial audit, confirmed by probe to be the
+    /// very next preamble step after ActFirst/ActLast. Previously reachable only via the raw,
+    /// non-HTTP CampaignDurableAuthorityJournal.Append/legal-action-set path, never by a real
+    /// player.
+    /// </summary>
+    internal CampaignOwnerOpening QueryReserveDesignationOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, ReserveDesignationOpeningKey, CampaignOwnerOpeningKind.ReserveDesignation);
 
     internal CampaignOwnerOpening QueryPregameAxisSupplyOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, PregameAxisSupplyOpeningKey, CampaignOwnerOpeningKind.PregameAxisSupply);
@@ -430,6 +442,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.ReserveDesignation)
+            {
+                var draft = CampaignHostAdapter.QueryReserveDesignationOwnerDraft(authority.Session, seat.Audience);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(authority.Session, seat.Audience);
@@ -696,6 +715,7 @@ internal enum CampaignOwnerOpeningKind
 {
     Movement,
     InitiativeOrder,
+    ReserveDesignation,
     CombatSelection,
     RetreatBeforeAssault,
     ForceAssignment,

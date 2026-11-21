@@ -25,6 +25,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, InitiativeOrderOpeningKey, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.InitiativeOrder);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerReserveDesignation(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, ReserveDesignationOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.ReserveDesignation);
+
     internal CampaignOwnerSubmissionResult SubmitPregameAxisSupply(CampaignSeatCredential credential,
         long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, PregameAxisSupplyOpeningKey, openingRevision, publicActionRef,
@@ -512,6 +517,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.ReserveDesignation)
+            {
+                var draft = CampaignHostAdapter.QueryReserveDesignationOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(head.Session, seat.Audience);
@@ -671,6 +682,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitTruckConvoyPass(head.Session, submission),
             CampaignOwnerOpeningKind.InitiativeOrder =>
                 CampaignHostAdapter.SubmitInitiativeOrder(head.Session, submission),
+            CampaignOwnerOpeningKind.ReserveDesignation =>
+                CampaignHostAdapter.SubmitReserveDesignation(head.Session, submission),
             CampaignOwnerOpeningKind.PostCombatPass =>
                 CampaignHostAdapter.SubmitPostCombatPass(head.Session, submission),
             CampaignOwnerOpeningKind.SecondReserve =>
@@ -988,6 +1001,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     {
         CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
         CampaignOwnerOpeningKind.InitiativeOrder => CampaignHostAcceptedStep.ContactInitiativeOrderKind,
+        CampaignOwnerOpeningKind.ReserveDesignation => CampaignHostAcceptedStep.ContactReserveDesignationKind,
         CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
         CampaignOwnerOpeningKind.RetreatBeforeAssault => CampaignHostAcceptedStep.ContactRbaDeclineKind,
         CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,
