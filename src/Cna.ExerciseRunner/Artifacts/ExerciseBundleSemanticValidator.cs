@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Exercises;
 using Cna.ExerciseRunner.Execution;
@@ -89,7 +90,8 @@ internal static class ExerciseBundleSemanticValidator
 
         ValidateSeedIdentity(exerciseManifest, seedLedger);
         var initial = ExerciseEvidenceCodec.DeserializeSnapshot(initialSnapshot);
-        var final = ExerciseEvidenceCodec.DeserializeSnapshot(finalSnapshot);
+        var final = DeserializeFinalCheckpoint(exerciseManifest, seedLedger.Identity,
+            canonicalEvents, finalSnapshot);
         ValidateEvidence(
             exerciseManifest,
             acceptedActions,
@@ -213,6 +215,11 @@ internal static class ExerciseBundleSemanticValidator
             actions,
             events,
             finalSnapshot);
+        // Task 023A: Combat events and checkpoints have no Core decoder, so only a verified replay
+        // can admit them; a bundle whose replay does not verify cannot carry them.
+        if (!reconstruction.IsVerified && events.Any(value => value.IsReplayAuthenticated))
+            throw new InvalidDataException(
+                "Replay-authenticated Combat evidence does not reconstruct.");
         if (profile == ArtifactBundleProfile.FailedExecuted && !reconstruction.IsVerified)
             throw new InvalidDataException(
                 "Failed execution evidence does not reconstruct its accepted prefix.");
@@ -224,23 +231,55 @@ internal static class ExerciseBundleSemanticValidator
         return new AuthoritativeReplayObservations(reconstruction, readjudication);
     }
 
-    private static ReconstructionProof ObserveReconstruction(
-        ExerciseStartResult start,
+    // Task 023A (Harness v1 interim amendment, owner ruling 2026-11-21): the final checkpoint is
+    // the final step's Core checkpoint bytes. A campaign snapshot V11 is decoded by Core's public
+    // reader as before. Any other checkpoint (a Combat state document, for which Core has no reader)
+    // is trusted only if replaying the bundle's own canonical events through Core from the admitted
+    // creation reproduces exactly those bytes; its facts then come from the replayed checkpoint.
+    internal static ExerciseSnapshotFacts DeserializeFinalCheckpoint(
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         IReadOnlyList<ExerciseCanonicalEventRecord> events,
         byte[] finalSnapshot)
     {
-        var session = start.Session!;
+        try
+        {
+            return ExerciseEvidenceCodec.DeserializeSnapshot(finalSnapshot);
+        }
+        catch (JsonException) when (events.Count > 0)
+        {
+            var start = CampaignExercises.Begin(ExerciseExecutor.CreateRequest(manifest, identity));
+            var session = start.IsStarted ? ReplayEvents(start.Session!, events) : null;
+            if (session is null)
+                throw new InvalidDataException("The final checkpoint is not replayable Core evidence.");
+            var observed = CampaignExercises.Reconstruct(session);
+            if (!observed.IsVerified
+                || observed.ReconstructedSnapshotBytes is not { } reconstructed
+                || !reconstructed.AsSpan().SequenceEqual(finalSnapshot))
+                throw new InvalidDataException(
+                    "The final checkpoint does not equal Core's reconstruction of the canonical events.");
+            var checkpoint = CampaignExercises.QueryCheckpoint(session);
+            return new ExerciseSnapshotFacts(checkpoint.CampaignId, checkpoint.StateVersion,
+                checkpoint.RulesetHash, checkpoint.PositionId);
+        }
+    }
+
+    // Unique-successor event replay shared by reconstruction and the final-checkpoint rule.
+    private static ExerciseSession? ReplayEvents(
+        ExerciseSession session,
+        IReadOnlyList<ExerciseCanonicalEventRecord> events)
+    {
         foreach (var campaignEvent in events)
         {
             var successors = new List<ExerciseSession>();
             foreach (var audience in Enum.GetValues<CampaignActionAudience>())
             {
-                var query = CampaignExercises.Query(session, audience);
+                var query = CampaignExercises.QueryWithCombat(session, audience);
                 if (!query.IsSuccessful) continue;
                 var set = query.ActionSet!;
                 foreach (var candidate in set.Candidates)
                 {
-                    var submitted = CampaignExercises.Submit(
+                    var submitted = CampaignExercises.SubmitWithCombat(
                         session,
                         new CampaignActionSubmission(
                             CampaignActionSubmission.CurrentContractVersion,
@@ -256,15 +295,25 @@ internal static class ExerciseBundleSemanticValidator
                         successors.Add(submitted.SuccessorSession!);
                 }
             }
-            if (successors.Count != 1)
-            {
-                return new ReconstructionProof(
-                    ExerciseReconstructionFailureReason.InvalidHistory,
-                    HashEventStream(start.CreationEventBytes!, events),
-                    ReplayEvidenceHasher.HashBytes(finalSnapshot),
-                    null);
-            }
+            if (successors.Count != 1) return null;
             session = successors[0];
+        }
+        return session;
+    }
+
+    private static ReconstructionProof ObserveReconstruction(
+        ExerciseStartResult start,
+        IReadOnlyList<ExerciseCanonicalEventRecord> events,
+        byte[] finalSnapshot)
+    {
+        var session = ReplayEvents(start.Session!, events);
+        if (session is null)
+        {
+            return new ReconstructionProof(
+                ExerciseReconstructionFailureReason.InvalidHistory,
+                HashEventStream(start.CreationEventBytes!, events),
+                ReplayEvidenceHasher.HashBytes(finalSnapshot),
+                null);
         }
 
         var observed = CampaignExercises.Reconstruct(session);
@@ -304,14 +353,14 @@ internal static class ExerciseBundleSemanticValidator
         for (var index = 0; index < actions.Count; index++)
         {
             var recorded = actions[index];
-            var query = CampaignExercises.Query(session, recorded.Audience);
+            var query = CampaignExercises.QueryWithCombat(session, recorded.Audience);
             var candidate = query.ActionSet?.Candidates.SingleOrDefault(value => string.Equals(
                 value.ActionId,
                 recorded.ActionId,
                 StringComparison.Ordinal));
             if (candidate is null) break;
             var set = query.ActionSet!;
-            var submitted = CampaignExercises.Submit(session, new CampaignActionSubmission(
+            var submitted = CampaignExercises.SubmitWithCombat(session, new CampaignActionSubmission(
                 CampaignActionSubmission.CurrentContractVersion,
                 set.CampaignId,
                 set.StateVersion,
@@ -327,7 +376,7 @@ internal static class ExerciseBundleSemanticValidator
             readjudicatedFinal = evidence.SnapshotCheckpoint;
             session = submitted.SuccessorSession!;
         }
-        var terminal = CampaignExercises.Query(session, CampaignActionAudience.System);
+        var terminal = CampaignExercises.QueryWithCombat(session, CampaignActionAudience.System);
         if (!terminal.IsSuccessful
             || !string.Equals(
                 terminal.ActionSet!.PositionId,
@@ -453,7 +502,9 @@ internal static class ExerciseBundleSemanticValidator
                 || step.StateVersion != action.CommittedStateVersion
                 || campaignEvent.StateVersion != action.CommittedStateVersion
                 || !string.Equals(step.PositionId, action.ResultingPositionId, StringComparison.Ordinal)
-                || !string.Equals(campaignEvent.PositionId, action.ResultingPositionId, StringComparison.Ordinal)
+                // A replay-authenticated Combat event carries no decoded position (Task 023A).
+                || (!campaignEvent.IsReplayAuthenticated
+                    && !string.Equals(campaignEvent.PositionId, action.ResultingPositionId, StringComparison.Ordinal))
                 || step.Audience != action.Audience
                 || !string.Equals(step.ActionId, action.ActionId, StringComparison.Ordinal)
                 || !string.Equals(

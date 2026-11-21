@@ -719,3 +719,30 @@ There are no architecture-blocking open questions for Harness v1. Future public 
 changes within `Cna.Core.Exercises` must preserve the delivered capability boundaries, contracts,
 and acceptance criteria. Any material change requires a spec amendment and review before
 implementation.
+
+## Amendment A-023A: first-cycle Combat checkpoints (DRAFT for owner review)
+
+Owner ruling, 2026-11-21 (Task 023 option A, relayed). This is an interim, test-harness-only amendment.
+It is not Combat activation or certification, and it does not implement CMB-CON-006. The occurrence
+terminal and the B2 child-evidence format remain the planned Task 023. Scoping is in PR #482
+(`docs/work/plans/2026-11-21-task-023-runner-combat-bundle-scoping.md`).
+
+- **Legal-action surface.** The Runner always uses `CampaignExercises.QueryWithCombat`/
+  `SubmitWithCombat`. These are identical to `Query`/`Submit` outside first-cycle Combat, so no
+  manifest field is needed and no checked manifest changes (Q9: always on).
+- **Final checkpoint.** `final-snapshot.json` holds the final step's Core checkpoint bytes.
+  - A campaign snapshot V11 is still decoded by Core's public reader, as above.
+  - Any other checkpoint, such as a Combat state document, has no Core reader. It is trusted only if
+    replaying the bundle's canonical events through Core, from the admitted creation, reproduces
+    those exact bytes. Its position and versions are taken from that replayed checkpoint.
+  - This replaces the "canonical deserialization of `final-snapshot.json`" and "decoded by Core's
+    complete current snapshot/world contract" requirements for such checkpoints only.
+- **Combat event records.** A closed allowlist of first-cycle Combat event types is accepted as
+  canonical JSON carrying `contractVersion`, `campaignId` and `priorStateVersion`. Their bytes are
+  authenticated only by the authoritative replay. They carry no decoded position: action/step
+  positions are checked against the receipt and replay instead. A bundle containing any such record
+  must reconstruct, or it is rejected.
+- **Unchanged.** Every other EXR rule is unchanged: manifest-last publication, proofs, readjudication,
+  the check catalog and failure profiles. A position-only terminal still applies. Inside Combat
+  some positions repeat (for example, Anti Armor and the assault result share `combat.close-assault`),
+  so the first-cycle loop terminates at the unique `truck-convoy-movement` position.

@@ -91,13 +91,15 @@ public sealed class ExerciseCanonicalEventRecord
         string campaignId,
         long stateVersion,
         string fromPositionId,
-        string positionId)
+        string positionId,
+        bool replayAuthenticated = false)
     {
         this.canonicalBytes = canonicalBytes.ToArray();
         CampaignId = campaignId;
         StateVersion = stateVersion;
         FromPositionId = fromPositionId;
         PositionId = positionId;
+        IsReplayAuthenticated = replayAuthenticated;
     }
 
     public byte[] CanonicalBytes => canonicalBytes.ToArray();
@@ -105,10 +107,30 @@ public sealed class ExerciseCanonicalEventRecord
     public long StateVersion { get; }
     public string FromPositionId { get; }
     public string PositionId { get; }
+
+    /// <summary>
+    /// Task 023A: a first-cycle Combat event. Core has no standalone reader for Combat events, so
+    /// the record carries no decoded positions; it is trusted only through the bundle reader's
+    /// authoritative replay, which must reproduce its exact bytes.
+    /// </summary>
+    internal bool IsReplayAuthenticated { get; }
 }
 
 public static class ExerciseEvidenceCodec
 {
+    // Task 023A (Harness v1 interim amendment): the closed set of first-cycle Combat event types the
+    // Combat-aware Exercise path can publish. Each needs canonical JSON with contractVersion,
+    // campaignId and priorStateVersion; its bytes are authenticated by replay, not by a decoder.
+    private static readonly HashSet<string> ReplayAuthenticatedCombatEventTypes = new(StringComparer.Ordinal)
+    {
+        "combat-selection-decided", "combat-no-attack-completed", "combat-barrage-no-effect",
+        "combat-rba-declined", "combat-force-sealed", "combat-force-cancelled", "combat-force-completed",
+        "combat-anti-armor-completed", "combat-cancelled-assault-completed", "combat-assault-resolved",
+        "combat-post-result-retreat-decided", "combat-world-settled", "combat-custody-disposed",
+        "combat-sequence-resumed", "reserve-release-member-choice", "reserve-release-completed",
+        "movement-combat-cycle-control",
+    };
+
     private static readonly string[] AcceptedActionProperties =
     [
         "contractVersion", "schemeId", "stepOrdinal", "campaignId", "priorStateVersion",
@@ -349,6 +371,16 @@ public static class ExerciseEvidenceCodec
         if (root.ValueKind != JsonValueKind.Object)
             throw new JsonException("Canonical event evidence must be an object.");
         var eventType = RequireString(root, "eventType");
+        if (ReplayAuthenticatedCombatEventTypes.Contains(eventType))
+        {
+            RequireCanonical(root, canonicalRecord);
+            if (root.GetProperty("contractVersion").GetInt32() < 1)
+                throw new JsonException("Combat event contract version is invalid.");
+            var priorStateVersion = root.GetProperty("priorStateVersion").GetInt64();
+            if (priorStateVersion < 1) throw new JsonException("Combat event state version is invalid.");
+            return new ExerciseCanonicalEventRecord(canonicalRecord, RequireString(root, "campaignId"),
+                checked(priorStateVersion + 1), "", "", replayAuthenticated: true);
+        }
         var (expectedVersion, expectedProperties) = eventType switch
         {
             "campaign-created" => throw new JsonException(
