@@ -113,6 +113,137 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         FinishSecondSideOperationStage(fixture, clock, request, commonwealth);
     }
 
+    // Item 5's own gap (per the handoff report): SecondSidePayableAssaultSealsForceAndColdReplays
+    // above uses the default seed, whose result needs neither a real defender
+    // retreat decision nor a real custody choice -- both resolve without an
+    // owner opening. This is the second-side analog of the first side's own
+    // PostResultDefenderRetreatUsesSeatOpeningAndColdReplay (seed 6 there):
+    // same seed drives the *second* side's own assault to a result that
+    // genuinely requires the defender's (here, Axis's) real post-assault
+    // retreat decision through its own seat-scoped opening -- proving the
+    // shared CampaignNativeRepeatAssaultRuntime.Apply retreat/custody stages
+    // (which carry no IsSecondSide branch at all, unlike the three Reserve
+    // Release/Truck-Convoy forks that do) are genuinely side-agnostic, not
+    // just reachable because nothing exercised them yet.
+    [Fact]
+    public void SecondSideDefenderRetreatAfterAssaultUsesSeatOpeningAndColdReplay()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var (request, axis, commonwealth) = SecondSideAssaultThroughRba(fixture, clock,
+            PositiveCombatRequest(6));
+        var attackerForce = fixture.Open(clock).QueryForceOwnerOpening(commonwealth, "commonwealth-infantry");
+        var defenderForce = fixture.Open(clock).QueryForceOwnerOpening(axis, "axis-infantry");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(fixture.Open(clock).SubmitOwnerForceSeal(commonwealth, "commonwealth-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(fixture.Open(clock).SubmitOwnerForceSeal(axis, "axis-infantry",
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+
+        // The result needs the defender's (Axis's) own real retreat decision --
+        // unlike the default-seed path above, this does not auto-resolve.
+        var afterResult = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(22, CampaignExercises.QueryCheckpoint(afterResult).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(afterResult).IsVerified);
+        Assert.Throws<InvalidOperationException>(() =>
+            fixture.Open(clock).QueryPostAssaultRetreatOwnerOpening(commonwealth, "axis-infantry"));
+        var retreat = fixture.Open(clock).QueryPostAssaultRetreatOwnerOpening(axis, "axis-infantry");
+        Assert.NotEmpty(retreat.PublicActionRefs);
+        var accepted = fixture.Open(clock).SubmitOwnerPostAssaultRetreat(axis, "axis-infantry",
+            retreat.Revision, retreat.PublicActionRefs[0]);
+        Assert.True(accepted.IsAccepted);
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-post-assault-retreat"));
+        var retry = fixture.Open(clock).SubmitOwnerPostAssaultRetreat(axis, "axis-infantry",
+            retreat.Revision, retreat.PublicActionRefs[0]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
+
+        // Whatever happens next (custody pending or not) must still reach the
+        // second side's own Reserve Release and finish Operation Stage 1.
+        if (CampaignHostAdapter.IsNativeCombatCustodyPending(
+                fixture.Open(clock).ReadVerified(request.CampaignId)))
+            ResolveSecondSideCustody(fixture, clock, request, axis, commonwealth);
+        var released = fixture.Open(clock).ReadVerified(request.CampaignId);
+        var checkpoint = CampaignExercises.QueryCheckpoint(released);
+        Assert.Equal(27, checkpoint.ContractVersion);
+        Assert.Equal(SecondCombatPrefix + "reserve-release", checkpoint.PositionId);
+        FinishSecondSideOperationStage(fixture, clock, request, commonwealth);
+    }
+
+    // Second-side analog of the first side's own CaptorCustodyUsesSideSafeOpeningAndColdReceipt
+    // (seed 5 there): drives the second side's own assault to a result that
+    // genuinely requires a real captor custody disposition, with no preceding
+    // retreat decision (unlike the test above).
+    [Fact]
+    public void SecondSideCaptorCustodyUsesSideSafeOpeningAndColdReceipt()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var (request, axis, commonwealth) = SecondSideAssaultThroughRba(fixture, clock,
+            PositiveCombatRequest(5));
+        var attackerForce = fixture.Open(clock).QueryForceOwnerOpening(commonwealth, "commonwealth-infantry");
+        var defenderForce = fixture.Open(clock).QueryForceOwnerOpening(axis, "axis-infantry");
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(fixture.Open(clock).SubmitOwnerForceSeal(commonwealth, "commonwealth-infantry",
+            attackerForce.Revision, attackerForce.PublicActionRefs[0]).IsAccepted);
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Assert.True(fixture.Open(clock).SubmitOwnerForceSeal(axis, "axis-infantry",
+            defenderForce.Revision, defenderForce.PublicActionRefs[0]).IsAccepted);
+
+        var afterResult = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(afterResult).IsVerified);
+        Assert.True(CampaignHostAdapter.IsNativeCombatCustodyPending(afterResult),
+            StepKinds(fixture.Path, request.CampaignId));
+        ResolveSecondSideCustody(fixture, clock, request, axis, commonwealth);
+        var released = fixture.Open(clock).ReadVerified(request.CampaignId);
+        var checkpoint = CampaignExercises.QueryCheckpoint(released);
+        Assert.Equal(27, checkpoint.ContractVersion);
+        Assert.Equal(SecondCombatPrefix + "reserve-release", checkpoint.PositionId);
+        FinishSecondSideOperationStage(fixture, clock, request, commonwealth);
+    }
+
+    // Shared custody-resolution step: whichever side the captor opening
+    // actually belongs to (side-safe -- the other side's query must throw,
+    // same invariant CaptorCustodyUsesSideSafeOpeningAndColdReceipt checks
+    // for the first side), submit its one legal disposition and cold-replay.
+    private static void ResolveSecondSideCustody(JournalFixture fixture, ManualClock clock,
+        CampaignCreationRequest request, CampaignSeatCredential axis, CampaignSeatCredential commonwealth)
+    {
+        CampaignSeatCredential captor;
+        string captorId;
+        CampaignOwnerOpening opening;
+        try
+        {
+            opening = fixture.Open(clock).QueryCustodyOwnerOpening(commonwealth, "commonwealth-infantry");
+            captor = commonwealth;
+            captorId = "commonwealth-infantry";
+            Assert.Throws<InvalidOperationException>(() =>
+                fixture.Open(clock).QueryCustodyOwnerOpening(axis, captorId));
+        }
+        catch (InvalidOperationException)
+        {
+            opening = fixture.Open(clock).QueryCustodyOwnerOpening(axis, "axis-infantry");
+            captor = axis;
+            captorId = "axis-infantry";
+            Assert.Throws<InvalidOperationException>(() =>
+                fixture.Open(clock).QueryCustodyOwnerOpening(commonwealth, captorId));
+        }
+        Assert.NotEmpty(opening.PublicActionRefs);
+        var accepted = fixture.Open(clock).SubmitOwnerCustody(captor, captorId,
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(accepted.IsAccepted);
+        var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, request.CampaignId, "contact-combat-custody"));
+        var retry = fixture.Open(clock).SubmitOwnerCustody(captor, captorId,
+            opening.Revision, opening.PublicActionRefs[0]);
+        Assert.True(retry.IsAccepted);
+        Assert.Equal(accepted.CanonicalReceipt, retry.CanonicalReceipt);
+    }
+
     [Fact]
     public void SecondSideVoluntaryFinishCompletesOperationStageOne()
     {
