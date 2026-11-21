@@ -15,6 +15,8 @@ namespace Cna.ExerciseRunner.Tests.Artifacts;
 public sealed class CombatBundleReadbackTests : IDisposable
 {
     private const string TruckConvoy = "land.position.operation-1.first-player.truck-convoy-movement";
+    private const string SecondCombatEntry =
+        "land.position.operation-1.second-player.movement-and-combat.combat.position-determination";
     private const string CloseAssault =
         "land.position.operation-1.first-player.movement-and-combat.combat.close-assault";
 
@@ -50,6 +52,36 @@ public sealed class CombatBundleReadbackTests : IDisposable
         var execution = ExerciseExecutor.Execute(manifest, TestContext.Current.CancellationToken);
         Assert.Equal(execution.FinalSnapshot, final);
         Assert.Contains(EventTypes(bundlePath!), type => type == "movement-combat-cycle-control");
+    }
+
+    // 022D: both sides' Combat in one operation stage. The first side runs its full Combat loop and
+    // finishes; the second player then passes Truck Convoy and post-Combat, designates Reserves,
+    // moves, completes Breakdown and takes its own Combat Selection. Axis acts first under
+    // reaction-all; Commonwealth acts first under act-last (Axis holds initiative and acts last).
+    [Theory]
+    [InlineData("double-fresh", 5ul, "reaction-all-by-action-id", "Commonwealth:second-combat-selection-decided")]
+    [InlineData("assault", 6ul, "act-last-reserve-none-then-first-by-action-id", "Axis:second-combat-selection-decided")]
+    public void CliPublishesAStrictlyReadableBundleThroughBothSidesCombat(string setup, ulong seed, string policy,
+        string secondSelection)
+    {
+        var manifest = Manifest(setup, seed, SecondCombatEntry, policy);
+        var (exitCode, bundlePath) = RunCli(manifest, $"both-{setup}-{seed}");
+
+        Assert.Equal(ExerciseProcessExitCode.Succeeded, exitCode);
+        var bundle = ExerciseBundleReader.Read(bundlePath!);
+        Assert.Equal(ArtifactBundleProfile.Succeeded, bundle.Manifest.Profile);
+        var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
+        Assert.Equal(SecondCombatEntry, Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
+        var types = EventTypes(bundlePath!);
+        Assert.Contains("combat-selection-decided", types);
+        Assert.Contains("movement-combat-cycle-control", types);
+        Assert.Contains("truck-convoy-movement-passed", types);
+        Assert.Contains("second-breakdown-completed", types);
+
+        // The same run continued past the boundary takes the second side's own Combat Selection.
+        var further = ExerciseExecutor.Execute(Manifest(setup, seed, "land.position.unreachable", policy),
+            TestContext.Current.CancellationToken);
+        Assert.Contains(further.Steps, step => $"{step.Audience}:{EventType(step.EventRecords[0])}" == secondSelection);
     }
 
     [Fact]
@@ -139,9 +171,16 @@ public sealed class CombatBundleReadbackTests : IDisposable
         return (exitCode, line?["bundle=".Length..]);
     }
 
-    private static ExerciseManifest Manifest(string setup, ulong seed, string terminal) =>
+    private static ExerciseManifest Manifest(string setup, ulong seed, string terminal,
+        string policy = "reaction-all-by-action-id") =>
         ExerciseManifestCodec.Deserialize(Encoding.UTF8.GetBytes(
-            $$"""{"contractVersion":2,"exerciseId":"combat-selection.c",{{(setup == "assault" ? Assault : DoubleFresh)}},"rulesetHash":"17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a","terminalBoundary":"{{terminal}}","maximumSteps":200,"rootSeed":{{seed}},"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"compact","controllers":{"system":"reaction-all-by-action-id","axis":"reaction-all-by-action-id","commonwealth":"reaction-all-by-action-id"},"assertFailureCategory":null}"""));
+            $$"""{"contractVersion":2,"exerciseId":"combat-selection.c",{{(setup == "assault" ? Assault : DoubleFresh)}},"rulesetHash":"17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a","terminalBoundary":"{{terminal}}","maximumSteps":200,"rootSeed":{{seed}},"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"compact","controllers":{"system":"{{policy}}","axis":"{{policy}}","commonwealth":"{{policy}}"},"assertFailureCategory":null}"""));
+
+    private static string EventType(byte[] record)
+    {
+        using var document = JsonDocument.Parse(record);
+        return document.RootElement.GetProperty("eventType").GetString()!;
+    }
 
     private static string[] EventTypes(string bundlePath) =>
         Encoding.UTF8.GetString(File.ReadAllBytes(Path.Combine(bundlePath, ArtifactSchema.CanonicalEventsPath)))

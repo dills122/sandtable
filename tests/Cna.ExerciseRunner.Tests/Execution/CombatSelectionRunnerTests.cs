@@ -59,6 +59,8 @@ public sealed class CombatSelectionRunnerTests : IDisposable
 
     private const string CloseAssault = Prefix + "combat.close-assault";
     private const string TruckConvoy = "land.position.operation-1.first-player.truck-convoy-movement";
+    private const string SecondBarrage = "land.position.operation-1.second-player.movement-and-combat.combat.barrage";
+    private const string SecondReserveRelease = "land.position.operation-1.second-player.movement-and-combat.reserve-release";
     private const string Released = "System:reserve-release-completed";
     private const string Cycle = "Axis:movement-combat-cycle-control";
     private static readonly string[] Finish =
@@ -163,8 +165,11 @@ public sealed class CombatSelectionRunnerTests : IDisposable
     }
 
     [Theory]
-    [InlineData("assault", "reaction-all-by-action-id", "c", 6, TruckConvoy, "movement-combat-cycle-control")]
-    [InlineData("double-fresh", "reaction-all-by-action-id", "c", 6, TruckConvoy, "movement-combat-cycle-control")]
+    // 022D: after the first side finishes, the second player's phase runs; a second-side assault has
+    // no Core continuation past its Selection, and the second side's no-attack completion opens no
+    // Reserve Release.
+    [InlineData("assault", "reaction-all-by-action-id", "c", 6, SecondBarrage, "second-combat-selection-decided")]
+    [InlineData("double-fresh", "reaction-all-by-action-id", "c", 6, SecondReserveRelease, "combat-no-attack-completed")]
     // Seed 7's result requires a post-assault retreat, a contract-v2 owner stage the harness does not cover.
     [InlineData("double-fresh", "reaction-all-by-action-id", "c", 7, CloseAssault, "combat-assault-resolved")]
     public void UnsupportedNextCombatStepIsAnHonestNoLegalActionFrontier(string setup, string policy, string variant,
