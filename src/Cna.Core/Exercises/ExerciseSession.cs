@@ -374,7 +374,11 @@ public sealed class ExerciseSession
                 repeatCombatSelection, repeatMoveWorld,
                 combatAssaultResult.AfterRandomState, context,
                 repeatAssaultBaseContacts, prePostHistory, assaultEvents,
-                ammunitionLedger);
+                // #446: once settled, ammunitionLedger already holds this
+                // engagement's spend; replaying its result from that ledger
+                // would spend twice. Fold the pre-assault history instead.
+                assaultEvents.Any(value => value is CampaignNativeCombatSettlementV24)
+                    ? null : ammunitionLedger);
             var assaultTerminalContacts = postRepeatBaseContacts ?? CurrentContacts;
             if (assaultTerminalContacts.AuthorityVersion
                     != runtime.Contacts.AuthorityVersion
@@ -735,10 +739,13 @@ public sealed class ExerciseSession
         // through CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents, so
         // the result's ContentHash/SourceHash/PriorAmmunitionHash/
         // AfterAmmunitionHash are re-validated, not trusted blindly.
+        // #446: with no carried seed (after a later repeat cycle), fold from
+        // genesis; CurrentHistory already holds this engagement's result.
         var ammunitionLedger = campaignEvent is CampaignNativeCombatSettlementV24
-            ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
-                CurrentAmmunitionLedger ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(Context),
-                new object[] { CurrentRepeatAssault!.Result! })
+            ? CurrentAmmunitionLedger is { } seed
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(
+                    seed, new object[] { CurrentRepeatAssault!.Result! })
+                : CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context, CurrentHistory)
             : CurrentAmmunitionLedger;
         return new(CurrentSnapshot, Context,
             CurrentHistory.Add(campaignEvent), contacts, CurrentCombatDecision,

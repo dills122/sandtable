@@ -5191,7 +5191,7 @@ public static class CampaignExercises
             {
                 return CampaignNativeCombatForceEligibility.CanCompleteAssault(repeat.Selection,
                     repeatDecline, repeat.RetreatWorld ?? repeat.Selection.World, session.Context,
-                    session.CurrentAmmunitionLedger);
+                    CurrentAmmunition(session, session.CurrentHistory));
             }
             catch (Exception exception) when (exception is ArgumentException
                 or InvalidOperationException or InvalidCampaignHistoryException)
@@ -5209,7 +5209,7 @@ public static class CampaignExercises
             return CampaignNativeCombatForceEligibility.CanCompleteAssault(
                 selected, decline,
                 session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
-                session.Context, session.CurrentAmmunitionLedger);
+                session.Context, CurrentAmmunition(session, session.CurrentHistory));
         }
         catch (Exception exception) when (exception is ArgumentException
             or InvalidOperationException or InvalidCampaignHistoryException)
@@ -5466,6 +5466,15 @@ public static class CampaignExercises
         }
     }
 
+    // #446: the #437 seed is deliberately absent after a later repeat cycle
+    // (ExerciseSession.WithPostRepeatEvent). Fall back to the pre-#437
+    // from-genesis fold over the same history, never to the unspent initial
+    // ledger, which would let a later-cycle result spend ammunition twice.
+    private static CampaignCombatAmmunitionLedgerV1 CurrentAmmunition(ExerciseSession session,
+        IEnumerable<object> preSpendHistory) =>
+        session.CurrentAmmunitionLedger
+            ?? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(session.Context, preSpendHistory);
+
     internal static ExerciseStepResult ResolveNativeCombatAssault(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -5497,8 +5506,7 @@ public static class CampaignExercises
             // first Combat result in a campaign, or after a later repeat
             // cycle that intentionally left the ledger null (see
             // ExerciseSession.WithPostRepeatEvent).
-            var ammunition = session.CurrentAmmunitionLedger
-                ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(session.Context);
+            var ammunition = CurrentAmmunition(session, session.CurrentHistory);
             var inputs = CampaignNativeCombatAssaultInputs.Create(selected, completion,
                 antiArmor, session.CurrentCombatForceSeals,
                 session.CurrentCombatRetreatWorld ?? selected.PriorSnapshot.World,
@@ -5558,8 +5566,7 @@ public static class CampaignExercises
             // Perf seeding path (Phase 1 of #436): see the matching
             // comment in ResolveNativeCombatAssault -- same reasoning
             // applies to the repeated-assault path.
-            var ammunition = session.CurrentAmmunitionLedger
-                ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(session.Context);
+            var ammunition = CurrentAmmunition(session, session.CurrentHistory);
             var inputs = CampaignNativeCombatAssaultInputs.Create(selected,
                 runtime.ForceCompletion!, runtime.AntiArmor,
                 runtime.Seals, runtime.RetreatWorld ?? selected.World,
@@ -5854,8 +5861,9 @@ public static class CampaignExercises
             // old `priorHistory = CurrentHistory.Take(Count - 2)` rescan
             // existed only to exclude `result` itself from the fold for
             // the same reason; seeding removes the need for it entirely.
-            var ammunition = session.CurrentAmmunitionLedger
-                ?? CampaignCombatAmmunitionLedgerV1.CreateInitial(session.Context);
+            // History minus the result and its retreat choice is the pre-spend cut.
+            var ammunition = CurrentAmmunition(session,
+                session.CurrentHistory.Take(session.CurrentHistory.Count - 2));
             var inputs = CampaignNativeCombatAssaultInputs.Create(selected,
                 session.CurrentCombatForceCompletion!, session.CurrentCombatAntiArmor!,
                 session.CurrentCombatForceSeals,

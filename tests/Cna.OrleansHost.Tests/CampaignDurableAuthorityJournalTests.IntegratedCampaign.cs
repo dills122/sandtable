@@ -12,7 +12,7 @@ namespace Cna.OrleansHost.Tests;
 public sealed partial class CampaignDurableAuthorityJournalTests
 {
     [Theory]
-    [InlineData("paid-assault", Traits = ["KnownIssue", "446"])] // https://github.com/dills122/sandtable/issues/446
+    [InlineData("paid-assault")]
     [InlineData("selection-timeout")]
     [InlineData("rba-timeout")]
     [InlineData("force-timeout")]

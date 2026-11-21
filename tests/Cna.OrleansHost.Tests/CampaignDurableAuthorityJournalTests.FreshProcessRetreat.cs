@@ -9,7 +9,6 @@ namespace Cna.OrleansHost.Tests;
 
 public sealed partial class CampaignDurableAuthorityJournalTests
 {
-    [Trait("KnownIssue", "446")] // https://github.com/dills122/sandtable/issues/446
     [Fact]
     public async Task FreshProcessRepeatedRequiredRetreatRecoveryAppliesSourceRefusal()
     {
