@@ -134,7 +134,10 @@ public sealed class CampaignCombatExerciseActionsTests
         Assert.All(Enum.GetValues<CampaignActionAudience>(), audience =>
         {
             var set = CampaignExercises.QueryWithCombat(atFrontier, audience).ActionSet!;
-            Assert.Empty(set.Candidates);
+            // 022B: after Barrage only the bound defender is offered its decline-only RBA decision.
+            if (fromEnd == 0 && audience == CampaignActionAudience.Commonwealth)
+                Assert.Equal("decline-retreat-before-assault", Assert.Single(set.Candidates).Kind);
+            else Assert.Empty(set.Candidates);
             Assert.Equal(Prefix + frontier, set.PositionId);
             Assert.Equal(CampaignLegalActionQueryRejectionReason.InvalidState,
                 CampaignExercises.Query(atFrontier, audience).RejectionReason);

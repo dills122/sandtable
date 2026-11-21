@@ -598,11 +598,7 @@
       "declaredMembers": ["ActingElementId"]
     },
     {
-      "name": "Cna.Core.Actions.CompleteCombatNoAttackAction",
-      "declaredMembers": []
-    },
-    {
-      "name": "Cna.Core.Actions.CompleteCombatBarrageAction",
+      "name": "Cna.Core.Actions.CombatExerciseSystemAction",
       "declaredMembers": []
     },
     {
