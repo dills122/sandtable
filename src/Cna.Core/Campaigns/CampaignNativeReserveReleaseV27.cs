@@ -260,6 +260,91 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             selected.Decision.Side, 1, position, world, [], [], false, false);
     }
 
+    // The second acting side's own first-cycle Reserve Release. Its frame is
+    // the V47 selection (second-side World and position); turn facts come
+    // from the retained V11, which is the same turn and Operation Stage.
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterSecondNoAttack(
+        CampaignCombatSelectionFrame selected,
+        CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(completion);
+        if (selected.Decision.Choice != "finish-combat-without-attack"
+            || completion.CampaignId != selected.CampaignId
+            || completion.PriorStateVersion != selected.StateVersion
+            || completion.DecisionActionId != selected.Decision.ActionId)
+            throw new InvalidOperationException(
+                "Second-side no-attack Reserve Release lacks accepted Combat authority.");
+        return InitializeAfterSecondCompletion(selected, completion.StateVersion,
+            completion.Steps[^1].NextPositionId,
+            CampaignNativeReserveReleaseEventV27.Hash(completion.SerializeCanonical()),
+            selected.World, context);
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterSecondCompletion(
+        CampaignCombatSelectionFrame selected, long stateVersion,
+        string nextPositionId, string eventHash, CampaignWorldSnapshotV6 world,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(context);
+        if (context.ArtifactV6 is not { } artifact
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
+            throw new InvalidOperationException(
+                "Second-side Reserve Release lacks retained World authority.");
+        var position = SecondSidePosition(selected, nextPositionId);
+        _ = CampaignReserveReleaseRules.Pending(world, context, selected.Decision.Side, 1);
+        return new(selected.CampaignId, stateVersion, eventHash,
+            selected.Decision.Side, 1, position, world, [], [], false, false);
+    }
+
+    internal static CampaignNativeReserveReleaseStateV27 InitializeAfterSecondAssault(
+        CampaignCombatSelectionFrame selected,
+        CampaignNativeCombatSuccessorV26 successor,
+        CampaignNativeCombatSuccessorV26.Projection projection,
+        CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(successor);
+        ArgumentNullException.ThrowIfNull(projection);
+        ArgumentNullException.ThrowIfNull(context);
+        if (selected.Decision.Choice != "select-contact-assault"
+            || successor.CampaignId != selected.CampaignId
+            || successor.StateVersion != projection.StateVersion
+            || successor.NextPositionId != projection.NextPosition.PositionId
+            || successor.StateHash != CampaignNativeReserveReleaseEventV27.Hash(
+                projection.SerializeCanonical(context))
+            || successor.CustodyStateHash != CampaignNativeReserveReleaseEventV27.Hash(
+                CampaignNativeCombatCustodyProjectionV25.SerializeStateCanonical(
+                    projection.Custody)))
+            throw new InvalidOperationException(
+                "Second-side assault successor lacks accepted Reserve Release authority.");
+        var position = SecondSidePosition(selected, projection.NextPosition.PositionId);
+        _ = CampaignReserveReleaseRules.Pending(projection.World, context,
+            selected.Decision.Side, 1);
+        return new(successor.CampaignId, successor.StateVersion,
+            CampaignNativeReserveReleaseEventV27.Hash(successor.SerializeCanonical()),
+            selected.Decision.Side, 1, position, projection.World, [], [], false, true);
+    }
+
+    // Same-slot second-player Reserve Release, bound to the acting side (the
+    // catalog's relative-role entries carry no side of their own).
+    private static LandSequencePosition SecondSidePosition(
+        CampaignCombatSelectionFrame selected, string positionId)
+    {
+        var turn = selected.PriorSnapshot.CurrentPosition.SequenceContext;
+        var position = Cna1979LandSequenceV4.CreateTurn(turn.GameTurn)
+            .Single(value => value.PositionId == positionId);
+        if (position.SegmentId != LandSegmentIds.ReserveRelease
+            || position.ActorRole != LandActorRole.SecondActingSide
+            || position.OperationStage != turn.OperationStage)
+            throw new InvalidOperationException(
+                "Second-side Combat must reach same-slot Reserve Release.");
+        return position;
+    }
+
     internal static CampaignNativeReserveReleaseStateV27 InitializeAfterRepeatNoAttack(
         CampaignSnapshotV11 initial,
         CampaignNativeRepeatCombatDecisionV31 selection,

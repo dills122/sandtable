@@ -36,7 +36,8 @@ internal record CampaignNativeCycleControlV28(
         ArgumentNullException.ThrowIfNull(contacts);
         if (!Enum.IsDefined(choice) || !release.Completed
             || release.Position.SegmentId != LandSegmentIds.ReserveRelease
-            || release.Position.ActorRole != LandActorRole.FirstActingSide
+            || release.Position.ActorRole is not (LandActorRole.FirstActingSide
+                or LandActorRole.SecondActingSide)
             || release.Pending(context).Count != 0
             || contacts.CampaignId != release.CampaignId
             || contacts.AuthorityVersion != release.StateVersion)
@@ -46,6 +47,12 @@ internal record CampaignNativeCycleControlV28(
         string? witnessActionId = null;
         if (choice == CampaignNativeCycleControlChoiceV28.Repeat)
         {
+            // Owner ruling 2026-11-21: the second acting side's Repeat edge is
+            // source-legal but not built this release. It stays offered and is
+            // refused explicitly, never silently dropped from the legal set.
+            if (release.Position.ActorRole == LandActorRole.SecondActingSide)
+                throw new CampaignRuleNotImplementedException(
+                    "The second acting side's Movement and Combat Repeat is not implemented.");
             if (release.CycleOrdinal < 1
                 || !release.HasRetainedCombatRandomCursor)
                 throw new InvalidOperationException(

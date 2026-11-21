@@ -83,4 +83,5 @@ internal sealed record CampaignGrainSubmissionResult
 {
     [Id(0)] public bool IsAccepted { get; init; }
     [Id(1)] public byte[]? CanonicalReceipt { get; init; }
+    [Id(2)] public string? RejectionCode { get; init; }
 }

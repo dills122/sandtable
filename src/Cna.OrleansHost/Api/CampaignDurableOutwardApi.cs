@@ -822,7 +822,7 @@ internal static class CampaignDurableOutwardApi
                         openingRevision = revision,
                         publicActionRef = reference
                     })
-                    : Error(StatusCodes.Status409Conflict, "rejected");
+                    : Error(StatusCodes.Status409Conflict, result.RejectionCode ?? "rejected");
             }));
     }
 

@@ -609,6 +609,75 @@ public sealed class ExerciseCheckpoint
         PositionId = completion.NextPositionId;
     }
 
+    private ExerciseCheckpoint(int contractVersion, string campaignId, long stateVersion,
+        string rulesetHash, string positionId)
+    {
+        ContractVersion = contractVersion;
+        CampaignId = campaignId;
+        StateVersion = stateVersion;
+        RulesetHash = rulesetHash;
+        PositionId = positionId;
+    }
+
+    // The second acting side's V14-V28 stages after its own V47 assault
+    // selection: the same fields their later-cycle checkpoints expose, with
+    // turn facts from the V47 selection's retained V11.
+    internal static ExerciseCheckpoint ForSecondAssault(CampaignNativeRepeatAssaultRuntime runtime,
+        CampaignNativeSecondCombatDecisionStateV47 decision)
+    {
+        ArgumentNullException.ThrowIfNull(runtime);
+        ArgumentNullException.ThrowIfNull(decision);
+        if (!runtime.IsSecondSide || runtime.Events.Count == 0
+            || runtime.Selection.Decision.ActionId != decision.Decision.ActionId)
+            throw new ArgumentException("Second-side checkpoint needs an advanced second-side assault.",
+                nameof(runtime));
+        var ruleset = decision.TurnFacts.RulesetHash;
+        return runtime.Events[^1] switch
+        {
+            CampaignNativeReserveReleaseEventV27 => new(runtime.Release!.EventContractVersion,
+                runtime.Release.CampaignId, runtime.Release.StateVersion, ruleset,
+                runtime.Release.Position.PositionId),
+            CampaignNativeCycleControlV28 control => new(control.ContractVersion, control.CampaignId,
+                control.StateVersion, ruleset, control.NextPositionId),
+            CampaignNativeTruckConvoyPassV41 value => new(value.ContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativePostCombatPassV42 value => new(value.ContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatNoAttackCompletionV13 value => new(CampaignNativeCombatNoAttackCompletionV13.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatBarrageV14 value => new(CampaignNativeCombatBarrageV14.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatRetreatMoveV16 value => new(CampaignNativeCombatRetreatMoveV16.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.PositionId),
+            CampaignNativeCombatRetreatDeclineV15 value => new(CampaignNativeCombatRetreatDeclineV15.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatRbaCancellationV33 value => new(CampaignNativeCombatRbaCancellationV33.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatForceSealV17 value => new(CampaignNativeCombatForceSealV17.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatForceCompletionV18 value => new(CampaignNativeCombatForceCompletionV18.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatForceCancellationV19 value => new(CampaignNativeCombatForceCancellationV19.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatAntiArmorV20 value => new(CampaignNativeCombatAntiArmorV20.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatCancelledAssaultV21 value => new(CampaignNativeCombatCancelledAssaultV21.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatAssaultResultV22 value => new(CampaignNativeCombatAssaultResultV22.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatRetreatAfterAssaultV23 value => new(value.ContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatSettlementV24 value => new(CampaignNativeCombatSettlementV24.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            CampaignNativeCombatCustodyDispositionV25 value => new(value.ContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.PositionId),
+            CampaignNativeCombatSuccessorV26 value => new(CampaignNativeCombatSuccessorV26.CurrentContractVersion,
+                value.CampaignId, value.StateVersion, ruleset, value.NextPositionId),
+            _ => throw new ArgumentException("Second-side assault checkpoint has an unsupported event.",
+                nameof(runtime)),
+        };
+    }
+
     public int ContractVersion { get; }
     public string CampaignId { get; }
     public long StateVersion { get; }

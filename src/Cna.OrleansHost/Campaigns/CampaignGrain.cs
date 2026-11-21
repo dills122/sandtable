@@ -169,6 +169,7 @@ internal sealed class CampaignGrain(CampaignDurableAuthorityJournalStore store, 
         {
             IsAccepted = result.IsAccepted,
             CanonicalReceipt = result.CanonicalReceipt,
+            RejectionCode = result.RejectionCode,
         };
     }
 

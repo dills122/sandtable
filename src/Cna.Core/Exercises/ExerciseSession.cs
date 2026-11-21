@@ -388,7 +388,7 @@ public sealed class ExerciseSession
                 throw new ArgumentException(
                     "Repeated assault contacts differ from retained replay.",
                     nameof(contacts));
-            CurrentRepeatAssault = runtime;
+            firstSideRepeatAssault = runtime;
             CurrentFirstRepeatAssault = runtime;
         }
         CurrentRepeatAssaultBaseContacts = repeatAssaultBaseContacts;
@@ -421,7 +421,7 @@ public sealed class ExerciseSession
                     "Later-cycle contacts differ from retained replay.",
                     nameof(contacts));
             CurrentPostRepeat = runtime;
-            CurrentRepeatAssault = runtime.ActiveAssault;
+            firstSideRepeatAssault = runtime.ActiveAssault;
         }
         else if (CurrentRepeatAssault is
         {
@@ -445,7 +445,7 @@ public sealed class ExerciseSession
                     "Later-cycle contacts differ from retained replay.",
                     nameof(contacts));
             CurrentPostRepeat = runtime;
-            CurrentRepeatAssault = runtime.ActiveAssault;
+            firstSideRepeatAssault = runtime.ActiveAssault;
         }
         CurrentPostRepeatBaseContacts = postRepeatBaseContacts;
         CurrentPostRepeatEvents = Array.AsReadOnly(laterEvents);
@@ -722,6 +722,8 @@ public sealed class ExerciseSession
     internal ExerciseSession WithRepeatAssaultEvent(object campaignEvent,
         CampaignContactJournal contacts)
     {
+        if (CurrentSecondAssault is not null)
+            return WithSecondAssaultEvent(campaignEvent, contacts);
         if (CurrentPostRepeat?.ActiveAssault is not null)
             return WithPostRepeatEvent(campaignEvent, contacts);
         // Perf seeding path (Phase 1 of #436): CurrentAmmunitionLedger is
@@ -869,6 +871,54 @@ public sealed class ExerciseSession
         successor.CurrentSecondCombatDecision = selected;
         successor.CurrentContacts = contacts;
         successor.CurrentHistory = CurrentHistory.Add(selected.Decision);
+        successor.CurrentSecondAssault = CampaignNativeRepeatAssaultRuntime.ReplaySecond(
+            SecondAssaultFrame(selected, CurrentSnapshot, CurrentHistory), Context, contacts,
+            successor.CurrentHistory, []);
+        return successor;
+    }
+
+    // The second side's V14-V26 assault stages after its V47 selection,
+    // re-verified from that cut on every accepted step.
+    internal CampaignNativeRepeatAssaultRuntime? CurrentSecondAssault { get; private set; }
+    internal ExerciseSession? SecondAssaultPredecessor { get; private set; }
+
+    // The frame's random cursor is the campaign's latest accepted Combat
+    // draw: the last Close Assault result's successor cursor, or the retained
+    // V11 cursor when no assault has resolved this turn. V47 itself carries
+    // no cursor, and reusing the stale V11 one would replay earlier draws.
+    internal static CampaignCombatSelectionFrame SecondAssaultFrame(
+        CampaignNativeSecondCombatDecisionStateV47 selected, CampaignSnapshotV11 turnFacts,
+        IEnumerable<object> history)
+    {
+        CampaignCombatSelectionFrame frame = selected;
+        var cursor = history.OfType<CampaignNativeCombatAssaultResultV22>().LastOrDefault()
+            ?.AfterRandomState ?? turnFacts.RandomState;
+        return frame with { RandomState = cursor };
+    }
+
+    internal ExerciseSession WithSecondAssaultEvent(object campaignEvent,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(campaignEvent);
+        ArgumentNullException.ThrowIfNull(contacts);
+        var runtime = CurrentSecondAssault!.Advance(campaignEvent);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion
+            || runtime.Contacts.Records.Count != contacts.Records.Count
+            || runtime.Contacts.Records.Zip(contacts.Records)
+                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+            throw new InvalidOperationException(
+                "Second-side assault step differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.SecondAssaultPredecessor = this;
+        successor.CurrentSecondAssault = runtime;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(campaignEvent);
+        // As for later cycles: the settlement makes this engagement's spend
+        // final, so the carried ledger folds exactly its result.
+        if (campaignEvent is CampaignNativeCombatSettlementV24)
+            successor.CurrentAmmunitionLedger = CurrentAmmunitionLedger is { } seed
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(seed, new object[] { runtime.Result! })
+                : CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context, CurrentHistory);
         return successor;
     }
 
@@ -888,8 +938,15 @@ public sealed class ExerciseSession
             || completion.PriorStateVersion != selected.StateVersion
             || contacts.AuthorityVersion != completion.StateVersion)
             throw new InvalidOperationException("Second no-attack completion must advance its retained cut once.");
+        var runtime = (CurrentSecondAssault
+            ?? throw new InvalidOperationException("Second no-attack completion lacks its stage chain."))
+            .Advance(completion);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion)
+            throw new InvalidOperationException("Second no-attack completion differs from its retained replay.");
         var successor = (ExerciseSession)MemberwiseClone();
         successor.SecondNoAttackPredecessor = this;
+        successor.SecondAssaultPredecessor = this;
+        successor.CurrentSecondAssault = runtime;
         successor.CurrentSecondNoAttackCompletion = completion;
         successor.CurrentContacts = contacts;
         successor.CurrentHistory = CurrentHistory.Add(completion);
@@ -1025,7 +1082,7 @@ public sealed class ExerciseSession
     // WithPostRepeatEvent) leaves this null rather than forward a stale
     // value, so a reader always either gets a current ledger or a null
     // that forces the safe from-genesis fallback -- never a wrong answer.
-    internal CampaignCombatAmmunitionLedgerV1? CurrentAmmunitionLedger { get; }
+    internal CampaignCombatAmmunitionLedgerV1? CurrentAmmunitionLedger { get; private set; }
     internal IReadOnlyList<CampaignNativeReserveReleaseEventV27> CurrentReserveReleaseEvents { get; }
     internal CampaignNativeReserveReleaseStateV27? CurrentReserveRelease { get; }
     internal CampaignNativeCycleControlV28? CurrentCycleControl { get; }
@@ -1036,7 +1093,12 @@ public sealed class ExerciseSession
     internal CampaignNativeRepeatCombatNoAttackV32? CurrentRepeatNoAttack { get; }
     internal CampaignContactJournal? CurrentRepeatAssaultBaseContacts { get; }
     internal IReadOnlyList<object> CurrentRepeatAssaultEvents { get; }
-    internal CampaignNativeRepeatAssaultRuntime? CurrentRepeatAssault { get; }
+    private readonly CampaignNativeRepeatAssaultRuntime? firstSideRepeatAssault;
+    // The active V14-V26 assault runtime: the second acting side's own once it
+    // has selected an assault, otherwise the first side's later-cycle one.
+    internal CampaignNativeRepeatAssaultRuntime? CurrentRepeatAssault =>
+        (CurrentSecondAssault is { IsSecondSideFinish: false } ? CurrentSecondAssault : null)
+            ?? firstSideRepeatAssault;
     internal CampaignNativeRepeatAssaultRuntime? CurrentFirstRepeatAssault { get; }
     internal CampaignContactJournal? CurrentPostRepeatBaseContacts { get; }
     internal IReadOnlyList<object> CurrentPostRepeatEvents { get; }

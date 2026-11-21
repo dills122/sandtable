@@ -248,6 +248,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             var isEntry = step.Kind is CampaignHostAcceptedStep.NativeCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeRepeatCombatNoAttackKind
+                or CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeCombatRbaCancellationKind
                 or CampaignHostAcceptedStep.NativeCombatCancelledAssaultKind
                 or CampaignHostAcceptedStep.NativeCombatSuccessorKind;
