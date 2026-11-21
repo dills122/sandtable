@@ -538,6 +538,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
     internal CampaignOwnerOpening QueryCycleControlOwnerOpening(CampaignSeatCredential credential) =>
         JournalFor(credential.CampaignId, createIfMissing: false).QueryCycleControlOwnerOpening(credential);
 
+    internal CampaignOwnerOpening QueryInitiativeOrderOwnerOpening(CampaignSeatCredential credential) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).QueryInitiativeOrderOwnerOpening(credential);
+
     internal CampaignOwnerOpening QueryTruckConvoyPassOwnerOpening(CampaignSeatCredential credential) =>
         JournalFor(credential.CampaignId, createIfMissing: false).QueryTruckConvoyPassOwnerOpening(credential);
 
@@ -684,6 +687,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal CampaignOwnerSubmissionResult SubmitOwnerCycleControl(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerCycleControl(credential, openingRevision, publicActionRef);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerInitiativeOrder(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerInitiativeOrder(credential, openingRevision, publicActionRef);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerTruckConvoyPass(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerTruckConvoyPass(credential, openingRevision, publicActionRef);
@@ -993,6 +999,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
     internal Task<CampaignOwnerOpening> QueryCycleControlOwnerOpeningAsync(CampaignSeatCredential credential) =>
         RunAsync(credential.CampaignId, false, journal => journal.QueryCycleControlOwnerOpening(credential));
 
+    internal Task<CampaignOwnerOpening> QueryInitiativeOrderOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryInitiativeOrderOwnerOpening(credential));
+
     internal Task<CampaignOwnerOpening> QueryTruckConvoyPassOwnerOpeningAsync(CampaignSeatCredential credential) =>
         RunAsync(credential.CampaignId, false, journal => journal.QueryTruckConvoyPassOwnerOpening(credential));
 
@@ -1136,6 +1145,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerCycleControlAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerCycleControl(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerInitiativeOrderAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerInitiativeOrder(credential, openingRevision, publicActionRef));
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerTruckConvoyPassAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerTruckConvoyPass(credential, openingRevision, publicActionRef));
