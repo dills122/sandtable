@@ -742,6 +742,13 @@ terminal and the B2 child-evidence format remain the planned Task 023. Scoping i
   authenticated only by the authoritative replay. They carry no decoded position: action/step
   positions are checked against the receipt and replay instead. A bundle containing any such record
   must reconstruct, or it is rejected.
+- **Second player's phase (022D).** The same rule covers the second player's phase after the
+  first side's Cycle Control Finish. Its offers are the Host-adapter drafts the unchanged trusted step
+  accepts, and its event types join the same allowlist. That phase runs Truck Convoy and post-Combat
+  passes, second-side Reserve, Movement and Breakdown, second-side Selection, and the no-attack
+  completion after a finish. A second-side assault has no Core continuation past its Selection, and
+  the second side's no-attack completion opens no Reserve Release. Both are empty frontiers, as on the
+  Host.
 - **Unchanged.** Every other EXR rule is unchanged: manifest-last publication, proofs, readjudication,
   the check catalog and failure profiles. A position-only terminal still applies. Inside Combat
   some positions repeat (for example, Anti Armor and the assault result share `combat.close-assault`),

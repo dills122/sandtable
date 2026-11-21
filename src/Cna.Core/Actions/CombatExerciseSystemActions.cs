@@ -19,6 +19,8 @@ internal sealed record CombatExerciseSystemAction : CampaignActionCandidate
     internal const string NoCustodyKind = "complete-combat-no-custody";
     internal const string SuccessorKind = "complete-combat-successor";
     internal const string ReserveReleaseKind = "complete-combat-reserve-release";
+    internal const string SecondBreakdownKind = "complete-second-side-breakdown";
+    internal const string SecondNoAttackKind = "complete-second-side-combat-no-attack";
 
     internal CombatExerciseSystemAction(string kind, byte[] eventBytes) : base(kind, eventBytes)
     {
@@ -33,6 +35,10 @@ internal sealed record CombatExerciseOwnerChoiceAction : CampaignActionCandidate
     internal const string CustodyStage = "custody";
     internal const string ReserveReleaseStage = "reserve-release";
     internal const string CycleControlStage = "cycle-control";
+    internal const string TruckConvoyPassStage = "truck-convoy-pass";
+    internal const string PostCombatPassStage = "post-combat-pass";
+    internal const string SecondMovementStage = "second-movement";
+    internal const string SecondMovementCompletionStage = "second-movement-completion";
 
     internal CombatExerciseOwnerChoiceAction(string stage, string choice, string subjectId, string actionId)
         : base($"combat-{stage}-{choice}", actionId, precomputedActionId: true)
