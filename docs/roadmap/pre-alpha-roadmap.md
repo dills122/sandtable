@@ -4,6 +4,29 @@ Current execution checkpoint: [RC checklist](../work/plans/2026-10-24-rc-checkli
 It records bounded implementation evidence and pass criteria without replacing
 the canonical Combat and MVP gates below.
 
+**Status correction, 2026-11-21:** the "Public Core 020-021" and "Exercise and
+Runner 022-024" rows below, and the "Combat and continual cycle" / "Exercise
+Harness" rows in the delivery-status table, are stale. Tasks 020 and 021
+(public, audience-safe Combat actions on the real Host API) and Tasks 022-023
+(Exercise Harness Combat adoption) have since merged — see commits through PR
+#483. The real Host API
+(`src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.Openings.cs` /
+`.Submissions.cs`) now exposes and resolves a full first-side Combat cycle
+(Selection through Reserve Release and Cycle Control), Truck Convoy Pass, and
+second-side Reserve/Movement/Movement-completion, each backed by passing Host
+tests including cold replay. A real, confirmed gap remains: a **second-side**
+Combat assault does not auto-continue past Combat Selection to a result or to
+its own Reserve Release on the real Host path (see
+`src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.Submissions.cs:820-874`,
+explicit "#394 extra-2/extra-3" comments). This is **not** the same gap as
+"the Exercise Harness/Runner cannot reach Combat" (issue #448) — that is a
+separate, test-automation-only limitation of `Cna.ExerciseRunner`. The two
+must not be conflated; see
+[the frozen initial-release scope](../work/plans/2026-11-21-initial-engine-release-scope.md)
+and the
+[initial-release readiness check](../work/plans/2026-11-21-initial-engine-release-readiness-check.md)
+for current, per-item status with citations.
+
 **Status:** Active
 
 **Rules target:** `cna-1979.1`
