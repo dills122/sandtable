@@ -27,6 +27,16 @@ public abstract record CampaignActionCandidate
         ActionId = CalculateId(WriteSubjectSemantics(kind, elementId));
     }
 
+    // Task 022C: an offer whose Core action ID its own cut already derived (Reserve Release, Cycle
+    // Control, Custody); the identity is carried over unchanged, never re-derived.
+    internal CampaignActionCandidate(string kind, string actionId, bool precomputedActionId)
+    {
+        if (!precomputedActionId) throw new ArgumentException("Use a semantics constructor.", nameof(precomputedActionId));
+        Kind = ContentContractGuards.RequireStableId(kind, nameof(kind));
+        ContractVersion = CurrentContractVersion;
+        ActionId = ContentContractGuards.RequireSha256(actionId, nameof(actionId));
+    }
+
     internal CampaignActionCandidate(string kind, byte[] semantics)
     {
         Kind = ContentContractGuards.RequireStableId(kind, nameof(kind));

@@ -1,5 +1,6 @@
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Exercises;
@@ -22,8 +23,14 @@ namespace Cna.Core.Exercises;
 //     owners' seals, offered together because they are hidden and order-independent (020A1), then
 //     the System Force completion; System Anti Armor; then the V21 cancelled assault or the V22
 //     assault result.
-//   - the cut right after the last covered step offers nothing (the harness frontier): Reserve
-//     Release after a no-attack or cancelled assault, and the post-result retreat after a result.
+//   - 022C: after a result with no required retreat, the System no-retreat completion, World
+//     settlement, the captor's Custody choice or the System no-custody completion, and the
+//     successor; then, after any result, cancelled assault or no-attack completion, each pending
+//     Reserve Release member's owner choice and the System Reserve Release completion; then the
+//     acting side's Cycle Control choice.
+//   - the cut right after the last covered step offers nothing (the harness frontier): after Cycle
+//     Control (Repeat leads to repeated Movement, a contract-v2 stage; Finish to the Truck Convoy
+//     pass), and a result that requires a post-assault retreat (a contract-v2 stage).
 // Anything else (repeat cycles, second side, timeouts, RBA movement) returns null, and the caller
 // keeps the ordinary behavior.
 internal static class CampaignCombatExerciseActions
@@ -34,6 +41,9 @@ internal static class CampaignCombatExerciseActions
         Selection,
         RetreatBeforeAssault,
         ForceAssignment,
+        Custody,
+        ReserveRelease,
+        CycleControl,
         System,
         Frontier,
     }
@@ -80,13 +90,22 @@ internal static class CampaignCombatExerciseActions
                 CampaignExercises.SubmitContactDefenderRbaDecline(session, submission, decline.ElementId)),
             SealCombatForceAssignmentAction seal => WithResultingCheckpoint(
                 CampaignExercises.SubmitContactOwnerForceSeal(session, submission, seal.ElementId)),
-            _ => offered.Step!,
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.CustodyStage } custody =>
+                WithResultingCheckpoint(CampaignHostAdapter.SubmitNativeCombatCustody(session, submission,
+                    custody.SubjectId)),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.ReserveReleaseStage } release =>
+                WithResultingCheckpoint(CampaignHostAdapter.SubmitNativeReserveReleaseChoice(session, submission,
+                    release.SubjectId)),
+            CombatExerciseOwnerChoiceAction { Stage: CombatExerciseOwnerChoiceAction.CycleControlStage } =>
+                WithResultingCheckpoint(CampaignHostAdapter.SubmitNativeCycleControl(session, submission)),
+            _ => WithResultingCheckpoint(offered.Step!),
         };
     }
 
-    // T022-Q7 (open, author choice for owner review): owner-decision receipts (V12 Selection, V15 RBA
-    // decline, V17 Force seal) report the cut the decision was taken at as ResultingPositionId, while
-    // the successor's checkpoint is the next position. System-step receipts name the next position.
+    // T022-Q7 (open, author choice for owner review): some receipts report the cut the step was taken
+    // at as ResultingPositionId, while the successor's checkpoint is the next position: the owner
+    // decisions V12 Selection, V15 RBA decline and V17 Force seal, and the System V26 successor. The
+    // other covered steps' receipts already name the successor checkpoint and pass through unchanged.
     // The Host persists and returns these receipts, so they are left unchanged there; this harness
     // path alone re-issues an owner receipt with the successor checkpoint position so the Runner's
     // checkpoint-continuity invariant holds. Event, snapshot checkpoint, successor session, versions,
@@ -122,10 +141,10 @@ internal static class CampaignCombatExerciseActions
         Cut AtFrontier(long lastVersion) =>
             lastVersion == stateVersion ? new(Stage.Frontier) : new(Stage.None);
         if (selected.Decision.Choice == "finish-combat-without-attack")
-            return session.CurrentNoAttackCompletion is { } completion
-                ? AtFrontier(completion.StateVersion)
-                : new(Stage.System, CampaignExercises.CompleteNativeCombatNoAttack,
-                    CombatExerciseSystemAction.NoAttackKind);
+            return session.CurrentNoAttackCompletion is null
+                ? new(Stage.System, CampaignExercises.CompleteNativeCombatNoAttack,
+                    CombatExerciseSystemAction.NoAttackKind)
+                : AfterCombat(session, stateVersion);
         if (selected.Decision.Choice != "select-contact-assault" || session.CurrentNoAttackCompletion is not null)
             return new(Stage.None);
         if (session.CurrentCombatBarrage is null)
@@ -153,14 +172,47 @@ internal static class CampaignCombatExerciseActions
             return new(Stage.System, CampaignExercises.CompleteNativeCombatAntiArmor,
                 CombatExerciseSystemAction.AntiArmorKind);
         if (session.CurrentCombatForceCancellation is not null)
-            return session.CurrentCombatCancelledAssault is { } cancelled
-                ? AtFrontier(cancelled.StateVersion)
-                : new(Stage.System, CampaignExercises.CompleteNativeCombatCancelledAssault,
-                    CombatExerciseSystemAction.CancelledAssaultKind);
-        return session.CurrentCombatAssaultResult is { } result
-            ? AtFrontier(result.StateVersion)
-            : new(Stage.System, CampaignExercises.ResolveNativeCombatAssault,
+            return session.CurrentCombatCancelledAssault is null
+                ? new(Stage.System, CampaignExercises.CompleteNativeCombatCancelledAssault,
+                    CombatExerciseSystemAction.CancelledAssaultKind)
+                : AfterCombat(session, stateVersion);
+        if (session.CurrentCombatAssaultResult is not { } result)
+            return new(Stage.System, CampaignExercises.ResolveNativeCombatAssault,
                 CombatExerciseSystemAction.AssaultResultKind);
+        if (session.CurrentCombatPostResultRetreat is null)
+            // A required post-assault retreat is a contract-v2 owner stage: not covered.
+            return result.Facts.RequiredRetreat == 0
+                ? new(Stage.System, CampaignExercises.CompleteNoPostResultRetreat,
+                    CombatExerciseSystemAction.NoRetreatKind)
+                : AtFrontier(result.StateVersion);
+        if (session.CurrentCombatSettlement is not { } settlement)
+            return new(Stage.System, CampaignExercises.SettleNativeCombatWorld,
+                CombatExerciseSystemAction.SettlementKind);
+        if (session.CurrentCombatCustodyDisposition is null)
+            return settlement.PendingCaptives.Count == 0
+                ? new(Stage.System, CampaignExercises.CompleteNoNativeCombatCustody,
+                    CombatExerciseSystemAction.NoCustodyKind)
+                : new(Stage.Custody);
+        return session.CurrentCombatSuccessor is null
+            ? new(Stage.System, CampaignExercises.CompleteNativeCombatSuccessor,
+                CombatExerciseSystemAction.SuccessorKind)
+            : AfterCombat(session, stateVersion);
+    }
+
+    // Reserve Release, then Cycle Control, in the order the Host opens them
+    // (AppendEmptyReserveRelease, then the Cycle Control round).
+    private static Cut AfterCombat(ExerciseSession session, long stateVersion)
+    {
+        if (session.CurrentCycleControl is { } control)
+            return control.StateVersion == stateVersion ? new(Stage.Frontier) : new(Stage.None);
+        CampaignNativeReserveReleaseStateV27 release;
+        try { release = CampaignExercises.QueryNativeReserveReleaseState(session); }
+        catch (InvalidOperationException) { return new(Stage.None); }
+        if (release.Completed) return new(Stage.CycleControl);
+        return release.Pending(session.Context).Count > 0
+            ? new(Stage.ReserveRelease)
+            : new(Stage.System, CampaignExercises.CompleteNativeReserveRelease,
+                CombatExerciseSystemAction.ReserveReleaseKind);
     }
 
     private static bool IsFirstSideCombatEntry(CampaignSnapshotV11 snapshot)
@@ -189,6 +241,9 @@ internal static class CampaignCombatExerciseActions
             Stage.Selection => SelectionOffers(session, side),
             Stage.RetreatBeforeAssault => RbaDeclineOffer(session, side),
             Stage.ForceAssignment => ForceSealOffer(session, side),
+            Stage.Custody => CustodyOffers(session, side),
+            Stage.ReserveRelease => ReserveReleaseOffers(session, side),
+            Stage.CycleControl => CycleControlOffers(session, side),
             _ => [],
         };
     }
@@ -222,6 +277,59 @@ internal static class CampaignCombatExerciseActions
         {
             return [];
         }
+    }
+
+    // The bound captor only (CampaignHostAdapter.QueryContactCustodyOwnerDraft's rule).
+    private static List<(CampaignActionCandidate, ExerciseStepResult?)> CustodyOffers(
+        ExerciseSession session, LandSide side)
+    {
+        if (CampaignExercises.QueryNativeCombatCustodyCut(session) is not { } cut) return [];
+        var captorSide = session.Context.ArtifactV6!.Definition.LegacyDefinition.Elements
+            .Single(value => value.ElementId == cut.CaptorElementId).SideId;
+        if (captorSide != CampaignSnapshotSerializer.FormatSide(side)) return [];
+        return cut.Choices.Select(choice => ((CampaignActionCandidate)new CombatExerciseOwnerChoiceAction(
+                CombatExerciseOwnerChoiceAction.CustodyStage, choice.Kind, cut.CaptorElementId, choice.ActionId),
+            (ExerciseStepResult?)null)).ToList();
+    }
+
+    // The next ordered pending member of the acting side, as the Host opens Reserve Release.
+    private static List<(CampaignActionCandidate, ExerciseStepResult?)> ReserveReleaseOffers(
+        ExerciseSession session, LandSide side)
+    {
+        var release = CampaignExercises.QueryNativeReserveReleaseState(session);
+        if (release.ActingSide != side) return [];
+        var member = release.Pending(session.Context)[0];
+        var cut = CampaignReserveReleaseOwnerCutV27.Project(release, session.Context, side, member.ElementId);
+        return member.Choices.Zip(cut.ActionIds, (choice, actionId) => ((CampaignActionCandidate)
+                new CombatExerciseOwnerChoiceAction(CombatExerciseOwnerChoiceAction.ReserveReleaseStage,
+                    Kebab(choice.ToString()), member.ElementId, actionId), (ExerciseStepResult?)null))
+            .ToList();
+    }
+
+    private static List<(CampaignActionCandidate, ExerciseStepResult?)> CycleControlOffers(
+        ExerciseSession session, LandSide side)
+    {
+        var release = CampaignExercises.QueryNativeReserveReleaseState(session);
+        if (release.ActingSide != side) return [];
+        var cut = CampaignCycleControlOwnerCutV28.Project(release, session.Context, session.CurrentContacts, side);
+        return cut.Choices.Zip(cut.ActionIds, (choice, actionId) => ((CampaignActionCandidate)
+                new CombatExerciseOwnerChoiceAction(CombatExerciseOwnerChoiceAction.CycleControlStage,
+                    Kebab(choice.ToString()), CombatExerciseOwnerChoiceAction.CycleControlStage, actionId),
+                (ExerciseStepResult?)null))
+            .ToList();
+    }
+
+    // "ConvertToII" -> "convert-to-ii", "Finish" -> "finish".
+    private static string Kebab(string value)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var index = 0; index < value.Length; index++)
+        {
+            var current = value[index];
+            if (index > 0 && char.IsUpper(current) && !char.IsUpper(value[index - 1])) builder.Append('-');
+            builder.Append(char.ToLowerInvariant(current));
+        }
+        return builder.ToString();
     }
 
     private static List<(CampaignActionCandidate, ExerciseStepResult?)> SelectionOffers(

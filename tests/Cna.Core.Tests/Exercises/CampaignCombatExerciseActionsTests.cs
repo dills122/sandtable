@@ -137,6 +137,11 @@ public sealed class CampaignCombatExerciseActionsTests
             // 022B: after Barrage only the bound defender is offered its decline-only RBA decision.
             if (fromEnd == 0 && audience == CampaignActionAudience.Commonwealth)
                 Assert.Equal("decline-retreat-before-assault", Assert.Single(set.Candidates).Kind);
+            // 022C: after the no-attack completion, Reserve Release follows (an owner member choice or,
+            // with nothing pending, the System completion).
+            else if (fromEnd == 1 && audience != CampaignActionAudience.Commonwealth && set.Candidates.Count > 0)
+                Assert.All(set.Candidates, candidate => Assert.True(candidate.Kind == "complete-combat-reserve-release"
+                    || candidate.Kind.StartsWith("combat-reserve-release-", StringComparison.Ordinal), candidate.Kind));
             else Assert.Empty(set.Candidates);
             Assert.Equal(Prefix + frontier, set.PositionId);
             Assert.Equal(CampaignLegalActionQueryRejectionReason.InvalidState,
