@@ -226,6 +226,23 @@ be re-scoped against Marten rather than proceeding in its original form, and
 any future reference to "RC is local-only" anywhere in this project's docs
 should be treated as stale until corrected.
 
+## 13. 2026-11-21 status correction
+
+The `Public Combat (020–021, HOST-PUB-001)` and `Runner/studies (022–025)`
+rows in section 3 above were accurate as "not started this session" on
+2026-11-17. They are stale now: Tasks 020 and 021 (public, audience-safe
+Combat actions on the real Host API) and Tasks 022-023 (Exercise Harness
+Combat adoption) have since merged (commits through PR #483). The real Host
+API now resolves a full first-side Combat cycle, Truck Convoy Pass, and
+second-side Reserve/Movement, each backed by passing Host tests. The
+second-side Combat continuation gap described in section 4 above is still
+genuinely open and was independently re-confirmed directly against
+`CampaignDurableAuthorityJournal.Submissions.cs` (see the
+[2026-11-21 readiness check](2026-11-21-initial-engine-release-readiness-check.md),
+which also resolves whether turn-to-turn looping works on the real Host path
+— it was unconfirmed anywhere before that doc). This section is a forward
+pointer, not a rewrite of the dated snapshot above.
+
 ## Honest bottom line
 
 `MVP-GATE-03` (six-turn authority) is the gate getting the most direct
