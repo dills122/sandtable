@@ -84,6 +84,8 @@ internal static class CampaignCurrentEventSerializer
             "second-movement-completed" => CampaignNativeSecondMovementCompletedV45.Deserialize(canonicalJson),
             "second-breakdown-completed" => CampaignNativeSecondBreakdownV46.Deserialize(canonicalJson),
             "second-combat-selection-decided" => CampaignNativeSecondCombatDecisionV47.Deserialize(canonicalJson),
+            CampaignNativeSecondCombatSelectionTimeoutV48.EventTypeId => new CampaignNativeSecondCombatSelectionTimeoutV48(
+                CampaignSelectionTimeoutEvidenceV38.Deserialize(canonicalJson)),
             "cycle-repeat-combat-no-attack-completed" =>
                 CampaignNativeRepeatCombatNoAttackV32.Deserialize(canonicalJson),
             "cycle-repeat-combat-selection-decided" =>

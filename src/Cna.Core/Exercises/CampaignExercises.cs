@@ -4524,6 +4524,16 @@ public static class CampaignExercises
         return (CampaignSelectionTimeoutEvidenceV38.Digest(breakdown.SerializeCanonical()), breakdown.StateVersion);
     }
 
+    internal static CampaignNativeSecondCombatSelectionTimeoutV48 CreateSecondSelectionTimeout(
+        ExerciseSession session, string configurationHash, long opened, long deadline, long highWater,
+        long? observed, string reason)
+    {
+        var (world, position) = QuerySecondCombatWorldAndPosition(session);
+        return CampaignNativeSecondCombatSelectionTimeoutV48.Create(session.CurrentSecondBreakdown!, world,
+            position, session.Context, session.CurrentContacts, configurationHash, opened, deadline,
+            highWater, observed, reason);
+    }
+
     private static object CreateSelectionTimeout(ExerciseSession session, string configurationHash,
         long opened, long deadline, long highWater, long? observed, string reason,
         bool legacyInitiativeOwner = false)
@@ -4550,16 +4560,6 @@ public static class CampaignExercises
         bool legacyInitiativeOwner = false)
     {
         ArgumentNullException.ThrowIfNull(session);
-        // #394 gap 4/extra-1: applying a selection-round timeout for the
-        // second side is explicitly out of this PR's scope (see
-        // QuerySecondCombatSelectionRoundBinding's remarks) -- fail loudly
-        // and specifically here rather than falling into the first-side-only
-        // logic below, which would either misread a second-side cut as a
-        // first-side one or throw a generic, unhelpful "no pending repeated
-        // Combat selection" once CreateSelectionTimeout's unconditional
-        // CurrentCombatDecision check sees the stale first-side field.
-        if (session.CurrentSecondBreakdown is not null)
-            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         try
         {
             if ((configuration is not null && (configuration.RulesetHash != session.CurrentSnapshot.RulesetHash
@@ -4568,6 +4568,28 @@ public static class CampaignExercises
                 || (reason != "selection-unavailable" && (configuration is null
                     || checked(deadlineUnixMilliseconds - openedAtUnixMilliseconds) != configuration.Budget("selection"))))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            // The second acting side's round binds its V46 Breakdown (V48),
+            // never the first side's stale snapshot or later-cycle chain.
+            if (session.CurrentSecondBreakdown is { } secondBreakdown)
+            {
+                if (session.CurrentSecondCombatDecision is not null)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+                var secondTimeout = CreateSecondSelectionTimeout(session,
+                    configuration?.Hash ?? CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
+                    openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
+                    cancelledAtUnixMilliseconds, reason);
+                var (secondWorld, _) = QuerySecondCombatWorldAndPosition(session);
+                var secondSelected = new CampaignNativeSecondCombatDecisionStateV47(session.CurrentSnapshot,
+                    secondWorld, session.CurrentSnapshot.RandomState, secondTimeout);
+                var secondContacts = session.CurrentContacts.AdvanceSecondCombatSelection(secondTimeout);
+                var secondNext = session.WithSecondCombatSelection(secondSelected, secondContacts);
+                var secondBytes = secondTimeout.SerializeCanonical();
+                var secondReceipt = new CampaignActionAcceptanceReceipt(secondTimeout.CampaignId,
+                    secondBreakdown.StateVersion, secondTimeout.StateVersion, secondTimeout.NextPositionId,
+                    CampaignActionAudience.System, secondTimeout.Evidence.Hash);
+                return ExerciseStepResult.Accepted(secondNext,
+                    new ExerciseStepEvidence(secondReceipt, secondBytes, secondBytes));
+            }
             var timeout = CreateSelectionTimeout(session, configuration?.Hash ?? CampaignSelectionTimeoutEvidenceV38.NoTimingConfigurationHash,
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds, cancelledAtUnixMilliseconds, reason,
                 legacyInitiativeOwner);
@@ -8443,12 +8465,17 @@ public static class CampaignExercises
                 if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                     throw new InvalidCampaignHistoryException("Second Combat selection predecessor did not replay.");
                 var (world, position) = QuerySecondCombatWorldAndPosition(predecessor);
-                var replayed = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                    predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
-                    predecessor.CurrentContacts, secondDecision.Decision.Side, secondDecision.Decision.ActingElementId,
-                    secondDecision.Decision.ActionId);
-                var bytes = replayed.Decision.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayed.Decision);
+                CampaignNativeSecondCombatDecisionV47 replayedDecision = secondDecision.Decision
+                    is CampaignNativeSecondCombatSelectionTimeoutV48 { Evidence: var timeout }
+                    ? CreateSecondSelectionTimeout(predecessor, timeout.ConfigurationHash,
+                        timeout.OpenedAtUnixMilliseconds, timeout.DeadlineUnixMilliseconds,
+                        timeout.HighWaterUnixMilliseconds, timeout.CancelledAtUnixMilliseconds, timeout.Reason)
+                    : CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                        predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                        predecessor.CurrentContacts, secondDecision.Decision.Side, secondDecision.Decision.ActingElementId,
+                        secondDecision.Decision.ActionId).Decision;
+                var bytes = replayedDecision.SerializeCanonical();
+                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
                 if (!expected.AsSpan().SequenceEqual(bytes)
                     || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
                     || completedSession.CurrentContacts.Records.Count != contacts.Records.Count

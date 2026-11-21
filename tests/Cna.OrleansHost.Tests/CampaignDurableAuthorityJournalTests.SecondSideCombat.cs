@@ -133,14 +133,19 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     private static void FinishSecondSideOperationStage(JournalFixture fixture, ManualClock clock,
         CampaignCreationRequest request, CampaignSeatCredential owner)
     {
-        var control = fixture.Open(clock).QueryCycleControlOwnerOpening(owner);
-        var visible = System.Text.Encoding.UTF8.GetString(control.VisibleBytes);
-        Assert.Contains("Finish", visible, StringComparison.Ordinal);
-        Assert.True(fixture.Open(clock).SubmitOwnerCycleControl(owner, control.Revision,
-            control.PublicActionRefs[^1]).IsAccepted);
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+        // A Cycle Control timeout may already have taken the Finish edge.
+        if (CampaignExercises.QueryCheckpoint(cold).PositionId != "land.position.operation-1.second-player.truck-convoy-movement")
+        {
+            var control = fixture.Open(clock).QueryCycleControlOwnerOpening(owner);
+            var visible = System.Text.Encoding.UTF8.GetString(control.VisibleBytes);
+            Assert.Contains("Finish", visible, StringComparison.Ordinal);
+            Assert.True(fixture.Open(clock).SubmitOwnerCycleControl(owner, control.Revision,
+                control.PublicActionRefs[^1]).IsAccepted);
+            cold = fixture.Open(clock).ReadVerified(request.CampaignId);
+            Assert.Equal(28, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
+        }
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
-        Assert.Equal(28, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
         Assert.Equal("land.position.operation-1.second-player.truck-convoy-movement",
             CampaignExercises.QueryCheckpoint(cold).PositionId);
 
