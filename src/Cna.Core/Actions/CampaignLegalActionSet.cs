@@ -11,6 +11,11 @@ public sealed record CampaignLegalActionSet
     public const string PregamePolicyId = "sandtable.legal-actions.graziani-pregame.v1";
     public const string SourceSetupPolicyId = "sandtable.legal-actions.graziani-source-setup.v1";
     public const string SourceTurnPolicyId = "sandtable.legal-actions.graziani-source-turn.v1";
+    /// <summary>
+    /// Task 022A: first-cycle Combat steps for the trusted in-process Exercise harness only
+    /// (<c>CampaignExercises.QueryWithCombat</c>). Not served by the Host; not Combat activation.
+    /// </summary>
+    public const string CombatExercisePolicyId = "sandtable.legal-actions.combat-exercise.v1";
     internal const string HistoricalPolicyIdV2 = "sandtable.legal-actions.v2";
 
     internal CampaignLegalActionSet(string campaignId, long stateVersion, string rulesetHash,
@@ -19,7 +24,8 @@ public sealed record CampaignLegalActionSet
         string policyId = CurrentPolicyId)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(stateVersion, 1);
-        if (policyId != CurrentPolicyId && policyId != HistoricalPolicyIdV2 && policyId != PregamePolicyId && policyId != SourceSetupPolicyId && policyId != SourceTurnPolicyId)
+        if (policyId != CurrentPolicyId && policyId != HistoricalPolicyIdV2 && policyId != PregamePolicyId && policyId != SourceSetupPolicyId && policyId != SourceTurnPolicyId
+            && policyId != CombatExercisePolicyId)
             throw new ArgumentException("Unsupported legal-action policy.", nameof(policyId));
         if (!(policyId == HistoricalPolicyIdV2
                 ? Cna1979Ruleset.IsHistoricalHashV8(rulesetHash)
@@ -95,8 +101,18 @@ public sealed record CampaignLegalActionSet
                 )
                 throw new ArgumentException("Source turn policy requires an owner-specific source turn cut.", nameof(candidates));
         }
+        else if (policyId == CombatExercisePolicyId)
+        {
+            if (audience == CampaignActionAudience.System
+                    ? copy.Any(candidate => candidate is not (CompleteCombatNoAttackAction or CompleteCombatBarrageAction))
+                    : copy.Any(candidate => candidate is not (SelectContactAssaultAction or FinishCombatWithoutAttackAction)))
+                throw new ArgumentException("Combat Exercise policy requires first-cycle Combat candidates for the audience.", nameof(candidates));
+        }
         else if (hasPregameCandidate || copy.Any(candidate => candidate is CampaignSourceSetupAction or CampaignSourceTurnAction))
             throw new ArgumentException("Pre-game candidates require the pre-game policy.", nameof(candidates));
+        if (policyId != CombatExercisePolicyId
+            && copy.Any(candidate => candidate is CompleteCombatNoAttackAction or CompleteCombatBarrageAction))
+            throw new ArgumentException("Combat Exercise System steps require the Combat Exercise policy.", nameof(candidates));
 
         ContractVersion = CurrentContractVersion;
         PolicyId = policyId;
