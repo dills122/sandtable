@@ -9,6 +9,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 {
     private const string InitiativeOrderOpeningKey = "land.initiative-order";
     private const string ReserveDesignationOpeningKey = "land.reserve-designation";
+    private const string ReactionOpeningKey = "land.reaction";
     private const string CycleControlOpeningKey = "land.cycle-control";
     private const string TruckConvoyPassOpeningKey = "land.truck-convoy-pass";
     private const string PostCombatPassOpeningKey = "land.post-combat-pass";
@@ -67,6 +68,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// </summary>
     internal CampaignOwnerOpening QueryReserveDesignationOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, ReserveDesignationOpeningKey, CampaignOwnerOpeningKind.ReserveDesignation);
+
+    /// <summary>
+    /// Reaction window resolution (opened whenever a Movement or second-side Movement crosses
+    /// an eligible opponent's reaction opportunity): the same gap class as InitiativeOrder/
+    /// ReserveDesignation, found during the Movement/ZOC/Reaction/Breakdown adversarial audit.
+    /// Confirmed reachable with the standard admitted content (not just theoretically possible)
+    /// by the existing VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart
+    /// test, which finds and submits a real reaction-triggering move and was, until now, unable
+    /// to resolve it through any owner opening.
+    /// </summary>
+    internal CampaignOwnerOpening QueryReactionOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, ReactionOpeningKey, CampaignOwnerOpeningKind.Reaction);
 
     internal CampaignOwnerOpening QueryPregameAxisSupplyOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, PregameAxisSupplyOpeningKey, CampaignOwnerOpeningKind.PregameAxisSupply);
@@ -449,6 +462,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.Reaction)
+            {
+                var draft = CampaignHostAdapter.QueryReactionOwnerDraft(authority.Session, seat.Audience);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(authority.Session, seat.Audience);
@@ -716,6 +736,7 @@ internal enum CampaignOwnerOpeningKind
     Movement,
     InitiativeOrder,
     ReserveDesignation,
+    Reaction,
     CombatSelection,
     RetreatBeforeAssault,
     ForceAssignment,

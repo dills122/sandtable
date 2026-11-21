@@ -805,7 +805,7 @@ internal static class CampaignDurableOutwardApi
                     or "source-maletti-hierarchy" or "source-gt2-correction"
                     or "source-cw-priority-catalog" or "source-matruh-formation"
                     or "source-cw-free-guns" or "source-axis-priority-motorization"
-                    or "source-cairo-setup" or "movement" or "initiative-order" or "reserve-designation" or "combat-selection"
+                    or "source-cairo-setup" or "movement" or "initiative-order" or "reserve-designation" or "reaction" or "combat-selection"
                     or "rba-decline" or "force-assignment"
                     or "post-assault-retreat" or "custody" or "reserve-release"
                     or "cycle-control" or "truck-convoy-pass" or "post-combat-pass"

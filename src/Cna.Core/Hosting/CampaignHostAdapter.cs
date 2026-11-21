@@ -2325,6 +2325,101 @@ public static class CampaignHostAdapter
         return CampaignExercises.Submit(session, submission);
     }
 
+    // Reaction window resolution (land.position...reaction, opened whenever a Movement or
+    // second-side Movement crosses an eligible opponent's reaction opportunity): the same gap
+    // class as InitiativeOrder/ReserveDesignation. Core already computes and replay-verifies
+    // this via the generic CampaignExercises.Query/Submit path (CampaignLegalActions.Query
+    // routes to CampaignObservationV7ActionDerivation.DerivePlayer whenever
+    // snapshot.ReactionWindow is not null) -- this is a redacted Host wrapper over it, not new
+    // Core logic. Two-phase, like SecondMovement/SecondMovementCompletion: with no active
+    // participant yet, the legal set is one MoveReactingElementAction per (opportunity, move
+    // option) plus one DeclineReactionWindowAction; once a MoveReactingElementAction commits to
+    // an opportunity, the legal set narrows to that opportunity's own remaining move options
+    // plus one CompleteReactionParticipantAction. Re-querying this same opening after each
+    // accepted move reflects whichever phase the window is currently in -- there is no
+    // separate "completion" opening, unlike SecondMovement/SecondMovementCompletion's two
+    // distinct stages, because Core itself does not split them into two positions. No
+    // round/deadline tracking, same reasoning as InitiativeOrder/ReserveDesignation (a
+    // real round/timeout policy for an open reaction window is a design decision for the
+    // owner, not something to guess at here).
+    private static (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions)
+        CreateReactionOwnerDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var result = CampaignExercises.Query(session, audience);
+        if (!result.IsSuccessful || result.ActionSet is not { } set
+            || set.Candidates.Count == 0
+            || set.Candidates.Any(value => value is not (MoveReactingElementAction
+                or DeclineReactionWindowAction or CompleteReactionParticipantAction)))
+            throw new InvalidOperationException("Reaction is unavailable.");
+        var actions = set.Candidates.ToArray();
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("campaignId", set.CampaignId);
+            writer.WriteString("positionId", set.PositionId);
+            writer.WriteStartArray("choices");
+            foreach (var action in actions)
+            {
+                writer.WriteStartObject();
+                switch (action)
+                {
+                    case MoveReactingElementAction move:
+                        writer.WriteString("kind", "move");
+                        writer.WriteString("windowId", move.WindowId);
+                        writer.WriteString("opportunityId", move.OpportunityId);
+                        writer.WriteString("originLocationId", move.OriginLocationId);
+                        writer.WriteString("destinationLocationId", move.DestinationLocationId);
+                        MovementActionJson.WriteCostBreakdown(writer, move.CostBreakdown);
+                        break;
+                    case DeclineReactionWindowAction decline:
+                        writer.WriteString("kind", "decline");
+                        writer.WriteString("windowId", decline.WindowId);
+                        break;
+                    case CompleteReactionParticipantAction complete:
+                        writer.WriteString("kind", "complete");
+                        writer.WriteString("windowId", complete.WindowId);
+                        writer.WriteString("opportunityId", complete.OpportunityId);
+                        break;
+                }
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+        return (new CampaignHostCycleControlOwnerDraft(set.StateVersion, stream.ToArray(),
+            actions.Select(action => action.ActionId).ToArray()), actions);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QueryReactionOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience) =>
+        CreateReactionOwnerDraft(session, audience).Draft;
+
+    public static ExerciseStepResult SubmitReaction(ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions) cut;
+        try { cut = CreateReactionOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
+        if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.Submit(session, submission);
+    }
+
     public static CampaignHostCycleControlOwnerDraft QueryNativeCycleControlOwnerDraft(
         ExerciseSession session, CampaignActionAudience audience)
     {
@@ -3023,6 +3118,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactMovementKind
                 or CampaignHostAcceptedStep.ContactInitiativeOrderKind
                 or CampaignHostAcceptedStep.ContactReserveDesignationKind
+                or CampaignHostAcceptedStep.ContactReactionKind
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind
@@ -3283,6 +3379,8 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.ContactInitiativeOrderKind => SubmitInitiativeOrder(
                     session, submission),
                 CampaignHostAcceptedStep.ContactReserveDesignationKind => SubmitReserveDesignation(
+                    session, submission),
+                CampaignHostAcceptedStep.ContactReactionKind => SubmitReaction(
                     session, submission),
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
                 CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind => CompleteSecondCombatNoAttack(session),
@@ -3937,6 +4035,7 @@ public sealed class CampaignHostAcceptedStep
     // existing Contact*/Native* number so it can never collide with one of them.
     public const int ContactInitiativeOrderContractVersion = 48;
     public const int ContactReserveDesignationContractVersion = 49;
+    public const int ContactReactionContractVersion = 50;
     public const int ContactCombatSelectionContractVersion = 3;
     public const int NativeCombatNoAttackContractVersion = 4;
     public const int NativeCombatBarrageContractVersion = 5;
@@ -4058,6 +4157,7 @@ public sealed class CampaignHostAcceptedStep
     public const string ContactMovementKind = "contact-movement";
     public const string ContactInitiativeOrderKind = "contact-initiative-order";
     public const string ContactReserveDesignationKind = "contact-reserve-designation";
+    public const string ContactReactionKind = "contact-reaction";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
     public const string NativeCombatNoAttackKind = "native-combat-no-attack";
     public const string NativeSecondCombatNoAttackKind = "native-second-combat-no-attack";
@@ -4181,7 +4281,7 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactCombatSelectionKind
+        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or ContactCombatSelectionKind
                 or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
@@ -4293,6 +4393,7 @@ public sealed class CampaignHostAcceptedStep
             ContactMovementKind => ContactMovementContractVersion,
             ContactInitiativeOrderKind => ContactInitiativeOrderContractVersion,
             ContactReserveDesignationKind => ContactReserveDesignationContractVersion,
+            ContactReactionKind => ContactReactionContractVersion,
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
             ContactRbaDeclineKind => ContactRbaDeclineContractVersion,
             ContactRbaMoveKind => ContactRbaMoveContractVersion,
