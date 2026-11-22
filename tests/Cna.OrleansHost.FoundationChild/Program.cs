@@ -90,6 +90,49 @@ if (args is ["--source-owner-crash-probe"])
     throw new InvalidOperationException("Source crash probe was not terminated by parent.");
 }
 
+// Same genuine-crash mechanism as --source-owner-crash-probe (NativeCrashClock pauses and the
+// parent kills this process at that exact point -- never a managed exception/disposal standing
+// in for a real crash), generalized to the two newest owner openings this release added
+// (CompleteMovementSegmentAction/StopElementMovementAction, which share one submit method --
+// Core's own dispatch, not the caller, decides which of the two a given accepted publicActionRef
+// resolves to). AfterCommit=true pauses right after the submit call returns (durably committed,
+// before any response reaches a real caller) -- this is the meaningful case for a one-shot
+// decision with no deadline/timeout round of its own (so, unlike Source/RBA/Force/Retreat,
+// there is no mid-transaction clock read to pause on with AfterCommit=false).
+if (args is ["--movement-owner-crash-probe"])
+{
+    var movementCrashInput = JsonSerializer.Deserialize<SourceOwnerCrashInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing movement-owner crash input.");
+    var clock = new NativeCrashClock(movementCrashInput.NowUnixMilliseconds, movementCrashInput.AfterCommit ? 0 : 1);
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(movementCrashInput.Path, clock);
+    _ = journal.ReadVerified(movementCrashInput.Credential.CampaignId);
+    clock.Arm();
+    var movementCrashResult = journal.SubmitOwnerMovementSegmentCompletion(
+        movementCrashInput.Credential, movementCrashInput.Revision, movementCrashInput.Reference);
+    if (!movementCrashResult.IsAccepted) throw new InvalidOperationException("Movement owner action was rejected.");
+    if (movementCrashInput.AfterCommit) NativeCrashClock.Pause("movement-after-commit", clock.ReadIndex, clock.LastObserved);
+    throw new InvalidOperationException("Movement crash probe was not terminated by parent.");
+}
+
+// Companion read-side probe for the other half of the same ask: a cold restart right after the
+// System-audience Breakdown auto-drain fires (triggered, by design, as a side effect of the next
+// real owner-opening query -- see CampaignDurableAuthorityJournal.Openings.cs's own C3b remarks),
+// but before any real player request follows it. Queries the Combat Selection opening (the query
+// that performs the drain) and pauses/crashes right after that query call returns, durably
+// committed, before any response reaches a real caller.
+if (args is ["--post-drain-owner-crash-probe"])
+{
+    var drainCrashInput = JsonSerializer.Deserialize<PostDrainCrashInput>(Console.ReadLine() ?? "")
+        ?? throw new InvalidOperationException("Missing post-drain crash input.");
+    var clock = new NativeCrashClock(drainCrashInput.NowUnixMilliseconds, 0);
+    var journal = CampaignDurableAuthorityJournal.OpenExisting(drainCrashInput.Path, clock);
+    _ = journal.ReadVerified(drainCrashInput.Credential.CampaignId);
+    clock.Arm();
+    _ = journal.QueryCombatOwnerOpening(drainCrashInput.Credential, drainCrashInput.ActingElementId);
+    NativeCrashClock.Pause("post-drain-after-query", clock.ReadIndex, clock.LastObserved);
+    throw new InvalidOperationException("Post-drain crash probe was not terminated by parent.");
+}
+
 if (args is ["--native-campaign-deadline"])
 {
     var native = JsonSerializer.Deserialize<NativeDeadlineInput>(Console.ReadLine() ?? "")
@@ -142,6 +185,9 @@ internal sealed record SourceCampaignInput(string Path, string CampaignId);
 
 internal sealed record SourceOwnerCrashInput(string Path, CampaignSeatCredential Credential, long Revision,
     string Reference, long NowUnixMilliseconds, bool AfterCommit);
+
+internal sealed record PostDrainCrashInput(string Path, CampaignSeatCredential Credential,
+    string ActingElementId, long NowUnixMilliseconds);
 
 internal sealed class NativeCrashClock(long now, int stopAtRead) : TimeProvider
 {
