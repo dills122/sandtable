@@ -1121,7 +1121,22 @@ public sealed class ExerciseSession
     {
         ArgumentNullException.ThrowIfNull(declared);
         ArgumentNullException.ThrowIfNull(contacts);
-        if (CurrentPostCombatPass is null || CurrentInitiativeDeclaration is not null
+        // Correction (MTS-TASK-005, 2026-11-22): this guard originally read
+        // `CurrentPostCombatPass is null`, i.e. the FIRST acting side's own
+        // Patrol pass -- which is already non-null long before the SECOND
+        // side's own cycle (Reserve through its own Truck Convoy/Rail/Repair/
+        // Patrol, modeled entirely inside CurrentSecondAssault per
+        // CampaignNativeRepeatAssaultRuntime.ApplySecondSidePhase) has even
+        // started, let alone finished. That let Initiative Declaration become
+        // constructible before both sides had actually completed the prior
+        // stage. The real terminal fact is the second side's own last Post
+        // Combat Pass, which CampaignNativeRepeatAssaultRuntime retains as
+        // the last entry of its own PostCombatPasses list (Rail, Repair,
+        // Patrol in order) once IsSecondSideFinish's Truck Convoy/Patrol
+        // sequence has run -- there is no dedicated ExerciseSession field for
+        // it because, unlike every earlier step, this one is produced inside
+        // that runtime rather than via its own WithXxx method.
+        if (CurrentSecondAssault is not { PostCombatPasses.Count: > 0 } || CurrentInitiativeDeclaration is not null
             || declared.PriorStateVersion != CurrentContacts.AuthorityVersion
             || contacts.AuthorityVersion != declared.StateVersion)
             throw new InvalidOperationException("Initiative Declaration must advance its retained cut once.");
@@ -1230,6 +1245,39 @@ public sealed class ExerciseSession
         successor.CurrentNoObligationFleetRepair = resolved;
         successor.CurrentContacts = contacts;
         successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side Reserve
+    // Designation, entered from the six-event preamble chain's terminal
+    // (CurrentNoObligationFleetRepair). Reuses CampaignNativeSecondReserveV43
+    // unchanged -- the type is role-as-data generic as of #518's refactor, so
+    // this is a new occurrence of the same event type, not a new one. A
+    // distinct ExerciseSession slot is required because CurrentSecondReserve
+    // is already permanently bound to Stage 1's second acting side by the
+    // time this stage's preamble can even complete, and no field in this
+    // class is ever reset once set.
+    internal CampaignNativeSecondReserveV43? CurrentStageEntryReserve { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentStageEntryReserveWorld { get; private set; }
+    internal ExerciseSession? StageEntryReservePredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntryReserve(CampaignNativeSecondReserveV43 reserve,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(reserve);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentNoObligationFleetRepair is null || CurrentStageEntryReserve is not null
+            || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != reserve.StateVersion
+            || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Stage Entry Reserve must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntryReservePredecessor = this;
+        successor.CurrentStageEntryReserve = reserve;
+        successor.CurrentStageEntryReserveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(reserve);
         return successor;
     }
 

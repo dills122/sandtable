@@ -949,3 +949,18 @@ native-chain preamble event types
 | `FullSixEventChainResolvesIntoACampaignNativeSecondReserveV43PredecessorForTheNewStage` | `27db5667ca` | 15 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryPreambleTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-22 (12 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `b768e5f85f9a6d7e09d2bff677b3a1bf95759bbd28072ed75da70a97fe9df17e`; retained XML SHA-256 `aa1629398afac3084c45cd68cb6fb2652d246ac4e335c52b85a8c6bcea28e5f6`. All twelve row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+## Stage Entry Reserve, the new stage's own first-acting-side (MTS-TASK-005, 2026-11-22)
+
+Adds one new class, `CampaignNativeStageEntryReserveTests`, proving
+`CampaignNativeSecondReserveV43` reused for a third occurrence (Stage 1's
+second side, and now the new stage's first acting side) via the six-event
+preamble chain's terminal event. Two new `[Fact]` rows, one ordinary suite
+part; no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntryReserveCompletesForTheNewStagesFirstActingSide` | `66d12ea69f` | 45 |
+| `StageEntryReserveRejectsTheOppositeStagesRole` | `c3a30e6942` | 8 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryReserveTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-22 (2 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `ca27e764171d390992791383b4825cb34f74da3067fc1ef717ef02dd4062ba68`; retained XML SHA-256 `00bb6878707ea6cab0f1a4b4cbf53078c14d16b34a2944ce88a74e5a519cf8ff`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
