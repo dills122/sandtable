@@ -216,7 +216,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var transaction = connection.BeginTransaction(deferred: false);
         var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
-        var authority = verifiedHead ?? Load(connection, transaction, seat.CampaignId);
+        // UX-001 (PR #504): drain any pending System-only steps -- no human decision exists at
+        // them for either real audience -- before this query ever observes the position they
+        // would otherwise leave "stuck" at. See CampaignDurableAuthorityJournal.cs's
+        // DrainPendingSystemSteps remarks.
+        var authority = DrainPendingSystemSteps(connection, transaction, seat.CampaignId,
+            verifiedHead ?? Load(connection, transaction, seat.CampaignId));
         if (kind == CampaignOwnerOpeningKind.ForceAssignment && authority.Timing is null)
             throw new InvalidOperationException("Force Assignment needs a pinned campaign timing configuration.");
         byte[] visible;

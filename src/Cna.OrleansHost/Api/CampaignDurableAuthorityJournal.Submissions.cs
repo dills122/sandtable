@@ -239,7 +239,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var transaction = connection.BeginTransaction(deferred: false);
         var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
-        var head = verifiedHead ?? Load(connection, transaction, seat.CampaignId);
+        // UX-001 (PR #504): same drain as the query side -- see
+        // CampaignDurableAuthorityJournal.cs's DrainPendingSystemSteps remarks. A submission
+        // against a stale owner_openings row (because System steps advanced since it was
+        // queried) still fails the usual revision/visible-cut checks below, exactly as any
+        // other authority advance between query and submit already does.
+        var head = DrainPendingSystemSteps(connection, transaction, seat.CampaignId,
+            verifiedHead ?? Load(connection, transaction, seat.CampaignId));
         if (kind == CampaignOwnerOpeningKind.ForceAssignment && head.Timing is null)
             return CampaignOwnerSubmissionResult.Rejected();
         if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
