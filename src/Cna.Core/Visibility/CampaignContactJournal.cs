@@ -384,6 +384,59 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(passed.StateVersion);
     }
 
+    // MTS-TASK-002 (2026-11-22, docs/work/plans/2026-11-22-stage-entry-bridge-design-options.md):
+    // the six native-chain preamble events. None of them move an element or
+    // otherwise change observed contacts -- same shape as AdvanceTruckConvoyPass/
+    // AdvancePostCombatPass above, just bumping the authority cut.
+    internal CampaignContactJournal AdvanceInitiativeDeclaration(CampaignNativeInitiativeDeclarationV49 declared)
+    {
+        ArgumentNullException.ThrowIfNull(declared);
+        if (declared.CampaignId != CampaignId || declared.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Initiative Declaration does not bind contact authority.", nameof(declared));
+        return AtAuthorityVersion(declared.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceWeatherDetermination(CampaignNativeWeatherDeterminationV50 determined)
+    {
+        ArgumentNullException.ThrowIfNull(determined);
+        if (determined.CampaignId != CampaignId || determined.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Weather Determination does not bind contact authority.", nameof(determined));
+        return AtAuthorityVersion(determined.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNoObligationOrganization(CampaignNativeNoObligationOrganizationV51 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Organization resolution does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNoObligationNavalConvoyArrival(
+        CampaignNativeNoObligationNavalConvoyArrivalV52 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Naval Convoy Arrival resolution does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNoObligationFleetAssignment(CampaignNativeNoObligationFleetAssignmentV53 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Fleet Assignment resolution does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNoObligationFleetRepair(CampaignNativeNoObligationFleetRepairV54 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Fleet Repair resolution does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceSecondReserve(CampaignNativeSecondReserveV43 reserve)
     {
         ArgumentNullException.ThrowIfNull(reserve);

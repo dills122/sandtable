@@ -29,6 +29,16 @@ internal sealed record CampaignNativeSecondReserveV43(
                 phase.NextPositionId, phase.WorldHash, phase.SerializeCanonical()),
             CampaignNativeSecondReserveV43 reserve when !reserve.Completed => (reserve.CampaignId, reserve.StateVersion,
                 reserve.NextPositionId, reserve.ResultWorldHash, reserve.SerializeCanonical()),
+            // MTS-TASK-002 (2026-11-22, docs/work/plans/2026-11-22-stage-entry-bridge-design-options.md):
+            // the terminal event of the new stage's six-event native preamble
+            // chain -- additive, does not change the two arms above. The
+            // caller is responsible for including this predecessor's own
+            // CampaignNativeNoObligationFleetRepairV54.ToOrder() in `orders`
+            // before calling Create, per the owner's ruling that the resolved
+            // order is self-contained on this terminal event rather than a
+            // dedicated ExerciseSession field.
+            CampaignNativeNoObligationFleetRepairV54 fleetRepair => (fleetRepair.CampaignId, fleetRepair.StateVersion,
+                fleetRepair.NextPositionId, fleetRepair.WorldHash, fleetRepair.SerializeCanonical()),
             _ => throw new InvalidOperationException("Second Reserve requires an accepted predecessor."),
         };
         var position = Cna1979LandSequenceV4.CreateTurn(gameTurn).Single(value => value.PositionId == positionId);

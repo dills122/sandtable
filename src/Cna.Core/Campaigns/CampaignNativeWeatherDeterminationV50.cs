@@ -36,9 +36,9 @@ namespace Cna.Core.Campaigns;
 internal sealed record CampaignNativeWeatherDeterminationV50(
     int ContractVersion, string CampaignId, long PriorStateVersion, string PriorEventHash,
     string PositionId, string NextPositionId, string WorldHash, int GameTurn, int OperationStage,
-    LandSide DeterminingSide, WeatherSeason Season, int FirstDie, int SecondDie, WeatherKind Kind,
-    WeatherScope Scope, int? LocationDie, IReadOnlyList<WeatherArea> AffectedAreas,
-    ulong PriorRandomCursor, ulong ResultRandomCursor)
+    LandSide FirstSide, LandSide SecondSide, LandSide DeterminingSide, WeatherSeason Season,
+    int FirstDie, int SecondDie, WeatherKind Kind, WeatherScope Scope, int? LocationDie,
+    IReadOnlyList<WeatherArea> AffectedAreas, ulong PriorRandomCursor, ulong ResultRandomCursor)
 {
     internal const int CurrentContractVersion = 50;
     internal long StateVersion => checked(PriorStateVersion + 1);
@@ -75,6 +75,7 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
         return new(CurrentContractVersion, predecessor.CampaignId, predecessor.StateVersion,
             "sha256:" + Convert.ToHexStringLower(SHA256.HashData(priorBytes)),
             position.PositionId, next.PositionId, predecessor.WorldHash, position.GameTurn, position.OperationStage,
+            predecessor.FirstSide, predecessor.SecondSide,
             predecessor.DeclaringHolder, resolution.Season, resolution.FirstDie, resolution.SecondDie,
             resolution.Kind, resolution.Scope, resolution.LocationDie, resolution.AffectedAreas,
             priorRandomState.NextByteCursor, resolution.RandomState.NextByteCursor);
@@ -84,6 +85,7 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1 || !IsHash(PriorEventHash)
             || !IsHash(WorldHash) || GameTurn < 1 || OperationStage is < 1 or > 3
+            || !Enum.IsDefined(FirstSide) || !Enum.IsDefined(SecondSide) || FirstSide == SecondSide
             || !Enum.IsDefined(DeterminingSide) || !Enum.IsDefined(Season) || !Enum.IsDefined(Kind)
             || !Enum.IsDefined(Scope) || FirstDie is < 1 or > 6 || SecondDie is < 1 or > 6
             || (LocationDie is { } die && die is < 1 or > 6))
@@ -102,6 +104,8 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
             writer.WriteString("worldHash", WorldHash);
             writer.WriteNumber("gameTurn", GameTurn);
             writer.WriteNumber("operationStage", OperationStage);
+            writer.WriteString("firstSide", CampaignSnapshotSerializer.FormatSide(FirstSide));
+            writer.WriteString("secondSide", CampaignSnapshotSerializer.FormatSide(SecondSide));
             writer.WriteString("determiningSide", CampaignSnapshotSerializer.FormatSide(DeterminingSide));
             writer.WriteString("season", Season.ToString());
             writer.WriteNumber("firstDie", FirstDie);
@@ -129,11 +133,11 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
             var root = document.RootElement;
             CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType", "campaignId",
                 "priorStateVersion", "priorEventHash", "positionId", "nextPositionId", "worldHash", "gameTurn",
-                "operationStage", "determiningSide", "season", "firstDie", "secondDie", "kind", "scope",
-                "locationDie", "affectedAreas", "priorRandomCursor", "resultRandomCursor");
+                "operationStage", "firstSide", "secondSide", "determiningSide", "season", "firstDie", "secondDie",
+                "kind", "scope", "locationDie", "affectedAreas", "priorRandomCursor", "resultRandomCursor");
             if (root.GetProperty("eventType").GetString() != "native-weather-determined")
                 throw new JsonException("Invalid event type.");
-            var side = root.GetProperty("determiningSide").GetString() switch
+            LandSide ParseSide(string property) => root.GetProperty(property).GetString() switch
             {
                 "axis" => LandSide.Axis,
                 "commonwealth" => LandSide.Commonwealth,
@@ -146,7 +150,8 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
                 root.GetProperty("campaignId").GetString()!, root.GetProperty("priorStateVersion").GetInt64(),
                 root.GetProperty("priorEventHash").GetString()!, root.GetProperty("positionId").GetString()!,
                 root.GetProperty("nextPositionId").GetString()!, root.GetProperty("worldHash").GetString()!,
-                root.GetProperty("gameTurn").GetInt32(), root.GetProperty("operationStage").GetInt32(), side,
+                root.GetProperty("gameTurn").GetInt32(), root.GetProperty("operationStage").GetInt32(),
+                ParseSide("firstSide"), ParseSide("secondSide"), ParseSide("determiningSide"),
                 Enum.Parse<WeatherSeason>(root.GetProperty("season").GetString()!),
                 root.GetProperty("firstDie").GetInt32(), root.GetProperty("secondDie").GetInt32(),
                 Enum.Parse<WeatherKind>(root.GetProperty("kind").GetString()!),

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using Cna.Core.Campaigns;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
+using Cna.Core.Tests.Content;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -162,5 +163,146 @@ public sealed class CampaignNativeStageEntryPreambleTests
         var foreignAlgorithm = new RandomStreamState(SandtableRandom.ContractVersion, "foreign-algorithm", 1, 0);
         Assert.Throws<InvalidOperationException>(() => CampaignNativeWeatherDeterminationV50.Create(
             declared, foreignAlgorithm, 1, declared.StateVersion));
+    }
+
+    // MTS-TASK-002 slices 2-3 (2026-11-22): the remaining four native-chain
+    // preamble events (Organization, Naval Convoy Arrival, Fleet Assignment,
+    // Fleet Repair) and a full six-event chain proof, same isolated-fixture
+    // depth as slice 1 above.
+    private static CampaignNativeWeatherDeterminationV50 WeatherComplete(string campaignId, long stateVersion)
+    {
+        var predecessor = SecondSidePatrolComplete(campaignId, stateVersion);
+        var declared = CampaignNativeInitiativeDeclarationV49.Create(
+            predecessor, LandSide.Axis, actFirst: true, 1, predecessor.StateVersion);
+        return CampaignNativeWeatherDeterminationV50.Create(declared, GenesisRandomState(), 1, declared.StateVersion);
+    }
+
+    [Fact]
+    public void OrganizationAdvancesFromWeatherToNavalConvoyArrival()
+    {
+        var weather = WeatherComplete("test-campaign-020", 100);
+
+        var organization = CampaignNativeNoObligationOrganizationV51.Create(weather, weather.StateVersion);
+
+        Assert.Equal(weather.NextPositionId, organization.PositionId);
+        Assert.Equal(weather.FirstSide, organization.FirstSide);
+        Assert.Equal(weather.SecondSide, organization.SecondSide);
+        Assert.Equal(weather.WorldHash, organization.WorldHash);
+        Assert.Contains("naval-convoy-arrival", organization.NextPositionId, StringComparison.Ordinal);
+
+        var bytes = organization.SerializeCanonical();
+        Assert.Equal(organization, CampaignNativeNoObligationOrganizationV51.Deserialize(bytes));
+        Assert.Throws<InvalidOperationException>(() => CampaignNativeNoObligationOrganizationV51.Create(
+            weather, weather.StateVersion + 1));
+    }
+
+    [Fact]
+    public void NavalConvoyArrivalAdvancesFromOrganizationToFleetAssignmentWhenNoArrivalIsDue()
+    {
+        var weather = WeatherComplete("test-campaign-021", 100);
+        var organization = CampaignNativeNoObligationOrganizationV51.Create(weather, weather.StateVersion);
+        var artifact = BreakdownContentFixture.Artifact();
+        var scenario = BreakdownSnapshotTests.Scenario();
+        var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
+
+        var convoyArrival = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
+            organization, context, organization.StateVersion);
+
+        Assert.Equal(organization.NextPositionId, convoyArrival.PositionId);
+        Assert.Contains("commonwealth-fleet.assignment", convoyArrival.NextPositionId, StringComparison.Ordinal);
+
+        var bytes = convoyArrival.SerializeCanonical();
+        Assert.Equal(convoyArrival, CampaignNativeNoObligationNavalConvoyArrivalV52.Deserialize(bytes));
+    }
+
+    [Fact]
+    public void FleetAssignmentAdvancesFromNavalConvoyArrivalToFleetRepair()
+    {
+        var weather = WeatherComplete("test-campaign-022", 100);
+        var organization = CampaignNativeNoObligationOrganizationV51.Create(weather, weather.StateVersion);
+        var artifact = BreakdownContentFixture.Artifact();
+        var scenario = BreakdownSnapshotTests.Scenario();
+        var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
+        var convoyArrival = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
+            organization, context, organization.StateVersion);
+
+        var fleetAssignment = CampaignNativeNoObligationFleetAssignmentV53.Create(
+            convoyArrival, convoyArrival.StateVersion);
+
+        Assert.Equal(convoyArrival.NextPositionId, fleetAssignment.PositionId);
+        Assert.Contains("commonwealth-fleet.repair", fleetAssignment.NextPositionId, StringComparison.Ordinal);
+
+        var bytes = fleetAssignment.SerializeCanonical();
+        Assert.Equal(fleetAssignment, CampaignNativeNoObligationFleetAssignmentV53.Deserialize(bytes));
+    }
+
+    [Fact]
+    public void FleetRepairIsTheTerminalEventAndAdvancesToTheNewStagesFirstActingSideReserveDesignation()
+    {
+        var weather = WeatherComplete("test-campaign-023", 100);
+        var organization = CampaignNativeNoObligationOrganizationV51.Create(weather, weather.StateVersion);
+        var artifact = BreakdownContentFixture.Artifact();
+        var scenario = BreakdownSnapshotTests.Scenario();
+        var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
+        var convoyArrival = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
+            organization, context, organization.StateVersion);
+        var fleetAssignment = CampaignNativeNoObligationFleetAssignmentV53.Create(
+            convoyArrival, convoyArrival.StateVersion);
+
+        var fleetRepair = CampaignNativeNoObligationFleetRepairV54.Create(fleetAssignment, fleetAssignment.StateVersion);
+
+        Assert.Equal(fleetAssignment.NextPositionId, fleetRepair.PositionId);
+        var catalog = Cna1979LandSequenceV4.CreateTurn(1);
+        var successor = catalog.Single(value => value.PositionId == fleetRepair.NextPositionId);
+        Assert.Equal(LandActorRole.FirstActingSide, successor.ActorRole);
+        Assert.Equal(LandPhaseIds.ReserveDesignation, successor.PhaseId);
+        Assert.Equal(2, successor.OperationStage);
+
+        var order = fleetRepair.ToOrder();
+        Assert.Equal(fleetRepair.FirstSide, order.FirstSide);
+        Assert.Equal(fleetRepair.SecondSide, order.SecondSide);
+        Assert.Equal(2, order.OperationStage);
+
+        var bytes = fleetRepair.SerializeCanonical();
+        Assert.Equal(fleetRepair, CampaignNativeNoObligationFleetRepairV54.Deserialize(bytes));
+    }
+
+    [Fact]
+    public void FullSixEventChainResolvesIntoACampaignNativeSecondReserveV43PredecessorForTheNewStage()
+    {
+        // Proves the whole chain this slice built actually connects end to
+        // end: PostCombatPass -> Initiative -> Weather -> Organization ->
+        // Naval Convoy Arrival -> Fleet Assignment -> Fleet Repair -> the
+        // new stage's first-acting-side Reserve Designation, via the
+        // additive predecessor-switch arm added to
+        // CampaignNativeSecondReserveV43.Create.
+        var predecessor = SecondSidePatrolComplete("test-campaign-030", 100);
+        var declared = CampaignNativeInitiativeDeclarationV49.Create(
+            predecessor, LandSide.Axis, actFirst: true, 1, predecessor.StateVersion);
+        var weather = CampaignNativeWeatherDeterminationV50.Create(declared, GenesisRandomState(), 1, declared.StateVersion);
+        var organization = CampaignNativeNoObligationOrganizationV51.Create(weather, weather.StateVersion);
+        var artifact = BreakdownContentFixture.Artifact();
+        var scenario = BreakdownSnapshotTests.Scenario();
+        var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
+        var convoyArrival = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
+            organization, context, organization.StateVersion);
+        var fleetAssignment = CampaignNativeNoObligationFleetAssignmentV53.Create(
+            convoyArrival, convoyArrival.StateVersion);
+        var fleetRepair = CampaignNativeNoObligationFleetRepairV54.Create(fleetAssignment, fleetAssignment.StateVersion);
+        var order = fleetRepair.ToOrder();
+        IReadOnlyList<CampaignOperationStageOrder> orders = [order];
+        // A real, valid initial World for this fixture's content/scenario --
+        // its hash deliberately does NOT match fleetRepair.WorldHash (that
+        // field threads an arbitrary synthetic hash from
+        // SecondSidePatrolComplete above, not a real one), so Create is
+        // expected to fail the *World* check below, not the predecessor
+        // match -- which is exactly what proves the new switch arm was
+        // reached rather than falling through to the generic rejection.
+        var world = CampaignWorldV6Factory.CreateInitial(artifact, scenario);
+
+        var error = Assert.Throws<InvalidOperationException>(() => CampaignNativeSecondReserveV43.Create(
+            fleetRepair, world, context, orders, order.FirstSide, elementId: null, 1, fleetRepair.StateVersion));
+
+        Assert.Equal("Second Reserve requires its owner and settled World.", error.Message);
     }
 }

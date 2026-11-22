@@ -1103,5 +1103,135 @@ public sealed class ExerciseSession
     internal CampaignContactJournal? CurrentPostRepeatBaseContacts { get; }
     internal IReadOnlyList<object> CurrentPostRepeatEvents { get; }
     internal CampaignNativePostRepeatRuntime? CurrentPostRepeat { get; }
+
+    // MTS-TASK-002 (2026-11-22, docs/work/plans/2026-11-22-stage-entry-bridge-design-options.md):
+    // the six native-chain preamble events, same CurrentXxx/XxxPredecessor/
+    // WithXxx shape as every other native-chain step above (e.g.
+    // WithTruckConvoyPass/WithPostCombatPass). Each guards both idempotency
+    // (CurrentXxx must still be null) and chain order (the immediate
+    // predecessor's own CurrentXxx must already be set) -- the native
+    // event's own Create method is what actually validates the predecessor
+    // object and catalog position; these guards are defense in depth, the
+    // same depth WithPostCombatPass already applies.
+    internal CampaignNativeInitiativeDeclarationV49? CurrentInitiativeDeclaration { get; private set; }
+    internal ExerciseSession? InitiativeDeclarationPredecessor { get; private set; }
+
+    internal ExerciseSession WithInitiativeDeclaration(CampaignNativeInitiativeDeclarationV49 declared,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(declared);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentPostCombatPass is null || CurrentInitiativeDeclaration is not null
+            || declared.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != declared.StateVersion)
+            throw new InvalidOperationException("Initiative Declaration must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.InitiativeDeclarationPredecessor = this;
+        successor.CurrentInitiativeDeclaration = declared;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(declared);
+        return successor;
+    }
+
+    internal CampaignNativeWeatherDeterminationV50? CurrentStageEntryWeather { get; private set; }
+    internal ExerciseSession? StageEntryWeatherPredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntryWeather(CampaignNativeWeatherDeterminationV50 determined,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(determined);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentInitiativeDeclaration is null || CurrentStageEntryWeather is not null
+            || determined.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != determined.StateVersion)
+            throw new InvalidOperationException("Weather Determination must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntryWeatherPredecessor = this;
+        successor.CurrentStageEntryWeather = determined;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(determined);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationOrganizationV51? CurrentNoObligationOrganization { get; private set; }
+    internal ExerciseSession? NoObligationOrganizationPredecessor { get; private set; }
+
+    internal ExerciseSession WithNoObligationOrganization(CampaignNativeNoObligationOrganizationV51 resolved,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntryWeather is null || CurrentNoObligationOrganization is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Organization resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.NoObligationOrganizationPredecessor = this;
+        successor.CurrentNoObligationOrganization = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationNavalConvoyArrivalV52? CurrentNoObligationNavalConvoyArrival { get; private set; }
+    internal ExerciseSession? NoObligationNavalConvoyArrivalPredecessor { get; private set; }
+
+    internal ExerciseSession WithNoObligationNavalConvoyArrival(
+        CampaignNativeNoObligationNavalConvoyArrivalV52 resolved, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentNoObligationOrganization is null || CurrentNoObligationNavalConvoyArrival is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Naval Convoy Arrival resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.NoObligationNavalConvoyArrivalPredecessor = this;
+        successor.CurrentNoObligationNavalConvoyArrival = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationFleetAssignmentV53? CurrentNoObligationFleetAssignment { get; private set; }
+    internal ExerciseSession? NoObligationFleetAssignmentPredecessor { get; private set; }
+
+    internal ExerciseSession WithNoObligationFleetAssignment(CampaignNativeNoObligationFleetAssignmentV53 resolved,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentNoObligationNavalConvoyArrival is null || CurrentNoObligationFleetAssignment is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Fleet Assignment resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.NoObligationFleetAssignmentPredecessor = this;
+        successor.CurrentNoObligationFleetAssignment = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationFleetRepairV54? CurrentNoObligationFleetRepair { get; private set; }
+    internal ExerciseSession? NoObligationFleetRepairPredecessor { get; private set; }
+
+    internal ExerciseSession WithNoObligationFleetRepair(CampaignNativeNoObligationFleetRepairV54 resolved,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentNoObligationFleetAssignment is null || CurrentNoObligationFleetRepair is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Fleet Repair resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.NoObligationFleetRepairPredecessor = this;
+        successor.CurrentNoObligationFleetRepair = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
     public override string ToString() => nameof(ExerciseSession);
 }
