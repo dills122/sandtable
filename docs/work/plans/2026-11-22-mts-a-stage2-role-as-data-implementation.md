@@ -72,6 +72,9 @@ fixed, since it never independently re-checks `ActorRole`).
     `SecondSideCombatSelectionRejectsAnActionNotOfferedAtTheCut`, and
     `SecondSideRealAssaultSelectionIsLegalPersistedColdReplayableAndRetried` — real HTTP,
     cold-replay-checked, second-side Combat selection coverage).
+  - `python3 .github/scripts/local_tests.py core --class "*Breakdown*"`: **801/801 passed**
+    (confirmatory only — these methods are never on the first-side Breakdown path this
+    change didn't touch, run for extra confidence given the size of this file).
 - No existing test was found that asserts a `FirstActingSide` position/rejection from any
   of the 7 methods (`search_code` for `FirstActingSide` in
   `tests/Cna.Core.Tests/Observations/CampaignContactOwnerMovementCutTests.cs` and a broader
@@ -108,16 +111,81 @@ guessed at:
 be built as a new native-chain pattern (mirroring how `#394` built the Movement/Combat
 native chain, but for Initiative/Weather/Organization/Convoy/Fleet instead), or does the
 owner want to revisit the Option 1/Option 2 fork specifically for preamble, since preamble
-has no existing native prior art the way Movement/Combat did?** This blocks `MTS-TASK-002`/
-`003`/`004` (Stage 2 preamble through Reserve Designation) as scoped in the original
-document until it's answered. It does not block continuing the Movement/Breakdown/Combat
-generalization (`MTS-TASK-005`/`006`, which this slice's refactor directly feeds) if the
-owner wants that to proceed independently.
+has no existing native prior art the way Movement/Combat did?**
+
+## Correction (2026-11-22, same day): MTS-TASK-005/006 is also gated on this, not independent
+
+The statement above this heading originally claimed starting `MTS-TASK-005`/`006` was
+**not** blocked by the preamble question. Re-investigated before starting that work, per
+the instruction to stop and report on any new real fork rather than press forward on an
+unverified assumption. **That claim was wrong, and is corrected here rather than silently
+fixed**, per this project's own citation/correction discipline.
+
+What's actually true, re-verified by reading the entry path each of the 7 generalized
+classes' predecessors require:
+
+- `CampaignNativeSecondReserveV43.Create`'s `predecessor switch`
+  (`CampaignNativeSecondReserveV43.cs:26-33`) accepts exactly two predecessor shapes:
+  `CampaignNativePostCombatPassV42` (a side's own Rail/Repair/Patrol pass, which can only
+  exist *after* that side's own full Reserve-through-TruckConvoy cycle has already run)
+  or an incomplete `CampaignNativeSecondReserveV43` itself. **Neither shape can represent
+  "Stage 2 preamble just finished, first acting side is now ready to begin Reserve
+  Designation"** — that predecessor type does not exist, because it is the preamble
+  question's own open architecture decision (what does Stage 2's native-chain entry point
+  even look like) under a different name.
+- This is not specific to the first-generalized class: `CampaignNativeTruckConvoyPassV41.Create`
+  (`CampaignNativeTruckConvoyPassV41.cs:16-33`) requires a completed
+  `CampaignNativeReserveReleaseStateV27`/`CampaignNativeCycleControlV28` pair with
+  `Choice == Finish` — i.e. the *entire* Reserve/Movement/Breakdown/Combat/ReserveRelease
+  cycle for that side must already have run through the native chain before Truck Convoy
+  is reachable, which is circular for "build the first acting side's cycle" if there is no
+  entry point into that cycle in the first place.
+- The second acting side of Stage 2 is gated transitively on the first: it needs the first
+  side's own `CampaignNativePostCombatPassV42` as its predecessor (per the table above),
+  so it cannot be live/reachable before the first side's cycle is.
+
+**Re-investigated separately and confirmed good news, so the #518 refactor is not
+wasted:** the *deeper* Combat sub-step machinery — Barrage through Settlement/Custody/
+Successor (`CampaignNativeCombatBarrageV14` through `CampaignNativeCombatSuccessorV26`),
+driven by `CampaignNativeRepeatAssaultRuntime` — is **already side/stage-generic by
+design**, not hardcoded. `CampaignNativeRepeatAssaultRuntime.ReplaySecond`
+(`CampaignNativeRepeatAssaultRuntime.cs:132-156`) operates on a `CampaignCombatSelectionFrame`
+(a facts bag: `TurnFacts`/`World`/`RandomState`/`Decision`), not a hardcoded role, and its
+`isSecondSide` constructor flag (confirmed by reading `Apply`/the class's own comments,
+e.g. `:93-94`, `:9-11`) controls *which continuation path* (native Truck
+Convoy/Post-Combat Pass vs. the V11-rooted repeat path), not literally "is this the second
+side" — so this method is actually already the right substrate for Stage 2's *first*
+acting side too, once something can reach it. `CampaignNativeReserveReleaseV27`/
+`CampaignNativeCycleControlV28`/`CampaignNativeTruckConvoyPassV41`/
+`CampaignNativePostCombatPassV42` were separately confirmed already side-generic in the
+original addendum. **So the remaining gap for MTS-TASK-005/006 is concentrated entirely in
+the entry bridge, not in the combat mechanics themselves** — which is useful risk
+information for scoping, even though it does not unblock the task today.
+
+This is the same open architecture question as the preamble one, not a second,
+independent question: both boil down to "what event/type represents 'Stage 2 has begun,
+side X may now act' on the native chain, since `CampaignSnapshotV11` cannot represent
+it." Answering it for preamble answers it for `MTS-TASK-005`/`006` too (or vice versa) —
+they should be decided together, not separately. No bridge design is proposed here; that
+would be guessing at exactly the architecture the owner asked not to be guessed at.
 
 ## Next steps
 
-- Await the owner's ruling on the preamble open question above before starting
-  `MTS-TASK-002`-`004`.
-- `MTS-TASK-005`/`006` (Stage 2 Movement/Breakdown/Combat, both sides) can now build on
-  the 7 generalized classes above rather than hand-building side-specific siblings, per
-  the hybrid's intended payoff — not yet started in this slice.
+- Await the owner's ruling on the preamble/entry-bridge open question before starting
+  live/wired work on `MTS-TASK-002`-`006`. All of Stage 2's mechanics (preamble and
+  Movement/Breakdown/Combat alike) are gated on the same unresolved question: what native
+  event represents entering Stage 2 at all.
+- The 7-class role-as-data refactor in this PR stands as real, valuable, independently
+  tested progress regardless of how the bridge question resolves — it removes a hardcoded
+  assumption that would have blocked Stage 2 either way, and the re-investigation above
+  confirms the deeper combat machinery needs no further generalization once the bridge
+  exists.
+- Not attempted in this pass: a synthetic/isolated Core test that drives the native chain
+  through a hand-constructed Stage 2 `CampaignOperationStageOrder` and a fabricated
+  predecessor (bypassing the live bridge question entirely, the way this project's own
+  history used "synthetic earlier Movement" for early Combat evidence, e.g. Task019D1).
+  That could produce real "Implemented," not-yet-"Activated-and-witnessed" evidence (per
+  this project's own four-state status model in the roadmap) without resolving the bridge
+  — flagged as a real option for a future slice, not started here since it was not what
+  was asked for this round and risks presupposing a predecessor shape the owner hasn't
+  ruled on.
