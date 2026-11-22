@@ -872,6 +872,33 @@ The owner may weigh the "Option 1 is more conventional/less surprising
 architecturally" consideration differently, and nothing above should be
 read as foreclosing that judgment call.
 
+### Owner ruling (2026-11-22)
+
+**Option 2, via the hybrid proposed above.** Reasoning, in the owner's own
+words (paraphrased, recorded here for the project's record per this
+document's own citation discipline — this is a decision record, not a new
+finding):
+
+> The native chain isn't a new thing being introduced, it's already proven.
+> Option 1's unified-snapshot architecture might be cleaner in the abstract,
+> but rewriting the shared validator that all already-accepted history
+> replays through is a real-risk change for a payoff that's architectural
+> tidiness, not new capability right now. Choosing the hybrid doesn't
+> foreclose consolidating to Option 1 later if the native-chain approach
+> starts accumulating real debt as more stages/turns land — that becomes an
+> informed decision later instead of a guess now.
+
+This directly adopts the recommendation's reasoning (risk shape over
+cleanliness, existing prior art, smaller blast radius, non-foreclosure of
+Option 1 later) rather than overriding it. **`CampaignSnapshotV11` and
+`CampaignSnapshotV11Validator` are not to be modified as part of this
+work.** Implementation proceeds per the hybrid: apply the "role as data"
+refactor to the 7 enumerated decision-point classes, scoped to Stage 2
+only, with the defined fallback (finish Stage 2 "hand-build it" style) if
+the refactor does not generalize cleanly. See
+[`2026-11-22-mts-a-stage2-role-as-data-implementation.md`](2026-11-22-mts-a-stage2-role-as-data-implementation.md)
+for the implementation record.
+
 ---
 
 ## 5. Open design questions for the owner

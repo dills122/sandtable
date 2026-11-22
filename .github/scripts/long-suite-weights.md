@@ -922,3 +922,30 @@ part); no existing row is renamed or removed.
 | `CampaignHostAdapterResumeTests.ResumedImportValidatesContactRecordsLikeFreshReplayAndRejectsTampering` | `4966acacb3c3` | 163 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class '*CampaignHostAdapterResumeTests*' --report-xunit-xml --results-directory <local-dir>` (3 passed, 0 failed, 0 skipped) on a macOS arm64 .NET 10 Release local run on 2026-11-19 — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. `python3 .github/scripts/local_tests.py fast-01 --dry-run` (full live discovery across `Cna.Core.Tests` plus `make_plan`) and `python3 .github/scripts/long_suite_partition_test.py` (35 tests) both passed locally against the merged manifest.
+
+## Native Stage 2 preamble chain, slices 1-3 (MTS-TASK-002, 2026-11-22)
+
+Adds one new class, `CampaignNativeStageEntryPreambleTests`, covering the six new
+native-chain preamble event types
+(`CampaignNativeInitiativeDeclarationV49`/`CampaignNativeWeatherDeterminationV50`/
+`CampaignNativeNoObligationOrganizationV51`/`...NavalConvoyArrivalV52`/
+`...FleetAssignmentV53`/`...FleetRepairV54`) built for
+`docs/work/plans/2026-11-22-stage-entry-bridge-design-options.md`. Twelve new
+`[Fact]` rows, one ordinary suite part; no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `InitiativeDeclarationAdvancesFromPatrolCompleteToWeatherForEitherChoice` | `d8fa23a870` | 1 |
+| `InitiativeDeclarationSerializationRoundTripsCanonically` | `d05f59bebd` | 1 |
+| `InitiativeDeclarationRejectsWrongPredecessorTypeOrStaleCut` | `e272b9f80f` | 1 |
+| `InitiativeDeclarationRejectsAPredecessorNotAtSecondSidePatrol` | `feacd032dc` | 9 |
+| `WeatherDeterminationAdvancesFromInitiativeDeclarationAndConsumesExactlyTwoOrThreeDraws` | `a9b7efe18b` | 4 |
+| `WeatherDeterminationSerializationRoundTripsCanonically` | `b447790e72` | 3 |
+| `WeatherDeterminationRejectsAStaleCutOrForeignRandomAlgorithm` | `65e5663127` | 1 |
+| `OrganizationAdvancesFromWeatherToNavalConvoyArrival` | `0d669a3b1b` | 1 |
+| `NavalConvoyArrivalAdvancesFromOrganizationToFleetAssignmentWhenNoArrivalIsDue` | `42306f36fc` | 6 |
+| `FleetAssignmentAdvancesFromNavalConvoyArrivalToFleetRepair` | `10466355ec` | 8 |
+| `FleetRepairIsTheTerminalEventAndAdvancesToTheNewStagesFirstActingSideReserveDesignation` | `7c9a81f83b` | 33 |
+| `FullSixEventChainResolvesIntoACampaignNativeSecondReserveV43PredecessorForTheNewStage` | `27db5667ca` | 15 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryPreambleTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-22 (12 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `b768e5f85f9a6d7e09d2bff677b3a1bf95759bbd28072ed75da70a97fe9df17e`; retained XML SHA-256 `aa1629398afac3084c45cd68cb6fb2652d246ac4e335c52b85a8c6bcea28e5f6`. All twelve row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.

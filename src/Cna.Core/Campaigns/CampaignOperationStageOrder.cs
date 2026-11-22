@@ -33,4 +33,14 @@ internal sealed record CampaignOperationStageOrder
     public int OperationStage { get; }
     public LandSide FirstSide { get; }
     public LandSide SecondSide { get; }
+
+    // MTS-A (2026-11-22, docs/work/plans/2026-11-22-multi-turn-multi-stage-scoping.md):
+    // added so the native "Second*" decision-point classes (V43-V46) can resolve
+    // which stage-relative role a given side holds generically instead of
+    // hardcoding LandActorRole.SecondActingSide. Returns null when the side is
+    // neither of this order's two acting sides.
+    internal LandActorRole? ActingRole(LandSide side) =>
+        side == FirstSide ? LandActorRole.FirstActingSide
+        : side == SecondSide ? LandActorRole.SecondActingSide
+        : null;
 }

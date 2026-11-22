@@ -67,7 +67,12 @@ internal sealed record CampaignNativeSecondBreakdownV46(
         var breakdown = catalog.Single(value => value.PositionId == completed.NextPositionId);
         var order = initial.OperationStageOrders.Single(value => value.GameTurn == movement.GameTurn
             && value.OperationStage == movement.OperationStage);
-        if (order.SecondSide != completed.Side || movement.ActorRole != LandActorRole.SecondActingSide
+        // MTS-A (2026-11-22): generalized, same reasoning as
+        // CampaignNativeSecondReserveV43.Create -- `actingRole` is reused below
+        // for the Breakdown -> Combat successor check too, since a side-block's
+        // acting role is constant across the whole block.
+        var actingRole = order.ActingRole(completed.Side);
+        if (actingRole is null || movement.ActorRole != actingRole
             || movement.SegmentId != LandSegmentIds.Movement || Cna1979LandSequenceV4.GetNext(movement) != breakdown
             || breakdown.SegmentId != LandSegmentIds.BreakdownDetermination)
             throw new InvalidOperationException("Second Breakdown does not follow its retained movement slot.");
@@ -76,7 +81,7 @@ internal sealed record CampaignNativeSecondBreakdownV46(
             && value.OperationalState.MovementEnded?.PositionId == movement.PositionId))
             throw new InvalidOperationException("Vehicle movement requires breakdown accounting.");
         var next = Cna1979LandSequenceV4.GetNext(breakdown);
-        if (next.ActorRole != LandActorRole.SecondActingSide || next.SegmentId != LandSegmentIds.Combat
+        if (next.ActorRole != actingRole || next.SegmentId != LandSegmentIds.Combat
             || next.StepId != LandStepIds.PositionDetermination)
             throw new InvalidOperationException("Second Breakdown requires its combat successor.");
         return new(CurrentContractVersion, completed.CampaignId, completed.StateVersion,

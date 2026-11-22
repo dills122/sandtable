@@ -37,8 +37,11 @@ internal sealed record CampaignNativeSecondMoveV44(
         };
         var catalog = Cna1979LandSequenceV4.CreateTurn(gameTurn).Single(value => value.PositionId == positionId);
         var order = orders.Single(value => value.GameTurn == gameTurn && value.OperationStage == catalog.OperationStage);
-        if (priorSide != side || order.SecondSide != side || contactVersion != version
-            || catalog.ActorRole != LandActorRole.SecondActingSide || catalog.SegmentId != LandSegmentIds.Movement
+        // MTS-A (2026-11-22): generalized, same reasoning as
+        // CampaignNativeSecondReserveV43.Create.
+        var actingRole = order.ActingRole(side);
+        if (priorSide != side || actingRole is null || contactVersion != version
+            || catalog.ActorRole != actingRole || catalog.SegmentId != LandSegmentIds.Movement
             || worldHash != CampaignNativeCombatPaidWorldV22.Hash(world)
             || context.ArtifactV6 is not { } artifact || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
             throw new InvalidOperationException("Second Movement does not bind the owner and World.");

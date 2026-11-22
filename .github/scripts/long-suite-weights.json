@@ -859,6 +859,9 @@
     },
     "Cna.Core.Tests.Exercises.CampaignCombatExerciseAssaultTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CampaignNativeStageEntryPreambleTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4639,7 +4642,19 @@
     "ab1488efff37221e46fd5311529e4d867fc744b72300f4059bea2fdd82cfb572": 970,
     "6101c33dc560cf1899783d12a6420d6738d5d2ebc4eb3686456b1a3701abc4a2": 376,
     "a59c59cf01349108a1a2de255d2fefcdd68e9eb9202a4c0310c8f4af7e98eb8d": 344,
-    "02dcfd1673d32da7da1543a4eec7ab596900f46ba3863b0b4f41820d0e52f5c8": 850
+    "02dcfd1673d32da7da1543a4eec7ab596900f46ba3863b0b4f41820d0e52f5c8": 850,
+    "0d669a3b1b1505c99d3a4cb37c40a2e7f05a6f04bce50d2a7ef6fd64ffc7a295": 1,
+    "10466355ec802988399d4ae6763b4880a8a9622a1f554b8485d4d52432951022": 8,
+    "27db5667caf498b524bac09a601335847f765e9856e8497e771287a6c78e51b5": 15,
+    "42306f36fcfb2a82f7f4b1dcb5a6598f014463efc3e25259069c2a9848e32512": 6,
+    "65e56631277a28c6004a4f06c65ac43ad6e6f9d5392fc2d873bfb012716d9b98": 1,
+    "7c9a81f83b419ec4cf53e44518857c13ba706678176a50d1fdf9999498d39b8f": 33,
+    "a9b7efe18b3c9ee9313bee93b9f453c3927f9853963b5f0c4196217562969e9e": 4,
+    "b447790e7270e38ff59cba1fbedba0210b2cdf80c593e43f01e1b78dbd2cc74e": 3,
+    "d05f59bebd536425c4ecc4f0cee5d122b672672d1e0aee8260a0097b86f23ded": 1,
+    "d8fa23a87044c620f79d37390434352014c9878077c53a7d3a1112a183e0c93d": 1,
+    "e272b9f80f42546c2aaf7702b176155779a7eb061a83c9bc712a5c7e510b8b42": 1,
+    "feacd032dcf472a875743ffe6a00683967f42d61fccd0acb7c4d43b224335335": 9
   },
   "provisional_rows": {
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new Cna1979HistoricalMapTests Malta column-00 NeighborsOf rows, pending hosted CI calibration",
@@ -5149,7 +5164,19 @@
     "ab1488efff37221e46fd5311529e4d867fc744b72300f4059bea2fdd82cfb572": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Exercises.CampaignCombatExerciseAssaultTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CampaignCombatExerciseAssaultTests rows (Task 022B), pending hosted CI calibration",
     "6101c33dc560cf1899783d12a6420d6738d5d2ebc4eb3686456b1a3701abc4a2": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Exercises.CampaignCombatExerciseAssaultTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CampaignCombatExerciseAssaultTests rows (Task 022C), pending hosted CI calibration",
     "a59c59cf01349108a1a2de255d2fefcdd68e9eb9202a4c0310c8f4af7e98eb8d": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Exercises.CampaignCombatExerciseAssaultTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CampaignCombatExerciseAssaultTests rows (Task 022C), pending hosted CI calibration",
-    "02dcfd1673d32da7da1543a4eec7ab596900f46ba3863b0b4f41820d0e52f5c8": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Exercises.CampaignCombatExerciseAssaultTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CampaignCombatExerciseAssaultTests rows (Task 022C), pending hosted CI calibration"
+    "02dcfd1673d32da7da1543a4eec7ab596900f46ba3863b0b4f41820d0e52f5c8": "2026-11-20 macOS arm64 .NET 10 Release focused MTP XML (Cna.Core.Tests, --filter-class Cna.Core.Tests.Exercises.CampaignCombatExerciseAssaultTests, dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --report-xunit-xml); new CampaignCombatExerciseAssaultTests rows (Task 022C), pending hosted CI calibration",
+    "0d669a3b1b1505c99d3a4cb37c40a2e7f05a6f04bce50d2a7ef6fd64ffc7a295": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "10466355ec802988399d4ae6763b4880a8a9622a1f554b8485d4d52432951022": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "27db5667caf498b524bac09a601335847f765e9856e8497e771287a6c78e51b5": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "42306f36fcfb2a82f7f4b1dcb5a6598f014463efc3e25259069c2a9848e32512": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "65e56631277a28c6004a4f06c65ac43ad6e6f9d5392fc2d873bfb012716d9b98": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "7c9a81f83b419ec4cf53e44518857c13ba706678176a50d1fdf9999498d39b8f": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "a9b7efe18b3c9ee9313bee93b9f453c3927f9853963b5f0c4196217562969e9e": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "b447790e7270e38ff59cba1fbedba0210b2cdf80c593e43f01e1b78dbd2cc74e": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "d05f59bebd536425c4ecc4f0cee5d122b672672d1e0aee8260a0097b86f23ded": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "d8fa23a87044c620f79d37390434352014c9878077c53a7d3a1112a183e0c93d": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "e272b9f80f42546c2aaf7702b176155779a7eb061a83c9bc712a5c7e510b8b42": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration",
+    "feacd032dcf472a875743ffe6a00683967f42d61fccd0acb7c4d43b224335335": "2026-11-22 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntryPreambleTests rows (MTS-TASK-002), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
