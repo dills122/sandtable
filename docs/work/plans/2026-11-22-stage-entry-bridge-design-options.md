@@ -241,3 +241,68 @@ generalized classes needs an answer before any of them can actually run for Stag
   are the owner's call.
 - Does not re-examine `CampaignSnapshotV11`/`CampaignSnapshotV11Validator` — untouched,
   per the standing ruling.
+
+## Owner ruling (2026-11-22)
+
+**Option A — six separate native events, one per mechanic.** Reasoning, for the record:
+Organization/Naval Convoy Arrival/Fleet Assignment/Fleet Repair are already flagged by the
+roadmap as likely needing real decisions for later scenarios; splitting a bundled event
+apart once it has live accepted history is a permanent new-version cost under `EVT-001`
+("authoritative changes occur only through versioned commands and emitted events" —
+changing what one committed event type means, after real history exists under it, is the
+kind of migration this project's own compatibility discipline treats as expensive and
+separately gated). Three extra implementation slices now is cheaper than that
+forever-liability.
+
+**`orders`-list sub-question:** the owner's lean — self-contained on the terminal event of
+the six-event chain (Fleet Repair's own event carries the resolved
+`CampaignOperationStageOrder` fields directly), consistent with the native chain's general
+pattern of passing forward what's needed through the event chain itself rather than a
+mutable session-wide field, avoiding the exact single-mutable-slot-field problem class
+this whole effort has been fixing — explicitly asked to be verified against the
+established pattern before committing, not assumed.
+
+**Verified: this is the obvious fit, not a fork.** Every `#518`-generalized class already
+takes `orders: IReadOnlyList<CampaignOperationStageOrder>` as an *externally supplied*
+parameter (e.g. `CampaignNativeSecondReserveV43.Create`,
+`CampaignNativeSecondReserveV43.cs:17-19`) — never self-discovered from an
+`ExerciseSession` field. Today's only real source for that parameter is
+`session.CurrentSnapshot.OperationStageOrders` (the frozen genesis snapshot). The
+additive, zero-signature-change way to extend this for Stage 2+ is for the caller
+(whatever Submit method drives the first Stage-2 Reserve action) to build the `orders`
+list it passes in by concatenating `session.CurrentSnapshot.OperationStageOrders`
+(Stage 1's order, unchanged) with the order resolved by the native Initiative Declaration
+event, read directly off whichever native predecessor object is in hand — exactly the
+same way every other native-chain value (`WorldHash`, `Side`, `PositionId`) is read
+directly off a concrete predecessor type via its own fields, never a dedicated
+`ExerciseSession` mutable-state field. No new `ExerciseSession` field is needed for the
+order *value* itself. (`ExerciseSession` does still need the usual per-mechanic
+`CurrentXxx`/`XxxPredecessor` field pair for each of the six new event types, the same as
+every other native chain step — that is the established pattern for chain-position
+tracking, not a special case.)
+
+**A second, related design decision made during implementation, recorded here since it
+surfaced the same class of question and the owner's reasoning above applies directly to
+it: threading `RandomStreamState` through the new chain.** Only Weather Determination
+consumes randomness among the six mechanics (confirmed: `CampaignV11Preamble.Create`'s
+`ActFirstAction`/`ActLastAction`/Organization/Naval-Convoy/Fleet cases never touch
+`prior.RandomState`; only `ResolveWeatherAction` does, via `Cna1979Weather.Resolve(turn,
+prior.RandomState)`, `CampaignV11Preamble.cs:34`). `CampaignNativePostCombatPassV42`
+carries no `RandomState` field at all (Rail/Repair/Patrol never draw randomness), so the
+"current cursor" by the time Weather needs one cannot be read off the immediate
+predecessor. The one existing precedent for this exact problem,
+`ExerciseSession.SecondAssaultFrame` (`ExerciseSession.cs:889-897`), resolves it by
+walking `CurrentHistory` for the most recent event of a specific RNG-advancing type and
+falling back to the frozen genesis snapshot's `RandomState` if none exists yet — not a
+generic "any RNG-advancing type" resolver (there isn't one), but a narrow, explicitly
+commented, one-more-`OfType<T>()`-case extension of exactly the same technique used here.
+Decision: extend that same technique with one more case for the new Weather event type,
+documented with the same kind of explanatory comment `SecondAssaultFrame` already carries
+— not a new pattern, and backed by the same safety net that already protects it:
+`CampaignExercises.ReconstructOne`'s independent replay/hash-chain re-verification would
+surface a wrong cursor as a reconstruction failure, not a silent determinism bug. Treated
+as an obvious extension of established precedent rather than a fork requiring a separate
+ruling; flagged here for the record per this document's own citation discipline.
+
+Implementation proceeds per this ruling in
+[`2026-11-22-mts-task-002-slice-1-implementation.md`](2026-11-22-mts-task-002-slice-1-implementation.md).
