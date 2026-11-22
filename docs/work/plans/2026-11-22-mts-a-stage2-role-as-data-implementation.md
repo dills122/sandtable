@@ -175,6 +175,14 @@ would be guessing at exactly the architecture the owner asked not to be guessed 
   live/wired work on `MTS-TASK-002`-`006`. All of Stage 2's mechanics (preamble and
   Movement/Breakdown/Combat alike) are gated on the same unresolved question: what native
   event represents entering Stage 2 at all.
+- **Update (2026-11-22, same day):** per the owner's follow-up ruling, this question was
+  investigated in detail (not a synthetic bypass, per the owner's explicit reasoning that
+  isolated evidence disconnected from the real activation path repeats this session's
+  earlier Exercise-Harness-vs-real-path trust problem). See
+  [`2026-11-22-stage-entry-bridge-design-options.md`](2026-11-22-stage-entry-bridge-design-options.md)
+  for concrete options (A / A′ / B) with file:line citations, consumer impact, and
+  DET-001/DET-002/REL-001 risk profile, and a recommendation (A′) — still awaiting the
+  owner's actual ruling before any of it is built.
 - The 7-class role-as-data refactor in this PR stands as real, valuable, independently
   tested progress regardless of how the bridge question resolves — it removes a hardcoded
   assumption that would have blocked Stage 2 either way, and the re-investigation above
