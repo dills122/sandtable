@@ -1672,10 +1672,19 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(first.PublicActionRefs, reopened.PublicActionRefs);
         Assert.Equal(first.Revision, reopened.Revision);
 
-        var system = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
-        var advance = new CampaignActionSubmission(1, system.CampaignId,
-            system.StateVersion, system.PositionId, system.Audience,
-            system.Candidates.Single().ActionId);
+        // UX-001 auto-drain (PR #504): the first QueryOwnerOpening above may already have
+        // silently advanced System past the leading preamble steps as a side effect, so
+        // `session`'s own captured System candidate can be stale by now -- pick whichever
+        // audience (System, Axis, or Commonwealth) currently has something pending instead of
+        // assuming System specifically, to drive the same "unseen authority advance elsewhere"
+        // this test means to simulate regardless of exactly where the drain left things.
+        var pending = Enum.GetValues<CampaignActionAudience>()
+            .Select(audience => CampaignExercises.Query(
+                journal.ReadVerified("campaign-durable-journal"), audience).ActionSet)
+            .First(value => value is { Candidates.Count: > 0 })!;
+        var advance = new CampaignActionSubmission(1, pending.CampaignId,
+            pending.StateVersion, pending.PositionId, pending.Audience,
+            pending.Candidates[0].ActionId);
         Assert.True(journal.Append(advance.CampaignId, advance).IsAccepted);
         var after = fixture.Open().QueryOwnerOpening(credential, elementId);
         Assert.Equal(first.VisibleBytes, after.VisibleBytes);

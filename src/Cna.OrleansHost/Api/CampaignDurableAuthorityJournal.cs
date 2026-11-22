@@ -620,7 +620,85 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireBounded(snapshot);
         InsertCampaign(connection, transaction, request, creation, snapshot, contacts, timingBytes);
         transaction.Commit();
+        // Deliberately not draining here: CreateCampaign/Append are the trusted, direct-access
+        // surface several pre-existing tests use to exercise generic replay/idempotency/tamper
+        // mechanics against a freshly created, deliberately undrained genesis (picking whatever
+        // CampaignActionAudience.System offers as a convenient, always-available test vehicle --
+        // not testing genesis reachability itself). A real HTTP player only ever reaches a
+        // position through QueryOwnerOpeningCore/SubmitOwnerActionCore (below), which already
+        // drain -- so creation leaving genesis undrained is never observable over the outward
+        // API: the very next request through either of those two entry points drains it first.
         return created.Session!;
+    }
+
+    // UX-001: a System-only legal-action step (CampaignV11Preamble.Apply's ResolveInitiativeAction,
+    // ResolveNoObligationXxxAction, ResolveWeatherAction, and their siblings -- every one of them
+    // forced, with no human decision behind it) must never be exposed to a real player as a
+    // "stuck" opening with nothing for either audience to do. Ruled (scope doc, PR #504): the
+    // Host auto-drains these transparently, as a general mechanism applied wherever a real
+    // player (or campaign creation) would otherwise observe the stuck state -- not a one-off
+    // creation-time special case, and not an HTTP route of its own, since there is never a real
+    // choice at these steps for any HTTP-exposed audience to make. Confirmed this recurs well
+    // past genesis -- not just the 3 steps before InitiativeDeclaration, but (for example) 5 more
+    // between ActFirst/ActLast and Reserve Designation -- by
+    // CampaignDurableAuthorityJournalTests.EndToEndHttpRelease.cs driving the entire release
+    // scope purely over HTTP with no direct Core/Journal call anywhere in its own body.
+    //
+    // Persisted exactly like CampaignHostAdapter.Submit's own generic Append path
+    // (CampaignHostAcceptedStep.LegacyKind) -- the same shape every existing test helper's own
+    // manual System-step draining already uses and that cold replay already verifies -- so a
+    // drained step is real, ordinary accepted history, never synthesized or skipped on replay.
+    // Idempotent by construction: once nothing is pending for CampaignActionAudience.System the
+    // loop is a single no-op read-only query, so calling this from every Query/Submit entry point
+    // (even when a caller, such as an existing test's own setup helper, already drained directly)
+    // costs one extra Core query and changes nothing.
+    private static Loaded DrainPendingSystemSteps(SqliteConnection connection, SqliteTransaction transaction,
+        string campaignId, Loaded head)
+    {
+        while (true)
+        {
+            var query = CampaignHostAdapter.QuerySystem(head.Session);
+            if (!query.IsSuccessful || query.ActionSet is not { } set || set.Candidates.Count == 0)
+                return head;
+            var candidate = set.Candidates.Count == 1 ? set.Candidates[0]
+                : OneAmbiguousForcedSystemCandidate(set.Candidates);
+            var submission = new CampaignActionSubmission(1, set.CampaignId, set.StateVersion,
+                set.PositionId, CampaignActionAudience.System, candidate.ActionId);
+            var result = CampaignHostAdapter.Submit(head.Session, submission);
+            if (!result.IsAccepted)
+                throw new InvalidOperationException("Core rejected its own forced System step.");
+            head = PersistAccepted(connection, transaction, campaignId, head,
+                CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
+        }
+    }
+
+    // The only confirmed case where CampaignActionAudience.System legitimately offers more than
+    // one forced candidate at once: CampaignObservationV7ActionDerivation.DeriveSystem, for a
+    // reaction window with no one left to act on it, offers close-reaction-window-timeout and
+    // close-reaction-window-scripted-unavailable side by side -- two reason codes for the same
+    // forced closure, not two different choices Core is leaving to whoever submits. They are
+    // NOT interchangeable, though: CampaignBreakdownLifecycleFactory.CreateReactionClose records
+    // a different CampaignBreakdownStopReason for each (ReactionTimeout vs. ReactionUnavailable),
+    // so picking one is a real fact recorded in history, not a cosmetic label. Timeout is the
+    // one chosen here: every other round-based mechanic in this project (CampaignRoundTimeoutGrain,
+    // the per-round policies in CampaignDecisionTimingConfigurationV1) already resolves an
+    // abandoned decision nobody acted on as a timeout, and -- unlike those rounds -- a reaction
+    // window currently has no armed deadline of its own at all (no round/timeout tracking, per
+    // CampaignHostAdapter.CreateReactionOwnerDraft's own remarks), so asserting
+    // "scripted-unavailable" here would claim a specific authored reason the Host has no actual
+    // basis for. Any other, not-yet-seen multi-candidate System shape is deliberately not
+    // guessed at -- it throws, the same "stop rather than invent a value" rule this project
+    // applies everywhere else.
+    private static CampaignActionCandidate OneAmbiguousForcedSystemCandidate(
+        IReadOnlyList<CampaignActionCandidate> candidates)
+    {
+        if (candidates.Count == 2
+            && candidates.Select(value => value.Kind).OrderBy(value => value, StringComparer.Ordinal)
+                .SequenceEqual(["close-reaction-window-scripted-unavailable", "close-reaction-window-timeout"]))
+            return candidates.Single(value => value.Kind == "close-reaction-window-timeout");
+        throw new InvalidOperationException(
+            "A System-only step offered an unrecognized set of more than one legal action: "
+            + string.Join(",", candidates.Select(value => value.Kind)));
     }
 
     internal CampaignSourceSession CreateCampaign(CampaignCreationRequest request,
