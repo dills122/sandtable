@@ -330,7 +330,7 @@ internal sealed class CampaignJournalWorkingSet : IDisposable
             using var insert = anchor.CreateCommand();
             insert.Transaction = transaction;
             insert.CommandText = """
-                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,
+                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,$side,
                   $command,$event,$receipt,$checkpoint,$contacts,$prior,$hash)
                 """;
             insert.Parameters.AddWithValue("$id", id);
@@ -340,6 +340,7 @@ internal sealed class CampaignJournalWorkingSet : IDisposable
             insert.Parameters.AddWithValue("$ref", (object?)step.OwnerPublicRef ?? DBNull.Value);
             insert.Parameters.AddWithValue("$epoch", (object?)step.SeatEpoch ?? DBNull.Value);
             insert.Parameters.AddWithValue("$revision", (object?)step.OwnerRevision ?? DBNull.Value);
+            insert.Parameters.AddWithValue("$side", (object?)step.Side ?? DBNull.Value);
             insert.Parameters.AddWithValue("$command", step.CanonicalCommand);
             insert.Parameters.AddWithValue("$event", step.CanonicalEvent);
             insert.Parameters.AddWithValue("$receipt", step.CanonicalReceipt);
@@ -587,7 +588,7 @@ internal sealed class CampaignJournalWorkingSet : IDisposable
         query.CommandText = """
             SELECT sequence,action_kind,acting_element_id,owner_public_ref,seat_epoch,owner_revision,
               canonical_command,canonical_event,canonical_receipt,snapshot_checkpoint,canonical_contacts,
-              prior_hash,record_hash
+              prior_hash,record_hash,owner_side
             FROM accepted_steps WHERE campaign_id=$id AND sequence>$after ORDER BY sequence
             """;
         query.Parameters.AddWithValue("$id", campaignId);
@@ -601,7 +602,8 @@ internal sealed class CampaignJournalWorkingSet : IDisposable
                     reader.IsDBNull(3) ? null : reader.GetString(3),
                     reader.IsDBNull(4) ? null : reader.GetInt64(4),
                     reader.IsDBNull(5) ? null : reader.GetInt64(5),
-                    Blob(reader, 6), Blob(reader, 7), Blob(reader, 8), Blob(reader, 9), Blob(reader, 10))));
+                    Blob(reader, 6), Blob(reader, 7), Blob(reader, 8), Blob(reader, 9), Blob(reader, 10),
+                    reader.IsDBNull(13) ? null : reader.GetString(13))));
         return steps;
     }
 
