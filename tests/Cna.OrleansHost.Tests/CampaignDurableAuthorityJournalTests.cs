@@ -2106,6 +2106,33 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 TestContext.Current.CancellationToken));
         }
 
+        // Status and body of one opening post, without asserting success (Reaction:
+        // CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException must surface as
+        // an explicit 409 rule-not-implemented, not the generic 409 "unavailable").
+        internal async Task<(HttpStatusCode Status, string Body)> OpeningResponse(
+            CampaignSeatCredential credential, string actor, string openingStage)
+        {
+            var openingBody = JsonSerializer.Serialize(new
+            {
+                contractVersion = 2,
+                credential = new
+                {
+                    campaignId = credential.CampaignId,
+                    audience = credential.Audience == CampaignActionAudience.Axis ? "axis" : "commonwealth",
+                    epoch = credential.Epoch,
+                    secret = credential.Secret,
+                    expiresUnixMs = credential.ExpiresUnixMs,
+                },
+                stage = openingStage,
+                actingElementId = actor,
+            });
+            using var opened = await client.PostAsync($"/api/v2/campaigns/{campaignId}/openings",
+                new StringContent(openingBody, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            return (opened.StatusCode, await opened.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+        }
+
         public async ValueTask DisposeAsync()
         {
             await app.StopAsync(TestContext.Current.CancellationToken);

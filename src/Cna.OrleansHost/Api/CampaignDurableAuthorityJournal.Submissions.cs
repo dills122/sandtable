@@ -30,6 +30,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, ReserveDesignationOpeningKey, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.ReserveDesignation);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerReaction(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, ReactionOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.Reaction);
+
     internal CampaignOwnerSubmissionResult SubmitPregameAxisSupply(CampaignSeatCredential credential,
         long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, PregameAxisSupplyOpeningKey, openingRevision, publicActionRef,
@@ -284,6 +289,23 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 seat.CampaignId);
         }
 
+        // Reaction (#394 gap 3, PR #501): while a window opened by a second-side Movement
+        // cannot be resolved into an owner opening at all, no owner_openings row for it is
+        // ever persisted either (the query that would persist one throws first) -- so the
+        // ordinary revision/visible-cut lookup below can never match and would otherwise fall
+        // through to the generic, indistinguishable CampaignOwnerSubmissionResult.Rejected().
+        // Checking this specific, already-distinguishable case here, before that lookup, is
+        // what lets a real player's submission get the same explicit rule-not-implemented
+        // signal the query side already gives, instead of an ordinary-looking rejection that
+        // would silently approximate a real, open decision as a no-op (FID-002).
+        if (kind == CampaignOwnerOpeningKind.Reaction)
+        {
+            try { CampaignHostAdapter.QueryReactionOwnerDraft(head.Session, seat.Audience); }
+            catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+            { return CampaignOwnerSubmissionResult.RuleNotImplemented(); }
+            catch (InvalidOperationException) { /* no window at all; fall through as usual */ }
+        }
+
         long authorityVersion;
         string visibleDigest;
         byte[] visibleBytes;
@@ -523,6 +545,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.Reaction)
+            {
+                var draft = CampaignHostAdapter.QueryReactionOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(head.Session, seat.Audience);
@@ -684,6 +712,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitInitiativeOrder(head.Session, submission),
             CampaignOwnerOpeningKind.ReserveDesignation =>
                 CampaignHostAdapter.SubmitReserveDesignation(head.Session, submission),
+            CampaignOwnerOpeningKind.Reaction =>
+                CampaignHostAdapter.SubmitReaction(head.Session, submission),
             CampaignOwnerOpeningKind.PostCombatPass =>
                 CampaignHostAdapter.SubmitPostCombatPass(head.Session, submission),
             CampaignOwnerOpeningKind.SecondReserve =>
@@ -1002,6 +1032,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         CampaignOwnerOpeningKind.Movement => CampaignHostAcceptedStep.ContactMovementKind,
         CampaignOwnerOpeningKind.InitiativeOrder => CampaignHostAcceptedStep.ContactInitiativeOrderKind,
         CampaignOwnerOpeningKind.ReserveDesignation => CampaignHostAcceptedStep.ContactReserveDesignationKind,
+        CampaignOwnerOpeningKind.Reaction => CampaignHostAcceptedStep.ContactReactionKind,
         CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
         CampaignOwnerOpeningKind.RetreatBeforeAssault => CampaignHostAcceptedStep.ContactRbaDeclineKind,
         CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,

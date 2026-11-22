@@ -4,6 +4,7 @@ using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.OrleansHost.Campaigns;
 using Orleans;
@@ -805,7 +806,7 @@ internal static class CampaignDurableOutwardApi
                     or "source-maletti-hierarchy" or "source-gt2-correction"
                     or "source-cw-priority-catalog" or "source-matruh-formation"
                     or "source-cw-free-guns" or "source-axis-priority-motorization"
-                    or "source-cairo-setup" or "movement" or "initiative-order" or "reserve-designation" or "combat-selection"
+                    or "source-cairo-setup" or "movement" or "initiative-order" or "reserve-designation" or "reaction" or "combat-selection"
                     or "rba-decline" or "force-assignment"
                     or "post-assault-retreat" or "custody" or "reserve-release"
                     or "cycle-control" or "truck-convoy-pass" or "post-combat-pass"
@@ -927,6 +928,11 @@ internal static class CampaignDurableOutwardApi
         catch (InvalidContentPackException) { return Error(400, "invalid-request"); }
         catch (KeyNotFoundException) { return Error(400, "invalid-request"); }
         catch (FormatException) { return Error(400, "invalid-request"); }
+        // FID-002: a real, source-legal decision the engine cannot resolve yet (currently only
+        // a Reaction window opened by a second-side Movement -- #394 gap 3) -- distinguishable
+        // from the generic "unavailable" below, which also covers "no such opening exists".
+        catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+        { return Error(409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
         catch (InvalidOperationException) { return Error(409, "unavailable"); }
         catch (ArgumentException) { return Error(400, "invalid-request"); }
         catch (OverflowException) { return Error(400, "invalid-request"); }
@@ -939,6 +945,8 @@ internal static class CampaignDurableOutwardApi
         catch (JsonException) { return Error(400, "invalid-request"); }
         catch (KeyNotFoundException) { return Error(400, "invalid-request"); }
         catch (FormatException) { return Error(400, "invalid-request"); }
+        catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+        { return Error(409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
         catch (InvalidOperationException) { return Error(409, "unavailable"); }
         catch (ArgumentException) { return Error(400, "invalid-request"); }
         catch (OverflowException) { return Error(400, "invalid-request"); }
