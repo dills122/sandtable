@@ -652,7 +652,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     // loop is a single no-op read-only query, so calling this from every Query/Submit entry point
     // (even when a caller, such as an existing test's own setup helper, already drained directly)
     // costs one extra Core query and changes nothing.
-    private static Loaded DrainPendingSystemSteps(SqliteConnection connection, SqliteTransaction transaction,
+    private Loaded DrainPendingSystemSteps(SqliteConnection connection, SqliteTransaction transaction,
         string campaignId, Loaded head)
     {
         while (true)
@@ -669,6 +669,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 throw new InvalidOperationException("Core rejected its own forced System step.");
             head = PersistAccepted(connection, transaction, campaignId, head,
                 CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
+            // A drained step (e.g. CompleteBreakdownSegmentAction, following Movement Segment
+            // Completion) can be exactly the step that first makes a Combat Selection round
+            // startable -- the same TryInitializeSelectionRound call every other completion
+            // path (Movement, SecondMovementCompletion) already makes after its own accepted
+            // step, not previously needed here since nothing durable used to follow genesis's
+            // leading System-only steps. Safe and idempotent: it no-ops whenever the position
+            // still isn't Selection-ready.
+            TryInitializeSelectionRound(connection, transaction, head, campaignId);
         }
     }
 

@@ -10,6 +10,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private const string InitiativeOrderOpeningKey = "land.initiative-order";
     private const string ReserveDesignationOpeningKey = "land.reserve-designation";
     private const string ReactionOpeningKey = "land.reaction";
+    private const string MovementSegmentCompletionOpeningKey = "land.movement-segment-completion";
     private const string CycleControlOpeningKey = "land.cycle-control";
     private const string TruckConvoyPassOpeningKey = "land.truck-convoy-pass";
     private const string PostCombatPassOpeningKey = "land.post-combat-pass";
@@ -80,6 +81,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// </summary>
     internal CampaignOwnerOpening QueryReactionOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, ReactionOpeningKey, CampaignOwnerOpeningKind.Reaction);
+
+    /// <summary>
+    /// Movement Segment Completion (land.position...movement-and-combat.movement, Operation
+    /// Stage 1): the fourth gap of this exact shape, found auditing the entire real-HTTP-player
+    /// chain end to end (scope doc, PR #507). CompleteMovementSegmentAction is a real, side-level
+    /// legal candidate the generic derivation already produces alongside each element's own
+    /// MoveElementAction options, but the dedicated "movement" HTTP stage's own draft type can
+    /// never carry it (see CampaignHostAdapter.QueryMovementSegmentCompletionOwnerDraft's remarks).
+    /// </summary>
+    internal CampaignOwnerOpening QueryMovementSegmentCompletionOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, MovementSegmentCompletionOpeningKey,
+            CampaignOwnerOpeningKind.MovementSegmentCompletion);
 
     internal CampaignOwnerOpening QueryPregameAxisSupplyOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, PregameAxisSupplyOpeningKey, CampaignOwnerOpeningKind.PregameAxisSupply);
@@ -474,6 +487,13 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 authorityVersion = draft.AuthorityVersion;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.MovementSegmentCompletion)
+            {
+                var draft = CampaignHostAdapter.QueryMovementSegmentCompletionOwnerDraft(authority.Session, seat.Audience);
+                visible = draft.VisibleBytes;
+                authorityVersion = draft.AuthorityVersion;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(authority.Session, seat.Audience);
@@ -750,6 +770,7 @@ internal enum CampaignOwnerOpeningKind
     InitiativeOrder,
     ReserveDesignation,
     Reaction,
+    MovementSegmentCompletion,
     CombatSelection,
     RetreatBeforeAssault,
     ForceAssignment,

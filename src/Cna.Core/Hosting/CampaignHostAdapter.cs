@@ -2255,6 +2255,95 @@ public static class CampaignHostAdapter
         return CampaignExercises.Submit(session, submission);
     }
 
+    // Movement Segment Completion (land.position...movement-and-combat.movement, Operation
+    // Stage 1): the fourth gap of this exact shape found auditing the real-HTTP-player chain
+    // end to end (scope doc, PR #507) -- CompleteMovementSegmentAction is a real, side-level
+    // (not per-element) legal candidate CampaignMovementActionDerivation.cs already produces
+    // generically alongside each element's own MoveElementAction options, but the dedicated
+    // "movement" HTTP stage (CampaignContactOwnerMovementCut's own MovementOffers field) is
+    // typed IReadOnlyList<MoveElementAction> -- a hard constraint that can never carry it, no
+    // matter how the generic set is built. This is a redacted Host wrapper over the same
+    // generic CampaignExercises.Query/Submit path InitiativeOrder/ReserveDesignation already
+    // use, not new Core logic, and -- same as those two -- fires before any Combat decision
+    // has ever been made in the session, so it needs no #394 gap 1 sidestep.
+    //
+    // StopElementMovementAction (the fifth gap of this exact shape, found building the E2E
+    // test itself, scope doc PR #509) shares this one opening rather than getting its own:
+    // CampaignObservationV7ActionDerivation.DeriveOrdinaryMovement's own dispatch
+    // (`route is null ? [Complete] : [Stop(route.RouteId)]`) makes the two strictly mutually
+    // exclusive -- Complete is offered only once nobody has an in-progress route, Stop only
+    // once somebody does -- so a real HTTP player querying this one stage always gets
+    // whichever of the two is actually the live choice, rather than needing to guess which of
+    // two separate stages to ask. (StopElementMovementAction's constructor living in
+    // BreakdownActionCandidates.cs is misleading: it is not vehicle-breakdown-only -- it is
+    // this same ordinary ActiveMovement/route mechanism's own "stop here instead of continuing
+    // or completing the whole segment" choice, reachable the moment a real player moves one
+    // step and wants to stop without first exhausting that element's entire movement budget.)
+    // The query deliberately ignores every MoveElementAction present in the same legal set
+    // (that side of the decision is already served by the "movement" stage); it only ever
+    // exposes the single Complete or Stop candidate, whichever exists. No round/deadline
+    // tracking, same reasoning as InitiativeOrder/ReserveDesignation.
+    public static CampaignHostCycleControlOwnerDraft QueryMovementSegmentCompletionOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var result = CampaignExercises.Query(session, audience);
+        if (!result.IsSuccessful || result.ActionSet is not { } set)
+            throw new InvalidOperationException("Movement segment completion is unavailable.");
+        CampaignActionCandidate? resolution = set.Candidates.OfType<CompleteMovementSegmentAction>().SingleOrDefault();
+        resolution ??= set.Candidates.OfType<StopElementMovementAction>().SingleOrDefault();
+        if (resolution is null)
+            throw new InvalidOperationException("Movement segment completion is unavailable.");
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", 1);
+            writer.WriteString("campaignId", set.CampaignId);
+            writer.WriteString("positionId", set.PositionId);
+            writer.WriteStartArray("choices");
+            writer.WriteStartObject();
+            switch (resolution)
+            {
+                case CompleteMovementSegmentAction:
+                    writer.WriteString("kind", "complete-movement-segment");
+                    break;
+                case StopElementMovementAction stop:
+                    writer.WriteString("kind", "stop-element-movement");
+                    writer.WriteString("routeId", stop.RouteId);
+                    break;
+            }
+            writer.WriteEndObject();
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+        return new CampaignHostCycleControlOwnerDraft(set.StateVersion, stream.ToArray(),
+            [resolution.ActionId]);
+    }
+
+    public static ExerciseStepResult SubmitMovementSegmentCompletion(ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QueryMovementSegmentCompletionOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.Submit(session, submission);
+    }
+
     // First acting side's own Reserve Designation (land.phase.reserve-designation, Operation
     // Stage 1): the same gap class as ActFirst/ActLast -- Core already computes and
     // replay-verifies DesignateReserveAction/CompleteReserveDesignationAction
@@ -3150,6 +3239,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactInitiativeOrderKind
                 or CampaignHostAcceptedStep.ContactReserveDesignationKind
                 or CampaignHostAcceptedStep.ContactReactionKind
+                or CampaignHostAcceptedStep.ContactMovementSegmentCompletionKind
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
                 or CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind
@@ -3412,6 +3502,8 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.ContactReserveDesignationKind => SubmitReserveDesignation(
                     session, submission),
                 CampaignHostAcceptedStep.ContactReactionKind => SubmitReaction(
+                    session, submission),
+                CampaignHostAcceptedStep.ContactMovementSegmentCompletionKind => SubmitMovementSegmentCompletion(
                     session, submission),
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
                 CampaignHostAcceptedStep.NativeSecondCombatNoAttackKind => CompleteSecondCombatNoAttack(session),
@@ -4067,6 +4159,7 @@ public sealed class CampaignHostAcceptedStep
     public const int ContactInitiativeOrderContractVersion = 48;
     public const int ContactReserveDesignationContractVersion = 49;
     public const int ContactReactionContractVersion = 50;
+    public const int ContactMovementSegmentCompletionContractVersion = 51;
     public const int ContactCombatSelectionContractVersion = 3;
     public const int NativeCombatNoAttackContractVersion = 4;
     public const int NativeCombatBarrageContractVersion = 5;
@@ -4189,6 +4282,7 @@ public sealed class CampaignHostAcceptedStep
     public const string ContactInitiativeOrderKind = "contact-initiative-order";
     public const string ContactReserveDesignationKind = "contact-reserve-designation";
     public const string ContactReactionKind = "contact-reaction";
+    public const string ContactMovementSegmentCompletionKind = "contact-movement-segment-completion";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
     public const string NativeCombatNoAttackKind = "native-combat-no-attack";
     public const string NativeSecondCombatNoAttackKind = "native-second-combat-no-attack";
@@ -4312,7 +4406,7 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or ContactCombatSelectionKind
+        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or ContactMovementSegmentCompletionKind or ContactCombatSelectionKind
                 or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
@@ -4425,6 +4519,7 @@ public sealed class CampaignHostAcceptedStep
             ContactInitiativeOrderKind => ContactInitiativeOrderContractVersion,
             ContactReserveDesignationKind => ContactReserveDesignationContractVersion,
             ContactReactionKind => ContactReactionContractVersion,
+            ContactMovementSegmentCompletionKind => ContactMovementSegmentCompletionContractVersion,
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
             ContactRbaDeclineKind => ContactRbaDeclineContractVersion,
             ContactRbaMoveKind => ContactRbaMoveContractVersion,
