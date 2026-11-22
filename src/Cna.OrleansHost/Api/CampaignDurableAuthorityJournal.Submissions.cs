@@ -35,6 +35,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, ReactionOpeningKey, openingRevision, publicActionRef,
             CampaignOwnerOpeningKind.Reaction);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerMovementSegmentCompletion(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, MovementSegmentCompletionOpeningKey, openingRevision, publicActionRef,
+            CampaignOwnerOpeningKind.MovementSegmentCompletion);
+
     internal CampaignOwnerSubmissionResult SubmitPregameAxisSupply(CampaignSeatCredential credential,
         long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, PregameAxisSupplyOpeningKey, openingRevision, publicActionRef,
@@ -557,6 +562,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 currentVisible = draft.VisibleBytes;
                 actionIds = draft.PrivateActionIds.ToArray();
             }
+            else if (kind == CampaignOwnerOpeningKind.MovementSegmentCompletion)
+            {
+                var draft = CampaignHostAdapter.QueryMovementSegmentCompletionOwnerDraft(head.Session, seat.Audience);
+                currentVisible = draft.VisibleBytes;
+                actionIds = draft.PrivateActionIds.ToArray();
+            }
             else if (kind == CampaignOwnerOpeningKind.PostCombatPass)
             {
                 var draft = CampaignHostAdapter.QueryPostCombatPassOwnerDraft(head.Session, seat.Audience);
@@ -720,6 +731,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitReserveDesignation(head.Session, submission),
             CampaignOwnerOpeningKind.Reaction =>
                 CampaignHostAdapter.SubmitReaction(head.Session, submission),
+            CampaignOwnerOpeningKind.MovementSegmentCompletion =>
+                CampaignHostAdapter.SubmitMovementSegmentCompletion(head.Session, submission),
             CampaignOwnerOpeningKind.PostCombatPass =>
                 CampaignHostAdapter.SubmitPostCombatPass(head.Session, submission),
             CampaignOwnerOpeningKind.SecondReserve =>
@@ -827,7 +840,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
             UpdateSelectionRound(connection, transaction, selectionRound with { Status = "completed" });
             RecordRoundClosed(CampaignRoundKind.Selection);
         }
-        if (kind == CampaignOwnerOpeningKind.Movement)
+        // Movement Segment Completion is the first side's own analog of SecondMovementCompletion
+        // (#394 gap 4's own precedent below): completing it, like completing an ordinary
+        // Movement cut, opens the way to a Combat Selection round, so it needs this exact same
+        // round-initialization call -- not just the dedicated MoveElementAction/
+        // StopElementMovementAction path (CampaignOwnerOpeningKind.Movement) completing a move.
+        if (kind is CampaignOwnerOpeningKind.Movement or CampaignOwnerOpeningKind.MovementSegmentCompletion)
             TryInitializeSelectionRound(connection, transaction, acceptedHead, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
         {
@@ -1039,6 +1057,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         CampaignOwnerOpeningKind.InitiativeOrder => CampaignHostAcceptedStep.ContactInitiativeOrderKind,
         CampaignOwnerOpeningKind.ReserveDesignation => CampaignHostAcceptedStep.ContactReserveDesignationKind,
         CampaignOwnerOpeningKind.Reaction => CampaignHostAcceptedStep.ContactReactionKind,
+        CampaignOwnerOpeningKind.MovementSegmentCompletion => CampaignHostAcceptedStep.ContactMovementSegmentCompletionKind,
         CampaignOwnerOpeningKind.CombatSelection => CampaignHostAcceptedStep.ContactCombatSelectionKind,
         CampaignOwnerOpeningKind.RetreatBeforeAssault => CampaignHostAcceptedStep.ContactRbaDeclineKind,
         CampaignOwnerOpeningKind.ForceAssignment => CampaignHostAcceptedStep.ContactForceSealKind,

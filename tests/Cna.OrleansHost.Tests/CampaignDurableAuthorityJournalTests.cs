@@ -2025,6 +2025,62 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             return new OwnerHttpHarness(app, silo, client, campaignId);
         }
 
+        // Real outward HTTP API campaign creation (POST /api/v2/campaigns/), not a direct
+        // journal.CreateCampaign shortcut -- the actual boundary a real operator/setup flow
+        // crosses. Asserts 201 Created; the body is just {contractVersion, campaignId}.
+        internal async Task CreateCampaign(CampaignCreationRequest request,
+            CampaignDecisionTimingConfigurationV1 timing, string operatorSecret)
+        {
+            using var timingJson = JsonDocument.Parse(timing.SerializeCanonical());
+            var body = JsonSerializer.Serialize(new
+            {
+                contractVersion = 2,
+                campaignId = request.CampaignId,
+                rulesetHash = request.RulesetHash,
+                seed = request.Seed,
+                setupId = request.SetupId,
+                setupHash = request.SetupHash,
+                contentPackId = request.ContentPackId,
+                contentHash = request.ContentHash,
+                scenarioId = request.ScenarioId,
+                timing = timingJson.RootElement,
+            });
+            using var message = new HttpRequestMessage(HttpMethod.Post, $"/api/v2/campaigns/")
+            { Content = new StringContent(body, Encoding.UTF8, "application/json") };
+            message.Headers.Add("X-Sandtable-Operator", operatorSecret);
+            using var response = await client.SendAsync(message, TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        }
+
+        // Real outward HTTP API seat issuance + redemption (POST /grants/{audience} then
+        // POST /seats), not journal.IssueSeatGrant/RedeemSeatGrant directly.
+        internal async Task<CampaignSeatCredential> IssueAndRedeemSeat(
+            CampaignActionAudience audience, string operatorSecret)
+        {
+            var side = audience == CampaignActionAudience.Axis ? "axis" : "commonwealth";
+            using var grantMessage = new HttpRequestMessage(HttpMethod.Post,
+                $"/api/v2/campaigns/{campaignId}/grants/{side}")
+            { Content = new StringContent("{}", Encoding.UTF8, "application/json") };
+            grantMessage.Headers.Add("X-Sandtable-Operator", operatorSecret);
+            using var grantResponse = await client.SendAsync(grantMessage, TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, grantResponse.StatusCode);
+            using var grant = JsonDocument.Parse(await grantResponse.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            var seatBody = "{\"contractVersion\":2,\"grant\":"
+                + grant.RootElement.GetProperty("grant").GetRawText() + "}";
+            using var seatResponse = await client.PostAsync($"/api/v2/campaigns/{campaignId}/seats",
+                new StringContent(seatBody, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, seatResponse.StatusCode);
+            using var credentialJson = JsonDocument.Parse(await seatResponse.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            var value = credentialJson.RootElement.GetProperty("credential");
+            return new CampaignSeatCredential(
+                value.GetProperty("campaignId").GetString()!, audience,
+                value.GetProperty("epoch").GetInt64(), value.GetProperty("secret").GetString()!,
+                value.GetProperty("expiresUnixMs").GetInt64());
+        }
+
         internal async Task Submit(CampaignSeatCredential credential, string actor,
             string openingStage, string actionStage, CampaignOwnerOpening expected,
             string reference)
