@@ -508,15 +508,388 @@ work — see Open Question 2.
 
 ---
 
+## Addendum (2026-11-22): the snapshot-representation fork, in concrete detail
+
+**Owner ruling received:** sequencing — start the multi-turn engine work now;
+Sprint 6/7 content-surface measurement does not need to be held for (resolves
+Open Question 6 below). The snapshot-representation fork (Open Question 1)
+is not ready to be ruled on yet; the owner asked for the concrete tradeoffs
+before deciding. This section is that detail. No code was written to produce
+it — same research-only discipline as the rest of this document. Both
+options below are compared against current `main` at `366126fc` (this
+document's own merged commit), not against a hypothetical.
+
+### Framing: what "Option 1" concretely means
+
+`CampaignSnapshotV11` is a single, versioned, sealed `record` type
+(`CurrentContractVersion = 11`). There would not literally be a new .NET
+type per stage (3 stages × 6 turns of distinct types would be absurd and
+nobody is proposing it). "Its own `CampaignSnapshotV11`-shaped type"
+concretely means one of:
+
+- **1a.** Widen the *existing* `CampaignSnapshotV11` type's validator
+  (`CampaignSnapshotV11Validator.RequireShape`) to accept any
+  `(GameTurn, OperationStage)` the rest of the system is prepared to produce,
+  without changing the record's shape at all — a validator-only change, no
+  new contract version.
+- **1b.** Freeze a new contract version (`CampaignSnapshotV12`, per this
+  project's own versioning convention — every prior contract-affecting
+  change in this file's history bumped a version number, e.g. V10 → V11)
+  that is structurally identical to V11 but whose validator is the widened
+  one from 1a.
+
+The distinction between 1a/1b doesn't change the consumer-impact analysis
+below (both still mean "the one canonical snapshot type now accepts a wider
+range of `(GameTurn, OperationStage)` values") — it only changes whether
+existing V11 history needs an explicit migration/compatibility story (1b) or
+not (1a, since nothing about already-accepted V11 bytes changes meaning).
+Given this project's own stated compatibility discipline ("old readers
+reject new contracts... preserve old admission and historical fixtures,"
+`combat-cycle-implementation-plan.md`), 1a is almost certainly the safer
+reading. The rest of this addendum evaluates "Option 1" as 1a unless noted.
+
+### Concrete consumer count for each option
+
+**Baseline, re-verified this pass:** `CampaignSnapshotV11` is referenced in
+exactly **75 files** project-wide: **40 files under `src/Cna.Core`** (142
+individual occurrences), **15 files under `tests/Cna.Core.Tests`** (55
+occurrences), and the remainder are historical design docs (not consumers).
+**Zero occurrences in `src/Cna.OrleansHost` and zero in
+`src/Cna.ExerciseRunner`** — confirmed by direct search, not inferred. Both
+the real Host and the Exercise Harness consume `ExerciseSession`/
+`CampaignExercises`'s `Query`/`Submit`/`Reconstruct` surface, never the
+snapshot type directly:
+
+- `IExerciseExecutionRuntime` (`src/Cna.ExerciseRunner/Execution/ExerciseExecutionRuntime.cs:54-68`)
+  exposes only `Begin`/`QueryCheckpoint`/`Query`/`Select`/`Submit`/
+  `Reconstruct` — none of these signatures mention `CampaignSnapshotV11`.
+- `CampaignHostAdapter.cs` (4,612 lines, in `src/Cna.Core/Hosting`) has only
+  **2** `OperationStage`-related occurrences in the entire file — it is a
+  thin pass-through onto `CampaignExercises`, not an independent source of
+  stage-hardcoding.
+
+**This means the real, load-bearing consumer surface for either option is
+entirely inside `Cna.Core`, and the Host/Harness need no changes under
+either option** — a materially smaller blast radius than "75 files" sounds
+like at first glance. The 40 `Cna.Core` files break down by role:
+
+| Role | Files (representative, not exhaustive) | Option 1 (widen validator) impact | Option 2 (extend native chain) impact |
+| --- | --- | --- | --- |
+| The type + its validator/admission | `CampaignSnapshotV11.cs`, `CampaignSnapshotV11Validator.cs`, `CampaignSnapshotV11Admission.cs` | **Must change** — this is the actual fork | Untouched |
+| Serialization | `CampaignSnapshotV11Serializer.cs` | Likely untouched (shape doesn't change under 1a) | Untouched |
+| Event projectors (build next snapshot from an event) | `CampaignV11Preamble.cs`, `CampaignV11MoveProjector.cs`, `CampaignV11BreakdownProjector.cs`, `CampaignElementMovedV3Factory.cs`, `CampaignReactingElementMovedV2Factory.cs`, `CampaignBreakdownStopResolvedFactory.cs`, `CampaignBreakdownLifecycleFactory.cs`, `CampaignCreationV10.cs`, `CampaignCreationExecution.cs` | **Each must be individually audited and very likely changed** — `CampaignV11Preamble.Create` alone hard-codes stage `1` at `CampaignV11Preamble.cs:41` and `:122`; this pattern needs checking per file, not assumed fixed by the validator change alone | Untouched — these projectors stay exactly as they are, frozen to Stage 1/Turn 1 forever, because Option 2 never asks them to represent anything else |
+| First-side Combat native classes keyed to V11 | `CampaignNativeCombatDecisionV12.cs`, `CampaignNativeCombatCustodyProjectionV25.cs`, `CampaignNativeCombatCustodyDispositionV25.cs`, `CampaignNativeCombatCustodyTimeoutV36.cs`, `CampaignNativeCombatSelectionTimeoutV38.cs`, `CampaignNativeReserveReleaseV27.cs`, `CampaignNativeCombatRetreatMovement.cs`, `CampaignNativePostRepeatRuntime.cs`, `CampaignNativeCombatSuccessorV26.cs`, `CampaignCombatSelectionFrame.cs`, `CampaignNativeRepeatAssaultRuntime.cs` (11 files) | Each takes/returns a `CampaignSnapshotV11` and would need auditing for stage-1 assumptions the same way `CampaignContactOwnerMovementCut.DeriveMovementOffers` does (Section 3) | Untouched if Option 2 also builds dedicated per-stage native classes for Combat (the likely shape, per Section 2's finding that this family already special-cases itself) |
+| Legal actions / observation derivation | `CampaignLegalActions.cs`, `CampaignCurrentActionExecution.cs`, `CampaignObservations.cs`, `CampaignObservationV7Projector.cs`, `CampaignContactJournal.cs`, `CampaignContactAdjacencySource.cs` | Must audit for stage-1 hardcoding (these files also appear in Section 3's 104-match `OperationStage` grep) | Untouched for Stage 1's own paths; Stage 2+ gets its own parallel derivation, same shape as the existing `CampaignContactOwnerMovementCut.ProjectSecondMovement`/`ProjectSecondCombatOwner` |
+| Session/orchestration | `ExerciseSession.cs`, `CampaignExercises.cs`, `CampaignCombatExerciseActions.cs`, `ExerciseCheckpoint.cs` | `Reconstruct`/`ReconstructOne`'s V11-rooted base case (the `chain.Count == 0` branch, `CampaignExercises.cs:7426`) stays as-is; no new branches needed since Option 1 doesn't add new native types | **Must add one new dispatcher branch per new native class** in both `Reconstruct` (`CampaignExercises.cs:7398-7435`) and `ReconstructOne` (`CampaignExercises.cs:8425-9434`) — mechanical, additive, confirmed by direct reading (see below) |
+| Hosting | `CampaignAudienceOutcomeSource.cs`, `CampaignHostAdapter.cs` | Thin pass-through; low direct impact either way | Thin pass-through; low direct impact either way |
+| Second-side bridge (already non-V11-rooted) | `CampaignNativeSecondCombatDecisionV47.cs`, `CampaignContactCombatSelectionCut.cs` (`ProjectSecondCombat`), `CampaignContactOwnerMovementCut.cs` (`ProjectSecondCombatOwner`) | Untouched (these already don't use V11 internally — they reference it only to assert they are NOT building one, per `ExerciseSession.cs:827-849`'s comment) | **This is the pattern to extend** — see enumeration below |
+
+**Concrete count, Option 1:** at minimum the 3 validator/admission files plus
+a stage-1-hardcoding audit of the ~9-file projector group and the ~6-file
+legal-action/observation group — **roughly 18 files with a near-certain
+required change**, plus an audit obligation (not necessarily a change) across
+the remaining ~13 Combat/session files, before a single Stage 2 mechanic can
+be implemented on top.
+
+**Concrete count, Option 2:** **zero existing files change.** Every file in
+the table above that's "untouched" stays byte-for-byte as it is. The work is
+additive: new files (new native classes, modeled on the 7 enumerated below)
+plus new `if`-branches appended to `Reconstruct`/`ReconstructOne`/`Query`/
+`Submit`'s existing dispatch chains.
+
+### DET-001/DET-002/REL-001 risk profile
+
+**Option 1 (widen `CampaignSnapshotV11`) carries real, non-additive replay
+risk.** `CampaignSnapshotV11Validator.RequireShape` is called from the
+`CampaignSnapshotV11` constructor itself (`CampaignSnapshotV11.cs:68`,
+`CampaignSnapshotV11Validator.RequireShape(this);`) — **every single V11
+snapshot ever constructed, including replaying all of the already-accepted
+Stage 1/Turn 1 history, runs through this exact method.** Widening it is not
+adding a new accepted case alongside the old ones in isolation; it is
+changing the one gate that *every* historical and future snapshot passes
+through. Three independent hard-coded `== 1` checks were found in this one
+method on this pass (`RequireShape`'s top-level `OperationStage != 1` check
+at `CampaignSnapshotV11Validator.cs:~15`, the `OperationStageOrders`/
+`OperationStageWeather` `Any(value => value.OperationStage != 1)` checks
+immediately after, and a third, independent, easy-to-miss one deeper in the
+same method: the `MovementEnded` marker check does
+`snapshot.OperationStageOrders.SingleOrDefault(value => value.GameTurn ==
+sequence.GameTurn && value.OperationStage == 1)` — a filter that would
+silently return the wrong (or no) order once more than one stage's orders
+can coexist in that list, unless it's also updated to filter by the
+*current* stage, not literally `1`). Missing even one of these three while
+widening would either wrongly reject valid Stage 2+ history or — the more
+dangerous failure mode — wrongly *accept* something that should have been
+rejected, which is exactly the shape of bug `#511`'s "two independent,
+incomplete step-kind allowlist copies" finding (frozen scope doc item 2')
+and the kind of defect DET-001/DET-002 exist to catch. **This is not purely
+additive**: it requires re-reasoning about, and re-verifying, every existing
+accepted-history invariant this validator currently enforces for Stage 1,
+to make sure widening the gate doesn't also loosen something that was
+coincidentally only true *because* Stage was pinned at 1 (the `ApplicableWeather`
+method's `snapshot.OperationStageWeather.Single()` call, used by Breakdown's
+weather-kind lookup, is one concrete example: it assumes exactly one weather
+record exists in the list at all times, which is only true today because
+only one stage's weather can ever be recorded; the moment a second stage's
+weather can coexist, `.Single()` needs to become a filtered lookup, or it
+throws on every post-Stage-1 Breakdown check). REL-001 ("snapshots are
+replay checkpoints") is directly implicated: a less-complete widening could
+produce a snapshot that replays to one state from the live event stream but
+to a different (or throws on) state when reconstructed from history through
+a slightly different, now-ambiguous validator path — exactly the class of
+bug the project's own discipline this session was built to catch.
+
+**Option 2 (extend the native chain) is genuinely additive for already-accepted
+history, confirmed by direct reading of the replay dispatcher.**
+`CampaignExercises.Reconstruct` (`CampaignExercises.cs:7398-7435`) walks
+backward through a `switch`-like chain of `is not null` checks
+(`CurrentSecondBreakdown`, `CurrentSecondMovementCompletion`,
+`CurrentSecondMove`, `CurrentSecondReserve`, `CurrentPostCombatPass`,
+`CurrentTruckConvoyPass`, each paired with its own predecessor field) down to
+the one case that isn't a native successor, which falls through to
+`ReconstructOne` rooted in `CampaignSnapshotV11` — and `ReconstructOne`
+itself (`CampaignExercises.cs:8425-9434`) has the exact same shape: one `if
+(completedSession.CurrentXxx is { } ...)` block per native type, each
+independently replaying via that type's own `Create`, comparing serialized
+bytes, and returning. **Confirmed directly in source (not inferred): these
+blocks do not share mutable state or fall-through logic with each other** —
+each is a self-contained `if` with its own `try`/`catch` and `return`. Adding
+a Stage-2-first-side-Movement equivalent means adding one more such block,
+modeled on the `CurrentSecondMove` block already there, which does not
+require touching the five other existing blocks or the V11-rooted base case.
+**The realistic risk under Option 2 is not "it breaks Stage 1 history"** (it
+structurally cannot, since nothing about the existing blocks changes) **but
+"the new block itself has a replay bug the first time it's written"** — the
+same class of risk that `#511`'s already-encountered "two independent,
+incomplete step-kind allowlist copies" bug represents, which is a real risk
+but a *contained, per-occurrence* one, caught by this project's own
+established practice of an immediate end-to-end HTTP+cold-replay test per
+new native class (exactly as done for every `V4x` class shipped this
+session). Net: **Option 1's risk is concentrated in one shared,
+load-bearing gate that all history depends on; Option 2's risk is
+distributed into N independent, individually-testable additions that cannot
+regress each other.** This matches, and sharpens with a direct code
+citation, the qualitative judgment in Section 2's "Net verdict."
+
+One caveat that applies to **both** options equally, found during this pass
+and not previously flagged: every native-chain `Create` method inspected
+(`CampaignNativeSecondReserveV43.Create`, `CampaignNativeSecondMoveV44.Create`,
+`CampaignNativeSecondMovementCompletedV45.Create`) and `ReconstructOne`'s
+calls into them take their `gameTurn` value from
+`predecessor.CurrentSnapshot.Setup.InitialGameTurn` — a field fixed forever
+at campaign creation — rather than from a tracked "current game turn."
+`CampaignSnapshotV11Validator.RequireShape` enforces the identical
+assumption independently (`sequence.GameTurn != snapshot.Setup.InitialGameTurn`).
+**This is a third, turn-specific hardcoding, orthogonal to the
+stage-specific one, and it is shared infrastructure both options depend on**
+— neither option avoids needing to resolve "what does `gameTurn` mean once
+the campaign has advanced past its initial turn" before Turn 2 work (not
+just Stage 2) can proceed. Flagging this now because it wasn't visible from
+the Section 1/2 analysis alone and affects the Checkpoint `MTS-E` (Turns
+2-6) estimate regardless of which fork is chosen here.
+
+### Enumerating the "built for exactly one occurrence" spots (as requested)
+
+Per the task's example (`ProjectSecondMovement` requiring `ActorRole ==
+LandActorRole.SecondActingSide` specifically), a direct search for
+`LandActorRole.SecondActingSide` across `src/Cna.Core` was run and each hit
+classified by whether the containing method is **hardcoded to "second"
+specifically** (cost: a new, differently-named method needed per future
+occurrence) or **already side-generic** (cost: likely zero — same method
+reusable as-is once fed a different position):
+
+**Hardcoded to exactly "second acting side" (7 spots — these are the ones
+that would need a same-shaped sibling per new occurrence under Option 2):**
+
+1. `CampaignNativeSecondReserveV43.Create` (`CampaignNativeSecondReserveV43.cs:37`)
+   — requires `position.ActorRole != LandActorRole.SecondActingSide` to
+   reject; also requires its *successor* position's `ActorRole ==
+   SecondActingSide` at `:46`.
+2. `CampaignNativeSecondMoveV44.Source` (`CampaignNativeSecondMoveV44.cs:41`)
+   — same shape, on the Movement owner-opening.
+3. `CampaignNativeSecondMovementCompletedV45.Create`
+   (`CampaignNativeSecondMovementCompletedV45.cs:32`) — requires the
+   *successor* position's `ActorRole == SecondActingSide`.
+4. `CampaignNativeSecondBreakdownV46.Create`
+   (`CampaignNativeSecondBreakdownV46.cs:70,79`) — requires both the
+   Movement position *and* its Combat successor to be `SecondActingSide`.
+5. `CampaignContactOwnerMovementCut.ProjectSecondMovement`
+   (`CampaignContactOwnerMovementCut.cs:73`) — the citation already in
+   Section 3.
+6. `CampaignContactOwnerMovementCut.ProjectSecondCombatOwner`
+   (`CampaignContactOwnerMovementCut.cs:121`) — same file, Combat variant.
+7. `CampaignReactionWindow`'s constructor identity check
+   (`CampaignReactionWindow.cs:229`) — a narrower, Reaction-specific version
+   of the same pattern, gating on `CampaignNativeSecondMoveV44`'s contract
+   version specifically.
+
+**Already side-generic (6 spots — good news: this is existing, working
+prior art for Option 2's "generalize" direction, not a second problem to
+solve):**
+
+1. `CampaignNativePostCombatPassV42.Create` — takes `LandSide side`
+   directly and checks `position.ActorRole is not (FirstActingSide or
+   SecondActingSide)`, i.e. accepts either (Section 3's correction).
+2. `CampaignNativeCycleControlV28.Create` — same `is not (FirstActingSide or
+   SecondActingSide)` shape; the one side-specific behavior (rejecting
+   "Repeat" for the second side) is an explicit, commented, owner-ruled
+   carve-out (`CampaignNativeCycleControlV28.cs`, "Owner ruling 2026-11-21"),
+   not a structural inability to represent the second side.
+3. `CampaignReactionIdentity.CampaignSequenceV5Guards.RequireMaterializedMovement`
+   /`RequireCurrentPosition` — both accept either role generically,
+   resolving the correct side via the `CampaignOperationStageOrder`'s
+   `FirstSide`/`SecondSide` fields rather than hardcoding one.
+4. `CampaignCombatResultRelease.Derive` / `CampaignCombatCycleMovement.Derive`
+   / `CampaignCombatReserveReleaseCodec.Validate` — all three resolve
+   `LandActorRole` from a `PlayerPhaseSlot` *string* field (`"first-acting-side"`
+   / `"second-acting-side"`) carried on their own cycle/boundary record,
+   rather than hardcoding a role — a role-as-data pattern, not role-as-code.
+5. `CampaignSourceTurnAuthority.ResolvePhasingSide` — resolves either role
+   generically from `StageOneFirstSide`.
+6. `CampaignNativeReserveReleaseStateV27.SecondSidePosition` — this one
+   *is* second-side-named specifically, but it's a narrow, self-contained
+   helper (13 lines) inside a class that otherwise already handles both
+   sides via the `PlayerPhaseSlot` pattern above — i.e. the "hardcoded" part
+   here is small and already surrounded by generic infrastructure.
+
+**What this enumeration actually shows:** the project's own pattern visibly
+*evolved* over the course of the `#394` work, from "write a dedicated
+`Second*`-named type per owner-opening decision" (spots 1-7, all from the
+earlier `V43`-`V47` wave — the actual player-facing decision points: Reserve,
+Move, Movement-completion, Breakdown, Combat selection) to "take the role/side
+as data and branch generically" (spots 1-6 in the second list, mostly the
+*later*-landed continuation/infrastructure pieces: Post-Combat Pass, Cycle
+Control, Reaction identity, Reserve Release derivation). **The
+"hardcoded" cost under Option 2 is concentrated specifically in the 7
+player-decision-point classes, not spread evenly across the whole native
+chain** — and there is already-proven, working prior art inside this exact
+codebase for how to make a decision-point class side/role-generic (the
+`PlayerPhaseSlot`-as-data pattern), it just hasn't been applied yet to the 7
+decision-point classes themselves.
+
+### How much of the native-chain generalization carries over per phase
+
+Given the above, a concrete estimate for Section 4's Checkpoints:
+
+- **If Option 2 is built "hand-build it" style** (repeating the `#394`
+  wave's original pattern literally, i.e. naming new types per occurrence
+  — `CampaignNativeStage2FirstMoveVxx`, `CampaignNativeStage2SecondMoveVxx`,
+  etc.): **zero carryover between phases for the 7 decision-point classes.**
+  Each of `MTS-TASK-005`/`006` (Stage 2 Movement/Breakdown/Combat, both
+  sides) and `MTS-TASK-009` (Stage 3, same) would need its own full set of
+  Reserve/Move/MovementCompletion/Breakdown/CombatSelection classes, each
+  with its own `Reconstruct`/`ReconstructOne` dispatcher branch. The
+  continuation/infrastructure pieces (Post-Combat Pass, Cycle Control,
+  Reaction identity, Reserve Release derivation) **do carry over for free
+  today**, because they're already side-generic and most of them
+  (`CampaignNativePostCombatPassV42`, `CampaignNativeCycleControlV28`) key
+  off the actual `LandSequencePosition` passed in via `Cna1979LandSequenceV4.CreateTurn`/`GetNext`
+  rather than a hardcoded stage number — confirmed by re-reading
+  `CampaignNativePostCombatPassV42.Create` (Section 3): it derives `position`
+  and `next` generically from whatever `positionId`/`gameTurn` it's given.
+- **If Option 2 is built "generalize now" style** (applying the
+  `PlayerPhaseSlot`-as-data pattern to the 7 decision-point classes before
+  Stage 2 work starts, i.e. a `MTS-TASK-001b` that refactors
+  `CampaignNativeSecondReserveV43`-style classes into side/stage-generic
+  ones first): the continuation pieces need no work (already generic); the
+  7 decision-point classes become a one-time refactor cost paid once, and
+  `MTS-TASK-005/006/009` collapse from "write N new classes" to "call the
+  now-generic classes with a different position" — much closer to the
+  additive, low-risk shape Option 2 already has for the continuation
+  pieces. This is the generalize-the-native-chain analog of Option 1's
+  validator-widening, but confined to 7 already-identified, already-small
+  classes instead of a shared gate every snapshot passes through — a
+  meaningfully smaller and more contained generalization task than Option
+  1's.
+
+### Hybrid option (not previously explored)
+
+**Prove the "generalize now" native-chain refactor on Stage 2 only, before
+deciding whether to carry it through Stages 3 and Turns 2-6.** Concretely:
+do `MTS-TASK-005`/`006` (Stage 2 Movement/Breakdown/Combat) once, the
+"generalize now" way — refactor the 7 decision-point classes to take
+side/stage as data (the `PlayerPhaseSlot` pattern already proven out
+elsewhere in this exact codebase) rather than naming a new type — and treat
+that as the real-world proof of whether the pattern generalizes cleanly a
+*second* time (it has, so far, only ever been generalized once, for
+Post-Combat Pass/Cycle Control/Reaction identity, none of which are the
+decision-point classes themselves). If it holds up cleanly for Stage 2, the
+same generalized classes should carry forward into Stage 3 and Turns 2-6
+largely for free, collapsing most of Checkpoint `MTS-E`'s combinatorial
+repetition. If it does not hold up cleanly — if Stage 2's actual mechanics
+turn out to need something the `PlayerPhaseSlot` pattern can't express
+generically — that's discovered on the smallest possible slice (one stage),
+not after committing the pattern across 3 stages × 6 turns, and the fallback
+is simply to finish Stage 2 "hand-build it" style and reconsider before
+Stage 3. This hybrid does not touch `CampaignSnapshotV11` or its validator
+at all, so it carries none of Option 1's shared-gate replay risk regardless
+of how it resolves, and it turns "should we generalize the native chain" from
+a single all-or-nothing bet into a one-stage experiment with a defined
+fallback.
+
+### Recommendation
+
+**Option 2 (permanently generalize the native `(CampaignWorldSnapshotV6,
+LandSequencePosition)` chain), via the hybrid sequencing above, not Option
+1.** Reasoning, in order of weight:
+
+1. **Risk shape is the deciding factor, not effort.** Option 1 requires
+   changing a single gate (`CampaignSnapshotV11Validator.RequireShape`) that
+   every unit of already-accepted Stage 1/Turn 1 history is replayed
+   through, with at least three independently-hardcoded `== 1` checks found
+   in that one method and at least one further `.Single()`-shaped latent
+   assumption (`ApplicableWeather`) that only happens to be safe today
+   *because* Stage is pinned at 1. That is a direct REL-001/DET-001 exposure
+   on the one thing this project has spent the most verification effort
+   protecting all session. Option 2's risk is structurally contained to new,
+   independently-testable, per-occurrence additions that cannot regress
+   already-accepted history, confirmed by direct reading of `Reconstruct`/
+   `ReconstructOne`'s dispatch shape, not asserted.
+2. **Option 2 already has more real prior art in this codebase.** Six of
+   the thirteen `SecondActingSide`-touching spots found this pass are
+   already side-generic, proving the pattern Option 2 needs (role-as-data,
+   keyed off the real `LandSequencePosition`) already works here for the
+   continuation/infrastructure layer. Option 1 has no comparable prior art
+   for "widen `CampaignSnapshotV11`'s validity envelope safely" — it would
+   be a first-of-its-kind change to the single most load-bearing gate in the
+   replay pipeline.
+3. **The consumer blast radius is genuinely smaller for Option 2.** Roughly
+   18 files need a near-certain change under Option 1 before any Stage 2
+   mechanic can ship, against a well-defined audit obligation on another
+   13; Option 2 changes zero existing files.
+4. **This does not foreclose Option 1 later.** Nothing about building Stage
+   2/3 on a generalized native chain forecloses a future decision to widen
+   `CampaignSnapshotV11` for some other reason (e.g. if the native chain
+   itself starts accumulating its own version of the "92-field, append-only"
+   problem `ExerciseSession` already has — a real possibility worth
+   watching for, not confirmed, given the chain's own classes already number
+   in the double digits). It is the lower-risk default to start from, not
+   claimed to be unconditionally correct forever.
+
+This recommendation is this document's own synthesis, offered because the
+owner asked for one — it is not a unilateral decision on the fork itself.
+The owner may weigh the "Option 1 is more conventional/less surprising
+architecturally" consideration differently, and nothing above should be
+read as foreclosing that judgment call.
+
+---
+
 ## 5. Open design questions for the owner
 
 These are the genuine forks found during this pass — places where more than
 one reasonable answer exists, or where a DET-001/DET-002/EVT-001/REL-001
 ruling is needed before implementation. None are guessed at below.
 
+**Owner ruling received 2026-11-22:** sequencing (Open Question 6) —
+start the multi-turn engine work now; Sprint 6/7 content-surface measurement
+does not need to be held for. Open Question 1 is addressed in detail in the
+new Addendum section above, with a recommendation; still awaiting the
+owner's actual ruling.
+
 **1. Does Stage 2+ get its own `CampaignSnapshotV11`-shaped type, or does
 everything past Stage 1 move permanently to the native `(World, Position)`
-chain?**
+chain?** **See the Addendum above for the concrete tradeoff detail and a
+recommendation.**
 Section 2 found that the project's actual, working answer to "mechanic
 happens again" has so far always been "bypass `CampaignSnapshotV11`, carry
 `(CampaignWorldSnapshotV6, LandSequencePosition)` directly." That answer
