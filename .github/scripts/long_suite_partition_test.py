@@ -153,6 +153,47 @@ class SupervisorTests(unittest.TestCase):
             self.assertTrue(all(status['exit_code'] == 0 for status in statuses.values()))
             self.assertTrue((root.parent / 'long-01-resource.json').exists())
 
+    def test_four_lanes_never_run_more_than_three_processes_at_once(self):
+        """Regression for the long-01 CI shard failure: with all four lanes
+        populated, true concurrency must stay at MAX_CONCURRENT_LANES (3), not
+        4 - CI's hosted runner tripped its 3GiB memory reserve when all four
+        lanes' heavy rows briefly overlapped (abort_reason: "Available memory
+        below 3GiB reserve", peak_aggregate_rss_bytes ~10.8GiB of ~15.3GiB
+        physical). Each synthetic lane here has exactly one row (32 bins / 32
+        lanes), so a concurrently-running fourth process is directly observed,
+        not inferred from timing."""
+        import os
+        import sys
+        from unittest import mock
+        import ci_group_runner
+        snapshot = {'platform': 'Darwin', 'physical_memory_bytes': 16 * 2**30, 'effective_memory_limit_bytes': 16 * 2**30, 'memory_available_bytes': 12 * 2**30, 'effective_cpu_count': 4}
+        plan = suites.make_plan(self.rows, self.weights)
+        self.assertEqual(4, sum(1 for entry in plan['groups'].values() if entry['job'] == 'long-01'))
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.object(ci_group_runner, 'resource_snapshot', return_value=snapshot):
+            root = Path(temporary) / 'groups'
+            markers = Path(temporary) / 'markers'
+            peaks_dir = Path(temporary) / 'peaks'
+            markers.mkdir()
+            peaks_dir.mkdir()
+            script = (
+                "import os, sys, time\n"
+                "marker_dir, peak_dir = sys.argv[1], sys.argv[2]\n"
+                "pid_file = os.path.join(marker_dir, str(os.getpid()))\n"
+                "open(pid_file, 'w').close()\n"
+                "time.sleep(0.3)\n"
+                "count = len(os.listdir(marker_dir))\n"
+                "open(os.path.join(peak_dir, 'peak-' + str(count)), 'w').close()\n"
+                "time.sleep(0.1)\n"
+                "os.remove(pid_file)\n"
+            )
+            command_builder = lambda *_: [sys.executable, '-c', script, str(markers), str(peaks_dir)]
+            statuses = suites.run_suite_job(plan, 'long-01', root, {}, '/bin/not-used.dll', 10, command_builder=command_builder)
+            self.assertTrue(all(status['exit_code'] == 0 and not status['cancelled'] for status in statuses.values()))
+            peaks = [int(name.split('-', 1)[1]) for name in os.listdir(peaks_dir) if name.startswith('peak-')]
+            self.assertTrue(peaks)
+            self.assertLessEqual(max(peaks), suites.MAX_CONCURRENT_LANES)
+            self.assertEqual(suites.MAX_CONCURRENT_LANES, max(peaks), 'test is not exercising full concurrency; strengthen it')
+
     def test_failure_and_stale_outputs_fail_closed(self):
         import sys
         from unittest import mock

@@ -133,6 +133,17 @@ def verify_process(group, entry, directory, binding, expected_plan_sha256):
 LONG_JOBS = tuple(f'long-{index:02}' for index in range(1, 9))
 FAST_JOBS = tuple(f'fast-{index:02}' for index in range(1, 5))
 
+# Lanes are still numbered/allocated 1-4 (the plan/weights digest is unaffected),
+# but at most this many run truly concurrently. CI's hosted runner measured
+# peak_aggregate_rss_bytes ~10.8GiB / physical_memory_bytes ~15.3GiB when all
+# four lanes' GrazianiSourceAuthorityTests rows briefly overlapped, driving
+# memory_available_bytes under the 3GiB runtime reserve and tripping
+# ResourceGuard (abort_reason: "Available memory below 3GiB reserve") - not a
+# timeout (720s cap untouched) and not a real test failure. Capping true
+# concurrency at 3 keeps the same lane allocation but removes the one window
+# where all four heavy rows ran at once.
+MAX_CONCURRENT_LANES = 3
+
 
 def run_suite_job(plan, job, root, binding, binary, timeout_seconds=720, command_builder=execution_command):
     from concurrent.futures import ThreadPoolExecutor
@@ -176,7 +187,7 @@ def run_suite_job(plan, job, root, binding, binary, timeout_seconds=720, command
     statuses = {}
     try:
         guard.start()
-        with ThreadPoolExecutor(max_workers=4) as workers:
+        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_LANES) as workers:
             futures = [workers.submit(lane, number) for number in range(1, 5)]
             for future in futures: statuses.update(future.result())
         require(set(statuses) == set(selected) and not cancellation.is_set(), 'Failed/cancelled/incomplete suite process set')
