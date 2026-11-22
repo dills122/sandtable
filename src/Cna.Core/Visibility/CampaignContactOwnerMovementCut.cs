@@ -60,6 +60,14 @@ internal sealed record CampaignContactOwnerMovementCut(
             Array.AsReadOnly(offers));
     }
 
+    // MTS-A (2026-11-22, docs/work/plans/2026-11-22-multi-turn-multi-stage-scoping.md):
+    // generalized from "ActorRole != SecondActingSide" to the FirstActingSide-or-
+    // SecondActingSide shape already proven by CampaignNativePostCombatPassV42/
+    // CampaignNativeCycleControlV28 -- this was never actually tied to "second"
+    // specifically, only to acting at all. Stage 2+ needs both acting sides on
+    // this native path, since CampaignSnapshotV11 stays Stage 1/Turn 1-only per
+    // the owner's Option-2 ruling. Side/position agreement (position.ActiveSide
+    // != side, two lines below) is unchanged and still rejects a mismatched pair.
     internal static CampaignContactOwnerMovementCut ProjectSecondMovement(
         CampaignWorldSnapshotV6 world, LandSequencePosition position, CampaignContentContext context,
         CampaignContactJournal contacts, LandSide side, string actingElementId)
@@ -70,7 +78,8 @@ internal sealed record CampaignContactOwnerMovementCut(
         ArgumentNullException.ThrowIfNull(contacts);
         ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
         if (context.ArtifactV6 is not { } artifact || !Enum.IsDefined(side)
-            || position.ActorRole != LandActorRole.SecondActingSide || position.ActiveSide != side
+            || position.ActorRole is not (LandActorRole.FirstActingSide or LandActorRole.SecondActingSide)
+            || position.ActiveSide != side
             || position.SegmentId != LandSegmentIds.Movement
             || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
             throw new ArgumentException("Second Movement requires a valid owner World and position.");
@@ -108,6 +117,8 @@ internal sealed record CampaignContactOwnerMovementCut(
     // same reason (no CampaignSnapshotV11 can represent this position; see
     // CampaignNativeSecondCombatDecisionV47's remarks). MovementOffers is
     // irrelevant to a Combat cut and left empty.
+    // MTS-A (2026-11-22): generalized to FirstActingSide-or-SecondActingSide,
+    // same reasoning as ProjectSecondMovement above.
     internal static CampaignContactOwnerMovementCut ProjectSecondCombatOwner(
         CampaignWorldSnapshotV6 world, LandSequencePosition position, CampaignContentContext context,
         CampaignContactJournal contacts, LandSide side, string actingElementId)
@@ -118,7 +129,8 @@ internal sealed record CampaignContactOwnerMovementCut(
         ArgumentNullException.ThrowIfNull(contacts);
         ArgumentException.ThrowIfNullOrWhiteSpace(actingElementId);
         if (context.ArtifactV6 is not { } artifact || !Enum.IsDefined(side)
-            || position.ActorRole != LandActorRole.SecondActingSide || position.ActiveSide != side
+            || position.ActorRole is not (LandActorRole.FirstActingSide or LandActorRole.SecondActingSide)
+            || position.ActiveSide != side
             || position.SegmentId != LandSegmentIds.Combat || position.StepId != LandStepIds.PositionDetermination
             || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
             throw new ArgumentException("Second Combat selection requires a valid owner World and position.");

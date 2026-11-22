@@ -226,7 +226,13 @@ internal sealed record CampaignReactionWindow
             || (reactingPosition.SuspendedMovementPosition.ContractVersion == Cna1979LandSequenceV4.ContractVersion
                 && triggerAuthority.MoveContractVersion != 3
                 && (triggerAuthority.MoveContractVersion != CampaignNativeSecondMoveV44.CurrentContractVersion
-                    || reactingPosition.SuspendedMovementPosition.ActorRole != LandActorRole.SecondActingSide)))
+                    // MTS-A (2026-11-22): generalized from "must be SecondActingSide"
+                    // to "must be an acting side at all" -- this is a contract-version
+                    // pairing sanity check, not an assertion about which side triggered
+                    // it, and CampaignNativeSecondMoveV44.Source now accepts either
+                    // acting role (see its own comment).
+                    || reactingPosition.SuspendedMovementPosition.ActorRole is not
+                        (LandActorRole.FirstActingSide or LandActorRole.SecondActingSide))))
         {
             throw new ArgumentException("Reaction position and triggering move contracts must belong to the same version set.");
         }

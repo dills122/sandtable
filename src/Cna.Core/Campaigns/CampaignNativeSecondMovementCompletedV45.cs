@@ -28,8 +28,14 @@ internal sealed record CampaignNativeSecondMovementCompletedV45(
         var catalogPosition = Cna1979LandSequenceV4.CreateTurn(gameTurn)
             .Single(value => value.PositionId == position.PositionId);
         var next = Cna1979LandSequenceV4.GetNext(catalogPosition);
+        // MTS-A (2026-11-22): generalized from a hardcoded SecondActingSide check
+        // to "the same acting role Source already validated for `position`" --
+        // a side-block's acting role is constant across its own Movement ->
+        // Breakdown transition (Cna1979LandSequence.AddPlayerPhase passes one
+        // actorRole through the whole block), so this is not a new assumption,
+        // just no longer hardcoded to "second" specifically.
         if (next.SegmentId != LandSegmentIds.BreakdownDetermination
-            || next.ActorRole != LandActorRole.SecondActingSide)
+            || next.ActorRole != position.ActorRole)
             throw new InvalidOperationException("Movement must lead to the second-side Breakdown segment.");
         return new(CurrentContractVersion, campaignId, contactVersion,
             "sha256:" + Convert.ToHexStringLower(SHA256.HashData(CampaignCurrentEventSerializer.Serialize(predecessor))),

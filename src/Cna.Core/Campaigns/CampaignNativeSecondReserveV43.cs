@@ -34,8 +34,15 @@ internal sealed record CampaignNativeSecondReserveV43(
         var position = Cna1979LandSequenceV4.CreateTurn(gameTurn).Single(value => value.PositionId == positionId);
         var order = orders.Single(value => value.GameTurn == position.GameTurn && value.OperationStage == position.OperationStage);
         var priorHash = CampaignNativeCombatPaidWorldV22.Hash(world);
-        if (position.PhaseId != LandPhaseIds.ReserveDesignation || position.ActorRole != LandActorRole.SecondActingSide
-            || side != order.SecondSide || contactVersion != version || priorHash != expectedWorldHash
+        // MTS-A (2026-11-22): generalized from a hardcoded SecondActingSide/
+        // order.SecondSide pairing to CampaignOperationStageOrder.ActingRole --
+        // Stage 2+ needs this native path for whichever side acts first there
+        // too, since CampaignSnapshotV11 stays Stage 1/Turn 1-only (owner's
+        // Option-2 ruling). actingRole is null, and this rejects, whenever side
+        // is not one of this stage's two acting sides at all.
+        var actingRole = order.ActingRole(side);
+        if (position.PhaseId != LandPhaseIds.ReserveDesignation || actingRole is null || position.ActorRole != actingRole
+            || contactVersion != version || priorHash != expectedWorldHash
             || context.ArtifactV6 is not { } artifact || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
             throw new InvalidOperationException("Second Reserve requires its owner and settled World.");
         var next = position;
@@ -43,7 +50,7 @@ internal sealed record CampaignNativeSecondReserveV43(
         if (elementId is null)
         {
             next = Cna1979LandSequenceV4.GetNext(position);
-            if (next.SegmentId != LandSegmentIds.Movement || next.ActorRole != LandActorRole.SecondActingSide)
+            if (next.SegmentId != LandSegmentIds.Movement || next.ActorRole != actingRole)
                 throw new InvalidOperationException("Second Reserve completion needs its Movement successor.");
         }
         else
