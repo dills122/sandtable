@@ -75,9 +75,12 @@ In roughly the order they landed:
 
 ## What's still in flight as of writing this
 
-- `StopElementMovementAction` (the fifth gap) was approved and dispatched;
-  its PR had not landed yet when this summary was written. Check the repo's
-  open PRs for it — if it's not there, it's still running.
+Nothing. **#511 (merged, commit `788b5430`)** landed `StopElementMovementAction`
+alongside `CompleteMovementSegmentAction` — the two share one owner
+opening/HTTP stage since Core's dispatch makes them strictly either-or — and
+the end-to-end test that found this gap (`TwoRealHttpPlayersConductAnEntireOperationStageOne`)
+now passes with zero workaround. Every item in the scope doc is Done or
+explicitly out of scope. Zero open PRs as of this update.
 
 ## What's deliberately out of scope or deferred (not forgotten, tracked)
 
