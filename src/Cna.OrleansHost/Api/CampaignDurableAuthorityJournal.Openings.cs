@@ -524,6 +524,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     StringComparer.Ordinal).Select(value => value.ActionId).ToArray();
             }
         }
+        catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+        {
+            // FID-002: distinguishable from "no such opening" -- propagate as-is so the
+            // outward HTTP layer (CampaignDurableOutwardApi.cs) can surface an explicit
+            // rule-not-implemented response instead of folding a real, open decision into
+            // the generic "unavailable" case below.
+            throw;
+        }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             throw new InvalidOperationException("No owner opening is available at this cut.");

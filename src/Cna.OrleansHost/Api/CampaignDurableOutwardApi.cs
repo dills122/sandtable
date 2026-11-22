@@ -4,6 +4,7 @@ using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.OrleansHost.Campaigns;
 using Orleans;
@@ -927,6 +928,11 @@ internal static class CampaignDurableOutwardApi
         catch (InvalidContentPackException) { return Error(400, "invalid-request"); }
         catch (KeyNotFoundException) { return Error(400, "invalid-request"); }
         catch (FormatException) { return Error(400, "invalid-request"); }
+        // FID-002: a real, source-legal decision the engine cannot resolve yet (currently only
+        // a Reaction window opened by a second-side Movement -- #394 gap 3) -- distinguishable
+        // from the generic "unavailable" below, which also covers "no such opening exists".
+        catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+        { return Error(409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
         catch (InvalidOperationException) { return Error(409, "unavailable"); }
         catch (ArgumentException) { return Error(400, "invalid-request"); }
         catch (OverflowException) { return Error(400, "invalid-request"); }
@@ -939,6 +945,8 @@ internal static class CampaignDurableOutwardApi
         catch (JsonException) { return Error(400, "invalid-request"); }
         catch (KeyNotFoundException) { return Error(400, "invalid-request"); }
         catch (FormatException) { return Error(400, "invalid-request"); }
+        catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+        { return Error(409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
         catch (InvalidOperationException) { return Error(409, "unavailable"); }
         catch (ArgumentException) { return Error(400, "invalid-request"); }
         catch (OverflowException) { return Error(400, "invalid-request"); }

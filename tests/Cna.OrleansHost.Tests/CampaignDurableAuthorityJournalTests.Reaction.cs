@@ -8,32 +8,43 @@ using Cna.OrleansHost.Api;
 
 namespace Cna.OrleansHost.Tests;
 
-// Owner ruling (release-blocking, same audit as #497/#499): Reaction window resolution
-// (MoveReactingElementAction/DeclineReactionWindowAction/CompleteReactionParticipantAction,
-// opened whenever a Movement or second-side Movement crosses an eligible opponent's reaction
-// opportunity) had no owner opening or HTTP stage. Confirmed reachable with the standard
-// admitted content (not just theoretically possible) by the pre-existing
-// VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart test, which already
-// finds and submits a real reaction-triggering second-side move and was, until now, unable to
-// resolve what it opened through any owner opening. Built the same way as
-// InitiativeOrder/ReserveDesignation -- no new Core logic: CampaignLegalActions.Query already
-// routes to CampaignObservationV7ActionDerivation.DerivePlayer/DeriveSystem whenever
-// snapshot.ReactionWindow is not null, and already replay-verifies it.
+// Owner ruling history (release-blocking, same audit as #497/#499):
+//  1. Reaction window resolution (MoveReactingElementAction/DeclineReactionWindowAction/
+//     CompleteReactionParticipantAction) had no owner opening or HTTP stage at all.
+//  2. Building it the same way as InitiativeOrder/ReserveDesignation (the generic
+//     CampaignExercises.Query/Submit path) hit #394 gap 1: that path's stale
+//     CurrentCombatDecision gate unconditionally rejects every second-side-triggered window --
+//     the only kind the standard admitted content ever actually opens. Ruled: sidestep gap 1
+//     with a dedicated non-generic Core entry point (CampaignExercises.QueryReactionWindow/
+//     SubmitReactionWindow in CampaignExercises.cs), not remediate the shared gate.
+//  3. That sidestep is confirmed correct (no more gate-related rejection), but a second,
+//     independent, already-documented gap (#394 gap 3: ExerciseSession.CurrentSnapshot is
+//     never bridged to the second-side native chain's own world/position -- see
+//     docs/work/plans/2026-11-18-combat-continuation-second-side-design-proposal.md) still
+//     means Core cannot derive legal Reaction actions for a window a second-side Movement
+//     opened. Ruled: not fixed this release (tracked separately, PR #501). Instead,
+//     CampaignHostAdapter.CreateReactionOwnerDraft now distinguishes that specific case (a
+//     real window genuinely open, confirmed via CurrentSecondMove.ReactionWindow) from "no
+//     window at all", and throws CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException
+//     instead of the generic "Reaction is unavailable" -- which both CampaignDurableAuthorityJournal
+//     and the outward HTTP API (CampaignDurableOutwardApi.cs) now propagate as an explicit
+//     FID-002 rule-not-implemented response, same pattern as second-side Repeat's own
+//     RuleNotImplemented rejection reason, rather than folding a real, open decision into the
+//     ordinary "no such opening" case or letting an unhandled exception reach a real player.
 public sealed partial class CampaignDurableAuthorityJournalTests
 {
     // Reuses VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart's own,
     // already-proven setup (Request() fixture; first side voluntarily finishes Combat with
     // nothing adjacent; Cycle Control Finish; Truck Convoy; four Post-Combat passes; second
-    // side's Reserve designates its one eligible element then completes) to reach the second
+    // side's Reserve finished empty so every element stays free to move) to reach the second
     // side's own Movement, then searches its real move offers -- on disposable copies of the
-    // same base authority, the identical search pattern that test already uses -- for one that
-    // opens a real reaction window for the first side. InitiativeOrder/ReserveDesignation for
-    // the FIRST side are exercised through the ordinary AdvanceToContactCombat helper here
-    // (already proven correct in their own dedicated test files); this helper exists only to
-    // reach a genuine open reaction window for Reaction's own tests.
-    private static (CampaignCreationRequest Request, CampaignSeatCredential Acting,
+    // same base authority -- for one that opens a real reaction window. Detection is the thing
+    // under test itself: a move opens a real window iff querying Reaction for the non-mover
+    // throws CampaignReactionWindowRuleNotImplementedException specifically (confirmed real,
+    // currently un-resolvable window), not the generic InvalidOperationException (no window).
+    private static (CampaignCreationRequest Request, CampaignSeatCredential Mover,
         CampaignSeatCredential Other, JournalFixture Fixture, ManualClock Clock)
-        AdvanceToOpenReactionWindow()
+        AdvanceToSecondSideReactionWindow()
     {
         var baseFixture = new JournalFixture();
         var clock = new ManualClock();
@@ -59,10 +70,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         }
         var commonwealth = journal.RedeemSeatGrant(journal.IssueSeatGrant(
             request.CampaignId, CampaignActionAudience.Commonwealth, OperatorSecret))!;
-        // Finish Second Reserve designation immediately with nobody designated -- the
-        // simplest closed path to a completed Reserve stage, with every element still free
-        // to move (same closed path AdvanceToSecondCombatSelectionWithAdjacentEnemy's own
-        // remarks use for the same reason).
         var secondReserve = journal.QuerySecondReserveOwnerOpening(commonwealth);
         var movementElements = JsonDocument.Parse(secondReserve.VisibleBytes).RootElement
             .GetProperty("choices").EnumerateArray()
@@ -86,14 +93,12 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                     var accepted = attemptJournal.SubmitOwnerSecondMovement(commonwealth, movementElement,
                         movement.Revision, movement.PublicActionRefs[index]);
                     if (!accepted.IsAccepted) continue;
-                    try
-                    {
-                        attemptJournal.QueryReactionOwnerOpening(axis);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        continue;
-                    }
+                    var opensRealReactionWindow = false;
+                    try { attemptJournal.QueryReactionOwnerOpening(axis); }
+                    catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
+                    { opensRealReactionWindow = true; }
+                    catch (InvalidOperationException) { /* genuinely no window from this move */ }
+                    if (!opensRealReactionWindow) continue;
                     attempts.Remove(attempt);
                     baseFixture.Dispose();
                     return (request, commonwealth, axis, attempt, clock);
@@ -110,113 +115,81 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
-    public async Task ReactionIsOfferedOnlyToTheReactingSideAndAcceptedThroughHttp()
+    public void ReactionOpenedBySecondSideMovementIsRejectedAsRuleNotImplementedNotUnavailable()
     {
-        var (request, acting, other, fixture, clock) = AdvanceToOpenReactionWindow();
+        var (request, mover, other, fixture, clock) = AdvanceToSecondSideReactionWindow();
         using (fixture)
         {
             var journal = fixture.Open(clock);
-
-            // Side-safe: the mover has no reaction opening at all while the window is open --
-            // same invariant every other asymmetric owner opening holds (and the same thing
-            // VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart already
-            // proved for the plain "movement" stage during an open window).
-            Assert.Throws<InvalidOperationException>(() => journal.QueryReactionOwnerOpening(acting));
-
-            var opening = journal.QueryReactionOwnerOpening(other);
-            Assert.NotEmpty(opening.PublicActionRefs);
-            string? chosenRef = null;
-            string? windowId = null;
-            using (var visible = JsonDocument.Parse(opening.VisibleBytes))
-            {
-                var choices = visible.RootElement.GetProperty("choices").EnumerateArray().ToArray();
-                Assert.Contains(choices, value => value.GetProperty("kind").GetString() == "move");
-                var moveIndex = Array.FindIndex(choices, value => value.GetProperty("kind").GetString() == "move");
-                windowId = choices[moveIndex].GetProperty("windowId").GetString();
-                Assert.NotNull(windowId);
-                chosenRef = opening.PublicActionRefs[moveIndex];
-            }
-
-            // The real outward HTTP API, not CampaignDurableAuthorityJournal.Append.
-            await using var outward = await OwnerHttpHarness.Start(journal, request.CampaignId);
-            await outward.Submit(other, opening.ActingElementId, "reaction", "reaction", opening, chosenRef!);
-
-            var cold = fixture.Open(clock);
-            var afterHttp = cold.ReadVerified(request.CampaignId);
-            Assert.True(CampaignExercises.Reconstruct(afterHttp).IsVerified);
-
-            // Retry through the normal durable Host: idempotent, same canonical receipt.
-            var retried = cold.SubmitOwnerReaction(other, opening.Revision, chosenRef!);
-            Assert.True(retried.IsAccepted);
-
-            // Having committed to an opportunity, the window is now in its second phase: the
-            // same "reaction" opening, re-queried, narrows to that opportunity's own remaining
-            // options plus completing it -- not the first-phase decline/other-opportunity set.
-            var narrowed = cold.QueryReactionOwnerOpening(other);
-            using (var visible = JsonDocument.Parse(narrowed.VisibleBytes))
-            {
-                var choices = visible.RootElement.GetProperty("choices").EnumerateArray().ToArray();
-                Assert.DoesNotContain(choices, value => value.GetProperty("kind").GetString() == "decline");
-                Assert.All(choices, value => Assert.Equal(windowId, value.GetProperty("windowId").GetString()));
-            }
-        }
-    }
-
-    [Fact]
-    public void ReactionRejectsStaleForgedAndWrongAudienceSubmissions()
-    {
-        var (request, acting, other, fixture, clock) = AdvanceToOpenReactionWindow();
-        using (fixture)
-        {
-            var journal = fixture.Open(clock);
-            var opening = journal.QueryReactionOwnerOpening(other);
-            var legalRef = opening.PublicActionRefs[0];
             var before = StoredAuthority(fixture.Path, request.CampaignId);
 
-            // Wrong audience: the mover cannot submit even a well-formed reference.
-            Assert.False(journal.SubmitOwnerReaction(acting, opening.Revision, legalRef).IsAccepted);
-            // Stale revision.
-            Assert.False(journal.SubmitOwnerReaction(other, opening.Revision + 1, legalRef).IsAccepted);
-            // Forged reference: well-formed ("act." + 64 hex) but never issued.
-            var forged = "act." + new string(legalRef[4] == '0' ? '1' : '0', 64);
-            Assert.NotEqual(legalRef, forged);
-            Assert.False(journal.SubmitOwnerReaction(other, opening.Revision, forged).IsAccepted);
-            // Oversized reference.
-            Assert.False(journal.SubmitOwnerReaction(other, opening.Revision,
-                "act." + new string('0', 1_000_000)).IsAccepted);
+            // Both sides -- not just the non-mover -- get the distinguishable, FID-002-honest
+            // signal: a real window exists that this release cannot resolve, not the generic
+            // "nothing to see here" every other not-yet-open stage returns.
+            Assert.Throws<CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException>(
+                () => journal.QueryReactionOwnerOpening(other));
+            Assert.Throws<CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException>(
+                () => journal.QueryReactionOwnerOpening(mover));
 
+            // A well-formed-looking submission is rejected the same explicit way, through the
+            // normal durable Host entry point -- not a thrown exception reaching the caller.
+            var forged = "act." + new string('0', 64);
+            var rejected = journal.SubmitOwnerReaction(other, 1, forged);
+            Assert.False(rejected.IsAccepted);
+            Assert.Equal("rule-not-implemented", rejected.RejectionCode);
+
+            // Querying/submitting never mutated anything: still the exact pre-query authority,
+            // and the one real step that did commit (the triggering second-side Movement)
+            // still reconstructs and verifies cleanly.
             Assert.Equal(before, StoredAuthority(fixture.Path, request.CampaignId));
             Assert.True(CampaignExercises.Reconstruct(journal.ReadVerified(request.CampaignId)).IsVerified);
 
-            // The genuine offer still works after every rejected attempt above.
-            var accepted = journal.SubmitOwnerReaction(other, opening.Revision, legalRef);
-            Assert.True(accepted.IsAccepted);
+            // Cold replay: the explicit rejection is not an in-memory-only quirk -- it survives
+            // a fresh process-local reopen of the same durable file.
             var cold = fixture.Open(clock);
+            Assert.Throws<CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException>(
+                () => cold.QueryReactionOwnerOpening(other));
+            var coldRejected = cold.SubmitOwnerReaction(other, 1, forged);
+            Assert.False(coldRejected.IsAccepted);
+            Assert.Equal("rule-not-implemented", coldRejected.RejectionCode);
             Assert.True(CampaignExercises.Reconstruct(cold.ReadVerified(request.CampaignId)).IsVerified);
         }
     }
 
     [Fact]
-    public void DecliningTheReactionWindowClosesItAndSurvivesColdReplay()
+    public async Task ReactionOpenedBySecondSideMovementReturnsHttp409RuleNotImplementedNotACrash()
     {
-        var (request, acting, other, fixture, clock) = AdvanceToOpenReactionWindow();
+        var (request, mover, other, fixture, clock) = AdvanceToSecondSideReactionWindow();
         using (fixture)
         {
             var journal = fixture.Open(clock);
-            var opening = journal.QueryReactionOwnerOpening(other);
-            using var visible = JsonDocument.Parse(opening.VisibleBytes);
-            var choices = visible.RootElement.GetProperty("choices").EnumerateArray().ToArray();
-            var declineIndex = Array.FindIndex(choices, value => value.GetProperty("kind").GetString() == "decline");
-            Assert.True(declineIndex >= 0, "This fixture's opportunity has no decline offer.");
-            Assert.True(journal.SubmitOwnerReaction(other, opening.Revision,
-                opening.PublicActionRefs[declineIndex]).IsAccepted);
 
+            // The real outward HTTP API, not CampaignDurableAuthorityJournal.Append directly --
+            // this is the actual boundary a real player's request crosses, and the one the
+            // owner ruling specifically called out as must-not-crash.
+            await using var outward = await OwnerHttpHarness.Start(journal, request.CampaignId);
+
+            var (openingStatus, openingBody) = await outward.OpeningResponse(
+                other, "land.reaction", "reaction");
+            Assert.Equal(HttpStatusCode.Conflict, openingStatus);
+            using (var openingJson = JsonDocument.Parse(openingBody))
+                Assert.Equal("rule-not-implemented", openingJson.RootElement.GetProperty("code").GetString());
+
+            var (moverOpeningStatus, moverOpeningBody) = await outward.OpeningResponse(
+                mover, "land.reaction", "reaction");
+            Assert.Equal(HttpStatusCode.Conflict, moverOpeningStatus);
+            using (var moverOpeningJson = JsonDocument.Parse(moverOpeningBody))
+                Assert.Equal("rule-not-implemented", moverOpeningJson.RootElement.GetProperty("code").GetString());
+
+            var (actionStatus, actionBody) = await outward.SubmitResponse(
+                other, "land.reaction", "reaction", 1, "act." + new string('0', 64));
+            Assert.Equal(HttpStatusCode.Conflict, actionStatus);
+            using (var actionJson = JsonDocument.Parse(actionBody))
+                Assert.Equal("rule-not-implemented", actionJson.RootElement.GetProperty("code").GetString());
+
+            // The HTTP layer never mutated anything either; the whole chain still verifies.
             var cold = fixture.Open(clock);
-            var verified = cold.ReadVerified(request.CampaignId);
-            Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
-
-            // The window is closed: the reacting side has nothing left to resolve.
-            Assert.Throws<InvalidOperationException>(() => cold.QueryReactionOwnerOpening(other));
+            Assert.True(CampaignExercises.Reconstruct(cold.ReadVerified(request.CampaignId)).IsVerified);
         }
     }
 }

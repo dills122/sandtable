@@ -4349,6 +4349,42 @@ public static class CampaignExercises
         return Complete(session, execution);
     }
 
+    // Dedicated non-generic entry point for Reaction -- ruled (scope doc,
+    // PR #500): sidestep #394 gap 1 here rather than remediate the shared
+    // gate, which stays its own tracked future design decision (see
+    // docs/work/plans/2026-11-18-combat-continuation-second-side-design-proposal.md).
+    // A reaction window opened by a second-side Movement is reached only
+    // after the first-side's own Combat decision has already been made,
+    // which trips the generic Query/Submit's stale CurrentCombatDecision
+    // gate above even though no second-side Combat decision exists yet --
+    // the exact gap 1 symptom, just hit from a third call site the scope
+    // doc's two gates (QueryContactOwnerMovementCut/QueryContactOwnerCombatCut)
+    // never covered. This mirrors Query/Submit's own fallthrough exactly
+    // (the same CampaignLegalActions.Query / CampaignCurrentActionExecution
+    // .Execute + Complete dispatch, on the same session.CurrentSnapshot)
+    // with only that one gate removed -- no other Core logic changes.
+    // CampaignHostAdapter's own candidate-shape validation
+    // (CreateReactionOwnerDraft/SubmitReaction) is what keeps this entry
+    // point from ever returning or accepting anything but Reaction's own
+    // three candidate types.
+    internal static CampaignLegalActionQueryResult QueryReactionWindow(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return CampaignLegalActions.Query(
+            new CampaignAuthorityHandle(session.CurrentSnapshot, session.Context), audience);
+    }
+
+    internal static ExerciseStepResult SubmitReactionWindow(
+        ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        var execution = CampaignCurrentActionExecution.Execute(
+            session.CurrentSnapshot, session.Context, submission);
+        return Complete(session, execution);
+    }
+
     private static ExerciseStepResult SubmitPregame(ExerciseSession session, CampaignPregameSourceState pregame,
         CampaignActionSubmission submission)
     {
