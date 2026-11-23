@@ -8,6 +8,7 @@
     <Project Path="src/Cna.Intelligence.Contracts/Cna.Intelligence.Contracts.csproj" />
     <Project Path="src/Cna.Intelligence.Gateway/Cna.Intelligence.Gateway.csproj" />
     <Project Path="src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
+    <Project Path="src/Cna.RecommendationConnector/Cna.RecommendationConnector.csproj" />
     <Project Path="src/Cna.ServiceDefaults/Cna.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/tests/">
