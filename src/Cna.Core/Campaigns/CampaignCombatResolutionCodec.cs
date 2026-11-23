@@ -376,7 +376,7 @@ internal static class CampaignCombatResolutionCodec
         ["CloseEffect"] = "kind:id settlementId:id proofReceipts:id[]",
         ["CaEffect"] = "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id roundClosureReceiptId:id",
         ["ResultState"] = "contractVersion:int roundClockConfigurationHash:hash resultClockPolicyId:id committedHash:hash stateVersion:long prefix:hash status:id result:AssaultResult? settlementId:id? window:ChoiceWindow? acceptedHighWater:utc world:World randomState:Random roundClosureReceiptId:id? caCompletionReceiptId:id? receipts:Receipt[] closed:bool",
-        ["Receipt"] = "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
-        ["Timing"] = "contractVersion:int configHash:hash kind:id decisionBudgetMilliseconds:int openedAtUnixMilliseconds:utc deadlineUnixMilliseconds:utc highWaterUnixMilliseconds:utc",
+        ["Receipt"] = CampaignCodecSchemaFragments.Receipt,
+        ["Timing"] = CampaignCodecSchemaFragments.Timing,
     };
 }
