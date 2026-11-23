@@ -148,5 +148,7 @@
   <ItemGroup>
     <Compile Include="../Shared/GrazianiSourceExcerpt.cs" Link="Shared/GrazianiSourceExcerpt.cs" />
     <ProjectReference Include="../../src/Cna.Core/Cna.Core.csproj" />
+    <!-- See Cna.Core.csproj for why this is scoped here rather than repo-wide for now. -->
+    <ProjectReference Include="../../src/Cna.Analyzers/Cna.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

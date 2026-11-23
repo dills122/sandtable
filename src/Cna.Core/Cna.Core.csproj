@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- CNA001/CNA002: see docs/work/plans/2026-11-23-codebase-overhaul-direction.md,
+         Section 2 and Section 5. Scoped to Cna.Core (and Cna.Core.Tests) for now rather
+         than wired repo-wide via Directory.Build.props as that doc describes: this
+         keeps the blast radius of a brand-new analyzer limited to the one project where
+         the dangerous patterns actually live, while every other project here already
+         has TreatWarningsAsErrors=true. Widening to Directory.Build.props is a one-line
+         follow-up once this has run clean in CI for a while. -->
+    <ProjectReference Include="../Cna.Analyzers/Cna.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <InternalsVisibleTo Include="Cna.Core.Tests" />
     <EmbeddedResource Include="Content/HistoricalMap/*.json" />
     <EmbeddedResource Include="Content/Fixtures/rules-lab.content.breakdown-truck.v1.json" />
