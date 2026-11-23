@@ -234,6 +234,55 @@ originally guessed.
    size only if (a) doesn't close the gap, per the design's own stated
    order.
 
+## Live-session prototype — run for real, not just in xunit
+
+Every verification so far ran inside xunit's own process, through a hand-built
+`HttpClient` the test itself constructed. That client added a header
+(`Sec-Fetch-Site: same-origin`) the real outward API's same-origin gate (#319)
+requires from every caller. The connector's own shipped `Program.cs` never
+added that header to its real `HttpClient` registration — meaning the actual
+standalone service, as it would run in any real deployment, got a bare `403
+Forbidden` on its very first call. This was never caught because nothing had
+ever actually run the real service outside a test. Fixed by adding the same
+header where the connector's own `OutwardApi` `HttpClient` is registered —
+the connector doing, in its own runtime wiring, exactly what its test harness
+already simulated it doing.
+
+Caught by building `Cna.LocalCampaignSimulator` (new `src/` project): a small
+dev-only tool that boots one real campaign — real file-backed journal, real
+Orleans silo, real `MapDurableCampaignApi()` routes, the same production
+classes the test harness already used, just packaged as a long-running
+process instead of disposed at the end of a test — and keeps it listening on
+a real local port. Pointing the real `Cna.RecommendationConnector` service
+(via `dotnet run`, no test runner involved) at that address, then driving
+both decision types with plain `curl`, is the first time this connector
+actually ran as the standalone service it's meant to be, against a live
+campaign, end to end:
+
+- `POST /advise/initiative-order` → real `act-last` recommendation, grounded
+  rationale text, `Grounded: false` (verifier-noise, same documented pattern).
+- Submitted the real `act-first` action over the real outward API to advance
+  the campaign (this connector itself never does this — a human/UI would).
+- `POST /advise/reserve-designation` → real `complete` recommendation against
+  a genuinely different opening.
+
+Also added a second few-shot example to `ReserveDesignationAdvisor`'s system
+prompt (a 3-option case, distinct answer, explicit "the real list varies,
+re-read it" instruction) — the concrete next step (a) from the section above.
+Re-verified 3x against fresh real campaigns: 3/3 internally coherent (up from
+1/3 before), closing the self-contradiction gap without needing a larger
+model. Verifier noise (2/3 flagged `Grounded: false` on reads that look
+fine) persists and is unaffected by this change, as expected — it's a
+property of the single-model verifier, not the generator's examples.
+Deliberately did **not** add a second example to `InitiativeOrderAdvisor`:
+its real input never varies (always the same four-field shape), so a second
+example with a different answer for an identical input would teach
+inconsistency, not generalization — one example per genuinely-constant input
+is the right size, not under-provisioned.
+
+Not done: the asymmetric-verifier-model idea (b) from the section above —
+still a real next step, just not this increment's.
+
 ## Boundary set now, not deferred
 
 No "admin/spectator" mode that lets the connector see hidden state for

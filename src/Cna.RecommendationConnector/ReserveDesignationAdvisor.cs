@@ -46,6 +46,14 @@ public sealed class ReserveDesignationAdvisor(HttpClient outwardApi, IOllamaApiC
         Reason: with no situational data to suggest an immediate need for axis-infantry's
         full strength, the general default is to hold a resource in reserve rather than
         fully commit everything with nothing held back.
+
+        Example: options are [0: complete, 1: designate cw-armor, 2: designate cw-artillery].
+        Answer: 0. Reason: with multiple elements eligible and no situational data pointing
+        at any one of them as the right one to hold back, there is no principled basis to
+        single one out over the others -- committing everything (complete) avoids an
+        arbitrary pick among equally-uninformed options. The number and names of the
+        designate options vary call to call; always re-read the real list given and
+        answer with its index, never assume these two examples are the only options.
         """;
 
     private const string VerificationSystemPrompt = """
