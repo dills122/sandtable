@@ -23,7 +23,15 @@ static int FreePort()
     return ((IPEndPoint)listener.LocalEndpoint).Port;
 }
 
-var journalPath = Path.Combine(Path.GetTempPath(), "sandtable-local-simulator-" + Guid.NewGuid().ToString("N") + ".sqlite");
+// The host-identity file EnsureHostIdentity writes lives beside the journal file, in its
+// directory -- a unique filename in the shared temp directory is not enough isolation (a
+// stale _host-identity.db from an earlier run's different operator secret would 401 this
+// run). Each run gets its own fresh directory.
+var journalDirectory = Path.Combine(Path.GetTempPath(), "sandtable-local-simulator-" + Guid.NewGuid().ToString("N"));
+Directory.CreateDirectory(journalDirectory);
+if (!OperatingSystem.IsWindows())
+    File.SetUnixFileMode(journalDirectory, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+var journalPath = Path.Combine(journalDirectory, "campaign.sqlite");
 var journal = CampaignDurableAuthorityJournal.CreateNew(
     journalPath, operatorSecret, contentResolver: Cna1979SyntheticContentResolver.Instance);
 var store = CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal);
