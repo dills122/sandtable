@@ -4075,6 +4075,14 @@ public static class CampaignExercises
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
         // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // Movement + Movement Completion are chronologically later than this
+        // stage's own second-side Reserve Designation below, so they must be
+        // checked first (same ordering discipline as every cascade above).
+        if (session.CurrentStageEntrySecondMovementCompletion is { } stageEntrySecondMovementCompleted)
+            return new ExerciseCheckpoint(stageEntrySecondMovementCompleted, session.CurrentSnapshot);
+        if (session.CurrentStageEntrySecondMove is { } stageEntrySecondMove)
+            return new ExerciseCheckpoint(stageEntrySecondMove, session.CurrentSnapshot);
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
         // Reserve Designation is chronologically later than this stage's own
         // first-acting-side Combat assault/no-attack block below, so it must
         // be checked first, same ordering discipline as every cascade in
@@ -7037,6 +7045,96 @@ public static class CampaignExercises
         }
     }
 
+    // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+    // Movement -- same shape as QueryStageEntryMovementSource/CompleteStageEntryMovement/
+    // QueryStageEntryMovementCut/SubmitStageEntryMovement above, reusing
+    // CampaignNativeSecondMoveV44/CampaignNativeSecondMovementCompletedV45
+    // unchanged (confirmed by reading CampaignNativeSecondMoveV44.Source
+    // directly: its predecessor switch matches by type alone), entered from
+    // this stage's own completed second-side Reserve Designation.
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntrySecondMovementSource(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntrySecondMovementCompletion is not null)
+            throw new InvalidOperationException("Stage Entry second-side Movement has already completed.");
+        if (session.CurrentStageEntrySecondMove is { } movement)
+            return (movement, session.CurrentStageEntrySecondMoveWorld
+                ?? throw new InvalidOperationException("Stage Entry second-side Movement World is missing."));
+        if (session.CurrentStageEntrySecondReserve is { Completed: true } reserve)
+            return (reserve, session.CurrentStageEntrySecondReserveWorld
+                ?? throw new InvalidOperationException("Stage Entry second-side Reserve World is missing."));
+        throw new InvalidOperationException("Stage Entry second-side Movement requires completed second-side Reserve Designation.");
+    }
+
+    internal static ExerciseStepResult CompleteStageEntrySecondMovement(ExerciseSession session,
+        CampaignActionAudience audience, string actionId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Stage Entry second-side Movement requires an owner."),
+            };
+            var (source, world) = QueryStageEntrySecondMovementSource(session);
+            var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
+                StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                session.CurrentContacts.AuthorityVersion);
+            var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
+            var next = session.WithStageEntrySecondMovementCompletion(completed, contacts);
+            var bytes = completed.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(completed.CampaignId,
+                completed.PriorStateVersion, completed.StateVersion, completed.PositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (error is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
+    internal static CampaignContactOwnerMovementCut QueryStageEntrySecondMovementCut(ExerciseSession session,
+        LandSide side, string elementId)
+    {
+        var (source, world) = QueryStageEntrySecondMovementSource(session);
+        var (_, _, position) = CampaignNativeSecondMoveV44.Source(source, world, session.Context,
+            StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentContacts.AuthorityVersion);
+        return CampaignContactOwnerMovementCut.ProjectSecondMovement(world, position, session.Context,
+            session.CurrentContacts, side, elementId);
+    }
+
+    internal static ExerciseStepResult SubmitStageEntrySecondMovement(ExerciseSession session,
+        CampaignActionAudience audience, string actionId, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Stage Entry second-side Movement requires an owner."),
+            };
+            var (source, world) = QueryStageEntrySecondMovementSource(session);
+            var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
+                StageEntryOrders(session), session.CurrentContacts, side,
+                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+            var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
+            var next = session.WithStageEntrySecondMove(movement, result, contacts);
+            var bytes = movement.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(movement.CampaignId,
+                movement.PriorStateVersion, movement.StateVersion, movement.PositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (error is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     // MTS-TASK-005/006 (2026-11-22): the new stage's own first-acting-side
     // Movement -- same shape as QuerySecondMovementSource/CompleteSecondMovement/
     // QuerySecondMovementCut/SubmitSecondMovement above, reusing
@@ -7824,9 +7922,12 @@ public static class CampaignExercises
             var (isNativeSuccessor, predecessor) = cursor switch
             {
                 // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting
-                // side's Reserve Designation -- additive, does not change
-                // any arm below. Checked most-recent-first, same ordering
-                // discipline as every arm in this switch.
+                // side's Movement + Movement Completion + Reserve
+                // Designation -- additive, does not change any arm below.
+                // Checked most-recent-first, same ordering discipline as
+                // every arm in this switch.
+                { CurrentStageEntrySecondMovementCompletion: not null } => (true, cursor.StageEntrySecondMovementCompletionPredecessor),
+                { CurrentStageEntrySecondMove: not null } => (true, cursor.StageEntrySecondMovePredecessor),
                 { CurrentStageEntrySecondReserve: not null } => (true, cursor.StageEntrySecondReservePredecessor),
                 // MTS-TASK-005/006 (2026-11-22/23): this stage's own
                 // Breakdown + Movement + Movement Completion + Reserve
@@ -8863,6 +8964,83 @@ public static class CampaignExercises
         bool predecessorVerified)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // Movement + Movement Completion -- same shape as the
+        // CurrentStageEntryMovementCompletion/CurrentStageEntryMove blocks
+        // below, reusing CampaignNativeSecondMovementCompletedV45/
+        // CampaignNativeSecondMoveV44 unchanged. Chronologically latest in
+        // this function (later than this stage's own second-side Reserve
+        // Designation below), mirroring QueryCheckpoint's own ordering, so
+        // they are replayed and verified first.
+        if (completedSession.CurrentStageEntrySecondMovementCompletion is { } stageEntrySecondMovementCompletion)
+        {
+            var expected = stageEntrySecondMovementCompletion.SerializeCanonical();
+            var secondCompletionExpectedHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntrySecondMovementCompletionPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Movement completion has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement predecessor did not replay.");
+                var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
+                var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
+                    StageEntryOrders(predecessor), stageEntrySecondMovementCompletion.Side,
+                    predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                var bytes = replayed.SerializeCanonical();
+                var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
+                if (!expected.AsSpan().SequenceEqual(bytes)
+                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement completion differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    bytes, streamHash, secondCompletionExpectedHash, Hash(bytes));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            {
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                    null, null, secondCompletionExpectedHash, null);
+            }
+        }
+        if (completedSession.CurrentStageEntrySecondMove is { } stageEntrySecondMove)
+        {
+            var expected = stageEntrySecondMove.SerializeCanonical();
+            var secondMoveExpectedHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntrySecondMovePredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Movement has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement predecessor did not replay.");
+                var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
+                var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
+                    predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
+                    stageEntrySecondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntrySecondMove.ElementId,
+                    stageEntrySecondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
+                var bytes = replayed.SerializeCanonical();
+                var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
+                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntrySecondMoveWorld != resultWorld
+                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    bytes, streamHash, secondMoveExpectedHash, Hash(bytes));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            {
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                    null, null, secondMoveExpectedHash, null);
+            }
+        }
         // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
         // Reserve Designation -- same shape as the CurrentStageEntryReserve
         // block below, reusing CampaignNativeSecondReserveV43 unchanged.
