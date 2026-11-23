@@ -11,6 +11,7 @@
     <PackageVersion Include="Grpc.Tools" Version="2.85.0" />
     <PackageVersion Include="MessagePack" Version="3.1.12" />
     <PackageVersion Include="Marten" Version="9.62.0" />
+    <PackageVersion Include="OllamaSharp" Version="5.5.2" />
     <!-- Pinned to the Roslyn compiler version actually bundled with the pinned .NET 10
          SDK (global.json), not the latest on NuGet: an analyzer assembly cannot
          reference a newer compiler than the one that loads it (CS9057). -->

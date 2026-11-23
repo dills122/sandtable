@@ -13,6 +13,7 @@
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="xunit.v3.mtp-v2" />
     <ProjectReference Include="../../src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
+    <ProjectReference Include="../../src/Cna.RecommendationConnector/Cna.RecommendationConnector.csproj" />
     <ProjectReference Include="../Cna.OrleansHost.FoundationChild/Cna.OrleansHost.FoundationChild.csproj"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>

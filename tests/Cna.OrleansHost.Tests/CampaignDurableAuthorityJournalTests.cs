@@ -1995,6 +1995,11 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         private readonly HttpClient client;
         private readonly string campaignId;
 
+        // The real listening address this harness's Kestrel instance bound to -- for a
+        // genuinely separate HttpClient (e.g. a connector process) to call against, the
+        // same way any other out-of-process real client would.
+        internal Uri Address => client.BaseAddress!;
+
         private OwnerHttpHarness(WebApplication app, IHost silo, HttpClient client, string campaignId)
         {
             this.app = app;
