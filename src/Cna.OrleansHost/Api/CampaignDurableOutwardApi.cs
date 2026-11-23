@@ -721,6 +721,7 @@ internal static class CampaignDurableOutwardApi
                     or "post-assault-retreat" or "custody" or "reserve-release"
                     or "cycle-control" or "truck-convoy-pass" or "post-combat-pass"
                     or "second-reserve" or "second-movement" or "second-movement-completion"
+                    or "stage-entry-initiative-declaration"
                     or "repeat-movement" or "repeat-combat-selection";
                 if (!stageKnown) throw new JsonException("Unknown owner stage.");
                 var result = await grainFactory.GetGrain<ICampaignGrain>(campaignId)

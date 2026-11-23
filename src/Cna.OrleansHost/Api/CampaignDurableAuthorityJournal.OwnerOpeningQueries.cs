@@ -210,6 +210,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var draft = CampaignHostAdapter.QuerySecondReserveOwnerDraft(session, audience);
                 return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
             },
+            [CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration] = (session, audience, actingElementId) =>
+            {
+                var draft = CampaignHostAdapter.QueryStageEntryInitiativeDeclarationOwnerDraft(session, audience);
+                return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
+            },
             [CampaignOwnerOpeningKind.SecondMovement] = (session, audience, actingElementId) =>
             {
                 var draft = CampaignHostAdapter.QuerySecondMovementOwnerDraft(session, audience, actingElementId);

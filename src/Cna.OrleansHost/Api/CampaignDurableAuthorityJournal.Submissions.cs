@@ -213,6 +213,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, SecondReserveOpeningKey, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.SecondReserve);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryInitiativeDeclaration(
+        CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, StageEntryInitiativeDeclarationOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration);
+
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovement(CampaignSeatCredential credential,
         string elementId, long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, elementId, openingRevision, publicActionRef, CampaignOwnerOpeningKind.SecondMovement);
@@ -489,6 +494,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitPostCombatPass(head.Session, submission),
             CampaignOwnerOpeningKind.SecondReserve =>
                 CampaignHostAdapter.SubmitSecondReserve(head.Session, submission),
+            CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration =>
+                CampaignHostAdapter.SubmitStageEntryInitiativeDeclaration(head.Session, submission),
             CampaignOwnerOpeningKind.SecondMovement =>
                 CampaignHostAdapter.SubmitSecondMovement(head.Session, submission, actingElementId),
             CampaignOwnerOpeningKind.SecondMovementCompletion =>
@@ -828,6 +835,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAcceptedStep.ContactPostCombatPassKind,
         CampaignOwnerOpeningKind.SecondReserve =>
             CampaignHostAcceptedStep.ContactSecondReserveKind,
+        CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration =>
+            CampaignHostAcceptedStep.ContactStageEntryInitiativeDeclarationKind,
         CampaignOwnerOpeningKind.SecondMovement =>
             CampaignHostAcceptedStep.ContactSecondMovementKind,
         CampaignOwnerOpeningKind.SecondMovementCompletion =>

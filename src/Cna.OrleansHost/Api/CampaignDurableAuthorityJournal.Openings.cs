@@ -15,6 +15,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private const string TruckConvoyPassOpeningKey = "land.truck-convoy-pass";
     private const string PostCombatPassOpeningKey = "land.post-combat-pass";
     private const string SecondReserveOpeningKey = "land.second-reserve";
+    private const string StageEntryInitiativeDeclarationOpeningKey = "land.stage-entry-initiative-declaration";
     private const string SecondMovementCompletionOpeningKey = "land.second-movement-completion";
     private const string RepeatMovementOpeningKey = "land.repeat-movement";
     private const string PregameAxisSupplyOpeningKey = "land.pregame-axis-supply";
@@ -203,6 +204,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     internal CampaignOwnerOpening QuerySecondReserveOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, SecondReserveOpeningKey, CampaignOwnerOpeningKind.SecondReserve);
+
+    internal CampaignOwnerOpening QueryStageEntryInitiativeDeclarationOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, StageEntryInitiativeDeclarationOpeningKey,
+            CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration);
 
     internal CampaignOwnerOpening QuerySecondMovementOwnerOpening(CampaignSeatCredential credential, string elementId) =>
         QueryOwnerOpeningCore(credential, elementId, CampaignOwnerOpeningKind.SecondMovement);
@@ -481,6 +486,7 @@ internal enum CampaignOwnerOpeningKind
     SecondReserve,
     SecondMovement,
     SecondMovementCompletion,
+    StageEntryInitiativeDeclaration,
     RepeatMovement,
     RepeatCombatSelection,
     PregameAxisSupply,

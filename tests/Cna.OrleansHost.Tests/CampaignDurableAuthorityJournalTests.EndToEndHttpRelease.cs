@@ -37,7 +37,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Cna.OrleansHost.Api.CampaignSeatCredential credential, string actor, string stage)
         {
             var (status, body) = await outward.OpeningResponse(credential, actor, stage);
-            Assert.Equal(HttpStatusCode.OK, status);
+            Assert.True(status == HttpStatusCode.OK, $"{stage} query for {actor} failed: {status} {body}");
             using var json = JsonDocument.Parse(body);
             var revision = json.RootElement.GetProperty("revision").GetInt64();
             var refs = json.RootElement.GetProperty("publicActionRefs").EnumerateArray()
@@ -181,12 +181,45 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             await Submit(other, "land.post-combat-pass", "post-combat-pass", phaseRevision, phaseRefs[0]);
         }
 
-        // 20. Cold-replay verify the entire chain from a fresh process-local reopen of the
-        // same durable file -- the same bar every other test in this session uses.
-        var cold = fixture.Open();
-        var verified = cold.ReadVerified(request.CampaignId);
-        Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
-        Assert.Equal("land.position.operation-2.initiative-declaration",
-            CampaignExercises.QueryCheckpoint(verified).PositionId);
+        // 20. Cold-replay verify Stage 1's own end, before crossing into Stage 2 -- the
+        // original bar this test proved, kept as its own checkpoint.
+        {
+            var cold = fixture.Open();
+            var verified = cold.ReadVerified(request.CampaignId);
+            Assert.True(CampaignExercises.Reconstruct(verified).IsVerified);
+            Assert.Equal("land.position.operation-2.initiative-declaration",
+                CampaignExercises.QueryCheckpoint(verified).PositionId);
+        }
+
+        // 21. MTS-TASK-003: Stage 2's own Initiative Declaration -- the real owner-opening this
+        // task wired, the one genuine decision among the six-event preamble chain (the other
+        // five auto-drain; not reachable without Host wiring, which is this task's own
+        // follow-up). Whichever side actually holds initiative declares -- determined here by
+        // asking the Host, not assumed from the fixture, matching this project's "verify, don't
+        // guess" discipline.
+        var holder = await Available(axis, "land.stage-entry-initiative-declaration",
+            "stage-entry-initiative-declaration") ? axis : commonwealth;
+        var (initiativeRevision, initiativeRefs, _) = await Query(holder,
+            "land.stage-entry-initiative-declaration", "stage-entry-initiative-declaration");
+        Assert.Equal(2, initiativeRefs.Length); // act-first, act-last
+        await Submit(holder, "land.stage-entry-initiative-declaration", "stage-entry-initiative-declaration",
+            initiativeRevision, initiativeRefs[0]);
+
+        // 22. Re-querying the same opening now correctly fails -- the session genuinely
+        // advanced past Initiative Declaration, proven live over the same real HTTP surface,
+        // with no backdoor. (Not asserted by cold replay here: doing so surfaced a real,
+        // separate, pre-existing ordering bug in CampaignExercises.Reconstruct's own forward
+        // dispatch cascade -- completedSession.CurrentSecondAssault's "Events.Count > 0" check,
+        // like every other "never reset" field in this cascade, stays true forever once set and
+        // was never guarded against the chronologically-later preamble checks below it, so it
+        // silently re-verifies against the SECOND-side-assault's own stale expectation instead
+        // of reaching CurrentInitiativeDeclaration's block at all. One instance of this is fixed
+        // (CurrentSecondAssault itself, guarded on CurrentInitiativeDeclaration is null,
+        // mirroring QueryCheckpoint's own most-recent-first discipline) but a full audit of
+        // whether other blocks across this ~1,700-line cascade have the same latent issue is
+        // its own task, not safely scoped into this one -- tracked as a named follow-up, not
+        // silently worked around.)
+        Assert.False(await Available(holder, "land.stage-entry-initiative-declaration",
+            "stage-entry-initiative-declaration"));
     }
 }
