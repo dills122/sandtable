@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Roslyn analyzers enforcing Sandtable's recurring hardcoded-assumption and determinism rules (see docs/work/plans/2026-11-23-codebase-overhaul-direction.md, Section 2).</Description>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IsPackable>false</IsPackable>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <!-- LangVersion/Nullable/EnforceCodeStyleInBuild from Directory.Build.props target
+         netstandard2.0 fine for an analyzer: these are compiler-feature/BCL-surface
+         settings, not a TFM requirement, and this project ships no public API of its
+         own that callers consume via the BCL surface added after netstandard2.0. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+</Project>

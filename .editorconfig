@@ -20,6 +20,13 @@ dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 
+# Cna.Analyzers (docs/work/plans/2026-11-23-codebase-overhaul-direction.md, Sections 2 and 5):
+# the recurring hardcoded-stage/role bug class and DET-001/DET-002 non-determinism, both
+# promoted from warning to error -- TreatWarningsAsErrors already does this project-wide,
+# but these two are explicit here per that doc's own recommendation.
+dotnet_diagnostic.CNA001.severity = error
+dotnet_diagnostic.CNA002.severity = error
+
 [*.{csproj,props,targets,slnx}]
 indent_size = 2
 

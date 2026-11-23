@@ -56,6 +56,39 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  # Architecture fitness functions (docs/work/plans/2026-11-23-codebase-overhaul-direction.md,
+  # Section 5). Deliberately NOT added to `verify`'s needs list yet -- this is a brand-new
+  # project landing the same day as active feature work elsewhere in the repo, so it runs
+  # and reports as its own check first. Promote it to a required dependency of `verify`
+  # once it has run clean in CI for a while.
+  architecture-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - name: Restore
+        run: dotnet restore tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj '/bl:artifacts/architecture-tests/restore-{}.binlog'
+      - name: Build
+        run: dotnet build tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-restore '/bl:artifacts/architecture-tests/build-{}.binlog'
+      - name: Run architecture fitness tests
+        run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/architecture-tests
+      - name: Retain evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: architecture-tests-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/architecture-tests
+          if-no-files-found: error
+          retention-days: 14
+
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
