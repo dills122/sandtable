@@ -129,7 +129,7 @@ internal static class CampaignDurableOutwardApi
                 }, statusCode: StatusCodes.Status201Created);
             }));
         api.MapPost("/{campaignId}/source-axis-supplement", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceAxisSupplementAsync(campaignId,
@@ -137,7 +137,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-commonwealth-supplement", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCommonwealthSupplementAsync(campaignId,
@@ -145,7 +145,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-priority-motorization", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourcePriorityMotorizationAsync(campaignId,
@@ -153,7 +153,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-attached-initial-loads", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceAttachedInitialLoadsAsync(campaignId,
@@ -161,7 +161,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-initial-wrecks", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceInitialWrecksAsync(campaignId,
@@ -169,7 +169,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-axis-free-setup", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceAxisFreeSetupAsync(campaignId,
@@ -177,7 +177,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-axis-corps-setup", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceAxisCorpsSetupAsync(campaignId,
@@ -185,7 +185,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-maletti-hierarchy", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceMalettiHierarchyAsync(campaignId,
@@ -193,7 +193,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-gt2-correction", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceGt2CorrectionAsync(campaignId,
@@ -201,7 +201,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-cw-priority-catalog", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCwPriorityCatalogAsync(campaignId,
@@ -209,7 +209,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-compact-checkpoint", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCompactCheckpointAsync(campaignId,
@@ -217,7 +217,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-fourth-indian-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceFourthIndianWorldAsync(campaignId,
@@ -225,7 +225,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-matruh-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceMatruhGroupedWorldAsync(campaignId,
@@ -233,7 +233,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-maletti-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceMalettiGroupedWorldAsync(campaignId,
@@ -241,7 +241,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-libyan-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceLibyanGroupedWorldAsync(campaignId,
@@ -249,7 +249,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-italian-divisions-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceItalianDivisionsGroupedWorldAsync(campaignId,
@@ -257,7 +257,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-seventh-armored-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceSeventhArmoredGroupedWorldAsync(campaignId,
@@ -265,7 +265,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-sixteenth-brigade-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceSixteenthBrigadeGroupedWorldAsync(campaignId,
@@ -273,7 +273,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-catanzaro-grouped-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCatanzaroGroupedWorldAsync(campaignId,
@@ -281,7 +281,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-turn/start", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var started = await journal.StartSourceTurnAsync(campaignId,
@@ -289,7 +289,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, started });
             }));
         api.MapPost("/{campaignId}/source-turn/initiative", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var resolved = await journal.ResolveSourceInitiativeAsync(campaignId,
@@ -297,7 +297,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, resolved });
             }));
         api.MapPost("/{campaignId}/source-turn/complete-gt1-scheduling", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var completed = await journal.CompleteSourceGt1SchedulingAsync(campaignId,
@@ -305,7 +305,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, completed });
             }));
         api.MapPost("/{campaignId}/source-turn/complete-gt1-organization", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var completed = await journal.CompleteSourceGt1OrganizationAsync(campaignId,
@@ -313,7 +313,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, completed });
             }));
         api.MapPost("/{campaignId}/source-turn/complete-gt1-stage1-arrivals", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var completed = await journal.CompleteSourceGt1StageOneArrivalsAsync(campaignId,
@@ -321,7 +321,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, completed });
             }));
         api.MapPost("/{campaignId}/source-turn/complete-gt1-stage1-fleet", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var completed = await journal.CompleteSourceGt1StageOneFleetAsync(campaignId,
@@ -329,7 +329,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, completed });
             }));
         api.MapPost("/{campaignId}/source-turn/complete-gt1-first-breakdown", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var completed = await journal.CompleteSourceGt1FirstBreakdownAsync(campaignId,
@@ -337,7 +337,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, completed });
             }));
         api.MapPost("/{campaignId}/source-turn/gt1-weather", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var resolved = await journal.ResolveSourceGt1WeatherAsync(campaignId,
@@ -345,7 +345,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, resolved });
             }));
         api.MapPost("/{campaignId}/source-turn/gt1-lane2", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var announced = await journal.AnnounceSourceGt1Lane2Async(campaignId,
@@ -353,7 +353,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, announced });
             }));
         api.MapPost("/{campaignId}/source-turn/gt1-lane3", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var announced = await journal.AnnounceSourceGt1Lane3Async(campaignId,
@@ -361,7 +361,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, announced });
             }));
         api.MapPost("/{campaignId}/source-seventh-shell-correction", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var corrected = await journal.CorrectSourceSeventhShellAsync(campaignId,
@@ -369,7 +369,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, corrected });
             }));
         api.MapPost("/{campaignId}/source-axis-minor-garrisons-activation", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var activated = await journal.ActivateSourceAxisMinorGarrisonsAsync(campaignId,
@@ -377,7 +377,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, activated });
             }));
         api.MapPost("/{campaignId}/source-axis-garrison-remainder-activation", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var activated = await journal.ActivateSourceAxisGarrisonRemainderAsync(campaignId,
@@ -385,7 +385,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, activated });
             }));
         api.MapPost("/{campaignId}/source-giarabub-motor-machine-gun-activation", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var activated = await journal.ActivateSourceGiarabubMotorMachineGunAsync(campaignId,
@@ -393,7 +393,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, activated });
             }));
         api.MapPost("/{campaignId}/source-cw-frontline-activation", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var activated = await journal.ActivateSourceCwFrontlineAsync(campaignId,
@@ -401,7 +401,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, activated });
             }));
         api.MapPost("/{campaignId}/source-giarabub-motor-placement-policy", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceGiarabubMotorPlacementPolicyAsync(campaignId,
@@ -409,7 +409,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted });
             }));
         api.MapPost("/{campaignId}/source-turn/gt1-multiple-lanes", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var announced = await journal.AnnounceSourceGt1MultiLanesAsync(campaignId,
@@ -417,7 +417,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, announced });
             }));
         api.MapPost("/{campaignId}/source-matruh-formation", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceMatruhFormationAsync(campaignId,
@@ -425,7 +425,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-cw-free-guns", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCwFreeGunsAsync(campaignId,
@@ -433,7 +433,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-axis-priority-motorization", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceAxisPriorityMotorizationAsync(campaignId,
@@ -441,7 +441,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-axis-minor-garrisons", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceAxisMinorGarrisonsAsync(campaignId,
@@ -449,7 +449,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-battlefield", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceBattlefieldAsync(campaignId,
@@ -457,7 +457,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-cairo-setup", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCairoSetupAsync(campaignId,
@@ -465,7 +465,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-profiles", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitAvailableSourceProfilesAsync(campaignId,
@@ -473,7 +473,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-cairo-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceCairoWorldAsync(campaignId,
@@ -481,7 +481,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-maletti-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceMalettiAsync(campaignId,
@@ -489,7 +489,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-independent-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceIndependentAsync(campaignId,
@@ -497,7 +497,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-expanded-independent-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceExpandedIndependentAsync(campaignId,
@@ -505,7 +505,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-axis-free-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceAxisFreeWorldAsync(campaignId,
@@ -513,7 +513,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-axis-corps-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceAxisCorpsWorldAsync(campaignId,
@@ -521,7 +521,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-certified-maletti-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceCertifiedMalettiWorldAsync(campaignId,
@@ -529,7 +529,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-matruh-detached-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceMatruhDetachedWorldAsync(campaignId,
@@ -537,7 +537,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-cw-priority-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceCwPriorityWorldAsync(campaignId,
@@ -545,7 +545,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-cw-free-guns-world", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.PromoteSourceCwFreeGunsWorldAsync(campaignId,
@@ -553,7 +553,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapPost("/{campaignId}/source-local-map", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var admitted = await journal.AdmitSourceLocalMapAsync(campaignId,
@@ -561,7 +561,7 @@ internal static class CampaignDurableOutwardApi
                 return Results.Json(new { contractVersion = 2, campaignId, admitted, status = "setup-incomplete" });
             }));
         api.MapGet("/{campaignId}/source-initialization", (HttpContext context,
-            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(async () =>
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var source = await journal.ReadSourceVerifiedAsync(campaignId);
@@ -599,7 +599,7 @@ internal static class CampaignDurableOutwardApi
             }));
         api.MapPost("/{campaignId}/grants/{audience}",
             (HttpContext context, CampaignDurableAuthorityJournalStore journal,
-                string campaignId, string audience) => ExecuteWithoutBody(async () =>
+                string campaignId, string audience) => ExecuteWithoutBody(context, async () =>
             {
                 RequireOperator(context, journal);
                 var grant = await journal.IssueSeatGrantAsync(campaignId, Audience(audience),
@@ -733,8 +733,22 @@ internal static class CampaignDurableOutwardApi
                         openingRevision = revision,
                         publicActionRef = reference
                     })
-                    : Error(StatusCodes.Status409Conflict, result.RejectionCode ?? "rejected");
+                    : Error(context, StatusCodes.Status409Conflict, result.RejectionCode ?? "rejected");
             }));
+        // API shape-review, 2026-11-23, Recommendation 3 (scoped): a client's only way to learn
+        // which owner-opening kinds exist was reading source or the hand-maintained reference doc
+        // (docs/work/plans/2026-11-22-outward-http-api-reference.md). This exposes the real enum
+        // via reflection, so it cannot drift from the code -- deliberately narrower than that doc's
+        // full Stable/Experimental/Omit table, which classifies maturity, not just existence, and
+        // has no equivalent in code today; adding that classification to the enum itself would be
+        // its own separate change, not a "cheap win." Read-only, no side effects, no per-campaign
+        // state, so it needs no operator/seat credential beyond the loopback/dev-only gate already
+        // enforced above.
+        api.MapGet("/opening-kinds", () => Results.Json(new
+        {
+            contractVersion = 2,
+            kinds = Enum.GetNames<CampaignOwnerOpeningKind>(),
+        }));
     }
 
     private static bool SameOrigin(HttpContext context)
@@ -886,35 +900,38 @@ internal static class CampaignDurableOutwardApi
     private static async Task<IResult> Execute(HttpContext context, Func<Task<IResult>> action)
     {
         try { return await action(); }
-        catch (UnauthorizedAccessException) { return Error(401, "unauthorized"); }
-        catch (JsonException) { return Error(400, "invalid-request"); }
-        catch (InvalidContentPackException) { return Error(400, "invalid-request"); }
-        catch (KeyNotFoundException) { return Error(400, "invalid-request"); }
-        catch (FormatException) { return Error(400, "invalid-request"); }
+        catch (UnauthorizedAccessException) { return Error(context, 401, "unauthorized"); }
+        catch (JsonException) { return Error(context, 400, "invalid-request"); }
+        catch (InvalidContentPackException) { return Error(context, 400, "invalid-request"); }
+        catch (KeyNotFoundException) { return Error(context, 400, "invalid-request"); }
+        catch (FormatException) { return Error(context, 400, "invalid-request"); }
         // FID-002: a real, source-legal decision the engine cannot resolve yet (currently only
         // a Reaction window opened by a second-side Movement -- #394 gap 3) -- distinguishable
         // from the generic "unavailable" below, which also covers "no such opening exists".
         catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
-        { return Error(409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
-        catch (InvalidOperationException) { return Error(409, "unavailable"); }
-        catch (ArgumentException) { return Error(400, "invalid-request"); }
-        catch (OverflowException) { return Error(400, "invalid-request"); }
+        { return Error(context, 409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
+        catch (InvalidOperationException) { return Error(context, 409, "unavailable"); }
+        catch (ArgumentException) { return Error(context, 400, "invalid-request"); }
+        catch (OverflowException) { return Error(context, 400, "invalid-request"); }
     }
 
-    private static async Task<IResult> ExecuteWithoutBody(Func<Task<IResult>> action)
+    private static async Task<IResult> ExecuteWithoutBody(HttpContext context, Func<Task<IResult>> action)
     {
         try { return await action(); }
-        catch (UnauthorizedAccessException) { return Error(401, "unauthorized"); }
-        catch (JsonException) { return Error(400, "invalid-request"); }
-        catch (KeyNotFoundException) { return Error(400, "invalid-request"); }
-        catch (FormatException) { return Error(400, "invalid-request"); }
+        catch (UnauthorizedAccessException) { return Error(context, 401, "unauthorized"); }
+        catch (JsonException) { return Error(context, 400, "invalid-request"); }
+        catch (KeyNotFoundException) { return Error(context, 400, "invalid-request"); }
+        catch (FormatException) { return Error(context, 400, "invalid-request"); }
         catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
-        { return Error(409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
-        catch (InvalidOperationException) { return Error(409, "unavailable"); }
-        catch (ArgumentException) { return Error(400, "invalid-request"); }
-        catch (OverflowException) { return Error(400, "invalid-request"); }
+        { return Error(context, 409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
+        catch (InvalidOperationException) { return Error(context, 409, "unavailable"); }
+        catch (ArgumentException) { return Error(context, 400, "invalid-request"); }
+        catch (OverflowException) { return Error(context, 400, "invalid-request"); }
     }
 
-    private static IResult Error(int status, string code) =>
-        Results.Json(new { contractVersion = 2, code }, statusCode: status);
+    // API shape-review, 2026-11-23, Recommendation 6: HttpContext.TraceIdentifier is already
+    // generated per request by ASP.NET Core -- echoing it here gives a client something to
+    // correlate a failed request against server-side logs, at zero new cost.
+    private static IResult Error(HttpContext context, int status, string code) =>
+        Results.Json(new { contractVersion = 2, code, requestId = context.TraceIdentifier }, statusCode: status);
 }
