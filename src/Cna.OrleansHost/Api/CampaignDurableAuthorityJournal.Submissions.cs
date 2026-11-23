@@ -252,11 +252,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var head = DrainPendingSystemSteps(connection, transaction, seat.CampaignId,
             verifiedHead ?? Load(connection, transaction, seat.CampaignId));
         if (kind == CampaignOwnerOpeningKind.ForceAssignment && head.Timing is null)
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.ForceRoundUnavailableCode);
         if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
             || !IsPublicReference(publicActionRef)
             || openingRevision < 1)
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.InvalidRequestCode);
 
         using (var retry = connection.CreateCommand())
         {
@@ -294,7 +294,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         ForceRound? forceRound = null;
         if (kind == CampaignOwnerOpeningKind.ForceAssignment)
         {
-            if (schemaVersion != SchemaVersion) return CampaignOwnerSubmissionResult.Rejected();
+            if (schemaVersion != SchemaVersion) return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.SchemaMismatchCode);
             (string DecisionActionId, string DeclineEventHash) binding;
             try
             {
@@ -302,11 +302,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
             catch (InvalidOperationException)
             {
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.ForceRoundUnavailableCode);
             }
             if (!ForceRoundExists(connection, transaction, seat.CampaignId,
                 binding.DeclineEventHash))
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.ForceRoundUnavailableCode);
             forceRound = ReadActiveForceRound(connection, transaction, head,
                 seat.CampaignId);
         }
@@ -315,7 +315,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // cannot be resolved into an owner opening at all, no owner_openings row for it is
         // ever persisted either (the query that would persist one throws first) -- so the
         // ordinary revision/visible-cut lookup below can never match and would otherwise fall
-        // through to the generic, indistinguishable CampaignOwnerSubmissionResult.Rejected().
+        // through to the ordinary StaleOpeningCode rejection below (API shape-review,
+        // 2026-11-23) -- accurate as far as it goes ("no such opening row exists"), but still
+        // not the real reason: the decision genuinely cannot be resolved yet, not merely stale.
         // Checking this specific, already-distinguishable case here, before that lookup, is
         // what lets a real player's submission get the same explicit rule-not-implemented
         // signal the query side already gives, instead of an ordinary-looking rejection that
@@ -345,7 +347,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             opening.Parameters.AddWithValue("$epoch", seat.Epoch);
             opening.Parameters.AddWithValue("$revision", openingRevision);
             using var reader = opening.ExecuteReader();
-            if (!reader.Read()) return CampaignOwnerSubmissionResult.Rejected();
+            if (!reader.Read()) return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.StaleOpeningCode);
             visibleDigest = reader.GetString(0);
             visibleBytes = ReadBounded(reader, 1);
             authorityVersion = reader.GetInt64(2);
@@ -357,7 +359,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (authorityVersion < 1
             || authorityVersion > CampaignExercises.QueryCheckpoint(head.Session).StateVersion
             || visibleDigest != "sha256:" + Convert.ToHexStringLower(SHA256.HashData(visibleBytes)))
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.StaleOpeningCode);
         byte[] currentVisible;
         string[] actionIds;
         try
@@ -368,11 +370,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.StaleOpeningCode);
         }
         if (!currentVisible.AsSpan().SequenceEqual(visibleBytes))
-            return CampaignOwnerSubmissionResult.Rejected();
-        if (actionIds.Length != actionCount) return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.StaleOpeningCode);
+        if (actionIds.Length != actionCount) return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.StaleOpeningCode);
 
         int ordinal;
         string coreActionId;
@@ -387,28 +389,28 @@ internal sealed partial class CampaignDurableAuthorityJournal
             BindOpeningKey(action, seat.CampaignId, Side(seat.Audience), actingElementId);
             action.Parameters.AddWithValue("$ref", publicActionRef);
             using var reader = action.ExecuteReader();
-            if (!reader.Read()) return CampaignOwnerSubmissionResult.Rejected();
+            if (!reader.Read()) return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.UnknownActionReferenceCode);
             ordinal = reader.GetInt32(0);
             coreActionId = reader.GetString(1);
         }
         if (ordinal < 0 || ordinal >= actionIds.Length)
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.UnknownActionReferenceCode);
         if (kind == CampaignOwnerOpeningKind.SourceActions)
         {
             if (!CampaignHostAdapter.MatchesIssuedSourceAction(authorityVersion, visibleBytes, ordinal, coreActionId))
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.UnknownActionReferenceCode);
             // A hidden opponent decision can advance the source version without changing this
             // authenticated visible offer. Submit its freshly revalidated current identity.
             coreActionId = actionIds[ordinal];
         }
         else if (coreActionId != actionIds[ordinal])
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.UnknownActionReferenceCode);
         var expectedRef = Reference(ReadReferenceKey(connection, transaction), seat.CampaignId,
             Side(seat.Audience), actingElementId, seat.Epoch, openingRevision,
             visibleDigest, ordinal);
         if (!CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expectedRef),
                 Encoding.UTF8.GetBytes(publicActionRef)))
-            return CampaignOwnerSubmissionResult.Rejected();
+            return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.InvalidReferenceCode);
 
         // Only a current, authenticated owner offer may trigger clock cancellation.
         // Retained accepted retries have already returned their original receipt above.
@@ -421,7 +423,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CancelForceRound(connection, transaction, head, forceRound,
                     reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
 
@@ -502,7 +504,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (!result.IsAccepted)
             return result.RejectionReason == CampaignActionSubmissionRejectionReason.RuleNotImplemented
                 ? CampaignOwnerSubmissionResult.RuleNotImplemented()
-                : CampaignOwnerSubmissionResult.Rejected();
+                : CampaignOwnerSubmissionResult.Rejected(
+                    CampaignOwnerSubmissionResult.CoreRejectionCode(result.RejectionReason));
         RbaRound? rbaRound = null;
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
         {
@@ -513,7 +516,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 CancelRbaRound(connection, transaction, head, rbaRound, reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
         CycleRound? cycleRound = null;
@@ -526,7 +529,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 TimeoutCycleRound(connection, transaction, head, cycleRound, reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
         SelectionRound? selectionRound = null;
@@ -540,7 +543,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 TimeoutSelectionRound(connection, transaction, head, selectionRound, reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
         RetreatRound? retreatRound = null;
@@ -553,7 +556,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 TimeoutRetreatRound(connection, transaction, head, retreatRound, reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
         CustodyRound? custodyRound = null;
@@ -566,7 +569,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 TimeoutCustodyRound(connection, transaction, head, custodyRound, reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
         ReserveRound? reserveRound = null;
@@ -579,7 +582,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 TimeoutReserveRound(connection, transaction, head, reserveRound, reason, gate.CancelledAt);
                 transaction.Commit();
-                return CampaignOwnerSubmissionResult.Rejected();
+                return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.RoundCancelledCode);
             }
         }
         var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
@@ -883,11 +886,38 @@ internal sealed class CampaignOwnerSubmissionResult
     }
 
     internal const string RuleNotImplementedCode = "rule-not-implemented";
+    // Reason codes for SubmitOwnerActionCore's Rejected() call sites (owner shape-review,
+    // 2026-11-23): named from the real, already-distinguished branches in that method, not
+    // invented categories. "rejected" (the HTTP-side fallback for a null RejectionCode) stays
+    // the catch-all for anything not categorized below.
+    internal const string InvalidRequestCode = "invalid-request";
+    internal const string SchemaMismatchCode = "schema-mismatch";
+    internal const string ForceRoundUnavailableCode = "force-round-unavailable";
+    internal const string StaleOpeningCode = "stale-opening";
+    internal const string UnknownActionReferenceCode = "unknown-action-reference";
+    internal const string InvalidReferenceCode = "invalid-reference";
+    internal const string RoundCancelledCode = "round-cancelled";
 
     internal static CampaignOwnerSubmissionResult Accepted(byte[] canonicalReceipt) =>
         new(canonicalReceipt);
 
     internal static CampaignOwnerSubmissionResult Rejected() => new(null);
+
+    internal static CampaignOwnerSubmissionResult Rejected(string reasonCode) => new(null, reasonCode);
+
+    // Maps Core's own already-distinguished rejection reason (CampaignActionSubmissionRejectionReason)
+    // to the same kebab-case reason-code shape used above, instead of discarding it at the HTTP
+    // boundary. RuleNotImplemented is handled separately by its own branch at the call site.
+    internal static string CoreRejectionCode(CampaignActionSubmissionRejectionReason reason) => reason switch
+    {
+        CampaignActionSubmissionRejectionReason.InvalidSubmission => "invalid-submission",
+        CampaignActionSubmissionRejectionReason.InvalidAuthority => "invalid-authority",
+        CampaignActionSubmissionRejectionReason.CampaignMismatch => "campaign-mismatch",
+        CampaignActionSubmissionRejectionReason.StaleState => "stale-state",
+        CampaignActionSubmissionRejectionReason.UnexpectedPosition => "unexpected-position",
+        CampaignActionSubmissionRejectionReason.ActionNotLegal => "action-not-legal",
+        _ => "rejected",
+    };
 
     // A source-legal choice the engine has not built yet (FID-002): refused,
     // but distinguishable from an illegal or stale submission.
