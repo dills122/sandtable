@@ -3933,7 +3933,9 @@ public static class CampaignExercises
     // second-side query is unconditionally rejected as "already advanced"
     // even though no second-side decision exists yet.
     private static bool HasAdvancedCombatSelection(ExerciseSession session) =>
-        session.CurrentStageEntryBreakdown is not null
+        session.CurrentStageEntrySecondBreakdown is not null
+            ? session.CurrentStageEntrySecondCombatDecision is not null
+            : session.CurrentStageEntryBreakdown is not null
             ? session.CurrentStageEntryCombatDecision is not null
             : session.CurrentSecondBreakdown is not null
                 ? session.CurrentSecondCombatDecision is not null
@@ -3978,6 +3980,25 @@ public static class CampaignExercises
         return (world, position);
     }
 
+    // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+    // (World, Position) pair for Combat selection, same shape as
+    // QueryStageEntryCombatWorldAndPosition above, substituting this
+    // stage's own second-side Breakdown/Move/Reserve slots.
+    private static (CampaignWorldSnapshotV6 World, LandSequencePosition Position)
+        QueryStageEntrySecondCombatWorldAndPosition(ExerciseSession session)
+    {
+        var breakdown = session.CurrentStageEntrySecondBreakdown
+            ?? throw new InvalidOperationException("Stage Entry second-side Combat selection requires a completed second-side Breakdown.");
+        var world = session.CurrentStageEntrySecondMoveWorld ?? session.CurrentStageEntrySecondReserveWorld
+            ?? throw new InvalidOperationException("Stage Entry second-side Combat selection requires a retained World.");
+        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+            .Single(value => value.PositionId == breakdown.NextPositionId);
+        var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
+            catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
+            catalog.ActorRole, breakdown.Side, catalog.Sources);
+        return (world, position);
+    }
+
     internal static CampaignContactOwnerMovementCut QueryContactOwnerMovementCut(
         ExerciseSession session, Cna.Core.Rules.LandSide side, string actingElementId)
     {
@@ -3994,6 +4015,12 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(session);
         if (HasAdvancedCombatSelection(session))
             throw new InvalidOperationException("Combat selection has already advanced this authority cut.");
+        if (session.CurrentStageEntrySecondBreakdown is not null)
+        {
+            var (stageEntrySecondWorld, stageEntrySecondPosition) = QueryStageEntrySecondCombatWorldAndPosition(session);
+            return CampaignContactCombatSelectionCut.ProjectSecondCombat(stageEntrySecondWorld, stageEntrySecondPosition,
+                session.Context, session.CurrentContacts, side, actingElementId);
+        }
         if (session.CurrentStageEntryBreakdown is not null)
         {
             var (stageEntryWorld, stageEntryPosition) = QueryStageEntryCombatWorldAndPosition(session);
@@ -4074,6 +4101,17 @@ public static class CampaignExercises
         if (session.SourceTurn is { } sourceTurn) return new ExerciseCheckpoint(sourceTurn);
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // Combat assault/no-attack completion are chronologically later
+        // than this stage's own second-side Breakdown block below, so they
+        // must be checked first, same ordering discipline as every cascade
+        // in this file.
+        if (session.CurrentStageEntrySecondAssault is { Events.Count: > 0 } stageEntrySecondAssault)
+            return ExerciseCheckpoint.ForSecondAssault(stageEntrySecondAssault, session.CurrentStageEntrySecondCombatDecision!);
+        if (session.CurrentStageEntrySecondNoAttackCompletion is { } stageEntrySecondNoAttack)
+            return new ExerciseCheckpoint(stageEntrySecondNoAttack, session.CurrentStageEntrySecondCombatDecision!);
+        if (session.CurrentStageEntrySecondCombatDecision is { } stageEntrySecondCombatDecision)
+            return new ExerciseCheckpoint(stageEntrySecondCombatDecision);
         // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
         // Breakdown is chronologically later than this stage's own
         // second-side Movement Completion below, so it must be checked
@@ -4532,9 +4570,16 @@ public static class CampaignExercises
         // stage's own first-acting-side Combat Decision, gated by
         // CurrentStageEntryBreakdown the same way, checked first since it is
         // chronologically later than the #394 second side's own Breakdown.
-        var isStageEntry = session.CurrentStageEntryBreakdown is not null;
-        var isSecondSide = !isStageEntry && session.CurrentSecondBreakdown is not null;
-        var expectedStateVersion = isStageEntry
+        // MTS-TASK-006 (2026-11-23): extended a fourth time for this
+        // stage's own SECOND acting side's Combat Decision, gated by
+        // CurrentStageEntrySecondBreakdown, checked first since it is
+        // chronologically latest.
+        var isStageEntrySecondSide = session.CurrentStageEntrySecondBreakdown is not null;
+        var isStageEntry = !isStageEntrySecondSide && session.CurrentStageEntryBreakdown is not null;
+        var isSecondSide = !isStageEntrySecondSide && !isStageEntry && session.CurrentSecondBreakdown is not null;
+        var expectedStateVersion = isStageEntrySecondSide
+            ? session.CurrentStageEntrySecondBreakdown!.StateVersion
+            : isStageEntry
             ? session.CurrentStageEntryBreakdown!.StateVersion
             : isSecondSide
                 ? session.CurrentSecondBreakdown!.StateVersion : session.CurrentSnapshot.StateVersion;
@@ -4548,7 +4593,9 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
         if (submission.ExpectedStateVersion != expectedStateVersion)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
-        var expectedPositionId = isStageEntry
+        var expectedPositionId = isStageEntrySecondSide
+            ? session.CurrentStageEntrySecondBreakdown!.NextPositionId
+            : isStageEntry
             ? session.CurrentStageEntryBreakdown!.NextPositionId
             : isSecondSide
                 ? session.CurrentSecondBreakdown!.NextPositionId
@@ -4565,6 +4612,31 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         try
         {
+            if (isStageEntrySecondSide)
+            {
+                // Net-new path: no legacy decision event can exist for this
+                // stage's second side either.
+                var (world, position) = QueryStageEntrySecondCombatWorldAndPosition(session);
+                var stageEntrySecondCut = CampaignContactCombatSelectionCut.ProjectSecondCombat(world, position,
+                    session.Context, session.CurrentContacts, side.Value, actingElementId);
+                if (!stageEntrySecondCut.AssaultOffers.Any(offer => offer.ActionId == submission.ActionId)
+                    && stageEntrySecondCut.FinishOffer?.ActionId != submission.ActionId)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                var stageEntrySecondSelected = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                    session.CurrentSnapshot, session.CurrentSnapshot.RandomState, session.Context,
+                    session.CurrentContacts, side.Value, actingElementId, submission.ActionId);
+                if (stageEntrySecondSelected.Decision.Side != side || stageEntrySecondSelected.Decision.ActingElementId != actingElementId
+                    || stageEntrySecondSelected.Decision.ActionId != submission.ActionId)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                var stageEntrySecondContacts = session.CurrentContacts.AdvanceSecondCombatSelection(stageEntrySecondSelected.Decision);
+                var stageEntrySecondSuccessor = session.WithStageEntrySecondCombatSelection(stageEntrySecondSelected, stageEntrySecondContacts);
+                var stageEntrySecondBytes = stageEntrySecondSelected.Decision.SerializeCanonical();
+                var stageEntrySecondReceipt = new CampaignActionAcceptanceReceipt(stageEntrySecondSelected.CampaignId,
+                    stageEntrySecondSelected.Decision.PriorStateVersion, stageEntrySecondSelected.StateVersion,
+                    stageEntrySecondSelected.Decision.PositionId, submission.Audience, submission.ActionId);
+                return ExerciseStepResult.Accepted(stageEntrySecondSuccessor,
+                    new ExerciseStepEvidence(stageEntrySecondReceipt, stageEntrySecondBytes, stageEntrySecondBytes));
+            }
             if (isStageEntry)
             {
                 // Net-new path: no legacy decision event can exist for this
@@ -4872,6 +4944,37 @@ public static class CampaignExercises
             var completion = CampaignNativeCombatNoAttackCompletionV13.Create(selected, session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
             var successor = session.WithStageEntryNoAttack(completion, contacts);
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                selected.StateVersion, completion.StateVersion,
+                completion.NextPositionId, CampaignActionAudience.System,
+                $"sha256:{Convert.ToHexStringLower(SHA256.HashData(
+                    completion.SerializeCanonical()))}");
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
+                completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    // MTS-TASK-006 (2026-11-23): Stage Entry second-side analog of
+    // CompleteStageEntryCombatNoAttack, same shape and same reasoning,
+    // writing CurrentStageEntrySecondCombatDecision/CurrentStageEntrySecondNoAttackCompletion
+    // instead of the first-acting-side equivalents.
+    internal static ExerciseStepResult CompleteStageEntrySecondCombatNoAttack(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntrySecondCombatDecision is not { } selected
+            || session.CurrentStageEntrySecondNoAttackCompletion is not null
+            || session.CurrentContacts.AuthorityVersion != selected.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var completion = CampaignNativeCombatNoAttackCompletionV13.Create(selected, session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
+            var successor = session.WithStageEntrySecondNoAttack(completion, contacts);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 selected.StateVersion, completion.StateVersion,
                 completion.NextPositionId, CampaignActionAudience.System,
@@ -6550,6 +6653,8 @@ public static class CampaignExercises
         ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntrySecondAssault?.Release is { } stageEntrySecondSide)
+            return stageEntrySecondSide;
         if (session.CurrentStageEntryAssault?.Release is { } stageEntrySide)
             return stageEntrySide;
         if (session.CurrentSecondAssault?.Release is { } secondSide)
@@ -6608,7 +6713,9 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Choose(session.Context, elementId, choice);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(emitted, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(emitted, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(emitted, contacts)
@@ -6645,7 +6752,9 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Complete(session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(emitted, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(emitted, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(emitted, contacts)
@@ -6674,7 +6783,9 @@ public static class CampaignExercises
     internal static CampaignNativeReserveReleaseStateV27 QueryPendingNativeCycleControl(ExerciseSession session)
     {
         var release = QueryNativeReserveReleaseState(session);
-        if ((session.CurrentStageEntryAssault is { } stageEntryControl
+        if ((session.CurrentStageEntrySecondAssault is { } stageEntrySecondControl
+                ? stageEntrySecondControl.Control
+                : session.CurrentStageEntryAssault is { } stageEntryControl
                 ? stageEntryControl.Control
                 : session.CurrentSecondAssault is { } secondSideControl
                 ? secondSideControl.Control
@@ -6719,7 +6830,9 @@ public static class CampaignExercises
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
                 cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(control);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(control, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(control, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
@@ -6764,7 +6877,9 @@ public static class CampaignExercises
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
                 cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(control, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(control, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
@@ -7287,7 +7402,9 @@ public static class CampaignExercises
     }
 
     internal static object QueryPostCombatPassSource(ExerciseSession session) =>
-        session.CurrentStageEntryAssault is { TruckConvoyPass: { } stageEntryConvoy } stageEntrySide
+        session.CurrentStageEntrySecondAssault is { TruckConvoyPass: { } stageEntrySecondConvoy } stageEntrySecondSide
+            ? stageEntrySecondSide.PostCombatPasses.Count > 0 ? stageEntrySecondSide.PostCombatPasses[^1] : stageEntrySecondConvoy
+            : session.CurrentStageEntryAssault is { TruckConvoyPass: { } stageEntryConvoy } stageEntrySide
             ? stageEntrySide.PostCombatPasses.Count > 0 ? stageEntrySide.PostCombatPasses[^1] : stageEntryConvoy
             : session.CurrentSecondAssault is { TruckConvoyPass: { } secondConvoy } secondSide
             ? secondSide.PostCombatPasses.Count > 0 ? secondSide.PostCombatPasses[^1] : secondConvoy
@@ -7309,7 +7426,9 @@ public static class CampaignExercises
             var passed = CampaignNativePostCombatPassV42.Create(QueryPostCombatPassSource(session), side,
                 session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvancePostCombatPass(passed);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(passed, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(passed, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(passed, contacts)
@@ -7330,6 +7449,18 @@ public static class CampaignExercises
         QueryTruckConvoyPassSource(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntrySecondAssault is { } stageEntrySecondSide)
+        {
+            if (stageEntrySecondSide.TruckConvoyPass is not null)
+                throw new InvalidOperationException("Truck Convoy has already been passed.");
+            if (stageEntrySecondSide is not
+                {
+                    Release: { } stageEntrySecondRelease,
+                    Control.Choice: CampaignNativeCycleControlChoiceV28.Finish
+                })
+                throw new InvalidOperationException("Truck Convoy requires a finished cycle.");
+            return (stageEntrySecondRelease, stageEntrySecondSide.Control);
+        }
         if (session.CurrentStageEntryAssault is { } stageEntrySide)
         {
             if (stageEntrySide.TruckConvoyPass is not null)
@@ -7385,7 +7516,9 @@ public static class CampaignExercises
             var passed = CampaignNativeTruckConvoyPassV41.Create(release, control, side,
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceTruckConvoyPass(passed);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(passed, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(passed, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(passed, contacts)
@@ -7412,7 +7545,9 @@ public static class CampaignExercises
             var release = QueryNativeReserveReleaseState(session);
             var expectedAudience = release.ActingSide == LandSide.Axis
                 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
-            if ((session.CurrentStageEntryAssault is { } stageEntrySideControl
+            if ((session.CurrentStageEntrySecondAssault is { } stageEntrySecondSideControl
+                    ? stageEntrySecondSideControl.Control
+                    : session.CurrentStageEntryAssault is { } stageEntrySideControl
                     ? stageEntrySideControl.Control
                     : session.CurrentSecondAssault is { } secondSideControl
                     ? secondSideControl.Control
@@ -7438,7 +7573,9 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             }
             var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
-            var next = session.CurrentStageEntryAssault is not null
+            var next = session.CurrentStageEntrySecondAssault is not null
+                ? session.WithStageEntrySecondAssaultEvent(control, contacts)
+                : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(control, contacts)
                 : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
@@ -9148,6 +9285,99 @@ public static class CampaignExercises
                 return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
                     null, null, secondReserveExpectedHash, null);
             }
+        }
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // assault/no-attack/Combat Decision stages are chronologically
+        // latest, so they must be replayed and verified first, mirroring
+        // QueryCheckpoint's own ordering.
+        if (completedSession.CurrentStageEntrySecondAssault is { Events.Count: > 0 } stageEntrySecondAssault)
+        {
+            var expected = CampaignCurrentEventSerializer.Serialize(stageEntrySecondAssault.Events[^1],
+                completedSession.Context);
+            var stageEntrySecondAssaultHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntrySecondAssaultPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side assault step has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side assault predecessor did not replay.");
+                var replayed = (predecessor.CurrentStageEntrySecondAssault
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side assault predecessor has no stage chain."))
+                    .Advance(stageEntrySecondAssault.Events[^1]);
+                var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
+                if (!expected.AsSpan().SequenceEqual(actual)
+                    || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side assault step differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    expected, streamHash, stageEntrySecondAssaultHash, Hash(actual));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondAssaultHash, null); }
+        }
+        if (completedSession.CurrentStageEntrySecondNoAttackCompletion is { } stageEntrySecondNoAttack)
+        {
+            var expected = stageEntrySecondNoAttack.SerializeCanonical();
+            var stageEntrySecondNoAttackHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntrySecondNoAttackPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack completion has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack predecessor did not replay.");
+                var result = CompleteStageEntrySecondCombatNoAttack(predecessor);
+                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack completion differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    expected, streamHash, stageEntrySecondNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondNoAttackHash, null); }
+        }
+        if (completedSession.CurrentStageEntrySecondCombatDecision is { } stageEntrySecondDecision)
+        {
+            var expected = stageEntrySecondDecision.Decision.SerializeCanonical();
+            var stageEntrySecondDecisionHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntrySecondCombatSelectionPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection predecessor did not replay.");
+                var (world, position) = QueryStageEntrySecondCombatWorldAndPosition(predecessor);
+                var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                    predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                    predecessor.CurrentContacts, stageEntrySecondDecision.Decision.Side, stageEntrySecondDecision.Decision.ActingElementId,
+                    stageEntrySecondDecision.Decision.ActionId).Decision;
+                var bytes = replayedDecision.SerializeCanonical();
+                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
+                if (!expected.AsSpan().SequenceEqual(bytes)
+                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    bytes, streamHash, stageEntrySecondDecisionHash, Hash(bytes));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondDecisionHash, null); }
         }
         // MTS-TASK-005/006 follow-up: this stage's own assault/no-attack
         // stages are chronologically later than the #394 second-side block
