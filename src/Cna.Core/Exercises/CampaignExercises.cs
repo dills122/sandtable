@@ -4068,6 +4068,18 @@ public static class CampaignExercises
             return new ExerciseCheckpoint(secondMove, session.CurrentSnapshot);
         if (session.CurrentSecondReserve is { } secondReserve)
             return new ExerciseCheckpoint(secondReserve, session.CurrentSnapshot);
+        // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side
+        // Reserve Designation, chronologically later than every preamble
+        // checkpoint below, so it must be checked first (same ordering
+        // discipline as the #394 second-side block above it). Note: the six
+        // preamble events themselves (CurrentInitiativeDeclaration through
+        // CurrentNoObligationFleetRepair) have no ExerciseCheckpoint branch
+        // here at all, pre-existing from #518 -- ExerciseCheckpoint has no
+        // constructor overload for any of those six types yet. Out of scope
+        // for this change (preamble's own wiring, not MTS-TASK-005/006);
+        // flagged in this PR's description rather than silently left unnoted.
+        if (session.CurrentStageEntryReserve is { } stageEntryReserve)
+            return new ExerciseCheckpoint(stageEntryReserve, session.CurrentSnapshot);
         if (session.CurrentPostCombatPass is { } phasePassed)
             return new ExerciseCheckpoint(phasePassed, session.CurrentSnapshot);
         if (session.CurrentTruckConvoyPass is { } passed)
@@ -6766,6 +6778,66 @@ public static class CampaignExercises
         }
     }
 
+    // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side Reserve
+    // Designation -- same shape as QuerySecondReserveSource/SubmitSecondReserve
+    // above, reusing CampaignNativeSecondReserveV43 unchanged (role-as-data
+    // generic as of #518), but entered from the six-event preamble chain's
+    // terminal event instead of the first side's Post Combat Pass. The
+    // `orders` list must additionally carry this stage's own resolved order
+    // (CampaignNativeNoObligationFleetRepairV54.ToOrder()), per that event's
+    // own remarks -- it is not yet a member of CurrentSnapshot.OperationStageOrders,
+    // which only ever holds the orders CampaignSnapshotV11 itself was built
+    // with (Stage 1's).
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntryReserveSource(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntryReserve is { } reserve)
+            return (reserve, session.CurrentStageEntryReserveWorld
+                ?? throw new InvalidOperationException("Stage Entry Reserve World is missing."));
+        if (session.CurrentNoObligationFleetRepair is { } fleetRepair)
+            return (fleetRepair, session.CurrentSecondAssault?.Release?.World
+                ?? throw new InvalidOperationException("Stage Entry Reserve requires the prior stage's settled World."));
+        throw new InvalidOperationException("Stage Entry Reserve requires a completed prior-stage preamble.");
+    }
+
+    internal static IReadOnlyList<CampaignOperationStageOrder> StageEntryOrders(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return session.CurrentNoObligationFleetRepair is { } fleetRepair
+            ? [.. session.CurrentSnapshot.OperationStageOrders, fleetRepair.ToOrder()]
+            : session.CurrentSnapshot.OperationStageOrders;
+    }
+
+    internal static ExerciseStepResult SubmitStageEntryReserve(ExerciseSession session,
+        CampaignActionAudience audience, string actionId, string? elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Stage Entry Reserve requires an owner."),
+            };
+            var (predecessor, world) = QueryStageEntryReserveSource(session);
+            var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
+                session.Context, StageEntryOrders(session), side, elementId,
+                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+            var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
+            var next = session.WithStageEntryReserve(reserve, result, contacts);
+            var bytes = reserve.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(reserve.CampaignId,
+                reserve.PriorStateVersion, reserve.StateVersion, reserve.NextPositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (error is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     internal static object QueryPostCombatPassSource(ExerciseSession session) =>
         session.CurrentSecondAssault is { TruckConvoyPass: { } secondConvoy } secondSide
             ? secondSide.PostCombatPasses.Count > 0 ? secondSide.PostCombatPasses[^1] : secondConvoy
@@ -7410,6 +7482,10 @@ public static class CampaignExercises
                 return InvalidNativeHistory(completedSession);
             var (isNativeSuccessor, predecessor) = cursor switch
             {
+                // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-
+                // side Reserve Designation -- additive, does not change any
+                // arm below.
+                { CurrentStageEntryReserve: not null } => (true, cursor.StageEntryReservePredecessor),
                 { CurrentSecondBreakdown: not null } => (true, cursor.SecondBreakdownPredecessor),
                 { CurrentSecondMovementCompletion: not null } => (true, cursor.SecondMovementCompletionPredecessor),
                 { CurrentSecondMove: not null } => (true, cursor.SecondMovePredecessor),
@@ -8656,6 +8732,44 @@ public static class CampaignExercises
                     || completedSession.CurrentContacts.Records.Zip(contacts.Records)
                         .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
                     throw new InvalidCampaignHistoryException("Second Reserve differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    bytes, streamHash, reserveExpectedHash, Hash(bytes));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            {
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                    null, null, reserveExpectedHash, null);
+            }
+        }
+        // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side
+        // Reserve Designation -- same shape as the CurrentSecondReserve block
+        // above, reusing CampaignNativeSecondReserveV43 unchanged.
+        if (completedSession.CurrentStageEntryReserve is { } stageEntryReserve)
+        {
+            var expected = stageEntryReserve.SerializeCanonical();
+            var reserveExpectedHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntryReservePredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry Reserve has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry Reserve predecessor did not replay.");
+                var (source, world) = QueryStageEntryReserveSource(predecessor);
+                var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
+                    predecessor.Context, StageEntryOrders(predecessor), stageEntryReserve.Side,
+                    stageEntryReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                    predecessor.CurrentContacts.AuthorityVersion);
+                var bytes = replayed.SerializeCanonical();
+                var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntryReserve);
+                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntryReserveWorld != resultWorld
+                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry Reserve differs from replay.");
                 var streamHash = includeStreamHash
                     ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
                 return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
