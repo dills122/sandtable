@@ -10,8 +10,8 @@ internal static class CampaignCombatSelectionStepsCodec
     private static readonly Dictionary<string, string> Shapes = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         ["Boundary"] = "contractVersion:int creationBinding:id cycle:Authority firstActingSide:side priorVersion:long priorPrefix:hash completedBreakdownReceipt:hash position:Position world:World randomState:Random weather:ApplicableWeather breakdownFlow:Idle reactionWindow:null",
-        ["Participant"] = "unit:UnitKey representationId:id locationId:id componentIds:id[]",
-        ["Candidate"] = "attacker:Participant defender:Participant targetLocationId:id basis:id",
+        ["Participant"] = CampaignCodecSchemaFragments.Participant,
+        ["Candidate"] = CampaignCodecSchemaFragments.Candidate,
         ["Window"] = "decisionId:id owner:side timing:Timing",
         ["Command"] = "contractVersion:int kind:id segmentId:id decisionId:id? fromPositionId:id? expectedPriorVersion:long? choice:id? candidate:Candidate? participant:UnitKey?",
         ["Input"] = "command:Command actor:actor admittedAt:utc? clockAvailable:bool",
@@ -21,12 +21,12 @@ internal static class CampaignCombatSelectionStepsCodec
         ["RbaOpenEffect"] = "kind:id selectionReceiptId:id window:Window",
         ["DeclineEffect"] = "kind:id selectionReceiptId:id participant:UnitKey timing:Timing",
         ["CancelEffect"] = "kind:id selectionReceiptId:id timing:Timing?",
-        ["StepEffect"] = "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id dispositionReceiptId:id proofKind:id",
-        ["Receipt"] = "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+        ["StepEffect"] = CampaignCodecSchemaFragments.InheritedTraversalEffect,
+        ["Receipt"] = CampaignCodecSchemaFragments.Receipt,
         ["Control"] = "contractVersion:int boundaryHash:hash segmentId:id stateVersion:long prefix:hash stepIndex:int selectionOutcome:id selection:Candidate? selectionReceiptId:id? declineReceiptId:id? cancellationReceiptId:id? selectionWindow:Window? rbaWindow:Window? stepReceipts:id[] receipts:Receipt[] closed:bool",
         ["ApplicableWeather"] = "gameTurn:int operationStage:int attackerKind:id defenderKind:id weatherReceiptHash:hash",
-        ["Timing"] = "contractVersion:int configHash:hash kind:id decisionBudgetMilliseconds:int openedAtUnixMilliseconds:utc deadlineUnixMilliseconds:utc highWaterUnixMilliseconds:utc",
-        ["Idle"] = "kind:id",
+        ["Timing"] = CampaignCodecSchemaFragments.Timing,
+        ["Idle"] = CampaignCodecSchemaFragments.IdleFlow,
     };
 
     public static byte[] SerializeInput(CombatStepsInput input) => Bytes("Input", writer => WriteInput(writer, input));
