@@ -1373,5 +1373,66 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // MTS-TASK-005/006 (2026-11-23): the new stage's own first-acting-side
+    // Combat Decision, entered from this stage's own completed Breakdown
+    // (CurrentStageEntryBreakdown) instead of the #394 second side's.
+    // Unlike V46 (Breakdown), CampaignNativeSecondCombatDecisionStateV47's
+    // own Select factory already takes world/position/turnFacts/randomState
+    // as explicit parameters rather than reading session fields directly
+    // (confirmed by reading CampaignNativeSecondCombatDecisionV47.Select
+    // directly), so it needed no new entry point on the native class
+    // itself -- only this stage's own ExerciseSession slot, same reason
+    // every prior Stage Entry slot needed one. SecondAssaultFrame (used
+    // below, unchanged) is likewise already parameterized by the decision/
+    // turnFacts/history passed in, not by session field name.
+    //
+    // Accepting the decision immediately spins up CurrentStageEntryAssault
+    // (mirroring WithSecondCombatSelection exactly), but this slice does not
+    // add a WithStageEntryAssaultEvent/WithStageEntryNoAttack pair to
+    // advance it further: those require threading a Stage Entry branch
+    // through ~15 pre-existing CampaignExercises submit call sites that
+    // currently ternary between WithSecondAssaultEvent/WithRepeatAssaultEvent
+    // (Barrage, RetreatMove, ForceAssignment, AntiArmor, CancelledAssault,
+    // AssaultResult, PostResultRetreat, Settlement, CustodyDisposition,
+    // CustodySuccessor), none of which are reachable without the Host/HTTP
+    // wiring that does not exist yet for any Stage Entry mechanic (same
+    // pre-existing gap every prior slice has documented). Deferred to its
+    // own follow-up slice rather than forced in here unverifiable.
+    internal CampaignNativeSecondCombatDecisionStateV47? CurrentStageEntryCombatDecision { get; private set; }
+    internal ExerciseSession? StageEntryCombatSelectionPredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntryCombatSelection(CampaignNativeSecondCombatDecisionStateV47 selected,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntryBreakdown is null || CurrentStageEntryCombatDecision is not null
+            || selected.Decision.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != selected.StateVersion)
+            throw new InvalidOperationException("Stage Entry Combat selection must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntryCombatSelectionPredecessor = this;
+        successor.CurrentStageEntryCombatDecision = selected;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(selected.Decision);
+        successor.CurrentStageEntryAssault = CampaignNativeRepeatAssaultRuntime.ReplaySecond(
+            SecondAssaultFrame(selected, CurrentSnapshot, CurrentHistory), Context, contacts,
+            successor.CurrentHistory, []);
+        return successor;
+    }
+
+    // The new stage's own V14-V26 assault stages after its V47 selection --
+    // same shape as CurrentSecondAssault, a distinct slot for the same
+    // already-established reason (CurrentSecondAssault is permanently bound
+    // to Stage 1's second acting side). Created above as soon as the
+    // decision is accepted (matching WithSecondCombatSelection's own
+    // behavior), but not yet advanced past zero events by anything in this
+    // slice -- see the remarks above WithStageEntryCombatSelection.
+    // StageEntryAssaultPredecessor is deliberately not added yet: nothing in
+    // this slice ever sets it (that's WithStageEntryAssaultEvent/
+    // WithStageEntryNoAttack's job, both deferred to the follow-up slice),
+    // so it would be a dead field until then.
+    internal CampaignNativeRepeatAssaultRuntime? CurrentStageEntryAssault { get; private set; }
+
     public override string ToString() => nameof(ExerciseSession);
 }
