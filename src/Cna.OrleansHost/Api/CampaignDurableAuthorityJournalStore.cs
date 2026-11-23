@@ -559,6 +559,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
     internal CampaignOwnerOpening QuerySecondReserveOwnerOpening(CampaignSeatCredential credential) =>
         JournalFor(credential.CampaignId, createIfMissing: false).QuerySecondReserveOwnerOpening(credential);
 
+    internal CampaignOwnerOpening QueryStageEntryInitiativeDeclarationOwnerOpening(CampaignSeatCredential credential) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).QueryStageEntryInitiativeDeclarationOwnerOpening(credential);
+
     internal CampaignOwnerOpening QuerySecondMovementOwnerOpening(CampaignSeatCredential credential, string elementId) =>
         JournalFor(credential.CampaignId, createIfMissing: false).QuerySecondMovementOwnerOpening(credential, elementId);
 
@@ -717,6 +720,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondReserve(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerSecondReserve(credential, openingRevision, publicActionRef);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryInitiativeDeclaration(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerStageEntryInitiativeDeclaration(credential, openingRevision, publicActionRef);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovement(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerSecondMovement(credential, elementId, openingRevision, publicActionRef);
@@ -1038,6 +1044,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
     internal Task<CampaignOwnerOpening> QuerySecondReserveOwnerOpeningAsync(CampaignSeatCredential credential) =>
         RunAsync(credential.CampaignId, false, journal => journal.QuerySecondReserveOwnerOpening(credential));
 
+    internal Task<CampaignOwnerOpening> QueryStageEntryInitiativeDeclarationOwnerOpeningAsync(CampaignSeatCredential credential) =>
+        RunAsync(credential.CampaignId, false, journal => journal.QueryStageEntryInitiativeDeclarationOwnerOpening(credential));
+
     internal Task<CampaignOwnerOpening> QuerySecondMovementOwnerOpeningAsync(CampaignSeatCredential credential, string elementId) =>
         RunAsync(credential.CampaignId, false, journal => journal.QuerySecondMovementOwnerOpening(credential, elementId));
 
@@ -1193,6 +1202,9 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondReserveAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondReserve(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerStageEntryInitiativeDeclarationAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerStageEntryInitiativeDeclaration(credential, openingRevision, publicActionRef));
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondMovementAsync(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondMovement(credential, elementId, openingRevision, publicActionRef));

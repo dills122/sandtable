@@ -11,7 +11,13 @@ public abstract record CampaignActionCandidate
     internal CampaignActionCandidate(string kind, int? operationStage = null)
     {
         Kind = ContentContractGuards.RequireStableId(kind, nameof(kind));
-        if (operationStage is not null and not 1)
+        // MTS-TASK-003 (2026-11-23) correction: this hardcoded operationStage to exactly 1 --
+        // the only stage that existed when this constructor was written. Never reachable until
+        // now: nothing before this change ever passed a real Stage 2+ value through here.
+        // Widened to this codebase's real valid range (1-3, same bound CampaignSnapshotV11 and
+        // every native event's own SerializeCanonical already use), not removed, since a
+        // genuinely out-of-range value (0, negative, >3) should still fail loudly (FID-002).
+        if (operationStage is not null and (< 1 or > 3))
         {
             throw new ArgumentOutOfRangeException(nameof(operationStage));
         }

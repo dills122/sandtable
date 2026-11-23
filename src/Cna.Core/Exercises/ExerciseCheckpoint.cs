@@ -38,6 +38,79 @@ public sealed class ExerciseCheckpoint
         PositionId = CampaignPregameSourceCreation.PositionId;
     }
 
+    // MTS-TASK-003 (2026-11-23): the six-event Stage-entry preamble chain
+    // (#518) had no ExerciseCheckpoint representation at all -- flagged as a
+    // known gap by the MTS-TASK-005 Reserve slice's own doc. Each
+    // constructor mirrors the CampaignNativeSecondReserveV43/initial shape
+    // exactly: `initial` supplies only RulesetHash and a campaign-id
+    // cross-check, never consulted for stage/turn, so these are safe for any
+    // stage this chain is entered from.
+    internal ExerciseCheckpoint(CampaignNativeInitiativeDeclarationV49 declared, CampaignSnapshotV11 initial)
+    {
+        if (declared.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Initiative Declaration belongs to another campaign.");
+        ContractVersion = CampaignNativeInitiativeDeclarationV49.CurrentContractVersion;
+        CampaignId = declared.CampaignId;
+        StateVersion = declared.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = declared.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeWeatherDeterminationV50 determined, CampaignSnapshotV11 initial)
+    {
+        if (determined.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Weather Determination belongs to another campaign.");
+        ContractVersion = CampaignNativeWeatherDeterminationV50.CurrentContractVersion;
+        CampaignId = determined.CampaignId;
+        StateVersion = determined.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = determined.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeNoObligationOrganizationV51 resolved, CampaignSnapshotV11 initial)
+    {
+        if (resolved.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Organization resolution belongs to another campaign.");
+        ContractVersion = CampaignNativeNoObligationOrganizationV51.CurrentContractVersion;
+        CampaignId = resolved.CampaignId;
+        StateVersion = resolved.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = resolved.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeNoObligationNavalConvoyArrivalV52 resolved, CampaignSnapshotV11 initial)
+    {
+        if (resolved.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Naval Convoy Arrival resolution belongs to another campaign.");
+        ContractVersion = CampaignNativeNoObligationNavalConvoyArrivalV52.CurrentContractVersion;
+        CampaignId = resolved.CampaignId;
+        StateVersion = resolved.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = resolved.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeNoObligationFleetAssignmentV53 resolved, CampaignSnapshotV11 initial)
+    {
+        if (resolved.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Fleet Assignment resolution belongs to another campaign.");
+        ContractVersion = CampaignNativeNoObligationFleetAssignmentV53.CurrentContractVersion;
+        CampaignId = resolved.CampaignId;
+        StateVersion = resolved.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = resolved.NextPositionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeNoObligationFleetRepairV54 resolved, CampaignSnapshotV11 initial)
+    {
+        if (resolved.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Fleet Repair resolution belongs to another campaign.");
+        ContractVersion = CampaignNativeNoObligationFleetRepairV54.CurrentContractVersion;
+        CampaignId = resolved.CampaignId;
+        StateVersion = resolved.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = resolved.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeSecondBreakdownV46 completed, CampaignSnapshotV11 initial)
     {
         if (completed.CampaignId != initial.CampaignId)

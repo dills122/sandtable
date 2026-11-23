@@ -4162,16 +4162,29 @@ public static class CampaignExercises
             return new ExerciseCheckpoint(secondMove, session.CurrentSnapshot);
         if (session.CurrentSecondReserve is { } secondReserve)
             return new ExerciseCheckpoint(secondReserve, session.CurrentSnapshot);
+        // MTS-TASK-003 (2026-11-23): the six-event Stage-entry preamble
+        // chain, chronologically later than every first-side checkpoint
+        // below (CurrentPostCombatPass etc.) and earlier than this stage's
+        // own Reserve Designation above, so it must be checked here -- the
+        // gap flagged by the MTS-TASK-005 Reserve slice's own doc ("no
+        // ExerciseCheckpoint branch here at all"). Checked most-recent-first,
+        // same ordering discipline as every cascade in this file.
+        if (session.CurrentNoObligationFleetRepair is { } checkpointFleetRepair)
+            return new ExerciseCheckpoint(checkpointFleetRepair, session.CurrentSnapshot);
+        if (session.CurrentNoObligationFleetAssignment is { } checkpointFleetAssignment)
+            return new ExerciseCheckpoint(checkpointFleetAssignment, session.CurrentSnapshot);
+        if (session.CurrentNoObligationNavalConvoyArrival is { } checkpointConvoyArrival)
+            return new ExerciseCheckpoint(checkpointConvoyArrival, session.CurrentSnapshot);
+        if (session.CurrentNoObligationOrganization is { } checkpointOrganization)
+            return new ExerciseCheckpoint(checkpointOrganization, session.CurrentSnapshot);
+        if (session.CurrentStageEntryWeather is { } checkpointWeather)
+            return new ExerciseCheckpoint(checkpointWeather, session.CurrentSnapshot);
+        if (session.CurrentInitiativeDeclaration is { } checkpointDeclared)
+            return new ExerciseCheckpoint(checkpointDeclared, session.CurrentSnapshot);
         // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side
         // Reserve Designation, chronologically later than every preamble
-        // checkpoint below, so it must be checked first (same ordering
-        // discipline as the #394 second-side block above it). Note: the six
-        // preamble events themselves (CurrentInitiativeDeclaration through
-        // CurrentNoObligationFleetRepair) have no ExerciseCheckpoint branch
-        // here at all, pre-existing from #518 -- ExerciseCheckpoint has no
-        // constructor overload for any of those six types yet. Out of scope
-        // for this change (preamble's own wiring, not MTS-TASK-005/006);
-        // flagged in this PR's description rather than silently left unnoted.
+        // checkpoint above, so it must be checked first (same ordering
+        // discipline as the #394 second-side block above it).
         // MTS-TASK-005/006 (2026-11-23): this stage's own Combat Decision is
         // chronologically later than this stage's own Breakdown below, so it
         // must be checked first (same ordering discipline as every cascade
@@ -7047,6 +7060,66 @@ public static class CampaignExercises
         }
     }
 
+    // MTS-TASK-003 (2026-11-23): the six-event Stage-entry preamble chain's
+    // own opening decision -- the only one of the six that is a genuine
+    // player choice, not an automatic/no-decision step. Confirmed against
+    // this project's own existing classification of the Stage 1 original
+    // (CampaignAudienceOutcomeSource.cs: InitiativeOrderDeclared's
+    // "act-first"/"act-last" require Human(actor, e.DeclaringHolder),
+    // while WeatherDetermined/NoObligationOrganizationResolved/
+    // NoObligationNavalConvoyScheduleResolved all require System(actor)) --
+    // the five mechanics after this one are automatic and do not get their
+    // own owner-opening; wiring them is this task's own follow-up, tracked
+    // separately, not guessed at here.
+    internal static CampaignNativePostCombatPassV42 QueryStageEntryInitiativeDeclarationSource(
+        ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentInitiativeDeclaration is not null)
+            throw new InvalidOperationException("Initiative Declaration has already advanced its retained cut.");
+        if (session.CurrentSecondAssault is not { PostCombatPasses.Count: > 0 } repeatAssault)
+            throw new InvalidOperationException("Initiative Declaration requires the prior stage's completed preamble.");
+        return repeatAssault.PostCombatPasses[^1];
+    }
+
+    // `actionId` here follows every other Submit method's own convention: the real
+    // sha256-hash core action id (used only for the acceptance receipt's audit trail),
+    // never a semantic label -- confirmed against SubmitStageEntryReserve's identical
+    // shape, whose own `elementId` parameter carries the semantic choice separately.
+    // The actual decision (act-first/act-last) is `actFirst`, its own explicit parameter.
+    internal static ExerciseStepResult SubmitStageEntryInitiativeDeclaration(ExerciseSession session,
+        CampaignActionAudience audience, string actionId, bool actFirst)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Initiative Declaration requires an owner."),
+            };
+            var holder = session.CurrentSnapshot.InitiativeHolder
+                ?? throw new InvalidOperationException("Initiative Declaration requires a resolved holder.");
+            if (side != holder)
+                throw new InvalidOperationException("Only the initiative holder may declare.");
+            var predecessor = QueryStageEntryInitiativeDeclarationSource(session);
+            var declared = CampaignNativeInitiativeDeclarationV49.Create(predecessor, holder, actFirst,
+                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+            var contacts = session.CurrentContacts.AdvanceInitiativeDeclaration(declared);
+            var next = session.WithInitiativeDeclaration(declared, contacts);
+            var bytes = declared.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(declared.CampaignId,
+                declared.PriorStateVersion, declared.StateVersion, declared.NextPositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (error is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
     // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side Reserve
     // Designation -- same shape as QuerySecondReserveSource/SubmitSecondReserve
     // above, reusing CampaignNativeSecondReserveV43 unchanged (role-as-data
@@ -9443,7 +9516,16 @@ public static class CampaignExercises
         // Second-side assault stages follow the V47 selection: verify the
         // predecessor, then re-verify the whole retained stage chain with this
         // step appended, exactly as the session accepted it.
-        if (completedSession.CurrentSecondAssault is { Events.Count: > 0 } secondAssault)
+        // MTS-TASK-003 (2026-11-23) correction: this matched unconditionally on
+        // CurrentSecondAssault.Events.Count -- which stays > 0 forever once set,
+        // same as every other "never reset" field -- so it silently intercepted
+        // every chronologically-later preamble check below it (CurrentInitiativeDeclaration
+        // through CurrentNoObligationFleetRepair) the moment any of them also became
+        // true, re-verifying against the STALE second-side-assault expectation instead.
+        // Guarded out once the preamble chain has begun, mirroring the same
+        // most-recent-first discipline QueryCheckpoint's cascade already uses.
+        if (completedSession.CurrentInitiativeDeclaration is null
+            && completedSession.CurrentSecondAssault is { Events.Count: > 0 } secondAssault)
         {
             var expected = CampaignCurrentEventSerializer.Serialize(secondAssault.Events[^1],
                 completedSession.Context);
@@ -9943,7 +10025,18 @@ public static class CampaignExercises
                     ?? throw new InvalidCampaignHistoryException("Initiative Declaration has no predecessor.");
                 if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                     throw new InvalidCampaignHistoryException("Initiative Declaration predecessor did not replay.");
-                var replayed = CampaignNativeInitiativeDeclarationV49.Create(predecessor.CurrentPostCombatPass!,
+                // MTS-TASK-003 (2026-11-23) correction: this previously read
+                // predecessor.CurrentPostCombatPass -- the FIRST side's own
+                // Patrol pass, fixed forever once set and long stale by this
+                // point -- instead of the SECOND side's own terminal pass
+                // (CampaignNativeRepeatAssaultRuntime.PostCombatPasses' last
+                // entry, confirmed as the real predecessor shape by
+                // CampaignNativeStageEntryPreambleTests' own
+                // SecondSidePatrolComplete helper). Never triggered until
+                // now: no caller of WithInitiativeDeclaration existed before
+                // this change, so this mismatch was latent, not observed.
+                var replayed = CampaignNativeInitiativeDeclarationV49.Create(
+                    predecessor.CurrentSecondAssault!.PostCombatPasses[^1],
                     declared.DeclaringHolder, declared.FirstSide == declared.DeclaringHolder,
                     predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion)
                     .SerializeCanonical();
