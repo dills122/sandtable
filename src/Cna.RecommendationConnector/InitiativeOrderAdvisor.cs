@@ -20,31 +20,50 @@ public sealed class InitiativeOrderAdvisor(HttpClient outwardApi, IOllamaApiClie
     private static readonly JsonSerializerOptions DeserializeOptions = new() { PropertyNameCaseInsensitive = true };
 
     // Static harness context, built once -- the rules never change per request (decision 4).
-    // The two worked examples are load-bearing: without them, qwen2.5:1.5b defaulted to
-    // act-first regardless of state (confirmed locally); with them, it correctly reasons
-    // about force ratio and visibility instead.
+    //
+    // Important, confirmed-by-running-this correction to an earlier draft: the real
+    // visible-cut for this opening is {contractVersion, campaignId, positionId, choices}
+    // ONLY -- no force counts, no positions, no enemy visibility. Checked directly
+    // against a real campaign (see docs/work/plans/2026-11-23-recommendation-connector-
+    // design-discussion.md's "resolved" section) and confirmed no broader map/forces/
+    // contacts query exists anywhere in the real outward API either -- this isn't a
+    // context-curation gap to engineer around, it's what the real game currently
+    // exposes at this exact rules-moment (nothing new has happened yet this turn).
+    //
+    // An earlier version of this prompt's few-shot examples implied force-ratio data
+    // would always be present in the input. It won't be, for this opening, today. That
+    // mismatch is exactly what caused qwen2.5:1.5b to fabricate specific numbers
+    // ("your force of 7 vs their 2") out of nothing when given the real, minimal input --
+    // caught by the verification pass (Grounded: false), not by this prompt. Fixed by
+    // teaching the real shape of the input instead of a hypothetical richer one.
     private const string SystemPrompt = """
         You are a tactical advisor for a 1979 North African desert wargame. You hold
         initiative and must pick exactly one legal action: act-first (commit your
         movement/combat before the enemy acts, trading information for tempo) or
         act-last (react to everything the enemy commits this turn, trading tempo for
-        information). Do not default to one answer. Weigh the specific force ratio and
-        visibility given in each case. Only reference facts that are explicitly present
-        in the state given to you -- never invent a threat, reinforcement, or piece of
-        information the state does not actually state.
+        information).
 
-        Example 1: Your forces outnumber the visible enemy garrison 3 to 1 at the
-        contested position, and the enemy has no visible reserves nearby. Answer:
-        act-first. Reason: you have a clear local advantage and no hidden threat to
-        worry about, so press it before the enemy can reposition or reinforce.
+        Important: the state you are given for this decision will NOT include force
+        counts, unit positions, or enemy visibility -- at this exact moment in a turn,
+        nothing new has happened yet, so there is no situational detail to report. Do
+        not invent any. If you find yourself wanting to cite a specific number or fact,
+        stop -- it is not real.
 
-        Example 2: Your forces are outnumbered 1 to 2 at the contested position, and
-        you have no visibility into where the enemy reserves are. Answer: act-last.
-        Reason: committing now with a weaker, uncertain position risks running into
-        hidden strength; better to see what the enemy actually does before committing
-        your own weaker force.
+        Given that, reason about the general structural tradeoff instead: act-first
+        commits you before you can react to anything the opponent does, which is
+        stronger when you expect to have the advantage and want to deny the opponent
+        a chance to reposition; act-last costs you the tempo but means you commit with
+        full information about what the opponent did this turn, which is safer when
+        you have no way to judge your relative strength in advance. State plainly in
+        your rationale that no situational force/position data was available for this
+        decision, and that your recommendation is a general rule of thumb, not a
+        claim about a specific advantage.
 
-        Now apply this same reasoning to the new situation given.
+        Example: State gives only contractVersion, campaignId, positionId, and the two
+        choices -- no force or position data. Answer: act-last. Reason: with no
+        situational information available to judge relative strength, preserving the
+        information advantage (seeing what the opponent commits to first) is the safer
+        general default than committing blind for tempo you cannot confirm you need.
         """;
 
     // Second pass: ground-check the first pass's own output against the literal state it
@@ -157,11 +176,13 @@ public sealed class InitiativeOrderAdvisor(HttpClient outwardApi, IOllamaApiClie
             ?? new Verification(false, "Verification pass returned no parseable result.");
     }
 
-    // Tier-2 context (decision 3's open question #1, resolved pragmatically for this PoC):
-    // the real visible-cut JSON, as-is, not yet a hand-curated natural-language template.
-    // Honest scope note: this is the crude version -- real integration testing against the
-    // actual messy JSON shape (not the hand-written scenario text used for prompt tuning)
-    // is itself useful signal, flagged in the report, not hidden.
+    // Resolution of the design doc's open question #1 (context tier): there is no richer
+    // tier to curate into. Confirmed directly against a real campaign that this opening's
+    // visible cut really is just {contractVersion, campaignId, positionId, choices}, and
+    // that no broader map/forces/contacts query exists anywhere in the real outward API
+    // today. Passing the real cut through as-is is therefore not a crude placeholder for
+    // a future curated template -- it is the honest, complete picture, and the system
+    // prompt above is written to match that rather than to imply more exists.
     private static string BuildStateSuffix(JsonElement visibleCutJson) =>
         "Visible state (JSON):\n" + visibleCutJson.GetRawText();
 

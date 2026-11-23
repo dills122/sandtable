@@ -159,29 +159,80 @@ with zero new authoritative surface:
      local position → press with tempo; uncertain disposition → wait for
      information), not a fixed maxim.
 
-## Open questions — need an empirical check, not more theorizing
+## Open questions — resolved against real campaigns, not theorized
 
-1. **Context tier for the per-request game-state suffix.** Three tiers
-   considered:
-   - Minimal: just the current `QueryOpening` response (legal actions only).
-   - Current full visible state + pending decision (everything the
-     player's own client already renders — still 100% `FOW-001`-safe since
-     it's identical to what they already see).
-   - Historical/replay trend context (attrition patterns, momentum) — needs
-     its own `FOW-001`-scoped history query surface, which may not exist
-     yet; **not investigated**.
+Both items below were resolved by actually running the connector against real
+campaigns over real HTTP (PR #542, and the follow-up Reserve Designation work),
+not by further discussion. The resolutions turned out different from what was
+originally guessed.
 
-   This tension cuts against decision 3 above (cheap/small model, low
-   compute): richer context costs more tokens per request even on cheap
-   hardware, and a small model may not meaningfully use extra context
-   anyway. **Proposed next step (not yet run):** a small empirical test —
-   same model, a handful of real decision points, tier-1 vs. tier-2 context
-   — to see whether advice quality actually improves or whether the small
-   model can't use the extra context well regardless. Defer tier-3 until
-   there's a concrete reason to build a new history-exposure endpoint for it.
+1. **Context tier for the per-request game-state suffix — RESOLVED, and
+   differently than expected: there is no richer tier to pick between.**
+   Checked directly against a real campaign: the Initiative Order opening's
+   real visible cut is exactly `{contractVersion, campaignId, positionId,
+   choices}` — no force counts, no positions, no enemy visibility. Checked a
+   second decision type (Reserve Designation) and found the same shape
+   (`choices` as `{kind, elementId}` objects, still no tactical data). Then
+   checked whether any *other* real endpoint exposes a broader map/forces/
+   contacts view — grepped every route in `CampaignDurableOutwardApi.cs`;
+   the only other state-adjacent endpoint found (`source-counter-contacts`)
+   is a pregame-setup admission endpoint, not a live map query. **There is
+   currently no endpoint anywhere in the real outward API that exposes
+   richer tactical state to any client, human or automated.** This was not
+   a `FOW-001` scoping choice — it's that the outward API, as built and
+   proven this session, was scoped narrowly to "can two players submit and
+   receive the exact legal next decision," never "render a tactical picture
+   of the battlefield." A real human player's own UI would hit the exact
+   same wall today.
 
-2. **Model quality bar.** Not yet tested against anything. The ladder above
-   is a starting plan, not a result.
+   Consequence for the harness: the original few-shot examples (written
+   before this was checked) implied force-ratio data would always be
+   present in the input. It won't be, for either decision type checked so
+   far. That mismatch — not model size, not JSON formatting — is what
+   caused the originally-reported hallucination (a 1.5B model, taught by
+   example to expect comparable numbers, fabricated some when none were
+   given). Fixed by rewriting both advisors' system prompts to state
+   plainly that no situational force/position data will be present and to
+   reason about the general structural tradeoff instead, with worked
+   examples matching the real (minimal) input shape rather than a
+   hypothetical richer one. Confirmed against three fresh real campaigns
+   each for both decision types: zero fabricated facts in any of the six
+   runs, a real, qualitative improvement over the original hallucination.
+
+2. **Model quality bar — RESOLVED as "workable but genuinely fragile," not
+   "good," at the 1.5B tier, and the harder finding is about the
+   verification step's own reliability, not just the generator's.** Across
+   3 fresh real Initiative Order runs: all 3 avoided fabricating facts
+   (the original bug), but only 1 of 3 passed its own verification pass
+   cleanly — the other 2 were flagged `Grounded: false` by the *verifier*,
+   and reading them, at least one of those two flags looks like verifier
+   noise rather than a real problem in the candidate. Across 3 fresh real
+   Reserve Designation runs (a structurally harder decision — a
+   variable-length choice list, not a fixed binary, with only one worked
+   example instead of two): only 1 of 3 was internally coherent; the other
+   2 showed genuine self-contradiction (one run picked "complete" while its
+   own stated rationale argued for holding something in reserve — the
+   opposite action). All 3 were correctly flagged `Grounded: false`.
+
+   Reading across both decision types: **the generator's reliability
+   degrades with decision complexity** (binary choice, well-anchored by two
+   worked examples → mostly coherent; variable-length choice, anchored by
+   only one example → frequently incoherent), and **the verifier itself
+   (same 1.5B model) is noisy in both directions** — it caught every real
+   problem in both batches (true positives), but also flagged at least one
+   candidate that reads as fine (a plausible false positive). The system
+   behaved safely either way — nothing incoherent would have reached a
+   player unflagged — but "safe because it rejects a lot" and "actually
+   reliable" are different claims. Concrete next steps, not yet done: (a)
+   more worked examples for decision types with more structure (Reserve
+   Designation's variable-length shape needs more than one anchor, the same
+   lesson Initiative Order's two-example prompt already demonstrated); (b)
+   consider an asymmetric model size — keep the cheap generator, use a
+   larger model only for the verification call, since that call runs once
+   per advice request either way and a false-positive-prone verifier
+   defeats the point of having one; (c) escalate the generator's own model
+   size only if (a) doesn't close the gap, per the design's own stated
+   order.
 
 ## Boundary set now, not deferred
 
