@@ -964,3 +964,20 @@ part; no existing row is renamed or removed.
 | `StageEntryReserveRejectsTheOppositeStagesRole` | `c3a30e6942` | 8 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryReserveTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-22 (2 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `ca27e764171d390992791383b4825cb34f74da3067fc1ef717ef02dd4062ba68`; retained XML SHA-256 `00bb6878707ea6cab0f1a4b4cbf53078c14d16b34a2944ce88a74e5a519cf8ff`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+## Stage Entry Movement, the new stage's own first-acting-side (MTS-TASK-005/006, 2026-11-22)
+
+Adds one new class, `CampaignNativeStageEntryMovementTests`, proving
+`CampaignNativeSecondMoveV44`/`CampaignNativeSecondMovementCompletedV45`
+reused unchanged (both are already role-as-data generic as of #518, and
+their predecessor switches match `CampaignNativeSecondReserveV43` by type,
+not by which `ExerciseSession` slot holds it), entered from the new
+stage's own completed Reserve Designation. Two new `[Fact]` rows, one
+ordinary suite part; no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntryMovementCompletesForTheNewStagesFirstActingSideWithNoElementsMoved` | `eee178aa34` | 18 |
+| `StageEntryMovementRejectsTheOppositeStagesRole` | `56f241f573` | 43 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryMovementTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-22 (2 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `213dcbc7bfe0e160293a6828dfa1efc45173a083e3a28fe240d1986b579c0f09`; retained XML SHA-256 `10b193cf4a64eda9931c47fe2c6a31d93dfad7a01e4fd8b399ee5454c0343bfe`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
