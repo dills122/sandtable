@@ -224,7 +224,7 @@ public sealed class AuthorityBoundaryTests
             .Order(StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(["Cna.ExerciseRunner", "Cna.OrleansHost"], references);
+        Assert.Equal(["Cna.ExerciseRunner", "Cna.LocalCampaignSimulator", "Cna.OrleansHost"], references);
     }
 
     [Fact]

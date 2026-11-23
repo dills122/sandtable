@@ -234,6 +234,108 @@ originally guessed.
    size only if (a) doesn't close the gap, per the design's own stated
    order.
 
+## Live-session prototype — run for real, not just in xunit
+
+Every verification so far ran inside xunit's own process, through a hand-built
+`HttpClient` the test itself constructed. That client added a header
+(`Sec-Fetch-Site: same-origin`) the real outward API's same-origin gate (#319)
+requires from every caller. The connector's own shipped `Program.cs` never
+added that header to its real `HttpClient` registration — meaning the actual
+standalone service, as it would run in any real deployment, got a bare `403
+Forbidden` on its very first call. This was never caught because nothing had
+ever actually run the real service outside a test. Fixed by adding the same
+header where the connector's own `OutwardApi` `HttpClient` is registered —
+the connector doing, in its own runtime wiring, exactly what its test harness
+already simulated it doing.
+
+Caught by building `Cna.LocalCampaignSimulator` (new `src/` project): a small
+dev-only tool that boots one real campaign — real file-backed journal, real
+Orleans silo, real `MapDurableCampaignApi()` routes, the same production
+classes the test harness already used, just packaged as a long-running
+process instead of disposed at the end of a test — and keeps it listening on
+a real local port. Pointing the real `Cna.RecommendationConnector` service
+(via `dotnet run`, no test runner involved) at that address, then driving
+both decision types with plain `curl`, is the first time this connector
+actually ran as the standalone service it's meant to be, against a live
+campaign, end to end:
+
+- `POST /advise/initiative-order` → real `act-last` recommendation, grounded
+  rationale text, `Grounded: false` (verifier-noise, same documented pattern).
+- Submitted the real `act-first` action over the real outward API to advance
+  the campaign (this connector itself never does this — a human/UI would).
+- `POST /advise/reserve-designation` → real `complete` recommendation against
+  a genuinely different opening.
+
+Also added a second few-shot example to `ReserveDesignationAdvisor`'s system
+prompt (a 3-option case, distinct answer, explicit "the real list varies,
+re-read it" instruction) — the concrete next step (a) from the section above.
+Re-verified 3x against fresh real campaigns: 3/3 internally coherent (up from
+1/3 before), closing the self-contradiction gap without needing a larger
+model. Verifier noise (2/3 flagged `Grounded: false` on reads that look
+fine) persists and is unaffected by this change, as expected — it's a
+property of the single-model verifier, not the generator's examples.
+Deliberately did **not** add a second example to `InitiativeOrderAdvisor`:
+its real input never varies (always the same four-field shape), so a second
+example with a different answer for an identical input would teach
+inconsistency, not generalization — one example per genuinely-constant input
+is the right size, not under-provisioned.
+
+Not done: the asymmetric-verifier-model idea (b) from the section above —
+still a real next step, just not this increment's.
+
+## Third decision type: Movement — the first with real tactical data
+
+Checked what's actually HTTP-reachable on Stage 1 today (the real
+end-to-end test, `CampaignDurableAuthorityJournalTests.EndToEndHttpRelease.cs`)
+before picking: after Reserve Designation, the real flow is Movement (a real
+per-element move, repeated until none remain) then Movement Segment
+Completion, then Cycle Control, etc. Stage 2's own mechanics (Reserve,
+Breakdown, Combat Decision/Assault/No-Attack) are Core-only — their
+Host/HTTP wiring is a separate, still-unmerged effort — so they stay out of
+scope until that lands and is confirmed live on main, same discipline as
+every other scope decision this session.
+
+Checked the real Movement opening's visible cut directly against a real
+campaign and found something that revises the earlier "no richer tier
+exists" finding's scope: **it was true for Initiative Order and Reserve
+Designation specifically, not for every decision type.** Movement's real
+visible cut carries a real terrain graph (`locations`/`edges`, with terrain
+features like ridge/road/track), real contact observations (an apparent
+enemy presence, with how confidently it's identified), the acting element's
+own state (position, mobility, cohesion), and `movementOffers` — the real
+candidate moves, each with an origin, destination, and real movement-point
+cost. Added `MovementAdvisor`, the first advisor whose prompt teaches the
+model to read real facts rather than state plainly that none exist.
+
+Also found, by querying a real campaign: with this session's one available
+fixture (`CombatInfantryRequest`), `axis-infantry`'s own Movement opening
+only ever offers exactly one candidate move — the adjacent hex toward the
+contact is excluded (ZOC-related, per the existing Movement/ZOC/Reaction
+adversarial-audit comments already in the codebase), leaving nothing to
+actually choose between. Querying `commonwealth-infantry`'s Movement at the
+same point returned zero offers (not yet its turn in this sequence). A
+single real offer is not a real decision — `UX-001` is about not automating
+away a genuine human choice, and there is no choice to automate away when
+only one legal option exists — so `MovementAdvisor` short-circuits and
+returns that one option directly, with no model call at all, when exactly
+one offer is present. Verified live against a real campaign: the real
+`/advise/movement` endpoint returns the correct single-offer short-circuit
+result.
+
+**Known gap, not yet closed:** the genuinely interesting path — the model
+actually weighing real contacts/terrain/cost across 2+ real candidate
+moves — has not been exercised against a real campaign, because the one
+fixture available this session never produces more than one Movement offer
+for either side's infantry at this point in Stage 1. The prompt and schema
+are written for it and pass a local build, but "builds" and "verified
+against a real campaign" are different claims, and this is deliberately
+reported as the former only. Next step: find or build a fixture/position
+where a real element has 2+ legal moves (plausible candidates: a unit
+sitting at `center`, which has edges to both `east` and `west`, or a later
+turn/position), and re-run the same three-fresh-campaigns discipline used
+for the other two decision types before calling this one's reliability
+characterized at all.
+
 ## Boundary set now, not deferred
 
 No "admin/spectator" mode that lets the connector see hidden state for

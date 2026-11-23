@@ -445,7 +445,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts/orleans-results
-          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedReserveAdviceAgainstARealCampaign" 2>&1 | tee artifacts/orleans-results/console.log
+          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedReserveAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedMovementAdviceAgainstARealCampaign" 2>&1 | tee artifacts/orleans-results/console.log
           python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
       - name: Retain Orleans test results
         if: ${{ always() }}
