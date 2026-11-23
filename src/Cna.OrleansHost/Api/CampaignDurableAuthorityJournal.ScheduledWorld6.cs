@@ -268,7 +268,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             insert.Transaction = transaction;
             insert.CommandText = """
-                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,
+                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,$side,
                   $command,$event,$receipt,$checkpoint,$contacts,$prior,$hash)
                 """;
             insert.Parameters.AddWithValue("$id", campaignId);
@@ -278,6 +278,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             insert.Parameters.AddWithValue("$ref", (object?)ownerRef ?? DBNull.Value);
             insert.Parameters.AddWithValue("$epoch", (object?)epoch ?? DBNull.Value);
             insert.Parameters.AddWithValue("$revision", (object?)revision ?? DBNull.Value);
+            // This flow's own arrival opening is always the axis side (bound literally as
+            // "axis" in its own Reference(...) call above); null for the preamble rows that
+            // carry no owner reference at all, matching every other owner-identity column here.
+            insert.Parameters.AddWithValue("$side", ownerRef is null ? (object)DBNull.Value : "axis");
             insert.Parameters.AddWithValue("$command", command);
             insert.Parameters.AddWithValue("$event", eventBytes);
             insert.Parameters.AddWithValue("$receipt", receipt);

@@ -55,4 +55,12 @@ public sealed record CampaignAcceptedStepEvent(
     byte[] CanonicalEvent,
     byte[] CanonicalReceipt,
     byte[] SnapshotCheckpoint,
-    byte[] CanonicalContacts);
+    byte[] CanonicalContacts,
+    // Mirrors accepted_steps.owner_side (added alongside it to close a cross-audience
+    // idempotency-retry gap in SubmitOwnerActionCore; see that method's own remarks). A
+    // trailing optional property, not a required one, so every event constructed by an
+    // older build -- there is no migration mechanism for already-persisted Marten events,
+    // same as the SQLite journal (see CampaignDurableAuthorityJournal.OpenExisting's own
+    // remarks) -- deserializes with Side = null rather than failing, and falls back to the
+    // pre-fix (audience-blind) retry behavior for that one historical row only.
+    string? Side = null);

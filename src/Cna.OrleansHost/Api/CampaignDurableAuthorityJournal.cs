@@ -271,6 +271,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
           campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL,
           action_kind TEXT NOT NULL, acting_element_id TEXT,
           owner_public_ref TEXT, seat_epoch INTEGER, owner_revision INTEGER,
+          owner_side TEXT CHECK(owner_side IN ('axis','commonwealth') OR owner_side IS NULL),
           canonical_command BLOB NOT NULL, canonical_event BLOB NOT NULL,
           canonical_receipt BLOB NOT NULL, snapshot_checkpoint BLOB NOT NULL,
           canonical_contacts BLOB NOT NULL,
@@ -1796,6 +1797,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
         RequireBounded(checkpoint, head.Request.ContractVersion == CampaignPregameSourceCreation.RequestVersion
             ? MaxSourceCreationBytes : MaxEvidenceBytes);
         var nextSequence = checked(head.Sequence + 1);
+        // Deliberately NOT a StepHash input (see StepHash's own remarks): it is Host-side
+        // bookkeeping that lets the idempotency-retry lookup in SubmitOwnerActionCore scope a
+        // match to the credential that actually made it, never part of the canonical, hash-
+        // chained record itself. The submitting side is already bound into canonical_command via
+        // submission.Audience, so adding it here too would be redundant with, not additive to,
+        // what the hash already authenticates -- and changing StepHash's own inputs would move
+        // every existing hash chain, a DET-001/EVT-001-class change this fix does not need to
+        // make. Null for every System-audience/legacy step, which can never match that lookup's
+        // WHERE clause anyway (it requires a non-null owner_public_ref).
+        var side = submission.Audience is CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth
+            ? Side(submission.Audience) : null;
         var nextHash = StepHash(head.Hash, nextSequence,
             kind, actingElementId, ownerPublicRef, seatEpoch, ownerRevision,
             commandBytes, eventBytes,
@@ -1804,7 +1816,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         {
             insert.Transaction = transaction;
             insert.CommandText = """
-                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,
+                INSERT INTO accepted_steps VALUES ($id,$seq,$kind,$element,$ref,$epoch,$revision,$side,
                   $command,$event,$receipt,$checkpoint,$contacts,$prior,$hash)
                 """;
             insert.Parameters.AddWithValue("$id", campaignId);
@@ -1814,6 +1826,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             insert.Parameters.AddWithValue("$ref", (object?)ownerPublicRef ?? DBNull.Value);
             insert.Parameters.AddWithValue("$epoch", (object?)seatEpoch ?? DBNull.Value);
             insert.Parameters.AddWithValue("$revision", (object?)ownerRevision ?? DBNull.Value);
+            insert.Parameters.AddWithValue("$side", (object?)side ?? DBNull.Value);
             insert.Parameters.AddWithValue("$command", commandBytes);
             insert.Parameters.AddWithValue("$event", eventBytes);
             insert.Parameters.AddWithValue("$receipt", receiptBytes);

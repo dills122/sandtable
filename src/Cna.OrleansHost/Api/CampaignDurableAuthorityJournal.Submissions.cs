@@ -261,11 +261,21 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using (var retry = connection.CreateCommand())
         {
             retry.Transaction = transaction;
+            // owner_side is bound alongside the pre-existing match columns (never a StepHash
+            // input -- see PersistAccepted's own remarks) specifically so this idempotency
+            // shortcut cannot hand a DIFFERENT credential the accepted side's own cached
+            // receipt merely because the (element,ref,epoch,revision) tuple it submitted
+            // happens to coincide with that side's -- the epoch is a per-side counter, so
+            // "coincide" includes the ordinary case of both sides' very first action each
+            // being epoch 1. Without this, a resubmission under a foreign credential that
+            // somehow replays the correct side's own ref would short-circuit here and
+            // observe that side's receipt instead of the rejection every
+            // *RejectsStaleForgedAndWrongAudienceSubmissions-style test asserts.
             retry.CommandText = """
                 SELECT canonical_receipt FROM accepted_steps
                 WHERE campaign_id=$id AND action_kind=$kind
                   AND acting_element_id=$element AND owner_public_ref=$ref
-                  AND seat_epoch=$epoch AND owner_revision=$revision
+                  AND seat_epoch=$epoch AND owner_revision=$revision AND owner_side=$side
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
             retry.Parameters.AddWithValue("$kind", AcceptedKind(kind));
@@ -273,6 +283,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
             retry.Parameters.AddWithValue("$revision", openingRevision);
+            retry.Parameters.AddWithValue("$side", Side(seat.Audience));
             if (retry.ExecuteScalar() is byte[] retainedReceipt)
             {
                 RequireBounded(retainedReceipt);
