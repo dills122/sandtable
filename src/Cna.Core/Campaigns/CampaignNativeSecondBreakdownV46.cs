@@ -89,6 +89,88 @@ internal sealed record CampaignNativeSecondBreakdownV46(
             completed.Side, breakdown.PositionId, next.PositionId, completed.WorldHash);
     }
 
+    // MTS-TASK-005/006 (2026-11-23): duplicate of Create, entered from this
+    // stage's own completed Movement Completion (CurrentStageEntryMovementCompletion)
+    // instead of the first side's. Create(ExerciseSession) above reads four
+    // named session fields directly (CurrentSecondMovementCompletion,
+    // SecondMovementCompletionPredecessor, SecondMovePredecessor,
+    // CurrentSecondMoveWorld) rather than taking its predecessor by type the
+    // way CampaignNativeSecondMoveV44/V45 do, so it cannot be reused as-is
+    // for this stage's own slots. This mirrors the CampaignExercises layer's
+    // existing per-generation duplication (QuerySecondMovementSource/
+    // QueryStageEntryMovementSource) rather than introducing new
+    // delegate-based parameterization for a single call site. Every other
+    // check, invariant, and the resulting event's contract are byte-for-byte
+    // identical to Create -- only which ExerciseSession slots are read
+    // differs.
+    internal static CampaignNativeSecondBreakdownV46 CreateForStageEntry(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var completed = session.CurrentStageEntryMovementCompletion
+            ?? throw new InvalidOperationException("Stage Entry Movement has not completed.");
+        if (session.CurrentStageEntryBreakdown is not null)
+            throw new InvalidOperationException("Stage Entry Breakdown has already completed.");
+        var source = session.StageEntryMovementCompletionPredecessor
+            ?? throw new InvalidOperationException("Stage Entry Movement history is missing.");
+        var (_, world) = CampaignExercises.QueryStageEntryMovementSource(source);
+        var context = session.Context;
+        var initial = session.CurrentSnapshot;
+        var orders = CampaignExercises.StageEntryOrders(session);
+        var contactVersion = session.CurrentContacts.AuthorityVersion;
+        if (context.ArtifactV6 is not { } artifact || completed.CampaignId != initial.CampaignId
+            || completed.StateVersion != contactVersion || completed.WorldHash != CampaignNativeCombatPaidWorldV22.Hash(world)
+            || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario)
+            || initial.ReactionWindow is not null || initial.BreakdownFlow is not CampaignBreakdownFlow.Idle)
+            throw new InvalidOperationException("Stage Entry Breakdown requires settled movement and World authority.");
+        var (movementSource, _) = CampaignExercises.QueryStageEntryMovementSource(source);
+        var expectedCompletion = CampaignNativeSecondMovementCompletedV45.Create(movementSource, world, context,
+            orders, completed.Side, initial.Setup.InitialGameTurn, source.CurrentContacts.AuthorityVersion);
+        if (!completed.SerializeCanonical().AsSpan().SequenceEqual(expectedCompletion.SerializeCanonical()))
+            throw new InvalidOperationException("Movement completion differs from its predecessor.");
+        var cursor = source;
+        var seen = new HashSet<ExerciseSession>(ReferenceEqualityComparer.Instance);
+        while (cursor.CurrentHistory.Count != 0 && cursor.CurrentHistory[^1] is CampaignNativeSecondMoveV44 move)
+        {
+            if (!seen.Add(cursor)) throw new InvalidOperationException("Stage Entry Movement history contains a cycle.");
+            var definition = artifact.Definition.LegacyDefinition.Elements.Single(value => value.ElementId == move.ElementId);
+            if (definition.BreakdownVehicleCohort is not null || move.ReactionWindow is not null)
+                throw new InvalidOperationException("Movement requires breakdown or reaction handling.");
+            var predecessor = cursor.StageEntryMovePredecessor
+                ?? throw new InvalidOperationException("Stage Entry Movement predecessor is missing.");
+            var (priorEvent, priorWorld) = CampaignExercises.QueryStageEntryMovementSource(predecessor);
+            var (replayed, replayedWorld) = CampaignNativeSecondMoveV44.Create(priorEvent, priorWorld, context,
+                orders, predecessor.CurrentContacts, move.Side, initial.Setup.InitialGameTurn,
+                move.ElementId, move.ActionId, initial.RulesetHash);
+            if (!move.SerializeCanonical().AsSpan().SequenceEqual(replayed.SerializeCanonical())
+                || cursor.CurrentStageEntryMoveWorld != replayedWorld)
+                throw new InvalidOperationException("Stage Entry Movement differs from retained authority.");
+            cursor = predecessor;
+        }
+        if (cursor.CurrentHistory.Count == 0 || cursor.CurrentHistory[^1] is not CampaignNativeSecondReserveV43 { Completed: true })
+            throw new InvalidOperationException("Stage Entry Movement lacks its completed reserve predecessor.");
+        var catalog = Cna1979LandSequenceV4.CreateTurn(initial.Setup.InitialGameTurn);
+        var movement = catalog.Single(value => value.PositionId == completed.PositionId);
+        var breakdown = catalog.Single(value => value.PositionId == completed.NextPositionId);
+        var order = orders.Single(value => value.GameTurn == movement.GameTurn
+            && value.OperationStage == movement.OperationStage);
+        var actingRole = order.ActingRole(completed.Side);
+        if (actingRole is null || movement.ActorRole != actingRole
+            || movement.SegmentId != LandSegmentIds.Movement || Cna1979LandSequenceV4.GetNext(movement) != breakdown
+            || breakdown.SegmentId != LandSegmentIds.BreakdownDetermination)
+            throw new InvalidOperationException("Stage Entry Breakdown does not follow its retained movement slot.");
+        var definitions = artifact.Definition.LegacyDefinition.Elements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        if (world.Elements.Any(value => definitions[value.ElementId].BreakdownVehicleCohort is not null
+            && value.OperationalState.MovementEnded?.PositionId == movement.PositionId))
+            throw new InvalidOperationException("Vehicle movement requires breakdown accounting.");
+        var next = Cna1979LandSequenceV4.GetNext(breakdown);
+        if (next.ActorRole != actingRole || next.SegmentId != LandSegmentIds.Combat
+            || next.StepId != LandStepIds.PositionDetermination)
+            throw new InvalidOperationException("Stage Entry Breakdown requires its combat successor.");
+        return new(CurrentContractVersion, completed.CampaignId, completed.StateVersion,
+            "sha256:" + Convert.ToHexStringLower(SHA256.HashData(completed.SerializeCanonical())),
+            completed.Side, breakdown.PositionId, next.PositionId, completed.WorldHash);
+    }
+
     internal byte[] SerializeCanonical()
     {
         if (ContractVersion != CurrentContractVersion || PriorStateVersion is < 1 or long.MaxValue

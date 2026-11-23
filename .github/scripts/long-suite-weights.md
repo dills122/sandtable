@@ -981,3 +981,45 @@ ordinary suite part; no existing row is renamed or removed.
 | `StageEntryMovementRejectsTheOppositeStagesRole` | `56f241f573` | 43 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryMovementTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-22 (2 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `213dcbc7bfe0e160293a6828dfa1efc45173a083e3a28fe240d1986b579c0f09`; retained XML SHA-256 `10b193cf4a64eda9931c47fe2c6a31d93dfad7a01e4fd8b399ee5454c0343bfe`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+## Stage Entry Breakdown, the new stage's own first-acting-side (MTS-TASK-005/006, 2026-11-23)
+
+Adds one new class, `CampaignNativeStageEntryBreakdownTests`, proving the
+guard behavior of `CampaignNativeSecondBreakdownV46.CreateForStageEntry`
+-- a new entry point added because, unlike `CampaignNativeSecondReserveV43`/
+`CampaignNativeSecondMoveV44`/`CampaignNativeSecondMovementCompletedV45`,
+`CampaignNativeSecondBreakdownV46.Create` reads named `ExerciseSession`
+fields directly (`CurrentSecondMovementCompletion`,
+`SecondMovementCompletionPredecessor`, `SecondMovePredecessor`,
+`CurrentSecondMoveWorld`) rather than taking its predecessor by type, so it
+could not be reused as-is for this stage's own slots.
+`CreateForStageEntry` is a duplicate of `Create` with those four reads
+substituted for their Stage Entry equivalents, mirroring the
+`CampaignExercises`-layer's existing per-generation duplication
+(`QuerySecondMovementSource`/`QueryStageEntryMovementSource`) rather than
+introducing new delegate-based parameterization for a single call site.
+Two new `[Fact]` rows, one ordinary suite part; no existing row is
+renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntryBreakdownRejectsASessionWithoutACompletedStageEntryMovement` | `c673004075` | 102 |
+| `StageEntryBreakdownCompletionRejectsTheSameSession` | `0037edb91e` | 17 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryBreakdownTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) — a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `f3c6e49f597e3009b5299afdebfaf269af604fe323f4c3e8dc1793305149e375`; retained XML SHA-256 `70a0a2d6e4dc158b190e94aa8ddf5d4a44ec20343b4722d026090247329bbd52`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+Testing depth note: unlike the Reserve/Movement test files, this class
+cannot exercise a successful (non-rejecting) `CreateForStageEntry` call,
+because reaching a real `ExerciseSession` with
+`CurrentStageEntryMovementCompletion` populated needs the full six-event
+preamble chain plus this stage's own Reserve/Move/MovementCompletion
+driven through the real `ExerciseSession` `With*` chain, which itself
+needs a real driven campaign to reach legitimately -- the Host/HTTP wiring
+that would let a test (or a real player) reach that state does not exist
+yet (MTS-TASK-003/007, out of scope here). This is the same pre-existing
+gap `2026-11-22-mts-task-002-slices-2-3-and-wiring.md` already documents
+("the ExerciseSession/CampaignExercises wiring is not integration
+tested"), now also applying to this new method. What is tested is the
+guard itself: `CreateForStageEntry` correctly rejects a real, legitimately
+constructed session (a fresh campaign genesis) that has not reached a
+completed Stage Entry Movement.

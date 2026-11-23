@@ -1337,5 +1337,41 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // MTS-TASK-005/006 (2026-11-23): the new stage's own first-acting-side
+    // Breakdown, entered from this stage's own completed Movement Completion
+    // (CurrentStageEntryMovementCompletion) instead of the first side's.
+    // Reuses CampaignNativeSecondBreakdownV46's event payload/contract
+    // unchanged, but -- unlike V43/V44/V45 -- V46.Create(ExerciseSession)
+    // reads named session fields directly (CurrentSecondMovementCompletion,
+    // SecondMovementCompletionPredecessor, SecondMovePredecessor,
+    // CurrentSecondMoveWorld) rather than taking its predecessor by type, so
+    // it cannot be reused as-is for this stage's own slots (confirmed by
+    // reading CampaignNativeSecondBreakdownV46.Create directly). Added
+    // CampaignNativeSecondBreakdownV46.CreateForStageEntry, a duplicate of
+    // Create with those four reads substituted for their Stage Entry
+    // equivalents -- mirroring the per-generation duplication this codebase
+    // already uses at the CampaignExercises layer (QuerySecondXxx/
+    // QueryStageEntryXxx), rather than introducing new delegate-based
+    // parameterization for a single call site.
+    internal CampaignNativeSecondBreakdownV46? CurrentStageEntryBreakdown { get; private set; }
+    internal ExerciseSession? StageEntryBreakdownPredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntryBreakdown(CampaignNativeSecondBreakdownV46 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntryBreakdown is not null || CurrentStageEntryMovementCompletion is null
+            || completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Stage Entry Breakdown must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntryBreakdownPredecessor = this;
+        successor.CurrentStageEntryBreakdown = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
     public override string ToString() => nameof(ExerciseSession);
 }
