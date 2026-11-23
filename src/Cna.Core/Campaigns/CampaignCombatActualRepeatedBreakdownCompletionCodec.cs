@@ -197,13 +197,13 @@ internal static class CampaignCombatActualRepeatedBreakdownCompletionCodec
     {
         ["Source"] = "contractVersion:int repeatedMovementCompletionSourceCanonicalUtf8:carrier breakdownEventCanonicalUtf8:eventCarrier[]",
         ["Base"] = "contractVersion:int dependencyManifestHash:hash repeatedMovementCompletionProof:RMCProof",
-        ["Command"] = "contractVersion:int kind:id operationStage:int actionId:hash baseHash:hash cycleId:hash expectedPositionId:id expectedPriorVersion:long capabilityId:hash",
-        ["Input"] = "command:Command actor:actor",
+        ["Command"] = CampaignCodecSchemaFragments.StageActionCapabilityCommand,
+        ["Input"] = CampaignCodecSchemaFragments.Input,
         ["Reference"] = "sourceId:id locator:id",
         ["Effect"] = "kind:id movementCompletionReceiptId:id sources:Reference[] successorPositionId:id",
         ["Event"] = "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash repeatedMovementCompletionSourceHash:hash baseHash:hash cycleId:hash positionId:id priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
         ["Control"] = "contractVersion:int baseHash:hash repeatedMovementCompletionSourceHash:hash movementSourceHash:hash stateVersion:long prefix:hash positionId:id originalCycle:Authority activeCycle:Authority closure:Closure priorMovementEnd:MovementEndProof movementEnd:MovementEndProof? members:ReserveMember[] world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] nextCycleProgress:ProgressRef[] tracks:Track[] movementReceipts:Receipt[] flow:Flow interruptContext:Context? priorLifecycleReceipts:Receipt[] receipts:Receipt[] breakdownCompletionReceiptId:id? closed:bool",
-        ["Proof"] = "contractVersion:int sourceId:id sourceHash:hash base:Base control:Control",
+        ["Proof"] = CampaignCodecSchemaFragments.BaseControlProof,
     };
     private static readonly Dictionary<string, int> ArrayBounds = new(StringComparer.Ordinal)
     {
