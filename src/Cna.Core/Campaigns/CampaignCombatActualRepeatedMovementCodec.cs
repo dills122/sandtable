@@ -199,14 +199,14 @@ internal static class CampaignCombatActualRepeatedMovementCodec
         ["Source"] = "contractVersion:int continuationSourceCanonicalUtf8:carrier movementEventCanonicalUtf8:eventCarrier[]",
         ["Base"] = "contractVersion:int dependencyManifestHash:hash continuationProof:ContinuationProof",
         ["Command"] = "contractVersion:int kind:id baseHash:hash cycleId:hash positionId:id expectedPriorVersion:long unit:UnitKey originLocationId:id destinationLocationId:id",
-        ["Input"] = "command:Command actor:actor",
+        ["Input"] = CampaignCodecSchemaFragments.Input,
         ["Cost"] = "terrainCost:int breakOffCost:int totalCost:int baseCpa:int voluntaryCeiling:int beforeCp:int afterCp:int excessCpDp:int beforeCohesion:signedInt afterCohesion:signedInt",
-        ["MembershipEnd"] = "relationId:id creationReceiptId:id kind:id attacker:UnitKey defender:UnitKey endingCause:id",
+        ["MembershipEnd"] = CampaignCodecSchemaFragments.EndedMembership,
         ["Effect"] = "kind:id unit:UnitKey representationId:id originLocationId:id destinationLocationId:id costs:Cost endedMemberships:MembershipEnd[]",
         ["Event"] = "contractVersion:int eventType:id author:side campaignId:id rulesetHash:rawHash configurationHash:hash continuationSourceHash:hash baseHash:hash cycleId:hash positionId:id priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
-        ["Track"] = "unit:UnitKey route:id[]",
+        ["Track"] = CampaignCodecSchemaFragments.Track,
         ["Control"] = "contractVersion:int baseHash:hash continuationSourceHash:hash stateVersion:long prefix:hash positionId:id originalCycle:Authority activeCycle:Authority closure:Closure movementEnd:MovementEndProof members:ReserveMember[] world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] nextCycleProgress:ProgressRef[] tracks:Track[] receipts:Receipt[]",
-        ["Proof"] = "contractVersion:int sourceId:id sourceHash:hash base:Base control:Control",
+        ["Proof"] = CampaignCodecSchemaFragments.BaseControlProof,
     };
     private static readonly Dictionary<string, int> ArrayBounds = new(StringComparer.Ordinal)
     {
