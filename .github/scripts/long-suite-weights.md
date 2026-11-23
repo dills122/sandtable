@@ -1058,3 +1058,43 @@ verify the real one. What is tested instead is the guard itself:
 constructed session (a fresh campaign genesis) that has not reached a
 completed Stage Entry Breakdown -- same depth and same reasoning as the
 Breakdown test file.
+
+## Stage Entry Combat Assault/No-Attack, the new stage's own first-acting-side (MTS-TASK-005/006 follow-up, 2026-11-23)
+
+Adds one new class, `CampaignNativeStageEntryCombatAssaultTests`, proving the
+guard behavior of `ExerciseSession.WithStageEntryNoAttack`. The surrounding
+change generalizes the ~15 pre-existing shared submit/query call sites this
+stage's own assault/no-attack chain runs through (Barrage, RetreatMove,
+ForceSeal, ForceAssignment, AntiArmor, CancelledAssault, Reserve Release,
+Cycle Control, Post-Combat Pass, Truck Convoy) -- but found most of them need
+no per-site change at all: they dispatch through the `CurrentRepeatAssault`
+computed property and `WithRepeatAssaultEvent`, both now extended to resolve
+`CurrentStageEntryAssault` first, so only the later-tier methods that bypass
+that property on purpose (Reserve Release onward, which must still see a
+just-finished side's `.Release` after `IsSecondSideFinish` flips) needed
+explicit new branches. One new `[Fact]` row, one ordinary suite part; no
+existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntryNoAttackRejectsASessionWithoutACompletedStageEntryCombatDecision` | `f9f40374e7` | 106 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryCombatAssaultTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (1 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `1a1a41495a1d2ee2e3cf29cd6ba8a4b761eee15051f1c1bd88d6e8917d82765e`; retained XML SHA-256 `220b693a4604c6dd3f687129078e7244cfc1123a43e9862d95dd5b2641cef7f0`. The row hash is also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+Testing depth note: same limitation as every prior Stage Entry slice --
+`WithStageEntryAssaultEvent`, the `CurrentRepeatAssault` property's new
+three-way resolution, and `WithRepeatAssaultEvent`'s new three-way dispatch
+all operate on a real `CampaignNativeRepeatAssaultRuntime`, which only
+accepts a real `ExerciseSession`, not typed parameters -- there is no way to
+reach a genuine success path without a real driven session, which does not
+exist as a fixture yet (same pre-existing gap every prior slice has
+documented). What proves those three changes correct instead is the full
+existing regression suite (488/488, covering every `#394` second-side and
+first-side call site this change touches) passing unchanged: both are read
+by every one of those paths today, so a defect in the new Stage-Entry-first
+branch would surface there, not just in a missing new test. What is tested
+directly is the one method with its own explicit guard,
+`WithStageEntryNoAttack`, on a real, legitimately constructed session (a
+fresh campaign genesis) that has not reached a completed Stage Entry Combat
+Decision -- same depth and same reasoning as every prior Stage Entry test
+file.
