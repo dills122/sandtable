@@ -665,52 +665,7 @@ internal static class CampaignDurableOutwardApi
                 var credential = Credential(root.GetProperty("credential"), campaignId);
                 var stage = String(root, "stage");
                 var element = String(root, "actingElementId");
-                if (stage == "pregame-axis-supply" && element != "land.pregame-axis-supply")
-                    throw new JsonException("Invalid pregame opening key.");
-                if (stage == "pregame-axis-supply-finish" && element != "land.pregame-axis-supply-finish")
-                    throw new JsonException("Invalid pregame finish opening key.");
-                if (stage == "source-axis-dump" && element != "land.graziani-axis-dumps")
-                    throw new JsonException("Invalid Axis dump opening key.");
-                if (stage == "source-commonwealth-supply" && element != "land.graziani-commonwealth-supply")
-                    throw new JsonException("Invalid Commonwealth supply opening key.");
-                if (stage == "source-dummy" && element != "land.graziani-dummy-groups")
-                    throw new JsonException("Invalid dummy opening key.");
-                if (stage == "source-actions" && element != "land.graziani-source-actions")
-                    throw new JsonException("Invalid source actions opening key.");
-                if (stage == "source-unattached-cargo" && element != "land.graziani-unattached-cargo")
-                    throw new JsonException("Invalid unattached cargo opening key.");
-                if (stage == "source-motorization" && element != "land.graziani-motorization")
-                    throw new JsonException("Invalid motorization opening key.");
-                if (stage == "source-axis-gt1-supply" && element != "land.graziani-axis-gt1-supply")
-                    throw new JsonException("Invalid Axis GT1 supply opening key.");
-                if (stage == "source-commonwealth-supply-plan" && element != "land.graziani-commonwealth-supply-plan")
-                    throw new JsonException("Invalid Commonwealth supply plan opening key.");
-                if (stage == "source-autoblinda" && element != "land.graziani-axis-autoblinda")
-                    throw new JsonException("Invalid Autoblinda opening key.");
-                if (stage == "source-cw-free-guns" && element != "land.graziani-commonwealth-free-guns")
-                    throw new JsonException("Invalid Commonwealth free guns opening key.");
-                if (stage == "source-matruh-formation" && element != "land.graziani-commonwealth-matruh-formation")
-                    throw new JsonException("Invalid Matruh formation opening key.");
-                if (stage == "source-cw-priority-catalog" && element != "land.graziani-commonwealth-priority-catalog")
-                    throw new JsonException("Invalid Commonwealth priority catalog opening key.");
-                if (stage == "source-gt2-correction" && element != "land.graziani-axis-gt2-correction")
-                    throw new JsonException("Invalid GT2 correction opening key.");
-                if (stage == "source-maletti-hierarchy" && element != "land.graziani-axis-maletti-hierarchy")
-                    throw new JsonException("Invalid Maletti hierarchy opening key.");
-                if (stage == "source-axis-corps-setup" && element != "land.graziani-axis-corps-setup")
-                    throw new JsonException("Invalid Axis corps setup opening key.");
-                if (stage == "source-axis-free-setup" && element != "land.graziani-axis-free-setup")
-                    throw new JsonException("Invalid Axis free setup opening key.");
-                if (stage == "source-initial-wrecks" && element != "land.graziani-commonwealth-initial-wrecks")
-                    throw new JsonException("Invalid initial wrecks opening key.");
-                if (stage == "source-attached-initial-loads" && element != "land.graziani-commonwealth-attached-initial-loads")
-                    throw new JsonException("Invalid attached initial loads opening key.");
-                if (stage == "source-priority-motorization" && element != "land.graziani-commonwealth-priority-motorization")
-                    throw new JsonException("Invalid priority motorization opening key.");
-                if (stage == "source-axis-priority-motorization" && element != "land.graziani-axis-priority-motorization")
-                    throw new JsonException("Invalid Axis priority motorization opening key.");
-                if (stage == "source-cairo-setup" && element != "land.graziani-commonwealth-cairo-setup")
-                    throw new JsonException("Invalid Cairo setup opening key.");
+                RequireKnownSourceElement(stage, element);
                 // Phase C3b of issue #439: opening queries write durable state (opening/action
                 // references, the open round's high-water mark, and possibly a committed Core
                 // timeout), so they run behind CampaignGrain's single-writer boundary too.
@@ -742,52 +697,7 @@ internal static class CampaignDurableOutwardApi
                 var element = String(root, "actingElementId");
                 var revision = root.GetProperty("openingRevision").GetInt64();
                 var reference = String(root, "publicActionRef");
-                if (stage == "pregame-axis-supply" && element != "land.pregame-axis-supply")
-                    throw new JsonException("Invalid pregame opening key.");
-                if (stage == "pregame-axis-supply-finish" && element != "land.pregame-axis-supply-finish")
-                    throw new JsonException("Invalid pregame finish opening key.");
-                if (stage == "source-axis-dump" && element != "land.graziani-axis-dumps")
-                    throw new JsonException("Invalid Axis dump opening key.");
-                if (stage == "source-commonwealth-supply" && element != "land.graziani-commonwealth-supply")
-                    throw new JsonException("Invalid Commonwealth supply opening key.");
-                if (stage == "source-dummy" && element != "land.graziani-dummy-groups")
-                    throw new JsonException("Invalid dummy opening key.");
-                if (stage == "source-actions" && element != "land.graziani-source-actions")
-                    throw new JsonException("Invalid source actions opening key.");
-                if (stage == "source-unattached-cargo" && element != "land.graziani-unattached-cargo")
-                    throw new JsonException("Invalid unattached cargo opening key.");
-                if (stage == "source-motorization" && element != "land.graziani-motorization")
-                    throw new JsonException("Invalid motorization opening key.");
-                if (stage == "source-axis-gt1-supply" && element != "land.graziani-axis-gt1-supply")
-                    throw new JsonException("Invalid Axis GT1 supply opening key.");
-                if (stage == "source-commonwealth-supply-plan" && element != "land.graziani-commonwealth-supply-plan")
-                    throw new JsonException("Invalid Commonwealth supply plan opening key.");
-                if (stage == "source-autoblinda" && element != "land.graziani-axis-autoblinda")
-                    throw new JsonException("Invalid Autoblinda opening key.");
-                if (stage == "source-cw-free-guns" && element != "land.graziani-commonwealth-free-guns")
-                    throw new JsonException("Invalid Commonwealth free guns opening key.");
-                if (stage == "source-matruh-formation" && element != "land.graziani-commonwealth-matruh-formation")
-                    throw new JsonException("Invalid Matruh formation opening key.");
-                if (stage == "source-cw-priority-catalog" && element != "land.graziani-commonwealth-priority-catalog")
-                    throw new JsonException("Invalid Commonwealth priority catalog opening key.");
-                if (stage == "source-gt2-correction" && element != "land.graziani-axis-gt2-correction")
-                    throw new JsonException("Invalid GT2 correction opening key.");
-                if (stage == "source-maletti-hierarchy" && element != "land.graziani-axis-maletti-hierarchy")
-                    throw new JsonException("Invalid Maletti hierarchy opening key.");
-                if (stage == "source-axis-corps-setup" && element != "land.graziani-axis-corps-setup")
-                    throw new JsonException("Invalid Axis corps setup opening key.");
-                if (stage == "source-axis-free-setup" && element != "land.graziani-axis-free-setup")
-                    throw new JsonException("Invalid Axis free setup opening key.");
-                if (stage == "source-initial-wrecks" && element != "land.graziani-commonwealth-initial-wrecks")
-                    throw new JsonException("Invalid initial wrecks opening key.");
-                if (stage == "source-attached-initial-loads" && element != "land.graziani-commonwealth-attached-initial-loads")
-                    throw new JsonException("Invalid attached initial loads opening key.");
-                if (stage == "source-priority-motorization" && element != "land.graziani-commonwealth-priority-motorization")
-                    throw new JsonException("Invalid priority motorization opening key.");
-                if (stage == "source-axis-priority-motorization" && element != "land.graziani-axis-priority-motorization")
-                    throw new JsonException("Invalid Axis priority motorization opening key.");
-                if (stage == "source-cairo-setup" && element != "land.graziani-commonwealth-cairo-setup")
-                    throw new JsonException("Invalid Cairo setup opening key.");
+                RequireKnownSourceElement(stage, element);
                 // Phase C3a of issue #439: every stage below can open or close a combat round
                 // (they all funnel through CampaignDurableAuthorityJournal.Submissions.cs's one
                 // SubmitOwnerActionCore chokepoint), so this dispatch -- and the round-timeout
@@ -878,6 +788,59 @@ internal static class CampaignDurableOutwardApi
     private static void RequireVersion(JsonElement root)
     {
         if (root.GetProperty("contractVersion").GetInt32() != 2) throw new JsonException();
+    }
+
+    // Shared by /openings and /actions (API shape-review, 2026-11-23): both handlers
+    // independently hand-copied this exact pregame/source opening-key check; extracted here
+    // so the two can never drift out of sync again.
+    private static void RequireKnownSourceElement(string stage, string element)
+    {
+        if (stage == "pregame-axis-supply" && element != "land.pregame-axis-supply")
+            throw new JsonException("Invalid pregame opening key.");
+        if (stage == "pregame-axis-supply-finish" && element != "land.pregame-axis-supply-finish")
+            throw new JsonException("Invalid pregame finish opening key.");
+        if (stage == "source-axis-dump" && element != "land.graziani-axis-dumps")
+            throw new JsonException("Invalid Axis dump opening key.");
+        if (stage == "source-commonwealth-supply" && element != "land.graziani-commonwealth-supply")
+            throw new JsonException("Invalid Commonwealth supply opening key.");
+        if (stage == "source-dummy" && element != "land.graziani-dummy-groups")
+            throw new JsonException("Invalid dummy opening key.");
+        if (stage == "source-actions" && element != "land.graziani-source-actions")
+            throw new JsonException("Invalid source actions opening key.");
+        if (stage == "source-unattached-cargo" && element != "land.graziani-unattached-cargo")
+            throw new JsonException("Invalid unattached cargo opening key.");
+        if (stage == "source-motorization" && element != "land.graziani-motorization")
+            throw new JsonException("Invalid motorization opening key.");
+        if (stage == "source-axis-gt1-supply" && element != "land.graziani-axis-gt1-supply")
+            throw new JsonException("Invalid Axis GT1 supply opening key.");
+        if (stage == "source-commonwealth-supply-plan" && element != "land.graziani-commonwealth-supply-plan")
+            throw new JsonException("Invalid Commonwealth supply plan opening key.");
+        if (stage == "source-autoblinda" && element != "land.graziani-axis-autoblinda")
+            throw new JsonException("Invalid Autoblinda opening key.");
+        if (stage == "source-cw-free-guns" && element != "land.graziani-commonwealth-free-guns")
+            throw new JsonException("Invalid Commonwealth free guns opening key.");
+        if (stage == "source-matruh-formation" && element != "land.graziani-commonwealth-matruh-formation")
+            throw new JsonException("Invalid Matruh formation opening key.");
+        if (stage == "source-cw-priority-catalog" && element != "land.graziani-commonwealth-priority-catalog")
+            throw new JsonException("Invalid Commonwealth priority catalog opening key.");
+        if (stage == "source-gt2-correction" && element != "land.graziani-axis-gt2-correction")
+            throw new JsonException("Invalid GT2 correction opening key.");
+        if (stage == "source-maletti-hierarchy" && element != "land.graziani-axis-maletti-hierarchy")
+            throw new JsonException("Invalid Maletti hierarchy opening key.");
+        if (stage == "source-axis-corps-setup" && element != "land.graziani-axis-corps-setup")
+            throw new JsonException("Invalid Axis corps setup opening key.");
+        if (stage == "source-axis-free-setup" && element != "land.graziani-axis-free-setup")
+            throw new JsonException("Invalid Axis free setup opening key.");
+        if (stage == "source-initial-wrecks" && element != "land.graziani-commonwealth-initial-wrecks")
+            throw new JsonException("Invalid initial wrecks opening key.");
+        if (stage == "source-attached-initial-loads" && element != "land.graziani-commonwealth-attached-initial-loads")
+            throw new JsonException("Invalid attached initial loads opening key.");
+        if (stage == "source-priority-motorization" && element != "land.graziani-commonwealth-priority-motorization")
+            throw new JsonException("Invalid priority motorization opening key.");
+        if (stage == "source-axis-priority-motorization" && element != "land.graziani-axis-priority-motorization")
+            throw new JsonException("Invalid Axis priority motorization opening key.");
+        if (stage == "source-cairo-setup" && element != "land.graziani-commonwealth-cairo-setup")
+            throw new JsonException("Invalid Cairo setup opening key.");
     }
 
     private static string String(JsonElement root, string property)
