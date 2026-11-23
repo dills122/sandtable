@@ -4075,6 +4075,12 @@ public static class CampaignExercises
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
         // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // Breakdown is chronologically later than this stage's own
+        // second-side Movement Completion below, so it must be checked
+        // first (same ordering discipline as every cascade above).
+        if (session.CurrentStageEntrySecondBreakdown is { } stageEntrySecondBreakdown)
+            return new ExerciseCheckpoint(stageEntrySecondBreakdown, session.CurrentSnapshot);
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
         // Movement + Movement Completion are chronologically later than this
         // stage's own second-side Reserve Designation below, so they must be
         // checked first (same ordering discipline as every cascade above).
@@ -7135,6 +7141,33 @@ public static class CampaignExercises
         }
     }
 
+    // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+    // Breakdown, entered from this stage's own completed second-side
+    // Movement Completion. Same System-audience, no-owner-decision shape as
+    // CompleteStageEntryBreakdown above (Breakdown is a verify-and-replay
+    // transition, not a submitted player action), via
+    // CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide -- see
+    // that method's remarks for why a third entry point was needed instead
+    // of reusing Create/CreateForStageEntry directly.
+    internal static ExerciseStepResult CompleteStageEntrySecondBreakdown(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var transition = CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide(session);
+            var contacts = session.CurrentContacts.AdvanceSecondBreakdown(transition);
+            var next = session.WithStageEntrySecondBreakdown(transition, contacts);
+            var bytes = transition.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(transition.CampaignId, transition.PriorStateVersion,
+                transition.StateVersion, transition.NextPositionId, CampaignActionAudience.System,
+                "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (error is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
     // MTS-TASK-005/006 (2026-11-22): the new stage's own first-acting-side
     // Movement -- same shape as QuerySecondMovementSource/CompleteSecondMovement/
     // QuerySecondMovementCut/SubmitSecondMovement above, reusing
@@ -7922,10 +7955,11 @@ public static class CampaignExercises
             var (isNativeSuccessor, predecessor) = cursor switch
             {
                 // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting
-                // side's Movement + Movement Completion + Reserve
-                // Designation -- additive, does not change any arm below.
-                // Checked most-recent-first, same ordering discipline as
-                // every arm in this switch.
+                // side's Breakdown + Movement + Movement Completion +
+                // Reserve Designation -- additive, does not change any arm
+                // below. Checked most-recent-first, same ordering
+                // discipline as every arm in this switch.
+                { CurrentStageEntrySecondBreakdown: not null } => (true, cursor.StageEntrySecondBreakdownPredecessor),
                 { CurrentStageEntrySecondMovementCompletion: not null } => (true, cursor.StageEntrySecondMovementCompletionPredecessor),
                 { CurrentStageEntrySecondMove: not null } => (true, cursor.StageEntrySecondMovePredecessor),
                 { CurrentStageEntrySecondReserve: not null } => (true, cursor.StageEntrySecondReservePredecessor),
@@ -8964,6 +8998,40 @@ public static class CampaignExercises
         bool predecessorVerified)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // Breakdown -- same shape as the CurrentStageEntryBreakdown block
+        // below, via CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide.
+        // Chronologically latest in this function (later than this stage's
+        // own second-side Movement Completion below), mirroring
+        // QueryCheckpoint's own ordering, so it is replayed and verified
+        // first.
+        if (completedSession.CurrentStageEntrySecondBreakdown is { } stageEntrySecondBreakdown)
+        {
+            var expected = stageEntrySecondBreakdown.SerializeCanonical();
+            var stageEntrySecondBreakdownHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntrySecondBreakdownPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown predecessor is missing.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown predecessor did not replay.");
+                var result = CompleteStageEntrySecondBreakdown(predecessor);
+                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    expected, streamHash, stageEntrySecondBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondBreakdownHash, null); }
+        }
         // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
         // Movement + Movement Completion -- same shape as the
         // CurrentStageEntryMovementCompletion/CurrentStageEntryMove blocks

@@ -1603,5 +1603,35 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+    // Breakdown, entered from this stage's own completed second-side
+    // Movement Completion (CurrentStageEntrySecondMovementCompletion)
+    // instead of the first acting side's. Via
+    // CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide -- see
+    // that method's remarks for why a third entry point was needed. A
+    // distinct slot is required for the same reason every prior Stage Entry
+    // slot needed one: CurrentStageEntryBreakdown is already permanently
+    // bound to this stage's first acting side, and no field on this class
+    // is ever reset once set.
+    internal CampaignNativeSecondBreakdownV46? CurrentStageEntrySecondBreakdown { get; private set; }
+    internal ExerciseSession? StageEntrySecondBreakdownPredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntrySecondBreakdown(CampaignNativeSecondBreakdownV46 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntrySecondBreakdown is not null || CurrentStageEntrySecondMovementCompletion is null
+            || completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Stage Entry second-side Breakdown must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondBreakdownPredecessor = this;
+        successor.CurrentStageEntrySecondBreakdown = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
     public override string ToString() => nameof(ExerciseSession);
 }
