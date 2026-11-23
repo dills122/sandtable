@@ -1098,3 +1098,34 @@ directly is the one method with its own explicit guard,
 fresh campaign genesis) that has not reached a completed Stage Entry Combat
 Decision -- same depth and same reasoning as every prior Stage Entry test
 file.
+
+## Stage Entry second-side Reserve Designation, MTS-TASK-006 (2026-11-23)
+
+Adds one new class, `CampaignNativeStageEntrySecondReserveTests`, proving the
+guard behavior of `CampaignExercises.QueryStageEntrySecondReserveSource`/
+`SubmitStageEntrySecondReserve`. This is the first slice of MTS-TASK-006 (this
+stage's own SECOND acting side), entered from this stage's own first acting
+side's completed chain (`CurrentStageEntryAssault`'s terminal
+`PostCombatPasses` entry) instead of the preamble's terminal event -- the
+direct, side-generic analogue of how `#394`'s second side was entered from
+the first side's own singular `CurrentPostCombatPass`. Reuses
+`CampaignNativeSecondReserveV43` unchanged (a fourth occurrence of the same
+event type). Two new `[Fact]` rows, one ordinary suite part; no existing row
+is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntrySecondReserveSourceRejectsASessionWithoutACompletedFirstActingSideChain` | `69975711b5` | 15 |
+| `StageEntrySecondReserveSubmissionRejectsTheSameSession` | `d31d98df23` | 101 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondReserveTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `f7211037043e147216646da4bbdfd425c40541fccd14e41019aa0d211ebd810b`; retained XML SHA-256 `06f0fa8cc72b71ee71e7d258acf409650376c9dd430d482f362820e80ab7e246`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+Testing depth note: same limitation as every prior Stage Entry slice --
+reaching a session with `CurrentStageEntryAssault`'s own `PostCombatPasses`
+genuinely populated needs this stage's own full first-acting-side chain
+driven through a real campaign, which needs the Host/HTTP wiring that does
+not exist yet. What is tested directly is the guard itself: both
+`QueryStageEntrySecondReserveSource` and `SubmitStageEntrySecondReserve`
+correctly reject a real, legitimately constructed session (a fresh campaign
+genesis) that has not reached a completed first-acting-side chain -- same
+depth and same reasoning as every prior Stage Entry test file.
