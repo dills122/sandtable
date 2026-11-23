@@ -864,404 +864,62 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return result;
     }
 
-    internal bool AdmitSourceAxisSupplement(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceAxisSupplementAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceAxisSupplement(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source supplement is not available at this position.");
-        var command = CampaignHostAdapter.SourceAxisSupplementCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisSupplementKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceAxisSupplement(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceAxisSupplementHandler);
 
-    internal bool AdmitSourceCommonwealthSupplement(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCommonwealthSupplementAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCommonwealthSupplement(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source supplement is not available at this position.");
-        var command = CampaignHostAdapter.SourceCommonwealthSupplementCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCommonwealthSupplementKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCommonwealthSupplement(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCommonwealthSupplementHandler);
 
-    internal bool AdmitSourcePriorityMotorization(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourcePriorityMotorizationAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourcePriorityMotorization(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourcePriorityMotorizationCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourcePriorityMotorizationKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourcePriorityMotorization(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourcePriorityMotorizationHandler);
 
-    internal bool AdmitSourceAttachedInitialLoads(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceAttachedInitialLoadsAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceAttachedInitialLoads(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceAttachedInitialLoadsCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceAttachedInitialLoads(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceAttachedInitialLoadsHandler);
 
-    internal bool AdmitSourceInitialWrecks(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceInitialWrecksAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceInitialWrecks(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceInitialWrecksCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceInitialWrecksKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceInitialWrecks(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceInitialWrecksHandler);
 
-    internal bool AdmitSourceAxisFreeSetup(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceAxisFreeSetupAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceAxisFreeSetup(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceAxisFreeSetupCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisFreeSetupKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceAxisFreeSetup(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceAxisFreeSetupHandler);
 
-    internal bool AdmitSourceAxisCorpsSetup(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceAxisCorpsSetupAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceAxisCorpsSetup(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceAxisCorpsSetupCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisCorpsSetupKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceAxisCorpsSetup(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceAxisCorpsSetupHandler);
 
-    internal bool AdmitSourceMalettiHierarchy(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceMalettiHierarchyAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceMalettiHierarchy(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceMalettiHierarchyCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceMalettiHierarchyKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceMalettiHierarchy(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceMalettiHierarchyHandler);
 
-    internal bool AdmitSourceGt2Correction(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceGt2CorrectionAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceGt2Correction(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceGt2CorrectionCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceGt2CorrectionKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceGt2Correction(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceGt2CorrectionHandler);
 
-    internal bool AdmitSourceCwPriorityCatalog(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCwPriorityCatalogAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCwPriorityCatalog(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceCwPriorityCatalogCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCwPriorityCatalogKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCwPriorityCatalog(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCwPriorityCatalogHandler);
 
-    internal bool AdmitSourceCompactCheckpoint(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCompactCheckpointAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCompactCheckpoint(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceCompactCheckpointCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCompactCheckpointKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCompactCheckpoint(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCompactCheckpointHandler);
 
-    internal bool AdmitSourceFourthIndianWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceFourthIndianWorldAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceFourthIndianWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceFourthIndianWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceFourthIndianWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceFourthIndianWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceFourthIndianWorldHandler);
 
-    internal bool AdmitSourceMatruhGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceMatruhGroupedWorldAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceMatruhGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceMatruhGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceMatruhGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceMatruhGroupedWorldHandler);
 
-    internal bool AdmitSourceMalettiGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceMalettiGroupedWorldAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceMalettiGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceMalettiGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceMalettiGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceMalettiGroupedWorldHandler);
 
-    internal bool AdmitSourceLibyanGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceLibyanGroupedWorldAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceLibyanGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceLibyanGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceLibyanGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceLibyanGroupedWorldHandler);
 
-    internal bool AdmitSourceItalianDivisionsGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceItalianDivisionsGroupedAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceItalianDivisionsGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceItalianDivisionsGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceItalianDivisionsGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceItalianDivisionsGroupedWorldHandler);
 
-    internal bool AdmitSourceSeventhArmoredGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceSeventhArmoredGroupedAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceSeventhArmoredGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceSeventhArmoredGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceSeventhArmoredGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceSeventhArmoredGroupedWorldHandler);
 
-    internal bool AdmitSourceSixteenthBrigadeGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceSixteenthBrigadeGroupedAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceSixteenthBrigadeGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceSixteenthBrigadeGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceSixteenthBrigadeGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceSixteenthBrigadeGroupedWorldHandler);
 
-    internal bool AdmitSourceCatanzaroGroupedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCatanzaroGroupedAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCatanzaroGroupedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceCatanzaroGroupedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCatanzaroGroupedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCatanzaroGroupedWorldHandler);
 
     internal bool StartSourceTurn(string campaignId, string operatorSecret) =>
         ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTurnStartKind);
@@ -1375,362 +1033,56 @@ internal sealed partial class CampaignDurableAuthorityJournal
         return true;
     }
 
-    internal bool AdmitSourceMatruhFormation(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceMatruhFormationAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceMatruhFormation(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceMatruhFormationCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceMatruhFormationKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceMatruhFormation(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceMatruhFormationHandler);
 
-    internal bool AdmitSourceCwFreeGuns(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCwFreeGunsAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCwFreeGuns(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceCwFreeGunsCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCwFreeGunsKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCwFreeGuns(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCwFreeGunsHandler);
 
-    internal bool AdmitSourceAxisPriorityMotorization(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceAxisPriorityMotorizationAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceAxisPriorityMotorization(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source policy is not available at this position.");
-        var command = CampaignHostAdapter.SourceAxisPriorityMotorizationCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceAxisPriorityMotorization(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceAxisPriorityMotorizationHandler);
 
-    internal bool AdmitSourceAxisMinorGarrisons(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceAxisMinorGarrisons(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source garrisons are not available at this position.");
-        var command = CampaignHostAdapter.SourceAxisMinorGarrisonsCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceAxisMinorGarrisons(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceAxisMinorGarrisonsHandler);
 
-    internal bool AdmitSourceBattlefield(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceBattlefieldAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceBattlefield(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source battlefield is not available at this position.");
-        var command = CampaignHostAdapter.SourceBattlefieldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceBattlefieldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceBattlefield(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceBattlefieldHandler);
 
-    internal bool AdmitSourceCairoSetup(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCairoSetupAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCairoSetup(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Cairo setup is not available at this position.");
-        var command = CampaignHostAdapter.SourceCairoSetupCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCairoSetupKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCairoSetup(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCairoSetupHandler);
 
-    internal bool AdmitSourceCairoWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceCairoWorldAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceCairoWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Cairo World requires all supported player placements.");
-        var command = CampaignHostAdapter.SourceCairoWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCairoWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceCairoWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceCairoWorldHandler);
 
-    internal bool PromoteSourceMaletti(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceMaletti(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceMaletti(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Maletti promotion is not available at this position.");
-        var command = CampaignHostAdapter.SourceMalettiCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceMalettiKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceMaletti(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceMalettiHandler);
 
-    internal bool PromoteSourceIndependent(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceIndependent(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceIndependent(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Independent force promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceIndependentCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceIndependentKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceIndependent(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceIndependentHandler);
 
-    internal bool PromoteSourceExpandedIndependent(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceExpandedIndependent(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceExpandedIndependent(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Expanded independent force promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceExpandedIndependentCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceExpandedIndependentKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceExpandedIndependent(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceExpandedIndependentHandler);
 
-    internal bool PromoteSourceAxisFreeWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceAxisFreeWorld(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceAxisFreeWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Axis free-world promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceAxisFreeWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisFreeWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceAxisFreeWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceAxisFreeWorldHandler);
 
-    internal bool PromoteSourceAxisCorpsWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceAxisCorpsWorld(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceAxisCorpsWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Axis corps-world promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceAxisCorpsWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceAxisCorpsWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceAxisCorpsWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceAxisCorpsWorldHandler);
 
-    internal bool PromoteSourceCertifiedMalettiWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceCertifiedMalettiWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("certified Maletti world promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceCertifiedMalettiWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceCertifiedMalettiWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceCertifiedMalettiWorldHandler);
 
-    internal bool PromoteSourceMatruhDetachedWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceMatruhDetachedWorld(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceMatruhDetachedWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Matruh detached world promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceMatruhDetachedWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceMatruhDetachedWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceMatruhDetachedWorldHandler);
 
-    internal bool PromoteSourceCwPriorityWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceCwPriorityWorld(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceCwPriorityWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Commonwealth priority world promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceCwPriorityWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCwPriorityWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceCwPriorityWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceCwPriorityWorldHandler);
 
-    internal bool PromoteSourceCwFreeGunsWorld(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (!CampaignExercises.CanPromoteSourceCwFreeGunsWorld(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.PromoteSourceCwFreeGunsWorld(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Commonwealth priority world promotion is unavailable.");
-        var command = CampaignHostAdapter.SourceCwFreeGunsWorldCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool PromoteSourceCwFreeGunsWorld(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, promoteSourceCwFreeGunsWorldHandler);
 
-    internal bool AdmitSourceLocalMap(string campaignId, string operatorSecret)
-    {
-        RequireWritable();
-        using var connection = Connect(create: false);
-        using var transaction = connection.BeginTransaction(deferred: false);
-        RequireOperator(operatorSecret);
-        var head = Load(connection, transaction, campaignId);
-        if (head.Request.ContractVersion != CampaignPregameSourceCreation.RequestVersion)
-            throw new InvalidOperationException("Campaign is not a source-backed setup.");
-        if (CampaignExercises.IsSourceLocalMapAdmitted(head.Session))
-            return false;
-        var accepted = CampaignHostAdapter.AdmitSourceLocalMap(head.Session);
-        if (!accepted.IsAccepted)
-            throw new InvalidOperationException("Source map is unavailable at this position.");
-        var command = CampaignHostAdapter.SourceLocalMapCommand(head.Session, accepted);
-        PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.SourceLocalMapKind, null, null, null, null, command, accepted);
-        transaction.Commit();
-        return true;
-    }
+    internal bool AdmitSourceLocalMap(string campaignId, string operatorSecret) =>
+        AdmitCore(campaignId, operatorSecret, admitSourceLocalMapHandler);
 
     // Apply only deterministic source-profile migrations. Player setup choices
     // and game-clock advancement are never part of this operator operation.
