@@ -1507,5 +1507,47 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // MTS-TASK-006 (2026-11-23): the new stage's own SECOND acting side's
+    // Reserve Designation, entered from this stage's own first acting
+    // side's completed chain (CurrentStageEntryAssault's terminal
+    // PostCombatPasses entry) instead of the six-event preamble chain's
+    // terminal event -- the direct, side-generic analogue of how #394's
+    // second side was entered from the first side's own singular
+    // CurrentPostCombatPass (see
+    // docs/work/plans/2026-11-22-stage-entry-bridge-design-options.md's
+    // "actually-relevant precedent" section: CampaignNativePostCombatPassV42's
+    // own `next` position is already fully generic/catalog-driven via
+    // Cna1979LandSequenceV4.GetNext, and CampaignNativeSecondReserveV43's
+    // predecessor switch already accepts that type regardless of which
+    // ExerciseSession slot it came from). Reuses CampaignNativeSecondReserveV43
+    // unchanged -- same reasoning as CurrentStageEntryReserve above, this is a
+    // fourth occurrence of the same event type. A distinct slot is required
+    // for the same reason every prior Stage Entry slot needed one:
+    // CurrentStageEntryReserve is already permanently bound to this stage's
+    // first acting side, and no field on this class is ever reset once set.
+    internal CampaignNativeSecondReserveV43? CurrentStageEntrySecondReserve { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentStageEntrySecondReserveWorld { get; private set; }
+    internal ExerciseSession? StageEntrySecondReservePredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntrySecondReserve(CampaignNativeSecondReserveV43 reserve,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(reserve);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntryAssault is not { PostCombatPasses.Count: > 0 } || CurrentStageEntrySecondReserve is not null
+            || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != reserve.StateVersion
+            || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Stage Entry second-side Reserve must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondReservePredecessor = this;
+        successor.CurrentStageEntrySecondReserve = reserve;
+        successor.CurrentStageEntrySecondReserveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(reserve);
+        return successor;
+    }
+
     public override string ToString() => nameof(ExerciseSession);
 }
