@@ -722,6 +722,12 @@ public sealed class ExerciseSession
     internal ExerciseSession WithRepeatAssaultEvent(object campaignEvent,
         CampaignContactJournal contacts)
     {
+        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+        // assault runtime is chronologically latest, so it is checked
+        // first -- same ordering discipline as every branch in this
+        // dispatch.
+        if (CurrentStageEntrySecondAssault is not null)
+            return WithStageEntrySecondAssaultEvent(campaignEvent, contacts);
         if (CurrentStageEntryAssault is not null)
             return WithStageEntryAssaultEvent(campaignEvent, contacts);
         if (CurrentSecondAssault is not null)
@@ -1102,7 +1108,8 @@ public sealed class ExerciseSession
     // otherwise Stage 1's #394 second acting side's, otherwise the first
     // side's later-cycle one.
     internal CampaignNativeRepeatAssaultRuntime? CurrentRepeatAssault =>
-        (CurrentStageEntryAssault is { IsSecondSideFinish: false } ? CurrentStageEntryAssault : null)
+        (CurrentStageEntrySecondAssault is { IsSecondSideFinish: false } ? CurrentStageEntrySecondAssault : null)
+            ?? (CurrentStageEntryAssault is { IsSecondSideFinish: false } ? CurrentStageEntryAssault : null)
             ?? (CurrentSecondAssault is { IsSecondSideFinish: false } ? CurrentSecondAssault : null)
             ?? firstSideRepeatAssault;
     internal CampaignNativeRepeatAssaultRuntime? CurrentFirstRepeatAssault { get; }
@@ -1630,6 +1637,105 @@ public sealed class ExerciseSession
         successor.CurrentStageEntrySecondBreakdown = completed;
         successor.CurrentContacts = contacts;
         successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
+    // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+    // Combat Decision, entered from this stage's own completed second-side
+    // Breakdown (CurrentStageEntrySecondBreakdown) instead of the
+    // first-acting-side equivalent. CampaignNativeSecondCombatDecisionStateV47.Select
+    // needs no change -- confirmed already fully parameterized when
+    // MTS-TASK-005's own Combat Decision slice built it, same confirmation
+    // applies to a fourth occurrence.
+    internal CampaignNativeSecondCombatDecisionStateV47? CurrentStageEntrySecondCombatDecision { get; private set; }
+    internal ExerciseSession? StageEntrySecondCombatSelectionPredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntrySecondCombatSelection(CampaignNativeSecondCombatDecisionStateV47 selected,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(selected);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntrySecondBreakdown is null || CurrentStageEntrySecondCombatDecision is not null
+            || selected.Decision.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != selected.StateVersion)
+            throw new InvalidOperationException("Stage Entry second-side Combat selection must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondCombatSelectionPredecessor = this;
+        successor.CurrentStageEntrySecondCombatDecision = selected;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(selected.Decision);
+        successor.CurrentStageEntrySecondAssault = CampaignNativeRepeatAssaultRuntime.ReplaySecond(
+            SecondAssaultFrame(selected, CurrentSnapshot, CurrentHistory), Context, contacts,
+            successor.CurrentHistory, []);
+        return successor;
+    }
+
+    // This stage's own SECOND acting side's V14-V26 assault stages after
+    // its V47 selection -- same shape as CurrentStageEntryAssault, a
+    // distinct slot for the same already-established reason
+    // (CurrentStageEntryAssault is permanently bound to this stage's first
+    // acting side). Created above as soon as the decision is accepted.
+    internal CampaignNativeRepeatAssaultRuntime? CurrentStageEntrySecondAssault { get; private set; }
+    internal ExerciseSession? StageEntrySecondAssaultPredecessor { get; private set; }
+
+    // Stage Entry second-side counterpart to WithStageEntryAssaultEvent,
+    // same shape, writing CurrentStageEntrySecondAssault instead of
+    // CurrentStageEntryAssault. This is the half of the fix that lets the
+    // Barrage-through-Custody submit/complete methods pick up this stage's
+    // own second acting side's assault generically through the
+    // CurrentRepeatAssault computed property (now extended to a four-way
+    // resolution) rather than their own per-call-site branching.
+    internal ExerciseSession WithStageEntrySecondAssaultEvent(object campaignEvent,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(campaignEvent);
+        ArgumentNullException.ThrowIfNull(contacts);
+        var runtime = CurrentStageEntrySecondAssault!.Advance(campaignEvent);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion
+            || runtime.Contacts.Records.Count != contacts.Records.Count
+            || runtime.Contacts.Records.Zip(contacts.Records)
+                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+            throw new InvalidOperationException(
+                "Stage Entry second-side assault step differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondAssaultPredecessor = this;
+        successor.CurrentStageEntrySecondAssault = runtime;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(campaignEvent);
+        if (campaignEvent is CampaignNativeCombatSettlementV24)
+            successor.CurrentAmmunitionLedger = CurrentAmmunitionLedger is { } seed
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(seed, new object[] { runtime.Result! })
+                : CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context, CurrentHistory);
+        return successor;
+    }
+
+    internal CampaignNativeCombatNoAttackCompletionV13? CurrentStageEntrySecondNoAttackCompletion { get; private set; }
+    internal ExerciseSession? StageEntrySecondNoAttackPredecessor { get; private set; }
+
+    // Stage Entry second-side counterpart to WithStageEntryNoAttack, same
+    // shape, writing CurrentStageEntrySecondAssault/CurrentStageEntrySecondNoAttackCompletion
+    // instead of CurrentStageEntryAssault/CurrentStageEntryNoAttackCompletion.
+    internal ExerciseSession WithStageEntrySecondNoAttack(CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntrySecondCombatDecision is not { } selected || CurrentStageEntrySecondNoAttackCompletion is not null
+            || completion.PriorStateVersion != selected.StateVersion
+            || contacts.AuthorityVersion != completion.StateVersion)
+            throw new InvalidOperationException("Stage Entry second-side no-attack completion must advance its retained cut once.");
+        var runtime = (CurrentStageEntrySecondAssault
+            ?? throw new InvalidOperationException("Stage Entry second-side no-attack completion lacks its stage chain."))
+            .Advance(completion);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion)
+            throw new InvalidOperationException("Stage Entry second-side no-attack completion differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondNoAttackPredecessor = this;
+        successor.StageEntrySecondAssaultPredecessor = this;
+        successor.CurrentStageEntrySecondAssault = runtime;
+        successor.CurrentStageEntrySecondNoAttackCompletion = completion;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completion);
         return successor;
     }
 

@@ -1168,3 +1168,22 @@ ordinary suite part; no existing row is renamed or removed.
 | `StageEntrySecondBreakdownRejectsASessionWithoutACompletedSecondSideMovement` | `9bf1c6c541` | 15 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondBreakdownTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `450754655a350da9a636b7fc5550aa91aaca70d000abe68529f7975032c6945b`; retained XML SHA-256 `d45d78cd163ccfa78cc21e67cad9835af6e58df11fbc8629bd41107c68aa906b`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+## Stage Entry second-side Combat Decision/Assault/No-Attack, MTS-TASK-006 (2026-11-23)
+
+Adds two new classes, `CampaignNativeStageEntrySecondCombatSelectionTests`
+and `CampaignNativeStageEntrySecondCombatAssaultTests`, proving the guard
+behavior of `ExerciseSession.WithStageEntrySecondCombatSelection`/
+`WithStageEntrySecondNoAttack`. This slice completes MTS-TASK-006: this
+stage's second acting side is now fully generalized through the entire
+Combat chain, mirroring the `CurrentRepeatAssault`/`WithRepeatAssaultEvent`
+central-dispatch-point extension (now four-way) the first-acting-side
+Assault slice (#529) proved generically. One new `[Fact]` row per class,
+one ordinary suite part each; no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntrySecondCombatSelectionRejectsASessionWithoutACompletedSecondSideBreakdown` | `25e5bb7c3f` | 118 |
+| `StageEntrySecondNoAttackRejectsASessionWithoutACompletedSecondSideCombatDecision` | `319d468315` | 115 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class "*StageEntrySecondCombat*" --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `d39f0a6d0231b67cfef773238d86fe3fe0e5db9b7b2527995cb713d68bcd6ba7`; retained XML SHA-256 `a09f9f56fb9b4ccee5ece3ad50490df4bbde90942a353e4bea04003f469359a5`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test classes; existing weights and baseline metadata are otherwise unchanged.
