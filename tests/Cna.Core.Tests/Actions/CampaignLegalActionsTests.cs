@@ -184,7 +184,9 @@ public sealed class CampaignLegalActionsTests
         Assert.Throws<ArgumentException>(() => HistoricalLegalActionSetTestData.Create("campaign-actions", 4,
             Cna1979Ruleset.HistoricalManifestV8.Hash, "land.position.operation-1.initiative-declaration",
             CampaignActionAudience.Axis, [first, first]));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ActFirstAction(2));
+        // MTS-TASK-003: operationStage 2 (and 3) are now valid -- CampaignActionCandidate's
+        // range was widened from "exactly 1" to 1-3 to support Stage 2+. Probe the real boundary.
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ActFirstAction(4));
     }
 
     [Theory]
