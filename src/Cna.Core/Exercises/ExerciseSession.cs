@@ -722,6 +722,8 @@ public sealed class ExerciseSession
     internal ExerciseSession WithRepeatAssaultEvent(object campaignEvent,
         CampaignContactJournal contacts)
     {
+        if (CurrentStageEntryAssault is not null)
+            return WithStageEntryAssaultEvent(campaignEvent, contacts);
         if (CurrentSecondAssault is not null)
             return WithSecondAssaultEvent(campaignEvent, contacts);
         if (CurrentPostRepeat?.ActiveAssault is not null)
@@ -1094,10 +1096,14 @@ public sealed class ExerciseSession
     internal CampaignContactJournal? CurrentRepeatAssaultBaseContacts { get; }
     internal IReadOnlyList<object> CurrentRepeatAssaultEvents { get; }
     private readonly CampaignNativeRepeatAssaultRuntime? firstSideRepeatAssault;
-    // The active V14-V26 assault runtime: the second acting side's own once it
-    // has selected an assault, otherwise the first side's later-cycle one.
+    // The active V14-V26 assault runtime: this stage's own second-side
+    // combat decision if that's what's active (checked first, chronologically
+    // latest, same ordering discipline as every other cascade in this file),
+    // otherwise Stage 1's #394 second acting side's, otherwise the first
+    // side's later-cycle one.
     internal CampaignNativeRepeatAssaultRuntime? CurrentRepeatAssault =>
-        (CurrentSecondAssault is { IsSecondSideFinish: false } ? CurrentSecondAssault : null)
+        (CurrentStageEntryAssault is { IsSecondSideFinish: false } ? CurrentStageEntryAssault : null)
+            ?? (CurrentSecondAssault is { IsSecondSideFinish: false } ? CurrentSecondAssault : null)
             ?? firstSideRepeatAssault;
     internal CampaignNativeRepeatAssaultRuntime? CurrentFirstRepeatAssault { get; }
     internal CampaignContactJournal? CurrentPostRepeatBaseContacts { get; }
@@ -1387,17 +1393,15 @@ public sealed class ExerciseSession
     // turnFacts/history passed in, not by session field name.
     //
     // Accepting the decision immediately spins up CurrentStageEntryAssault
-    // (mirroring WithSecondCombatSelection exactly), but this slice does not
-    // add a WithStageEntryAssaultEvent/WithStageEntryNoAttack pair to
-    // advance it further: those require threading a Stage Entry branch
-    // through ~15 pre-existing CampaignExercises submit call sites that
-    // currently ternary between WithSecondAssaultEvent/WithRepeatAssaultEvent
-    // (Barrage, RetreatMove, ForceAssignment, AntiArmor, CancelledAssault,
-    // AssaultResult, PostResultRetreat, Settlement, CustodyDisposition,
-    // CustodySuccessor), none of which are reachable without the Host/HTTP
-    // wiring that does not exist yet for any Stage Entry mechanic (same
-    // pre-existing gap every prior slice has documented). Deferred to its
-    // own follow-up slice rather than forced in here unverifiable.
+    // (mirroring WithSecondCombatSelection exactly). The follow-up slice
+    // (see WithStageEntryAssaultEvent below) found most of the ~15
+    // pre-existing CampaignExercises call sites that ternary on
+    // CurrentSecondAssault don't need per-site changes at all: the
+    // Barrage-through-Custody methods dispatch generically through the
+    // CurrentRepeatAssault computed property, which now resolves to
+    // CurrentStageEntryAssault first. Only the later-tier methods that
+    // bypass that property on purpose (Reserve Release onward) needed
+    // explicit new branches.
     internal CampaignNativeSecondCombatDecisionStateV47? CurrentStageEntryCombatDecision { get; private set; }
     internal ExerciseSession? StageEntryCombatSelectionPredecessor { get; private set; }
 
@@ -1428,11 +1432,80 @@ public sealed class ExerciseSession
     // decision is accepted (matching WithSecondCombatSelection's own
     // behavior), but not yet advanced past zero events by anything in this
     // slice -- see the remarks above WithStageEntryCombatSelection.
-    // StageEntryAssaultPredecessor is deliberately not added yet: nothing in
-    // this slice ever sets it (that's WithStageEntryAssaultEvent/
-    // WithStageEntryNoAttack's job, both deferred to the follow-up slice),
-    // so it would be a dead field until then.
     internal CampaignNativeRepeatAssaultRuntime? CurrentStageEntryAssault { get; private set; }
+    internal ExerciseSession? StageEntryAssaultPredecessor { get; private set; }
+
+    // MTS-TASK-005/006 follow-up (2026-11-23, docs/work/plans/2026-11-23-mts-task-005-006-stage-entry-assault.md):
+    // the Stage Entry counterpart to WithSecondAssaultEvent, same shape,
+    // writing CurrentStageEntryAssault instead of CurrentSecondAssault. This
+    // is the half of the fix that lets the ~10 Barrage-through-Custody
+    // submit/complete methods (CampaignExercises.cs) pick up this stage's
+    // own assault generically: they all read the CurrentRepeatAssault
+    // computed property below (now extended to resolve to
+    // CurrentStageEntryAssault first) rather than their own per-call-site
+    // ternary, so they needed no changes themselves once that property and
+    // WithRepeatAssaultEvent's own dispatch (below) both learned about this
+    // slot. Any later-tier method that still reads CurrentSecondAssault
+    // explicitly (not through CurrentRepeatAssault) -- e.g.
+    // QueryNativeReserveReleaseState's own `?.Release` check, which
+    // deliberately bypasses CurrentRepeatAssault's IsSecondSideFinish guard
+    // -- still needs its own explicit CurrentStageEntryAssault branch; see
+    // the doc for the full accounting of which methods are which.
+    internal ExerciseSession WithStageEntryAssaultEvent(object campaignEvent,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(campaignEvent);
+        ArgumentNullException.ThrowIfNull(contacts);
+        var runtime = CurrentStageEntryAssault!.Advance(campaignEvent);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion
+            || runtime.Contacts.Records.Count != contacts.Records.Count
+            || runtime.Contacts.Records.Zip(contacts.Records)
+                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+            throw new InvalidOperationException(
+                "Stage Entry assault step differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntryAssaultPredecessor = this;
+        successor.CurrentStageEntryAssault = runtime;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(campaignEvent);
+        if (campaignEvent is CampaignNativeCombatSettlementV24)
+            successor.CurrentAmmunitionLedger = CurrentAmmunitionLedger is { } seed
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(seed, new object[] { runtime.Result! })
+                : CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context, CurrentHistory);
+        return successor;
+    }
+
+    internal CampaignNativeCombatNoAttackCompletionV13? CurrentStageEntryNoAttackCompletion { get; private set; }
+    internal ExerciseSession? StageEntryNoAttackPredecessor { get; private set; }
+
+    // Stage Entry counterpart to WithSecondNoAttack, same shape, writing
+    // CurrentStageEntryAssault/CurrentStageEntryNoAttackCompletion instead of
+    // CurrentSecondAssault/CurrentSecondNoAttackCompletion.
+    // CampaignNativeCombatNoAttackCompletionV13 needs no change here either,
+    // same reasoning as WithSecondNoAttack's own remarks.
+    internal ExerciseSession WithStageEntryNoAttack(CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntryCombatDecision is not { } selected || CurrentStageEntryNoAttackCompletion is not null
+            || completion.PriorStateVersion != selected.StateVersion
+            || contacts.AuthorityVersion != completion.StateVersion)
+            throw new InvalidOperationException("Stage Entry no-attack completion must advance its retained cut once.");
+        var runtime = (CurrentStageEntryAssault
+            ?? throw new InvalidOperationException("Stage Entry no-attack completion lacks its stage chain."))
+            .Advance(completion);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion)
+            throw new InvalidOperationException("Stage Entry no-attack completion differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntryNoAttackPredecessor = this;
+        successor.StageEntryAssaultPredecessor = this;
+        successor.CurrentStageEntryAssault = runtime;
+        successor.CurrentStageEntryNoAttackCompletion = completion;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completion);
+        return successor;
+    }
 
     public override string ToString() => nameof(ExerciseSession);
 }

@@ -4074,6 +4074,14 @@ public static class CampaignExercises
         if (session.SourceTurn is { } sourceTurn) return new ExerciseCheckpoint(sourceTurn);
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
+        // MTS-TASK-005/006 follow-up (2026-11-23): this stage's own Combat
+        // assault/no-attack completion are chronologically later than the
+        // #394 second-side block below, so they must be checked first, same
+        // ordering discipline as every cascade in this file.
+        if (session.CurrentStageEntryAssault is { Events.Count: > 0 } stageEntryAssault)
+            return ExerciseCheckpoint.ForSecondAssault(stageEntryAssault, session.CurrentStageEntryCombatDecision!);
+        if (session.CurrentStageEntryNoAttackCompletion is { } stageEntryNoAttack)
+            return new ExerciseCheckpoint(stageEntryNoAttack, session.CurrentStageEntryCombatDecision!);
         // #394 gap 1/3: second-side Combat selection/no-attack completion are
         // chronologically later than the second Breakdown checkpoint below,
         // so they must be checked first, the same way CurrentNoAttackCompletion/
@@ -4108,10 +4116,8 @@ public static class CampaignExercises
         // MTS-TASK-005/006 (2026-11-23): this stage's own Combat Decision is
         // chronologically later than this stage's own Breakdown below, so it
         // must be checked first (same ordering discipline as every cascade
-        // above). CurrentStageEntryAssault is deliberately not checked here
-        // (unlike the #394 CurrentSecondAssault branch above): nothing in
-        // this slice ever advances it past zero events -- see the remarks on
-        // WithStageEntryCombatSelection.
+        // above). The assault/no-attack branches above this one now cover
+        // everything past the bare decision itself.
         if (session.CurrentStageEntryCombatDecision is { } stageEntryCombatDecision)
             return new ExerciseCheckpoint(stageEntryCombatDecision);
         // MTS-TASK-005/006 (2026-11-23): this stage's own Breakdown is
@@ -4814,6 +4820,37 @@ public static class CampaignExercises
             var completion = CampaignNativeCombatNoAttackCompletionV13.Create(selected, session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
             var successor = session.WithSecondNoAttack(completion, contacts);
+            var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
+                selected.StateVersion, completion.StateVersion,
+                completion.NextPositionId, CampaignActionAudience.System,
+                $"sha256:{Convert.ToHexStringLower(SHA256.HashData(
+                    completion.SerializeCanonical()))}");
+            return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
+                completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
+            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    // MTS-TASK-005/006 follow-up: Stage Entry analog of CompleteSecondCombatNoAttack,
+    // same shape and same reasoning, writing CurrentStageEntryCombatDecision/
+    // CurrentStageEntryNoAttackCompletion instead of CurrentSecondCombatDecision/
+    // CurrentSecondNoAttackCompletion.
+    internal static ExerciseStepResult CompleteStageEntryCombatNoAttack(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntryCombatDecision is not { } selected
+            || session.CurrentStageEntryNoAttackCompletion is not null
+            || session.CurrentContacts.AuthorityVersion != selected.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        try
+        {
+            var completion = CampaignNativeCombatNoAttackCompletionV13.Create(selected, session.Context);
+            var contacts = session.CurrentContacts.AdvanceNativeCombatNoAttackCompletion(completion);
+            var successor = session.WithStageEntryNoAttack(completion, contacts);
             var receipt = new CampaignActionAcceptanceReceipt(selected.CampaignId,
                 selected.StateVersion, completion.StateVersion,
                 completion.NextPositionId, CampaignActionAudience.System,
@@ -6492,6 +6529,8 @@ public static class CampaignExercises
         ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntryAssault?.Release is { } stageEntrySide)
+            return stageEntrySide;
         if (session.CurrentSecondAssault?.Release is { } secondSide)
             return secondSide;
         if (session.CurrentPostRepeat is { } later)
@@ -6548,7 +6587,9 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Choose(session.Context, elementId, choice);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(emitted, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(emitted, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(emitted, contacts)
@@ -6583,7 +6624,9 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.InvalidAuthority);
             var (nextState, emitted) = state.Complete(session.Context);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(emitted);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(emitted, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(emitted, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(emitted, contacts)
@@ -6610,7 +6653,9 @@ public static class CampaignExercises
     internal static CampaignNativeReserveReleaseStateV27 QueryPendingNativeCycleControl(ExerciseSession session)
     {
         var release = QueryNativeReserveReleaseState(session);
-        if ((session.CurrentSecondAssault is { } secondSideControl
+        if ((session.CurrentStageEntryAssault is { } stageEntryControl
+                ? stageEntryControl.Control
+                : session.CurrentSecondAssault is { } secondSideControl
                 ? secondSideControl.Control
                 : session.CurrentRepeatAssault?.Release is not null
                 ? session.CurrentRepeatAssault.Control
@@ -6653,7 +6698,9 @@ public static class CampaignExercises
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
                 cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts.AdvanceNativeReserveRelease(control);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(control, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(control, contacts)
@@ -6696,7 +6743,9 @@ public static class CampaignExercises
                 openedAtUnixMilliseconds, deadlineUnixMilliseconds, highWaterUnixMilliseconds,
                 cancelledAtUnixMilliseconds, reason);
             var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(control, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(control, contacts)
@@ -7041,7 +7090,9 @@ public static class CampaignExercises
     }
 
     internal static object QueryPostCombatPassSource(ExerciseSession session) =>
-        session.CurrentSecondAssault is { TruckConvoyPass: { } secondConvoy } secondSide
+        session.CurrentStageEntryAssault is { TruckConvoyPass: { } stageEntryConvoy } stageEntrySide
+            ? stageEntrySide.PostCombatPasses.Count > 0 ? stageEntrySide.PostCombatPasses[^1] : stageEntryConvoy
+            : session.CurrentSecondAssault is { TruckConvoyPass: { } secondConvoy } secondSide
             ? secondSide.PostCombatPasses.Count > 0 ? secondSide.PostCombatPasses[^1] : secondConvoy
             : (object?)session.CurrentPostCombatPass ?? session.CurrentTruckConvoyPass
         ?? throw new InvalidOperationException("Post-combat pass requires the completed convoy phase.");
@@ -7061,7 +7112,9 @@ public static class CampaignExercises
             var passed = CampaignNativePostCombatPassV42.Create(QueryPostCombatPassSource(session), side,
                 session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvancePostCombatPass(passed);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(passed, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(passed, contacts)
                 : session.WithPostCombatPass(passed, contacts);
             var bytes = passed.SerializeCanonical();
@@ -7080,6 +7133,18 @@ public static class CampaignExercises
         QueryTruckConvoyPassSource(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.CurrentStageEntryAssault is { } stageEntrySide)
+        {
+            if (stageEntrySide.TruckConvoyPass is not null)
+                throw new InvalidOperationException("Truck Convoy has already been passed.");
+            if (stageEntrySide is not
+                {
+                    Release: { } stageEntryRelease,
+                    Control.Choice: CampaignNativeCycleControlChoiceV28.Finish
+                })
+                throw new InvalidOperationException("Truck Convoy requires a finished cycle.");
+            return (stageEntryRelease, stageEntrySide.Control);
+        }
         if (session.CurrentSecondAssault is { } secondSide)
         {
             if (secondSide.TruckConvoyPass is not null)
@@ -7095,7 +7160,9 @@ public static class CampaignExercises
         if (session.CurrentTruckConvoyPass is not null)
             throw new InvalidOperationException("Truck Convoy has already been passed.");
         var release = QueryNativeReserveReleaseState(session);
-        var control = session.CurrentSecondAssault is { } secondSideControl
+        var control = session.CurrentStageEntryAssault is { } stageEntrySideControl
+            ? stageEntrySideControl.Control
+            : session.CurrentSecondAssault is { } secondSideControl
             ? secondSideControl.Control
             : session.CurrentRepeatAssault?.Release is not null
             ? session.CurrentRepeatAssault.Control
@@ -7121,7 +7188,9 @@ public static class CampaignExercises
             var passed = CampaignNativeTruckConvoyPassV41.Create(release, control, side,
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceTruckConvoyPass(passed);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(passed, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(passed, contacts)
                 : session.WithTruckConvoyPass(passed, contacts);
             var bytes = passed.SerializeCanonical();
@@ -7146,7 +7215,9 @@ public static class CampaignExercises
             var release = QueryNativeReserveReleaseState(session);
             var expectedAudience = release.ActingSide == LandSide.Axis
                 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
-            if ((session.CurrentSecondAssault is { } secondSideControl
+            if ((session.CurrentStageEntryAssault is { } stageEntrySideControl
+                    ? stageEntrySideControl.Control
+                    : session.CurrentSecondAssault is { } secondSideControl
                     ? secondSideControl.Control
                     : session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
@@ -7170,7 +7241,9 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             }
             var contacts = session.CurrentContacts.AdvanceNativeCycleControl(control);
-            var next = session.CurrentSecondAssault is not null
+            var next = session.CurrentStageEntryAssault is not null
+                ? session.WithStageEntryAssaultEvent(control, contacts)
+                : session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(control, contacts)
@@ -8719,6 +8792,67 @@ public static class CampaignExercises
         bool predecessorVerified)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
+        // MTS-TASK-005/006 follow-up: this stage's own assault/no-attack
+        // stages are chronologically later than the #394 second-side block
+        // below, so -- mirroring QueryCheckpoint's own ordering -- they must
+        // be replayed and verified first.
+        if (completedSession.CurrentStageEntryAssault is { Events.Count: > 0 } stageEntryAssault)
+        {
+            var expected = CampaignCurrentEventSerializer.Serialize(stageEntryAssault.Events[^1],
+                completedSession.Context);
+            var stageEntryAssaultHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntryAssaultPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry assault step has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry assault predecessor did not replay.");
+                var replayed = (predecessor.CurrentStageEntryAssault
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry assault predecessor has no stage chain."))
+                    .Advance(stageEntryAssault.Events[^1]);
+                var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
+                if (!expected.AsSpan().SequenceEqual(actual)
+                    || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry assault step differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    expected, streamHash, stageEntryAssaultHash, Hash(actual));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryAssaultHash, null); }
+        }
+        if (completedSession.CurrentStageEntryNoAttackCompletion is { } stageEntryNoAttack)
+        {
+            var expected = stageEntryNoAttack.SerializeCanonical();
+            var stageEntryNoAttackHash = Hash(expected);
+            try
+            {
+                var predecessor = completedSession.StageEntryNoAttackPredecessor
+                    ?? throw new InvalidCampaignHistoryException("Stage Entry no-attack completion has no predecessor.");
+                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                    throw new InvalidCampaignHistoryException("Stage Entry no-attack predecessor did not replay.");
+                var result = CompleteStageEntryCombatNoAttack(predecessor);
+                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                    throw new InvalidCampaignHistoryException("Stage Entry no-attack completion differs from replay.");
+                var streamHash = includeStreamHash
+                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                    expected, streamHash, stageEntryNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
+            }
+            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                or ArgumentException or InvalidOperationException)
+            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryNoAttackHash, null); }
+        }
         // Second-side assault stages follow the V47 selection: verify the
         // predecessor, then re-verify the whole retained stage chain with this
         // step appended, exactly as the session accepted it.
