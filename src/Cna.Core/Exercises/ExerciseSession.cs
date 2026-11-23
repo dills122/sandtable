@@ -1549,5 +1549,59 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
+    // Movement + Movement Completion, entered from this stage's own
+    // completed second-side Reserve Designation (CurrentStageEntrySecondReserve)
+    // instead of the first acting side's completed chain. Reuses
+    // CampaignNativeSecondMoveV44/CampaignNativeSecondMovementCompletedV45
+    // unchanged -- confirmed by reading CampaignNativeSecondMoveV44.Source
+    // directly: its predecessor switch matches on CampaignNativeSecondReserveV43/
+    // CampaignNativeSecondMoveV44 by type alone, not by which ExerciseSession
+    // slot holds them, so a fifth occurrence needs no change. A distinct
+    // slot is required for the same reason every prior Stage Entry slot
+    // needed one: CurrentStageEntryMove/CurrentStageEntryMovementCompletion
+    // are already permanently bound to this stage's first acting side, and
+    // no field on this class is ever reset once set.
+    internal CampaignNativeSecondMoveV44? CurrentStageEntrySecondMove { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentStageEntrySecondMoveWorld { get; private set; }
+    internal ExerciseSession? StageEntrySecondMovePredecessor { get; private set; }
+    internal CampaignNativeSecondMovementCompletedV45? CurrentStageEntrySecondMovementCompletion { get; private set; }
+    internal ExerciseSession? StageEntrySecondMovementCompletionPredecessor { get; private set; }
+
+    internal ExerciseSession WithStageEntrySecondMovementCompletion(CampaignNativeSecondMovementCompletedV45 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Stage Entry second-side Movement completion must advance its retained cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondMovementCompletionPredecessor = this;
+        successor.CurrentStageEntrySecondMovementCompletion = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
+    internal ExerciseSession WithStageEntrySecondMove(CampaignNativeSecondMoveV44 movement,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (movement.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != movement.StateVersion
+            || movement.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Stage Entry second-side Movement must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.StageEntrySecondMovePredecessor = this;
+        successor.CurrentStageEntrySecondMove = movement;
+        successor.CurrentStageEntrySecondMoveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(movement);
+        return successor;
+    }
+
     public override string ToString() => nameof(ExerciseSession);
 }

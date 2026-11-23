@@ -1129,3 +1129,23 @@ not exist yet. What is tested directly is the guard itself: both
 correctly reject a real, legitimately constructed session (a fresh campaign
 genesis) that has not reached a completed first-acting-side chain -- same
 depth and same reasoning as every prior Stage Entry test file.
+
+## Stage Entry second-side Movement, MTS-TASK-006 (2026-11-23)
+
+Adds one new class, `CampaignNativeStageEntrySecondMovementTests`, proving
+`CampaignNativeSecondMoveV44`/`CampaignNativeSecondMovementCompletedV45`
+reused unchanged for a SIXTH occurrence (Stage 1's second side, this
+stage's first acting side, and now this stage's second acting side),
+entered directly from this stage's own first-acting-side Patrol
+completion. Unlike the second-side Reserve slice above (CampaignExercises-
+level guard tests only), this file reaches the richer native-class-level
+depth `CampaignNativeStageEntryMovementTests` itself reaches, since
+`Source`/`Create` take typed predecessors directly. Two new `[Fact]` rows,
+one ordinary suite part; no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntrySecondMovementCompletesForTheNewStagesSecondActingSideWithNoElementsMoved` | `e96c3bc52d` | 41 |
+| `StageEntrySecondMovementRejectsTheOppositeStagesRole` | `15c0bcc627` | 8 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondMovementTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `943fa628cb9fa8de13f747a312af536a045671c8c624799f8434ddb022f1ac2b`; retained XML SHA-256 `9d6d2f4590260c27eb9bfa3634771a338e1cb7d137d1a08cf77662733953c797`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
