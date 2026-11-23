@@ -1672,8 +1672,15 @@ public sealed class GrazianiPregameJournalTests
                 new { contractVersion = 2, credential, stage = "movement", actingElementId = "axis-infantry" },
                 TestContext.Current.CancellationToken);
             Assert.Equal(HttpStatusCode.Conflict, ordinary.StatusCode);
-            Assert.Equal("{\"contractVersion\":2,\"code\":\"unavailable\"}",
+            // API shape-review, 2026-11-23, Recommendation 6: requestId is ASP.NET Core's own
+            // per-request trace identifier, so it's checked for presence rather than folded into
+            // the exact-body literal below, which still pins contractVersion/code precisely.
+            using var ordinaryBody = JsonDocument.Parse(
                 await ordinary.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+            Assert.Equal(2, ordinaryBody.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.Equal("unavailable", ordinaryBody.RootElement.GetProperty("code").GetString());
+            Assert.False(string.IsNullOrEmpty(
+                ordinaryBody.RootElement.GetProperty("requestId").GetString()));
             var openingBody = new
             {
                 contractVersion = 2,

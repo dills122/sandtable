@@ -198,8 +198,15 @@ public sealed class CampaignDurableOutwardApiTests
             var rejected = await Send(client,
                 $"/api/v2/campaigns/{request.CampaignId}/actions", invalidAction);
             Assert.Equal(HttpStatusCode.Conflict, rejected.StatusCode);
-            Assert.DoesNotContain("authority", await rejected.Content.ReadAsStringAsync(
-                TestContext.Current.CancellationToken), StringComparison.OrdinalIgnoreCase);
+            var rejectedBody = await rejected.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken);
+            Assert.DoesNotContain("authority", rejectedBody, StringComparison.OrdinalIgnoreCase);
+            // API shape-review, 2026-11-23, Recommendation 6: every error envelope now echoes
+            // ASP.NET Core's own per-request trace identifier, so a client can correlate a failed
+            // request against server-side logs.
+            using var rejectedJson = JsonDocument.Parse(rejectedBody);
+            Assert.False(string.IsNullOrEmpty(
+                rejectedJson.RootElement.GetProperty("requestId").GetString()));
             var acceptedAction = JsonSerializer.Serialize(new
             {
                 contractVersion = 2,
@@ -232,6 +239,46 @@ public sealed class CampaignDurableOutwardApiTests
             await app.StopAsync(TestContext.Current.CancellationToken);
             await silo.StopAsync(TestContext.Current.CancellationToken);
             silo.Dispose();
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    // API shape-review, 2026-11-23, Recommendation 3 (scoped): /opening-kinds needs neither a
+    // campaign nor a silo -- it only reflects over CampaignOwnerOpeningKind -- so this test skips
+    // the heavier silo setup the route-dispatching tests above need.
+    [Fact]
+    public async Task OpeningKindsEndpointReflectsTheRealEnum()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "sandtable-opening-kinds-" + Guid.NewGuid().ToString("N"));
+        var journal = CampaignDurableAuthorityJournal.CreateNew(
+            Path.Combine(directory, "campaign.sqlite"), OperatorSecret);
+        var store = CampaignDurableAuthorityJournalStore.ForSingleCampaign(journal);
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(store);
+        await using var app = builder.Build();
+        app.MapDurableCampaignApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient { BaseAddress = new Uri(address) };
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v2/campaigns/opening-kinds");
+            request.Headers.Add("Sec-Fetch-Site", "same-origin");
+            var response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            var kinds = body.RootElement.GetProperty("kinds").EnumerateArray()
+                .Select(value => value.GetString()).ToArray();
+            Assert.Equal(Enum.GetNames<CampaignOwnerOpeningKind>(), kinds);
+            Assert.Contains("Movement", kinds);
+        }
+        finally
+        {
+            await app.StopAsync(TestContext.Current.CancellationToken);
             Directory.Delete(directory, recursive: true);
         }
     }
@@ -308,7 +355,14 @@ public sealed class CampaignDurableOutwardApiTests
                 var responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
                 Assert.True(response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Conflict,
                     $"Unexpected status {response.StatusCode}: {responseBody}");
-                return responseBody;
+                // API shape-review, 2026-11-23, Recommendation 6: requestId now legitimately
+                // differs on every request (it's ASP.NET Core's own per-request trace identifier),
+                // so it's excluded before this helper's two calls are compared for byte-for-byte
+                // equality -- that comparison is about leaked game content, not request identity.
+                using var parsed = JsonDocument.Parse(responseBody);
+                return JsonSerializer.Serialize(parsed.RootElement.EnumerateObject()
+                    .Where(property => property.Name != "requestId")
+                    .ToDictionary(property => property.Name, property => property.Value.GetRawText()));
             }
         }
         finally
