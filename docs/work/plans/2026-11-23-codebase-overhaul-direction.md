@@ -462,6 +462,32 @@ entirely in *authoring*: the next new codec composes from the same fragments ins
 retyping a 300-character literal by hand, so drift becomes structurally harder to
 introduce, not just easier to catch after the fact.
 
+> **Correction (2026-11-23, after attempting this):** this section's premise — "pure
+> mechanical extraction, low risk, start now" — is **wrong**, found by actually attempting
+> the refactor. The static check (every fragment resolved back to its literal and diffed
+> against the original: 1,664 dict entries, 0 mismatches, 507 replacements across 19
+> files) passed clean, but the real `dotnet test` run then failed 996/1,595 tests with
+> `JsonException: CMB-MRC-009`. Root cause, confirmed by bisecting against the original
+> file: this codebase pins the **SHA256 hash of the actual `.cs` source files themselves**
+> inside each codec's `Pins`/`Delivery` dict (`CombatEvidenceRevisions.cs`), as a
+> deliberate cross-file provenance/integrity gate, independent of whether the assembled
+> schema string is byte-identical. Editing *any* file that another file pins by hash
+> breaks that other file's dependency check — 5 of the 19 files this section's example
+> touches are pinned by other codecs this way. `CombatEvidenceRevisions.cs`'s own
+> comments are explicit: *"registration is code-owned, never supplied by a proposal"* and
+> *"Refreshed entries are frozen only after provenance regeneration and semantic
+> comparison."* The one prior real instance of refreshing these pins
+> (`docs/work/reviews/2026-10-25-evidence-revisions-author.md`) was a multi-day,
+> human-reviewed effort with dedicated archival tooling — not something to push through
+> unilaterally, agent or human.
+>
+> **Revised status: moved to "needs owner decision," not "start now"** (see Section 6).
+> The attempt was fully reverted — no commits, no PR, working tree clean. A narrower
+> version (scoping to only the files that aren't referenced as a pin target elsewhere)
+> would dodge the gate but delivers a smaller, asymmetric win and leaves the
+> most-duplicated, most-cross-referenced files untouched — whether that's worth doing on
+> its own is the owner's call, not a thing to decide by default.
+
 ## 4. `CampaignDurableAuthorityJournal` god object / ~30 near-duplicate admission triads
 
 14 partial files, ~9,000 lines combined. The ~30 `AdmitSourceXxx`/`QuerySourceXxxOpening`/
@@ -554,11 +580,16 @@ reference nothing in `CampaignExercises.cs`/`CampaignDurableAuthorityJournal`/
 surface at all. This is also the highest-value-per-hour item (Section 5's own argument),
 so it's the right thing to front-load.
 
-**Can also start now, lower priority:** Section 3's codec-schema-fragment extraction.
-It's a mechanical, behavior-preserving refactor of files
-(`CampaignCombatActual*Codec.cs`) that the current MTS work doesn't touch, verified
-safe-by-construction by the existing canonical-hash test suite. Low risk, but also lower
-payoff than Section 5 — do it when there's a quiet moment, not urgently.
+**Needs an owner decision, not "start now":** Section 3's codec-schema-fragment
+extraction, downgraded after actually attempting it (see the correction in Section 3).
+The static byte-identical check passed clean, but the real test run failed 996/1,595
+tests — several of the touched codec files are pinned by SHA256 source-file hash in
+`CombatEvidenceRevisions.cs`'s cross-file provenance gate, which this refactor trips
+regardless of whether the assembled schema string changes. The prior real refresh of
+those pins was a multi-day, human-reviewed effort with dedicated archival tooling, so
+this isn't a "quiet moment" task — it's blocked on the owner deciding whether to scope it
+down to the non-pinned files (smaller, asymmetric win) or treat it as its own
+provenance-regeneration effort later.
 
 **Should wait until the current MTS slices (005/006, then Stage 3) land:** Sections 1 and
 4 — the `QueryOwnerOpeningCore`/`SubmitOwnerActionCore`/`QueryCheckpoint` registry
@@ -575,7 +606,9 @@ instead of mid-growth.
 
 1. (parallel, now) `tests/Cna.ArchitectureTests` + Roslyn analyzer scaffolding — small,
    additive, 1-2 PRs.
-2. (parallel, now or soon) codec schema-fragment extraction — mechanical, 1 PR.
+2. (owner decision needed, not scheduled) codec schema-fragment extraction — blocked on
+   the `CombatEvidenceRevisions.cs` provenance gate; see the Section 3 correction and
+   Section 6's note above before resuming this one.
 3. (after MTS-TASK-005/006 + Stage 3 land) `CampaignDurableAuthorityJournal`'s ~30
    admission triads → registry (Section 4) — biggest line-count win, lowest behavioral
    risk, do it first of the two big ones.
