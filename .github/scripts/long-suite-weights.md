@@ -1023,3 +1023,38 @@ tested"), now also applying to this new method. What is tested is the
 guard itself: `CreateForStageEntry` correctly rejects a real, legitimately
 constructed session (a fresh campaign genesis) that has not reached a
 completed Stage Entry Movement.
+
+## Stage Entry Combat Decision, the new stage's own first-acting-side (MTS-TASK-005/006, 2026-11-23)
+
+Adds one new class, `CampaignNativeStageEntryCombatSelectionTests`, proving
+the guard behavior of `ExerciseSession.WithStageEntryCombatSelection`.
+Unlike `CampaignNativeSecondBreakdownV46` (Breakdown), the native class
+here -- `CampaignNativeSecondCombatDecisionStateV47.Select` -- already
+takes `world`/`position`/`turnFacts`/`randomState`/`context`/`contacts`/
+`side`/`actingElementId`/`actionId` as explicit parameters (confirmed by
+reading it directly), so it needed no new `CreateForStageEntry`-style entry
+point; the new code is entirely at the `ExerciseSession`/`CampaignExercises`
+layer (new fields, a third dispatch branch alongside the existing #394
+second-side one in `HasAdvancedCombatSelection`/`QueryContactOwnerCombatCut`/
+`SubmitContactOwnerCombatSelection`, and `QueryCheckpoint`/`ReconstructOne`
+wiring). One new `[Fact]` row, one ordinary suite part; no existing row is
+renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntryCombatSelectionRejectsASessionWithoutACompletedStageEntryBreakdown` | `e9d41bc969` | 104 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntryCombatSelectionTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (1 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `7fdcae9d56938c54ea243d4d497e69b9ad1c58d6ecaf25a863264215d587de55`; retained XML SHA-256 `d3760b3989cd9ece4ed16375eea27270b287ca618eef1fad9de897c98e6c9a51`. The row hash is also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+Testing depth note: a genuine success-path test (reaching `Select`'s own
+Combat/Barrage catalog position) was considered and rejected -- that
+position only exists downstream of a real `CampaignNativeSecondBreakdownV46`
+event, which (like `CreateForStageEntry`) only takes a real
+`ExerciseSession`, the same limitation the Breakdown test file already hit.
+Hand-deriving that catalog position independently, with no real Breakdown
+event to check it against, would test an invented position rather than
+verify the real one. What is tested instead is the guard itself:
+`WithStageEntryCombatSelection` correctly rejects a real, legitimately
+constructed session (a fresh campaign genesis) that has not reached a
+completed Stage Entry Breakdown -- same depth and same reasoning as the
+Breakdown test file.
