@@ -1149,3 +1149,22 @@ one ordinary suite part; no existing row is renamed or removed.
 | `StageEntrySecondMovementRejectsTheOppositeStagesRole` | `15c0bcc627` | 8 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondMovementTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `943fa628cb9fa8de13f747a312af536a045671c8c624799f8434ddb022f1ac2b`; retained XML SHA-256 `9d6d2f4590260c27eb9bfa3634771a338e1cb7d137d1a08cf77662733953c797`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
+
+## Stage Entry second-side Breakdown, MTS-TASK-006 (2026-11-23)
+
+Adds one new class, `CampaignNativeStageEntrySecondBreakdownTests`, proving
+the guard behavior of a third entry point,
+`CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide`, needed for
+the same reason `CreateForStageEntry` needed a second one (confirmed by
+reading `Create`/`CreateForStageEntry` directly before writing this slice):
+each occurrence reads its own four named `ExerciseSession` fields rather
+than taking its predecessor by type. Same depth as
+`CampaignNativeStageEntryBreakdownTests`. Two new `[Fact]` rows, one
+ordinary suite part; no existing row is renamed or removed.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `StageEntrySecondBreakdownCompletionRejectsTheSameSession` | `b1254b0113` | 101 |
+| `StageEntrySecondBreakdownRejectsASessionWithoutACompletedSecondSideMovement` | `9bf1c6c541` | 15 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondBreakdownTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `450754655a350da9a636b7fc5550aa91aaca70d000abe68529f7975032c6945b`; retained XML SHA-256 `d45d78cd163ccfa78cc21e67cad9835af6e58df11fbc8629bd41107c68aa906b`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test class; existing weights and baseline metadata are otherwise unchanged.
