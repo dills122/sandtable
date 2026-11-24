@@ -11,162 +11,53 @@ namespace Cna.Core.Exercises;
 // pre-#394 Combat/Reserve-Release/Cycle-Control/Repeat chain (the dense
 // hand-validated constructor's fields) is deliberately NOT represented here
 // -- see the overhaul doc's 0.2 "Scope discipline" note.
-internal abstract class PendingDecision
-{
-    internal abstract ExerciseSession? Predecessor { get; }
-}
+//
+// abstract record + one-line sealed-record subtypes: the same idiom already
+// used for this exact shape (sealed-subtype union, one common property) in
+// CombatStepsEffect (CampaignCombatSelectionStepsModels.cs) and
+// CampaignPhasingContinuation/CampaignBreakdownFlow (CampaignBreakdownRecords.cs).
+internal abstract record PendingDecision(ExerciseSession? Predecessor);
 
 // --- This stage's own SECOND acting side (#394/MTS-TASK-006) ---
 
-internal sealed class StageEntrySecondAssaultPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntrySecondNoAttackPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntrySecondCombatSelectionPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntrySecondBreakdownPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntrySecondMovementCompletionPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntrySecondMovePending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntrySecondReservePending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
+internal sealed record StageEntrySecondAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntrySecondNoAttackPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntrySecondCombatSelectionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntrySecondBreakdownPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntrySecondMovementCompletionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntrySecondMovePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntrySecondReservePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 
 // --- This stage's own FIRST acting side (#394/MTS-TASK-005) ---
 
-internal sealed class StageEntryAssaultPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryNoAttackPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryCombatSelectionPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryBreakdownPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryMovementCompletionPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryMovePending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryReservePending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
+internal sealed record StageEntryAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryNoAttackPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryCombatSelectionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryBreakdownPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryMovementCompletionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryMovePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryReservePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 
 // --- Prior cycle's second-acting side tail (#394 "gap 1/3") ---
 
-internal sealed class SecondAssaultPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class SecondNoAttackPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class SecondCombatSelectionPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class SecondBreakdownPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class SecondMovementCompletionPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class SecondMovePending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class SecondReservePending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
+internal sealed record SecondAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record SecondNoAttackPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record SecondCombatSelectionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record SecondBreakdownPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record SecondMovementCompletionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record SecondMovePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record SecondReservePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 
 // --- Stage 1->2 entry-bridge preamble chain (MTS-TASK-002/003) ---
 
-internal sealed class NoObligationFleetRepairPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class NoObligationFleetAssignmentPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class NoObligationNavalConvoyArrivalPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class NoObligationOrganizationPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class StageEntryWeatherPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class InitiativeDeclarationPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
+internal sealed record NoObligationFleetRepairPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record NoObligationFleetAssignmentPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record NoObligationNavalConvoyArrivalPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record NoObligationOrganizationPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record StageEntryWeatherPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record InitiativeDeclarationPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 
 // --- Prior stage's close-out (#394 base) ---
 
-internal sealed class PostCombatPassPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
-
-internal sealed class TruckConvoyPassPending(ExerciseSession? predecessor) : PendingDecision
-{
-    internal override ExerciseSession? Predecessor { get; } = predecessor;
-}
+internal sealed record PostCombatPassPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record TruckConvoyPassPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
