@@ -1391,6 +1391,26 @@ public static class CampaignHostAdapter
             ?? session.CurrentRepeatCombatSelection)?.Choice
             == "finish-combat-without-attack";
 
+    // #645: CurrentRepeatCombatSelection (and CurrentPostRepeat.Selection) is
+    // never reset once a repeat cycle finishes voluntarily, so a bare
+    // IsNativeRepeatCombatVoluntaryFinish read can alias onto a stale
+    // decision left over from an earlier, already-completed repeat combat --
+    // same "stale never-reset field, no scoping guard" shape PR #551 fixed
+    // for CurrentSecondAssault. Scope the check to the round actually bound
+    // to the CURRENT Selection timeout by requiring the stale decision's own
+    // StateVersion to match the live contact-authority version, the same
+    // freshness guard CompleteNativeRepeatCombatNoAttack already enforces
+    // before accepting it. A caller that needs to route a no-attack timeout
+    // between the repeat and non-repeat completion paths should use this,
+    // not the bare IsNativeRepeatCombatVoluntaryFinish, so a brand-new,
+    // unrelated Combat's initial Selection timeout is never misrouted to
+    // CompleteNativeRepeatCombatNoAttack.
+    public static bool IsNativeRepeatCombatNoAttackPending(ExerciseSession session) =>
+        (session.CurrentPostRepeat?.Selection
+            ?? session.CurrentRepeatCombatSelection) is { } selection
+        && selection.Choice == "finish-combat-without-attack"
+        && selection.StateVersion == session.CurrentContacts.AuthorityVersion;
+
     public static bool IsNativeRepeatCombatSelectedAssault(ExerciseSession session) =>
         (session.CurrentPostRepeat?.Selection
             ?? session.CurrentRepeatCombatSelection)?.Choice
