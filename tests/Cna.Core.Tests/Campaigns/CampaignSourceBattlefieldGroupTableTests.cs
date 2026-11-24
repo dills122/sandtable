@@ -204,13 +204,13 @@ public sealed class CampaignSourceBattlefieldGroupTableTests
 
     private static CampaignSourceBattlefield Confirm(CampaignSourceBattlefield battlefield, GroupedWorldMechanic mechanic,
         CampaignGroupedWorld prior, CampaignGroupedWorld next) => mechanic.GroupId switch
-    {
-        "4-indian-division" => battlefield.ConfirmFourthIndian(prior, next),
-        _ when mechanic.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId => battlefield.ConfirmCatanzaro(prior, next),
-        _ when mechanic.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId => battlefield.ConfirmSeventhArmored(prior, next),
-        _ when mechanic.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId => battlefield.ConfirmSixteenthBrigade(prior, next),
-        _ => throw new InvalidOperationException("Unknown mechanic."),
-    };
+        {
+            "4-indian-division" => battlefield.ConfirmFourthIndian(prior, next),
+            _ when mechanic.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId => battlefield.ConfirmCatanzaro(prior, next),
+            _ when mechanic.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId => battlefield.ConfirmSeventhArmored(prior, next),
+            _ when mechanic.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId => battlefield.ConfirmSixteenthBrigade(prior, next),
+            _ => throw new InvalidOperationException("Unknown mechanic."),
+        };
 
     private static void Validate(CampaignSourceBattlefield battlefield, GroupedWorldMechanic mechanic, CampaignGroupedWorld world)
     {
