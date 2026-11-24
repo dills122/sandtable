@@ -30,6 +30,9 @@ builder.Services.AddScoped(sp => new ReserveDesignationAdvisor(
 builder.Services.AddScoped(sp => new MovementAdvisor(
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("OutwardApi"),
     sp.GetRequiredService<IOllamaApiClient>()));
+builder.Services.AddScoped(sp => new SecondReserveAdvisor(
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("OutwardApi"),
+    sp.GetRequiredService<IOllamaApiClient>()));
 
 var app = builder.Build();
 
@@ -55,6 +58,15 @@ app.MapPost("/advise/reserve-designation", async (
 
 app.MapPost("/advise/movement", async (
     AdviceRequest request, MovementAdvisor advisor, CancellationToken cancellationToken) =>
+{
+    var credential = new CampaignSeatCredential(
+        request.CampaignId, request.Audience, request.Epoch, request.Secret, request.ExpiresUnixMs);
+    var result = await advisor.Advise(credential, request.ActingElementId, request.Stage, cancellationToken);
+    return Results.Ok(result);
+});
+
+app.MapPost("/advise/second-reserve", async (
+    AdviceRequest request, SecondReserveAdvisor advisor, CancellationToken cancellationToken) =>
 {
     var credential = new CampaignSeatCredential(
         request.CampaignId, request.Audience, request.Epoch, request.Secret, request.ExpiresUnixMs);
