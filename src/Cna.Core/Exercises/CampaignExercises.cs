@@ -6875,19 +6875,69 @@ public static class CampaignExercises
         }
     }
 
-    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QuerySecondMovementSource(ExerciseSession session)
+    // Slot: "which ExerciseSession fields does this movement-source query
+    // read, and what is its error-message prefix." QuerySecondMovementSource/
+    // QueryStageEntryMovementSource/QueryStageEntrySecondMovementSource were
+    // byte-for-byte identical in control flow, differing only in which
+    // Movement/Reserve ExerciseSession fields they read and an error-message
+    // prefix. This collapses all three into one QueryMovementSourceCore body
+    // (MTS maintainability Slice 2, 2026-11-24, reusing PR #560's Slot
+    // technique) -- a pure, mechanical, behavior-preserving extraction: every
+    // check, invariant and message is byte-identical to before. Only the
+    // internal control flow is parameterized.
+    private readonly record struct MovementSourceSlot(
+        string Context,
+        Func<ExerciseSession, bool> AlreadyCompleted,
+        Func<ExerciseSession, CampaignNativeSecondMoveV44?> Move,
+        Func<ExerciseSession, CampaignWorldSnapshotV6?> MoveWorld,
+        Func<ExerciseSession, CampaignNativeSecondReserveV43?> Reserve,
+        Func<ExerciseSession, CampaignWorldSnapshotV6?> ReserveWorld,
+        string RequiresReserveMessage);
+
+    private static readonly MovementSourceSlot SecondMovementSourceSlot = new(
+        "Second ",
+        session => session.CurrentSecondMovementCompletion is not null,
+        session => session.CurrentSecondMove,
+        session => session.CurrentSecondMoveWorld,
+        session => session.CurrentSecondReserve,
+        session => session.CurrentSecondReserveWorld,
+        "Second Movement requires completed Reserve Designation.");
+
+    private static readonly MovementSourceSlot StageEntryMovementSourceSlot = new(
+        "Stage Entry ",
+        session => session.CurrentStageEntryMovementCompletion is not null,
+        session => session.CurrentStageEntryMove,
+        session => session.CurrentStageEntryMoveWorld,
+        session => session.CurrentStageEntryReserve,
+        session => session.CurrentStageEntryReserveWorld,
+        "Stage Entry Movement requires completed Stage Entry Reserve Designation.");
+
+    private static readonly MovementSourceSlot StageEntrySecondMovementSourceSlot = new(
+        "Stage Entry second-side ",
+        session => session.CurrentStageEntrySecondMovementCompletion is not null,
+        session => session.CurrentStageEntrySecondMove,
+        session => session.CurrentStageEntrySecondMoveWorld,
+        session => session.CurrentStageEntrySecondReserve,
+        session => session.CurrentStageEntrySecondReserveWorld,
+        "Stage Entry second-side Movement requires completed second-side Reserve Designation.");
+
+    private static (object Predecessor, CampaignWorldSnapshotV6 World) QueryMovementSourceCore(
+        ExerciseSession session, MovementSourceSlot slot)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentSecondMovementCompletion is not null)
-            throw new InvalidOperationException("Second Movement has already completed.");
-        if (session.CurrentSecondMove is { } movement)
-            return (movement, session.CurrentSecondMoveWorld
-                ?? throw new InvalidOperationException("Second Movement World is missing."));
-        if (session.CurrentSecondReserve is { Completed: true } reserve)
-            return (reserve, session.CurrentSecondReserveWorld
-                ?? throw new InvalidOperationException("Second Reserve World is missing."));
-        throw new InvalidOperationException("Second Movement requires completed Reserve Designation.");
+        if (slot.AlreadyCompleted(session))
+            throw new InvalidOperationException($"{slot.Context}Movement has already completed.");
+        if (slot.Move(session) is { } movement)
+            return (movement, slot.MoveWorld(session)
+                ?? throw new InvalidOperationException($"{slot.Context}Movement World is missing."));
+        if (slot.Reserve(session) is { Completed: true } reserve)
+            return (reserve, slot.ReserveWorld(session)
+                ?? throw new InvalidOperationException($"{slot.Context}Reserve World is missing."));
+        throw new InvalidOperationException(slot.RequiresReserveMessage);
     }
+
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QuerySecondMovementSource(ExerciseSession session) =>
+        QueryMovementSourceCore(session, SecondMovementSourceSlot);
 
     internal static ExerciseStepResult CompleteSecondMovement(ExerciseSession session,
         CampaignActionAudience audience, string actionId)
@@ -6939,16 +6989,39 @@ public static class CampaignExercises
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
-    internal static CampaignContactOwnerMovementCut QuerySecondMovementCut(ExerciseSession session,
-        LandSide side, string elementId)
+    // Slot: "which movement-source query and which orders list." The three
+    // MovementCut queries below were byte-for-byte identical, differing only
+    // in which QueryXMovementSource to call and whether orders come from
+    // session.CurrentSnapshot.OperationStageOrders directly or
+    // StageEntryOrders(session). Same Slot technique as MovementSourceSlot
+    // above (MTS maintainability Slice 2, 2026-11-24).
+    private readonly record struct MovementCutSlot(
+        Func<ExerciseSession, (object Predecessor, CampaignWorldSnapshotV6 World)> Source,
+        Func<ExerciseSession, IReadOnlyList<CampaignOperationStageOrder>> Orders);
+
+    private static readonly MovementCutSlot SecondMovementCutSlot = new(
+        QuerySecondMovementSource, session => session.CurrentSnapshot.OperationStageOrders);
+
+    private static readonly MovementCutSlot StageEntryMovementCutSlot = new(
+        QueryStageEntryMovementSource, StageEntryOrders);
+
+    private static readonly MovementCutSlot StageEntrySecondMovementCutSlot = new(
+        QueryStageEntrySecondMovementSource, StageEntryOrders);
+
+    private static CampaignContactOwnerMovementCut QueryMovementCutCore(ExerciseSession session,
+        LandSide side, string elementId, MovementCutSlot slot)
     {
-        var (source, world) = QuerySecondMovementSource(session);
+        var (source, world) = slot.Source(session);
         var (_, _, position) = CampaignNativeSecondMoveV44.Source(source, world, session.Context,
-            session.CurrentSnapshot.OperationStageOrders, side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            slot.Orders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
             session.CurrentContacts.AuthorityVersion);
         return CampaignContactOwnerMovementCut.ProjectSecondMovement(world, position, session.Context,
             session.CurrentContacts, side, elementId);
     }
+
+    internal static CampaignContactOwnerMovementCut QuerySecondMovementCut(ExerciseSession session,
+        LandSide side, string elementId) =>
+        QueryMovementCutCore(session, side, elementId, SecondMovementCutSlot);
 
     internal static ExerciseStepResult SubmitSecondMovement(ExerciseSession session,
         CampaignActionAudience audience, string actionId, string elementId)
@@ -7091,17 +7164,59 @@ public static class CampaignExercises
     // own remarks -- it is not yet a member of CurrentSnapshot.OperationStageOrders,
     // which only ever holds the orders CampaignSnapshotV11 itself was built
     // with (Stage 1's).
-    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntryReserveSource(ExerciseSession session)
+    // Slot: "which Reserve/fallback ExerciseSession fields does this query
+    // read." QueryStageEntryReserveSource/QueryStageEntrySecondReserveSource
+    // are byte-for-byte identical in control flow (same Slot technique as
+    // above, MTS maintainability Slice 2, 2026-11-24). QuerySecondReserveSource
+    // is deliberately NOT included: its own fallback branch calls
+    // QueryNativeReserveReleaseState(session) -- the pre-#394 Reserve-Release/
+    // Cycle-Control dispatch cascade the 2026-11-24 maintainability-refactor
+    // direction doc (Section 1) explicitly scopes out of this plan -- instead
+    // of reading a sibling session field directly the way these two do. A
+    // real structural difference, not just "which field," so it stays
+    // hand-written per that doc's own outlier guidance.
+    private readonly record struct ReserveSourceSlot(
+        string Context,
+        Func<ExerciseSession, CampaignNativeSecondReserveV43?> Reserve,
+        Func<ExerciseSession, CampaignWorldSnapshotV6?> ReserveWorld,
+        Func<ExerciseSession, object?> FallbackPredecessor,
+        Func<ExerciseSession, CampaignWorldSnapshotV6?> FallbackWorld,
+        string FallbackWorldMissingMessage,
+        string RequiresMessage);
+
+    private static readonly ReserveSourceSlot StageEntryReserveSourceSlot = new(
+        "Stage Entry ",
+        session => session.CurrentStageEntryReserve,
+        session => session.CurrentStageEntryReserveWorld,
+        session => session.CurrentNoObligationFleetRepair,
+        session => session.CurrentSecondAssault?.Release?.World,
+        "Stage Entry Reserve requires the prior stage's settled World.",
+        "Stage Entry Reserve requires a completed prior-stage preamble.");
+
+    private static readonly ReserveSourceSlot StageEntrySecondReserveSourceSlot = new(
+        "Stage Entry second-side ",
+        session => session.CurrentStageEntrySecondReserve,
+        session => session.CurrentStageEntrySecondReserveWorld,
+        session => session.CurrentStageEntryAssault is { PostCombatPasses: [.., var lastPass] } ? lastPass : null,
+        session => session.CurrentStageEntryAssault?.Release?.World,
+        "Stage Entry second-side Reserve requires this stage's settled World.",
+        "Stage Entry second-side Reserve requires this stage's completed first-acting-side chain.");
+
+    private static (object Predecessor, CampaignWorldSnapshotV6 World) QueryReserveSourceCore(
+        ExerciseSession session, ReserveSourceSlot slot)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentStageEntryReserve is { } reserve)
-            return (reserve, session.CurrentStageEntryReserveWorld
-                ?? throw new InvalidOperationException("Stage Entry Reserve World is missing."));
-        if (session.CurrentNoObligationFleetRepair is { } fleetRepair)
-            return (fleetRepair, session.CurrentSecondAssault?.Release?.World
-                ?? throw new InvalidOperationException("Stage Entry Reserve requires the prior stage's settled World."));
-        throw new InvalidOperationException("Stage Entry Reserve requires a completed prior-stage preamble.");
+        if (slot.Reserve(session) is { } reserve)
+            return (reserve, slot.ReserveWorld(session)
+                ?? throw new InvalidOperationException($"{slot.Context}Reserve World is missing."));
+        if (slot.FallbackPredecessor(session) is { } predecessor)
+            return (predecessor, slot.FallbackWorld(session)
+                ?? throw new InvalidOperationException(slot.FallbackWorldMissingMessage));
+        throw new InvalidOperationException(slot.RequiresMessage);
     }
+
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntryReserveSource(ExerciseSession session) =>
+        QueryReserveSourceCore(session, StageEntryReserveSourceSlot);
 
     internal static IReadOnlyList<CampaignOperationStageOrder> StageEntryOrders(ExerciseSession session)
     {
@@ -7158,17 +7273,8 @@ public static class CampaignExercises
     // change between this stage's two acting sides, only which side is
     // currently acting -- resolved inside the native class via #518's
     // ActingRole, not by varying the orders list itself.
-    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntrySecondReserveSource(ExerciseSession session)
-    {
-        ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentStageEntrySecondReserve is { } reserve)
-            return (reserve, session.CurrentStageEntrySecondReserveWorld
-                ?? throw new InvalidOperationException("Stage Entry second-side Reserve World is missing."));
-        if (session.CurrentStageEntryAssault is { PostCombatPasses: [.., var lastPass] })
-            return (lastPass, session.CurrentStageEntryAssault.Release?.World
-                ?? throw new InvalidOperationException("Stage Entry second-side Reserve requires this stage's settled World."));
-        throw new InvalidOperationException("Stage Entry second-side Reserve requires this stage's completed first-acting-side chain.");
-    }
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntrySecondReserveSource(ExerciseSession session) =>
+        QueryReserveSourceCore(session, StageEntrySecondReserveSourceSlot);
 
     internal static ExerciseStepResult SubmitStageEntrySecondReserve(ExerciseSession session,
         CampaignActionAudience audience, string actionId, string? elementId)
@@ -7207,19 +7313,8 @@ public static class CampaignExercises
     // unchanged (confirmed by reading CampaignNativeSecondMoveV44.Source
     // directly: its predecessor switch matches by type alone), entered from
     // this stage's own completed second-side Reserve Designation.
-    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntrySecondMovementSource(ExerciseSession session)
-    {
-        ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentStageEntrySecondMovementCompletion is not null)
-            throw new InvalidOperationException("Stage Entry second-side Movement has already completed.");
-        if (session.CurrentStageEntrySecondMove is { } movement)
-            return (movement, session.CurrentStageEntrySecondMoveWorld
-                ?? throw new InvalidOperationException("Stage Entry second-side Movement World is missing."));
-        if (session.CurrentStageEntrySecondReserve is { Completed: true } reserve)
-            return (reserve, session.CurrentStageEntrySecondReserveWorld
-                ?? throw new InvalidOperationException("Stage Entry second-side Reserve World is missing."));
-        throw new InvalidOperationException("Stage Entry second-side Movement requires completed second-side Reserve Designation.");
-    }
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntrySecondMovementSource(ExerciseSession session) =>
+        QueryMovementSourceCore(session, StageEntrySecondMovementSourceSlot);
 
     internal static ExerciseStepResult CompleteStageEntrySecondMovement(ExerciseSession session,
         CampaignActionAudience audience, string actionId)
@@ -7250,15 +7345,8 @@ public static class CampaignExercises
     }
 
     internal static CampaignContactOwnerMovementCut QueryStageEntrySecondMovementCut(ExerciseSession session,
-        LandSide side, string elementId)
-    {
-        var (source, world) = QueryStageEntrySecondMovementSource(session);
-        var (_, _, position) = CampaignNativeSecondMoveV44.Source(source, world, session.Context,
-            StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
-            session.CurrentContacts.AuthorityVersion);
-        return CampaignContactOwnerMovementCut.ProjectSecondMovement(world, position, session.Context,
-            session.CurrentContacts, side, elementId);
-    }
+        LandSide side, string elementId) =>
+        QueryMovementCutCore(session, side, elementId, StageEntrySecondMovementCutSlot);
 
     internal static ExerciseStepResult SubmitStageEntrySecondMovement(ExerciseSession session,
         CampaignActionAudience audience, string actionId, string elementId)
@@ -7326,19 +7414,8 @@ public static class CampaignExercises
     // completed Reserve Designation, and carrying StageEntryOrders(session)
     // instead of CurrentSnapshot.OperationStageOrders directly, for the same
     // reason SubmitStageEntryReserve does.
-    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntryMovementSource(ExerciseSession session)
-    {
-        ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentStageEntryMovementCompletion is not null)
-            throw new InvalidOperationException("Stage Entry Movement has already completed.");
-        if (session.CurrentStageEntryMove is { } movement)
-            return (movement, session.CurrentStageEntryMoveWorld
-                ?? throw new InvalidOperationException("Stage Entry Movement World is missing."));
-        if (session.CurrentStageEntryReserve is { Completed: true } reserve)
-            return (reserve, session.CurrentStageEntryReserveWorld
-                ?? throw new InvalidOperationException("Stage Entry Reserve World is missing."));
-        throw new InvalidOperationException("Stage Entry Movement requires completed Stage Entry Reserve Designation.");
-    }
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryStageEntryMovementSource(ExerciseSession session) =>
+        QueryMovementSourceCore(session, StageEntryMovementSourceSlot);
 
     internal static ExerciseStepResult CompleteStageEntryMovement(ExerciseSession session,
         CampaignActionAudience audience, string actionId)
@@ -7369,15 +7446,8 @@ public static class CampaignExercises
     }
 
     internal static CampaignContactOwnerMovementCut QueryStageEntryMovementCut(ExerciseSession session,
-        LandSide side, string elementId)
-    {
-        var (source, world) = QueryStageEntryMovementSource(session);
-        var (_, _, position) = CampaignNativeSecondMoveV44.Source(source, world, session.Context,
-            StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
-            session.CurrentContacts.AuthorityVersion);
-        return CampaignContactOwnerMovementCut.ProjectSecondMovement(world, position, session.Context,
-            session.CurrentContacts, side, elementId);
-    }
+        LandSide side, string elementId) =>
+        QueryMovementCutCore(session, side, elementId, StageEntryMovementCutSlot);
 
     internal static ExerciseStepResult SubmitStageEntryMovement(ExerciseSession session,
         CampaignActionAudience audience, string actionId, string elementId)
