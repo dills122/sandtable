@@ -104,4 +104,46 @@ public sealed class ExerciseSessionPendingTests
 
         Assert.Null(session.Pending);
     }
+
+    // Critical finding from a follow-up audit of ComputePending() itself:
+    // only CurrentSecondAssault's arm carried the
+    // "CurrentInitiativeDeclaration is null &&" guard against staleness --
+    // the six OTHER second-side fields chronologically before it in the same
+    // cascade (SecondNoAttackCompletion/SecondCombatDecision/SecondBreakdown/
+    // SecondMovementCompletion/SecondMove/SecondReserve) had no such guard,
+    // even though they never reset either and are guaranteed non-null by the
+    // time CurrentInitiativeDeclaration exists (WithInitiativeDeclaration
+    // requires CurrentSecondAssault.PostCombatPasses non-empty, which itself
+    // requires the full SecondReserve->...->SecondAssault chain to have run).
+    // Without the guard, Pending permanently misreports every session that
+    // ever had a second-side combat as still being in that combat, making the
+    // entire newly-wired preamble/StageEntry chain unreachable via Pending.
+    [Fact]
+    public void PendingResolvesToInitiativeDeclarationNotAStaleSecondCombatDecision()
+    {
+        var session = NewBareSession();
+        SetCurrent(session, "CurrentSecondCombatDecision",
+            NewBareRecord<CampaignNativeSecondCombatDecisionStateV47>());
+        SetCurrent(session, "CurrentInitiativeDeclaration",
+            NewBareRecord<CampaignNativeInitiativeDeclarationV49>());
+
+        Assert.IsType<InitiativeDeclarationPending>(session.Pending);
+    }
+
+    // Same bug, a different one of the six unguarded arms: SecondBreakdown is
+    // chronologically earlier still (SecondReserve -> SecondMove ->
+    // SecondMovementCompletion -> SecondBreakdown -> SecondCombatDecision ->
+    // SecondAssault), so it's just as permanently non-null once
+    // CurrentInitiativeDeclaration exists.
+    [Fact]
+    public void PendingResolvesToInitiativeDeclarationNotAStaleSecondBreakdown()
+    {
+        var session = NewBareSession();
+        SetCurrent(session, "CurrentSecondBreakdown",
+            NewBareRecord<CampaignNativeSecondBreakdownV46>());
+        SetCurrent(session, "CurrentInitiativeDeclaration",
+            NewBareRecord<CampaignNativeInitiativeDeclarationV49>());
+
+        Assert.IsType<InitiativeDeclarationPending>(session.Pending);
+    }
 }
