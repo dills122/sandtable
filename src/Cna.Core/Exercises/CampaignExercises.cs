@@ -6691,7 +6691,7 @@ public static class CampaignExercises
                 ? session.WithStageEntrySecondAssaultEvent(emitted, contacts)
                 : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(emitted, contacts)
-                : session.CurrentSecondAssault is not null
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(emitted, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(emitted, contacts)
@@ -6730,7 +6730,7 @@ public static class CampaignExercises
                 ? session.WithStageEntrySecondAssaultEvent(emitted, contacts)
                 : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(emitted, contacts)
-                : session.CurrentSecondAssault is not null
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(emitted, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(emitted, contacts)
@@ -6761,7 +6761,7 @@ public static class CampaignExercises
                 ? stageEntrySecondControl.Control
                 : session.CurrentStageEntryAssault is { } stageEntryControl
                 ? stageEntryControl.Control
-                : session.CurrentSecondAssault is { } secondSideControl
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is { } secondSideControl
                 ? secondSideControl.Control
                 : session.CurrentRepeatAssault?.Release is not null
                 ? session.CurrentRepeatAssault.Control
@@ -6808,7 +6808,7 @@ public static class CampaignExercises
                 ? session.WithStageEntrySecondAssaultEvent(control, contacts)
                 : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(control, contacts)
-                : session.CurrentSecondAssault is not null
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(control, contacts)
@@ -6855,7 +6855,7 @@ public static class CampaignExercises
                 ? session.WithStageEntrySecondAssaultEvent(control, contacts)
                 : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(control, contacts)
-                : session.CurrentSecondAssault is not null
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(control, contacts)
@@ -7554,7 +7554,7 @@ public static class CampaignExercises
                 ? session.WithStageEntrySecondAssaultEvent(passed, contacts)
                 : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(passed, contacts)
-                : session.CurrentSecondAssault is not null
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(passed, contacts)
                 : session.WithTruckConvoyPass(passed, contacts);
             var bytes = passed.SerializeCanonical();
@@ -7583,7 +7583,7 @@ public static class CampaignExercises
                     ? stageEntrySecondSideControl.Control
                     : session.CurrentStageEntryAssault is { } stageEntrySideControl
                     ? stageEntrySideControl.Control
-                    : session.CurrentSecondAssault is { } secondSideControl
+                    : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is { } secondSideControl
                     ? secondSideControl.Control
                     : session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
@@ -7611,7 +7611,7 @@ public static class CampaignExercises
                 ? session.WithStageEntrySecondAssaultEvent(control, contacts)
                 : session.CurrentStageEntryAssault is not null
                 ? session.WithStageEntryAssaultEvent(control, contacts)
-                : session.CurrentSecondAssault is not null
+                : session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null
                 ? session.WithSecondAssaultEvent(control, contacts)
                 : session.CurrentPostRepeat is not null
                 ? session.WithPostRepeatEvent(control, contacts)
