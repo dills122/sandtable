@@ -827,63 +827,17 @@ internal sealed partial class CampaignSourceBattlefield
             axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
     }
 
-    internal CampaignSourceBattlefield PromoteFourthIndian(CampaignGroupedWorld world)
-    {
-        RequireFourthIndian(world, "source-evidence");
-        if (world.Groups.Single(value => value.GroupId == "4-indian-division").DispositionConfirmed)
-            throw new InvalidOperationException("Fourth Indian disposition must be proposed before confirmation.");
-        var ids = CampaignSourceFourthIndianDefinition.Members.Select(value => value.Id)
-            .ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-fourth-indian-proposed" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
+    // Collapsed in Slice 4b of docs/work/plans/2026-11-24-maintainability-refactor-direction.md
+    // onto the Slice 4a registry (CampaignSourceBattlefieldGroupTable.cs); name/signature/
+    // accessibility unchanged so CampaignSourceAuthority.cs and the equivalence test keep
+    // calling these exactly as before.
+    internal CampaignSourceBattlefield PromoteFourthIndian(CampaignGroupedWorld world) =>
+        ProposeGroup(world, FourthIndianMechanic);
 
-    internal CampaignSourceBattlefield ConfirmFourthIndian(CampaignGroupedWorld prior, CampaignGroupedWorld confirmed)
-    {
-        ArgumentNullException.ThrowIfNull(prior);
-        ArgumentNullException.ThrowIfNull(confirmed);
-        RequireFourthIndian(prior, "source-fourth-indian-proposed");
-        var before = prior.Groups.Single(value => value.GroupId == "4-indian-division");
-        var after = confirmed.Groups.Single(value => value.GroupId == "4-indian-division");
-        if (before.DispositionConfirmed || !after.DispositionConfirmed || prior.Prior != confirmed.Prior
-            || prior.ContentHash != confirmed.ContentHash || prior.Groups.Count != 1 || confirmed.Groups.Count != 1
-            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
-            || before.StackValue is not null || after.StackValue != 5 || before.MotorPool != after.MotorPool
-            || !before.Members.SequenceEqual(after.Members))
-            throw new InvalidOperationException("Fourth Indian confirmation changed its proposed world.");
-        var ids = CampaignSourceFourthIndianDefinition.Members.Select(value => value.Id)
-            .ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-fourth-indian-grouped" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
+    internal CampaignSourceBattlefield ConfirmFourthIndian(CampaignGroupedWorld prior, CampaignGroupedWorld confirmed) =>
+        ConfirmGroup(prior, confirmed, FourthIndianMechanic);
 
-    internal void ValidateFourthIndian(CampaignGroupedWorld world)
-    {
-        ArgumentNullException.ThrowIfNull(world);
-        var group = world.Groups.Single(value => value.GroupId == "4-indian-division");
-        RequireFourthIndian(world, group.DispositionConfirmed
-            ? "source-fourth-indian-grouped" : "source-fourth-indian-proposed");
-    }
-
-    private void RequireFourthIndian(CampaignGroupedWorld world, string status)
-    {
-        ArgumentNullException.ThrowIfNull(world);
-        var expected = CampaignSourceFourthIndianDefinition.Members.Select(value => value.Id)
-            .Order(StringComparer.Ordinal).ToArray();
-        var group = world.Groups.SingleOrDefault(value => value.GroupId == "4-indian-division");
-        var occupants = entries.Where(value => value.LocationId == "d3615").ToArray();
-        if (group is null || group.SideId != "commonwealth" || group.LocationId != "d3615"
-            || group.RootId != "4-indian-division-hq"
-            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(expected)
-            || occupants.Length != expected.Length
-            || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(expected)
-            || occupants.Any(value => value.SideId != "commonwealth" || value.AuthorityStatus != status))
-            throw new InvalidOperationException("Fourth Indian group differs from retained battlefield occupancy.");
-    }
+    internal void ValidateFourthIndian(CampaignGroupedWorld world) => ValidateGroup(world, FourthIndianMechanic);
 
     internal CampaignSourceBattlefield ProposeLibyanGroups(CampaignGroupedWorld world)
     {
@@ -969,169 +923,30 @@ internal sealed partial class CampaignSourceBattlefield
             throw new InvalidOperationException("Libyan grouped world differs from retained battlefield occupancy.");
     }
 
-    internal CampaignSourceBattlefield ProposeCatanzaro(CampaignGroupedWorld world)
-    {
-        RequireCatanzaro(world, "source-evidence");
-        var group = world.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
-        if (group.DispositionConfirmed) throw new InvalidOperationException("Catanzaro must first be proposed.");
-        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-catanzaro-proposed" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
+    // Collapsed in Slice 4b (see FourthIndian's comment above) onto the same registry.
+    internal CampaignSourceBattlefield ProposeCatanzaro(CampaignGroupedWorld world) =>
+        ProposeGroup(world, CatanzaroMechanic);
 
-    internal CampaignSourceBattlefield ConfirmCatanzaro(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld)
-    {
-        RequireCatanzaro(priorWorld, "source-catanzaro-proposed");
-        var before = priorWorld.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
-        var after = nextWorld.Groups.Single(value => value.GroupId == before.GroupId);
-        if (before.DispositionConfirmed || !after.DispositionConfirmed || before.StackValue is not null || after.StackValue != 5
-            || priorWorld.Prior != nextWorld.Prior || priorWorld.ContentHash != nextWorld.ContentHash
-            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
-            || before.MotorPool != after.MotorPool || !SameGroupedMembers(before.Members, after.Members)
-            || !priorWorld.Groups.Where(value => value.GroupId != before.GroupId).SequenceEqual(nextWorld.Groups.Where(value => value.GroupId != before.GroupId))
-            || !priorWorld.Detached.SequenceEqual(nextWorld.Detached) || !priorWorld.ExternalReservations.SequenceEqual(nextWorld.ExternalReservations))
-            throw new InvalidOperationException("Catanzaro confirmation changed its proposed world.");
-        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-catanzaro-grouped" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
+    internal CampaignSourceBattlefield ConfirmCatanzaro(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld) =>
+        ConfirmGroup(priorWorld, nextWorld, CatanzaroMechanic);
 
-    internal void ValidateCatanzaro(CampaignGroupedWorld world)
-    {
-        var group = world.Groups.Single(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
-        RequireCatanzaro(world, group.DispositionConfirmed ? "source-catanzaro-grouped" : "source-catanzaro-proposed");
-    }
+    internal void ValidateCatanzaro(CampaignGroupedWorld world) => ValidateGroup(world, CatanzaroMechanic);
 
-    private void RequireCatanzaro(CampaignGroupedWorld world, string status)
-    {
-        ArgumentNullException.ThrowIfNull(world);
-        var source = Cna1979GrazianiSourceFacts.CatanzaroInitialChartCandidate;
-        var ids = source.ElementIds.Order(StringComparer.Ordinal).ToArray();
-        var group = world.Groups.SingleOrDefault(value => value.GroupId == CampaignSourceCatanzaroGroupedDefinition.GroupId);
-        var occupants = entries.Where(value => value.LocationId == source.LocationId).ToArray();
-        var effective = world.OccupantsAt(source.LocationId);
-        if (group is null || group.SideId != "axis" || group.RootId != CampaignSourceCatanzaroGroupedDefinition.RootId
-            || group.LocationId != source.LocationId || group.MotorPool != 35 || group.StackValue != (group.DispositionConfirmed ? 5 : null)
-            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
-            || occupants.Length != ids.Length || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
-            || occupants.Any(value => value.SideId != "axis" || value.AuthorityStatus != status)
-            || effective.Count != 1 || effective[0].Formation?.GroupId != group.GroupId)
-            throw new InvalidOperationException("Catanzaro grouped world differs from retained battlefield occupancy.");
-    }
+    internal CampaignSourceBattlefield ProposeSeventhArmored(CampaignGroupedWorld world) =>
+        ProposeGroup(world, SeventhArmoredMechanic);
 
-    internal CampaignSourceBattlefield ProposeSeventhArmored(CampaignGroupedWorld world)
-    {
-        RequireSeventhArmored(world, "source-evidence");
-        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
-        if (group.DispositionConfirmed) throw new InvalidOperationException("Seventh Armored must first be proposed.");
-        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-seventh-armored-proposed" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
+    internal CampaignSourceBattlefield ConfirmSeventhArmored(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld) =>
+        ConfirmGroup(priorWorld, nextWorld, SeventhArmoredMechanic);
 
-    internal CampaignSourceBattlefield ConfirmSeventhArmored(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld)
-    {
-        RequireSeventhArmored(priorWorld, "source-seventh-armored-proposed");
-        var before = priorWorld.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
-        var after = nextWorld.Groups.Single(value => value.GroupId == before.GroupId);
-        if (before.DispositionConfirmed || !after.DispositionConfirmed || before.StackValue is not null || after.StackValue != 5
-            || priorWorld.Prior != nextWorld.Prior || priorWorld.ContentHash != nextWorld.ContentHash
-            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
-            || before.MotorPool != after.MotorPool || !SameGroupedMembers(before.Members, after.Members)
-            || !priorWorld.Groups.Where(value => value.GroupId != before.GroupId).SequenceEqual(nextWorld.Groups.Where(value => value.GroupId != before.GroupId))
-            || !priorWorld.Detached.SequenceEqual(nextWorld.Detached) || !priorWorld.ExternalReservations.SequenceEqual(nextWorld.ExternalReservations))
-            throw new InvalidOperationException("Seventh Armored confirmation changed its proposed world.");
-        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-seventh-armored-grouped" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
+    internal void ValidateSeventhArmored(CampaignGroupedWorld world) => ValidateGroup(world, SeventhArmoredMechanic);
 
-    internal void ValidateSeventhArmored(CampaignGroupedWorld world)
-    {
-        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
-        RequireSeventhArmored(world, group.DispositionConfirmed ? "source-seventh-armored-grouped" : "source-seventh-armored-proposed");
-    }
+    internal CampaignSourceBattlefield ProposeSixteenthBrigade(CampaignGroupedWorld world) =>
+        ProposeGroup(world, SixteenthBrigadeMechanic);
 
-    private void RequireSeventhArmored(CampaignGroupedWorld world, string status)
-    {
-        ArgumentNullException.ThrowIfNull(world);
-        var source = Cna1979GrazianiSourceFacts.SeventhArmoredDivisionInitialCandidate;
-        var ids = source.ElementIds.Order(StringComparer.Ordinal).ToArray();
-        var group = world.Groups.SingleOrDefault(value => value.GroupId == CampaignSourceSeventhArmoredGroupedDefinition.GroupId);
-        var occupants = entries.Where(value => value.LocationId == source.LocationId).ToArray();
-        var effective = world.OccupantsAt(source.LocationId);
-        if (group is null || group.SideId != "commonwealth" || group.RootId != CampaignSourceSeventhArmoredGroupedDefinition.RootId
-            || group.LocationId != source.LocationId || group.MotorPool != 10
-            || (group.DispositionConfirmed ? group.StackValue is not (3 or 5) : group.StackValue is not null)
-            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
-            || occupants.Length != ids.Length || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
-            || occupants.Any(value => value.SideId != "commonwealth" || value.AuthorityStatus != status)
-            || effective.Count != 1 || effective[0].Formation?.GroupId != group.GroupId)
-            throw new InvalidOperationException("Seventh Armored grouped world differs from retained battlefield occupancy.");
-    }
+    internal CampaignSourceBattlefield ConfirmSixteenthBrigade(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld) =>
+        ConfirmGroup(priorWorld, nextWorld, SixteenthBrigadeMechanic);
 
-    internal CampaignSourceBattlefield ProposeSixteenthBrigade(CampaignGroupedWorld world)
-    {
-        RequireSixteenthBrigade(world, "world8-initial");
-        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
-        if (group.DispositionConfirmed) throw new InvalidOperationException("Sixteenth Brigade must first be proposed.");
-        var ids = group.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-sixteenth-brigade-proposed" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
-
-    internal CampaignSourceBattlefield ConfirmSixteenthBrigade(CampaignGroupedWorld priorWorld, CampaignGroupedWorld nextWorld)
-    {
-        RequireSixteenthBrigade(priorWorld, "source-sixteenth-brigade-proposed");
-        var before = priorWorld.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
-        var after = nextWorld.Groups.Single(value => value.GroupId == before.GroupId);
-        if (before.DispositionConfirmed || !after.DispositionConfirmed || before.StackValue is not null || after.StackValue != 2
-            || priorWorld.Prior != nextWorld.Prior || priorWorld.ContentHash != nextWorld.ContentHash
-            || before.RootId != after.RootId || before.SideId != after.SideId || before.LocationId != after.LocationId
-            || before.MotorPool != after.MotorPool || !SameGroupedMembers(before.Members, after.Members)
-            || !priorWorld.Groups.Where(value => value.GroupId != before.GroupId).SequenceEqual(nextWorld.Groups.Where(value => value.GroupId != before.GroupId))
-            || !priorWorld.Detached.SequenceEqual(nextWorld.Detached) || !priorWorld.ExternalReservations.SequenceEqual(nextWorld.ExternalReservations))
-            throw new InvalidOperationException("Sixteenth Brigade confirmation changed its proposed world.");
-        var ids = before.Members.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal);
-        return new CampaignSourceBattlefield(entries.Select(value => ids.Contains(value.ElementId)
-            ? value with { AuthorityStatus = "source-sixteenth-brigade-grouped" } : value), pending,
-            cairoSetupIncluded, cairoSetupOriginHash, axisFreeArtilleryOriginHash,
-            axisCorpsArtilleryOriginHash, matruhOriginHash, cwFreeGunsOriginHash);
-    }
-
-    internal void ValidateSixteenthBrigade(CampaignGroupedWorld world)
-    {
-        var group = world.Groups.Single(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
-        RequireSixteenthBrigade(world, group.DispositionConfirmed ? "source-sixteenth-brigade-grouped" : "source-sixteenth-brigade-proposed");
-    }
-
-    private void RequireSixteenthBrigade(CampaignGroupedWorld world, string status)
-    {
-        ArgumentNullException.ThrowIfNull(world);
-        var source = Cna1979GrazianiSourceFacts.SixteenthInfantryBrigadeInitialCandidate;
-        var ids = source.ElementIds.Order(StringComparer.Ordinal).ToArray();
-        var group = world.Groups.SingleOrDefault(value => value.GroupId == CampaignSourceSixteenthBrigadeGroupedDefinition.GroupId);
-        var occupants = entries.Where(value => ids.Contains(value.ElementId, StringComparer.Ordinal)).ToArray();
-        var effective = world.OccupantsAt(source.LocationId);
-        if (group is null || group.SideId != "commonwealth" || group.RootId != CampaignSourceSixteenthBrigadeGroupedDefinition.RootId
-            || group.LocationId != source.LocationId || group.MotorPool != 20 || group.StackValue != (group.DispositionConfirmed ? 2 : null)
-            || !group.Members.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
-            || occupants.Length != ids.Length || !occupants.Select(value => value.ElementId).Order(StringComparer.Ordinal).SequenceEqual(ids)
-            || occupants.Any(value => value.SideId != "commonwealth" || value.LocationId != source.LocationId || value.AuthorityStatus != status)
-            || effective.Count(value => value.Formation?.GroupId == group.GroupId) != 1
-            || effective.Any(value => value.Independent?.BoundElementIds.Any(id => ids.Contains(id, StringComparer.Ordinal)) == true))
-            throw new InvalidOperationException("Sixteenth Brigade grouped world differs from retained battlefield occupancy.");
-    }
+    internal void ValidateSixteenthBrigade(CampaignGroupedWorld world) => ValidateGroup(world, SixteenthBrigadeMechanic);
 
     internal CampaignSourceBattlefield ProposeItalianDivisions(CampaignGroupedWorld world)
     {

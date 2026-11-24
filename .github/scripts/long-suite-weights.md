@@ -1187,3 +1187,22 @@ one ordinary suite part each; no existing row is renamed or removed.
 | `StageEntrySecondNoAttackRejectsASessionWithoutACompletedSecondSideCombatDecision` | `319d468315` | 115 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class "*StageEntrySecondCombat*" --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-23 (2 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Release Core test DLL SHA-256 `d39f0a6d0231b67cfef773238d86fe3fe0e5db9b7b2527995cb713d68bcd6ba7`; retained XML SHA-256 `a09f9f56fb9b4ccee5ece3ad50490df4bbde90942a353e4bea04003f469359a5`. Both row hashes are also recorded in `provisional_rows` pending hosted calibration. This resolves the `prepare` job's "Unknown/missing measured row" failure for this PR's new test classes; existing weights and baseline metadata are otherwise unchanged.
+
+## Maintainability Slice 1: CampaignNativeSecondBreakdownV46 Create coverage gap (2026-11-24)
+
+Per the 2026-11-24 maintainability refactor direction doc (Section 7), `Create`
+had no dedicated unit test file -- only `CreateForStageEntry` and
+`CreateForStageEntrySecondSide` did. Adds one new class,
+`CampaignNativeSecondBreakdownTests`, with one `[Theory]` row per entry point
+(`Create`/`CreateForStageEntry`/`CreateForStageEntrySecondSide`), written and
+run green *before* the `CreateCore`/`Slot` extraction that collapsed all three
+methods' shared control flow, then confirmed green again after. One ordinary
+suite part; no existing row is renamed or removed.
+
+| New row | Hash | Measured ms |
+| --- | --- | ---: |
+| `BreakdownRejectsASessionWithoutItsOwnCompletedMovement(entryPoint: "Create", ...)` | `0be08ab6576129fee2f7003df70dc4af8fbc581c9c02455c097a75cb9db138c1` | 16 |
+| `BreakdownRejectsASessionWithoutItsOwnCompletedMovement(entryPoint: "CreateForStageEntry", ...)` | `cb6d499d4b7ccb2b9f4aa502e3d29a4ed89d1e7c73e65ec0ba556bb65e21b79c` | 111 |
+| `BreakdownRejectsASessionWithoutItsOwnCompletedMovement(entryPoint: "CreateForStageEntrySecondSide", ...)` | `7e3620ef571ab145ef1080430f95c5cd52664b6f6e2a4413197ff031307b58a0` | 15 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --filter-class Cna.Core.Tests.Campaigns.CampaignNativeSecondBreakdownTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-24 (3 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Row hashes were computed from the literal `dotnet test --list-tests --pre-enumerate-theories on --no-ansi` discovery output per `.github/scripts/test_partition.py`'s `row_identity`, not from the xunit XML report (whose writer backslash-escapes quotes in Theory string arguments and would hash differently). All three row hashes are also recorded in `provisional_rows` pending hosted calibration. Existing weights and baseline metadata are otherwise unchanged.
