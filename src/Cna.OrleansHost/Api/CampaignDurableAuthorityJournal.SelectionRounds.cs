@@ -236,7 +236,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             AppendEmptyReserveRelease(connection, transaction, campaignId, secondCompleted);
             return;
         }
-        var repeated = CampaignHostAdapter.IsNativeRepeatCombatVoluntaryFinish(authority.Session);
+        // Scoped to the round actually bound to THIS Selection timeout, not
+        // a bare "is CurrentRepeatCombatSelection non-null somewhere in
+        // session history" read -- see IsNativeRepeatCombatNoAttackPending.
+        var repeated = CampaignHostAdapter.IsNativeRepeatCombatNoAttackPending(authority.Session);
         var accepted = repeated
             ? CampaignHostAdapter.CompleteNativeRepeatCombatNoAttack(authority.Session)
             : CampaignHostAdapter.CompleteNativeCombatNoAttack(authority.Session);
