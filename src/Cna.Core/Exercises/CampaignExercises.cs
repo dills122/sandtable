@@ -4108,6 +4108,21 @@ public static class CampaignExercises
         // directly (see ExerciseSession.Pending's remarks) -- this switch is
         // a mechanical transcription, not a reordering: "stop reading the
         // fields directly, read the derived value."
+        // Exhaustiveness: every PendingDecision subtype (PendingDecision.cs) has a case
+        // below -- verified against all 29 sealed records there, no wildcard/default arm.
+        // This stays a switch STATEMENT rather than a switch EXPRESSION on purpose: converting
+        // it to `session.Pending switch { ... }` so the compiler could flag a future missing
+        // case via CS8509 was tried and reverted, because Roslyn's switch-expression
+        // completeness check does not recognize sealed-record/class hierarchies as closed --
+        // CS8509 ("not exhaustive") fires on a bare type-pattern switch over such a hierarchy
+        // even when every subtype is already covered (confirmed with a minimal repro: 3
+        // sealed records under one abstract record, all 3 matched, still CS8509). Since
+        // Directory.Build.props already sets <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        // repo-wide, that conversion simply fails to build; the only way to silence it is a wildcard arm,
+        // which is exactly the runtime-only safety net this hardening was meant to remove.
+        // So: no case here is missing today, and a future missing case for a new subtype
+        // still needs a human (or a test) to catch, not the compiler -- there is currently no
+        // C# construct that enforces this at compile time without reintroducing a wildcard.
         switch (session.Pending)
         {
             case StageEntrySecondAssaultPending:
@@ -9221,6 +9236,19 @@ public static class CampaignExercises
         // StageEntrySecond group's internal order, and the six-mechanic preamble chain's
         // earliest-first order). There is no manual order left to get wrong: dispatch is by
         // the matched decision's runtime type, not by null-check sequence.
+        // Exhaustiveness: every PendingDecision subtype (PendingDecision.cs) has a case
+        // below -- verified against all 29 sealed records there, no wildcard/default arm.
+        // See QueryCheckpoint's own switch above it for why this stays a switch STATEMENT
+        // instead of a switch EXPRESSION: converting it to get CS8509 compiler-enforced
+        // exhaustiveness was tried and reverted, because Roslyn's switch-expression
+        // completeness check does not recognize sealed-record/class hierarchies as closed --
+        // CS8509 fires on a bare type-pattern switch over this hierarchy even when every
+        // subtype is covered, and Directory.Build.props' repo-wide
+        // <TreatWarningsAsErrors>true</TreatWarningsAsErrors> turns that into a hard build
+        // failure with no case actually missing. The only fix is a wildcard arm, which is
+        // exactly the runtime-only safety net this hardening pass was meant to remove, so
+        // none was added. A future missing case for a new PendingDecision subtype still
+        // needs a human (or a test) to catch it, not the compiler.
         switch (completedSession.Pending)
         {
             case StageEntrySecondBreakdownPending:
