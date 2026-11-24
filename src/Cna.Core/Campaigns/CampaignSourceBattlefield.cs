@@ -7,7 +7,7 @@ namespace Cna.Core.Campaigns;
 
 // A single source-identity-bound index over retained scenario evidence. Entries
 // tagged source-evidence are not yet playable units or proof of control.
-internal sealed class CampaignSourceBattlefield
+internal sealed partial class CampaignSourceBattlefield
 {
     internal const string PolicyId = "graziani.source-battlefield.evidence-index.v1";
     internal const string InitialHash = "sha256:5004b5cd07299c479c6fc77bd2421fa751b5b3081e3e95ae1657d27a047a70b8";

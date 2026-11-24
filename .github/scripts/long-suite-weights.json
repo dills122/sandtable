@@ -830,6 +830,9 @@
     "Cna.Core.Tests.Campaigns.CampaignSourceAuthorityStateInvariantTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Campaigns.CampaignSourceBattlefieldGroupTableTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Actions.CombatCycleDisclosureSecondSideTests": {
       "parts": 1
     },
@@ -904,6 +907,26 @@
     }
   },
   "rows": {
+    "519553d949bdb09dd561bfbc81e4234f5acfc95eba1bdab7e1421a2b88e7e7d8": 2,
+    "d6a16523c9e0568507e84e1efbe732be2a4c923cf97dcc4405cc8bb12f203390": 1,
+    "c3f67d860af712021ba4565d5548d04ebac8fc918be78dd2bfbae8e5acb6a056": 10,
+    "138600101b0fd49bbb52baa074a2f2e0c655d5f98b72f0d703e86b9a550d4b76": 1,
+    "a473c85500a150f128637b75454b181bbf756f3bbf64ae55db48e8d3f8bf30a5": 99,
+    "bfa763e92897ef2a053969c62ea79fc98a13dbcdbba316bb175049c7c65e9fcf": 3,
+    "164998e5a4c4362dabb5e904dedc1df97480a8897aca7297f66f04a567c11e84": 2,
+    "371b56e49f7c6689e6612c51153c5fb1004061aaae9612f63e68ec7084cfbe7b": 8,
+    "304f73c7074b06be5cb8af67a9eaf998c8160181b2137e24eafd58090646811c": 2,
+    "8d90008fe2f6bcc4ab5ad83b9fd9ed1f3f46bafba2421cf11e4db749e37b0f58": 1,
+    "cf33cd281287a274ebb8aad960abcb3edef0cce0daf1ade67e261a94ecf628c5": 1,
+    "c0674e1b8cf92bf4b22f69c10a6903ac42d2c1fe4b7e546a17574948aa62bcf9": 1,
+    "b1fca725b951c50533287689f285fee1c97f34b1827ac81a09a588f1d1a98d2e": 1,
+    "cad6f7d20161540a8700bb23b9d68841df885553c396404a3330edfd8edb3c14": 2,
+    "61baf8c716aa86c67963dc50928d39b5e1852ecefae8a71026d13b130ef59728": 2,
+    "379ff92187209d749f1c49cf5f307bec923dee66a533331f987bbb9170cf7af0": 8,
+    "c4c79ecdf6ef77b0ebd2e7f3d84ffb1e6d98434d8f44b98af5df36ef8e852ec4": 1,
+    "8250a9d770ca039311ea521d6ef2aeec2aae81976d947c067322a2420b2a8a31": 1,
+    "e6361f1ff376e32fcfa4b57bc2efad8ac4f37b54851f670e27ee5347f2dd15da": 1,
+    "323316097677c7b1bd5946142e8487419aa28c3ab20f06d7c9c01a5a9378dbdb": 2,
     "b5a34e085b3bee968c29990bd4a12ab52b972b9630ae692e02edd19f8101504d": 34,
     "ea2ac1d53fd304a438195932ab5272f63936f572635619202a5dbf9ae4b8b1e1": 1,
     "868c91e0eec1835a928fbd5749c111745055557b93f1b110e12ba6bdfee0b958": 1,
