@@ -903,6 +903,8 @@
   "rows": {
     "254f1d17f1e3a84fe3e39df584e7453401ea7f44232a4c5f656f3b84eaf2cc42": 32,
     "483ed399a00b7597d5d2b74c802d80b009d8b83b73af404b447e9db10691c007": 3,
+    "bb5332e16152053132ee941e47deb184b6f21fce5c228f45e043a20d0bd51fbc": 10,
+    "e790e5d9a21de5680009bd231cadb3d6b3f91e9ab495833591126fdf0cfbf555": 1,
     "3dd2e9c039b0516ce02709bba1745dca6a38098aecb4c6f6311b0c098a7a7a59": 7,
     "8143aea90ae0c4c662f8b74b07f30acfc6455ec510e899f668bf3d4bf9d570e2": 1,
     "0d5068c312abedcdc8fd9290a6434fd4a00aca52105b558dc8459f5a08952f8b": 1,
@@ -4717,6 +4719,8 @@
   "provisional_rows": {
     "254f1d17f1e3a84fe3e39df584e7453401ea7f44232a4c5f656f3b84eaf2cc42": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new StaleSecondAssaultGuardTests rows (PR #551), pending hosted/Release calibration",
     "483ed399a00b7597d5d2b74c802d80b009d8b83b73af404b447e9db10691c007": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new StaleSecondAssaultGuardTests rows (PR #551), pending hosted/Release calibration",
+    "bb5332e16152053132ee941e47deb184b6f21fce5c228f45e043a20d0bd51fbc": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #552), pending hosted/Release calibration",
+    "e790e5d9a21de5680009bd231cadb3d6b3f91e9ab495833591126fdf0cfbf555": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #552), pending hosted/Release calibration",
     "3dd2e9c039b0516ce02709bba1745dca6a38098aecb4c6f6311b0c098a7a7a59": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
     "8143aea90ae0c4c662f8b74b07f30acfc6455ec510e899f668bf3d4bf9d570e2": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
     "0d5068c312abedcdc8fd9290a6434fd4a00aca52105b558dc8459f5a08952f8b": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
