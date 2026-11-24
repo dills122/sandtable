@@ -1758,13 +1758,20 @@ public sealed class ExerciseSession
     // building this change). Recomputing on every access is the only safe
     // option under MemberwiseClone; the cascade itself is cheap.
     //
-    // One deliberate ordering exception: the SecondAssault arm below
-    // carries the CurrentInitiativeDeclaration-is-null guard that
-    // ReconstructOne's own cascade already added (MTS-TASK-003) to stop a
-    // stale, never-reset CurrentSecondAssault from intercepting the
-    // chronologically later preamble chain. QueryCheckpoint never had this
-    // guard; adopting the stricter, already-fixed condition here is safer
-    // than reintroducing that latent bug into either cascade.
+    // One deliberate ordering exception: the whole "Second*" (#394, Stage 1's
+    // own second-acting-side) group below carries the
+    // CurrentInitiativeDeclaration-is-null guard that ReconstructOne's own
+    // cascade already added for CurrentSecondAssault alone (MTS-TASK-003) to
+    // stop a stale, never-reset field from intercepting the chronologically
+    // later preamble chain. Stage 3 scoping verification (2026-11-23) found
+    // the same staleness on CurrentSecondAssault's six siblings
+    // (CurrentSecondNoAttackCompletion/CurrentSecondCombatDecision/
+    // CurrentSecondBreakdown/CurrentSecondMovementCompletion/CurrentSecondMove/
+    // CurrentSecondReserve) -- unguarded, any one of them permanently
+    // shadows Stage 2's own preamble/StageEntry chain in this cascade once a
+    // real session has played through Operation Stage 1's second side, which
+    // no test exercised until Stage 2's own close-out existed to drive to.
+    // The guard is applied to the whole group now, not just the one arm.
     internal PendingDecision? Pending => ComputePending();
 
     private PendingDecision? ComputePending()
@@ -1790,31 +1797,50 @@ public sealed class ExerciseSession
         // See this property's remarks: guarded so a stale, never-reset
         // CurrentSecondAssault cannot intercept the chronologically later
         // preamble chain below (mirrors ReconstructOne's MTS-TASK-003 fix).
+        // Stage 3 scoping verification (2026-11-23,
+        // docs/work/plans/2026-11-23-stage-3-scoping-verification.md): the
+        // same staleness applies to every one of this field's siblings below
+        // (SecondNoAttack/SecondCombatSelection/SecondBreakdown/
+        // SecondMovementCompletion/SecondMove/SecondReserve) -- the
+        // 2026-11-23 Reconstruct cascade ordering audit assumed this whole
+        // cascade was already fully correct (its own "Method" section took
+        // QueryCheckpoint as ground truth without re-checking it) and so
+        // never looked for this; it only ever surfaces once a real session
+        // reaches Stage 2's own second-acting-side close-out, which no test
+        // drove until this one.
         if (CurrentInitiativeDeclaration is null && CurrentSecondAssault is { Events.Count: > 0 })
             return new SecondAssaultPending(SecondAssaultPredecessor);
-        if (CurrentSecondNoAttackCompletion is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondNoAttackCompletion is not null)
             return new SecondNoAttackPending(SecondNoAttackPredecessor);
-        if (CurrentSecondCombatDecision is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondCombatDecision is not null)
             return new SecondCombatSelectionPending(SecondCombatSelectionPredecessor);
-        if (CurrentSecondBreakdown is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondBreakdown is not null)
             return new SecondBreakdownPending(SecondBreakdownPredecessor);
-        if (CurrentSecondMovementCompletion is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondMovementCompletion is not null)
             return new SecondMovementCompletionPending(SecondMovementCompletionPredecessor);
-        if (CurrentSecondMove is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondMove is not null)
             return new SecondMovePending(SecondMovePredecessor);
-        if (CurrentSecondReserve is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondReserve is not null)
             return new SecondReservePending(SecondReservePredecessor);
-        if (CurrentNoObligationFleetRepair is not null)
+        // Same staleness shape one more time: the six-event preamble chain's
+        // own fields (through CurrentInitiativeDeclaration) are never reset
+        // either, so once Stage 2's own StageEntry chain (Reserve onward)
+        // has actually started, these would otherwise permanently shadow it
+        // the same way the "Second*" group above would shadow this preamble
+        // chain. CurrentStageEntryReserve is this next group's own first
+        // field, the same role CurrentInitiativeDeclaration itself plays as
+        // guard for the group above.
+        if (CurrentStageEntryReserve is null && CurrentNoObligationFleetRepair is not null)
             return new NoObligationFleetRepairPending(NoObligationFleetRepairPredecessor);
-        if (CurrentNoObligationFleetAssignment is not null)
+        if (CurrentStageEntryReserve is null && CurrentNoObligationFleetAssignment is not null)
             return new NoObligationFleetAssignmentPending(NoObligationFleetAssignmentPredecessor);
-        if (CurrentNoObligationNavalConvoyArrival is not null)
+        if (CurrentStageEntryReserve is null && CurrentNoObligationNavalConvoyArrival is not null)
             return new NoObligationNavalConvoyArrivalPending(NoObligationNavalConvoyArrivalPredecessor);
-        if (CurrentNoObligationOrganization is not null)
+        if (CurrentStageEntryReserve is null && CurrentNoObligationOrganization is not null)
             return new NoObligationOrganizationPending(NoObligationOrganizationPredecessor);
-        if (CurrentStageEntryWeather is not null)
+        if (CurrentStageEntryReserve is null && CurrentStageEntryWeather is not null)
             return new StageEntryWeatherPending(StageEntryWeatherPredecessor);
-        if (CurrentInitiativeDeclaration is not null)
+        if (CurrentStageEntryReserve is null && CurrentInitiativeDeclaration is not null)
             return new InitiativeDeclarationPending(InitiativeDeclarationPredecessor);
         if (CurrentStageEntryCombatDecision is not null)
             return new StageEntryCombatSelectionPending(StageEntryCombatSelectionPredecessor);

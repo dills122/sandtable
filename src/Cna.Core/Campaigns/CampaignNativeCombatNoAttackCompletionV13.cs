@@ -34,6 +34,23 @@ internal sealed record CampaignNativeCombatNoAttackCompletionV13(
         var positions = Cna1979LandSequenceV4.CreateTurn(
             selected.PriorSnapshot.CurrentPosition.SequencePosition!.GameTurn);
         var position = positions.Single(candidate => candidate.PositionId == selected.Decision.NextPositionId);
+        // Stage 3 scoping verification (2026-11-23,
+        // docs/work/plans/2026-11-23-stage-3-scoping-verification.md): the
+        // same-slot check below used to compare against
+        // selected.PriorSnapshot.CurrentPosition.SequencePosition.OperationStage
+        // directly -- but PriorSnapshot (CampaignSnapshotV11) is frozen at
+        // Operation Stage 1 by construction (the owner's Option-2 ruling
+        // keeps it Stage 1/Turn 1-only) regardless of which stage this
+        // decision actually belongs to, so that comparison was only ever
+        // correct by coincidence for Operation Stage 1's own two sides. The
+        // walk itself already starts from the decision's own real
+        // NextPositionId (not from PriorSnapshot), so the correct same-slot
+        // bound is this starting position's own OperationStage, read here
+        // before the walk, the same "resolve from the real catalog position,
+        // not a frozen snapshot" discipline CampaignNativeSecondReserveV43/
+        // V44/V45 already apply.
+        var startingGameTurn = position.GameTurn;
+        var startingOperationStage = position.OperationStage;
         var steps = new List<CampaignNativeCombatNoAttackStepV13>(5);
         foreach (var currentStep in new[]
                  {
@@ -49,8 +66,8 @@ internal sealed record CampaignNativeCombatNoAttackCompletionV13(
             position = next;
         }
         if (position.SegmentId != LandSegmentIds.ReserveRelease
-            || position.GameTurn != selected.PriorSnapshot.CurrentPosition.SequencePosition.GameTurn
-            || position.OperationStage != selected.PriorSnapshot.CurrentPosition.SequencePosition.OperationStage)
+            || position.GameTurn != startingGameTurn
+            || position.OperationStage != startingOperationStage)
             throw new InvalidOperationException("No-attack completion must reach same-slot Reserve Release.");
         return new(CurrentContractVersion, selected.CampaignId, selected.StateVersion,
             selected.Decision.ActionId, steps);
