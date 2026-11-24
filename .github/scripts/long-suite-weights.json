@@ -692,6 +692,9 @@
     "Cna.Core.Tests.Campaigns.CampaignNativeRetreatTimeoutTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Campaigns.CampaignNativeSecondBreakdownTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Campaigns.CampaignNativeSelectionTimeoutTests": {
       "parts": 1
     },
@@ -910,6 +913,9 @@
     }
   },
   "rows": {
+    "0be08ab6576129fee2f7003df70dc4af8fbc581c9c02455c097a75cb9db138c1": 16,
+    "cb6d499d4b7ccb2b9f4aa502e3d29a4ed89d1e7c73e65ec0ba556bb65e21b79c": 111,
+    "7e3620ef571ab145ef1080430f95c5cd52664b6f6e2a4413197ff031307b58a0": 15,
     "e1ffe388cd9b13447b977e413f5d210fde700b5a8fa6520b7e408268c434dabf": 494,
     "519553d949bdb09dd561bfbc81e4234f5acfc95eba1bdab7e1421a2b88e7e7d8": 2,
     "d6a16523c9e0568507e84e1efbe732be2a4c923cf97dcc4405cc8bb12f203390": 1,
@@ -4750,6 +4756,9 @@
     "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": 115
   },
   "provisional_rows": {
+    "0be08ab6576129fee2f7003df70dc4af8fbc581c9c02455c097a75cb9db138c1": "2026-11-24 macOS arm64 .NET 10 Release MTP XML; new CampaignNativeSecondBreakdownTests row (maintainability Slice 1, pre-refactor-gap regression for CampaignNativeSecondBreakdownV46.Create), pending hosted calibration",
+    "cb6d499d4b7ccb2b9f4aa502e3d29a4ed89d1e7c73e65ec0ba556bb65e21b79c": "2026-11-24 macOS arm64 .NET 10 Release MTP XML; new CampaignNativeSecondBreakdownTests row (maintainability Slice 1, pre-refactor-gap regression for CampaignNativeSecondBreakdownV46.Create), pending hosted calibration",
+    "7e3620ef571ab145ef1080430f95c5cd52664b6f6e2a4413197ff031307b58a0": "2026-11-24 macOS arm64 .NET 10 Release MTP XML; new CampaignNativeSecondBreakdownTests row (maintainability Slice 1, pre-refactor-gap regression for CampaignNativeSecondBreakdownV46.Create), pending hosted calibration",
     "254f1d17f1e3a84fe3e39df584e7453401ea7f44232a4c5f656f3b84eaf2cc42": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new StaleSecondAssaultGuardTests rows (PR #551), pending hosted/Release calibration",
     "483ed399a00b7597d5d2b74c802d80b009d8b83b73af404b447e9db10691c007": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new StaleSecondAssaultGuardTests rows (PR #551), pending hosted/Release calibration",
     "bb5332e16152053132ee941e47deb184b6f21fce5c228f45e043a20d0bd51fbc": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #552), pending hosted/Release calibration",
