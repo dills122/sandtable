@@ -10,7 +10,7 @@ namespace Cna.Core.Campaigns;
 
 // Versioned successor of the retained, source-backed pregame.  Setup is still
 // in progress; there is no game clock until setup obligations are satisfied.
-internal sealed record CampaignSourceAuthorityState
+internal sealed partial record CampaignSourceAuthorityState
 {
     internal const int ContractVersion = 4;
     internal const int SupplementalContractVersion = 5;
