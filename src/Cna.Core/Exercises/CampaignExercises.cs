@@ -4101,117 +4101,78 @@ public static class CampaignExercises
         if (session.SourceTurn is { } sourceTurn) return new ExerciseCheckpoint(sourceTurn);
         if (session.SourceAuthority is { } sourceAuthority) return new ExerciseCheckpoint(sourceAuthority);
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Combat assault/no-attack completion are chronologically later
-        // than this stage's own second-side Breakdown block below, so they
-        // must be checked first, same ordering discipline as every cascade
-        // in this file.
-        if (session.CurrentStageEntrySecondAssault is { Events.Count: > 0 } stageEntrySecondAssault)
-            return ExerciseCheckpoint.ForSecondAssault(stageEntrySecondAssault, session.CurrentStageEntrySecondCombatDecision!);
-        if (session.CurrentStageEntrySecondNoAttackCompletion is { } stageEntrySecondNoAttack)
-            return new ExerciseCheckpoint(stageEntrySecondNoAttack, session.CurrentStageEntrySecondCombatDecision!);
-        if (session.CurrentStageEntrySecondCombatDecision is { } stageEntrySecondCombatDecision)
-            return new ExerciseCheckpoint(stageEntrySecondCombatDecision);
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Breakdown is chronologically later than this stage's own
-        // second-side Movement Completion below, so it must be checked
-        // first (same ordering discipline as every cascade above).
-        if (session.CurrentStageEntrySecondBreakdown is { } stageEntrySecondBreakdown)
-            return new ExerciseCheckpoint(stageEntrySecondBreakdown, session.CurrentSnapshot);
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Movement + Movement Completion are chronologically later than this
-        // stage's own second-side Reserve Designation below, so they must be
-        // checked first (same ordering discipline as every cascade above).
-        if (session.CurrentStageEntrySecondMovementCompletion is { } stageEntrySecondMovementCompleted)
-            return new ExerciseCheckpoint(stageEntrySecondMovementCompleted, session.CurrentSnapshot);
-        if (session.CurrentStageEntrySecondMove is { } stageEntrySecondMove)
-            return new ExerciseCheckpoint(stageEntrySecondMove, session.CurrentSnapshot);
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Reserve Designation is chronologically later than this stage's own
-        // first-acting-side Combat assault/no-attack block below, so it must
-        // be checked first, same ordering discipline as every cascade in
-        // this file.
-        if (session.CurrentStageEntrySecondReserve is { } stageEntrySecondReserve)
-            return new ExerciseCheckpoint(stageEntrySecondReserve, session.CurrentSnapshot);
-        // MTS-TASK-005/006 follow-up (2026-11-23): this stage's own Combat
-        // assault/no-attack completion are chronologically later than the
-        // #394 second-side block below, so they must be checked first, same
-        // ordering discipline as every cascade in this file.
-        if (session.CurrentStageEntryAssault is { Events.Count: > 0 } stageEntryAssault)
-            return ExerciseCheckpoint.ForSecondAssault(stageEntryAssault, session.CurrentStageEntryCombatDecision!);
-        if (session.CurrentStageEntryNoAttackCompletion is { } stageEntryNoAttack)
-            return new ExerciseCheckpoint(stageEntryNoAttack, session.CurrentStageEntryCombatDecision!);
-        // #394 gap 1/3: second-side Combat selection/no-attack completion are
-        // chronologically later than the second Breakdown checkpoint below,
-        // so they must be checked first, the same way CurrentNoAttackCompletion/
-        // CurrentCombatDecision are checked ahead of earlier first-side
-        // checkpoints further down this cascade. Reuses the exact same
-        // ExerciseCheckpoint constructors the first side already uses --
-        // they are generic over "which decision/completion", not hard-coded.
-        if (session.CurrentSecondAssault is { Events.Count: > 0 } secondAssault)
-            return ExerciseCheckpoint.ForSecondAssault(secondAssault, session.CurrentSecondCombatDecision!);
-        if (session.CurrentSecondNoAttackCompletion is { } secondNoAttack)
-            return new ExerciseCheckpoint(secondNoAttack, session.CurrentSecondCombatDecision!);
-        if (session.CurrentSecondCombatDecision is { } secondDecision)
-            return new ExerciseCheckpoint(secondDecision);
-        if (session.CurrentSecondBreakdown is { } secondBreakdown)
-            return new ExerciseCheckpoint(secondBreakdown, session.CurrentSnapshot);
-        if (session.CurrentSecondMovementCompletion is { } completed)
-            return new ExerciseCheckpoint(completed, session.CurrentSnapshot);
-        if (session.CurrentSecondMove is { } secondMove)
-            return new ExerciseCheckpoint(secondMove, session.CurrentSnapshot);
-        if (session.CurrentSecondReserve is { } secondReserve)
-            return new ExerciseCheckpoint(secondReserve, session.CurrentSnapshot);
-        // MTS-TASK-003 (2026-11-23): the six-event Stage-entry preamble
-        // chain, chronologically later than every first-side checkpoint
-        // below (CurrentPostCombatPass etc.) and earlier than this stage's
-        // own Reserve Designation above, so it must be checked here -- the
-        // gap flagged by the MTS-TASK-005 Reserve slice's own doc ("no
-        // ExerciseCheckpoint branch here at all"). Checked most-recent-first,
-        // same ordering discipline as every cascade in this file.
-        if (session.CurrentNoObligationFleetRepair is { } checkpointFleetRepair)
-            return new ExerciseCheckpoint(checkpointFleetRepair, session.CurrentSnapshot);
-        if (session.CurrentNoObligationFleetAssignment is { } checkpointFleetAssignment)
-            return new ExerciseCheckpoint(checkpointFleetAssignment, session.CurrentSnapshot);
-        if (session.CurrentNoObligationNavalConvoyArrival is { } checkpointConvoyArrival)
-            return new ExerciseCheckpoint(checkpointConvoyArrival, session.CurrentSnapshot);
-        if (session.CurrentNoObligationOrganization is { } checkpointOrganization)
-            return new ExerciseCheckpoint(checkpointOrganization, session.CurrentSnapshot);
-        if (session.CurrentStageEntryWeather is { } checkpointWeather)
-            return new ExerciseCheckpoint(checkpointWeather, session.CurrentSnapshot);
-        if (session.CurrentInitiativeDeclaration is { } checkpointDeclared)
-            return new ExerciseCheckpoint(checkpointDeclared, session.CurrentSnapshot);
-        // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side
-        // Reserve Designation, chronologically later than every preamble
-        // checkpoint above, so it must be checked first (same ordering
-        // discipline as the #394 second-side block above it).
-        // MTS-TASK-005/006 (2026-11-23): this stage's own Combat Decision is
-        // chronologically later than this stage's own Breakdown below, so it
-        // must be checked first (same ordering discipline as every cascade
-        // above). The assault/no-attack branches above this one now cover
-        // everything past the bare decision itself.
-        if (session.CurrentStageEntryCombatDecision is { } stageEntryCombatDecision)
-            return new ExerciseCheckpoint(stageEntryCombatDecision);
-        // MTS-TASK-005/006 (2026-11-23): this stage's own Breakdown is
-        // chronologically later than this stage's own Movement Completion
-        // below, so it must be checked first (same ordering discipline as
-        // every cascade above).
-        if (session.CurrentStageEntryBreakdown is { } stageEntryBreakdown)
-            return new ExerciseCheckpoint(stageEntryBreakdown, session.CurrentSnapshot);
-        // MTS-TASK-005/006 (2026-11-22): this stage's own Movement +
-        // Movement Completion are chronologically later than this stage's
-        // own Reserve Designation below, so they must be checked first
-        // (same ordering discipline as every cascade above).
-        if (session.CurrentStageEntryMovementCompletion is { } stageEntryMovementCompleted)
-            return new ExerciseCheckpoint(stageEntryMovementCompleted, session.CurrentSnapshot);
-        if (session.CurrentStageEntryMove is { } stageEntryMove)
-            return new ExerciseCheckpoint(stageEntryMove, session.CurrentSnapshot);
-        if (session.CurrentStageEntryReserve is { } stageEntryReserve)
-            return new ExerciseCheckpoint(stageEntryReserve, session.CurrentSnapshot);
-        if (session.CurrentPostCombatPass is { } phasePassed)
-            return new ExerciseCheckpoint(phasePassed, session.CurrentSnapshot);
-        if (session.CurrentTruckConvoyPass is { } passed)
-            return new ExerciseCheckpoint(passed, session.CurrentSnapshot);
+        // Overhaul doc (docs/work/plans/2026-11-23-codebase-overhaul-direction.md),
+        // Section 0.6 step 2: dispatch off session.Pending's runtime type
+        // instead of a 29-branch ordered null-check cascade. session.Pending
+        // is computed once, in the exact order this cascade used to check
+        // directly (see ExerciseSession.Pending's remarks) -- this switch is
+        // a mechanical transcription, not a reordering: "stop reading the
+        // fields directly, read the derived value."
+        switch (session.Pending)
+        {
+            case StageEntrySecondAssaultPending:
+                return ExerciseCheckpoint.ForSecondAssault(session.CurrentStageEntrySecondAssault!,
+                    session.CurrentStageEntrySecondCombatDecision!);
+            case StageEntrySecondNoAttackPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntrySecondNoAttackCompletion!,
+                    session.CurrentStageEntrySecondCombatDecision!);
+            case StageEntrySecondCombatSelectionPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntrySecondCombatDecision!);
+            case StageEntrySecondBreakdownPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntrySecondBreakdown!, session.CurrentSnapshot);
+            case StageEntrySecondMovementCompletionPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntrySecondMovementCompletion!, session.CurrentSnapshot);
+            case StageEntrySecondMovePending:
+                return new ExerciseCheckpoint(session.CurrentStageEntrySecondMove!, session.CurrentSnapshot);
+            case StageEntrySecondReservePending:
+                return new ExerciseCheckpoint(session.CurrentStageEntrySecondReserve!, session.CurrentSnapshot);
+            case StageEntryAssaultPending:
+                return ExerciseCheckpoint.ForSecondAssault(session.CurrentStageEntryAssault!,
+                    session.CurrentStageEntryCombatDecision!);
+            case StageEntryNoAttackPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryNoAttackCompletion!,
+                    session.CurrentStageEntryCombatDecision!);
+            case SecondAssaultPending:
+                return ExerciseCheckpoint.ForSecondAssault(session.CurrentSecondAssault!, session.CurrentSecondCombatDecision!);
+            case SecondNoAttackPending:
+                return new ExerciseCheckpoint(session.CurrentSecondNoAttackCompletion!, session.CurrentSecondCombatDecision!);
+            case SecondCombatSelectionPending:
+                return new ExerciseCheckpoint(session.CurrentSecondCombatDecision!);
+            case SecondBreakdownPending:
+                return new ExerciseCheckpoint(session.CurrentSecondBreakdown!, session.CurrentSnapshot);
+            case SecondMovementCompletionPending:
+                return new ExerciseCheckpoint(session.CurrentSecondMovementCompletion!, session.CurrentSnapshot);
+            case SecondMovePending:
+                return new ExerciseCheckpoint(session.CurrentSecondMove!, session.CurrentSnapshot);
+            case SecondReservePending:
+                return new ExerciseCheckpoint(session.CurrentSecondReserve!, session.CurrentSnapshot);
+            case NoObligationFleetRepairPending:
+                return new ExerciseCheckpoint(session.CurrentNoObligationFleetRepair!, session.CurrentSnapshot);
+            case NoObligationFleetAssignmentPending:
+                return new ExerciseCheckpoint(session.CurrentNoObligationFleetAssignment!, session.CurrentSnapshot);
+            case NoObligationNavalConvoyArrivalPending:
+                return new ExerciseCheckpoint(session.CurrentNoObligationNavalConvoyArrival!, session.CurrentSnapshot);
+            case NoObligationOrganizationPending:
+                return new ExerciseCheckpoint(session.CurrentNoObligationOrganization!, session.CurrentSnapshot);
+            case StageEntryWeatherPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryWeather!, session.CurrentSnapshot);
+            case InitiativeDeclarationPending:
+                return new ExerciseCheckpoint(session.CurrentInitiativeDeclaration!, session.CurrentSnapshot);
+            case StageEntryCombatSelectionPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryCombatDecision!);
+            case StageEntryBreakdownPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryBreakdown!, session.CurrentSnapshot);
+            case StageEntryMovementCompletionPending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryMovementCompletion!, session.CurrentSnapshot);
+            case StageEntryMovePending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryMove!, session.CurrentSnapshot);
+            case StageEntryReservePending:
+                return new ExerciseCheckpoint(session.CurrentStageEntryReserve!, session.CurrentSnapshot);
+            case PostCombatPassPending:
+                return new ExerciseCheckpoint(session.CurrentPostCombatPass!, session.CurrentSnapshot);
+            case TruckConvoyPassPending:
+                return new ExerciseCheckpoint(session.CurrentTruckConvoyPass!, session.CurrentSnapshot);
+        }
         if (session.CurrentPostRepeatEvents.Count > 0
             && session.CurrentPostRepeat?.ActiveAssault is null)
         {
@@ -8162,47 +8123,19 @@ public static class CampaignExercises
         {
             if (!seen.Add(cursor))
                 return InvalidNativeHistory(completedSession);
-            var (isNativeSuccessor, predecessor) = cursor switch
-            {
-                // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting
-                // side's Breakdown + Movement + Movement Completion +
-                // Reserve Designation -- additive, does not change any arm
-                // below. Checked most-recent-first, same ordering
-                // discipline as every arm in this switch.
-                { CurrentStageEntrySecondBreakdown: not null } => (true, cursor.StageEntrySecondBreakdownPredecessor),
-                { CurrentStageEntrySecondMovementCompletion: not null } => (true, cursor.StageEntrySecondMovementCompletionPredecessor),
-                { CurrentStageEntrySecondMove: not null } => (true, cursor.StageEntrySecondMovePredecessor),
-                { CurrentStageEntrySecondReserve: not null } => (true, cursor.StageEntrySecondReservePredecessor),
-                // MTS-TASK-005/006 (2026-11-22/23): this stage's own
-                // Breakdown + Movement + Movement Completion + Reserve
-                // Designation -- additive, does not change any arm below.
-                // Checked most-recent-first, same ordering discipline as
-                // the #394 second-side arms below.
-                { CurrentStageEntryBreakdown: not null } => (true, cursor.StageEntryBreakdownPredecessor),
-                { CurrentStageEntryMovementCompletion: not null } => (true, cursor.StageEntryMovementCompletionPredecessor),
-                { CurrentStageEntryMove: not null } => (true, cursor.StageEntryMovePredecessor),
-                { CurrentStageEntryReserve: not null } => (true, cursor.StageEntryReservePredecessor),
-                { CurrentSecondBreakdown: not null } => (true, cursor.SecondBreakdownPredecessor),
-                { CurrentSecondMovementCompletion: not null } => (true, cursor.SecondMovementCompletionPredecessor),
-                { CurrentSecondMove: not null } => (true, cursor.SecondMovePredecessor),
-                { CurrentSecondReserve: not null } => (true, cursor.SecondReservePredecessor),
-                // MTS-TASK-002 (2026-11-22): the six native-chain preamble
-                // events' own walk-back arms, additive -- same shape as
-                // every arm above, does not change any of them.
-                { CurrentNoObligationFleetRepair: not null } => (true, cursor.NoObligationFleetRepairPredecessor),
-                { CurrentNoObligationFleetAssignment: not null } => (true, cursor.NoObligationFleetAssignmentPredecessor),
-                { CurrentNoObligationNavalConvoyArrival: not null } => (true, cursor.NoObligationNavalConvoyArrivalPredecessor),
-                { CurrentNoObligationOrganization: not null } => (true, cursor.NoObligationOrganizationPredecessor),
-                { CurrentStageEntryWeather: not null } => (true, cursor.StageEntryWeatherPredecessor),
-                { CurrentInitiativeDeclaration: not null } => (true, cursor.InitiativeDeclarationPredecessor),
-                { CurrentPostCombatPass: not null } => (true, cursor.PostCombatPassPredecessor),
-                { CurrentTruckConvoyPass: not null } => (true, cursor.TruckConvoyPassPredecessor),
-                _ => (false, null),
-            };
-            if (!isNativeSuccessor) break;
-            if (predecessor is null) return InvalidNativeHistory(completedSession);
+            // Overhaul doc (docs/work/plans/2026-11-23-codebase-overhaul-direction.md),
+            // Section 0.2/0.6 step 1: this was an 18-arm (now 20, after
+            // MTS-TASK-005/006) hand-maintained switch pattern-matching the
+            // same Current*/*Predecessor pairs QueryCheckpoint/ReconstructOne
+            // dispatch off, in the same hand-maintained order. Collapses to
+            // a single property read: cursor.Pending is already computed in
+            // the correct order and already carries Predecessor, so there is
+            // no separate cascade left to keep in sync here.
+            var pending = cursor.Pending;
+            if (pending is null) break;
+            if (pending.Predecessor is null) return InvalidNativeHistory(completedSession);
             chain.Add(cursor);
-            cursor = predecessor;
+            cursor = pending.Predecessor;
         }
         if (chain.Count == 0) return ReconstructOne(cursor, includeStreamHash, predecessorVerified: false);
         if (!ReconstructOne(cursor, includeStreamHash: false, predecessorVerified: false).IsVerified)
@@ -9208,1017 +9141,981 @@ public static class CampaignExercises
         bool predecessorVerified)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Breakdown -- same shape as the CurrentStageEntryBreakdown block
-        // below, via CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide.
-        // Chronologically latest in this function (later than this stage's
-        // own second-side Movement Completion below), mirroring
-        // QueryCheckpoint's own ordering, so it is replayed and verified
-        // first.
-        if (completedSession.CurrentStageEntrySecondBreakdown is { } stageEntrySecondBreakdown)
+        // Overhaul doc (docs/work/plans/2026-11-23-codebase-overhaul-direction.md),
+        // Section 0.6 step 2: dispatch off completedSession.Pending's runtime type
+        // instead of a 29-branch ordered null-check cascade. completedSession.Pending
+        // is the SAME derived value QueryCheckpoint dispatches off (ExerciseSession.Pending,
+        // computed once, in QueryCheckpoint's own already-correct most-recent-first order)
+        // -- so this cascade can no longer drift out of sync with QueryCheckpoint's ordering
+        // the way it had (2026-11-23 Reconstruct cascade ordering audit, Findings 2/3: the
+        // StageEntrySecond group's internal order, and the six-mechanic preamble chain's
+        // earliest-first order). There is no manual order left to get wrong: dispatch is by
+        // the matched decision's runtime type, not by null-check sequence.
+        switch (completedSession.Pending)
         {
-            var expected = stageEntrySecondBreakdown.SerializeCanonical();
-            var stageEntrySecondBreakdownHash = Hash(expected);
-            try
+            case StageEntrySecondBreakdownPending:
             {
-                var predecessor = completedSession.StageEntrySecondBreakdownPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown predecessor is missing.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown predecessor did not replay.");
-                var result = CompleteStageEntrySecondBreakdown(predecessor);
-                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
-                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
-                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, stageEntrySecondBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                var stageEntrySecondBreakdown = completedSession.CurrentStageEntrySecondBreakdown!;
+                var expected = stageEntrySecondBreakdown.SerializeCanonical();
+                var stageEntrySecondBreakdownHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondBreakdownPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown predecessor is missing.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown predecessor did not replay.");
+                    var result = CompleteStageEntrySecondBreakdown(predecessor);
+                    if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                        || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                        || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Breakdown differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, stageEntrySecondBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondBreakdownHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondBreakdownHash, null); }
-        }
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Movement + Movement Completion -- same shape as the
-        // CurrentStageEntryMovementCompletion/CurrentStageEntryMove blocks
-        // below, reusing CampaignNativeSecondMovementCompletedV45/
-        // CampaignNativeSecondMoveV44 unchanged. Chronologically latest in
-        // this function (later than this stage's own second-side Reserve
-        // Designation below), mirroring QueryCheckpoint's own ordering, so
-        // they are replayed and verified first.
-        if (completedSession.CurrentStageEntrySecondMovementCompletion is { } stageEntrySecondMovementCompletion)
-        {
-            var expected = stageEntrySecondMovementCompletion.SerializeCanonical();
-            var secondCompletionExpectedHash = Hash(expected);
-            try
+            case StageEntrySecondMovementCompletionPending:
             {
-                var predecessor = completedSession.StageEntrySecondMovementCompletionPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Movement completion has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement predecessor did not replay.");
-                var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
-                var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
-                    StageEntryOrders(predecessor), stageEntrySecondMovementCompletion.Side,
-                    predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
-                if (!expected.AsSpan().SequenceEqual(bytes)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement completion differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, secondCompletionExpectedHash, Hash(bytes));
+                var stageEntrySecondMovementCompletion = completedSession.CurrentStageEntrySecondMovementCompletion!;
+                var expected = stageEntrySecondMovementCompletion.SerializeCanonical();
+                var secondCompletionExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondMovementCompletionPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Movement completion has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Movement predecessor did not replay.");
+                    var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
+                    var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
+                        StageEntryOrders(predecessor), stageEntrySecondMovementCompletion.Side,
+                        predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
+                    if (!expected.AsSpan().SequenceEqual(bytes)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Movement completion differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, secondCompletionExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, secondCompletionExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case StageEntrySecondMovePending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, secondCompletionExpectedHash, null);
+                var stageEntrySecondMove = completedSession.CurrentStageEntrySecondMove!;
+                var expected = stageEntrySecondMove.SerializeCanonical();
+                var secondMoveExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondMovePredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Movement has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Movement predecessor did not replay.");
+                    var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
+                    var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
+                        predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
+                        stageEntrySecondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntrySecondMove.ElementId,
+                        stageEntrySecondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
+                    if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntrySecondMoveWorld != resultWorld
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Movement differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, secondMoveExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, secondMoveExpectedHash, null);
+                }
             }
-        }
-        if (completedSession.CurrentStageEntrySecondMove is { } stageEntrySecondMove)
-        {
-            var expected = stageEntrySecondMove.SerializeCanonical();
-            var secondMoveExpectedHash = Hash(expected);
-            try
+            case StageEntrySecondReservePending:
             {
-                var predecessor = completedSession.StageEntrySecondMovePredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Movement has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement predecessor did not replay.");
-                var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
-                var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
-                    predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
-                    stageEntrySecondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntrySecondMove.ElementId,
-                    stageEntrySecondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
-                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntrySecondMoveWorld != resultWorld
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Movement differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, secondMoveExpectedHash, Hash(bytes));
+                var stageEntrySecondReserve = completedSession.CurrentStageEntrySecondReserve!;
+                var expected = stageEntrySecondReserve.SerializeCanonical();
+                var secondReserveExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondReservePredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Reserve has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Reserve predecessor did not replay.");
+                    var (source, world) = QueryStageEntrySecondReserveSource(predecessor);
+                    var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
+                        predecessor.Context, StageEntryOrders(predecessor), stageEntrySecondReserve.Side,
+                        stageEntrySecondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                        predecessor.CurrentContacts.AuthorityVersion);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntrySecondReserve);
+                    if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntrySecondReserveWorld != resultWorld
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Reserve differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, secondReserveExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, secondReserveExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case StageEntrySecondAssaultPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, secondMoveExpectedHash, null);
+                var stageEntrySecondAssault = completedSession.CurrentStageEntrySecondAssault!;
+                var expected = CampaignCurrentEventSerializer.Serialize(stageEntrySecondAssault.Events[^1],
+                    completedSession.Context);
+                var stageEntrySecondAssaultHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondAssaultPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side assault step has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side assault predecessor did not replay.");
+                    var replayed = (predecessor.CurrentStageEntrySecondAssault
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side assault predecessor has no stage chain."))
+                        .Advance(stageEntrySecondAssault.Events[^1]);
+                    var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
+                    if (!expected.AsSpan().SequenceEqual(actual)
+                        || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side assault step differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, stageEntrySecondAssaultHash, Hash(actual));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondAssaultHash, null); }
             }
-        }
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // Reserve Designation -- same shape as the CurrentStageEntryReserve
-        // block below, reusing CampaignNativeSecondReserveV43 unchanged.
-        // Chronologically latest in this function, mirroring QueryCheckpoint's
-        // own ordering, so it is replayed and verified first.
-        if (completedSession.CurrentStageEntrySecondReserve is { } stageEntrySecondReserve)
-        {
-            var expected = stageEntrySecondReserve.SerializeCanonical();
-            var secondReserveExpectedHash = Hash(expected);
-            try
+            case StageEntrySecondNoAttackPending:
             {
-                var predecessor = completedSession.StageEntrySecondReservePredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Reserve has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Reserve predecessor did not replay.");
-                var (source, world) = QueryStageEntrySecondReserveSource(predecessor);
-                var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
-                    predecessor.Context, StageEntryOrders(predecessor), stageEntrySecondReserve.Side,
-                    stageEntrySecondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
-                    predecessor.CurrentContacts.AuthorityVersion);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntrySecondReserve);
-                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntrySecondReserveWorld != resultWorld
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Reserve differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, secondReserveExpectedHash, Hash(bytes));
+                var stageEntrySecondNoAttack = completedSession.CurrentStageEntrySecondNoAttackCompletion!;
+                var expected = stageEntrySecondNoAttack.SerializeCanonical();
+                var stageEntrySecondNoAttackHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondNoAttackPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack completion has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack predecessor did not replay.");
+                    var result = CompleteStageEntrySecondCombatNoAttack(predecessor);
+                    if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                        || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                        || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack completion differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, stageEntrySecondNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondNoAttackHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case StageEntrySecondCombatSelectionPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, secondReserveExpectedHash, null);
-            }
-        }
-        // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
-        // assault/no-attack/Combat Decision stages are chronologically
-        // latest, so they must be replayed and verified first, mirroring
-        // QueryCheckpoint's own ordering.
-        if (completedSession.CurrentStageEntrySecondAssault is { Events.Count: > 0 } stageEntrySecondAssault)
-        {
-            var expected = CampaignCurrentEventSerializer.Serialize(stageEntrySecondAssault.Events[^1],
-                completedSession.Context);
-            var stageEntrySecondAssaultHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.StageEntrySecondAssaultPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side assault step has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side assault predecessor did not replay.");
-                var replayed = (predecessor.CurrentStageEntrySecondAssault
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side assault predecessor has no stage chain."))
-                    .Advance(stageEntrySecondAssault.Events[^1]);
-                var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
-                if (!expected.AsSpan().SequenceEqual(actual)
-                    || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side assault step differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, stageEntrySecondAssaultHash, Hash(actual));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondAssaultHash, null); }
-        }
-        if (completedSession.CurrentStageEntrySecondNoAttackCompletion is { } stageEntrySecondNoAttack)
-        {
-            var expected = stageEntrySecondNoAttack.SerializeCanonical();
-            var stageEntrySecondNoAttackHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.StageEntrySecondNoAttackPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack completion has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack predecessor did not replay.");
-                var result = CompleteStageEntrySecondCombatNoAttack(predecessor);
-                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
-                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
-                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side no-attack completion differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, stageEntrySecondNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondNoAttackHash, null); }
-        }
-        if (completedSession.CurrentStageEntrySecondCombatDecision is { } stageEntrySecondDecision)
-        {
-            var expected = stageEntrySecondDecision.Decision.SerializeCanonical();
-            var stageEntrySecondDecisionHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.StageEntrySecondCombatSelectionPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection predecessor did not replay.");
-                var (world, position) = QueryStageEntrySecondCombatWorldAndPosition(predecessor);
-                var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                    predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
-                    predecessor.CurrentContacts, stageEntrySecondDecision.Decision.Side, stageEntrySecondDecision.Decision.ActingElementId,
-                    stageEntrySecondDecision.Decision.ActionId).Decision;
-                var bytes = replayedDecision.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
-                if (!expected.AsSpan().SequenceEqual(bytes)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, stageEntrySecondDecisionHash, Hash(bytes));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondDecisionHash, null); }
-        }
-        // MTS-TASK-005/006 follow-up: this stage's own assault/no-attack
-        // stages are chronologically later than the #394 second-side block
-        // below, so -- mirroring QueryCheckpoint's own ordering -- they must
-        // be replayed and verified first.
-        if (completedSession.CurrentStageEntryAssault is { Events.Count: > 0 } stageEntryAssault)
-        {
-            var expected = CampaignCurrentEventSerializer.Serialize(stageEntryAssault.Events[^1],
-                completedSession.Context);
-            var stageEntryAssaultHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.StageEntryAssaultPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry assault step has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry assault predecessor did not replay.");
-                var replayed = (predecessor.CurrentStageEntryAssault
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry assault predecessor has no stage chain."))
-                    .Advance(stageEntryAssault.Events[^1]);
-                var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
-                if (!expected.AsSpan().SequenceEqual(actual)
-                    || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry assault step differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, stageEntryAssaultHash, Hash(actual));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryAssaultHash, null); }
-        }
-        if (completedSession.CurrentStageEntryNoAttackCompletion is { } stageEntryNoAttack)
-        {
-            var expected = stageEntryNoAttack.SerializeCanonical();
-            var stageEntryNoAttackHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.StageEntryNoAttackPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry no-attack completion has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry no-attack predecessor did not replay.");
-                var result = CompleteStageEntryCombatNoAttack(predecessor);
-                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
-                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
-                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry no-attack completion differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, stageEntryNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryNoAttackHash, null); }
-        }
-        // Second-side assault stages follow the V47 selection: verify the
-        // predecessor, then re-verify the whole retained stage chain with this
-        // step appended, exactly as the session accepted it.
-        // MTS-TASK-003 (2026-11-23) correction: this matched unconditionally on
-        // CurrentSecondAssault.Events.Count -- which stays > 0 forever once set,
-        // same as every other "never reset" field -- so it silently intercepted
-        // every chronologically-later preamble check below it (CurrentInitiativeDeclaration
-        // through CurrentNoObligationFleetRepair) the moment any of them also became
-        // true, re-verifying against the STALE second-side-assault expectation instead.
-        // Guarded out once the preamble chain has begun, mirroring the same
-        // most-recent-first discipline QueryCheckpoint's cascade already uses.
-        if (completedSession.CurrentInitiativeDeclaration is null
-            && completedSession.CurrentSecondAssault is { Events.Count: > 0 } secondAssault)
-        {
-            var expected = CampaignCurrentEventSerializer.Serialize(secondAssault.Events[^1],
-                completedSession.Context);
-            var secondAssaultHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.SecondAssaultPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second-side assault step has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second-side assault predecessor did not replay.");
-                var replayed = (predecessor.CurrentSecondAssault
-                    ?? throw new InvalidCampaignHistoryException("Second-side assault predecessor has no stage chain."))
-                    .Advance(secondAssault.Events[^1]);
-                var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
-                if (!expected.AsSpan().SequenceEqual(actual)
-                    || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second-side assault step differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, secondAssaultHash, Hash(actual));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondAssaultHash, null); }
-        }
-        // #394 gap 1/3: second-side Combat selection/no-attack completion are
-        // chronologically later than the second Breakdown checked below, so
-        // -- mirroring QueryCheckpoint's own ordering -- they must be
-        // replayed and verified first.
-        if (completedSession.CurrentSecondNoAttackCompletion is { } secondNoAttack)
-        {
-            var expected = secondNoAttack.SerializeCanonical();
-            var secondNoAttackHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.SecondNoAttackPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second no-attack completion has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second no-attack predecessor did not replay.");
-                var result = CompleteSecondCombatNoAttack(predecessor);
-                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
-                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
-                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second no-attack completion differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, secondNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondNoAttackHash, null); }
-        }
-        if (completedSession.CurrentSecondCombatDecision is { } secondDecision)
-        {
-            var expected = secondDecision.Decision.SerializeCanonical();
-            var secondDecisionHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.SecondCombatSelectionPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second Combat selection has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second Combat selection predecessor did not replay.");
-                var (world, position) = QuerySecondCombatWorldAndPosition(predecessor);
-                CampaignNativeSecondCombatDecisionV47 replayedDecision = secondDecision.Decision
-                    is CampaignNativeSecondCombatSelectionTimeoutV48 { Evidence: var timeout }
-                    ? CreateSecondSelectionTimeout(predecessor, timeout.ConfigurationHash,
-                        timeout.OpenedAtUnixMilliseconds, timeout.DeadlineUnixMilliseconds,
-                        timeout.HighWaterUnixMilliseconds, timeout.CancelledAtUnixMilliseconds, timeout.Reason)
-                    : CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                var stageEntrySecondDecision = completedSession.CurrentStageEntrySecondCombatDecision!;
+                var expected = stageEntrySecondDecision.Decision.SerializeCanonical();
+                var stageEntrySecondDecisionHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntrySecondCombatSelectionPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection predecessor did not replay.");
+                    var (world, position) = QueryStageEntrySecondCombatWorldAndPosition(predecessor);
+                    var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
                         predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
-                        predecessor.CurrentContacts, secondDecision.Decision.Side, secondDecision.Decision.ActingElementId,
-                        secondDecision.Decision.ActionId).Decision;
-                var bytes = replayedDecision.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
-                if (!expected.AsSpan().SequenceEqual(bytes)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second Combat selection differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, secondDecisionHash, Hash(bytes));
+                        predecessor.CurrentContacts, stageEntrySecondDecision.Decision.Side, stageEntrySecondDecision.Decision.ActingElementId,
+                        stageEntrySecondDecision.Decision.ActionId).Decision;
+                    var bytes = replayedDecision.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
+                    if (!expected.AsSpan().SequenceEqual(bytes)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, stageEntrySecondDecisionHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntrySecondDecisionHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondDecisionHash, null); }
-        }
-        if (completedSession.CurrentSecondBreakdown is { } secondBreakdown)
-        {
-            var expected = secondBreakdown.SerializeCanonical();
-            var secondBreakdownHash = Hash(expected);
-            try
+            case StageEntryAssaultPending:
             {
-                var predecessor = completedSession.SecondBreakdownPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second Breakdown predecessor is missing.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second Breakdown predecessor did not replay.");
-                var result = CompleteSecondBreakdown(predecessor);
-                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
-                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
-                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second Breakdown differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, secondBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                var stageEntryAssault = completedSession.CurrentStageEntryAssault!;
+                var expected = CampaignCurrentEventSerializer.Serialize(stageEntryAssault.Events[^1],
+                    completedSession.Context);
+                var stageEntryAssaultHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryAssaultPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry assault step has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry assault predecessor did not replay.");
+                    var replayed = (predecessor.CurrentStageEntryAssault
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry assault predecessor has no stage chain."))
+                        .Advance(stageEntryAssault.Events[^1]);
+                    var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
+                    if (!expected.AsSpan().SequenceEqual(actual)
+                        || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry assault step differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, stageEntryAssaultHash, Hash(actual));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryAssaultHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondBreakdownHash, null); }
-        }
-        if (completedSession.CurrentSecondMovementCompletion is { } movementCompletion)
-        {
-            var expected = movementCompletion.SerializeCanonical();
-            var completionExpectedHash = Hash(expected);
-            try
+            case StageEntryNoAttackPending:
             {
-                var predecessor = completedSession.SecondMovementCompletionPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second Movement completion has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second Movement predecessor did not replay.");
-                var (source, world) = QuerySecondMovementSource(predecessor);
-                var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
-                    predecessor.CurrentSnapshot.OperationStageOrders, movementCompletion.Side,
-                    predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
-                if (!expected.AsSpan().SequenceEqual(bytes)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second Movement completion differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, completionExpectedHash, Hash(bytes));
+                var stageEntryNoAttack = completedSession.CurrentStageEntryNoAttackCompletion!;
+                var expected = stageEntryNoAttack.SerializeCanonical();
+                var stageEntryNoAttackHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryNoAttackPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry no-attack completion has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry no-attack predecessor did not replay.");
+                    var result = CompleteStageEntryCombatNoAttack(predecessor);
+                    if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                        || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                        || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry no-attack completion differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, stageEntryNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryNoAttackHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case SecondAssaultPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, completionExpectedHash, null);
+                var secondAssault = completedSession.CurrentSecondAssault!;
+                var expected = CampaignCurrentEventSerializer.Serialize(secondAssault.Events[^1],
+                    completedSession.Context);
+                var secondAssaultHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondAssaultPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second-side assault step has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second-side assault predecessor did not replay.");
+                    var replayed = (predecessor.CurrentSecondAssault
+                        ?? throw new InvalidCampaignHistoryException("Second-side assault predecessor has no stage chain."))
+                        .Advance(secondAssault.Events[^1]);
+                    var actual = CampaignCurrentEventSerializer.Serialize(replayed.Events[^1], completedSession.Context);
+                    if (!expected.AsSpan().SequenceEqual(actual)
+                        || completedSession.CurrentContacts.AuthorityVersion != replayed.Contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != replayed.Contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(replayed.Contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second-side assault step differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, secondAssaultHash, Hash(actual));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondAssaultHash, null); }
             }
-        }
-        if (completedSession.CurrentSecondMove is { } secondMove)
-        {
-            var expected = secondMove.SerializeCanonical();
-            var moveExpectedHash = Hash(expected);
-            try
+            case SecondNoAttackPending:
             {
-                var predecessor = completedSession.SecondMovePredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second Movement has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second Movement predecessor did not replay.");
-                var (source, world) = QuerySecondMovementSource(predecessor);
-                var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
-                    predecessor.Context, predecessor.CurrentSnapshot.OperationStageOrders, predecessor.CurrentContacts,
-                    secondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, secondMove.ElementId,
-                    secondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
-                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentSecondMoveWorld != resultWorld
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second Movement differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, moveExpectedHash, Hash(bytes));
+                var secondNoAttack = completedSession.CurrentSecondNoAttackCompletion!;
+                var expected = secondNoAttack.SerializeCanonical();
+                var secondNoAttackHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondNoAttackPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second no-attack completion has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second no-attack predecessor did not replay.");
+                    var result = CompleteSecondCombatNoAttack(predecessor);
+                    if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                        || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                        || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second no-attack completion differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, secondNoAttackHash, Hash(result.Evidence.EventRecords.Single()));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondNoAttackHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case SecondCombatSelectionPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, moveExpectedHash, null);
+                var secondDecision = completedSession.CurrentSecondCombatDecision!;
+                var expected = secondDecision.Decision.SerializeCanonical();
+                var secondDecisionHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondCombatSelectionPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second Combat selection has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second Combat selection predecessor did not replay.");
+                    var (world, position) = QuerySecondCombatWorldAndPosition(predecessor);
+                    CampaignNativeSecondCombatDecisionV47 replayedDecision = secondDecision.Decision
+                        is CampaignNativeSecondCombatSelectionTimeoutV48 { Evidence: var timeout }
+                        ? CreateSecondSelectionTimeout(predecessor, timeout.ConfigurationHash,
+                            timeout.OpenedAtUnixMilliseconds, timeout.DeadlineUnixMilliseconds,
+                            timeout.HighWaterUnixMilliseconds, timeout.CancelledAtUnixMilliseconds, timeout.Reason)
+                        : CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                            predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                            predecessor.CurrentContacts, secondDecision.Decision.Side, secondDecision.Decision.ActingElementId,
+                            secondDecision.Decision.ActionId).Decision;
+                    var bytes = replayedDecision.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
+                    if (!expected.AsSpan().SequenceEqual(bytes)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second Combat selection differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, secondDecisionHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondDecisionHash, null); }
             }
-        }
-        if (completedSession.CurrentSecondReserve is { } secondReserve)
-        {
-            var expected = secondReserve.SerializeCanonical();
-            var reserveExpectedHash = Hash(expected);
-            try
+            case SecondBreakdownPending:
             {
-                var predecessor = completedSession.SecondReservePredecessor
-                    ?? throw new InvalidCampaignHistoryException("Second Reserve has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Second Reserve predecessor did not replay.");
-                var (source, world) = QuerySecondReserveSource(predecessor);
-                var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
-                    predecessor.Context, predecessor.CurrentSnapshot.OperationStageOrders, secondReserve.Side,
-                    secondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
-                    predecessor.CurrentContacts.AuthorityVersion);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(secondReserve);
-                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentSecondReserveWorld != resultWorld
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Second Reserve differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, reserveExpectedHash, Hash(bytes));
+                var secondBreakdown = completedSession.CurrentSecondBreakdown!;
+                var expected = secondBreakdown.SerializeCanonical();
+                var secondBreakdownHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondBreakdownPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second Breakdown predecessor is missing.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second Breakdown predecessor did not replay.");
+                    var result = CompleteSecondBreakdown(predecessor);
+                    if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                        || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                        || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second Breakdown differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, secondBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, secondBreakdownHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case SecondMovementCompletionPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, reserveExpectedHash, null);
+                var movementCompletion = completedSession.CurrentSecondMovementCompletion!;
+                var expected = movementCompletion.SerializeCanonical();
+                var completionExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondMovementCompletionPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second Movement completion has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second Movement predecessor did not replay.");
+                    var (source, world) = QuerySecondMovementSource(predecessor);
+                    var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
+                        predecessor.CurrentSnapshot.OperationStageOrders, movementCompletion.Side,
+                        predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
+                    if (!expected.AsSpan().SequenceEqual(bytes)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second Movement completion differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, completionExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, completionExpectedHash, null);
+                }
             }
-        }
-        // MTS-TASK-005/006 (2026-11-23): this stage's own Combat Decision --
-        // same shape as the CurrentSecondCombatDecision block above, reusing
-        // CampaignNativeSecondCombatDecisionStateV47.Select unchanged (it
-        // already takes world/position/turnFacts as explicit parameters,
-        // confirmed by reading it directly, so no new entry point was
-        // needed on the native class, unlike V46/Breakdown). No timeout
-        // variant exists for this stage yet (CampaignNativeSecondCombatSelectionTimeoutV48's
-        // equivalent is deferred along with the rest of the round-binding/
-        // System-audience timeout question -- out of scope here, same as
-        // every prior slice's open items), so this always calls Select
-        // directly, no ternary. Checked before Breakdown below:
-        // chronologically later, same ordering discipline as every cascade
-        // in this file.
-        if (completedSession.CurrentStageEntryCombatDecision is { } stageEntryDecision)
-        {
-            var expected = stageEntryDecision.Decision.SerializeCanonical();
-            var stageEntryDecisionHash = Hash(expected);
-            try
+            case SecondMovePending:
             {
-                var predecessor = completedSession.StageEntryCombatSelectionPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry Combat selection has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry Combat selection predecessor did not replay.");
-                var (world, position) = QueryStageEntryCombatWorldAndPosition(predecessor);
-                var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                    predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
-                    predecessor.CurrentContacts, stageEntryDecision.Decision.Side, stageEntryDecision.Decision.ActingElementId,
-                    stageEntryDecision.Decision.ActionId).Decision;
-                var bytes = replayedDecision.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
-                if (!expected.AsSpan().SequenceEqual(bytes)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry Combat selection differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, stageEntryDecisionHash, Hash(bytes));
+                var secondMove = completedSession.CurrentSecondMove!;
+                var expected = secondMove.SerializeCanonical();
+                var moveExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondMovePredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second Movement has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second Movement predecessor did not replay.");
+                    var (source, world) = QuerySecondMovementSource(predecessor);
+                    var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
+                        predecessor.Context, predecessor.CurrentSnapshot.OperationStageOrders, predecessor.CurrentContacts,
+                        secondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, secondMove.ElementId,
+                        secondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
+                    if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentSecondMoveWorld != resultWorld
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second Movement differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, moveExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, moveExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryDecisionHash, null); }
-        }
-        // MTS-TASK-005/006 (2026-11-23): this stage's own Breakdown -- same
-        // shape as the CurrentSecondBreakdown block above, reusing
-        // CampaignNativeSecondBreakdownV46's event payload/contract
-        // unchanged via its new CreateForStageEntry entry point (see that
-        // method's remarks for why a new entry point was needed: unlike
-        // V43/V44/V45, V46.Create reads named ExerciseSession fields
-        // directly rather than taking its predecessor by type). Checked
-        // before Movement Completion below: chronologically later, same
-        // ordering discipline as every cascade in this file.
-        if (completedSession.CurrentStageEntryBreakdown is { } stageEntryBreakdown)
-        {
-            var expected = stageEntryBreakdown.SerializeCanonical();
-            var stageEntryBreakdownHash = Hash(expected);
-            try
+            case SecondReservePending:
             {
-                var predecessor = completedSession.StageEntryBreakdownPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry Breakdown predecessor is missing.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry Breakdown predecessor did not replay.");
-                var result = CompleteStageEntryBreakdown(predecessor);
-                if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
-                    || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
-                    || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry Breakdown differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    expected, streamHash, stageEntryBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                var secondReserve = completedSession.CurrentSecondReserve!;
+                var expected = secondReserve.SerializeCanonical();
+                var reserveExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.SecondReservePredecessor
+                        ?? throw new InvalidCampaignHistoryException("Second Reserve has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Second Reserve predecessor did not replay.");
+                    var (source, world) = QuerySecondReserveSource(predecessor);
+                    var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
+                        predecessor.Context, predecessor.CurrentSnapshot.OperationStageOrders, secondReserve.Side,
+                        secondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                        predecessor.CurrentContacts.AuthorityVersion);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(secondReserve);
+                    if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentSecondReserveWorld != resultWorld
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Second Reserve differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, reserveExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, reserveExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryBreakdownHash, null); }
-        }
-        // MTS-TASK-005/006 (2026-11-22): this stage's own Movement
-        // Completion + Movement -- same shape as the CurrentSecondMovementCompletion/
-        // CurrentSecondMove blocks above, reusing CampaignNativeSecondMovementCompletedV45/
-        // CampaignNativeSecondMoveV44 unchanged. Checked before Reserve
-        // Designation below: chronologically later, same ordering
-        // discipline as every cascade in this file.
-        if (completedSession.CurrentStageEntryMovementCompletion is { } stageEntryMovementCompletion)
-        {
-            var expected = stageEntryMovementCompletion.SerializeCanonical();
-            var completionExpectedHash = Hash(expected);
-            try
+            case StageEntryCombatSelectionPending:
             {
-                var predecessor = completedSession.StageEntryMovementCompletionPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry Movement completion has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry Movement predecessor did not replay.");
-                var (source, world) = QueryStageEntryMovementSource(predecessor);
-                var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
-                    StageEntryOrders(predecessor), stageEntryMovementCompletion.Side,
-                    predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
-                if (!expected.AsSpan().SequenceEqual(bytes)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry Movement completion differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, completionExpectedHash, Hash(bytes));
+                var stageEntryDecision = completedSession.CurrentStageEntryCombatDecision!;
+                var expected = stageEntryDecision.Decision.SerializeCanonical();
+                var stageEntryDecisionHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryCombatSelectionPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry Combat selection has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry Combat selection predecessor did not replay.");
+                    var (world, position) = QueryStageEntryCombatWorldAndPosition(predecessor);
+                    var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                        predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                        predecessor.CurrentContacts, stageEntryDecision.Decision.Side, stageEntryDecision.Decision.ActingElementId,
+                        stageEntryDecision.Decision.ActionId).Decision;
+                    var bytes = replayedDecision.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
+                    if (!expected.AsSpan().SequenceEqual(bytes)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry Combat selection differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, stageEntryDecisionHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryDecisionHash, null); }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case StageEntryBreakdownPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, completionExpectedHash, null);
+                var stageEntryBreakdown = completedSession.CurrentStageEntryBreakdown!;
+                var expected = stageEntryBreakdown.SerializeCanonical();
+                var stageEntryBreakdownHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryBreakdownPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry Breakdown predecessor is missing.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry Breakdown predecessor did not replay.");
+                    var result = CompleteStageEntryBreakdown(predecessor);
+                    if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                        || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                        || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry Breakdown differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        expected, streamHash, stageEntryBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, stageEntryBreakdownHash, null); }
             }
-        }
-        if (completedSession.CurrentStageEntryMove is { } stageEntryMove)
-        {
-            var expected = stageEntryMove.SerializeCanonical();
-            var moveExpectedHash = Hash(expected);
-            try
+            case StageEntryMovementCompletionPending:
             {
-                var predecessor = completedSession.StageEntryMovePredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry Movement has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry Movement predecessor did not replay.");
-                var (source, world) = QueryStageEntryMovementSource(predecessor);
-                var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
-                    predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
-                    stageEntryMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntryMove.ElementId,
-                    stageEntryMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
-                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntryMoveWorld != resultWorld
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry Movement differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, moveExpectedHash, Hash(bytes));
+                var stageEntryMovementCompletion = completedSession.CurrentStageEntryMovementCompletion!;
+                var expected = stageEntryMovementCompletion.SerializeCanonical();
+                var completionExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryMovementCompletionPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry Movement completion has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry Movement predecessor did not replay.");
+                    var (source, world) = QueryStageEntryMovementSource(predecessor);
+                    var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
+                        StageEntryOrders(predecessor), stageEntryMovementCompletion.Side,
+                        predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
+                    if (!expected.AsSpan().SequenceEqual(bytes)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry Movement completion differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, completionExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, completionExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case StageEntryMovePending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, moveExpectedHash, null);
+                var stageEntryMove = completedSession.CurrentStageEntryMove!;
+                var expected = stageEntryMove.SerializeCanonical();
+                var moveExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryMovePredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry Movement has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry Movement predecessor did not replay.");
+                    var (source, world) = QueryStageEntryMovementSource(predecessor);
+                    var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
+                        predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
+                        stageEntryMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntryMove.ElementId,
+                        stageEntryMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
+                    if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntryMoveWorld != resultWorld
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry Movement differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, moveExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, moveExpectedHash, null);
+                }
             }
-        }
-        // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side
-        // Reserve Designation -- same shape as the CurrentSecondReserve block
-        // above, reusing CampaignNativeSecondReserveV43 unchanged.
-        if (completedSession.CurrentStageEntryReserve is { } stageEntryReserve)
-        {
-            var expected = stageEntryReserve.SerializeCanonical();
-            var reserveExpectedHash = Hash(expected);
-            try
+            case StageEntryReservePending:
             {
-                var predecessor = completedSession.StageEntryReservePredecessor
-                    ?? throw new InvalidCampaignHistoryException("Stage Entry Reserve has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Stage Entry Reserve predecessor did not replay.");
-                var (source, world) = QueryStageEntryReserveSource(predecessor);
-                var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
-                    predecessor.Context, StageEntryOrders(predecessor), stageEntryReserve.Side,
-                    stageEntryReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
-                    predecessor.CurrentContacts.AuthorityVersion);
-                var bytes = replayed.SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntryReserve);
-                if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntryReserveWorld != resultWorld
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Stage Entry Reserve differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    bytes, streamHash, reserveExpectedHash, Hash(bytes));
+                var stageEntryReserve = completedSession.CurrentStageEntryReserve!;
+                var expected = stageEntryReserve.SerializeCanonical();
+                var reserveExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryReservePredecessor
+                        ?? throw new InvalidCampaignHistoryException("Stage Entry Reserve has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Stage Entry Reserve predecessor did not replay.");
+                    var (source, world) = QueryStageEntryReserveSource(predecessor);
+                    var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
+                        predecessor.Context, StageEntryOrders(predecessor), stageEntryReserve.Side,
+                        stageEntryReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                        predecessor.CurrentContacts.AuthorityVersion);
+                    var bytes = replayed.SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntryReserve);
+                    if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentStageEntryReserveWorld != resultWorld
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Stage Entry Reserve differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        bytes, streamHash, reserveExpectedHash, Hash(bytes));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, reserveExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case PostCombatPassPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, reserveExpectedHash, null);
+                var phasePassed = completedSession.CurrentPostCombatPass!;
+                var expected = phasePassed.SerializeCanonical();
+                var passExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.PostCombatPassPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Post-combat pass has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Post-combat predecessor did not replay.");
+                    var replayed = CampaignNativePostCombatPassV42.Create(QueryPostCombatPassSource(predecessor),
+                        phasePassed.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvancePostCombatPass(phasePassed);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Post-combat pass differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, passExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, passExpectedHash, null);
+                }
             }
-        }
-        if (completedSession.CurrentPostCombatPass is { } phasePassed)
-        {
-            var expected = phasePassed.SerializeCanonical();
-            var passExpectedHash = Hash(expected);
-            try
+            case TruckConvoyPassPending:
             {
-                var predecessor = completedSession.PostCombatPassPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Post-combat pass has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Post-combat predecessor did not replay.");
-                var replayed = CampaignNativePostCombatPassV42.Create(QueryPostCombatPassSource(predecessor),
-                    phasePassed.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvancePostCombatPass(phasePassed);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Post-combat pass differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, passExpectedHash, Hash(replayed));
+                var passed = completedSession.CurrentTruckConvoyPass!;
+                var expected = passed.SerializeCanonical();
+                var passExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.TruckConvoyPassPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Truck Convoy pass has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Truck Convoy predecessor did not replay.");
+                    var (release, control) = QueryTruckConvoyPassSource(predecessor);
+                    var replayed = CampaignNativeTruckConvoyPassV41.Create(release, control, passed.Side,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceTruckConvoyPass(passed);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Truck Convoy pass differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, passExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, passExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case InitiativeDeclarationPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, passExpectedHash, null);
+                var declared = completedSession.CurrentInitiativeDeclaration!;
+                var expected = declared.SerializeCanonical();
+                var declaredExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.InitiativeDeclarationPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Initiative Declaration has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Initiative Declaration predecessor did not replay.");
+                    // MTS-TASK-003 (2026-11-23) correction: this previously read
+                    // predecessor.CurrentPostCombatPass -- the FIRST side's own
+                    // Patrol pass, fixed forever once set and long stale by this
+                    // point -- instead of the SECOND side's own terminal pass
+                    // (CampaignNativeRepeatAssaultRuntime.PostCombatPasses' last
+                    // entry, confirmed as the real predecessor shape by
+                    // CampaignNativeStageEntryPreambleTests' own
+                    // SecondSidePatrolComplete helper). Never triggered until
+                    // now: no caller of WithInitiativeDeclaration existed before
+                    // this change, so this mismatch was latent, not observed.
+                    var replayed = CampaignNativeInitiativeDeclarationV49.Create(
+                        predecessor.CurrentSecondAssault!.PostCombatPasses[^1],
+                        declared.DeclaringHolder, declared.FirstSide == declared.DeclaringHolder,
+                        predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion)
+                        .SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceInitiativeDeclaration(declared);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Initiative Declaration differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, declaredExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, declaredExpectedHash, null);
+                }
             }
-        }
-        if (completedSession.CurrentTruckConvoyPass is { } passed)
-        {
-            var expected = passed.SerializeCanonical();
-            var passExpectedHash = Hash(expected);
-            try
+            case StageEntryWeatherPending:
             {
-                var predecessor = completedSession.TruckConvoyPassPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Truck Convoy pass has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Truck Convoy predecessor did not replay.");
-                var (release, control) = QueryTruckConvoyPassSource(predecessor);
-                var replayed = CampaignNativeTruckConvoyPassV41.Create(release, control, passed.Side,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceTruckConvoyPass(passed);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Truck Convoy pass differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, passExpectedHash, Hash(replayed));
+                var determined = completedSession.CurrentStageEntryWeather!;
+                var expected = determined.SerializeCanonical();
+                var determinedExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.StageEntryWeatherPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Weather Determination has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Weather Determination predecessor did not replay.");
+                    var genesisRandom = predecessor.CurrentSnapshot.RandomState;
+                    var priorRandomState = new RandomStreamState(genesisRandom.ContractVersion, genesisRandom.AlgorithmId,
+                        genesisRandom.Seed, determined.PriorRandomCursor);
+                    var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentInitiativeDeclaration!,
+                        priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceWeatherDetermination(determined);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Weather Determination differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, determinedExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, determinedExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case NoObligationOrganizationPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, passExpectedHash, null);
+                var organizationResolved = completedSession.CurrentNoObligationOrganization!;
+                var expected = organizationResolved.SerializeCanonical();
+                var organizationExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.NoObligationOrganizationPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Organization resolution has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Organization predecessor did not replay.");
+                    var replayed = CampaignNativeNoObligationOrganizationV51.Create(predecessor.CurrentStageEntryWeather!,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceNoObligationOrganization(organizationResolved);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Organization resolution differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, organizationExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, organizationExpectedHash, null);
+                }
             }
-        }
-        // MTS-TASK-002 (2026-11-22, docs/work/plans/2026-11-22-stage-entry-bridge-design-options.md):
-        // the six native-chain preamble events, same replay/compare shape as
-        // every native block above -- additive, no existing block changes.
-        if (completedSession.CurrentInitiativeDeclaration is { } declared)
-        {
-            var expected = declared.SerializeCanonical();
-            var declaredExpectedHash = Hash(expected);
-            try
+            case NoObligationNavalConvoyArrivalPending:
             {
-                var predecessor = completedSession.InitiativeDeclarationPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Initiative Declaration has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Initiative Declaration predecessor did not replay.");
-                // MTS-TASK-003 (2026-11-23) correction: this previously read
-                // predecessor.CurrentPostCombatPass -- the FIRST side's own
-                // Patrol pass, fixed forever once set and long stale by this
-                // point -- instead of the SECOND side's own terminal pass
-                // (CampaignNativeRepeatAssaultRuntime.PostCombatPasses' last
-                // entry, confirmed as the real predecessor shape by
-                // CampaignNativeStageEntryPreambleTests' own
-                // SecondSidePatrolComplete helper). Never triggered until
-                // now: no caller of WithInitiativeDeclaration existed before
-                // this change, so this mismatch was latent, not observed.
-                var replayed = CampaignNativeInitiativeDeclarationV49.Create(
-                    predecessor.CurrentSecondAssault!.PostCombatPasses[^1],
-                    declared.DeclaringHolder, declared.FirstSide == declared.DeclaringHolder,
-                    predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion)
-                    .SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceInitiativeDeclaration(declared);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Initiative Declaration differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, declaredExpectedHash, Hash(replayed));
+                var convoyArrivalResolved = completedSession.CurrentNoObligationNavalConvoyArrival!;
+                var expected = convoyArrivalResolved.SerializeCanonical();
+                var convoyArrivalExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.NoObligationNavalConvoyArrivalPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Naval Convoy Arrival resolution has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Naval Convoy Arrival predecessor did not replay.");
+                    var replayed = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
+                        predecessor.CurrentNoObligationOrganization!, predecessor.Context,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceNoObligationNavalConvoyArrival(convoyArrivalResolved);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Naval Convoy Arrival resolution differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, convoyArrivalExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, convoyArrivalExpectedHash, null);
+                }
             }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
+            case NoObligationFleetAssignmentPending:
             {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, declaredExpectedHash, null);
+                var fleetAssignmentResolved = completedSession.CurrentNoObligationFleetAssignment!;
+                var expected = fleetAssignmentResolved.SerializeCanonical();
+                var fleetAssignmentExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.NoObligationFleetAssignmentPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Fleet Assignment resolution has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Fleet Assignment predecessor did not replay.");
+                    var replayed = CampaignNativeNoObligationFleetAssignmentV53.Create(
+                        predecessor.CurrentNoObligationNavalConvoyArrival!,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetAssignment(fleetAssignmentResolved);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Fleet Assignment resolution differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, fleetAssignmentExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, fleetAssignmentExpectedHash, null);
+                }
             }
-        }
-        if (completedSession.CurrentStageEntryWeather is { } determined)
-        {
-            var expected = determined.SerializeCanonical();
-            var determinedExpectedHash = Hash(expected);
-            try
+            case NoObligationFleetRepairPending:
             {
-                var predecessor = completedSession.StageEntryWeatherPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Weather Determination has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Weather Determination predecessor did not replay.");
-                var genesisRandom = predecessor.CurrentSnapshot.RandomState;
-                var priorRandomState = new RandomStreamState(genesisRandom.ContractVersion, genesisRandom.AlgorithmId,
-                    genesisRandom.Seed, determined.PriorRandomCursor);
-                var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentInitiativeDeclaration!,
-                    priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceWeatherDetermination(determined);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Weather Determination differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, determinedExpectedHash, Hash(replayed));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, determinedExpectedHash, null);
-            }
-        }
-        if (completedSession.CurrentNoObligationOrganization is { } organizationResolved)
-        {
-            var expected = organizationResolved.SerializeCanonical();
-            var organizationExpectedHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.NoObligationOrganizationPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Organization resolution has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Organization predecessor did not replay.");
-                var replayed = CampaignNativeNoObligationOrganizationV51.Create(predecessor.CurrentStageEntryWeather!,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceNoObligationOrganization(organizationResolved);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Organization resolution differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, organizationExpectedHash, Hash(replayed));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, organizationExpectedHash, null);
-            }
-        }
-        if (completedSession.CurrentNoObligationNavalConvoyArrival is { } convoyArrivalResolved)
-        {
-            var expected = convoyArrivalResolved.SerializeCanonical();
-            var convoyArrivalExpectedHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.NoObligationNavalConvoyArrivalPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Naval Convoy Arrival resolution has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Naval Convoy Arrival predecessor did not replay.");
-                var replayed = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
-                    predecessor.CurrentNoObligationOrganization!, predecessor.Context,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceNoObligationNavalConvoyArrival(convoyArrivalResolved);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Naval Convoy Arrival resolution differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, convoyArrivalExpectedHash, Hash(replayed));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, convoyArrivalExpectedHash, null);
-            }
-        }
-        if (completedSession.CurrentNoObligationFleetAssignment is { } fleetAssignmentResolved)
-        {
-            var expected = fleetAssignmentResolved.SerializeCanonical();
-            var fleetAssignmentExpectedHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.NoObligationFleetAssignmentPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Fleet Assignment resolution has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Fleet Assignment predecessor did not replay.");
-                var replayed = CampaignNativeNoObligationFleetAssignmentV53.Create(
-                    predecessor.CurrentNoObligationNavalConvoyArrival!,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetAssignment(fleetAssignmentResolved);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Fleet Assignment resolution differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, fleetAssignmentExpectedHash, Hash(replayed));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, fleetAssignmentExpectedHash, null);
-            }
-        }
-        if (completedSession.CurrentNoObligationFleetRepair is { } fleetRepairResolved)
-        {
-            var expected = fleetRepairResolved.SerializeCanonical();
-            var fleetRepairExpectedHash = Hash(expected);
-            try
-            {
-                var predecessor = completedSession.NoObligationFleetRepairPredecessor
-                    ?? throw new InvalidCampaignHistoryException("Fleet Repair resolution has no predecessor.");
-                if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
-                    throw new InvalidCampaignHistoryException("Fleet Repair predecessor did not replay.");
-                var replayed = CampaignNativeNoObligationFleetRepairV54.Create(
-                    predecessor.CurrentNoObligationFleetAssignment!,
-                    predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
-                var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetRepair(fleetRepairResolved);
-                if (!expected.AsSpan().SequenceEqual(replayed)
-                    || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
-                    || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
-                    || completedSession.CurrentContacts.Records.Zip(contacts.Records)
-                        .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
-                    throw new InvalidCampaignHistoryException("Fleet Repair resolution differs from replay.");
-                var streamHash = includeStreamHash
-                    ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
-                    replayed, streamHash, fleetRepairExpectedHash, Hash(replayed));
-            }
-            catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
-                or ArgumentException or InvalidOperationException)
-            {
-                return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
-                    null, null, fleetRepairExpectedHash, null);
+                var fleetRepairResolved = completedSession.CurrentNoObligationFleetRepair!;
+                var expected = fleetRepairResolved.SerializeCanonical();
+                var fleetRepairExpectedHash = Hash(expected);
+                try
+                {
+                    var predecessor = completedSession.NoObligationFleetRepairPredecessor
+                        ?? throw new InvalidCampaignHistoryException("Fleet Repair resolution has no predecessor.");
+                    if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                        throw new InvalidCampaignHistoryException("Fleet Repair predecessor did not replay.");
+                    var replayed = CampaignNativeNoObligationFleetRepairV54.Create(
+                        predecessor.CurrentNoObligationFleetAssignment!,
+                        predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                    var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetRepair(fleetRepairResolved);
+                    if (!expected.AsSpan().SequenceEqual(replayed)
+                        || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                        || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                        || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                            .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                        throw new InvalidCampaignHistoryException("Fleet Repair resolution differs from replay.");
+                    var streamHash = includeStreamHash
+                        ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                        replayed, streamHash, fleetRepairExpectedHash, Hash(replayed));
+                }
+                catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                    or ArgumentException or InvalidOperationException)
+                {
+                    return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                        null, null, fleetRepairExpectedHash, null);
+                }
             }
         }
         var expectedBytes = completedSession.CurrentNoAttackCompletion is { } completion
