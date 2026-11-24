@@ -941,9 +941,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitSupplementActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.axis-forces.supplement.v1"));
 
-    internal CampaignSourceAuthorityState AdmitAxisSupplement()
+    internal CampaignSourceAuthorityState AdmitAxisSupplement() => AdmitCore(this, StepByKind("Supplemental"));
+
+    private CampaignSourceAuthorityState AdmitAxisSupplementCore()
     {
-        if (AxisSupplement is not null) throw new InvalidOperationException("The Axis source supplement is already admitted.");
         var supplement = CampaignSourceAxisSupplementalForces.Create(Pregame, AxisInitialForces);
         return (this with { AxisSupplement = supplement, Autoblinda = CampaignSourceAutoblindaSetup.Create(supplement), CommonwealthSupplement = null, PriorityMotorization = null, AxisPriorityMotorization = null, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
@@ -964,10 +965,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitCommonwealthSupplementActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.commonwealth-forces.supplement.v1"));
 
-    internal CampaignSourceAuthorityState AdmitCommonwealthSupplement()
+    internal CampaignSourceAuthorityState AdmitCommonwealthSupplement() => AdmitCore(this, StepByKind("CommonwealthSupplemental"));
+
+    private CampaignSourceAuthorityState AdmitCommonwealthSupplementCore()
     {
-        if (AxisSupplement is null || CommonwealthSupplement is not null)
-            throw new InvalidOperationException("Commonwealth source supplement requires the prior profile and no duplicate.");
         var supplement = CampaignSourceCommonwealthSupplementalForces.Create(Pregame, CommonwealthInitialForces);
         return (this with { CommonwealthSupplement = supplement, PriorityMotorization = null, AxisPriorityMotorization = null, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
@@ -997,11 +998,11 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitPriorityMotorizationActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.priority-motorization.admit.v1"));
 
-    internal CampaignSourceAuthorityState AdmitPriorityMotorization()
+    internal CampaignSourceAuthorityState AdmitPriorityMotorization() => AdmitCore(this, StepByKind("PriorityMotorization"));
+
+    private CampaignSourceAuthorityState AdmitPriorityMotorizationCore()
     {
-        if (CommonwealthSupplement is null || PriorityMotorization is not null)
-            throw new InvalidOperationException("Priority motorization requires the prior source profile and no duplicate.");
-        var priority = CampaignSourcePriorityMotorization.Create(CommonwealthSupplement, CommonwealthMotorization);
+        var priority = CampaignSourcePriorityMotorization.Create(CommonwealthSupplement!, CommonwealthMotorization);
         return (this with { PriorityMotorization = priority, AxisPriorityMotorization = null, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
@@ -1063,11 +1064,11 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitAxisPriorityActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.axis-priority-motorization.admit.v1"));
 
-    internal CampaignSourceAuthorityState AdmitAxisPriorityMotorization()
+    internal CampaignSourceAuthorityState AdmitAxisPriorityMotorization() => AdmitCore(this, StepByKind("AxisPriorityMotorization"));
+
+    private CampaignSourceAuthorityState AdmitAxisPriorityMotorizationCore()
     {
-        if (PriorityMotorization is null || AxisPriorityMotorization is not null || AxisSupplement is null)
-            throw new InvalidOperationException("Axis priority setup requires the prior source profile and no duplicate.");
-        var priority = CampaignSourceAxisPriorityMotorization.Create(AxisSupplement, AxisMotorization);
+        var priority = CampaignSourceAxisPriorityMotorization.Create(AxisSupplement!, AxisMotorization);
         return (this with { AxisPriorityMotorization = priority, AxisGarrisons = null, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
@@ -1140,11 +1141,11 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitAxisGarrisonsActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.axis-garrisons.admit.v1"));
 
-    internal CampaignSourceAuthorityState AdmitAxisGarrisons()
+    internal CampaignSourceAuthorityState AdmitAxisGarrisons() => AdmitCore(this, StepByKind("AxisGarrisons"));
+
+    private CampaignSourceAuthorityState AdmitAxisGarrisonsCore()
     {
-        if (AxisPriorityMotorization is null || AxisGarrisons is not null || AxisSupplement is null)
-            throw new InvalidOperationException("Axis garrisons require the prior source profile and no duplicate.");
-        var garrisons = CampaignSourceAxisGarrisonForces.Create(Pregame, AxisInitialForces, AxisSupplement);
+        var garrisons = CampaignSourceAxisGarrisonForces.Create(Pregame, AxisInitialForces, AxisSupplement!);
         return (this with { AxisGarrisons = garrisons, Battlefield = null, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
@@ -1172,10 +1173,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitBattlefieldActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.battlefield.admit.v1"));
 
-    internal CampaignSourceAuthorityState AdmitBattlefield()
+    internal CampaignSourceAuthorityState AdmitBattlefield() => AdmitCore(this, StepByKind("Battlefield"));
+
+    private CampaignSourceAuthorityState AdmitBattlefieldCore()
     {
-        if (AxisGarrisons is null || Battlefield is not null)
-            throw new InvalidOperationException("Source battlefield requires the prior profile and no duplicate.");
         var battlefield = CampaignSourceBattlefield.Create(this);
         return (this with { Battlefield = battlefield, CairoSetup = null, CairoWorld = null, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
@@ -1204,12 +1205,12 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitCairoSetupActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.cairo-setup.admit.v1"));
 
-    internal CampaignSourceAuthorityState AdmitCairoSetup()
+    internal CampaignSourceAuthorityState AdmitCairoSetup() => AdmitCore(this, StepByKind("CairoSetup"));
+
+    private CampaignSourceAuthorityState AdmitCairoSetupCore()
     {
-        if (Battlefield is null || CairoSetup is not null)
-            throw new InvalidOperationException("Cairo setup requires the prior battlefield and no duplicate.");
-        var cairo = CampaignSourceCairoInitialSetup.Create(Battlefield);
-        var battlefield = Battlefield.AddCairoSetup(cairo);
+        var cairo = CampaignSourceCairoInitialSetup.Create(Battlefield!);
+        var battlefield = Battlefield!.AddCairoSetup(cairo);
         return (this with { Battlefield = battlefield, CairoSetup = cairo, StateVersion = checked(StateVersion + 1) }).Validated();
     }
 
@@ -1271,10 +1272,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitCairoWorldActionId = CampaignPregameSourceCreation.Digest(
         Encoding.UTF8.GetBytes("graziani.source.cairo-world.admit.v1"));
 
-    internal CampaignSourceAuthorityState AdmitCairoWorld()
+    internal CampaignSourceAuthorityState AdmitCairoWorld() => AdmitCore(this, StepByKind("CairoWorld"));
+
+    private CampaignSourceAuthorityState AdmitCairoWorldCore()
     {
-        if (CairoSetup is null || CairoWorld is not null || CairoSetup.PendingIds.Count != 0)
-            throw new InvalidOperationException("Cairo active world requires all source placements and no duplicate.");
         var world = CampaignSourceCairoActiveWorld.Create(this);
         return (this with { CairoWorld = world, MalettiWorld = null, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
     }
@@ -1308,9 +1309,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal bool CanPromoteMaletti => IndependentWorld is null && CairoWorld is not null && Battlefield is not null && AxisPriorityMotorization is not null
         && AxisPriorityMotorization.DetachedTargets.Except(MalettiWorld?.ActivatedIds ?? [], StringComparer.Ordinal).Any();
 
-    internal CampaignSourceAuthorityState PromoteMaletti()
+    internal CampaignSourceAuthorityState PromoteMaletti() => AdmitCore(this, StepByKind("MalettiWorld"));
+
+    private CampaignSourceAuthorityState PromoteMalettiCore()
     {
-        if (!CanPromoteMaletti) throw new InvalidOperationException("No newly detached Maletti units are ready for promotion.");
         var active = CampaignSourceMalettiActiveWorld.Create(this);
         var battlefield = Battlefield!.PromoteMaletti(AxisPriorityMotorization!, World, active.World);
         return (this with { Battlefield = battlefield, MalettiWorld = active, IndependentWorld = null, LocalMapWorld = null, StateVersion = checked(StateVersion + 1) }).Validated();
@@ -1349,9 +1351,10 @@ internal sealed partial record CampaignSourceAuthorityState
             (unit.SideId == "commonwealth" || AxisPriorityMotorization.DetachedTargets.Contains(unit.ElementId, StringComparer.Ordinal))
             && World.World.Elements.All(element => element.ElementId != unit.ElementId));
 
-    internal CampaignSourceAuthorityState PromoteIndependent()
+    internal CampaignSourceAuthorityState PromoteIndependent() => AdmitCore(this, StepByKind("IndependentWorld"));
+
+    private CampaignSourceAuthorityState PromoteIndependentCore()
     {
-        if (!CanPromoteIndependent) throw new InvalidOperationException("No source independent units are ready for promotion.");
         var active = CampaignSourceIndependentActiveWorld.Create(this);
         var battlefield = Battlefield!.PromoteSourceIndependent(CommonwealthSupplement!, AxisSupplement!,
             AxisPriorityMotorization!, World, active.World);
@@ -1415,11 +1418,12 @@ internal sealed partial record CampaignSourceAuthorityState
     internal static readonly string AdmitCwFreeGunsActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.cw-free-guns.admit.v1"));
     internal static readonly string PromoteCwFreeGunsWorldActionId = CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.cw-free-guns-world.promote.v1"));
     internal static string CwFreeGunPlacementActionId(string id, string location) => CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.cw-free-guns.place.v1\0" + id + "\0" + location));
-    internal CampaignSourceAuthorityState AdmitCwFreeGuns()
+    internal CampaignSourceAuthorityState AdmitCwFreeGuns() => AdmitCore(this, StepByKind("CwFreeGuns"));
+
+    private CampaignSourceAuthorityState AdmitCwFreeGunsCore()
     {
-        if (CwPriorityWorld is null || Battlefield is null || CwFreeGuns is not null) throw new InvalidOperationException("CW free guns require source world and no duplicate.");
-        var setup = CampaignSourceCwFreeGuns.Create(this, Battlefield);
-        return WithCwFreeGuns(setup, Battlefield.AddCwFreeGuns(setup), CwFreeGunsWorld);
+        var setup = CampaignSourceCwFreeGuns.Create(this, Battlefield!);
+        return WithCwFreeGuns(setup, Battlefield!.AddCwFreeGuns(setup), CwFreeGunsWorld);
     }
     internal CampaignSourceAuthorityState PlaceCwFreeGun(string id, string location)
     {
@@ -1429,9 +1433,10 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal bool CanPromoteCwFreeGunsWorld => CwFreeGuns is not null && Battlefield is not null && CwPriorityWorld is not null
         && CwFreeGuns.Placements.Any(placement => World.World.Elements.All(element => element.ElementId != placement.ElementId));
-    internal CampaignSourceAuthorityState PromoteCwFreeGunsWorld()
+    internal CampaignSourceAuthorityState PromoteCwFreeGunsWorld() => AdmitCore(this, StepByKind("CwFreeGunsWorld"));
+
+    private CampaignSourceAuthorityState PromoteCwFreeGunsWorldCore()
     {
-        if (!CanPromoteCwFreeGunsWorld) throw new InvalidOperationException("No CW free guns await activation.");
         var active = CampaignSourceCwFreeGunsWorld.Create(this);
         return WithCwFreeGuns(CwFreeGuns!, Battlefield!.PromoteCwFreeGuns(CwFreeGuns!, World, active.World), active);
     }
@@ -2436,9 +2441,10 @@ internal sealed partial record CampaignSourceAuthorityState
         Encoding.UTF8.GetBytes("graziani.source.cw-priority-world.promote.v1"));
     internal bool CanPromoteCwPriorityWorld => CwPriorityCatalog is not null && CwPriorityWorld is null
         && AxisCorpsArtilleryWorld is not null && Battlefield is not null;
-    internal CampaignSourceAuthorityState PromoteCwPriorityWorld()
+    internal CampaignSourceAuthorityState PromoteCwPriorityWorld() => AdmitCore(this, StepByKind("CwPriorityWorld"));
+
+    private CampaignSourceAuthorityState PromoteCwPriorityWorldCore()
     {
-        if (!CanPromoteCwPriorityWorld) throw new InvalidOperationException("Commonwealth source priority world not ready.");
         var active = CampaignSourceCwPriorityWorld.Create(this);
         var battlefield = Battlefield!.PromoteCwPriorityWorld(CommonwealthSupplement!, World, active.World);
         return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), CwPriorityWorld = active }).Validated();
@@ -2462,11 +2468,10 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string CwPriorityCatalogActionId(string id, int delta) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes(FormattableString.Invariant($"graziani.source.cw-priority-catalog.adjust.v1\0{id}\0{delta}")));
-    internal CampaignSourceAuthorityState AdmitCwPriorityCatalog()
-    {
-        if (CwPriorityCatalog is not null) throw new InvalidOperationException("Commonwealth priority catalog already admitted.");
-        return WithCwPriorityCatalog(CampaignSourceCwPriorityCatalog.Create(this), PriorityMotorization!);
-    }
+    internal CampaignSourceAuthorityState AdmitCwPriorityCatalog() => AdmitCore(this, StepByKind("CwPriorityCatalog"));
+
+    private CampaignSourceAuthorityState AdmitCwPriorityCatalogCore() =>
+        WithCwPriorityCatalog(CampaignSourceCwPriorityCatalog.Create(this), PriorityMotorization!);
     internal CampaignSourceAuthorityState AdjustCwPriorityCatalog(string id, int delta)
     {
         var catalog = CwPriorityCatalog ?? throw new InvalidOperationException("Commonwealth priority catalog not admitted.");
@@ -2496,11 +2501,10 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string Gt2CorrectionActionId(string kind, int lane, int stage, int delta) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes(FormattableString.Invariant($"graziani.source.gt2-correction.choice.v1\0{kind}\0{lane}\0{stage}\0{delta}")));
-    internal CampaignSourceAuthorityState AdmitGt2Correction()
-    {
-        if (Gt2Correction is not null) throw new InvalidOperationException("GT2 correction already admitted.");
-        return WithGt2Correction(CampaignSourceGt2ConvoyCorrection.Create(ConvoyPlan));
-    }
+    internal CampaignSourceAuthorityState AdmitGt2Correction() => AdmitCore(this, StepByKind("Gt2Correction"));
+
+    private CampaignSourceAuthorityState AdmitGt2CorrectionCore() =>
+        WithGt2Correction(CampaignSourceGt2ConvoyCorrection.Create(ConvoyPlan));
     internal CampaignSourceAuthorityState ApplyGt2Correction(string kind, int lane, int stage, int delta)
     {
         var correction = Gt2Correction ?? throw new InvalidOperationException("GT2 correction not admitted.");
@@ -2535,9 +2539,10 @@ internal sealed partial record CampaignSourceAuthorityState
         Encoding.UTF8.GetBytes("graziani.source.matruh-detached-world.promote.v1"));
     internal bool CanPromoteMatruhDetachedWorld => MatruhFormation is { Confirmed: true, DetachedId: not null }
         && MatruhDetachedWorld is null && Battlefield is not null && AxisCorpsArtilleryWorld is not null;
-    internal CampaignSourceAuthorityState PromoteMatruhDetachedWorld()
+    internal CampaignSourceAuthorityState PromoteMatruhDetachedWorld() => AdmitCore(this, StepByKind("MatruhDetachedWorld"));
+
+    private CampaignSourceAuthorityState PromoteMatruhDetachedWorldCore()
     {
-        if (!CanPromoteMatruhDetachedWorld) throw new InvalidOperationException("Matruh detached unit is not ready.");
         MatruhFormation!.Validate(this);
         var active = CampaignSourceMatruhDetachedWorld.Create(this);
         var battlefield = Battlefield!.PromoteMatruhDetached(MatruhFormation, World, active.World);
@@ -2570,13 +2575,13 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string MatruhFormationActionId(string kind, string? id) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.matruh-formation.choice.v1\0" + kind + "\0" + id));
-    internal CampaignSourceAuthorityState AdmitMatruhFormation()
+    internal CampaignSourceAuthorityState AdmitMatruhFormation() => AdmitCore(this, StepByKind("MatruhFormation"));
+
+    private CampaignSourceAuthorityState AdmitMatruhFormationCore()
     {
-        if (MalettiHierarchy is not { Confirmed: true } || Battlefield is null || MatruhFormation is not null)
-            throw new InvalidOperationException("Matruh formation requires the prior hierarchy and no duplicate.");
-        MalettiHierarchy.Validate(this);
+        MalettiHierarchy!.Validate(this);
         var group = CampaignSourceMatruhFormation.Create(this);
-        return WithMatruhFormation(group, Battlefield.AddMatruhFormation(group));
+        return WithMatruhFormation(group, Battlefield!.AddMatruhFormation(group));
     }
     internal CampaignSourceAuthorityState ApplyMatruhFormation(string kind, string? id)
     {
@@ -2626,9 +2631,10 @@ internal sealed partial record CampaignSourceAuthorityState
         Encoding.UTF8.GetBytes("graziani.source.certified-maletti-world.promote.v1"));
     internal bool CanPromoteCertifiedMalettiWorld => MalettiHierarchy is { Confirmed: true, DetachedId: not null }
         && CertifiedMalettiWorld is null && Battlefield is not null && AxisPriorityMotorization is not null;
-    internal CampaignSourceAuthorityState PromoteCertifiedMalettiWorld()
+    internal CampaignSourceAuthorityState PromoteCertifiedMalettiWorld() => AdmitCore(this, StepByKind("CertifiedMalettiWorld"));
+
+    private CampaignSourceAuthorityState PromoteCertifiedMalettiWorldCore()
     {
-        if (!CanPromoteCertifiedMalettiWorld) throw new InvalidOperationException("Certified Maletti unit not ready.");
         MalettiHierarchy!.Validate(this);
         var active = CampaignSourceCertifiedMalettiWorld.Create(this);
         var battlefield = Battlefield!.PromoteCertifiedMaletti(MalettiHierarchy, AxisPriorityMotorization!, World, active.World);
@@ -2666,12 +2672,10 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string MalettiHierarchyActionId(string kind, string? id) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.maletti-hierarchy.choice.v1\0" + kind + "\0" + id));
-    internal CampaignSourceAuthorityState AdmitMalettiHierarchy()
-    {
-        if (AxisCorpsArtilleryWorld is null || MalettiHierarchy is not null)
-            throw new InvalidOperationException("Maletti hierarchy requires prior world and no duplicate.");
-        return WithMalettiHierarchy(CampaignSourceMalettiHierarchy.Create(this), AxisPriorityMotorization!);
-    }
+    internal CampaignSourceAuthorityState AdmitMalettiHierarchy() => AdmitCore(this, StepByKind("MalettiHierarchy"));
+
+    private CampaignSourceAuthorityState AdmitMalettiHierarchyCore() =>
+        WithMalettiHierarchy(CampaignSourceMalettiHierarchy.Create(this), AxisPriorityMotorization!);
     internal CampaignSourceAuthorityState ApplyMalettiHierarchy(string kind, string? id)
     {
         var hierarchy = MalettiHierarchy ?? throw new InvalidOperationException("Maletti hierarchy not admitted.");
@@ -2721,9 +2725,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal bool CanPromoteAxisCorpsWorld => AxisCorpsArtillery is not null && Battlefield is not null
         && AxisFreeArtilleryWorld is not null && AxisCorpsArtillery.Placements.Any(placement =>
             World.World.Elements.All(element => element.ElementId != placement.ElementId));
-    internal CampaignSourceAuthorityState PromoteAxisCorpsWorld()
+    internal CampaignSourceAuthorityState PromoteAxisCorpsWorld() => AdmitCore(this, StepByKind("AxisCorpsWorld"));
+
+    private CampaignSourceAuthorityState PromoteAxisCorpsWorldCore()
     {
-        if (!CanPromoteAxisCorpsWorld) throw new InvalidOperationException("No placed Axis corps guns await activation.");
         var active = CampaignSourceAxisCorpsArtilleryWorld.Create(this);
         var battlefield = Battlefield!.PromoteAxisCorpsArtillery(AxisCorpsArtillery!, World, active.World);
         return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), AxisCorpsArtilleryWorld = active }).Validated();
@@ -2747,13 +2752,12 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string AxisCorpsPlacementActionId(string id, string locationId) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.axis-corps-setup.place.v1\0" + id + "\0" + locationId));
-    internal CampaignSourceAuthorityState AdmitAxisCorpsSetup()
+    internal CampaignSourceAuthorityState AdmitAxisCorpsSetup() => AdmitCore(this, StepByKind("AxisCorpsSetup"));
+
+    private CampaignSourceAuthorityState AdmitAxisCorpsSetupCore()
     {
-        if (AxisFreeArtilleryWorld is null || Battlefield is null || AxisCorpsArtillery is not null
-            || AxisFreeArtillery is null || AxisFreeArtillery.PendingIds.Count != 0 || CanPromoteAxisFreeWorld)
-            throw new InvalidOperationException("Axis corps setup requires the previous world and no duplicate.");
-        var setup = CampaignSourceAxisCorpsArtillery.Create(Pregame, Battlefield);
-        return WithAxisCorpsSetup(setup, Battlefield.AddAxisCorpsArtillery(setup));
+        var setup = CampaignSourceAxisCorpsArtillery.Create(Pregame, Battlefield!);
+        return WithAxisCorpsSetup(setup, Battlefield!.AddAxisCorpsArtillery(setup));
     }
     internal CampaignSourceAuthorityState PlaceAxisCorpsUnit(string id, string locationId)
     {
@@ -2787,9 +2791,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal bool CanPromoteAxisFreeWorld => AxisFreeArtillery is not null && Battlefield is not null
         && ExpandedIndependentWorld is not null && AxisFreeArtillery.Placements.Any(placement =>
             World.World.Elements.All(element => element.ElementId != placement.ElementId));
-    internal CampaignSourceAuthorityState PromoteAxisFreeWorld()
+    internal CampaignSourceAuthorityState PromoteAxisFreeWorld() => AdmitCore(this, StepByKind("AxisFreeWorld"));
+
+    private CampaignSourceAuthorityState PromoteAxisFreeWorldCore()
     {
-        if (!CanPromoteAxisFreeWorld) throw new InvalidOperationException("No placed Axis source guns await activation.");
         var active = CampaignSourceAxisFreeArtilleryWorld.Create(this);
         var battlefield = Battlefield!.PromoteAxisFreeArtillery(AxisFreeArtillery!, World, active.World);
         return (this with { Battlefield = battlefield, StateVersion = checked(StateVersion + 1), AxisFreeArtilleryWorld = active }).Validated();
@@ -2813,12 +2818,12 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string AxisFreePlacementActionId(string id, string locationId) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.axis-free-setup.place.v1\0" + id + "\0" + locationId));
-    internal CampaignSourceAuthorityState AdmitAxisFreeSetup()
+    internal CampaignSourceAuthorityState AdmitAxisFreeSetup() => AdmitCore(this, StepByKind("AxisFreeSetup"));
+
+    private CampaignSourceAuthorityState AdmitAxisFreeSetupCore()
     {
-        if (InitialWrecks is null || Battlefield is null || AxisFreeArtillery is not null)
-            throw new InvalidOperationException("Axis free setup requires prior source setup and no duplicate.");
-        var setup = CampaignSourceAxisFreeArtillery.Create(Pregame, Battlefield);
-        return WithAxisFreeSetup(setup, Battlefield.AddAxisFreeArtillery(setup));
+        var setup = CampaignSourceAxisFreeArtillery.Create(Pregame, Battlefield!);
+        return WithAxisFreeSetup(setup, Battlefield!.AddAxisFreeArtillery(setup));
     }
     internal CampaignSourceAuthorityState PlaceAxisFreeUnit(string id, string locationId)
     {
@@ -2849,11 +2854,10 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     internal static string InitialWreckPlacementActionId(string id, string locationId) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.initial-wrecks.place.v1\0" + id + "\0" + locationId));
-    internal CampaignSourceAuthorityState AdmitInitialWrecks()
-    {
-        if (AttachedInitialLoads is null || InitialWrecks is not null) throw new InvalidOperationException("Initial wrecks require prior setup and no duplicate.");
-        return WithInitialWrecks(CampaignSourceInitialWrecks.Create(Pregame));
-    }
+    internal CampaignSourceAuthorityState AdmitInitialWrecks() => AdmitCore(this, StepByKind("InitialWrecks"));
+
+    private CampaignSourceAuthorityState AdmitInitialWrecksCore() =>
+        WithInitialWrecks(CampaignSourceInitialWrecks.Create(Pregame));
     internal CampaignSourceAuthorityState PlaceInitialWreck(string id, string locationId) =>
         WithInitialWrecks((InitialWrecks ?? throw new InvalidOperationException("Initial wrecks not admitted.")).Place(id, locationId));
     private CampaignSourceAuthorityState WithInitialWrecks(CampaignSourceInitialWrecks wrecks) =>
@@ -2878,16 +2882,14 @@ internal sealed partial record CampaignSourceAuthorityState
         }
         return stream.ToArray();
     }
-    internal CampaignSourceAuthorityState AdmitAttachedInitialLoads()
-    {
-        if (ExpandedIndependentWorld is null || AttachedInitialLoads is not null || PriorityMotorization is null)
-            throw new InvalidOperationException("Initial loads require the expanded source world and priority setup.");
-        return new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
+    internal CampaignSourceAuthorityState AdmitAttachedInitialLoads() => AdmitCore(this, StepByKind("AttachedInitialLoads"));
+
+    private CampaignSourceAuthorityState AdmitAttachedInitialLoadsCore() =>
+        new(Pregame, ConvoyPlan, AxisSupplyWorld, CommonwealthSupplyWorld, AxisInitialForces,
             CommonwealthInitialForces, AxisMotorization, CommonwealthMotorization, OpeningConvoyPlan, CommonwealthSupplyPlans,
-            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization, AxisPriorityMotorization, AxisGarrisons,
+            AxisSupplement, Autoblinda, CommonwealthSupplement, PriorityMotorization!, AxisPriorityMotorization, AxisGarrisons,
             Battlefield, CairoSetup, CairoWorld, MalettiWorld, IndependentWorld, LocalMapWorld, checked(StateVersion + 1),
-            ExpandedIndependentWorld, CampaignSourceAttachedInitialLoads.Create(), septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
-    }
+            ExpandedIndependentWorld!, CampaignSourceAttachedInitialLoads.Create(), septemberPlans: SeptemberPlans, finalizedOwners: FinalizedOwners, finalizationVersion: FinalizationVersion, horseRulingVotes: HorseRulingVotes, horseStageOneNoTraining: HorseStageOneNoTraining, horseRulingVersion: HorseRulingVersion);
 
     internal static string AttachedInitialLoadsActionId(string kind, string elementId) =>
         CampaignPregameSourceCreation.Digest(Encoding.UTF8.GetBytes("graziani.source.attached-initial-loads.choice.v1\0" + kind + "\0" + elementId));
@@ -2957,9 +2959,10 @@ internal sealed partial record CampaignSourceAuthorityState
             .Any(unit => (unit.SideId == "commonwealth" || AxisPriorityMotorization.DetachedTargets.Contains(unit.ElementId, StringComparer.Ordinal))
                 && World.World.Elements.All(element => element.ElementId != unit.ElementId));
 
-    internal CampaignSourceAuthorityState PromoteExpandedIndependent()
+    internal CampaignSourceAuthorityState PromoteExpandedIndependent() => AdmitCore(this, StepByKind("ExpandedIndependentWorld"));
+
+    private CampaignSourceAuthorityState PromoteExpandedIndependentCore()
     {
-        if (!CanPromoteExpandedIndependent) throw new InvalidOperationException("No expanded source units are ready for promotion.");
         var active = CampaignSourceExpandedIndependentWorld.Create(this);
         var battlefield = Battlefield!.PromoteSourceIndependentV2(CommonwealthSupplement!, AxisSupplement!,
             AxisPriorityMotorization!, World, active.World);
@@ -2990,10 +2993,10 @@ internal sealed partial record CampaignSourceAuthorityState
         return stream.ToArray();
     }
 
-    internal CampaignSourceAuthorityState AdmitLocalMap()
+    internal CampaignSourceAuthorityState AdmitLocalMap() => AdmitCore(this, StepByKind("LocalMapWorld"));
+
+    private CampaignSourceAuthorityState AdmitLocalMapCore()
     {
-        if (IndependentWorld is null || LocalMapWorld is not null)
-            throw new InvalidOperationException("Local source map requires the prior independent world and no duplicate.");
         var map = CampaignSourceLocalMapWorld.Create(this);
         return (this with { LocalMapWorld = map, StateVersion = checked(StateVersion + 1) }).Validated();
     }
