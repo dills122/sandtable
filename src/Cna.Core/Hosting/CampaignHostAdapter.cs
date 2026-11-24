@@ -2641,7 +2641,7 @@ public static class CampaignHostAdapter
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Cycle control needs an owner side."),
         };
-        if ((session.CurrentSecondAssault is { } secondSide
+        if ((session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is { } secondSide
                 ? secondSide.Control
                 : session.CurrentRepeatAssault?.Release is not null
                 ? session.CurrentRepeatAssault.Control
@@ -2670,7 +2670,7 @@ public static class CampaignHostAdapter
                 CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
                 _ => throw new InvalidOperationException("Cycle control needs an owner side."),
             };
-            if ((session.CurrentSecondAssault is { } secondSide
+            if ((session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is { } secondSide
                     ? secondSide.Control
                     : session.CurrentRepeatAssault?.Release is not null
                     ? session.CurrentRepeatAssault.Control
@@ -2715,7 +2715,7 @@ public static class CampaignHostAdapter
             _ => throw new InvalidOperationException("Repeated Movement needs an owner side."),
         };
         // The second acting side has no Repeat edge this release.
-        if (session.CurrentSecondAssault is not null)
+        if (session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null)
             throw new InvalidOperationException("Repeated Movement is unavailable.");
         if ((session.CurrentPostRepeat?.Movement is not null
                 || session.CurrentPostRepeat is null
