@@ -581,6 +581,7 @@ public sealed class GrazianiSourceAuthorityTests
         var migrated = CampaignExercises.AdmitSourceAxisSupplement(cwSession);
         Assert.True(migrated.IsAccepted);
         cwSession = migrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Supplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.SupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisSupplementAdmitted(cwSession));
         Assert.Equal(5, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
@@ -606,6 +607,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cwMigrated = CampaignExercises.AdmitSourceCommonwealthSupplement(cwSession);
         Assert.True(cwMigrated.IsAccepted);
         cwSession = cwMigrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CommonwealthSupplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CommonwealthSupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceCommonwealthSupplementAdmitted(cwSession));
         Assert.Equal(6, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(12, cwSession.SourceAuthority!.CommonwealthSupplement!.Forces.Count);
@@ -616,6 +618,7 @@ public sealed class GrazianiSourceAuthorityTests
         var priorityMigration = CampaignExercises.AdmitSourcePriorityMotorization(cwSession);
         Assert.True(priorityMigration.IsAccepted);
         cwSession = priorityMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("PriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.PriorityMotorizationProfileHash);
         Assert.True(CampaignExercises.IsSourcePriorityMotorizationAdmitted(cwSession));
         Assert.Equal(7, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourcePriorityMotorizationDraft(cwSession, CampaignActionAudience.Axis));
@@ -637,6 +640,7 @@ public sealed class GrazianiSourceAuthorityTests
         var axisMigration = CampaignExercises.AdmitSourceAxisPriorityMotorization(cwSession);
         Assert.True(axisMigration.IsAccepted);
         cwSession = axisMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisPriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisPriorityMotorizationProfileHash);
         Assert.Equal(8, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var targetAxis = "1-1-libyan-motor-infantry";
         var oldDetach = CampaignSourceAuthorityState.AxisPriorityActionId("detach", targetAxis, 0);
@@ -663,6 +667,7 @@ public sealed class GrazianiSourceAuthorityTests
         var garrisonMigration = CampaignExercises.AdmitSourceAxisMinorGarrisons(cwSession);
         Assert.True(garrisonMigration.IsAccepted);
         cwSession = garrisonMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisGarrisons", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisGarrisonsProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted(cwSession));
         Assert.Equal(9, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(13, cwSession.SourceAuthority!.AxisGarrisons!.Forces.Count);
@@ -674,6 +679,7 @@ public sealed class GrazianiSourceAuthorityTests
         var battlefieldMigration = CampaignExercises.AdmitSourceBattlefield(cwSession);
         Assert.True(battlefieldMigration.IsAccepted);
         cwSession = battlefieldMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Battlefield", cwSession.SourceAuthority!, cwSession.SourceAuthority!.BattlefieldProfileHash);
         Assert.True(CampaignExercises.IsSourceBattlefieldAdmitted(cwSession));
         Assert.Equal(10, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var battlefield = cwSession.SourceAuthority!.Battlefield!;
@@ -689,6 +695,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cairoAdmission = CampaignExercises.AdmitSourceCairoSetup(cwSession);
         Assert.True(cairoAdmission.IsAccepted);
         cwSession = cairoAdmission.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoSetup", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoSetupProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoSetupAdmitted(cwSession));
         Assert.Equal(11, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(4, cwSession.SourceAuthority!.CairoSetup!.PendingIds.Count);
@@ -719,6 +726,7 @@ public sealed class GrazianiSourceAuthorityTests
         var activeMigration = CampaignExercises.AdmitSourceCairoWorld(cwSession);
         Assert.True(activeMigration.IsAccepted);
         cwSession = activeMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoWorld", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoWorldProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoWorldAdmitted(cwSession));
         Assert.Equal(12, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var active = cwSession.SourceAuthority!.CairoWorld!;
@@ -757,16 +765,19 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
             CampaignExercises.ReplaySourceIndependentPromotion(lockedBeforePromotion).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("IndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.IndependentWorldProfileHash);
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(10, directV12.SourceAuthority!.World.World.Elements.Count);
         var genericIdentity = directV12.SourceAuthority.World.ContentIdentity;
         Assert.False(CampaignExercises.CanPromoteSourceIndependent(directV12));
         directV12 = CampaignExercises.AdmitSourceLocalMap(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("LocalMapWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.LocalMapWorldProfileHash);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var mapIdentity = directV12.SourceAuthority!.World.ContentIdentity;
         Assert.NotEqual(genericIdentity, mapIdentity);
         Assert.Equal(10, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.PromoteSourceExpandedIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("ExpandedIndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.ExpandedIndependentWorldProfileHash);
         Assert.Equal(16, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(13, directV12.SourceAuthority!.World.World.Elements.Count);
         var expandedIdentity = directV12.SourceAuthority.World.ContentIdentity;
@@ -777,6 +788,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(genericIdentity, directV12.SourceAuthority.IndependentWorld!.Content.Identity);
         Assert.Equal(13, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceAttachedInitialLoads(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AttachedInitialLoads", directV12.SourceAuthority!, directV12.SourceAuthority!.AttachedInitialLoadsProfileHash);
         Assert.Equal(17, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         const string loadedTarget = "2-rifle-brigade";
         var attach = CampaignSourceAuthorityState.AttachedInitialLoadsActionId("attach", loadedTarget);
@@ -798,6 +810,7 @@ public sealed class GrazianiSourceAuthorityTests
         directV12 = CampaignExercises.SubmitSourceAttachedInitialLoads(directV12, Submission(directV12, detachLoad, CampaignActionAudience.Commonwealth)).SuccessorSession!;
         Assert.Empty(directV12.SourceAuthority!.AttachedInitialLoads!.Targets);
         directV12 = CampaignExercises.AdmitSourceInitialWrecks(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("InitialWrecks", directV12.SourceAuthority!, directV12.SourceAuthority!.InitialWrecksProfileHash);
         Assert.Equal(18, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(3, directV12.SourceAuthority!.InitialWrecks!.PendingIds.Count);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceInitialWrecksDraft(directV12, CampaignActionAudience.Axis));
@@ -811,6 +824,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Empty(directV12.SourceAuthority!.InitialWrecks!.PendingIds);
         Assert.Equal(3, directV12.SourceAuthority.InitialWrecks.Placements.Count);
         directV12 = CampaignExercises.AdmitSourceAxisFreeSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeSetupProfileHash);
         Assert.Equal(19, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var forgedLegacyState = directV12.SourceAuthority!.ApplyAxisPriorityChoice("detach", targetAxis, 0);
         var forgedLegacyEvent = directV12.SourceAuthority.SerializeAxisPriorityEvent(forgedLegacyState, "detach", targetAxis, 0);
@@ -853,12 +867,14 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(3, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-placed"));
         var axisContent = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.PromoteSourceAxisFreeWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeWorldProfileHash);
         Assert.Equal(axisContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(17, directV12.SourceAuthority.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(4, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-active"));
         Assert.False(CampaignExercises.CanPromoteSourceAxisFreeWorld(directV12));
         directV12 = CampaignExercises.AdmitSourceAxisCorpsSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisCorpsSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsSetupProfileHash);
         Assert.Equal(21, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceAxisCorpsSetupDraft(directV12, CampaignActionAudience.Commonwealth));
         var corpsIds = directV12.SourceAuthority!.AxisCorpsArtillery!.PendingIds.ToArray();
@@ -878,6 +894,7 @@ public sealed class GrazianiSourceAuthorityTests
             directV12 = CampaignExercises.PromoteSourceAxisCorpsWorld(directV12).SuccessorSession!;
             Assert.Equal(22, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         }
+        AssertRegistryProfileHashMatches("AxisCorpsWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsWorldProfileHash);
         Assert.Equal(19, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(2, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-corps-artillery-active"));
@@ -893,6 +910,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(corpsContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(19, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceMalettiHierarchy(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MalettiHierarchy", directV12.SourceAuthority!, directV12.SourceAuthority!.MalettiHierarchyProfileHash);
         Assert.Equal(23, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var confirmHierarchy = CampaignSourceAuthorityState.MalettiHierarchyActionId("confirm", null);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -910,6 +928,7 @@ public sealed class GrazianiSourceAuthorityTests
             CampaignExercises.SubmitSourceMalettiHierarchy(directV12, Submission(directV12, otherDetach, CampaignActionAudience.Axis)).RejectionReason);
         Assert.True(CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(directV12));
         directV12 = CampaignExercises.PromoteSourceCertifiedMalettiWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CertifiedMalettiWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CertifiedMalettiWorldProfileHash);
         Assert.Equal(24, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(20, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
@@ -928,6 +947,7 @@ public sealed class GrazianiSourceAuthorityTests
             Submission(directV12, axisLift, CampaignActionAudience.Axis)).SuccessorSession!;
         Assert.Equal(5, directV12.SourceAuthority!.AxisPriorityMotorization!.AssignedPoints(targetAxis));
         directV12 = CampaignExercises.AdmitSourceMatruhFormation(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhFormation", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhFormationProfileHash);
         Assert.Equal(25, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceMatruhFormationDraft(directV12, CampaignActionAudience.Axis));
         var matruhConfirm = CampaignSourceAuthorityState.MatruhFormationActionId("confirm", null);
@@ -944,6 +964,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
             CampaignExercises.SubmitSourceMatruhFormation(directV12, Submission(directV12, secondMatruhDetach, CampaignActionAudience.Commonwealth)).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceMatruhDetachedWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhDetachedWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhDetachedWorldProfileHash);
         Assert.Equal(26, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(21, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(4, directV12.SourceAuthority.MatruhFormation!.AttachedIds.Count);
@@ -965,6 +986,7 @@ public sealed class GrazianiSourceAuthorityTests
         var rngBeforeGt2 = directV12.SourceAuthority!.RandomState;
         var worldBeforeGt2 = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.AdmitSourceGt2Correction(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("Gt2Correction", directV12.SourceAuthority!, directV12.SourceAuthority!.Gt2CorrectionProfileHash);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var finishGt2 = CampaignSourceAuthorityState.Gt2CorrectionActionId("finish", 0, 0, 0);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -989,8 +1011,10 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(rngBeforeGt2, directV12.SourceAuthority.RandomState);
         Assert.Equal(worldBeforeGt2, directV12.SourceAuthority.World.ContentIdentity);
         directV12 = CampaignExercises.AdmitSourceCwPriorityCatalog(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityCatalog", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityCatalogProfileHash);
         Assert.Equal(28, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         directV12 = CampaignExercises.PromoteSourceCwPriorityWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityWorldProfileHash);
         Assert.Equal(29, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(22, directV12.SourceAuthority!.World.World.Elements.Count);
         var frenchAdd = CampaignSourceAuthorityState.CwPriorityCatalogActionId("1-french-motor-marines", 1);
@@ -1007,6 +1031,7 @@ public sealed class GrazianiSourceAuthorityTests
         frenchFirst = CampaignExercises.AdmitSourceCwPriorityCatalog(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.PromoteSourceCwPriorityWorld(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.AdmitSourceCwFreeGuns(frenchFirst).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwFreeGuns", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsProfileHash);
         Assert.Equal(31, frenchFirst.SourceAuthority!.ProfileVersion);
         var freeGunIds = frenchFirst.SourceAuthority!.CwFreeGuns!.PendingIds.ToArray();
         var gunCairoHex = seed == 14 ? "e1730" : "e1830";
@@ -1019,6 +1044,7 @@ public sealed class GrazianiSourceAuthorityTests
                 Submission(frenchFirst, placeGun, CampaignActionAudience.Commonwealth)).SuccessorSession!;
             frenchFirst = CampaignExercises.PromoteSourceCwFreeGunsWorld(frenchFirst).SuccessorSession!;
         }
+        AssertRegistryProfileHashMatches("CwFreeGunsWorld", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsWorldProfileHash);
         Assert.Equal(32, frenchFirst.SourceAuthority!.ProfileVersion);
         _ = ContentSourceFourthIndianPackArtifact.Create(frenchFirst.SourceAuthority!.CwFreeGunsWorld!.Content);
         var indianResult = CampaignExercises.AdmitSourceFourthIndianWorld(frenchFirst);
@@ -3305,6 +3331,7 @@ public sealed class GrazianiSourceAuthorityTests
         var migrated = CampaignExercises.AdmitSourceAxisSupplement(cwSession);
         Assert.True(migrated.IsAccepted);
         cwSession = migrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Supplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.SupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisSupplementAdmitted(cwSession));
         Assert.Equal(5, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
@@ -3330,6 +3357,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cwMigrated = CampaignExercises.AdmitSourceCommonwealthSupplement(cwSession);
         Assert.True(cwMigrated.IsAccepted);
         cwSession = cwMigrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CommonwealthSupplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CommonwealthSupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceCommonwealthSupplementAdmitted(cwSession));
         Assert.Equal(6, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(12, cwSession.SourceAuthority!.CommonwealthSupplement!.Forces.Count);
@@ -3340,6 +3368,7 @@ public sealed class GrazianiSourceAuthorityTests
         var priorityMigration = CampaignExercises.AdmitSourcePriorityMotorization(cwSession);
         Assert.True(priorityMigration.IsAccepted);
         cwSession = priorityMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("PriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.PriorityMotorizationProfileHash);
         Assert.True(CampaignExercises.IsSourcePriorityMotorizationAdmitted(cwSession));
         Assert.Equal(7, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourcePriorityMotorizationDraft(cwSession, CampaignActionAudience.Axis));
@@ -3361,6 +3390,7 @@ public sealed class GrazianiSourceAuthorityTests
         var axisMigration = CampaignExercises.AdmitSourceAxisPriorityMotorization(cwSession);
         Assert.True(axisMigration.IsAccepted);
         cwSession = axisMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisPriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisPriorityMotorizationProfileHash);
         Assert.Equal(8, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var targetAxis = "1-1-libyan-motor-infantry";
         var oldDetach = CampaignSourceAuthorityState.AxisPriorityActionId("detach", targetAxis, 0);
@@ -3387,6 +3417,7 @@ public sealed class GrazianiSourceAuthorityTests
         var garrisonMigration = CampaignExercises.AdmitSourceAxisMinorGarrisons(cwSession);
         Assert.True(garrisonMigration.IsAccepted);
         cwSession = garrisonMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisGarrisons", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisGarrisonsProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted(cwSession));
         Assert.Equal(9, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(13, cwSession.SourceAuthority!.AxisGarrisons!.Forces.Count);
@@ -3398,6 +3429,7 @@ public sealed class GrazianiSourceAuthorityTests
         var battlefieldMigration = CampaignExercises.AdmitSourceBattlefield(cwSession);
         Assert.True(battlefieldMigration.IsAccepted);
         cwSession = battlefieldMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Battlefield", cwSession.SourceAuthority!, cwSession.SourceAuthority!.BattlefieldProfileHash);
         Assert.True(CampaignExercises.IsSourceBattlefieldAdmitted(cwSession));
         Assert.Equal(10, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var battlefield = cwSession.SourceAuthority!.Battlefield!;
@@ -3413,6 +3445,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cairoAdmission = CampaignExercises.AdmitSourceCairoSetup(cwSession);
         Assert.True(cairoAdmission.IsAccepted);
         cwSession = cairoAdmission.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoSetup", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoSetupProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoSetupAdmitted(cwSession));
         Assert.Equal(11, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(4, cwSession.SourceAuthority!.CairoSetup!.PendingIds.Count);
@@ -3443,6 +3476,7 @@ public sealed class GrazianiSourceAuthorityTests
         var activeMigration = CampaignExercises.AdmitSourceCairoWorld(cwSession);
         Assert.True(activeMigration.IsAccepted);
         cwSession = activeMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoWorld", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoWorldProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoWorldAdmitted(cwSession));
         Assert.Equal(12, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var active = cwSession.SourceAuthority!.CairoWorld!;
@@ -3481,16 +3515,19 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
             CampaignExercises.ReplaySourceIndependentPromotion(lockedBeforePromotion).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("IndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.IndependentWorldProfileHash);
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(10, directV12.SourceAuthority!.World.World.Elements.Count);
         var genericIdentity = directV12.SourceAuthority.World.ContentIdentity;
         Assert.False(CampaignExercises.CanPromoteSourceIndependent(directV12));
         directV12 = CampaignExercises.AdmitSourceLocalMap(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("LocalMapWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.LocalMapWorldProfileHash);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var mapIdentity = directV12.SourceAuthority!.World.ContentIdentity;
         Assert.NotEqual(genericIdentity, mapIdentity);
         Assert.Equal(10, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.PromoteSourceExpandedIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("ExpandedIndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.ExpandedIndependentWorldProfileHash);
         Assert.Equal(16, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(13, directV12.SourceAuthority!.World.World.Elements.Count);
         var expandedIdentity = directV12.SourceAuthority.World.ContentIdentity;
@@ -3501,6 +3538,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(genericIdentity, directV12.SourceAuthority.IndependentWorld!.Content.Identity);
         Assert.Equal(13, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceAttachedInitialLoads(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AttachedInitialLoads", directV12.SourceAuthority!, directV12.SourceAuthority!.AttachedInitialLoadsProfileHash);
         Assert.Equal(17, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         const string loadedTarget = "2-rifle-brigade";
         var attach = CampaignSourceAuthorityState.AttachedInitialLoadsActionId("attach", loadedTarget);
@@ -3522,6 +3560,7 @@ public sealed class GrazianiSourceAuthorityTests
         directV12 = CampaignExercises.SubmitSourceAttachedInitialLoads(directV12, Submission(directV12, detachLoad, CampaignActionAudience.Commonwealth)).SuccessorSession!;
         Assert.Empty(directV12.SourceAuthority!.AttachedInitialLoads!.Targets);
         directV12 = CampaignExercises.AdmitSourceInitialWrecks(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("InitialWrecks", directV12.SourceAuthority!, directV12.SourceAuthority!.InitialWrecksProfileHash);
         Assert.Equal(18, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(3, directV12.SourceAuthority!.InitialWrecks!.PendingIds.Count);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceInitialWrecksDraft(directV12, CampaignActionAudience.Axis));
@@ -3535,6 +3574,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Empty(directV12.SourceAuthority!.InitialWrecks!.PendingIds);
         Assert.Equal(3, directV12.SourceAuthority.InitialWrecks.Placements.Count);
         directV12 = CampaignExercises.AdmitSourceAxisFreeSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeSetupProfileHash);
         Assert.Equal(19, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var forgedLegacyState = directV12.SourceAuthority!.ApplyAxisPriorityChoice("detach", targetAxis, 0);
         var forgedLegacyEvent = directV12.SourceAuthority.SerializeAxisPriorityEvent(forgedLegacyState, "detach", targetAxis, 0);
@@ -3577,12 +3617,14 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(3, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-placed"));
         var axisContent = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.PromoteSourceAxisFreeWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeWorldProfileHash);
         Assert.Equal(axisContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(17, directV12.SourceAuthority.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(4, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-active"));
         Assert.False(CampaignExercises.CanPromoteSourceAxisFreeWorld(directV12));
         directV12 = CampaignExercises.AdmitSourceAxisCorpsSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisCorpsSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsSetupProfileHash);
         Assert.Equal(21, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceAxisCorpsSetupDraft(directV12, CampaignActionAudience.Commonwealth));
         var corpsIds = directV12.SourceAuthority!.AxisCorpsArtillery!.PendingIds.ToArray();
@@ -3602,6 +3644,7 @@ public sealed class GrazianiSourceAuthorityTests
             directV12 = CampaignExercises.PromoteSourceAxisCorpsWorld(directV12).SuccessorSession!;
             Assert.Equal(22, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         }
+        AssertRegistryProfileHashMatches("AxisCorpsWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsWorldProfileHash);
         Assert.Equal(19, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(2, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-corps-artillery-active"));
@@ -3617,6 +3660,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(corpsContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(19, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceMalettiHierarchy(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MalettiHierarchy", directV12.SourceAuthority!, directV12.SourceAuthority!.MalettiHierarchyProfileHash);
         Assert.Equal(23, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var confirmHierarchy = CampaignSourceAuthorityState.MalettiHierarchyActionId("confirm", null);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -3634,6 +3678,7 @@ public sealed class GrazianiSourceAuthorityTests
             CampaignExercises.SubmitSourceMalettiHierarchy(directV12, Submission(directV12, otherDetach, CampaignActionAudience.Axis)).RejectionReason);
         Assert.True(CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(directV12));
         directV12 = CampaignExercises.PromoteSourceCertifiedMalettiWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CertifiedMalettiWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CertifiedMalettiWorldProfileHash);
         Assert.Equal(24, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(20, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
@@ -3652,6 +3697,7 @@ public sealed class GrazianiSourceAuthorityTests
             Submission(directV12, axisLift, CampaignActionAudience.Axis)).SuccessorSession!;
         Assert.Equal(5, directV12.SourceAuthority!.AxisPriorityMotorization!.AssignedPoints(targetAxis));
         directV12 = CampaignExercises.AdmitSourceMatruhFormation(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhFormation", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhFormationProfileHash);
         Assert.Equal(25, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceMatruhFormationDraft(directV12, CampaignActionAudience.Axis));
         var matruhConfirm = CampaignSourceAuthorityState.MatruhFormationActionId("confirm", null);
@@ -3668,6 +3714,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
             CampaignExercises.SubmitSourceMatruhFormation(directV12, Submission(directV12, secondMatruhDetach, CampaignActionAudience.Commonwealth)).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceMatruhDetachedWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhDetachedWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhDetachedWorldProfileHash);
         Assert.Equal(26, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(21, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(4, directV12.SourceAuthority.MatruhFormation!.AttachedIds.Count);
@@ -3689,6 +3736,7 @@ public sealed class GrazianiSourceAuthorityTests
         var rngBeforeGt2 = directV12.SourceAuthority!.RandomState;
         var worldBeforeGt2 = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.AdmitSourceGt2Correction(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("Gt2Correction", directV12.SourceAuthority!, directV12.SourceAuthority!.Gt2CorrectionProfileHash);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var finishGt2 = CampaignSourceAuthorityState.Gt2CorrectionActionId("finish", 0, 0, 0);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -3713,8 +3761,10 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(rngBeforeGt2, directV12.SourceAuthority.RandomState);
         Assert.Equal(worldBeforeGt2, directV12.SourceAuthority.World.ContentIdentity);
         directV12 = CampaignExercises.AdmitSourceCwPriorityCatalog(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityCatalog", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityCatalogProfileHash);
         Assert.Equal(28, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         directV12 = CampaignExercises.PromoteSourceCwPriorityWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityWorldProfileHash);
         Assert.Equal(29, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(22, directV12.SourceAuthority!.World.World.Elements.Count);
         var frenchAdd = CampaignSourceAuthorityState.CwPriorityCatalogActionId("1-french-motor-marines", 1);
@@ -3731,6 +3781,7 @@ public sealed class GrazianiSourceAuthorityTests
         frenchFirst = CampaignExercises.AdmitSourceCwPriorityCatalog(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.PromoteSourceCwPriorityWorld(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.AdmitSourceCwFreeGuns(frenchFirst).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwFreeGuns", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsProfileHash);
         Assert.Equal(31, frenchFirst.SourceAuthority!.ProfileVersion);
         var freeGunIds = frenchFirst.SourceAuthority!.CwFreeGuns!.PendingIds.ToArray();
         var gunCairoHex = seed == 14 ? "e1730" : "e1830";
@@ -3743,6 +3794,7 @@ public sealed class GrazianiSourceAuthorityTests
                 Submission(frenchFirst, placeGun, CampaignActionAudience.Commonwealth)).SuccessorSession!;
             frenchFirst = CampaignExercises.PromoteSourceCwFreeGunsWorld(frenchFirst).SuccessorSession!;
         }
+        AssertRegistryProfileHashMatches("CwFreeGunsWorld", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsWorldProfileHash);
         Assert.Equal(32, frenchFirst.SourceAuthority!.ProfileVersion);
         _ = ContentSourceFourthIndianPackArtifact.Create(frenchFirst.SourceAuthority!.CwFreeGunsWorld!.Content);
         var indianResult = CampaignExercises.AdmitSourceFourthIndianWorld(frenchFirst);
@@ -5286,6 +5338,7 @@ public sealed class GrazianiSourceAuthorityTests
         var migrated = CampaignExercises.AdmitSourceAxisSupplement(cwSession);
         Assert.True(migrated.IsAccepted);
         cwSession = migrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Supplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.SupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisSupplementAdmitted(cwSession));
         Assert.Equal(5, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
@@ -5311,6 +5364,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cwMigrated = CampaignExercises.AdmitSourceCommonwealthSupplement(cwSession);
         Assert.True(cwMigrated.IsAccepted);
         cwSession = cwMigrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CommonwealthSupplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CommonwealthSupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceCommonwealthSupplementAdmitted(cwSession));
         Assert.Equal(6, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(12, cwSession.SourceAuthority!.CommonwealthSupplement!.Forces.Count);
@@ -5321,6 +5375,7 @@ public sealed class GrazianiSourceAuthorityTests
         var priorityMigration = CampaignExercises.AdmitSourcePriorityMotorization(cwSession);
         Assert.True(priorityMigration.IsAccepted);
         cwSession = priorityMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("PriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.PriorityMotorizationProfileHash);
         Assert.True(CampaignExercises.IsSourcePriorityMotorizationAdmitted(cwSession));
         Assert.Equal(7, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourcePriorityMotorizationDraft(cwSession, CampaignActionAudience.Axis));
@@ -5342,6 +5397,7 @@ public sealed class GrazianiSourceAuthorityTests
         var axisMigration = CampaignExercises.AdmitSourceAxisPriorityMotorization(cwSession);
         Assert.True(axisMigration.IsAccepted);
         cwSession = axisMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisPriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisPriorityMotorizationProfileHash);
         Assert.Equal(8, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var targetAxis = "1-1-libyan-motor-infantry";
         var oldDetach = CampaignSourceAuthorityState.AxisPriorityActionId("detach", targetAxis, 0);
@@ -5368,6 +5424,7 @@ public sealed class GrazianiSourceAuthorityTests
         var garrisonMigration = CampaignExercises.AdmitSourceAxisMinorGarrisons(cwSession);
         Assert.True(garrisonMigration.IsAccepted);
         cwSession = garrisonMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisGarrisons", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisGarrisonsProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted(cwSession));
         Assert.Equal(9, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(13, cwSession.SourceAuthority!.AxisGarrisons!.Forces.Count);
@@ -5379,6 +5436,7 @@ public sealed class GrazianiSourceAuthorityTests
         var battlefieldMigration = CampaignExercises.AdmitSourceBattlefield(cwSession);
         Assert.True(battlefieldMigration.IsAccepted);
         cwSession = battlefieldMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Battlefield", cwSession.SourceAuthority!, cwSession.SourceAuthority!.BattlefieldProfileHash);
         Assert.True(CampaignExercises.IsSourceBattlefieldAdmitted(cwSession));
         Assert.Equal(10, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var battlefield = cwSession.SourceAuthority!.Battlefield!;
@@ -5394,6 +5452,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cairoAdmission = CampaignExercises.AdmitSourceCairoSetup(cwSession);
         Assert.True(cairoAdmission.IsAccepted);
         cwSession = cairoAdmission.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoSetup", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoSetupProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoSetupAdmitted(cwSession));
         Assert.Equal(11, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(4, cwSession.SourceAuthority!.CairoSetup!.PendingIds.Count);
@@ -5424,6 +5483,7 @@ public sealed class GrazianiSourceAuthorityTests
         var activeMigration = CampaignExercises.AdmitSourceCairoWorld(cwSession);
         Assert.True(activeMigration.IsAccepted);
         cwSession = activeMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoWorld", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoWorldProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoWorldAdmitted(cwSession));
         Assert.Equal(12, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var active = cwSession.SourceAuthority!.CairoWorld!;
@@ -5462,16 +5522,19 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
             CampaignExercises.ReplaySourceIndependentPromotion(lockedBeforePromotion).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("IndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.IndependentWorldProfileHash);
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(10, directV12.SourceAuthority!.World.World.Elements.Count);
         var genericIdentity = directV12.SourceAuthority.World.ContentIdentity;
         Assert.False(CampaignExercises.CanPromoteSourceIndependent(directV12));
         directV12 = CampaignExercises.AdmitSourceLocalMap(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("LocalMapWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.LocalMapWorldProfileHash);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var mapIdentity = directV12.SourceAuthority!.World.ContentIdentity;
         Assert.NotEqual(genericIdentity, mapIdentity);
         Assert.Equal(10, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.PromoteSourceExpandedIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("ExpandedIndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.ExpandedIndependentWorldProfileHash);
         Assert.Equal(16, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(13, directV12.SourceAuthority!.World.World.Elements.Count);
         var expandedIdentity = directV12.SourceAuthority.World.ContentIdentity;
@@ -5482,6 +5545,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(genericIdentity, directV12.SourceAuthority.IndependentWorld!.Content.Identity);
         Assert.Equal(13, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceAttachedInitialLoads(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AttachedInitialLoads", directV12.SourceAuthority!, directV12.SourceAuthority!.AttachedInitialLoadsProfileHash);
         Assert.Equal(17, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         const string loadedTarget = "2-rifle-brigade";
         var attach = CampaignSourceAuthorityState.AttachedInitialLoadsActionId("attach", loadedTarget);
@@ -5503,6 +5567,7 @@ public sealed class GrazianiSourceAuthorityTests
         directV12 = CampaignExercises.SubmitSourceAttachedInitialLoads(directV12, Submission(directV12, detachLoad, CampaignActionAudience.Commonwealth)).SuccessorSession!;
         Assert.Empty(directV12.SourceAuthority!.AttachedInitialLoads!.Targets);
         directV12 = CampaignExercises.AdmitSourceInitialWrecks(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("InitialWrecks", directV12.SourceAuthority!, directV12.SourceAuthority!.InitialWrecksProfileHash);
         Assert.Equal(18, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(3, directV12.SourceAuthority!.InitialWrecks!.PendingIds.Count);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceInitialWrecksDraft(directV12, CampaignActionAudience.Axis));
@@ -5516,6 +5581,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Empty(directV12.SourceAuthority!.InitialWrecks!.PendingIds);
         Assert.Equal(3, directV12.SourceAuthority.InitialWrecks.Placements.Count);
         directV12 = CampaignExercises.AdmitSourceAxisFreeSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeSetupProfileHash);
         Assert.Equal(19, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var forgedLegacyState = directV12.SourceAuthority!.ApplyAxisPriorityChoice("detach", targetAxis, 0);
         var forgedLegacyEvent = directV12.SourceAuthority.SerializeAxisPriorityEvent(forgedLegacyState, "detach", targetAxis, 0);
@@ -5558,12 +5624,14 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(3, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-placed"));
         var axisContent = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.PromoteSourceAxisFreeWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeWorldProfileHash);
         Assert.Equal(axisContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(17, directV12.SourceAuthority.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(4, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-active"));
         Assert.False(CampaignExercises.CanPromoteSourceAxisFreeWorld(directV12));
         directV12 = CampaignExercises.AdmitSourceAxisCorpsSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisCorpsSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsSetupProfileHash);
         Assert.Equal(21, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceAxisCorpsSetupDraft(directV12, CampaignActionAudience.Commonwealth));
         var corpsIds = directV12.SourceAuthority!.AxisCorpsArtillery!.PendingIds.ToArray();
@@ -5583,6 +5651,7 @@ public sealed class GrazianiSourceAuthorityTests
             directV12 = CampaignExercises.PromoteSourceAxisCorpsWorld(directV12).SuccessorSession!;
             Assert.Equal(22, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         }
+        AssertRegistryProfileHashMatches("AxisCorpsWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsWorldProfileHash);
         Assert.Equal(19, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(2, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-corps-artillery-active"));
@@ -5598,6 +5667,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(corpsContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(19, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceMalettiHierarchy(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MalettiHierarchy", directV12.SourceAuthority!, directV12.SourceAuthority!.MalettiHierarchyProfileHash);
         Assert.Equal(23, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var confirmHierarchy = CampaignSourceAuthorityState.MalettiHierarchyActionId("confirm", null);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -5615,6 +5685,7 @@ public sealed class GrazianiSourceAuthorityTests
             CampaignExercises.SubmitSourceMalettiHierarchy(directV12, Submission(directV12, otherDetach, CampaignActionAudience.Axis)).RejectionReason);
         Assert.True(CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(directV12));
         directV12 = CampaignExercises.PromoteSourceCertifiedMalettiWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CertifiedMalettiWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CertifiedMalettiWorldProfileHash);
         Assert.Equal(24, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(20, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
@@ -5633,6 +5704,7 @@ public sealed class GrazianiSourceAuthorityTests
             Submission(directV12, axisLift, CampaignActionAudience.Axis)).SuccessorSession!;
         Assert.Equal(5, directV12.SourceAuthority!.AxisPriorityMotorization!.AssignedPoints(targetAxis));
         directV12 = CampaignExercises.AdmitSourceMatruhFormation(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhFormation", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhFormationProfileHash);
         Assert.Equal(25, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceMatruhFormationDraft(directV12, CampaignActionAudience.Axis));
         var matruhConfirm = CampaignSourceAuthorityState.MatruhFormationActionId("confirm", null);
@@ -5649,6 +5721,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
             CampaignExercises.SubmitSourceMatruhFormation(directV12, Submission(directV12, secondMatruhDetach, CampaignActionAudience.Commonwealth)).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceMatruhDetachedWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhDetachedWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhDetachedWorldProfileHash);
         Assert.Equal(26, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(21, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(4, directV12.SourceAuthority.MatruhFormation!.AttachedIds.Count);
@@ -5670,6 +5743,7 @@ public sealed class GrazianiSourceAuthorityTests
         var rngBeforeGt2 = directV12.SourceAuthority!.RandomState;
         var worldBeforeGt2 = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.AdmitSourceGt2Correction(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("Gt2Correction", directV12.SourceAuthority!, directV12.SourceAuthority!.Gt2CorrectionProfileHash);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var finishGt2 = CampaignSourceAuthorityState.Gt2CorrectionActionId("finish", 0, 0, 0);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -5694,8 +5768,10 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(rngBeforeGt2, directV12.SourceAuthority.RandomState);
         Assert.Equal(worldBeforeGt2, directV12.SourceAuthority.World.ContentIdentity);
         directV12 = CampaignExercises.AdmitSourceCwPriorityCatalog(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityCatalog", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityCatalogProfileHash);
         Assert.Equal(28, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         directV12 = CampaignExercises.PromoteSourceCwPriorityWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityWorldProfileHash);
         Assert.Equal(29, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(22, directV12.SourceAuthority!.World.World.Elements.Count);
         var frenchAdd = CampaignSourceAuthorityState.CwPriorityCatalogActionId("1-french-motor-marines", 1);
@@ -5712,6 +5788,7 @@ public sealed class GrazianiSourceAuthorityTests
         frenchFirst = CampaignExercises.AdmitSourceCwPriorityCatalog(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.PromoteSourceCwPriorityWorld(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.AdmitSourceCwFreeGuns(frenchFirst).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwFreeGuns", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsProfileHash);
         Assert.Equal(31, frenchFirst.SourceAuthority!.ProfileVersion);
         var freeGunIds = frenchFirst.SourceAuthority!.CwFreeGuns!.PendingIds.ToArray();
         var gunCairoHex = 0UL == 14 ? "e1730" : "e1830";
@@ -5724,6 +5801,7 @@ public sealed class GrazianiSourceAuthorityTests
                 Submission(frenchFirst, placeGun, CampaignActionAudience.Commonwealth)).SuccessorSession!;
             frenchFirst = CampaignExercises.PromoteSourceCwFreeGunsWorld(frenchFirst).SuccessorSession!;
         }
+        AssertRegistryProfileHashMatches("CwFreeGunsWorld", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsWorldProfileHash);
         Assert.Equal(32, frenchFirst.SourceAuthority!.ProfileVersion);
         _ = ContentSourceFourthIndianPackArtifact.Create(frenchFirst.SourceAuthority!.CwFreeGunsWorld!.Content);
         var indianResult = CampaignExercises.AdmitSourceFourthIndianWorld(frenchFirst);
@@ -7240,6 +7318,7 @@ public sealed class GrazianiSourceAuthorityTests
         var migrated = CampaignExercises.AdmitSourceAxisSupplement(cwSession);
         Assert.True(migrated.IsAccepted);
         cwSession = migrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Supplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.SupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisSupplementAdmitted(cwSession));
         Assert.Equal(5, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(cwSession).IsVerified);
@@ -7265,6 +7344,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cwMigrated = CampaignExercises.AdmitSourceCommonwealthSupplement(cwSession);
         Assert.True(cwMigrated.IsAccepted);
         cwSession = cwMigrated.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CommonwealthSupplemental", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CommonwealthSupplementalProfileHash);
         Assert.True(CampaignExercises.IsSourceCommonwealthSupplementAdmitted(cwSession));
         Assert.Equal(6, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(12, cwSession.SourceAuthority!.CommonwealthSupplement!.Forces.Count);
@@ -7275,6 +7355,7 @@ public sealed class GrazianiSourceAuthorityTests
         var priorityMigration = CampaignExercises.AdmitSourcePriorityMotorization(cwSession);
         Assert.True(priorityMigration.IsAccepted);
         cwSession = priorityMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("PriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.PriorityMotorizationProfileHash);
         Assert.True(CampaignExercises.IsSourcePriorityMotorizationAdmitted(cwSession));
         Assert.Equal(7, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourcePriorityMotorizationDraft(cwSession, CampaignActionAudience.Axis));
@@ -7296,6 +7377,7 @@ public sealed class GrazianiSourceAuthorityTests
         var axisMigration = CampaignExercises.AdmitSourceAxisPriorityMotorization(cwSession);
         Assert.True(axisMigration.IsAccepted);
         cwSession = axisMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisPriorityMotorization", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisPriorityMotorizationProfileHash);
         Assert.Equal(8, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var targetAxis = "1-1-libyan-motor-infantry";
         var oldDetach = CampaignSourceAuthorityState.AxisPriorityActionId("detach", targetAxis, 0);
@@ -7322,6 +7404,7 @@ public sealed class GrazianiSourceAuthorityTests
         var garrisonMigration = CampaignExercises.AdmitSourceAxisMinorGarrisons(cwSession);
         Assert.True(garrisonMigration.IsAccepted);
         cwSession = garrisonMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisGarrisons", cwSession.SourceAuthority!, cwSession.SourceAuthority!.AxisGarrisonsProfileHash);
         Assert.True(CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted(cwSession));
         Assert.Equal(9, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(13, cwSession.SourceAuthority!.AxisGarrisons!.Forces.Count);
@@ -7333,6 +7416,7 @@ public sealed class GrazianiSourceAuthorityTests
         var battlefieldMigration = CampaignExercises.AdmitSourceBattlefield(cwSession);
         Assert.True(battlefieldMigration.IsAccepted);
         cwSession = battlefieldMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("Battlefield", cwSession.SourceAuthority!, cwSession.SourceAuthority!.BattlefieldProfileHash);
         Assert.True(CampaignExercises.IsSourceBattlefieldAdmitted(cwSession));
         Assert.Equal(10, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var battlefield = cwSession.SourceAuthority!.Battlefield!;
@@ -7348,6 +7432,7 @@ public sealed class GrazianiSourceAuthorityTests
         var cairoAdmission = CampaignExercises.AdmitSourceCairoSetup(cwSession);
         Assert.True(cairoAdmission.IsAccepted);
         cwSession = cairoAdmission.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoSetup", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoSetupProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoSetupAdmitted(cwSession));
         Assert.Equal(11, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         Assert.Equal(4, cwSession.SourceAuthority!.CairoSetup!.PendingIds.Count);
@@ -7378,6 +7463,7 @@ public sealed class GrazianiSourceAuthorityTests
         var activeMigration = CampaignExercises.AdmitSourceCairoWorld(cwSession);
         Assert.True(activeMigration.IsAccepted);
         cwSession = activeMigration.SuccessorSession!;
+        AssertRegistryProfileHashMatches("CairoWorld", cwSession.SourceAuthority!, cwSession.SourceAuthority!.CairoWorldProfileHash);
         Assert.True(CampaignExercises.IsSourceCairoWorldAdmitted(cwSession));
         Assert.Equal(12, CampaignExercises.QueryCheckpoint(cwSession).ContractVersion);
         var active = cwSession.SourceAuthority!.CairoWorld!;
@@ -7416,16 +7502,19 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority,
             CampaignExercises.ReplaySourceIndependentPromotion(lockedBeforePromotion).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("IndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.IndependentWorldProfileHash);
         Assert.Equal(14, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(10, directV12.SourceAuthority!.World.World.Elements.Count);
         var genericIdentity = directV12.SourceAuthority.World.ContentIdentity;
         Assert.False(CampaignExercises.CanPromoteSourceIndependent(directV12));
         directV12 = CampaignExercises.AdmitSourceLocalMap(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("LocalMapWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.LocalMapWorldProfileHash);
         Assert.Equal(15, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var mapIdentity = directV12.SourceAuthority!.World.ContentIdentity;
         Assert.NotEqual(genericIdentity, mapIdentity);
         Assert.Equal(10, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.PromoteSourceExpandedIndependent(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("ExpandedIndependentWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.ExpandedIndependentWorldProfileHash);
         Assert.Equal(16, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(13, directV12.SourceAuthority!.World.World.Elements.Count);
         var expandedIdentity = directV12.SourceAuthority.World.ContentIdentity;
@@ -7436,6 +7525,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(genericIdentity, directV12.SourceAuthority.IndependentWorld!.Content.Identity);
         Assert.Equal(13, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceAttachedInitialLoads(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AttachedInitialLoads", directV12.SourceAuthority!, directV12.SourceAuthority!.AttachedInitialLoadsProfileHash);
         Assert.Equal(17, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         const string loadedTarget = "2-rifle-brigade";
         var attach = CampaignSourceAuthorityState.AttachedInitialLoadsActionId("attach", loadedTarget);
@@ -7457,6 +7547,7 @@ public sealed class GrazianiSourceAuthorityTests
         directV12 = CampaignExercises.SubmitSourceAttachedInitialLoads(directV12, Submission(directV12, detachLoad, CampaignActionAudience.Commonwealth)).SuccessorSession!;
         Assert.Empty(directV12.SourceAuthority!.AttachedInitialLoads!.Targets);
         directV12 = CampaignExercises.AdmitSourceInitialWrecks(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("InitialWrecks", directV12.SourceAuthority!, directV12.SourceAuthority!.InitialWrecksProfileHash);
         Assert.Equal(18, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(3, directV12.SourceAuthority!.InitialWrecks!.PendingIds.Count);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceInitialWrecksDraft(directV12, CampaignActionAudience.Axis));
@@ -7470,6 +7561,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Empty(directV12.SourceAuthority!.InitialWrecks!.PendingIds);
         Assert.Equal(3, directV12.SourceAuthority.InitialWrecks.Placements.Count);
         directV12 = CampaignExercises.AdmitSourceAxisFreeSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeSetupProfileHash);
         Assert.Equal(19, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var forgedLegacyState = directV12.SourceAuthority!.ApplyAxisPriorityChoice("detach", targetAxis, 0);
         var forgedLegacyEvent = directV12.SourceAuthority.SerializeAxisPriorityEvent(forgedLegacyState, "detach", targetAxis, 0);
@@ -7512,12 +7604,14 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(3, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-placed"));
         var axisContent = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.PromoteSourceAxisFreeWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisFreeWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisFreeWorldProfileHash);
         Assert.Equal(axisContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(17, directV12.SourceAuthority.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(4, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-1ar-active"));
         Assert.False(CampaignExercises.CanPromoteSourceAxisFreeWorld(directV12));
         directV12 = CampaignExercises.AdmitSourceAxisCorpsSetup(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("AxisCorpsSetup", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsSetupProfileHash);
         Assert.Equal(21, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceAxisCorpsSetupDraft(directV12, CampaignActionAudience.Commonwealth));
         var corpsIds = directV12.SourceAuthority!.AxisCorpsArtillery!.PendingIds.ToArray();
@@ -7537,6 +7631,7 @@ public sealed class GrazianiSourceAuthorityTests
             directV12 = CampaignExercises.PromoteSourceAxisCorpsWorld(directV12).SuccessorSession!;
             Assert.Equal(22, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         }
+        AssertRegistryProfileHashMatches("AxisCorpsWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.AxisCorpsWorldProfileHash);
         Assert.Equal(19, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
         Assert.Equal(2, directV12.SourceAuthority.Battlefield!.Entries.Count(entry => entry.AuthorityStatus == "source-corps-artillery-active"));
@@ -7552,6 +7647,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(corpsContent, directV12.SourceAuthority!.World.ContentIdentity);
         Assert.Equal(19, directV12.SourceAuthority.World.World.Elements.Count);
         directV12 = CampaignExercises.AdmitSourceMalettiHierarchy(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MalettiHierarchy", directV12.SourceAuthority!, directV12.SourceAuthority!.MalettiHierarchyProfileHash);
         Assert.Equal(23, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var confirmHierarchy = CampaignSourceAuthorityState.MalettiHierarchyActionId("confirm", null);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -7569,6 +7665,7 @@ public sealed class GrazianiSourceAuthorityTests
             CampaignExercises.SubmitSourceMalettiHierarchy(directV12, Submission(directV12, otherDetach, CampaignActionAudience.Axis)).RejectionReason);
         Assert.True(CampaignExercises.CanPromoteSourceCertifiedMalettiWorld(directV12));
         directV12 = CampaignExercises.PromoteSourceCertifiedMalettiWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CertifiedMalettiWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CertifiedMalettiWorldProfileHash);
         Assert.Equal(24, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(20, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(2, directV12.SourceAuthority.World.PendingArrivals.Count);
@@ -7587,6 +7684,7 @@ public sealed class GrazianiSourceAuthorityTests
             Submission(directV12, axisLift, CampaignActionAudience.Axis)).SuccessorSession!;
         Assert.Equal(5, directV12.SourceAuthority!.AxisPriorityMotorization!.AssignedPoints(targetAxis));
         directV12 = CampaignExercises.AdmitSourceMatruhFormation(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhFormation", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhFormationProfileHash);
         Assert.Equal(25, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QuerySourceMatruhFormationDraft(directV12, CampaignActionAudience.Axis));
         var matruhConfirm = CampaignSourceAuthorityState.MatruhFormationActionId("confirm", null);
@@ -7603,6 +7701,7 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
             CampaignExercises.SubmitSourceMatruhFormation(directV12, Submission(directV12, secondMatruhDetach, CampaignActionAudience.Commonwealth)).RejectionReason);
         directV12 = CampaignExercises.PromoteSourceMatruhDetachedWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("MatruhDetachedWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.MatruhDetachedWorldProfileHash);
         Assert.Equal(26, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(21, directV12.SourceAuthority!.World.World.Elements.Count);
         Assert.Equal(4, directV12.SourceAuthority.MatruhFormation!.AttachedIds.Count);
@@ -7624,6 +7723,7 @@ public sealed class GrazianiSourceAuthorityTests
         var rngBeforeGt2 = directV12.SourceAuthority!.RandomState;
         var worldBeforeGt2 = directV12.SourceAuthority.World.ContentIdentity;
         directV12 = CampaignExercises.AdmitSourceGt2Correction(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("Gt2Correction", directV12.SourceAuthority!, directV12.SourceAuthority!.Gt2CorrectionProfileHash);
         Assert.Equal(27, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         var finishGt2 = CampaignSourceAuthorityState.Gt2CorrectionActionId("finish", 0, 0, 0);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
@@ -7648,8 +7748,10 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.Equal(rngBeforeGt2, directV12.SourceAuthority.RandomState);
         Assert.Equal(worldBeforeGt2, directV12.SourceAuthority.World.ContentIdentity);
         directV12 = CampaignExercises.AdmitSourceCwPriorityCatalog(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityCatalog", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityCatalogProfileHash);
         Assert.Equal(28, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         directV12 = CampaignExercises.PromoteSourceCwPriorityWorld(directV12).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwPriorityWorld", directV12.SourceAuthority!, directV12.SourceAuthority!.CwPriorityWorldProfileHash);
         Assert.Equal(29, CampaignExercises.QueryCheckpoint(directV12).ContractVersion);
         Assert.Equal(22, directV12.SourceAuthority!.World.World.Elements.Count);
         var frenchAdd = CampaignSourceAuthorityState.CwPriorityCatalogActionId("1-french-motor-marines", 1);
@@ -7666,6 +7768,7 @@ public sealed class GrazianiSourceAuthorityTests
         frenchFirst = CampaignExercises.AdmitSourceCwPriorityCatalog(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.PromoteSourceCwPriorityWorld(frenchFirst).SuccessorSession!;
         frenchFirst = CampaignExercises.AdmitSourceCwFreeGuns(frenchFirst).SuccessorSession!;
+        AssertRegistryProfileHashMatches("CwFreeGuns", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsProfileHash);
         Assert.Equal(31, frenchFirst.SourceAuthority!.ProfileVersion);
         var freeGunIds = frenchFirst.SourceAuthority!.CwFreeGuns!.PendingIds.ToArray();
         var gunCairoHex = 0UL == 14 ? "e1730" : "e1830";
@@ -7678,6 +7781,7 @@ public sealed class GrazianiSourceAuthorityTests
                 Submission(frenchFirst, placeGun, CampaignActionAudience.Commonwealth)).SuccessorSession!;
             frenchFirst = CampaignExercises.PromoteSourceCwFreeGunsWorld(frenchFirst).SuccessorSession!;
         }
+        AssertRegistryProfileHashMatches("CwFreeGunsWorld", frenchFirst.SourceAuthority!, frenchFirst.SourceAuthority!.CwFreeGunsWorldProfileHash);
         Assert.Equal(32, frenchFirst.SourceAuthority!.ProfileVersion);
         _ = ContentSourceFourthIndianPackArtifact.Create(frenchFirst.SourceAuthority!.CwFreeGunsWorld!.Content);
         var indianResult = CampaignExercises.AdmitSourceFourthIndianWorld(frenchFirst);
@@ -8875,4 +8979,15 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.True(result.IsAccepted);
         return result.SuccessorSession!;
     }
+
+    // Slice 3a of the maintainability refactor direction
+    // (docs/work/plans/2026-11-24-maintainability-refactor-direction.md, Section 2.2):
+    // proves the new CampaignSourceAuthority.AdmissionSteps.cs registry's shared
+    // ProfileHash(step, state) formula reproduces the SAME value as the
+    // corresponding hand-written XxxProfileHash property, for a real state built
+    // by the real admission flow above -- not a static comparison of the two
+    // code paths in isolation (the exact lesson this project's reverted
+    // codec-fragment attempt already taught; see the direction doc's Section 6).
+    private static void AssertRegistryProfileHashMatches(string kind, CampaignSourceAuthorityState state, string expected) =>
+        Assert.Equal(expected, CampaignSourceAuthorityState.ProfileHash(CampaignSourceAuthorityState.StepByKind(kind), state));
 }
