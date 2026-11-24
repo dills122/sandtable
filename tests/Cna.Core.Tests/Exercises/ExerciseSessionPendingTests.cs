@@ -5,12 +5,16 @@ using Cna.Core.Exercises;
 
 namespace Cna.Core.Tests.Exercises;
 
-// Direct proof for the 2026-11-23 Reconstruct cascade ordering audit's
-// Findings 2 and 3 (docs/work/plans/2026-11-23-reconstruct-cascade-ordering-audit.md),
-// and for the overhaul doc's claim (docs/work/plans/2026-11-23-codebase-overhaul-direction.md,
-// Section 0.2) that collapsing the #394-onward Current*/*Predecessor pairs into
-// a single ExerciseSession.Pending value makes the ordering-discipline bug
-// class structurally impossible.
+// Direct proof that the 2026-11-23 Reconstruct cascade ordering audit's
+// Findings 2 and 3 (docs/work/plans/2026-11-23-reconstruct-cascade-ordering-audit.md)
+// stay fixed now that QueryCheckpoint and ReconstructOne both dispatch off the
+// same derived ExerciseSession.Pending value instead of two independently
+// hand-ordered cascades, so they can no longer drift apart from each other.
+// This does NOT make the ordering-discipline bug class structurally
+// impossible outright -- ComputePending() itself (ExerciseSession.cs) is
+// still a manually-ordered cascade; that is only eliminated by the overhaul
+// doc's (docs/work/plans/2026-11-23-codebase-overhaul-direction.md, Section
+// 0.3) step-3 type-keyed handler registry, not built here.
 //
 // Both findings are "two never-reset fields are simultaneously non-null, and
 // the chronologically EARLIER one was (wrongly) checked first" bugs. Building

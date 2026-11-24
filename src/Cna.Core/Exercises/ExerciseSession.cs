@@ -1743,38 +1743,28 @@ public sealed class ExerciseSession
     // Section 0.6 step 1: PendingDecision as a computed/derived property,
     // literally the same cascade CampaignExercises.QueryCheckpoint already
     // uses (ground truth for ordering), just centralized here instead of
-    // being re-derived (and re-ordered, independently and sometimes
-    // incorrectly -- see the 2026-11-23 Reconstruct cascade ordering audit,
-    // Findings 2/3) at every call site. Zero behavior change versus
-    // QueryCheckpoint's own cascade, with one deliberate exception: the
-    // SecondAssault arm below carries forward the
-    // CurrentInitiativeDeclaration-is-null guard that ReconstructOne's own
-    // cascade already added (the MTS-TASK-003 correction) to stop a stale,
-    // never-reset CurrentSecondAssault from intercepting the chronologically
-    // later preamble chain -- QueryCheckpoint itself never had this guard,
-    // but since both cascades now dispatch off this single derived value,
-    // adopting the already-fixed, stricter condition here is strictly
-    // safer than reintroducing that latent (confirmed "never observed")
-    // bug into either cascade. This single value is purely in-memory/
-    // in-process -- never serialized, never part of the replay wire format
-    // (EVT-001) -- so this choice carries no replay-format risk.
-    //
-    // Deliberately NOT cached on a backing field: every WithXxx successor
-    // is built via MemberwiseClone(), which would copy a cached value (and
-    // whether it had been computed yet) straight from the predecessor into
-    // the successor, before the successor's own Current* mutation below it
-    // runs -- silently pinning Pending to the predecessor's stale answer
-    // forever (caught by CampaignCombatExerciseAssaultTests while building
-    // this change). Recomputing on every access is the only version of
-    // "centralize the cascade in one place" that is actually safe under
-    // MemberwiseClone, and the cascade itself is cheap (a handful of null
-    // checks) -- this is a correctness requirement, not a style choice.
-    //
-    // Scoped to the #394-onward mechanics only, per the overhaul doc's
-    // explicit recommendation: the original pre-#394 Combat/Reserve-Release/
-    // Cycle-Control/Repeat chain (CurrentCombatDecision through
+    // being re-derived independently at every call site. Scoped to the
+    // #394-onward mechanics only; the original pre-#394 Combat/Reserve-
+    // Release/Cycle-Control/Repeat chain (CurrentCombatDecision through
     // CurrentPostRepeatEvents) is untouched and has no PendingDecision
     // subtype.
+    //
+    // Correctness requirement, not a style choice: deliberately NOT cached
+    // on a backing field. Every WithXxx successor is built via
+    // MemberwiseClone(), which would copy a cached value straight from the
+    // predecessor into the successor before the successor's own Current*
+    // mutation runs -- silently pinning Pending to the predecessor's stale
+    // answer forever (caught by CampaignCombatExerciseAssaultTests while
+    // building this change). Recomputing on every access is the only safe
+    // option under MemberwiseClone; the cascade itself is cheap.
+    //
+    // One deliberate ordering exception: the SecondAssault arm below
+    // carries the CurrentInitiativeDeclaration-is-null guard that
+    // ReconstructOne's own cascade already added (MTS-TASK-003) to stop a
+    // stale, never-reset CurrentSecondAssault from intercepting the
+    // chronologically later preamble chain. QueryCheckpoint never had this
+    // guard; adopting the stricter, already-fixed condition here is safer
+    // than reintroducing that latent bug into either cascade.
     internal PendingDecision? Pending => ComputePending();
 
     private PendingDecision? ComputePending()
