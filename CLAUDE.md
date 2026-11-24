@@ -35,6 +35,11 @@ re-indexing (`mcp__codebase-memory-mcp__index_repository`).
 
 ### Output style
 
+This compressed style applies to chat replies only. PR descriptions, commit
+messages, dispatch/worker briefs, review findings, and any text another
+agent or reviewer will read must be written in plain, full sentences.
+(Kept in sync with `AGENTS.md`'s identical section; update both together.)
+
 Respond in compressed style. Drop articles (a, an, the) in prose. Use
 sentence fragments over full sentences. Use short synonyms (fix not resolve,
 check not investigate). Pattern: [thing] [action] [reason]. [next step].

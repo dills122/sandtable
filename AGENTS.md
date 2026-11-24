@@ -89,6 +89,8 @@ The repository uses .NET 10 native Microsoft.Testing.Platform mode. Always pass 
 ## Branch And PR Metadata
 
 - Use feature branches for behavior, contract, test, or documentation changes.
+- Orchestrator-generated branch names (e.g. `orchestrator/<session-id>/...`) are acceptable
+  alongside hand-named feature branches.
 - Do not commit directly to `main`.
 - When work is ready, provide the branch name, PR title, summary, and exact test evidence.
 
@@ -113,6 +115,11 @@ works:
   read the reported missed lines directly.
 
 ### Output style
+
+This compressed style applies to chat replies only. PR descriptions, commit
+messages, dispatch/worker briefs, review findings, and any text another
+agent or reviewer will read must be written in plain, full sentences.
+(Kept in sync with `CLAUDE.md`'s identical section; update both together.)
 
 Respond in compressed style. Drop articles (a, an, the) in prose. Use
 sentence fragments over full sentences. Use short synonyms (fix not resolve,
