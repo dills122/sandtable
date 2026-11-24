@@ -58,7 +58,9 @@ public sealed class CampaignStageEntryPolicyTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(contractVersion: 2));
         Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(gameTurn: 0));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(operationStage: 2));
+        // operationStage 2/3 are now valid (Stage 2/3 support) -- probe the real boundary.
+        Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(operationStage: 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(operationStage: 4));
         Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(
             organization: (StageEntryObligationKind)0));
         Assert.Throws<ArgumentOutOfRangeException>(() => CreatePolicy(
@@ -104,7 +106,7 @@ public sealed class CampaignStageEntryPolicyTests
                 StringComparison.Ordinal),
             CanonicalExplicitNone.Replace(
                 "\"operationStage\":1",
-                "\"operationStage\":2",
+                "\"operationStage\":4",
                 StringComparison.Ordinal),
             CanonicalExplicitNone.Replace(
                 "\"organization\":\"explicit-none\"",

@@ -30,7 +30,8 @@ internal sealed record CampaignStageEntryPolicy
             contractVersion,
             CurrentContractVersion);
         ArgumentOutOfRangeException.ThrowIfLessThan(gameTurn, 1);
-        ArgumentOutOfRangeException.ThrowIfNotEqual(operationStage, 1);
+        ArgumentOutOfRangeException.ThrowIfLessThan(operationStage, 1);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(operationStage, 3);
         RequireDefined(organization, nameof(organization));
         RequireDefined(navalConvoyArrival, nameof(navalConvoyArrival));
         RequireDefined(fleetAssignment, nameof(fleetAssignment));
