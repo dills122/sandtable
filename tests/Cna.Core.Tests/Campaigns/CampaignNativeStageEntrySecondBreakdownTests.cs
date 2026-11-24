@@ -1,8 +1,7 @@
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
-using Cna.Core.Rules;
-using Cna.Core.Setups;
+using static Cna.Core.Tests.Campaigns.ExerciseSessionTestHarness;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -28,7 +27,7 @@ public sealed class CampaignNativeStageEntrySecondBreakdownTests
     [Fact]
     public void StageEntrySecondBreakdownRejectsASessionWithoutACompletedSecondSideMovement()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-stage-entry-second-breakdown-reject"));
 
         var error = Assert.Throws<InvalidOperationException>(
             () => CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide(session));
@@ -39,27 +38,11 @@ public sealed class CampaignNativeStageEntrySecondBreakdownTests
     [Fact]
     public void StageEntrySecondBreakdownCompletionRejectsTheSameSession()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-stage-entry-second-breakdown-reject"));
 
         var result = CampaignExercises.CompleteStageEntrySecondBreakdown(session);
 
         Assert.False(result.IsAccepted);
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority, result.RejectionReason);
-    }
-
-    private static ExerciseSession Start(CampaignCreationRequest request)
-    {
-        var result = CampaignExercises.Begin(request);
-        Assert.True(result.IsStarted);
-        return result.Session!;
-    }
-
-    private static CampaignCreationRequest CreateRequest()
-    {
-        var setup = CampaignSetupSnapshotV6.FromDefinition(
-            Cna1979BreakdownSetupCatalog.Definitions.Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId));
-        return new CampaignCreationRequest(1, "campaign-stage-entry-second-breakdown-reject", Cna1979Ruleset.Manifest.Hash,
-            12345, setup.SetupId, setup.SetupHash, setup.Content.Pack.PackId,
-            setup.Content.Pack.Hash, setup.Content.ScenarioId);
     }
 }

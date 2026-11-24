@@ -11,6 +11,22 @@ namespace Cna.Core.Exercises;
 
 public static class CampaignExercises
 {
+    // Shared catch-block filter (maintainability-refactor-direction.md
+    // Slice 2b, Finding C minor): the large majority of this file's many
+    // catch blocks reject the same five exception types as "expected
+    // campaign exceptions" that translate into a rejected
+    // ExerciseStepResult rather than propagating. Factored out once here
+    // -- C# cannot share a `when` filter clause directly -- so every site
+    // using this exact five-type set calls this instead of repeating the
+    // inline `is ArgumentException or ArithmeticException or
+    // InvalidCampaignHistoryException or InvalidOperationException or
+    // JsonException` filter. Sites with a narrower or different exception
+    // set are intentionally left alone: they are a different condition,
+    // not a copy of this one.
+    private static bool IsExpectedCampaignException(Exception exception) =>
+        exception is ArgumentException or ArithmeticException or InvalidCampaignHistoryException
+            or InvalidOperationException or JsonException;
+
     public static ExerciseStepResult SubmitSourceOwnerFinalization(ExerciseSession session, CampaignActionSubmission submission)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -4688,8 +4704,7 @@ public static class CampaignExercises
                 selected.Decision.SerializeCanonical(), selected.SerializeCanonical());
             return ExerciseStepResult.Accepted(successor, evidence);
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -4826,8 +4841,7 @@ public static class CampaignExercises
                 checked(evidence.PriorStateVersion + 1), evidence.NextPositionId, CampaignActionAudience.System, evidence.Hash);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, state));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -4853,8 +4867,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -4895,8 +4908,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -4926,8 +4938,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -4957,8 +4968,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 completion.SerializeCanonical(), completion.SerializeStateCanonical(selected)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -4988,8 +4998,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 barrage.SerializeCanonical(), barrage.SerializeStateCanonical(selected)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5058,8 +5067,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 decline.SerializeCanonical(), checkpoint));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5115,9 +5123,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, decline.SerializeCanonical(), checkpoint));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -5191,8 +5197,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 seal.SerializeCanonical(), seal.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5241,8 +5246,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 completion.SerializeCanonical(), completion.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5290,9 +5294,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 seal.SerializeCanonical(), seal.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5321,9 +5323,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 bytes, completion.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5378,8 +5378,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor,
                 new ExerciseStepEvidence(receipt, bytes, cancellation.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5455,8 +5454,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 bytes, cancellation.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5558,9 +5556,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, cancellation.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -5616,8 +5612,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 bytes, antiArmor.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5651,9 +5646,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 bytes, antiArmor.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5707,8 +5700,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 bytes, cancelledAssault.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5744,9 +5736,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, cancelled.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -5834,8 +5824,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(
                 receipt, bytes, result.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5875,9 +5864,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, result.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -5949,9 +5936,7 @@ public static class CampaignExercises
                     CampaignActionSubmissionRejectionReason.ActionNotLegal);
             return AcceptPostResultRetreat(session, submission.ActionId, audience);
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -5987,8 +5972,7 @@ public static class CampaignExercises
                 ? AcceptRepeatedPostResultRetreat(session, null, CampaignActionAudience.System, timeout)
                 : AcceptPostResultRetreat(session, null, CampaignActionAudience.System, timeout);
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -6010,9 +5994,7 @@ public static class CampaignExercises
         {
             return AcceptPostResultRetreat(session, null, CampaignActionAudience.System);
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6042,9 +6024,7 @@ public static class CampaignExercises
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
             return AcceptRepeatedPostResultRetreat(session, submission.ActionId, audience);
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6076,9 +6056,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 bytes, retreat.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6200,9 +6178,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(
                 receipt, bytes, settlement.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6241,9 +6217,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 bytes, settlement.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6320,9 +6294,7 @@ public static class CampaignExercises
             return AcceptNativeCombatCustody(session, cut, choice.Kind,
                 audience, submission.ActionId);
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6358,8 +6330,7 @@ public static class CampaignExercises
                 ? AcceptRepeatedCombatCustody(session, cut, "leave-unguarded", CampaignActionAudience.System, null, timeout)
                 : AcceptNativeCombatCustody(session, cut, "leave-unguarded", CampaignActionAudience.System, null, timeout);
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -6384,9 +6355,7 @@ public static class CampaignExercises
             return AcceptNativeCombatCustody(session, null, "not-required",
                 CampaignActionAudience.System, null);
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6425,9 +6394,7 @@ public static class CampaignExercises
             return AcceptRepeatedCombatCustody(session, cut, choice.Kind,
                 audience, submission.ActionId);
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6466,9 +6433,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 bytes, disposition.SerializeStateCanonical(priorState)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6579,9 +6544,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, projected.SerializeCanonical(session.Context)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6615,9 +6578,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt,
                 bytes, projected.SerializeCanonical(session.Context)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6705,9 +6666,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, nextState.SerializeCanonical()));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6745,9 +6704,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, nextState.SerializeCanonical()));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -6821,8 +6778,7 @@ public static class CampaignExercises
                 CampaignActionAudience.System, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, nextState.SerializeCanonical()));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6868,8 +6824,7 @@ public static class CampaignExercises
                 CampaignActionAudience.System, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -6962,8 +6917,7 @@ public static class CampaignExercises
                 completed.PriorStateVersion, completed.StateVersion, completed.PositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -6984,8 +6938,7 @@ public static class CampaignExercises
                 "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -7046,8 +6999,7 @@ public static class CampaignExercises
                 movement.PriorStateVersion, movement.StateVersion, movement.PositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7087,8 +7039,7 @@ public static class CampaignExercises
                 reserve.PriorStateVersion, reserve.StateVersion, reserve.NextPositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7147,8 +7098,7 @@ public static class CampaignExercises
                 declared.PriorStateVersion, declared.StateVersion, declared.NextPositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7249,8 +7199,7 @@ public static class CampaignExercises
                 reserve.PriorStateVersion, reserve.StateVersion, reserve.NextPositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7299,8 +7248,7 @@ public static class CampaignExercises
                 reserve.PriorStateVersion, reserve.StateVersion, reserve.NextPositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7339,8 +7287,7 @@ public static class CampaignExercises
                 completed.PriorStateVersion, completed.StateVersion, completed.PositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -7371,8 +7318,7 @@ public static class CampaignExercises
                 movement.PriorStateVersion, movement.StateVersion, movement.PositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7400,8 +7346,7 @@ public static class CampaignExercises
                 "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -7440,8 +7385,7 @@ public static class CampaignExercises
                 completed.PriorStateVersion, completed.StateVersion, completed.PositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -7472,8 +7416,7 @@ public static class CampaignExercises
                 movement.PriorStateVersion, movement.StateVersion, movement.PositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7500,8 +7443,7 @@ public static class CampaignExercises
                 "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
@@ -7542,8 +7484,7 @@ public static class CampaignExercises
                 passed.PriorStateVersion, passed.StateVersion, passed.NextPositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7632,8 +7573,7 @@ public static class CampaignExercises
                 passed.PriorStateVersion, passed.StateVersion, passed.NextPositionId, audience, actionId);
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
         }
-        catch (Exception error) when (error is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception error) when (IsExpectedCampaignException(error))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -7695,9 +7635,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, bytes));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -7744,9 +7682,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, bytes));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -7783,9 +7719,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, bytes));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -7845,9 +7779,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, bytes));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -7888,9 +7820,7 @@ public static class CampaignExercises
                 new ExerciseStepEvidence(receipt, bytes,
                     completion.SerializeStateCanonical(selected.SerializeCanonical())));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -7923,9 +7853,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, bytes, barrage.SerializeStateCanonical(runtime.Selection)));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
@@ -8016,8 +7944,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(successor, new ExerciseStepEvidence(receipt,
                 movement.SerializeCanonical(), checkpoint));
         }
-        catch (Exception exception) when (exception is ArgumentException or ArithmeticException
-            or InvalidCampaignHistoryException or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -8083,9 +8010,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(
                 receipt, movement.SerializeCanonical(), checkpoint));
         }
-        catch (Exception exception) when (exception is ArgumentException
-            or ArithmeticException or InvalidCampaignHistoryException
-            or InvalidOperationException or JsonException)
+        catch (Exception exception) when (IsExpectedCampaignException(exception))
         {
             return ExerciseStepResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);
