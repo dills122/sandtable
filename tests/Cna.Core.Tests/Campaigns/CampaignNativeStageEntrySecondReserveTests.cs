@@ -1,8 +1,7 @@
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
-using Cna.Core.Rules;
-using Cna.Core.Setups;
+using static Cna.Core.Tests.Campaigns.ExerciseSessionTestHarness;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -29,7 +28,7 @@ public sealed class CampaignNativeStageEntrySecondReserveTests
     [Fact]
     public void StageEntrySecondReserveSourceRejectsASessionWithoutACompletedFirstActingSideChain()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-stage-entry-second-reserve-reject"));
 
         var error = Assert.Throws<InvalidOperationException>(
             () => CampaignExercises.QueryStageEntrySecondReserveSource(session));
@@ -41,28 +40,12 @@ public sealed class CampaignNativeStageEntrySecondReserveTests
     [Fact]
     public void StageEntrySecondReserveSubmissionRejectsTheSameSession()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-stage-entry-second-reserve-reject"));
 
         var result = CampaignExercises.SubmitStageEntrySecondReserve(
             session, CampaignActionAudience.Axis, "action-stage-entry-second-reserve", elementId: null);
 
         Assert.False(result.IsAccepted);
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority, result.RejectionReason);
-    }
-
-    private static ExerciseSession Start(CampaignCreationRequest request)
-    {
-        var result = CampaignExercises.Begin(request);
-        Assert.True(result.IsStarted);
-        return result.Session!;
-    }
-
-    private static CampaignCreationRequest CreateRequest()
-    {
-        var setup = CampaignSetupSnapshotV6.FromDefinition(
-            Cna1979BreakdownSetupCatalog.Definitions.Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId));
-        return new CampaignCreationRequest(1, "campaign-stage-entry-second-reserve-reject", Cna1979Ruleset.Manifest.Hash,
-            12345, setup.SetupId, setup.SetupHash, setup.Content.Pack.PackId,
-            setup.Content.Pack.Hash, setup.Content.ScenarioId);
     }
 }

@@ -5,8 +5,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
-using Cna.Core.Setups;
-using Cna.Core.Tests.Campaigns;
+using static Cna.Core.Tests.Campaigns.ExerciseSessionTestHarness;
 
 namespace Cna.Core.Tests.Exercises;
 
@@ -15,7 +14,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void LiveEvidenceUsesRetainedContentAndRejectsAnIncompatibleContext()
     {
-        var started = CampaignExercises.Begin(CreateRequest());
+        var started = CampaignExercises.Begin(CreateRequest("campaign-exercise"));
         var session = Assert.IsType<ExerciseSession>(started.Session);
         var context = session.Context;
         var created = session.CurrentHistory[0];
@@ -32,7 +31,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void NormalHostCreationAndReplayUseSuppliedContentResolver()
     {
-        var request = CreateRequest();
+        var request = CreateRequest("campaign-exercise");
         var directResolver = new RecordingResolver();
         var direct = CampaignAuthority.Create(request, directResolver);
         Assert.True(direct.IsCreated);
@@ -80,7 +79,7 @@ public sealed class CampaignExercisesTests
             Calls++;
             if (!ignoreRequestedIdentity)
                 return Cna1979SyntheticContentResolver.Instance.ResolveV6(packId, expectedHash);
-            var original = CreateRequest();
+            var original = CreateRequest("campaign-exercise");
             return Cna1979SyntheticContentResolver.Instance.ResolveV6(original.ContentPackId, original.ContentHash);
         }
     }
@@ -88,7 +87,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void BeginMintsOnlyAnOpaqueFreshSessionWithDefensiveCanonicalEvidence()
     {
-        var request = CreateRequest();
+        var request = CreateRequest("campaign-exercise");
 
         var started = CampaignExercises.Begin(request);
         var ordinary = CampaignAuthority.Create(request);
@@ -140,7 +139,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void RejectedBeginReturnsNoSessionOrEvidence()
     {
-        var valid = CreateRequest();
+        var valid = CreateRequest("campaign-exercise");
         var result = CampaignExercises.Begin(new CampaignCreationRequest(
             99,
             valid.CampaignId,
@@ -162,7 +161,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void QueryUsesTheExistingLegalActionSemantics()
     {
-        var request = CreateRequest();
+        var request = CreateRequest("campaign-exercise");
         var session = Start(request);
         var authority = CampaignAuthority.Create(request).Handle!;
 
@@ -181,7 +180,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void CheckpointQueryExposesOnlyCurrentConcurrencyCoordinates()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-exercise"));
         var actionSet = CampaignExercises.Query(
             session,
             CampaignActionAudience.System).ActionSet!;
@@ -212,7 +211,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void CheckpointReaderStrictlyDecodesCanonicalSnapshotEvidence()
     {
-        var started = CampaignExercises.Begin(CreateRequest());
+        var started = CampaignExercises.Begin(CreateRequest("campaign-exercise"));
         Assert.True(started.IsStarted);
         var canonical = started.InitialSnapshotBytes!;
 
@@ -234,7 +233,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void ExerciseAndOrdinaryPathsMatchAtEverySupportedCheckpoint()
     {
-        var request = CreateRequest();
+        var request = CreateRequest("campaign-exercise");
         var session = Start(request);
         var authority = CampaignAuthority.Create(request).Handle!;
 
@@ -294,7 +293,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void RejectedSubmitDoesNotChangeTheInputSessionOrReturnEvidence()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-exercise"));
         var beforeQuery = CampaignExercises.Query(session, CampaignActionAudience.System);
         var beforeBytes = CampaignLegalActionSerializer.Serialize(beforeQuery.ActionSet!);
         var candidate = Assert.Single(beforeQuery.ActionSet!.Candidates);
@@ -363,7 +362,7 @@ public sealed class CampaignExercisesTests
     [Fact]
     public void TruckStopAndBreakdownCompletionRetainReplayableCurrentEvidence()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-exercise"));
         var moved = false;
         for (var step = 0; step < 25; step++)
         {
@@ -404,7 +403,7 @@ public sealed class CampaignExercisesTests
 
     private static ExerciseSession CompleteExercise()
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-exercise"));
         while (session.CurrentSnapshot.CurrentPosition.SequenceContext.PositionId
             != "land.position.operation-1.organization")
         {
@@ -424,21 +423,6 @@ public sealed class CampaignExercisesTests
             session = result.SuccessorSession!;
         }
         return session;
-    }
-
-    private static ExerciseSession Start(CampaignCreationRequest request)
-    {
-        var result = CampaignExercises.Begin(request);
-        Assert.True(result.IsStarted);
-        return result.Session!;
-    }
-
-    private static CampaignCreationRequest CreateRequest()
-    {
-        var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions.Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId));
-        return new CampaignCreationRequest(1, "campaign-exercise", Cna1979Ruleset.Manifest.Hash,
-            12345, setup.SetupId, setup.SetupHash, setup.Content.Pack.PackId,
-            setup.Content.Pack.Hash, setup.Content.ScenarioId);
     }
 
     private static bool ContainsType(Type candidate, Type forbidden)

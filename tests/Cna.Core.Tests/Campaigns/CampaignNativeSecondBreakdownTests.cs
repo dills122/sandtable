@@ -1,7 +1,6 @@
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
-using Cna.Core.Rules;
-using Cna.Core.Setups;
+using static Cna.Core.Tests.Campaigns.ExerciseSessionTestHarness;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -23,7 +22,7 @@ public sealed class CampaignNativeSecondBreakdownTests
     [InlineData("CreateForStageEntrySecondSide", "Stage Entry second-side Movement has not completed.")]
     public void BreakdownRejectsASessionWithoutItsOwnCompletedMovement(string entryPoint, string expectedMessage)
     {
-        var session = Start(CreateRequest());
+        var session = Start(CreateRequest("campaign-second-breakdown-entry-points-reject"));
 
         var error = Assert.Throws<InvalidOperationException>(() => Invoke(entryPoint, session));
 
@@ -37,20 +36,4 @@ public sealed class CampaignNativeSecondBreakdownTests
         "CreateForStageEntrySecondSide" => CampaignNativeSecondBreakdownV46.CreateForStageEntrySecondSide(session),
         _ => throw new ArgumentOutOfRangeException(nameof(entryPoint)),
     };
-
-    private static ExerciseSession Start(CampaignCreationRequest request)
-    {
-        var result = CampaignExercises.Begin(request);
-        Assert.True(result.IsStarted);
-        return result.Session!;
-    }
-
-    private static CampaignCreationRequest CreateRequest()
-    {
-        var setup = CampaignSetupSnapshotV6.FromDefinition(
-            Cna1979BreakdownSetupCatalog.Definitions.Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId));
-        return new CampaignCreationRequest(1, "campaign-second-breakdown-entry-points-reject", Cna1979Ruleset.Manifest.Hash,
-            12345, setup.SetupId, setup.SetupHash, setup.Content.Pack.PackId,
-            setup.Content.Pack.Hash, setup.Content.ScenarioId);
-    }
 }
