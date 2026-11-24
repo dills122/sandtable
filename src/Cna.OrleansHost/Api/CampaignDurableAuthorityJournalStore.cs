@@ -61,7 +61,7 @@ namespace Cna.OrleansHost.Api;
 /// snapshotting (&#167;5, separately documented as blocked). This class only resolves "which file"
 /// for the topology that already exists today, campaign-by-campaign.</para>
 /// </remarks>
-internal sealed class CampaignDurableAuthorityJournalStore
+internal sealed partial class CampaignDurableAuthorityJournalStore
 {
     private readonly string? directory;
     private readonly string? operatorSecret;
@@ -436,153 +436,6 @@ internal sealed class CampaignDurableAuthorityJournalStore
     // transcription mistake across ~150 near-identical forwarders) -- see the PR description for
     // the generator. Keep it that way: if CampaignDurableAuthorityJournal's outward-facing surface
     // changes, regenerate this block rather than hand-editing it.
-    internal bool TickCustodyRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickCustodyRound(campaignId);
-
-    internal bool TickCycleRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickCycleRound(campaignId);
-
-    internal bool TickForceRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickForceRound(campaignId);
-
-    internal CampaignOwnerOpening QueryOwnerOpening(CampaignSeatCredential credential, string actingElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryOwnerOpening(credential, actingElementId);
-
-    internal CampaignOwnerOpening QueryPregameAxisSupplyOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryPregameAxisSupplyOpening(credential);
-
-    internal CampaignOwnerOpening QueryPregameAxisSupplyFinishOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryPregameAxisSupplyFinishOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAxisDumpOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAxisDumpOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceCommonwealthSupplyOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceCommonwealthSupplyOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceDummyOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceDummyOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceMotorizationOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceMotorizationOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceUnattachedCargoOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceUnattachedCargoOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceActionsOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceActionsOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAxisGt1SupplyOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAxisGt1SupplyOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceCommonwealthSupplyPlanOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceCommonwealthSupplyPlanOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAutoblindaOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAutoblindaOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourcePriorityMotorizationOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourcePriorityMotorizationOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAttachedInitialLoadsOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAttachedInitialLoadsOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceInitialWrecksOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceInitialWrecksOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAxisFreeSetupOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAxisFreeSetupOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAxisCorpsSetupOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAxisCorpsSetupOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceMalettiHierarchyOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceMalettiHierarchyOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceGt2CorrectionOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceGt2CorrectionOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceCwPriorityCatalogOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceCwPriorityCatalogOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceMatruhFormationOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceMatruhFormationOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceCwFreeGunsOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceCwFreeGunsOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceAxisPriorityOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceAxisPriorityOpening(credential);
-
-    internal CampaignOwnerOpening QuerySourceCairoSetupOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceCairoSetupOpening(credential);
-
-    internal CampaignOwnerOpening QueryCombatOwnerOpening(CampaignSeatCredential credential, string actingElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryCombatOwnerOpening(credential, actingElementId);
-
-    internal CampaignOwnerOpening QueryRbaOwnerOpening(CampaignSeatCredential credential, string defenderElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryRbaOwnerOpening(credential, defenderElementId);
-
-    internal CampaignOwnerOpening QueryForceOwnerOpening(CampaignSeatCredential credential, string elementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryForceOwnerOpening(credential, elementId);
-
-    internal CampaignOwnerOpening QueryPostAssaultRetreatOwnerOpening(CampaignSeatCredential credential, string defenderElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryPostAssaultRetreatOwnerOpening(credential, defenderElementId);
-
-    internal CampaignOwnerOpening QueryCustodyOwnerOpening(CampaignSeatCredential credential, string captorElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryCustodyOwnerOpening(credential, captorElementId);
-
-    internal CampaignOwnerOpening QueryReserveReleaseOwnerOpening(CampaignSeatCredential credential, string reserveElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryReserveReleaseOwnerOpening(credential, reserveElementId);
-
-    internal CampaignOwnerOpening QueryCycleControlOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryCycleControlOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryInitiativeOrderOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryInitiativeOrderOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryReserveDesignationOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryReserveDesignationOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryReactionOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryReactionOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryMovementSegmentCompletionOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryMovementSegmentCompletionOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryTruckConvoyPassOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryTruckConvoyPassOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryPostCombatPassOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryPostCombatPassOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QuerySecondReserveOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySecondReserveOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryStageEntryInitiativeDeclarationOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryStageEntryInitiativeDeclarationOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QuerySecondMovementOwnerOpening(CampaignSeatCredential credential, string elementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySecondMovementOwnerOpening(credential, elementId);
-
-    internal CampaignOwnerOpening QuerySecondMovementCompletionOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QuerySecondMovementCompletionOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryRepeatMovementOwnerOpening(CampaignSeatCredential credential) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryRepeatMovementOwnerOpening(credential);
-
-    internal CampaignOwnerOpening QueryRepeatCombatOwnerOpening(CampaignSeatCredential credential, string actingElementId) =>
-        JournalFor(credential.CampaignId, createIfMissing: false).QueryRepeatCombatOwnerOpening(credential, actingElementId);
-
-    internal bool TickRbaRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickRbaRound(campaignId);
-
-    internal bool TickReserveRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickReserveRound(campaignId);
-
-    internal bool TickRetreatRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickRetreatRound(campaignId);
-
     internal void CreateScheduledWorld6(CampaignCreationRequest request) =>
         JournalFor(request.CampaignId, createIfMissing: true).CreateScheduledWorld6(request);
 
@@ -603,9 +456,6 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal byte[] QuerySourceCounterContacts(CampaignSeatCredential credential, string counterId) =>
         JournalFor(credential.CampaignId, createIfMissing: false).QuerySourceCounterContacts(credential, counterId);
-
-    internal bool TickSelectionRound(string campaignId) =>
-        JournalFor(campaignId, createIfMissing: false).TickSelectionRound(campaignId);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerMovement(CampaignSeatCredential credential, string actingElementId, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerMovement(credential, actingElementId, openingRevision, publicActionRef);
@@ -921,153 +771,6 @@ internal sealed class CampaignDurableAuthorityJournalStore
     // the block above (same generator discipline). Works against either backend: a SQLite file
     // store answers synchronously; the Marten store loads a working set, runs the same journal
     // method, and flushes it back (see RunAsync). Production callers use only these.
-    internal Task<bool> TickCustodyRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickCustodyRound(campaignId));
-
-    internal Task<bool> TickCycleRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickCycleRound(campaignId));
-
-    internal Task<bool> TickForceRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickForceRound(campaignId));
-
-    internal Task<CampaignOwnerOpening> QueryOwnerOpeningAsync(CampaignSeatCredential credential, string actingElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryOwnerOpening(credential, actingElementId));
-
-    internal Task<CampaignOwnerOpening> QueryPregameAxisSupplyOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryPregameAxisSupplyOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryPregameAxisSupplyFinishOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryPregameAxisSupplyFinishOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAxisDumpOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisDumpOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceCommonwealthSupplyOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCommonwealthSupplyOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceDummyOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceDummyOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceMotorizationOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceMotorizationOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceUnattachedCargoOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceUnattachedCargoOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceActionsOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceActionsOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAxisGt1SupplyOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisGt1SupplyOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceCommonwealthSupplyPlanOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCommonwealthSupplyPlanOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAutoblindaOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAutoblindaOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourcePriorityMotorizationOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourcePriorityMotorizationOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAttachedInitialLoadsOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAttachedInitialLoadsOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceInitialWrecksOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceInitialWrecksOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAxisFreeSetupOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisFreeSetupOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAxisCorpsSetupOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisCorpsSetupOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceMalettiHierarchyOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceMalettiHierarchyOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceGt2CorrectionOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceGt2CorrectionOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceCwPriorityCatalogOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCwPriorityCatalogOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceMatruhFormationOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceMatruhFormationOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceCwFreeGunsOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCwFreeGunsOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceAxisPriorityOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceAxisPriorityOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySourceCairoSetupOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCairoSetupOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryCombatOwnerOpeningAsync(CampaignSeatCredential credential, string actingElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryCombatOwnerOpening(credential, actingElementId));
-
-    internal Task<CampaignOwnerOpening> QueryRbaOwnerOpeningAsync(CampaignSeatCredential credential, string defenderElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryRbaOwnerOpening(credential, defenderElementId));
-
-    internal Task<CampaignOwnerOpening> QueryForceOwnerOpeningAsync(CampaignSeatCredential credential, string elementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryForceOwnerOpening(credential, elementId));
-
-    internal Task<CampaignOwnerOpening> QueryPostAssaultRetreatOwnerOpeningAsync(CampaignSeatCredential credential, string defenderElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryPostAssaultRetreatOwnerOpening(credential, defenderElementId));
-
-    internal Task<CampaignOwnerOpening> QueryCustodyOwnerOpeningAsync(CampaignSeatCredential credential, string captorElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryCustodyOwnerOpening(credential, captorElementId));
-
-    internal Task<CampaignOwnerOpening> QueryReserveReleaseOwnerOpeningAsync(CampaignSeatCredential credential, string reserveElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryReserveReleaseOwnerOpening(credential, reserveElementId));
-
-    internal Task<CampaignOwnerOpening> QueryCycleControlOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryCycleControlOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryInitiativeOrderOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryInitiativeOrderOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryReserveDesignationOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryReserveDesignationOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryReactionOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryReactionOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryMovementSegmentCompletionOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryMovementSegmentCompletionOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryTruckConvoyPassOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryTruckConvoyPassOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryPostCombatPassOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryPostCombatPassOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySecondReserveOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySecondReserveOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryStageEntryInitiativeDeclarationOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryStageEntryInitiativeDeclarationOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QuerySecondMovementOwnerOpeningAsync(CampaignSeatCredential credential, string elementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySecondMovementOwnerOpening(credential, elementId));
-
-    internal Task<CampaignOwnerOpening> QuerySecondMovementCompletionOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QuerySecondMovementCompletionOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryRepeatMovementOwnerOpeningAsync(CampaignSeatCredential credential) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryRepeatMovementOwnerOpening(credential));
-
-    internal Task<CampaignOwnerOpening> QueryRepeatCombatOwnerOpeningAsync(CampaignSeatCredential credential, string actingElementId) =>
-        RunAsync(credential.CampaignId, false, journal => journal.QueryRepeatCombatOwnerOpening(credential, actingElementId));
-
-    internal Task<bool> TickRbaRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickRbaRound(campaignId));
-
-    internal Task<bool> TickReserveRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickReserveRound(campaignId));
-
-    internal Task<bool> TickRetreatRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickRetreatRound(campaignId));
-
     internal Task CreateScheduledWorld6Async(CampaignCreationRequest request) =>
         RunAsync(request.CampaignId, true, journal => { journal.CreateScheduledWorld6(request); return true; });
 
@@ -1085,9 +788,6 @@ internal sealed class CampaignDurableAuthorityJournalStore
 
     internal Task<byte[]> QuerySourceCounterContactsAsync(CampaignSeatCredential credential, string counterId) =>
         RunAsync(credential.CampaignId, false, journal => journal.QuerySourceCounterContacts(credential, counterId));
-
-    internal Task<bool> TickSelectionRoundAsync(string campaignId) =>
-        RunAsync(campaignId, false, journal => journal.TickSelectionRound(campaignId));
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerMovementAsync(CampaignSeatCredential credential, string actingElementId, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerMovement(credential, actingElementId, openingRevision, publicActionRef));
