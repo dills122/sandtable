@@ -336,6 +336,52 @@ turn/position), and re-run the same three-fresh-campaigns discipline used
 for the other two decision types before calling this one's reliability
 characterized at all.
 
+## Fourth decision type: Second Reserve -- same shape, confirmed reachable
+
+Checked what's next in the real HTTP flow after Movement: the two automatic,
+single-offer stubs (`MovementSegmentCompletion`, which only ever exposes the
+single Complete or Stop candidate the whole decision point -- confirmed by
+reading `CampaignHostAdapter.QueryMovementSegmentCompletionOwnerDraft`'s own
+comment -- and `TruckConvoyPass`/`PostCombatPass`, each a fixed single-choice
+"pass"/"finish-without-activity" stub with no real alternative) are not real
+decisions at all, same UX-001 reasoning `MovementAdvisor`'s single-offer
+short-circuit already covers, so neither is worth a dedicated advisor.
+`SecondReserve` -- the second acting side's own reserve designation, reached
+after the first side's full Combat/Cycle Control/Truck Convoy/Post-Combat
+chain -- is: confirmed real and HTTP-wired (`CampaignOwnerOpeningKind
+.SecondReserve`, a real `land.second-reserve` stage), and confirmed by
+reading `CampaignHostAdapter.CreateSecondReserveOwnerDraft` to write the
+exact same visible-cut shape as first-side Reserve Designation --
+`{contractVersion, campaignId, positionId, choices}` with each choice
+`{kind: "complete"|"designate", elementId: string?}`. Added
+`SecondReserveAdvisor`, reusing `ReserveDesignationAdvisor`'s prompt and
+few-shot examples verbatim rather than inventing new ones, since the
+decision and the state it's given are structurally identical.
+
+Reaching it for real verification required driving the full first-side
+chain over real HTTP (Initiative Order, Reserve Designation, Movement,
+Movement Segment Completion, Combat Selection finish-without-attack, Cycle
+Control finish, Truck Convoy Pass, four Post-Combat passes) -- the same
+sequence `TwoRealHttpPlayersConductAnEntireOperationStageOne`
+(`EndToEndHttpRelease.cs`) already proved reachable, reused rather than
+re-derived. Verified live 3x against fresh real campaigns: 3/3 internally
+coherent recommendations (same "no situational data, general tradeoff"
+reasoning as Reserve Designation), with the same already-documented noisy
+verifier (1/3 "not grounded" false negative on an actually-grounded
+rationale) -- an unchanged, already-accepted reliability characteristic,
+not a new problem, since the prompt is byte-for-byte the one already
+shipped for Reserve Designation.
+
+Considered Reaction next instead, since it's reachable earlier in the
+flow. Did not build it this round: `CampaignHostAdapter`'s own Reaction
+path can throw `CampaignReactionWindowRuleNotImplementedException` (issue
+#394's Gap 3 is explicitly not fixed, per
+`2026-11-21-initial-engine-release-scope.md`), so an advisor for it would
+need to handle a real, documented "rule not implemented" rejection path
+that doesn't exist for any other decision type yet -- a genuinely different
+shape of work, not a quick rename of an existing advisor like this one was.
+Left as a candidate for a future round, not ruled out.
+
 ## Boundary set now, not deferred
 
 No "admin/spectator" mode that lets the connector see hidden state for
