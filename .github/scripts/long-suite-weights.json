@@ -5,6 +5,9 @@
   "baseline_attempt": 1,
   "weight_units": "observed per-row elapsed milliseconds; contention included, not CPU",
   "classes": {
+    "Cna.Core.Tests.Exercises.ExerciseSessionPendingTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Actions.BreakdownActionMembershipTests": {
       "parts": 1
     },
@@ -895,6 +898,10 @@
     }
   },
   "rows": {
+    "3dd2e9c039b0516ce02709bba1745dca6a38098aecb4c6f6311b0c098a7a7a59": 7,
+    "8143aea90ae0c4c662f8b74b07f30acfc6455ec510e899f668bf3d4bf9d570e2": 1,
+    "0d5068c312abedcdc8fd9290a6434fd4a00aca52105b558dc8459f5a08952f8b": 1,
+    "d436bc22e614640a61937fc9acbd5fa7a50adf337b57e5fca1f7ef5fc8834755": 1,
     "964f4111c4aac60c6e10deb32698c588c2ea0988bba5f4cf6b749d94d30db83a": 70130,
     "afec9a1b16072e3f0e10c4b755410d3c7c0fed49683d1ebf97481b61bba47c25": 10,
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": 1,
@@ -4703,6 +4710,10 @@
     "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": 115
   },
   "provisional_rows": {
+    "3dd2e9c039b0516ce02709bba1745dca6a38098aecb4c6f6311b0c098a7a7a59": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
+    "8143aea90ae0c4c662f8b74b07f30acfc6455ec510e899f668bf3d4bf9d570e2": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
+    "0d5068c312abedcdc8fd9290a6434fd4a00aca52105b558dc8459f5a08952f8b": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
+    "d436bc22e614640a61937fc9acbd5fa7a50adf337b57e5fca1f7ef5fc8834755": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new ExerciseSessionPendingTests rows (PR #548), pending hosted/Release calibration",
     "01c7b77035cd33f6b3256dfb1f9cebe7078d3c1c2e23eae45eb4863f7dd726ca": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new Cna1979HistoricalMapTests Malta column-00 NeighborsOf rows, pending hosted CI calibration",
     "00dc8b65f8fb78452aa4492509dfad99dcdef00f6d27c1c7eec51a844112b9f2": "2026-11-17 macOS arm64 .NET 10 Release focused MTP XML; new Cna1979HistoricalMapTests Malta column-00 NeighborsOf rows, pending hosted CI calibration",
     "000957e018b804af53eace22da15b21182c9aae8e3e1ae6b001077e83a64a6bc": "2026-10-21 macOS arm64 .NET 10 Release focused MTP XML; local scheduling hint, pending hosted calibration",
