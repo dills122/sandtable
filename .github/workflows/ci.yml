@@ -208,7 +208,7 @@ jobs:
     # the ~30m Graziani replay soak (orleans-slow.yml). The former KnownIssue=446 rows gate
     # again since the #446 ammunition-seed fix.
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -224,12 +224,37 @@ jobs:
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
       - name: Run and verify Orleans host rows
-        timeout-minutes: 30
+        # A healthy run's test step measures ~15m (observed, run 45309217076). The
+        # Testcontainers (Postgres) bootstrap has repeatedly stalled with ZERO test
+        # output and then run out the clock on a 30-minute single-attempt timeout --
+        # every occurrence this was checked, the retry log confirmed a real test
+        # never started, not a real failure. That shape (no XML report produced)
+        # is retried once automatically, in-job, with a tighter per-attempt cap, so
+        # a stall costs ~18 minutes instead of 30 and needs no external rerun. Any
+        # attempt that DOES produce a report -- a real pass or a real failure --
+        # exits immediately; this never retries past an actual test result.
+        timeout-minutes: 40
         shell: bash
         run: |
           set -o pipefail
           mkdir -p artifacts/orleans-results
-          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedReserveAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedMovementAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedSecondReserveAdviceAgainstARealCampaign" 2>&1 | tee artifacts/orleans-results/console.log
+          attempts=2
+          for attempt in $(seq 1 "$attempts"); do
+            rm -f artifacts/orleans-results/*.xml
+            if timeout 18m dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedReserveAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedMovementAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedSecondReserveAdviceAgainstARealCampaign" 2>&1 | tee "artifacts/orleans-results/console-attempt-${attempt}.log"; then
+              break
+            fi
+            status=$?
+            if compgen -G "artifacts/orleans-results/*.xml" > /dev/null; then
+              echo "::error::Orleans host tests produced a report and still failed on attempt ${attempt} (exit ${status}) -- a real failure, not retrying."
+              exit "$status"
+            fi
+            if [ "$attempt" -eq "$attempts" ]; then
+              echo "::error::Orleans host test run produced no report after ${attempts} attempts (exit ${status})."
+              exit "$status"
+            fi
+            echo "::warning::Orleans host test run produced no report before timing out on attempt ${attempt} (exit ${status}) -- likely a Testcontainers/Docker bootstrap stall, not a test failure. Retrying once."
+          done
           python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
       - name: Retain Orleans test results
         if: ${{ always() }}
