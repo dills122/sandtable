@@ -329,17 +329,35 @@ internal sealed record CampaignNativeReserveReleaseStateV27(
             selected.Decision.Side, 1, position, projection.World, [], [], false, true);
     }
 
-    // Same-slot second-player Reserve Release, bound to the acting side (the
-    // catalog's relative-role entries carry no side of their own).
+    // Same-slot Reserve Release for whichever acting side this V43-V47 chain
+    // occurrence belongs to (the catalog's relative-role entries carry no
+    // side of their own).
+    //
+    // Stage 3 scoping verification (2026-11-23,
+    // docs/work/plans/2026-11-23-stage-3-scoping-verification.md): two
+    // latent bugs fixed here, both from the same root cause -- this method's
+    // name and the hardcoded LandActorRole.SecondActingSide check below
+    // assumed its only caller would ever be Operation Stage 1's own second
+    // acting side (its callers' own comment: "the same turn and Operation
+    // Stage"), true only by coincidence until Stage 2's own first-acting-side
+    // close-out (CompleteStageEntryCombatNoAttack's success path) needed
+    // this same method and genuinely has ActorRole == FirstActingSide, not
+    // SecondActingSide. Both the OperationStage bound (previously
+    // `turn.OperationStage`, frozen at 1 by the retained CampaignSnapshotV11
+    // regardless of the real stage) and the ActorRole bound (previously
+    // hardcoded to SecondActingSide) are now read from the real position
+    // where the decision this Reserve Release concludes was actually made
+    // (selected.Decision.PositionId), not assumed.
     private static LandSequencePosition SecondSidePosition(
         CampaignCombatSelectionFrame selected, string positionId)
     {
         var turn = selected.PriorSnapshot.CurrentPosition.SequenceContext;
-        var position = Cna1979LandSequenceV4.CreateTurn(turn.GameTurn)
-            .Single(value => value.PositionId == positionId);
+        var catalog = Cna1979LandSequenceV4.CreateTurn(turn.GameTurn);
+        var position = catalog.Single(value => value.PositionId == positionId);
+        var decisionPosition = catalog.Single(value => value.PositionId == selected.Decision.PositionId);
         if (position.SegmentId != LandSegmentIds.ReserveRelease
-            || position.ActorRole != LandActorRole.SecondActingSide
-            || position.OperationStage != turn.OperationStage)
+            || position.ActorRole != decisionPosition.ActorRole
+            || position.OperationStage != decisionPosition.OperationStage)
             throw new InvalidOperationException(
                 "Second-side Combat must reach same-slot Reserve Release.");
         return position;

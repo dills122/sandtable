@@ -11,6 +11,9 @@
     "Cna.Core.Tests.Exercises.ExerciseSessionPendingTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Exercises.CampaignStageThreeEntryVerificationTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Actions.BreakdownActionMembershipTests": {
       "parts": 1
     },
@@ -907,6 +910,7 @@
     }
   },
   "rows": {
+    "e1ffe388cd9b13447b977e413f5d210fde700b5a8fa6520b7e408268c434dabf": 494,
     "519553d949bdb09dd561bfbc81e4234f5acfc95eba1bdab7e1421a2b88e7e7d8": 2,
     "d6a16523c9e0568507e84e1efbe732be2a4c923cf97dcc4405cc8bb12f203390": 1,
     "c3f67d860af712021ba4565d5548d04ebac8fc918be78dd2bfbae8e5acb6a056": 10,
