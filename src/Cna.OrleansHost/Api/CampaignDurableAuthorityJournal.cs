@@ -1021,7 +1021,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind => CampaignHostAdapter.ActivateSourceAxisGarrisonRemainder(head.Session),
             CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => CampaignHostAdapter.ActivateSourceGiarabubMotorMachineGun(head.Session),
             CampaignHostAcceptedStep.SourceCwFrontlineKind => CampaignHostAdapter.ActivateSourceCwFrontline(head.Session),
-            CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignHostAdapter.AdmitSourceGiarabubMotorPlacementPolicy(head.Session),
+            CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(head.Session),
             CampaignHostAcceptedStep.SourceGt1MultiLanesKind => CampaignHostAdapter.AnnounceSourceGt1MultiLanes(head.Session),
             _ => throw new ArgumentException("Unknown source turn step.", nameof(kind)),
         };
@@ -1098,19 +1098,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
         (Func<ExerciseSession, bool> AlreadyAdmitted, Func<ExerciseSession, ExerciseStepResult> Admit,
             Func<ExerciseSession, ExerciseStepResult, CampaignActionSubmission> Command, string Kind)[] migrations =
         [
-            (CampaignExercises.IsSourceAxisSupplementAdmitted, CampaignHostAdapter.AdmitSourceAxisSupplement,
+            (CampaignExercises.IsSourceAxisSupplementAdmitted, CampaignExercises.AdmitSourceAxisSupplement,
                 CampaignHostAdapter.SourceAxisSupplementCommand, CampaignHostAcceptedStep.SourceAxisSupplementKind),
-            (CampaignExercises.IsSourceCommonwealthSupplementAdmitted, CampaignHostAdapter.AdmitSourceCommonwealthSupplement,
+            (CampaignExercises.IsSourceCommonwealthSupplementAdmitted, CampaignExercises.AdmitSourceCommonwealthSupplement,
                 CampaignHostAdapter.SourceCommonwealthSupplementCommand, CampaignHostAcceptedStep.SourceCommonwealthSupplementKind),
-            (CampaignExercises.IsSourcePriorityMotorizationAdmitted, CampaignHostAdapter.AdmitSourcePriorityMotorization,
+            (CampaignExercises.IsSourcePriorityMotorizationAdmitted, CampaignExercises.AdmitSourcePriorityMotorization,
                 CampaignHostAdapter.SourcePriorityMotorizationCommand, CampaignHostAcceptedStep.SourcePriorityMotorizationKind),
-            (CampaignExercises.IsSourceAxisPriorityMotorizationAdmitted, CampaignHostAdapter.AdmitSourceAxisPriorityMotorization,
+            (CampaignExercises.IsSourceAxisPriorityMotorizationAdmitted, CampaignExercises.AdmitSourceAxisPriorityMotorization,
                 CampaignHostAdapter.SourceAxisPriorityMotorizationCommand, CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind),
-            (CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted, CampaignHostAdapter.AdmitSourceAxisMinorGarrisons,
+            (CampaignExercises.IsSourceAxisMinorGarrisonsAdmitted, CampaignExercises.AdmitSourceAxisMinorGarrisons,
                 CampaignHostAdapter.SourceAxisMinorGarrisonsCommand, CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind),
-            (CampaignExercises.IsSourceBattlefieldAdmitted, CampaignHostAdapter.AdmitSourceBattlefield,
+            (CampaignExercises.IsSourceBattlefieldAdmitted, CampaignExercises.AdmitSourceBattlefield,
                 CampaignHostAdapter.SourceBattlefieldCommand, CampaignHostAcceptedStep.SourceBattlefieldKind),
-            (CampaignExercises.IsSourceCairoSetupAdmitted, CampaignHostAdapter.AdmitSourceCairoSetup,
+            (CampaignExercises.IsSourceCairoSetupAdmitted, CampaignExercises.AdmitSourceCairoSetup,
                 CampaignHostAdapter.SourceCairoSetupCommand, CampaignHostAcceptedStep.SourceCairoSetupKind),
         ];
         var count = 0;

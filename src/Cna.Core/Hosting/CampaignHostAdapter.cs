@@ -237,63 +237,6 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission) =>
         CampaignExercises.SubmitSourceCommonwealthSupplyPlan(session, submission);
 
-    public static ExerciseStepResult AdmitSourceAxisSupplement(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceAxisSupplement(session);
-
-    public static ExerciseStepResult AdmitSourceCommonwealthSupplement(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCommonwealthSupplement(session);
-
-    public static ExerciseStepResult AdmitSourcePriorityMotorization(ExerciseSession session) =>
-        CampaignExercises.AdmitSourcePriorityMotorization(session);
-
-    public static ExerciseStepResult AdmitSourceAttachedInitialLoads(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceAttachedInitialLoads(session);
-
-    public static ExerciseStepResult AdmitSourceInitialWrecks(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceInitialWrecks(session);
-
-    public static ExerciseStepResult AdmitSourceAxisFreeSetup(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceAxisFreeSetup(session);
-
-    public static ExerciseStepResult AdmitSourceAxisCorpsSetup(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceAxisCorpsSetup(session);
-
-    public static ExerciseStepResult AdmitSourceMalettiHierarchy(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceMalettiHierarchy(session);
-
-    public static ExerciseStepResult AdmitSourceGt2Correction(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceGt2Correction(session);
-
-    public static ExerciseStepResult AdmitSourceCwPriorityCatalog(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCwPriorityCatalog(session);
-
-    public static ExerciseStepResult AdmitSourceCompactCheckpoint(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCompactCheckpoint(session);
-
-    public static ExerciseStepResult AdmitSourceFourthIndianWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceFourthIndianWorld(session);
-
-    public static ExerciseStepResult AdmitSourceMatruhGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceMatruhGroupedWorld(session);
-
-    public static ExerciseStepResult AdmitSourceMalettiGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceMalettiGroupedWorld(session);
-
-    public static ExerciseStepResult AdmitSourceLibyanGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceLibyanGroupedWorld(session);
-
-    public static ExerciseStepResult AdmitSourceItalianDivisionsGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceItalianDivisionsGroupedWorld(session);
-
-    public static ExerciseStepResult AdmitSourceSeventhArmoredGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceSeventhArmoredGroupedWorld(session);
-
-    public static ExerciseStepResult AdmitSourceSixteenthBrigadeGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceSixteenthBrigadeGroupedWorld(session);
-
-    public static ExerciseStepResult AdmitSourceCatanzaroGroupedWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCatanzaroGroupedWorld(session);
-
     public static ExerciseStepResult StartSourceTurn(ExerciseSession session) =>
         CampaignExercises.StartSourceTurn(session);
 
@@ -357,62 +300,8 @@ public static class CampaignHostAdapter
     public static ExerciseStepResult ActivateSourceCwFrontline(ExerciseSession session) =>
         CampaignExercises.ActivateSourceCwFrontline(session);
 
-    public static ExerciseStepResult AdmitSourceGiarabubMotorPlacementPolicy(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(session);
-
     public static ExerciseStepResult AnnounceSourceGt1MultiLanes(ExerciseSession session) =>
         CampaignExercises.AnnounceSourceGt1MultiLanes(session);
-
-    public static ExerciseStepResult AdmitSourceMatruhFormation(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceMatruhFormation(session);
-
-    public static ExerciseStepResult AdmitSourceCwFreeGuns(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCwFreeGuns(session);
-
-    public static ExerciseStepResult AdmitSourceAxisPriorityMotorization(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceAxisPriorityMotorization(session);
-
-    public static ExerciseStepResult AdmitSourceAxisMinorGarrisons(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceAxisMinorGarrisons(session);
-
-    public static ExerciseStepResult AdmitSourceBattlefield(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceBattlefield(session);
-
-    public static ExerciseStepResult AdmitSourceCairoSetup(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCairoSetup(session);
-
-    public static ExerciseStepResult AdmitSourceCairoWorld(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceCairoWorld(session);
-
-    public static ExerciseStepResult PromoteSourceMaletti(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceMaletti(session);
-
-    public static ExerciseStepResult PromoteSourceIndependent(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceIndependent(session);
-
-    public static ExerciseStepResult AdmitSourceLocalMap(ExerciseSession session) =>
-        CampaignExercises.AdmitSourceLocalMap(session);
-
-    public static ExerciseStepResult PromoteSourceExpandedIndependent(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceExpandedIndependent(session);
-
-    public static ExerciseStepResult PromoteSourceAxisFreeWorld(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceAxisFreeWorld(session);
-
-    public static ExerciseStepResult PromoteSourceAxisCorpsWorld(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceAxisCorpsWorld(session);
-
-    public static ExerciseStepResult PromoteSourceCertifiedMalettiWorld(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceCertifiedMalettiWorld(session);
-
-    public static ExerciseStepResult PromoteSourceMatruhDetachedWorld(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceMatruhDetachedWorld(session);
-
-    public static ExerciseStepResult PromoteSourceCwPriorityWorld(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceCwPriorityWorld(session);
-
-    public static ExerciseStepResult PromoteSourceCwFreeGunsWorld(ExerciseSession session) =>
-        CampaignExercises.PromoteSourceCwFreeGunsWorld(session);
 
     public static CampaignPregameAxisDraft QuerySourceCairoSetupDraft(
         ExerciseSession session, CampaignActionAudience audience) =>
@@ -3521,33 +3410,33 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.SourceActionsKind => Submit(session, submission),
                 CampaignHostAcceptedStep.SourceAxisGt1SupplyKind => SubmitSourceAxisGt1Supply(session, submission),
                 CampaignHostAcceptedStep.SourceCommonwealthSupplyPlanKind => SubmitSourceCommonwealthSupplyPlan(session, submission),
-                CampaignHostAcceptedStep.SourceAxisSupplementKind => AdmitSourceAxisSupplement(session),
+                CampaignHostAcceptedStep.SourceAxisSupplementKind => CampaignExercises.AdmitSourceAxisSupplement(session),
                 CampaignHostAcceptedStep.SourceAutoblindaKind => SubmitSourceAutoblinda(session, submission),
-                CampaignHostAcceptedStep.SourceCommonwealthSupplementKind => AdmitSourceCommonwealthSupplement(session),
-                CampaignHostAcceptedStep.SourcePriorityMotorizationKind => AdmitSourcePriorityMotorization(session),
+                CampaignHostAcceptedStep.SourceCommonwealthSupplementKind => CampaignExercises.AdmitSourceCommonwealthSupplement(session),
+                CampaignHostAcceptedStep.SourcePriorityMotorizationKind => CampaignExercises.AdmitSourcePriorityMotorization(session),
                 CampaignHostAcceptedStep.SourcePriorityMotorizationChoiceKind => AdjustSourcePriorityMotorization(session, submission),
-                CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind => AdmitSourceAttachedInitialLoads(session),
+                CampaignHostAcceptedStep.SourceAttachedInitialLoadsKind => CampaignExercises.AdmitSourceAttachedInitialLoads(session),
                 CampaignHostAcceptedStep.SourceAttachedInitialLoadsChoiceKind => SubmitSourceAttachedInitialLoads(session, submission),
-                CampaignHostAcceptedStep.SourceInitialWrecksKind => AdmitSourceInitialWrecks(session),
+                CampaignHostAcceptedStep.SourceInitialWrecksKind => CampaignExercises.AdmitSourceInitialWrecks(session),
                 CampaignHostAcceptedStep.SourceInitialWrecksChoiceKind => PlaceSourceInitialWreck(session, submission),
-                CampaignHostAcceptedStep.SourceAxisFreeSetupKind => AdmitSourceAxisFreeSetup(session),
+                CampaignHostAcceptedStep.SourceAxisFreeSetupKind => CampaignExercises.AdmitSourceAxisFreeSetup(session),
                 CampaignHostAcceptedStep.SourceAxisFreeSetupChoiceKind => PlaceSourceAxisFreeUnit(session, submission),
-                CampaignHostAcceptedStep.SourceAxisCorpsSetupKind => AdmitSourceAxisCorpsSetup(session),
+                CampaignHostAcceptedStep.SourceAxisCorpsSetupKind => CampaignExercises.AdmitSourceAxisCorpsSetup(session),
                 CampaignHostAcceptedStep.SourceAxisCorpsSetupChoiceKind => PlaceSourceAxisCorpsUnit(session, submission),
-                CampaignHostAcceptedStep.SourceMalettiHierarchyKind => AdmitSourceMalettiHierarchy(session),
+                CampaignHostAcceptedStep.SourceMalettiHierarchyKind => CampaignExercises.AdmitSourceMalettiHierarchy(session),
                 CampaignHostAcceptedStep.SourceMalettiHierarchyChoiceKind => SubmitSourceMalettiHierarchy(session, submission),
-                CampaignHostAcceptedStep.SourceGt2CorrectionKind => AdmitSourceGt2Correction(session),
+                CampaignHostAcceptedStep.SourceGt2CorrectionKind => CampaignExercises.AdmitSourceGt2Correction(session),
                 CampaignHostAcceptedStep.SourceGt2CorrectionChoiceKind => SubmitSourceGt2Correction(session, submission),
-                CampaignHostAcceptedStep.SourceCwPriorityCatalogKind => AdmitSourceCwPriorityCatalog(session),
-                CampaignHostAcceptedStep.SourceCompactCheckpointKind => AdmitSourceCompactCheckpoint(session),
-                CampaignHostAcceptedStep.SourceFourthIndianWorldKind => AdmitSourceFourthIndianWorld(session),
-                CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind => AdmitSourceMatruhGroupedWorld(session),
-                CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind => AdmitSourceMalettiGroupedWorld(session),
-                CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind => AdmitSourceLibyanGroupedWorld(session),
-                CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind => AdmitSourceItalianDivisionsGroupedWorld(session),
-                CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind => AdmitSourceSeventhArmoredGroupedWorld(session),
-                CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind => AdmitSourceSixteenthBrigadeGroupedWorld(session),
-                CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind => AdmitSourceCatanzaroGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceCwPriorityCatalogKind => CampaignExercises.AdmitSourceCwPriorityCatalog(session),
+                CampaignHostAcceptedStep.SourceCompactCheckpointKind => CampaignExercises.AdmitSourceCompactCheckpoint(session),
+                CampaignHostAcceptedStep.SourceFourthIndianWorldKind => CampaignExercises.AdmitSourceFourthIndianWorld(session),
+                CampaignHostAcceptedStep.SourceMatruhGroupedWorldKind => CampaignExercises.AdmitSourceMatruhGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceMalettiGroupedWorldKind => CampaignExercises.AdmitSourceMalettiGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceLibyanGroupedWorldKind => CampaignExercises.AdmitSourceLibyanGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceItalianDivisionsGroupedWorldKind => CampaignExercises.AdmitSourceItalianDivisionsGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceSeventhArmoredGroupedWorldKind => CampaignExercises.AdmitSourceSeventhArmoredGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceSixteenthBrigadeGroupedWorldKind => CampaignExercises.AdmitSourceSixteenthBrigadeGroupedWorld(session),
+                CampaignHostAcceptedStep.SourceCatanzaroGroupedWorldKind => CampaignExercises.AdmitSourceCatanzaroGroupedWorld(session),
                 CampaignHostAcceptedStep.SourceTurnStartKind => CampaignExercises.StartSourceTurn(session, SourceTurnStartVersion(step)),
                 CampaignHostAcceptedStep.SourceTurnInitiativeKind => ResolveSourceInitiative(session),
                 CampaignHostAcceptedStep.SourceGt1BreakdownCompleteKind => CompleteSourceGt1FirstBreakdown(session),
@@ -3563,30 +3452,30 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.SourceAxisGarrisonRemainderKind => ActivateSourceAxisGarrisonRemainder(session),
                 CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => ActivateSourceGiarabubMotorMachineGun(session),
                 CampaignHostAcceptedStep.SourceCwFrontlineKind => ActivateSourceCwFrontline(session),
-                CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => AdmitSourceGiarabubMotorPlacementPolicy(session),
+                CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(session),
                 CampaignHostAcceptedStep.SourceGt1MultiLanesKind => AnnounceSourceGt1MultiLanes(session),
                 CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind => SubmitSourceCwPriorityCatalog(session, submission),
-                CampaignHostAcceptedStep.SourceMatruhFormationKind => AdmitSourceMatruhFormation(session),
+                CampaignHostAcceptedStep.SourceMatruhFormationKind => CampaignExercises.AdmitSourceMatruhFormation(session),
                 CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind => SubmitSourceMatruhFormation(session, submission),
-                CampaignHostAcceptedStep.SourceCwFreeGunsKind => AdmitSourceCwFreeGuns(session),
+                CampaignHostAcceptedStep.SourceCwFreeGunsKind => CampaignExercises.AdmitSourceCwFreeGuns(session),
                 CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind => PlaceSourceCwFreeGun(session, submission),
-                CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind => AdmitSourceAxisPriorityMotorization(session),
+                CampaignHostAcceptedStep.SourceAxisPriorityMotorizationKind => CampaignExercises.AdmitSourceAxisPriorityMotorization(session),
                 CampaignHostAcceptedStep.SourceAxisPriorityChoiceKind => CampaignExercises.ReplaySourceAxisPriority(session, submission),
-                CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind => AdmitSourceAxisMinorGarrisons(session),
-                CampaignHostAcceptedStep.SourceBattlefieldKind => AdmitSourceBattlefield(session),
-                CampaignHostAcceptedStep.SourceCairoSetupKind => AdmitSourceCairoSetup(session),
+                CampaignHostAcceptedStep.SourceAxisMinorGarrisonsKind => CampaignExercises.AdmitSourceAxisMinorGarrisons(session),
+                CampaignHostAcceptedStep.SourceBattlefieldKind => CampaignExercises.AdmitSourceBattlefield(session),
+                CampaignHostAcceptedStep.SourceCairoSetupKind => CampaignExercises.AdmitSourceCairoSetup(session),
                 CampaignHostAcceptedStep.SourceCairoUnitKind => PlaceSourceCairoUnit(session, submission),
-                CampaignHostAcceptedStep.SourceCairoWorldKind => AdmitSourceCairoWorld(session),
+                CampaignHostAcceptedStep.SourceCairoWorldKind => CampaignExercises.AdmitSourceCairoWorld(session),
                 CampaignHostAcceptedStep.SourceMalettiKind => CampaignExercises.ReplaySourceMalettiPromotion(session),
                 CampaignHostAcceptedStep.SourceIndependentKind => CampaignExercises.ReplaySourceIndependentPromotion(session),
-                CampaignHostAcceptedStep.SourceLocalMapKind => AdmitSourceLocalMap(session),
+                CampaignHostAcceptedStep.SourceLocalMapKind => CampaignExercises.AdmitSourceLocalMap(session),
                 CampaignHostAcceptedStep.SourceExpandedIndependentKind => CampaignExercises.ReplaySourceExpandedIndependentPromotion(session),
-                CampaignHostAcceptedStep.SourceAxisFreeWorldKind => PromoteSourceAxisFreeWorld(session),
-                CampaignHostAcceptedStep.SourceAxisCorpsWorldKind => PromoteSourceAxisCorpsWorld(session),
-                CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind => PromoteSourceCertifiedMalettiWorld(session),
-                CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind => PromoteSourceMatruhDetachedWorld(session),
-                CampaignHostAcceptedStep.SourceCwPriorityWorldKind => PromoteSourceCwPriorityWorld(session),
-                CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind => PromoteSourceCwFreeGunsWorld(session),
+                CampaignHostAcceptedStep.SourceAxisFreeWorldKind => CampaignExercises.PromoteSourceAxisFreeWorld(session),
+                CampaignHostAcceptedStep.SourceAxisCorpsWorldKind => CampaignExercises.PromoteSourceAxisCorpsWorld(session),
+                CampaignHostAcceptedStep.SourceCertifiedMalettiWorldKind => CampaignExercises.PromoteSourceCertifiedMalettiWorld(session),
+                CampaignHostAcceptedStep.SourceMatruhDetachedWorldKind => CampaignExercises.PromoteSourceMatruhDetachedWorld(session),
+                CampaignHostAcceptedStep.SourceCwPriorityWorldKind => CampaignExercises.PromoteSourceCwPriorityWorld(session),
+                CampaignHostAcceptedStep.SourceCwFreeGunsWorldKind => CampaignExercises.PromoteSourceCwFreeGunsWorld(session),
                 CampaignHostAcceptedStep.ContactMovementKind => SubmitContactOwnerMovement(
                     session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactInitiativeOrderKind => SubmitInitiativeOrder(
