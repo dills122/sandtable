@@ -1787,22 +1787,28 @@ public sealed class ExerciseSession
             return new StageEntryAssaultPending(StageEntryAssaultPredecessor);
         if (CurrentStageEntryNoAttackCompletion is not null)
             return new StageEntryNoAttackPending(StageEntryNoAttackPredecessor);
-        // See this property's remarks: guarded so a stale, never-reset
-        // CurrentSecondAssault cannot intercept the chronologically later
-        // preamble chain below (mirrors ReconstructOne's MTS-TASK-003 fix).
+        // Guarded so a stale, never-reset CurrentSecondXxx field cannot
+        // intercept the chronologically later preamble/StageEntry chain
+        // below (mirrors ReconstructOne's MTS-TASK-003 fix). This guard was
+        // only applied to CurrentSecondAssault when this cascade was first
+        // written; the six arms below it are chronologically earlier in the
+        // same second-side chain and never reset either, so they need the
+        // identical guard -- without it, any session that ever had a
+        // second-side combat permanently misreports Pending once
+        // CurrentInitiativeDeclaration is also set.
         if (CurrentInitiativeDeclaration is null && CurrentSecondAssault is { Events.Count: > 0 })
             return new SecondAssaultPending(SecondAssaultPredecessor);
-        if (CurrentSecondNoAttackCompletion is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondNoAttackCompletion is not null)
             return new SecondNoAttackPending(SecondNoAttackPredecessor);
-        if (CurrentSecondCombatDecision is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondCombatDecision is not null)
             return new SecondCombatSelectionPending(SecondCombatSelectionPredecessor);
-        if (CurrentSecondBreakdown is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondBreakdown is not null)
             return new SecondBreakdownPending(SecondBreakdownPredecessor);
-        if (CurrentSecondMovementCompletion is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondMovementCompletion is not null)
             return new SecondMovementCompletionPending(SecondMovementCompletionPredecessor);
-        if (CurrentSecondMove is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondMove is not null)
             return new SecondMovePending(SecondMovePredecessor);
-        if (CurrentSecondReserve is not null)
+        if (CurrentInitiativeDeclaration is null && CurrentSecondReserve is not null)
             return new SecondReservePending(SecondReservePredecessor);
         if (CurrentNoObligationFleetRepair is not null)
             return new NoObligationFleetRepairPending(NoObligationFleetRepairPredecessor);
