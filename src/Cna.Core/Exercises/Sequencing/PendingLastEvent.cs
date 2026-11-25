@@ -14,6 +14,13 @@ internal enum PendingLastEvent
     /// <summary>A Move: the one Movement-segment event that leaves the cursor on the Movement position.</summary>
     MoveWithinPosition,
 
+    /// <summary>
+    /// A Reserve event (CampaignNativeSecondReserveV43). Designating an element leaves the cursor on the
+    /// Reserve Designation position (observed in S2); completing it advances the cursor. The classifier
+    /// cannot tell them apart, so Derive treats this value as CompletedPosition unless the cursor is on Reserve Designation.
+    /// </summary>
+    ReserveWithinPosition,
+
     /// <summary>Cycle Control Repeat: the cursor jumps back to the cycle's Movement position (observed in S0).</summary>
     CycleRepeat,
 }
@@ -27,6 +34,7 @@ internal static class PendingLastEventClassifier
         return session.CurrentHistory.Count == 0 ? PendingLastEvent.CompletedPosition : session.CurrentHistory[^1] switch
         {
             CampaignNativeSecondMoveV44 => PendingLastEvent.MoveWithinPosition,
+            CampaignNativeSecondReserveV43 => PendingLastEvent.ReserveWithinPosition,
             CampaignNativeCycleControlV28 { Choice: CampaignNativeCycleControlChoiceV28.Repeat } => PendingLastEvent.CycleRepeat,
             _ => PendingLastEvent.CompletedPosition,
         };

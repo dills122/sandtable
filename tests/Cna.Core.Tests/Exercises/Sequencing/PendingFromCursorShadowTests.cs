@@ -60,6 +60,19 @@ public sealed class PendingFromCursorShadowTests
     }
 
     [Fact]
+    public void ReserveEventStaysOnReserveDesignationOnlyWhileDesignatingAndAdvancesOnCompletion()
+    {
+        var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        var reserve = turn.Single(p => p.PositionId.EndsWith("operation-2.second-player.reserve-designation", StringComparison.Ordinal));
+        Assert.Equal("StageEntrySecondReservePending",
+            PendingFromCursor.Derive(turn, reserve.PositionId, PendingLastEvent.ReserveWithinPosition));
+        // Completion advanced the cursor to the next position: generic completed-position path.
+        var next = turn[turn.ToList().IndexOf(reserve) + 1];
+        Assert.Equal(PendingFromCursor.Derive(turn, next.PositionId, PendingLastEvent.CompletedPosition),
+            PendingFromCursor.Derive(turn, next.PositionId, PendingLastEvent.ReserveWithinPosition));
+    }
+
+    [Fact]
     public void UnknownPositionIsRejected()
     {
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
