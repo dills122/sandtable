@@ -157,3 +157,32 @@ may still be using it; `PostgresContainerFixture.CreateDatabaseAsync` also
 uniquifies the database name it actually creates (fixed per-test-class
 literal names would otherwise collide across workers sharing one instance),
 transparently to every caller.
+
+## Trunk.io flaky-test uploads
+
+`architecture-tests`, `orleans`, and `tests` (CI) each run a
+`trunk-io/analytics-uploader@v3` step (`continue-on-error: true`, so a Trunk
+outage or a missing secret never fails the actual test gate). The
+`architecture-tests` and `orleans` jobs' own `dotnet test` calls emit a
+genuine JUnit-schema report (`--report-junit`, alongside the unchanged
+`--report-xunit-xml` report) that step uploads. The `tests` job's real,
+sharded execution (`.github/scripts/long_suite_partition.py` /
+`r02_partition.py` / `ci_group_runner.py` / `test_partition.py`) does not yet
+emit one -- only this repo's local-only `local_parallel_check.py` convenience
+script does, so that job's upload step is currently a no-op on hosted CI;
+wiring its real command builders is tracked as follow-up work (see the PR
+that added this section for why it was deferred). Until the repo owner sets
+the variables/secret below, every upload step above is a no-op regardless:
+
+| Name | Kind | Where to get it |
+| --- | --- | --- |
+| `TRUNK_ORG_URL_SLUG` | repo variable | app.trunk.io -> Settings -> Organization -> General |
+| `TRUNK_TEST_COLLECTION_ID` | repo variable | app.trunk.io -> Flaky Tests -> Collections (create one for this repo) |
+| `TRUNK_API_KEY` | repo secret | app.trunk.io -> Settings -> Developer -> API Keys (needs "Upload test results" permission) |
+
+Set repo variables/secrets at GitHub -> repo -> Settings -> Secrets and
+variables -> Actions (variables and secrets are separate tabs there).
+
+`Microsoft.Testing.Extensions.JUnitReport` is currently a **preview/prerelease**
+NuGet package (pinned in `Directory.Packages.props`); its surface may still
+change upstream.

@@ -93,7 +93,16 @@ jobs:
       - name: Build
         run: dotnet build tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-restore '/bl:artifacts/architecture-tests/build-{}.binlog'
       - name: Run architecture fitness tests
-        run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/architecture-tests
+        run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --report-junit --report-junit-filename results.junit.xml --results-directory artifacts/architecture-tests
+      - name: Upload Test Results to Trunk.io
+        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
+        continue-on-error: true  # don't fail this job if the upload fails
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: artifacts/architecture-tests/*.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -219,6 +228,15 @@ jobs:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           TEST_SHARD: ${{ matrix.shard }}
+      - name: Upload Test Results to Trunk.io
+        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
+        continue-on-error: true  # don't fail this job if the upload fails
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: artifacts/local-parallel-check/**/results/*.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain results, process status and timings
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -273,6 +291,18 @@ jobs:
           python3 .github/scripts/orleans_partition.py execute --shard "$ORLEANS_SHARD" --total 4 --results artifacts/orleans-results
         env:
           ORLEANS_SHARD: ${{ matrix.shard }}
+      - name: Upload Test Results to Trunk.io
+        # orleans_partition.py's execute still only emits --report-xunit-xml (not JUnit) per
+        # shard -- same known gap as the `tests` job (see docs/runbooks/local-testing.md).
+        # This step is a harmless no-op until that script also emits a .junit.xml report.
+        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
+        continue-on-error: true  # don't fail this job if the upload fails
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: artifacts/orleans-results/*.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain Orleans test results
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
