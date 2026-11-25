@@ -1,0 +1,117 @@
+# Source reading kit: START HERE
+
+You are being asked to read nine publicly hosted scans of a 1979 board-game rulebook, charts and
+scenario booklet, and to copy specific printed facts into small JSON files. You do **not** need to
+know the game, the software project it supports, or programming. About {{ROWS}} rows ({{FIELDS}}
+values) in {{PACKETS}} packets are requested. Plan on roughly 15-40 hours in total; you can
+return packets as you finish them.
+
+Your reading is a *second, independent* reading. Its value depends on you not seeing the first one.
+
+## Rules of the exercise (please read)
+
+1. **Blind.** Do not look for, ask for, or accept anyone's earlier readings, summaries or
+   "what the answer should be". If someone volunteers one, stop and tell us in `READER-DECLARATION.md`.
+2. **Read the original page.** Copy what is *printed*, not what you think it means or what makes
+   sense. If printed text conflicts with another printed place, record what the row asks for and
+   mention the conflict in your notes file.
+3. **Do not use an AI assistant or other summary to fill values.** Using OCR or zoom to read a page is fine.
+4. **Unsure means `null`.** Never guess. `null` (no quotes) is a valid, useful answer. Never use `0`,
+   `false` or an empty string as a stand-in for "unknown".
+5. **Do not edit** `manifest.json`, the `sources` block or the `manifest_sha256` line of a reading.
+
+## What you need
+
+- Python 3.8 or newer (`python3 --version`). No other software or packages.
+- A text editor that keeps plain text (not a word processor). Any code editor works.
+- The nine source PDFs listed below, saved into a folder named `sources/` next to this file.
+  File names do not matter; the tools identify files by content hash, so you cannot mix up copies.
+
+## Step 1. Download and verify the sources
+
+| Source ID | What it is | Download | Expected SHA-256 |
+| --- | --- | --- | --- |
+{{SOURCE_TABLE}}
+
+Save each PDF into `sources/`, then run:
+
+```sh
+python3 tools/verify_sources.py sources/
+```
+
+Every line should say `OK`. `UNKNOWN` means the file is not the expected edition (a re-scan, a
+re-save or a different version): do not read from it; tell us. If a link has moved, any copy whose
+SHA-256 matches is acceptable. Page numbers below are the *printed* page number unless a packet
+says "PDF page".
+
+## Step 2. Pick a packet
+
+Run `python3 tools/check_reading.py --list` for the packet names. Suggested order (each group is
+independent of the others; you can skip around):
+
+{{ORDER_TABLE}}
+
+For a packet called `NAME`, open `packets/NAME/NOTES.md`. It lists the rows to read, the source file
+each row comes from, and packet-specific wording on what each field means. `manifest.json` in the
+same folder is the machine-readable version of the same row list.
+
+## Step 3. Fill in a reading
+
+```sh
+cp packets/NAME/reading-template.json returns/NAME.json
+```
+
+Open `returns/NAME.json`. It already contains every row and field, with `"locator": "UNVERIFIED"`
+and every value `null`. For each row:
+
+- `locator`: where you read it, specific enough for someone else to find the same spot, for example
+  `printed p. 27, 60.41, Tobruk row`. Include page, section/table and row or paragraph.
+- `values`: one entry per field, read from the page. Allowed types only:
+  - an integer (`12`, no quotes, no commas, no units),
+  - `true` / `false` (only when the field asks whether something is printed),
+  - text in quotes (hex coordinates, markers and names are always text, e.g. `"C4321"`),
+  - `null` for "I cannot tell".
+  - If a packet's notes say to write a special word such as `not-listed`, use exactly that text.
+- `reader_id` (near the top): replace `replace-with-reviewer-id` with one stable identifier for you
+  (a handle or initials). Use the same one in every packet you return.
+
+Common JSON mistakes: a missing or extra comma, straight quotes `"` only (not typographic quotes),
+each field name used once per row. The checker in Step 4 reports these.
+
+## Step 4. Check your file
+
+```sh
+python3 tools/check_reading.py --packet NAME --reading returns/NAME.json --sources-dir sources/
+```
+
+It confirms the structure, that nothing is left as a placeholder, and that you have the exact
+source files. It does **not** know the answers and cannot tell you whether a value is right. It
+ends with `READY TO SEND` or `NOT READY` and a list of problems. Unknown (`null`) values do not
+block sending; they are listed so you can re-check them.
+
+## Step 5. Return your work
+
+Send back, for each finished packet:
+
+- `returns/NAME.json`,
+- optionally `returns/NAME.notes.txt` (anything surprising, conflicts between printed places,
+  pages that were unreadable, values you were unsure about),
+- once, `returns/READER-DECLARATION.md` (copy it from `READER-DECLARATION.md.tmpl`, fill it in).
+
+## What happens next
+
+The project owner compares your file to an earlier reading with a deterministic tool
+(`tools/rerun_comparison.py`) that hashes the source bytes and lists every difference. Differences are
+resolved by going back to the page. A difference is not a verdict on either reader. A clean match
+shows only that two readings agree; it does not decide what the rules mean, or any rights question.
+
+## Notice
+
+The packet row lists and notes in this kit describe material from a published game and are **not**
+licensed under Apache-2.0 (see the project README, "Material not licensed under Apache-2.0"). They
+are provided to you only to do this review. The kit contains no scans; the source PDFs come from the
+public links above, which this project neither hosts nor controls and whose redistribution terms it has
+not verified. Please do not republish the kit or the sources. This is not legal advice.
+
+Kit integrity: `MANIFEST.sha256` lists a SHA-256 for every file in this kit
+(`shasum -a 256 -c MANIFEST.sha256` on macOS/Linux).
