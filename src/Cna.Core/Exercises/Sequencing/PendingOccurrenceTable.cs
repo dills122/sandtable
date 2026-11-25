@@ -16,8 +16,9 @@ internal enum PendingTailOwner
 /// One row per (operation stage, acting role) occurrence. <paramref name="Prefix"/> is the
 /// PendingDecision type-name prefix ("Second", "StageEntry", ...); null means the pre-#394 legacy
 /// chain, which has no PendingDecision for Reserve/Move/Breakdown/Combat.
-/// <paramref name="CombatArms"/> says whether the occurrence's own Combat/Truck/Post-Combat
-/// subtypes exist yet (Stage 3 slices S3-4+ flip this one flag).
+/// <paramref name="CombatArms"/> says whether the occurrence's own
+/// Assault/Truck/Post-Combat subtypes exist yet (Stage 3 flips this flag with S3-5; its CombatSelection
+/// subtype exists from S3-4 and is derived regardless of this flag).
 /// </summary>
 internal sealed record PendingOccurrence(string? Prefix, PendingTailOwner Tail, bool CombatArms);
 
@@ -32,7 +33,7 @@ internal static class PendingOccurrenceTable
         [(1, LandActorRole.SecondActingSide)] = new("Second", PendingTailOwner.InsideAssault, true),
         [(2, LandActorRole.FirstActingSide)] = new("StageEntry", PendingTailOwner.InsideAssault, true),
         [(2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", PendingTailOwner.InsideAssault, true),
-        // S3-1..S3-3: Reserve/Move/MovementCompletion/Breakdown only; flip CombatArms with S3-4.
+        // S3-1..S3-4: Reserve/Move/MovementCompletion/Breakdown/CombatSelection only; flip CombatArms with S3-5.
         [(3, LandActorRole.FirstActingSide)] = new("ThirdStage", PendingTailOwner.InsideAssault, false),
     };
 

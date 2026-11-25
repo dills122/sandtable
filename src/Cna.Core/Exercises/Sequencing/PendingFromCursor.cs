@@ -51,7 +51,7 @@ internal static class PendingFromCursor
         {
             if (PendingOccurrenceTable.Find(done.OperationStage, done.ActorRole) is not { } occurrence) return null;
             if (MechanicOf(done) is not { } mechanic) return null;
-            if (!occurrence.CombatArms && mechanic is Mechanic.CombatSelection or Mechanic.Combat or Mechanic.Truck or Mechanic.PostCombat)
+            if (!occurrence.CombatArms && mechanic is Mechanic.Combat or Mechanic.Truck or Mechanic.PostCombat)
                 return null;
             if (occurrence.Prefix is null)
                 return mechanic switch { Mechanic.Truck => "TruckConvoyPassPending", Mechanic.PostCombat => "PostCombatPassPending", _ => null };
