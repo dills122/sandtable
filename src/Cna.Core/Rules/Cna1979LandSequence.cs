@@ -1,10 +1,15 @@
+using System.Collections.Concurrent;
+
 namespace Cna.Core.Rules;
 
 public static class Cna1979LandSequence
 {
-    // Catalog values (including source lists) are immutable. Retain only the last turn;
-    // concurrent misses may rebuild it, but cannot mix positions from different turns.
-    private static IReadOnlyList<LandSequencePosition>? lastTurn;
+    // Catalog values (including source lists) are immutable. Cache admitted game
+    // turns only; callers may still inspect any positive turn without retaining it.
+    private sealed record TurnCatalog(IReadOnlyList<LandSequencePosition> Positions,
+        IReadOnlyDictionary<string, int> IndexByPositionId);
+
+    private static readonly ConcurrentDictionary<int, TurnCatalog> Turns = new();
 
     public const int ContractVersion = 3;
     public const int CatalogSchemaVersion = 3;
@@ -24,10 +29,16 @@ public static class Cna1979LandSequence
     public static IReadOnlyList<LandSequencePosition> CreateTurn(int gameTurn)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(gameTurn, 1);
-        var cached = Volatile.Read(ref lastTurn);
-        if (cached is not null && cached[0].GameTurn == gameTurn)
-            return cached;
+        return GetCatalog(gameTurn).Positions;
+    }
 
+    private static TurnCatalog GetCatalog(int gameTurn) =>
+        gameTurn <= Cna1979Weather.MaxGameTurn
+            ? Turns.GetOrAdd(gameTurn, static turn => BuildTurn(turn))
+            : BuildTurn(gameTurn);
+
+    private static TurnCatalog BuildTurn(int gameTurn)
+    {
         var positions = new List<LandSequencePosition>();
 
         AddPhase(positions, gameTurn, 0, "initiative-determination", LandStageIds.InitiativeDetermination, LandPhaseIds.InitiativeDetermination);
@@ -43,17 +54,19 @@ public static class Cna1979LandSequence
 
         AddPhase(positions, gameTurn, 0, "end-of-turn", LandStageIds.EndOfTurn, LandPhaseIds.EndOfTurn);
         IReadOnlyList<LandSequencePosition> result = Array.AsReadOnly(positions.ToArray());
-        Volatile.Write(ref lastTurn, result);
-        return result;
+        var index = result.Select((position, i) => (position.PositionId, Index: i))
+            .ToDictionary(value => value.PositionId, value => value.Index, StringComparer.Ordinal);
+        return new(result, index);
     }
 
     public static LandSequencePosition GetNext(LandSequencePosition current)
     {
         ArgumentNullException.ThrowIfNull(current);
-        var positions = CreateTurn(current.GameTurn);
-        var currentIndex = positions.ToList().FindIndex(position => position == current);
+        var catalog = GetCatalog(current.GameTurn);
+        var positions = catalog.Positions;
 
-        if (currentIndex < 0)
+        if (!catalog.IndexByPositionId.TryGetValue(current.PositionId, out var currentIndex)
+            || positions[currentIndex] != current)
         {
             throw new ArgumentException(
                 "The current position does not belong to the declared Land turn.",
