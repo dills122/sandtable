@@ -1,5 +1,7 @@
 # CI redesign: measurement and decision (2026-11-25)
 
+**Status:** Decision recorded; implementation PRs pending. Owner-controlled changes remain out of scope.
+
 Owner problem: CI is a blocker. Runs queue for an hour, every rebase restarts 25-60 minutes, semantic collisions reach `main`, CodeQL is red or queued, and 13 PRs were merged without waiting. This note measures why and decides what to change. Labels: **VERIFIED** (measured from `gh api` data pulled 2026-11-25 17:20 UTC, window 2026-11-22 17:20 to 2026-11-25 17:20 UTC, 913 runs), **DOC** (GitHub documentation or an earlier repo note), **ASSUMED** (extrapolated; stated as such). Earlier context: [2026-11-24 wall-clock measurement](2026-11-24-ci-wall-clock-measurement.md), [2026-10-15 runtime note](ci-runtime-optimization-2026-10-15.md).
 
 ## 1. Findings (numbers)
