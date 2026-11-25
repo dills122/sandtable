@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Campaigns;
+using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Cna.OrleansHost.Timeouts;
 using Microsoft.Data.Sqlite;
@@ -223,6 +224,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void AppendSelectionNoAttack(SqliteConnection connection, SqliteTransaction transaction,
         string campaignId, Loaded authority)
     {
+        // Later-stage timeout continuations are not yet durable Host kinds.
+        if (!CampaignExercises.QueryCheckpoint(authority.Session).PositionId.StartsWith(
+                "land.position.operation-1.", StringComparison.Ordinal))
+            throw new InvalidOperationException("Later-stage Selection continuation is not wired.");
         // The second side's V48 timeout completes through its own no-attack.
         if (CampaignHostAdapter.IsSecondSideCombatPending(authority.Session)
             && CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(authority.Session))

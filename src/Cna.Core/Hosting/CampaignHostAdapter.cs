@@ -1171,18 +1171,30 @@ public static class CampaignHostAdapter
     public static string NoTimingRbaCancellationHash =>
         CampaignNativeCombatRbaCancellationV33.NoTimingConfigurationHash;
 
+    private static CampaignNativeRepeatAssaultRuntime? CurrentOccurrenceAssault(ExerciseSession session) =>
+        session.Pending switch
+        {
+            SecondAssaultPending => session.CurrentSecondAssault,
+            StageEntryAssaultPending => session.CurrentStageEntryAssault,
+            StageEntrySecondAssaultPending => session.CurrentStageEntrySecondAssault,
+            ThirdStageAssaultPending => session.CurrentThirdStageAssault,
+            ThirdStageSecondAssaultPending => session.CurrentThirdStageSecondAssault,
+            null => session.CurrentRepeatAssault,
+            _ => null,
+        };
+
     public static (string DecisionActionId, string BarrageEventHash)
         QueryNativeCombatRbaRoundBinding(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
-        if (session.CurrentRepeatAssault is
+        if (CurrentOccurrenceAssault(session) is
             { Barrage: { } repeatedBarrage, Decline: null, RbaCancellation: null } repeated
             && checkpoint.StateVersion == ((repeated.RetreatMoves.Count > 0 ? repeated.RetreatMoves[^1].StateVersion : (long?)null) ?? repeatedBarrage.StateVersion))
             return (repeated.Selection.Decision.ActionId,
                 "sha256:" + Convert.ToHexStringLower(
                     System.Security.Cryptography.SHA256.HashData(repeatedBarrage.SerializeCanonical())));
-        if (session.CurrentRepeatAssault is not null
+        if (session.Pending is not null || CurrentOccurrenceAssault(session) is not null
             || session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatBarrage is not { } barrage
             || session.CurrentCombatRetreatDecline is not null
@@ -1198,7 +1210,7 @@ public static class CampaignHostAdapter
         CampaignExercises.CanCompleteNativeCombatForceAssignment(session);
 
     public static bool IsInitialNativeCombatForceRound(ExerciseSession session) =>
-        session.CurrentRepeatAssault is null && session.CurrentPostRepeat is null
+        session.Pending is null && CurrentOccurrenceAssault(session) is null && session.CurrentPostRepeat is null
         && session.CurrentCombatRetreatDecline is not null
         && session.CurrentCombatForceCompletion is null
         && session.CurrentCombatForceCancellation is null;
@@ -1209,7 +1221,7 @@ public static class CampaignHostAdapter
     /// <see cref="IsInitialNativeCombatForceRound"/>.
     /// </summary>
     public static bool IsRepeatedNativeCombatForceRound(ExerciseSession session) =>
-        session.CurrentRepeatAssault is
+        CurrentOccurrenceAssault(session) is
         {
             Decline: not null,
             ForceCompletion: null,
@@ -1235,46 +1247,64 @@ public static class CampaignHostAdapter
         CampaignExercises.CompleteNoPostResultRetreat(session);
 
     public static bool IsNativeCombatNoPostResultRetreat(ExerciseSession session) =>
-        (session.CurrentCombatAssaultResult is { Facts.RequiredRetreat: 0 }
+        (session.Pending is null && session.CurrentCombatAssaultResult is { Facts.RequiredRetreat: 0 }
             && session.CurrentCombatPostResultRetreat is null)
-        || session.CurrentRepeatAssault is
+        || CurrentOccurrenceAssault(session) is
         {
             Result.Facts.RequiredRetreat: 0, PostResultRetreat: null
         };
 
     public static bool IsNativeCombatForcePrepared(ExerciseSession session) =>
-        (session.CurrentCombatForceSeals.Count == 2
+        (session.Pending is null && session.CurrentCombatForceSeals.Count == 2
             && session.CurrentCombatForceCompletion is null)
-        || session.CurrentRepeatAssault is
+        || CurrentOccurrenceAssault(session) is
         {
             Seals.Count: 2,
             ForceCompletion: null
         };
 
-    public static bool IsNativeCombatVoluntaryFinish(ExerciseSession session) =>
-        session.CurrentCombatDecision?.Decision.Choice == "finish-combat-without-attack";
+    // Pending names identify the current occurrence, not simply a retained field.
+    // The pre-#394 first-side path has no Pending arm; its decision must still
+    // match live contact authority. In all other occurrences, only the
+    // selection arm owns an accepted selection awaiting continuation.
+    private static string? CurrentFirstSideCombatChoice(ExerciseSession session) =>
+        session.Pending switch
+        {
+            StageEntryCombatSelectionPending => session.CurrentStageEntryCombatDecision!.Decision.Choice,
+            ThirdStageCombatSelectionPending => session.CurrentThirdStageCombatDecision!.Decision.Choice,
+            null when session.CurrentCombatDecision is { } selection
+                && selection.StateVersion == session.CurrentContacts.AuthorityVersion => selection.Decision.Choice,
+            _ => null,
+        };
 
-    // #394 extra-3: IsNativeCombatVoluntaryFinish/IsNativeCombatSelectedAssault
-    // key off CurrentCombatDecision only. Once a second-side decision exists
-    // that field is stale (whatever the first side chose), so the Host's
-    // post-selection auto-continuation needs these side-correct siblings
-    // instead of reusing the first-side checks against the wrong decision.
+    private static string? CurrentSecondSideCombatChoice(ExerciseSession session) =>
+        session.Pending switch
+        {
+            SecondCombatSelectionPending => session.CurrentSecondCombatDecision!.Decision.Choice,
+            StageEntrySecondCombatSelectionPending => session.CurrentStageEntrySecondCombatDecision!.Decision.Choice,
+            ThirdStageSecondCombatSelectionPending => session.CurrentThirdStageSecondCombatDecision!.Decision.Choice,
+            _ => null,
+        };
+
+    public static bool IsNativeCombatVoluntaryFinish(ExerciseSession session) =>
+        CurrentFirstSideCombatChoice(session) == "finish-combat-without-attack";
+
     public static bool IsNativeSecondCombatVoluntaryFinish(ExerciseSession session) =>
-        session.CurrentSecondCombatDecision?.Decision.Choice == "finish-combat-without-attack";
+        CurrentSecondSideCombatChoice(session) == "finish-combat-without-attack";
 
     public static bool IsNativeSecondCombatSelectedAssault(ExerciseSession session) =>
-        session.CurrentSecondCombatDecision?.Decision.Choice == "select-contact-assault";
+        CurrentSecondSideCombatChoice(session) == "select-contact-assault";
 
-    // #394 extra-3: lets callers (the Host's post-selection auto-continuation)
-    // guard the *first*-side-only checks above/below so they never alias onto
-    // a second-side decision just because the stale CurrentCombatDecision
-    // happens to carry the same Choice string the second side also picked.
     public static bool IsSecondSideCombatPending(ExerciseSession session) =>
-        session.CurrentSecondBreakdown is not null;
+        session.Pending is SecondBreakdownPending or SecondCombatSelectionPending
+            or StageEntrySecondBreakdownPending or StageEntrySecondCombatSelectionPending
+            or ThirdStageSecondBreakdownPending or ThirdStageSecondCombatSelectionPending;
 
     public static bool IsNativeCombatSelectedAssault(ExerciseSession session) =>
-        session.CurrentCombatDecision?.Decision.Choice == "select-contact-assault";
+        CurrentFirstSideCombatChoice(session) == "select-contact-assault";
 
+    // Historical selection accessor retained for compatibility. Current-round routing
+    // must use IsNativeRepeatCombatNoAttackPending instead.
     public static bool IsNativeRepeatCombatVoluntaryFinish(ExerciseSession session) =>
         (session.CurrentPostRepeat?.Selection
             ?? session.CurrentRepeatCombatSelection)?.Choice
@@ -1295,21 +1325,23 @@ public static class CampaignHostAdapter
     // unrelated Combat's initial Selection timeout is never misrouted to
     // CompleteNativeRepeatCombatNoAttack.
     public static bool IsNativeRepeatCombatNoAttackPending(ExerciseSession session) =>
-        (session.CurrentPostRepeat?.Selection
+        session.Pending is null
+        && (session.CurrentPostRepeat?.Selection
             ?? session.CurrentRepeatCombatSelection) is { } selection
         && selection.Choice == "finish-combat-without-attack"
         && selection.StateVersion == session.CurrentContacts.AuthorityVersion;
 
     public static bool IsNativeRepeatCombatSelectedAssault(ExerciseSession session) =>
-        (session.CurrentPostRepeat?.Selection
-            ?? session.CurrentRepeatCombatSelection)?.Choice
-            == "select-contact-assault";
+        session.Pending is null
+        && (session.CurrentPostRepeat?.Selection ?? session.CurrentRepeatCombatSelection) is { } selection
+        && selection.Choice == "select-contact-assault"
+        && selection.StateVersion == session.CurrentContacts.AuthorityVersion;
 
     public static (string DecisionActionId, string DeclineEventHash)
         QueryNativeCombatForceRoundBinding(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (session.CurrentRepeatAssault is
+        if (CurrentOccurrenceAssault(session) is
             {
                 Decline: { } repeatedDecline,
                 ForceCompletion: null,
@@ -1319,7 +1351,7 @@ public static class CampaignHostAdapter
                 "sha256:" + Convert.ToHexStringLower(
                     System.Security.Cryptography.SHA256.HashData(
                         repeatedDecline.SerializeCanonical())));
-        if (session.CurrentRepeatAssault is not null
+        if (session.Pending is not null || CurrentOccurrenceAssault(session) is not null
             || session.CurrentCombatDecision is not { } selected
             || session.CurrentCombatRetreatDecline is not { } decline
             || session.CurrentCombatForceCompletion is not null
@@ -1532,7 +1564,8 @@ public static class CampaignHostAdapter
         try
         {
             var state = CampaignExercises.QueryNativeReserveReleaseState(session);
-            return !state.Completed && state.Pending(session.Context).Count == 0;
+            return state.StateVersion == session.CurrentContacts.AuthorityVersion
+                && !state.Completed && state.Pending(session.Context).Count == 0;
         }
         catch (InvalidOperationException)
         {
@@ -2658,7 +2691,7 @@ public static class CampaignHostAdapter
             || set.Candidates.Any(value => value is not (MoveReactingElementAction
                 or DeclineReactionWindowAction or CompleteReactionParticipantAction)))
         {
-            if (session.CurrentSecondMove?.ReactionWindow is not null)
+            if (session.Pending is SecondMovePending && session.CurrentSecondMove?.ReactionWindow is not null)
                 throw new CampaignReactionWindowRuleNotImplementedException(
                     "A reaction window opened by a second-side Movement cannot yet be " +
                     "resolved through an owner opening (#394 gap 3).");
@@ -2743,15 +2776,7 @@ public static class CampaignHostAdapter
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Cycle control needs an owner side."),
         };
-        if ((session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is { } secondSide
-                ? secondSide.Control
-                : session.CurrentRepeatAssault?.Release is not null
-                ? session.CurrentRepeatAssault.Control
-                : session.CurrentPostRepeat is not null
-                    ? session.CurrentPostRepeat.Control
-                    : session.CurrentCycleControl) is not null)
-            throw new InvalidOperationException("Cycle control is already committed.");
-        var release = CampaignExercises.QueryNativeReserveReleaseState(session);
+        var release = CampaignExercises.QueryPendingNativeCycleControl(session);
         var cut = CampaignCycleControlOwnerCutV28.Project(release,
             session.Context, session.CurrentContacts, side);
         return new CampaignHostCycleControlOwnerDraft(release.StateVersion,
@@ -2765,21 +2790,13 @@ public static class CampaignHostAdapter
         CampaignCycleControlOwnerCutV28 cut;
         try
         {
-            release = CampaignExercises.QueryNativeReserveReleaseState(session);
+            release = CampaignExercises.QueryPendingNativeCycleControl(session);
             var side = submission.Audience switch
             {
                 CampaignActionAudience.Axis => LandSide.Axis,
                 CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
                 _ => throw new InvalidOperationException("Cycle control needs an owner side."),
             };
-            if ((session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is { } secondSide
-                    ? secondSide.Control
-                    : session.CurrentRepeatAssault?.Release is not null
-                    ? session.CurrentRepeatAssault.Control
-                    : session.CurrentPostRepeat is not null
-                        ? session.CurrentPostRepeat.Control
-                        : session.CurrentCycleControl) is not null)
-                throw new InvalidOperationException("Cycle control is already committed.");
             cut = CampaignCycleControlOwnerCutV28.Project(release,
                 session.Context, session.CurrentContacts, side);
         }
@@ -2816,8 +2833,9 @@ public static class CampaignHostAdapter
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Repeated Movement needs an owner side."),
         };
-        // The second acting side has no Repeat edge this release.
-        if (session.CurrentInitiativeDeclaration is null && session.CurrentSecondAssault is not null)
+        var release = CampaignExercises.QueryNativeReserveReleaseState(session);
+        // Repeat movement is only wired for the legacy first-side occurrence.
+        if (session.Pending is not null)
             throw new InvalidOperationException("Repeated Movement is unavailable.");
         if ((session.CurrentPostRepeat?.Movement is not null
                 || session.CurrentPostRepeat is null
@@ -2827,7 +2845,6 @@ public static class CampaignHostAdapter
                 ? session.CurrentPostRepeat.Control
                 : session.CurrentRepeatAssault?.Control ?? session.CurrentCycleControl) is not { } control)
             throw new InvalidOperationException("Repeated Movement is unavailable.");
-        var release = CampaignExercises.QueryNativeReserveReleaseState(session);
         var cut = CampaignRepeatMovementOwnerCutV29.Project(release, control,
             session.Context, session.CurrentContacts, side);
         return new CampaignHostRepeatMovementOwnerDraft(control.StateVersion,
@@ -2987,18 +3004,18 @@ public static class CampaignHostAdapter
     }
 
     public static bool IsNativeCombatNoCustody(ExerciseSession session) =>
-        (session.CurrentCombatSettlement is { PendingCaptives.Count: 0 }
+        (session.Pending is null && session.CurrentCombatSettlement is { PendingCaptives.Count: 0 }
             && session.CurrentCombatCustodyDisposition is null)
-        || session.CurrentRepeatAssault is
+        || CurrentOccurrenceAssault(session) is
         {
             Settlement.PendingCaptives.Count: 0,
             Custody: null
         };
 
     public static bool IsNativeCombatCustodyPending(ExerciseSession session) =>
-        (session.CurrentCombatSettlement is { PendingCaptives.Count: > 0 }
+        (session.Pending is null && session.CurrentCombatSettlement is { PendingCaptives.Count: > 0 }
             && session.CurrentCombatCustodyDisposition is null)
-        || session.CurrentRepeatAssault is
+        || CurrentOccurrenceAssault(session) is
         {
             Settlement.PendingCaptives.Count: > 0,
             Custody: null
