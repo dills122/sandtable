@@ -1632,10 +1632,12 @@ public static class CampaignHostAdapter
         // EntryHash QuerySecondCombatSelectionRoundBinding computed when the
         // round was first initialized (CampaignExercises.cs), or a
         // genuinely correct second-side round looks tampered-with on replay.
-        // Stage-aware selection uses the canonical V46 bytes for each distinct occurrence.
-        // TODO(NativeStageEntrySecondBreakdownKind): add that kind here with its Host wiring.
-        if (step.Kind is CampaignHostAcceptedStep.NativeSecondBreakdownKind
-                or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind && step.EventRecords.Count == 1)
+        // TODO(StageEntrySelectionRounds): add NativeStageEntryBreakdownKind and
+        // NativeStageEntrySecondBreakdownKind here when the Stage 2 owner/timeout
+        // paths retain and close their rounds. The stage-aware Core binding uses
+        // this same V46 digest and version. Recognizing an unwired terminal
+        // Breakdown now would make VerifySelectionRounds require a missing row.
+        if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind && step.EventRecords.Count == 1)
         {
             var secondBreakdown = CampaignNativeSecondBreakdownV46.Deserialize(step.EventRecords[0]);
             return (CampaignSelectionTimeoutEvidenceV38.Digest(secondBreakdown.SerializeCanonical()), secondBreakdown.StateVersion);

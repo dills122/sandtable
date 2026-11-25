@@ -25,15 +25,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             AppendSelectionNoAttack(connection, transaction, campaignId, completed);
             return;
         }
-        RetainSelectionRound(connection, transaction, authority, campaignId, binding, opened);
-    }
-
-    private void RetainSelectionRound(SqliteConnection connection, SqliteTransaction transaction,
-        Loaded authority, string campaignId, (string EntryHash, long StateVersion) binding, long opened)
-    {
-        var timing = authority.Timing ?? throw new InvalidOperationException("Selection timing is missing.");
         var round = new SelectionRound(campaignId, binding.EntryHash, binding.StateVersion,
-            timing.Hash, opened, checked(opened + timing.Budget("selection")),
+            authority.Timing.Hash, opened, checked(opened + authority.Timing.Budget("selection")),
             opened, "collecting");
         using var insert = connection.CreateCommand();
         insert.Transaction = transaction;

@@ -94,10 +94,10 @@ The Stage 2 declaration is available only at `land.position.operation-2.initiati
 to the resolved initiative holder. Weather, Organization, Naval Convoy Arrival, Fleet Assignment,
 and Fleet Repair then auto-drain in the durable owner-opening path; the read-only open-for-seat
 route previews the same transitions without committing them. The first-side movement completion
-also attempts its existing obligation-free Breakdown transition and retains the timed selection
-round atomically, using the accepted V46 event's digest and state version. Without pinned timing
-or a trusted clock, Breakdown remains pending until the untimed selection continuation is wired.
-None of these System steps is a
+also attempts its existing obligation-free Breakdown transition, but does not create or arm a
+selection round until Stage 2 selection and its timeout continuation are wired. The future V46
+round binding is the canonical event digest and state version, as verified against the in-flight
+stage-aware Core changes. None of these System steps is a
 player or operator HTTP action.
 
 | Stage / opening kind | `actingElementId` | Core adapter query / submit |
