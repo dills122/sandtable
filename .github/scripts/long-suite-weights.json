@@ -14,6 +14,9 @@
     "Cna.Core.Tests.Exercises.CampaignStageThreeEntryVerificationTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Exercises.CampaignStageEntryCursorContractTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Actions.BreakdownActionMembershipTests": {
       "parts": 1
     },

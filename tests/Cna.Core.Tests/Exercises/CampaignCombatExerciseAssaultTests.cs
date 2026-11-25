@@ -91,6 +91,43 @@ public sealed class CampaignCombatExerciseAssaultTests
     }
 
     [Fact]
+    public void WeatherAfterAssaultUsesTheNextCursorWithoutOverlap()
+    {
+        var entry = AtCombatPosition("campaign-weather-after-assault", 5);
+        var assault = CampaignExercises.QueryWithCombat(entry, CampaignActionAudience.Axis).ActionSet!
+            .Candidates.OfType<SelectContactAssaultAction>().Single(value => value.ActingElementId == "axis-infantry");
+        var (_, session) = Drive(entry, assault.ActionId, finishSecondSideWithoutAttack: true);
+        Assert.NotNull(session.CurrentSecondNoAttackCompletion);
+        var result = session.CurrentHistory.OfType<CampaignNativeCombatAssaultResultV22>().Last();
+        var release = CampaignExercises.CompleteNativeReserveRelease(session);
+        Assert.True(release.IsAccepted, release.RejectionReason.ToString());
+        session = release.SuccessorSession!;
+        var secondSide = session.CurrentSnapshot.OperationStageOrders.Single(value =>
+            value.GameTurn == session.CurrentSnapshot.Setup.InitialGameTurn && value.OperationStage == 1).SecondSide;
+        var secondAudience = secondSide == LandSide.Axis ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        session = CampaignStageEntryCursorContractTests.FinishCycleThroughPostCombatPasses(session, secondAudience);
+        var holderAudience = session.CurrentSnapshot.InitiativeHolder == LandSide.Axis
+            ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        var declaration = CampaignExercises.SubmitStageEntryInitiativeDeclaration(session, holderAudience,
+            CampaignStageEntryCursorContractTests.Hash("weather-after-assault"), actFirst: true);
+        Assert.True(declaration.IsAccepted, declaration.RejectionReason.ToString());
+        session = declaration.SuccessorSession!;
+
+        var initial = session.CurrentSnapshot.RandomState;
+        Assert.Equal(result.AfterRandomState, ExerciseSession.LatestCursor(initial, session.CurrentHistory));
+        var weatherResult = CampaignExercises.CompleteStageEntryWeather(session);
+        Assert.True(weatherResult.IsAccepted, weatherResult.RejectionReason.ToString());
+        session = weatherResult.SuccessorSession!;
+        var weather = session.CurrentStageEntryWeather!;
+        Assert.Equal(result.AfterRandomState.NextByteCursor, weather.PriorRandomCursor);
+        var next = ExerciseSession.LatestCursor(initial, session.CurrentHistory);
+        Assert.Equal(weather.ResultRandomCursor, next.NextByteCursor);
+        Assert.True(next.NextByteCursor > result.AfterRandomState.NextByteCursor);
+        Assert.Equal(result.AfterRandomState.Seed, next.Seed);
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+    }
+
+    [Fact]
     public void CycleControlOffersRepeatAndFinishAndRepeatStopsAtTheRepeatedMovementFrontier()
     {
         var entry = AtCombatPosition("campaign-022c-repeat", 5);
@@ -183,7 +220,7 @@ public sealed class CampaignCombatExerciseAssaultTests
     // two simultaneous seals (Axis first); an owner choice takes the lowest action ID, except Cycle
     // Control, which takes Finish. Each accepted step is compared with the direct trusted step.
     private static (List<string> Kinds, ExerciseSession Frontier) Drive(ExerciseSession session, string assaultId,
-        bool stopAtCycleControl = false, bool releaseReserve = false)
+        bool stopAtCycleControl = false, bool releaseReserve = false, bool finishSecondSideWithoutAttack = false)
     {
         var kinds = new List<string> { "select-contact-assault" };
         session = Step(session, CampaignActionAudience.Axis, assaultId);
@@ -203,6 +240,12 @@ public sealed class CampaignCombatExerciseAssaultTests
             var candidate = set.Candidates.FirstOrDefault(value => value.Kind == "combat-cycle-control-finish")
                 ?? (releaseReserve
                     ? set.Candidates.FirstOrDefault(value => value.Kind == "combat-reserve-release-release-i")
+                    : null)
+                ?? (finishSecondSideWithoutAttack
+                    ? set.Candidates.OfType<CompleteReserveDesignationAction>().FirstOrDefault()
+                    : null)
+                ?? (finishSecondSideWithoutAttack && session.CurrentSecondBreakdown is not null
+                    ? set.Candidates.OfType<FinishCombatWithoutAttackAction>().FirstOrDefault()
                     : null)
                 ?? set.Candidates.OrderBy(value => value.ActionId, StringComparer.Ordinal).First();
             Assert.True(set.Candidates.Count == 1 || candidate is CombatExerciseOwnerChoiceAction

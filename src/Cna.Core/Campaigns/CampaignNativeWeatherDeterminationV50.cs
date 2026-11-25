@@ -25,14 +25,10 @@ namespace Cna.Core.Campaigns;
 // ResolveWeatherAction does). Its predecessor,
 // CampaignNativeInitiativeDeclarationV49, carries no RandomStreamState
 // field at all (Initiative Declaration doesn't consume one), so this type
-// takes its starting cursor as an explicit parameter rather than deriving
-// it from the predecessor object -- resolving *which* value a future
-// caller should pass is intentionally left to that future caller (the
-// same separation of concerns as ExerciseSession.SecondAssaultFrame, which
-// resolves a RandomStreamState cursor from CurrentHistory and hands it to
-// CampaignNativeRepeatAssaultRuntime.ReplaySecond as a parameter, rather
-// than having the runtime type look it up itself). Recorded in the design
-// doc above; not re-litigated here.
+// takes its starting cursor as an explicit parameter. ExerciseSession.LatestCursor
+// derives that value from the accepted predecessor history, as defined in
+// docs/work/plans/2026-11-24-stage-entry-weather-cursor-contract.md. The factory
+// remains independent of session history and its canonical byte layout is unchanged.
 internal sealed record CampaignNativeWeatherDeterminationV50(
     int ContractVersion, string CampaignId, long PriorStateVersion, string PriorEventHash,
     string PositionId, string NextPositionId, string WorldHash, int GameTurn, int OperationStage,
@@ -54,8 +50,8 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
         // guards that the caller passed a cursor shaped like a real
         // RandomStreamState for this algorithm, the same verification depth
         // CampaignNativeSecondMoveV44.Source applies to its own
-        // caller-supplied inputs. Correctness of the value itself is proven
-        // by cold replay (ReconstructOne), same as the rest of this chain.
+        // caller-supplied inputs. The exercise submit path and cold replay
+        // derive the value independently from the verified predecessor history.
         if (priorRandomState.ContractVersion != SandtableRandom.ContractVersion
             || priorRandomState.AlgorithmId != SandtableRandom.AlgorithmId)
             throw new InvalidOperationException("Weather Determination requires a valid random cursor.");

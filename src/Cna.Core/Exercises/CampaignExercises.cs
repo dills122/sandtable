@@ -4640,7 +4640,8 @@ public static class CampaignExercises
                     && stageEntrySecondCut.FinishOffer?.ActionId != submission.ActionId)
                     return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
                 var stageEntrySecondSelected = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                    session.CurrentSnapshot, session.CurrentSnapshot.RandomState, session.Context,
+                    session.CurrentSnapshot, ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState,
+                        session.CurrentHistory), session.Context,
                     session.CurrentContacts, side.Value, actingElementId, submission.ActionId);
                 if (stageEntrySecondSelected.Decision.Side != side || stageEntrySecondSelected.Decision.ActingElementId != actingElementId
                     || stageEntrySecondSelected.Decision.ActionId != submission.ActionId)
@@ -4665,7 +4666,8 @@ public static class CampaignExercises
                     && stageEntryCut.FinishOffer?.ActionId != submission.ActionId)
                     return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
                 var stageEntrySelected = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                    session.CurrentSnapshot, session.CurrentSnapshot.RandomState, session.Context,
+                    session.CurrentSnapshot, ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState,
+                        session.CurrentHistory), session.Context,
                     session.CurrentContacts, side.Value, actingElementId, submission.ActionId);
                 if (stageEntrySelected.Decision.Side != side || stageEntrySelected.Decision.ActingElementId != actingElementId
                     || stageEntrySelected.Decision.ActionId != submission.ActionId)
@@ -4690,7 +4692,8 @@ public static class CampaignExercises
                     && secondCut.FinishOffer?.ActionId != submission.ActionId)
                     return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
                 var secondSelected = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                    session.CurrentSnapshot, session.CurrentSnapshot.RandomState, session.Context,
+                    session.CurrentSnapshot, ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState,
+                        session.CurrentHistory), session.Context,
                     session.CurrentContacts, side.Value, actingElementId, submission.ActionId);
                 if (secondSelected.Decision.Side != side || secondSelected.Decision.ActingElementId != actingElementId
                     || secondSelected.Decision.ActionId != submission.ActionId)
@@ -4828,7 +4831,7 @@ public static class CampaignExercises
                     cancelledAtUnixMilliseconds, reason);
                 var (secondWorld, _) = QuerySecondCombatWorldAndPosition(session);
                 var secondSelected = new CampaignNativeSecondCombatDecisionStateV47(session.CurrentSnapshot,
-                    secondWorld, session.CurrentSnapshot.RandomState, secondTimeout);
+                    secondWorld, ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState, session.CurrentHistory), secondTimeout);
                 var secondContacts = session.CurrentContacts.AdvanceSecondCombatSelection(secondTimeout);
                 var secondNext = session.WithSecondCombatSelection(secondSelected, secondContacts);
                 var secondBytes = secondTimeout.SerializeCanonical();
@@ -7089,9 +7092,29 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(session);
         if (session.CurrentInitiativeDeclaration is not null)
             throw new InvalidOperationException("Initiative Declaration has already advanced its retained cut.");
-        if (session.CurrentSecondAssault is not { PostCombatPasses.Count: > 0 } repeatAssault)
+        if (session.CurrentSecondAssault is not { PostCombatPasses.Count: > 0 })
             throw new InvalidOperationException("Initiative Declaration requires the prior stage's completed preamble.");
-        return repeatAssault.PostCombatPasses[^1];
+        return QueryLatestInitiativeDeclarationSource(session);
+    }
+
+    private static CampaignNativePostCombatPassV42 QueryLatestInitiativeDeclarationSource(ExerciseSession session)
+    {
+        if (session.CurrentHistory.LastOrDefault() is not CampaignNativePostCombatPassV42 pass
+            || pass.StateVersion != session.CurrentContacts.AuthorityVersion)
+            throw new InvalidOperationException("Initiative Declaration requires the latest completed terminal pass.");
+        return pass;
+    }
+
+    private static CampaignNativeInitiativeDeclarationV49 RecreateInitiativeDeclaration(
+        ExerciseSession predecessor, CampaignNativeInitiativeDeclarationV49 declared)
+    {
+        var holder = predecessor.CurrentSnapshot.InitiativeHolder
+            ?? throw new InvalidCampaignHistoryException("Initiative holder is unresolved.");
+        if (holder != declared.DeclaringHolder)
+            throw new InvalidCampaignHistoryException("Initiative Declaration does not belong to its retained holder.");
+        return CampaignNativeInitiativeDeclarationV49.Create(QueryLatestInitiativeDeclarationSource(predecessor),
+            holder, declared.FirstSide == holder, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+            predecessor.CurrentContacts.AuthorityVersion);
     }
 
     // `actionId` here follows every other Submit method's own convention: the real
@@ -7129,6 +7152,36 @@ public static class CampaignExercises
         {
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
+    }
+
+    // Core-only automatic completion; future Host wiring must not supply a cursor.
+    internal static ExerciseStepResult CompleteStageEntryWeather(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var pending = session.Pending;
+            var declared = pending switch
+            {
+                InitiativeDeclarationPending => session.CurrentInitiativeDeclaration!,
+                ThirdStageInitiativeDeclarationPending => session.CurrentThirdStageInitiativeDeclaration!,
+                _ => throw new InvalidOperationException("Weather requires a pending initiative declaration."),
+            };
+            var prior = ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState, session.CurrentHistory);
+            var determined = CampaignNativeWeatherDeterminationV50.Create(declared, prior,
+                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+            var contacts = session.CurrentContacts.AdvanceWeatherDetermination(determined);
+            var next = pending is ThirdStageInitiativeDeclarationPending
+                ? session.WithThirdStageWeather(determined, contacts)
+                : session.WithStageEntryWeather(determined, contacts);
+            var bytes = determined.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(determined.CampaignId, determined.PriorStateVersion,
+                determined.StateVersion, determined.NextPositionId, CampaignActionAudience.System,
+                "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (IsExpectedCampaignException(error))
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
     }
 
     // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side Reserve
@@ -9395,7 +9448,8 @@ public static class CampaignExercises
                             throw new InvalidCampaignHistoryException("Stage Entry second-side Combat selection predecessor did not replay.");
                         var (world, position) = QueryStageEntrySecondCombatWorldAndPosition(predecessor);
                         var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                            predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                            predecessor.CurrentSnapshot, ExerciseSession.LatestCursor(predecessor.CurrentSnapshot.RandomState,
+                                predecessor.CurrentHistory), predecessor.Context,
                             predecessor.CurrentContacts, stageEntrySecondDecision.Decision.Side, stageEntrySecondDecision.Decision.ActingElementId,
                             stageEntrySecondDecision.Decision.ActionId).Decision;
                         var bytes = replayedDecision.SerializeCanonical();
@@ -9551,7 +9605,8 @@ public static class CampaignExercises
                                 timeout.OpenedAtUnixMilliseconds, timeout.DeadlineUnixMilliseconds,
                                 timeout.HighWaterUnixMilliseconds, timeout.CancelledAtUnixMilliseconds, timeout.Reason)
                             : CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                                predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                                predecessor.CurrentSnapshot, ExerciseSession.LatestCursor(predecessor.CurrentSnapshot.RandomState,
+                                    predecessor.CurrentHistory), predecessor.Context,
                                 predecessor.CurrentContacts, secondDecision.Decision.Side, secondDecision.Decision.ActingElementId,
                                 secondDecision.Decision.ActionId).Decision;
                         var bytes = replayedDecision.SerializeCanonical();
@@ -9719,7 +9774,8 @@ public static class CampaignExercises
                             throw new InvalidCampaignHistoryException("Stage Entry Combat selection predecessor did not replay.");
                         var (world, position) = QueryStageEntryCombatWorldAndPosition(predecessor);
                         var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
-                            predecessor.CurrentSnapshot, predecessor.CurrentSnapshot.RandomState, predecessor.Context,
+                            predecessor.CurrentSnapshot, ExerciseSession.LatestCursor(predecessor.CurrentSnapshot.RandomState,
+                                predecessor.CurrentHistory), predecessor.Context,
                             predecessor.CurrentContacts, stageEntryDecision.Decision.Side, stageEntryDecision.Decision.ActingElementId,
                             stageEntryDecision.Decision.ActionId).Decision;
                         var bytes = replayedDecision.SerializeCanonical();
@@ -9951,21 +10007,7 @@ public static class CampaignExercises
                             ?? throw new InvalidCampaignHistoryException("Initiative Declaration has no predecessor.");
                         if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                             throw new InvalidCampaignHistoryException("Initiative Declaration predecessor did not replay.");
-                        // MTS-TASK-003 (2026-11-23) correction: this previously read
-                        // predecessor.CurrentPostCombatPass -- the FIRST side's own
-                        // Patrol pass, fixed forever once set and long stale by this
-                        // point -- instead of the SECOND side's own terminal pass
-                        // (CampaignNativeRepeatAssaultRuntime.PostCombatPasses' last
-                        // entry, confirmed as the real predecessor shape by
-                        // CampaignNativeStageEntryPreambleTests' own
-                        // SecondSidePatrolComplete helper). Never triggered until
-                        // now: no caller of WithInitiativeDeclaration existed before
-                        // this change, so this mismatch was latent, not observed.
-                        var replayed = CampaignNativeInitiativeDeclarationV49.Create(
-                            predecessor.CurrentSecondAssault!.PostCombatPasses[^1],
-                            declared.DeclaringHolder, declared.FirstSide == declared.DeclaringHolder,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion)
-                            .SerializeCanonical();
+                        var replayed = RecreateInitiativeDeclaration(predecessor, declared).SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceInitiativeDeclaration(declared);
                         if (!expected.AsSpan().SequenceEqual(replayed)
                             || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
@@ -9996,9 +10038,10 @@ public static class CampaignExercises
                             ?? throw new InvalidCampaignHistoryException("Weather Determination has no predecessor.");
                         if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                             throw new InvalidCampaignHistoryException("Weather Determination predecessor did not replay.");
-                        var genesisRandom = predecessor.CurrentSnapshot.RandomState;
-                        var priorRandomState = new RandomStreamState(genesisRandom.ContractVersion, genesisRandom.AlgorithmId,
-                            genesisRandom.Seed, determined.PriorRandomCursor);
+                        var priorRandomState = ExerciseSession.LatestCursor(predecessor.CurrentSnapshot.RandomState,
+                            predecessor.CurrentHistory);
+                        if (priorRandomState.NextByteCursor != determined.PriorRandomCursor)
+                            throw new InvalidCampaignHistoryException("Weather Determination does not start at the retained cursor.");
                         var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentInitiativeDeclaration!,
                             priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
                             predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
@@ -10163,11 +10206,7 @@ public static class CampaignExercises
                             ?? throw new InvalidCampaignHistoryException("Initiative Declaration has no predecessor.");
                         if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                             throw new InvalidCampaignHistoryException("Initiative Declaration predecessor did not replay.");
-                        var replayed = CampaignNativeInitiativeDeclarationV49.Create(
-                            predecessor.CurrentStageEntrySecondAssault!.PostCombatPasses[^1],
-                            declared.DeclaringHolder, declared.FirstSide == declared.DeclaringHolder,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion)
-                            .SerializeCanonical();
+                        var replayed = RecreateInitiativeDeclaration(predecessor, declared).SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceInitiativeDeclaration(declared);
                         if (!expected.AsSpan().SequenceEqual(replayed)
                             || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
@@ -10198,9 +10237,10 @@ public static class CampaignExercises
                             ?? throw new InvalidCampaignHistoryException("Weather Determination has no predecessor.");
                         if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                             throw new InvalidCampaignHistoryException("Weather Determination predecessor did not replay.");
-                        var genesisRandom = predecessor.CurrentSnapshot.RandomState;
-                        var priorRandomState = new RandomStreamState(genesisRandom.ContractVersion, genesisRandom.AlgorithmId,
-                            genesisRandom.Seed, determined.PriorRandomCursor);
+                        var priorRandomState = ExerciseSession.LatestCursor(predecessor.CurrentSnapshot.RandomState,
+                            predecessor.CurrentHistory);
+                        if (priorRandomState.NextByteCursor != determined.PriorRandomCursor)
+                            throw new InvalidCampaignHistoryException("Weather Determination does not start at the retained cursor.");
                         var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentThirdStageInitiativeDeclaration!,
                             priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
                             predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
