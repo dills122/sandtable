@@ -27,12 +27,11 @@ internal static class CampaignCombatLossRetreat
             var element = settlement.PreLossElements.Single(e => e.ElementId == unit.ElementId);
             var component = element.Components.Single();
             var percent = role == "attacker" ? settlement.Result.AttackerPercent : settlement.Result.DefenderPercent;
-            var refusal = role == "defender" ? 10 * disposition.UnfulfilledDistance : 0;
-            var numerator = checked(component.CurrentToe * (percent + refusal));
-            var loss = role == "attacker" ? (numerator + 99) / 100 : numerator / 100;
-            var captured = role == settlement.Result.CapturedRole ? (loss * settlement.Result.CaptureShare + 99) / 100 : 0;
+            var refusal = role == "defender" ? CampaignCombatSettlementArithmetic.RefusalPercent(disposition.UnfulfilledDistance) : 0;
+            var loss = CampaignCombatSettlementArithmetic.LossToe(role == "attacker", component.CurrentToe, percent + refusal);
+            var captured = role == settlement.Result.CapturedRole ? CampaignCombatSettlementArithmetic.CapturedToe(loss, settlement.Result.CaptureShare) : 0;
             roles.Add(new(role, new(unit, component.ComponentId), component.CurrentToe, percent, refusal,
-                loss, captured, loss - captured, component.CurrentToe - loss, loss >= 3 ? 3 : 0));
+                loss, captured, loss - captured, component.CurrentToe - loss, CampaignCombatSettlementArithmetic.LossDp(loss)));
         }
         return new(settlement.SettlementId + ".losses", disposition.ReceiptId, roles);
     }
@@ -40,10 +39,10 @@ internal static class CampaignCombatLossRetreat
     {
         var disposition = settlement.Disposition ?? throw new JsonException("Retreat requires disposition.");
         var before = settlement.PreLossElements.Single(e => e.ElementId == settlement.Defender.ElementId).OperationalState.CapabilityPointsExpended;
-        var after = new CapabilityPointAmount(checked(before.Numerator + disposition.PlannedDistance), 1);
+        var after = new CapabilityPointAmount(checked(before.Numerator + CampaignCombatSettlementArithmetic.RetreatCapabilityPoints(disposition.PlannedDistance)), 1);
         return new(settlement.SettlementId + ".retreat", settlement.Losses?.ReceiptId ?? throw new JsonException("Retreat requires joint losses."),
             disposition.Kind, disposition.Route, disposition.PlannedDistance, before, after,
-            checked((int)(Math.Max(0, after.Numerator - 10) - Math.Max(0, before.Numerator - 10))), disposition.PlannedDistance == 1 ? 3 : 0);
+            checked((int)CampaignCombatSettlementArithmetic.ExcessCapabilityPoints(before.Numerator, after.Numerator)), CampaignCombatSettlementArithmetic.VictoryRp(disposition.PlannedDistance));
     }
 
     internal static CampaignWorldSnapshotV7 Project(CombatResolutionContext context, CombatAssaultResult result,
@@ -63,7 +62,7 @@ internal static class CampaignCombatLossRetreat
         {
             if (points == 0) return;
             var element = elements[elementId]; var prior = element.OperationalState.CohesionLevel;
-            var after = kind == "assault-victory-rp" ? Math.Min(10, checked(prior + points)) : checked(prior - points);
+            var after = kind == "assault-victory-rp" ? CampaignCombatSettlementArithmetic.CohesionAfterVictory(prior, points) : checked(prior - points);
             var side = elementId == expected.Attacker.ElementId ? expected.Attacker.OriginalSide : expected.Defender.OriginalSide;
             causes.Add(new(expected.SettlementId + "." + kind + "." + side, causes.Count + 1, receipt, elementId,
                 expected.GameTurn, expected.OperationStage, kind, points, prior, after));
@@ -90,7 +89,7 @@ internal static class CampaignCombatLossRetreat
             var defender = elements[expected.Defender.ElementId];
             if (retreat.CompletedDistance == 1)
             {
-                var charge = CampaignCombatSpending.ChargeMandatoryRetreat(defender.OperationalState, 10, defender.ElementId,
+                var charge = CampaignCombatSpending.ChargeMandatoryRetreat(defender.OperationalState, CampaignCombatSettlementArithmetic.Costs.BaseCapabilityPointAllowance, defender.ElementId,
                     retreat.ReceiptId, expected.SettlementId + ".retreat-excess-dp." + expected.Defender.OriginalSide, causes);
                 Require(charge.State.CapabilityPointsExpended == retreat.AfterCp && (charge.Cause?.Points ?? 0) == retreat.ExcessCpDp,
                     "Mandatory retreat ledger differs from receipt.");
@@ -116,7 +115,7 @@ internal static class CampaignCombatLossRetreat
         {
             elements[donor.ElementId] = WithEffects(donor, toe: custody.DonorToeAfter);
             guards.Add(new(custody.GuardId!, custody.ReceiptId, lot.LotId, new(lot.Captor, donor.Components.Single().ComponentId),
-                donor.CurrentLocationId, 1, 10, 0, 1, donor.OperationalState, donor.Ammunition, donor.Readiness));
+                donor.CurrentLocationId, CampaignCombatSettlementArithmetic.Rules.GuardToe, CampaignCombatSettlementArithmetic.Rules.GuardCapabilityPointAllowance, CampaignCombatSettlementArithmetic.Rules.GuardAttackRating, CampaignCombatSettlementArithmetic.Rules.GuardDefenseRating, donor.OperationalState, donor.Ammunition, donor.Readiness));
             lots[0] = new(lot.LotId, lot.LossReceiptId, lot.OriginalComponent, lot.Captor, lot.Quantity,
                 lot.OriginLocationId, donor.CurrentLocationId, "guarded", custody.GuardId, null);
             obligations.Add(new(expected.SettlementId + ".upkeep", custody.ReceiptId, "guard-priority-upkeep", custody.GuardId!, earned,
@@ -124,10 +123,10 @@ internal static class CampaignCombatLossRetreat
         }
         else
         {
-            var ordinal = checked((earned.GameTurn - 1) * 3 + earned.OperationStage - 1 + 12);
-            var eligible = new CampaignCombatScope(ordinal / 3 + 1, ordinal % 3 + 1, future: true);
+            var (eligibleTurn, eligibleStage) = CampaignCombatSettlementArithmetic.ReplacementEligibleScope(earned.GameTurn, earned.OperationStage);
+            var eligible = new CampaignCombatScope(eligibleTurn, eligibleStage, future: true);
             entitlements.Add(new(custody.EntitlementId!, custody.ReceiptId, lot.LotId, lot.OriginalComponent, lot.Quantity,
-                custody.Route[^1], earned, 12, eligible, "awaiting-eligibility-and-training"));
+                custody.Route[^1], earned, CampaignCombatSettlementArithmetic.Rules.ReplacementDelayOperationStages, eligible, "awaiting-eligibility-and-training"));
             lots[0] = new(lot.LotId, lot.LossReceiptId, lot.OriginalComponent, lot.Captor, lot.Quantity,
                 lot.OriginLocationId, null, "escaped", null, custody.ReceiptId);
             obligations.Add(new(expected.SettlementId + ".training", custody.ReceiptId, "replacement-training-gate", custody.EntitlementId!,
@@ -179,7 +178,7 @@ internal static class CampaignCombatLossRetreat
         var route = ContentPath(context, lot.OriginLocationId, guarded ? donor.CurrentLocationId : victim.CurrentLocationId);
         var before = donor.Components.Single().CurrentToe;
         if (guarded)
-            Require(route.Length - 1 <= 3 && !route.Skip(1).Contains(victim.CurrentLocationId) && before > 1 && lot.Quantity <= 5,
+            Require(CampaignCombatSettlementArithmetic.GuardLegal(route.Length - 1, lot.Quantity, before) && !route.Skip(1).Contains(victim.CurrentLocationId),
                 "Unsupported custody guard path or resources.");
         else
         {
@@ -192,11 +191,11 @@ internal static class CampaignCombatLossRetreat
                 Require(terrain == "land.terrain.clear" && move.IsSupported && move.Value.Cost.Denominator == 1, "Unsupported escape terrain.");
                 cost = checked(cost + move.Value.Cost.Numerator);
             }
-            Require(cost <= 8 && route.Length - 1 <= 4, "Escape path exceeds source CP limit.");
+            Require(CampaignCombatSettlementArithmetic.EscapeLegal(cost, route.Length - 1), "Escape path exceeds source CP limit.");
         }
         return new(settlement.SettlementId + ".custody", settlement.Retreat!.ReceiptId, lot.LotId, kind, route,
             guarded ? settlement.SettlementId + ".guard" : null, guarded ? null : settlement.SettlementId + ".replacement",
-            before, guarded ? before - 1 : before);
+            before, guarded ? before - CampaignCombatSettlementArithmetic.Rules.GuardToe : before);
     }
 
     private static CampaignElementStateV6 WithEffects(CampaignElementStateV6 element, string? location = null,
@@ -218,22 +217,11 @@ internal static class CampaignCombatLossRetreat
         Require(route.Length >= 2 && route[1] != attacker && ContentPath(context, attacker, route[1]).Length == 3, "Unsupported actual retreat geometry.");
         return [defender, route[1]];
     }
-    private static string[] ContentPath(CombatResolutionContext context, string start, string end)
-    {
-        var content = context.Creation.Setup.Artifact.Definition;
-        return ContentPath(content.Locations.Select(l => l.LocationId), content.Edges, start, end);
-    }
-    internal static string[] ContentPath(IEnumerable<string> locationIds, IEnumerable<ContentHexEdge> edges, string start, string end)
-    {
-        var graph = locationIds.ToDictionary(l => l, _ => new List<string>(), StringComparer.Ordinal);
-        foreach (var edge in edges) { graph[edge.FirstLocationId].Add(edge.SecondLocationId); graph[edge.SecondLocationId].Add(edge.FirstLocationId); }
-        var queue = new Queue<string[]>(); queue.Enqueue([start]); var seen = new HashSet<string>(StringComparer.Ordinal) { start };
-        while (queue.TryDequeue(out var path))
-        {
-            if (path[^1] == end) return path;
-            foreach (var next in graph[path[^1]]) if (seen.Add(next)) queue.Enqueue([.. path, next]);
-        }
-        throw new JsonException("No certified content route.");
-    }
+    private static string[] ContentPath(CombatResolutionContext context, string start, string end) =>
+        ContentPath(context.Creation.Setup.Artifact.Definition.Edges, start, end);
+    /// <summary>Shared with native V25: ordinal-sorted BFS, so equal-length ties resolve identically.</summary>
+    internal static string[] ContentPath(IEnumerable<ContentHexEdge> edges, string start, string end) =>
+        CampaignCombatSettlementArithmetic.ShortestRoute(edges.Select(e => (e.FirstLocationId, e.SecondLocationId)), start, end)
+        ?? throw new JsonException("No certified content route.");
     private static void Require(bool condition, string message) { if (!condition) throw new JsonException(message); }
 }

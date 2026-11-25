@@ -89,15 +89,15 @@ internal static class CampaignCombatActualPaidAssaultSupport
                 var f = Facts(diff, a, d, die);
                 for (var refusal = 0; refusal <= N(f, "requiredRetreat"); refusal++)
                 {
-                    var al = (10 * N(f, "attackerPercent") + 99) / 100; var dl = 10 * (N(f, "defenderPercent") + 10 * refusal) / 100;
-                    var ca = f["capturedRole"]?.GetValue<string>() == "attacker" ? (al * N(f, "captureShare") + 99) / 100 : 0;
-                    var cd = f["capturedRole"]?.GetValue<string>() == "defender" ? (dl * N(f, "captureShare") + 99) / 100 : 0;
+                    var toe = CampaignCombatSettlementArithmetic.Costs.CommittedToePerRole; var al = CampaignCombatSettlementArithmetic.LossToe(true, toe, (int)N(f, "attackerPercent")); var dl = CampaignCombatSettlementArithmetic.LossToe(false, toe, (int)N(f, "defenderPercent") + CampaignCombatSettlementArithmetic.RefusalPercent(refusal));
+                    var ca = f["capturedRole"]?.GetValue<string>() == "attacker" ? CampaignCombatSettlementArithmetic.CapturedToe(al, (int)N(f, "captureShare")) : 0;
+                    var cd = f["capturedRole"]?.GetValue<string>() == "defender" ? CampaignCombatSettlementArithmetic.CapturedToe(dl, (int)N(f, "captureShare")) : 0;
                     Require(ca >= 0 && ca <= al && al <= 3 && cd >= 0 && cd <= dl && dl <= 3, 7);
                     yield return O(("kind", "capture-refusal"), ("ordinal", ordinal++), ("differential", diff), ("attackerCoordinate", a),
                         ("defenderCoordinate", d), ("captureDie", die), ("refusalHexes", refusal), ("facts", f),
                         ("attackerLossToe", al), ("defenderLossToe", dl), ("attackerCapturedToe", ca), ("defenderCapturedToe", cd),
-                        ("attackerOtherLossToe", al - ca), ("defenderOtherLossToe", dl - cd), ("attackerRemainingToe", 10 - al),
-                        ("defenderRemainingToe", 10 - dl), ("attackerLossDp", al >= 3 ? 3 : 0), ("defenderLossDp", dl >= 3 ? 3 : 0));
+                        ("attackerOtherLossToe", al - ca), ("defenderOtherLossToe", dl - cd), ("attackerRemainingToe", toe - al),
+                        ("defenderRemainingToe", toe - dl), ("attackerLossDp", CampaignCombatSettlementArithmetic.LossDp(al)), ("defenderLossDp", CampaignCombatSettlementArithmetic.LossDp(dl)));
                 }
             }
         }
@@ -154,17 +154,9 @@ internal static class CampaignCombatActualPaidAssaultSupport
         }
         catch (OverflowException e) { throw new JsonException("CMB-APA-007", e); }
     }
-    internal static string[] Route(PaidAssaultFrame ctx, string origin, string destination)
-    {
-        var queue = new Queue<string[]>(); queue.Enqueue([origin]); var seen = new HashSet<string>(StringComparer.Ordinal) { origin };
-        while (queue.TryDequeue(out var path))
-        {
-            if (path[^1] == destination) return path;
-            foreach (var other in Neighbors(ctx, path[^1]).Order(StringComparer.Ordinal))
-                if (seen.Add(other)) queue.Enqueue([.. path, other]);
-        }
-        throw new JsonException("CMB-APA-007");
-    }
+    internal static string[] Route(PaidAssaultFrame ctx, string origin, string destination) =>
+        CampaignCombatSettlementArithmetic.ShortestRoute(ctx.Content["edges"]!.AsArray().Select(x => (T(x!, "firstLocationId"), T(x!, "secondLocationId"))), origin, destination)
+        ?? throw new JsonException("CMB-APA-007");
     private static IEnumerable<string> Neighbors(PaidAssaultFrame ctx, string location) => ctx.Content["edges"]!.AsArray()
         .Where(x => T(x!, "firstLocationId") == location || T(x!, "secondLocationId") == location)
         .Select(x => T(x!, T(x!, "firstLocationId") == location ? "secondLocationId" : "firstLocationId"));
@@ -204,7 +196,7 @@ internal static class CampaignCombatActualPaidAssaultSupport
         {
             if (points == 0) return;
             var before = N(element["operationalState"]!, "cohesionLevel");
-            var after = kind == "assault-victory-rp" ? Math.Min(10, before + points) : before - points;
+            var after = kind == "assault-victory-rp" ? Math.Min(CampaignCombatSettlementArithmetic.Rules.CohesionUpperCap, before + points) : before - points;
             Require(after is >= int.MinValue and <= int.MaxValue, 7); element["operationalState"]!["cohesionLevel"] = after;
             var side = T(Component(ctx, element)["unit"]!, "originalSide");
             world["cohesionCauses"]!.AsArray().Add(O(("causeId", sid + "." + kind + "." + side), ("ordinal", world["cohesionCauses"]!.AsArray().Count + 1),
@@ -214,14 +206,14 @@ internal static class CampaignCombatActualPaidAssaultSupport
         var roles = new JsonArray();
         foreach (var (role, element) in new[] { ("attacker", attacker), ("defender", defender) })
         {
-            var toe = N(frozenById[T(element, "elementId")]["components"]![0]!, "currentToe"); Require(toe == 10, 7);
-            var percent = N(facts, role + "Percent"); var refusal = role == "defender" ? 10 * (required - planned) : 0;
-            var loss = role == "attacker" ? (toe * (percent + refusal) + 99) / 100 : toe * (percent + refusal) / 100;
-            var captured = facts["capturedRole"]?.GetValue<string>() == role ? (loss * N(facts, "captureShare") + 99) / 100 : 0;
+            var toe = N(frozenById[T(element, "elementId")]["components"]![0]!, "currentToe"); Require(toe == CampaignCombatSettlementArithmetic.Costs.CommittedToePerRole, 7);
+            var percent = N(facts, role + "Percent"); var refusal = role == "defender" ? CampaignCombatSettlementArithmetic.RefusalPercent((int)(required - planned)) : 0;
+            var loss = CampaignCombatSettlementArithmetic.LossToe(role == "attacker", (int)toe, (int)(percent + refusal));
+            var captured = facts["capturedRole"]?.GetValue<string>() == role ? CampaignCombatSettlementArithmetic.CapturedToe((int)loss, (int)N(facts, "captureShare")) : 0;
             Require(captured >= 0 && captured <= loss && loss <= toe, 7);
             roles.Add(O(("role", role), ("component", Component(ctx, element)), ("committedToe", toe), ("tablePercent", percent),
-                ("refusalPercent", refusal), ("lossToe", loss), ("capturedToe", captured), ("otherLossToe", loss - captured), ("remainingToe", toe - loss), ("lossDp", loss >= 3 ? 3 : 0)));
-            element["components"]![0]!["currentToe"] = toe - loss; Cause(element, sid + ".losses", "loss-dp", loss >= 3 ? 3 : 0);
+                ("refusalPercent", refusal), ("lossToe", loss), ("capturedToe", captured), ("otherLossToe", loss - captured), ("remainingToe", toe - loss), ("lossDp", CampaignCombatSettlementArithmetic.LossDp((int)loss))));
+            element["components"]![0]!["currentToe"] = toe - loss; Cause(element, sid + ".losses", "loss-dp", CampaignCombatSettlementArithmetic.LossDp((int)loss));
         }
         st["losses"] = O(("receiptId", sid + ".losses"), ("predecessorReceiptId", sid + ".disposition"), ("roles", roles));
         var capturedRole = roles.FirstOrDefault(x => N(x!, "capturedToe") > 0);
@@ -237,28 +229,28 @@ internal static class CampaignCombatActualPaidAssaultSupport
         }
         if (cut == "losses") return world;
         var cp = defender["operationalState"]!["capabilityPointsExpended"]!; Require(N(cp, "denominator") == 1, 7);
-        var beforeCp = N(cp, "numerator"); Require(beforeCp <= long.MaxValue - planned, 7); var afterCp = beforeCp + planned;
-        var excess = Math.Max(0, afterCp - 10) - Math.Max(0, beforeCp - 10);
+        var beforeCp = N(cp, "numerator"); Require(beforeCp <= long.MaxValue - planned, 7); var afterCp = beforeCp + CampaignCombatSettlementArithmetic.RetreatCapabilityPoints(planned);
+        var excess = CampaignCombatSettlementArithmetic.ExcessCapabilityPoints(beforeCp, afterCp);
         defender["operationalState"]!["capabilityPointsExpended"] = Cp(afterCp); defender["currentLocationId"] = path[^1];
         foreach (var representation in world["representations"]!.AsArray())
             if (representation!["boundElementIds"]!.AsArray().Count == 1 && representation["boundElementIds"]![0]!.GetValue<string>() == T(defender, "elementId")) representation["currentLocationId"] = path[^1];
-        Cause(defender, sid + ".retreat", "retreat-excess-dp", excess); Cause(attacker, sid + ".retreat", "assault-victory-rp", planned > 0 ? 3 : 0);
+        Cause(defender, sid + ".retreat", "retreat-excess-dp", excess); Cause(attacker, sid + ".retreat", "assault-victory-rp", CampaignCombatSettlementArithmetic.VictoryRp(planned));
         st["retreat"] = O(("receiptId", sid + ".retreat"), ("predecessorReceiptId", sid + ".losses"), ("kind", choice), ("route", path),
-            ("completedDistance", planned), ("beforeCp", Cp(beforeCp)), ("afterCp", Cp(afterCp)), ("excessCpDp", excess), ("attackerVictoryRp", planned > 0 ? 3 : 0));
+            ("completedDistance", planned), ("beforeCp", Cp(beforeCp)), ("afterCp", Cp(afterCp)), ("excessCpDp", excess), ("attackerVictoryRp", CampaignCombatSettlementArithmetic.VictoryRp(planned)));
         if (cut == "retreat") return world;
         if (capturedRole is not null)
         {
             Require(custodyChoice is "relocate-and-guard" or "leave-unguarded", 6);
             var guarded = custodyChoice == "relocate-and-guard"; var destination = T(guarded ? captor! : victim!, "currentLocationId");
-            var custodyRoute = Route(ctx, T(lot!, "originLocationId"), destination); Require(custodyRoute.Length - 1 <= (guarded ? 3 : 8), 7);
+            var custodyRoute = Route(ctx, T(lot!, "originLocationId"), destination); Require(custodyRoute.Length - 1 <= (guarded ? CampaignCombatSettlementArithmetic.Rules.GuardedPathMaximumHexes : CampaignCombatSettlementArithmetic.Rules.EscapePathMaximumCapabilityPoints), 7);
             var donor = N(captor!["components"]![0]!, "currentToe");
             if (guarded)
             {
                 Require(donor >= 1 && !custodyRoute.Skip(1).Contains(T(victim!, "currentLocationId"), StringComparer.Ordinal), 7);
-                captor["components"]![0]!["currentToe"] = donor - 1;
+                captor["components"]![0]!["currentToe"] = donor - CampaignCombatSettlementArithmetic.Rules.GuardToe;
                 var guard = O(("guardId", sid + ".guard"), ("formationReceiptId", sid + ".custody"), ("lotId", lot!["lotId"]),
-                    ("originComponent", Component(ctx, captor)), ("currentLocationId", destination), ("toe", 1), ("baseCapabilityPointAllowance", 10),
-                    ("offensiveCloseAssaultRating", 0), ("defensiveCloseAssaultRating", 1), ("operationalState", captor["operationalState"]),
+                    ("originComponent", Component(ctx, captor)), ("currentLocationId", destination), ("toe", CampaignCombatSettlementArithmetic.Rules.GuardToe), ("baseCapabilityPointAllowance", CampaignCombatSettlementArithmetic.Rules.GuardCapabilityPointAllowance),
+                    ("offensiveCloseAssaultRating", CampaignCombatSettlementArithmetic.Rules.GuardAttackRating), ("defensiveCloseAssaultRating", CampaignCombatSettlementArithmetic.Rules.GuardDefenseRating), ("operationalState", captor["operationalState"]),
                     ("ammunition", captor["ammunition"]), ("readiness", captor["readiness"]));
                 world["guards"]!.AsArray().Add(guard); lot["status"] = "guarded"; lot["currentLocationId"] = destination; lot["guardId"] = sid + ".guard";
                 world["futureObligations"]!.AsArray().Add(O(("obligationId", sid + ".upkeep"), ("receiptId", sid + ".custody"), ("kind", "guard-priority-upkeep"),
@@ -266,11 +258,11 @@ internal static class CampaignCombatActualPaidAssaultSupport
             }
             else
             {
-                var ordinal = (N(scope, "gameTurn") - 1) * 3 + N(scope, "operationStage") - 1 + 12;
-                var eligible = O(("gameTurn", ordinal / 3 + 1), ("operationStage", ordinal % 3 + 1));
+                var (eligibleTurn, eligibleStage) = CampaignCombatSettlementArithmetic.ReplacementEligibleScope((int)N(scope, "gameTurn"), (int)N(scope, "operationStage"));
+                var eligible = O(("gameTurn", eligibleTurn), ("operationStage", eligibleStage));
                 var entitlement = O(("entitlementId", sid + ".replacement"), ("escapeReceiptId", sid + ".custody"), ("lotId", lot!["lotId"]),
                     ("originalComponent", Component(ctx, victim!)), ("quantity", lot["quantity"]), ("reunionLocationId", destination), ("earnedScope", scope),
-                    ("delayOperationStages", 12), ("eligibleScope", eligible), ("status", "awaiting-eligibility-and-training"));
+                    ("delayOperationStages", CampaignCombatSettlementArithmetic.Rules.ReplacementDelayOperationStages), ("eligibleScope", eligible), ("status", "awaiting-eligibility-and-training"));
                 world["replacementEntitlements"]!.AsArray().Add(entitlement); lot["status"] = "escaped"; lot["currentLocationId"] = null; lot["escapeReceiptId"] = sid + ".custody";
                 world["futureObligations"]!.AsArray().Add(O(("obligationId", sid + ".training"), ("receiptId", sid + ".custody"), ("kind", "replacement-training-gate"),
                     ("subjectId", entitlement["entitlementId"]), ("earnedScope", scope), ("eligibleScope", eligible), ("activationGate", "before-replacement-eligibility-training"), ("status", "retained-unimplemented")));

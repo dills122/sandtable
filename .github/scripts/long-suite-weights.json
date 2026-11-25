@@ -925,6 +925,9 @@
     },
     "Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondCombatAssaultTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CombatSettlementRulesGuardTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4790,7 +4793,12 @@
     "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": 16,
     "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": 22,
     "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": 564,
-    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": 1932
+    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": 1932,
+    "33c2f7d8c4f3ea814eb52f0aeb3d00235fa0a3962fccafcd3f6c9955cc1aaf67": 34,
+    "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": 1925,
+    "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": 1,
+    "4a48080dca55ec575ab58e2915ad02887638b7be5fa038d5f9107ad3c8aa5ce5": 2389,
+    "7b0cb26b3c22175655dbcafd3a3f71090a025ca61c10473b0be55616c07ba505": 326
   },
   "provisional_rows": {
     "5a8c29290efd77f35a3371c2048f8d3a47f5599965f60ed4557cfbbd789994c8": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; new issue #578 cursor-contract rows, pending hosted calibration",
@@ -5346,7 +5354,12 @@
     "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.EverySubtypeIsDerivableFromTheCatalogExceptTheExplicitExceptionList (spike S1), pending hosted calibration",
     "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.MoveIsTheOnlyStateThatNeedsTheLastEventTypeBeyondTheCursor (spike S1), pending hosted calibration",
     "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.CursorDerivationReproducesPendingOverEveryDrivenRealSessionState (spike S1), pending hosted calibration",
-    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests row (#579 Giarab motor placement finalization guard), pending hosted calibration"
+    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests row (#579 Giarab motor placement finalization guard), pending hosted calibration",
+    "33c2f7d8c4f3ea814eb52f0aeb3d00235fa0a3962fccafcd3f6c9955cc1aaf67": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "4a48080dca55ec575ab58e2915ad02887638b7be5fa038d5f9107ad3c8aa5ce5": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "7b0cb26b3c22175655dbcafd3a3f71090a025ca61c10473b0be55616c07ba505": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",

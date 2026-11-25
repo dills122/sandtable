@@ -70,15 +70,14 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
         var guardRoute = ShortestRoute(content.Edges, lot.OriginLocationId,
             captor.CurrentLocationId);
         var donorToe = captor.Components.Single().CurrentToe;
-        if (guardRoute is not null && guardRoute.Count - 1 <= 3
-            && lot.Quantity <= 5
-            && donorToe > 1
+        if (guardRoute is not null
+            && CampaignCombatSettlementArithmetic.GuardLegal(guardRoute.Count - 1, lot.Quantity, donorToe)
             && !guardRoute.Skip(1).Contains(victim.CurrentLocationId, StringComparer.Ordinal))
             choices.Add(Choice("relocate-and-guard", guardRoute));
 
         var escapeRoute = ShortestRoute(content.Edges, lot.OriginLocationId,
             victim.CurrentLocationId);
-        if (escapeRoute is not null && escapeRoute.Count - 1 <= 4)
+        if (escapeRoute is not null && escapeRoute.Count - 1 <= CampaignCombatSettlementArithmetic.EscapePathMaximumHexes)
         {
             long cost = 0;
             var supported = true;
@@ -96,7 +95,7 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
                 }
                 cost = checked(cost + move.Value.Cost.Numerator);
             }
-            if (supported && cost <= 8)
+            if (supported && CampaignCombatSettlementArithmetic.EscapeLegal(cost, escapeRoute.Count - 1))
                 choices.Add(Choice("leave-unguarded", escapeRoute));
         }
 
@@ -123,32 +122,7 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
     }
 
     internal static System.Collections.ObjectModel.ReadOnlyCollection<string>? ShortestRoute(
-        IReadOnlyList<ContentHexEdge> edges, string start, string end)
-    {
-        var graph = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-        foreach (var edge in edges)
-        {
-            Add(edge.FirstLocationId, edge.SecondLocationId);
-            Add(edge.SecondLocationId, edge.FirstLocationId);
-        }
-        var queue = new Queue<string[]>();
-        var seen = new HashSet<string>(StringComparer.Ordinal) { start };
-        queue.Enqueue([start]);
-        while (queue.TryDequeue(out var path))
-        {
-            if (path[^1] == end)
-                return Array.AsReadOnly(path);
-            if (!graph.TryGetValue(path[^1], out var neighbors)) continue;
-            foreach (var next in neighbors.Order(StringComparer.Ordinal))
-                if (seen.Add(next)) queue.Enqueue([.. path, next]);
-        }
-        return null;
-
-        void Add(string from, string to)
-        {
-            if (!graph.TryGetValue(from, out var neighbors))
-                graph[from] = neighbors = [];
-            neighbors.Add(to);
-        }
-    }
+        IReadOnlyList<ContentHexEdge> edges, string start, string end) =>
+        CampaignCombatSettlementArithmetic.ShortestRoute(edges.Select(e => (e.FirstLocationId, e.SecondLocationId)), start, end)
+            is { } route ? Array.AsReadOnly(route) : null;
 }
