@@ -41,6 +41,7 @@ public sealed class PendingDecisionReconstructCoverageTests
         [typeof(SecondNoAttackPending)] = NoAttackReason,
         [typeof(StageEntryNoAttackPending)] = NoAttackReason,
         [typeof(StageEntrySecondNoAttackPending)] = NoAttackReason,
+        [typeof(ThirdStageNoAttackPending)] = NoAttackReason,
         [typeof(StageEntryMovePending)] = StageEntryMoveReason,
         [typeof(StageEntrySecondMovePending)] = StageEntryMoveReason,
         [typeof(ThirdStageMovePending)] = StageEntryMoveReason,
@@ -331,13 +332,11 @@ internal static class PendingFixtures
             session = Ok(CampaignExercises.SubmitThirdStageReserve(session, audience, Hash("stage3-reserve"), elementId: null));
             session = Ok(CampaignExercises.CompleteThirdStageMovement(session, audience, Hash("stage3-movement-completion")));
             session = Ok(CampaignExercises.CompleteThirdStageBreakdown(session));
-            // S3-4: first-side Combat Decision (finish without attack).
-            var cut = CampaignExercises.QueryCheckpoint(session);
+            // S3-4/S3-5: first-side Combat Decision (finish without attack), No-Attack completion,
+            // Reserve Release, Cycle Control Finish, Truck Convoy and the four Post Combat Passes.
             var element = audience == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
-            Ok(CampaignExercises.SubmitContactOwnerCombatSelection(session,
-                new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion, cut.CampaignId,
-                    cut.StateVersion, cut.PositionId, audience, new FinishCombatWithoutAttackAction(element).ActionId),
-                element));
+            session = SubmitFinishWithoutAttack(session, audience, element, CampaignExercises.CompleteThirdStageCombatNoAttack);
+            FinishCycleThroughPostCombatPasses(session, audience);
         }
 
         private ExerciseSession Cap(ExerciseSession session)

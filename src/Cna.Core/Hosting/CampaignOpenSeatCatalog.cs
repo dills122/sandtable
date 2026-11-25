@@ -41,6 +41,8 @@ public static class CampaignOpenSeatCatalog
         new Dictionary<Type, CampaignOpenSeatRow>
         {
             // Stage 3 first side.
+            [typeof(ThirdStageAssaultPending)] = CampaignOpenSeatRow.Unwired(Stage3),
+            [typeof(ThirdStageNoAttackPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageCombatSelectionPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageBreakdownPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageMovementCompletionPending)] = CampaignOpenSeatRow.Unwired(Stage3),

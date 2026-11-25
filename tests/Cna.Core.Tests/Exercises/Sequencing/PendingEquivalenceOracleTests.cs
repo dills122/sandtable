@@ -85,6 +85,7 @@ public sealed class PendingEquivalenceOracleTests
             $"unvisited catalog positions {unvisited.Count} (expected {ExpectedUnvisited}):\n" + string.Join("\n", unvisited));
     }
 
-    // 38 after S3-4 (first-side Combat Decision sample added; the Stage 3 Assault/Truck/Post-Combat positions remain for S3-5).
-    private const int ExpectedUnvisited = 38;
+    // 31 after S3-5 (first-side Assault/No-Attack/Truck/Post-Combat sample added; what remains is the Stage 3 second side
+    // (S3-6..9), the Stage 1/2 combat sub-steps no no-attack scenario visits, and end-of-turn).
+    private const int ExpectedUnvisited = 31;
 }
