@@ -15,6 +15,37 @@ public sealed class GrazianiSourceAuthorityTests
     private static readonly string[] ExpectedGarrisonRemainderIds =
         ["giarabub-antitank", "giarabub-artillery", "giarabub-infantry", "giarabub-machine-gun",
             "soluch-antitank-company", "soluch-artillery-regiment"];
+    [Fact]
+    public void GiarabubMotorPlacementPolicyIsRejectedOnceCommonwealthIsFinalizedAndHistoryStillReconstructs()
+    {
+        var artifact = Cna1979GrazianiCairoSourceExcerpt.Build();
+        var initialization = new CampaignSourceInitialization(CapabilityPointAmount.Zero, 0);
+        var request = new CampaignCreationRequest(CampaignPregameSourceCreation.RequestVersion,
+            "source-giarab-finalization-guard", Cna1979Ruleset.Manifest.Hash, 0UL,
+            CampaignPregameSourceCreation.SetupId,
+            CampaignPregameSourceCreation.CalculateSetupHash(artifact.Identity, initialization),
+            artifact.Identity.PackId, artifact.Identity.Hash, Cna1979GrazianiCairoSourceExcerpt.ScenarioId);
+        var session = CampaignExercises.Begin(request, artifact, initialization).Session!;
+        var roll = Assert.Single(CampaignExercises.Query(session, CampaignActionAudience.Axis).ActionSet!.Candidates);
+        session = CampaignExercises.Submit(session, Submission(session, roll.ActionId, CampaignActionAudience.Axis)).SuccessorSession!;
+        var draft = CampaignExercises.QueryPregameAxisSupplyFinishDraft(session, CampaignActionAudience.Axis);
+        session = CampaignExercises.FinishPregameAxisSupply(session, Submission(session, draft.PrivateActionIds[0], CampaignActionAudience.Axis)).SuccessorSession!;
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+
+        var finishCw = CampaignExercises.Query(session, CampaignActionAudience.Commonwealth).ActionSet!.Candidates
+            .OfType<CampaignSourceSetupAction>().Single(value => value.Family == "owner-finalization");
+        var cwFinalized = CampaignExercises.Submit(session, Submission(session, finishCw.ActionId, CampaignActionAudience.Commonwealth)).SuccessorSession!;
+        Assert.Equal(2, cwFinalized.SourceAuthority!.FinalizedOwners);
+        Assert.True(CampaignExercises.Reconstruct(cwFinalized).IsVerified);
+
+        var attempt = CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(cwFinalized);
+        Assert.False(attempt.IsAccepted);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidAuthority, attempt.RejectionReason);
+        Assert.True(CampaignExercises.Reconstruct(cwFinalized).IsVerified);
+        if (attempt.IsAccepted)
+            Assert.True(CampaignExercises.Reconstruct(attempt.SuccessorSession!).IsVerified);
+    }
+
     [Theory]
     [InlineData(0UL, 3, 1)]
     [InlineData(14UL, 0, 0)]

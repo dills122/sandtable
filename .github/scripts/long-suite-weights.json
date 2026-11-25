@@ -5,6 +5,15 @@
   "baseline_attempt": 1,
   "weight_units": "observed per-row elapsed milliseconds; contention included, not CPU",
   "classes": {
+    "Cna.Core.Tests.Campaigns.CanonicalByteEnumNamePinTests": {
+      "parts": 1
+    },
+    "Cna.Core.Tests.Observations.CampaignObservationV6ReserveStateVersionTests": {
+      "parts": 1
+    },
+    "Cna.Core.Tests.Observations.CampaignObservationV7ReserveStateVersionTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Hosting.StaleSecondAssaultGuardTests": {
       "parts": 1
     },
@@ -925,6 +934,17 @@
     "6b3dad2263adbd52388635d0445060f6a8c49cad5cd1f971a40677bf3206fa9c": 2,
     "d814cda612b430703f49368409d9f19b3f5cb1c574b8329ea538527f6928f9dc": 2,
     "323eca1d290d5e3965b39e9d3e825fde55fd6b1c6a828e64bd23b48c2c97dce4": 2,
+    "ed3d6486b028f1e4a982928cd8332aa4cfe1e1276ec5f608953d5de6f61cec8b": 5,
+    "fef06dca51d27f6913d29187ce0f34556a47b08e7c79848208d7d5e32e580620": 5,
+    "0b10283b2292f036af365bd549848aeaecd0388bdc7f4360366ebd56cb01de79": 5,
+    "6edefcdf9468c73bc6b3bc51c93d58a17463cc8c08a19c547f1f4826f5c07951": 5,
+    "e1cac8f3db2054277a66f058174d32dc5041568ee048f019f40be045937afa48": 5,
+    "2a2480d015821fb3b529e6e480307120d669f0bf04f1209c5146b25d741b29a1": 5,
+    "3ae299da06a45f5a41d017792cd42f9f8f57fa4d9c1c04cf06a01bb50515185d": 5,
+    "56df62d8e6dff39db16cbf9542bca348daad537daaa63d156847a352a2fe49de": 5,
+    "4e6c1de2567ceb57a214fc2e7203c2c087e13a761361fca8b6a7518ef497274f": 5,
+    "bbdc69f41622d6ad14052d7e992c7fc97974b94d23e8a56e138d31fc03e92a77": 50,
+    "9f9b1b0c6af13dd8d4031b4b4e765bd098609959b9cd20962423d4ae8665ec27": 200,
     "0be08ab6576129fee2f7003df70dc4af8fbc581c9c02455c097a75cb9db138c1": 16,
     "cb6d499d4b7ccb2b9f4aa502e3d29a4ed89d1e7c73e65ec0ba556bb65e21b79c": 111,
     "7e3620ef571ab145ef1080430f95c5cd52664b6f6e2a4413197ff031307b58a0": 15,
@@ -4769,7 +4789,8 @@
     "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": 3264,
     "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": 16,
     "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": 22,
-    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": 564
+    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": 564,
+    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": 1932
   },
   "provisional_rows": {
     "5a8c29290efd77f35a3371c2048f8d3a47f5599965f60ed4557cfbbd789994c8": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; new issue #578 cursor-contract rows, pending hosted calibration",
@@ -5324,7 +5345,8 @@
     "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; CampaignContactJournalTests.SixTurnContactJournalCopying (#391), pending hosted calibration",
     "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.EverySubtypeIsDerivableFromTheCatalogExceptTheExplicitExceptionList (spike S1), pending hosted calibration",
     "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.MoveIsTheOnlyStateThatNeedsTheLastEventTypeBeyondTheCursor (spike S1), pending hosted calibration",
-    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.CursorDerivationReproducesPendingOverEveryDrivenRealSessionState (spike S1), pending hosted calibration"
+    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.CursorDerivationReproducesPendingOverEveryDrivenRealSessionState (spike S1), pending hosted calibration",
+    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests row (#579 Giarab motor placement finalization guard), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
