@@ -1,5 +1,7 @@
 import copy
 import json
+import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -407,7 +409,7 @@ class WorkflowTests(unittest.TestCase):
         # verifier, which still requires exactly {prepare, tests, format, orleans}.
         self.assertIn('needs: [changes, prepare, tests, format, orleans]', text)
         self.assertIn("jq -c 'del(.changes)'", text)
-        for heavy_job in ('format', 'architecture-tests', 'prepare', 'orleans'):
+        for heavy_job in ('architecture-tests', 'prepare', 'orleans'):
             body = text.split('\n  ' + heavy_job + ':\n', 1)[1].split('\n    steps:', 1)[0]
             self.assertIn("if: ${{ needs.changes.outputs.heavy == 'true' }}", body)
         orleans_job = text.split('\n  orleans:', 1)[1].split('\n  verify:', 1)[0]
@@ -436,6 +438,58 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn('continue-on-error', format_job)
         for mode in ('discover', 'execute', 'verify'):
             self.assertIn('python3 .github/scripts/long_suite_partition.py ' + mode, text)
+
+    def test_pr_scope_cases_and_full_non_pr_scope(self):
+        workflow = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
+        scope = workflow.split('- name: Classify changed paths', 1)[1].split('  format:', 1)[0]
+        script = '\n'.join(line[10:] for line in scope.split('run: |\n', 1)[1].splitlines() if line.startswith('          '))
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            def git(*args):
+                return subprocess.check_output(['git', '-C', str(root), *args], text=True).strip()
+            git('init', '-q')
+            git('config', 'commit.gpgsign', 'false')
+            git('config', 'user.name', 'CI test')
+            git('config', 'user.email', 'ci@example.invalid')
+            git('commit', '--allow-empty', '-qm', 'base')
+            base = git('rev-parse', 'HEAD')
+            git('remote', 'add', 'origin', str(root))
+            for event, paths, heavy in (
+                ('pull_request', ['site/index.html'], False),
+                ('pull_request', ['src/Cna.Maproom/index.html'], False),
+                ('pull_request', ['tools/example.py', 'deploy/compose.yml'], False),
+                ('pull_request', ['site/index.html', 'src/Cna.Core/file.cs'], True),
+                ('pull_request', ['src/Cna.Core/file.cs'], True),
+                ('pull_request', ['.github/workflows/ci.yml'], True),
+                ('pull_request', ['.github/scripts/runner.py'], True),
+                ('pull_request', ['tests/Test.cs'], True),
+                ('pull_request', ['docs/guide.md'], False),
+                ('pull_request', [], True),
+                ('push', ['site/index.html'], True),
+                ('schedule', [], True),
+            ):
+                with self.subTest(event=event, paths=paths):
+                    git('reset', '--hard', base)
+                    for name in paths:
+                        path = root / name
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        path.write_text('changed')
+                        git('add', name)
+                    git('commit', '--allow-empty', '-qm', 'change')
+                    output = root / 'output.txt'
+                    output.write_text('')
+                    subprocess.run(['bash', '-c', script], cwd=root, check=True,
+                                   env={**os.environ, 'EVENT_NAME': event, 'BASE_SHA': base, 'GITHUB_OUTPUT': str(output)},
+                                   capture_output=True, text=True)
+                    self.assertEqual(f'heavy={str(heavy).lower()}\n', output.read_text())
+        self.assertIn('types: [opened, synchronize, reopened, closed]', workflow)
+        self.assertIn('github.event.pull_request.number || github.ref', workflow)
+        self.assertIn('cancel-in-progress: true', workflow)
+        self.assertIn('schedule:', workflow)
+        self.assertIn("always() && github.event.action != 'closed'", workflow)
+        format_job = workflow.split('  format:', 1)[1].split('  architecture-tests:', 1)[0]
+        self.assertIn('name: Skip formatting for narrow scope', format_job)
+        self.assertNotIn("    if: ${{ needs.changes.outputs.heavy == 'true' }}\n    runs-on:", format_job)
 
     def test_nightly_heavy_workflow_carries_orleans_and_every_p01_family_unmodified(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci-nightly-heavy.yml').read_text()

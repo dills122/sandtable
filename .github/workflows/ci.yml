@@ -7,16 +7,19 @@ on:
       - 'docs/**'
       - '**/*.md'
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
+    types: [opened, synchronize, reopened, closed]
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # A merged PR's ref becomes main; its number stays stable. Scheduled full
+  # runs have a separate group so main-push bursts cannot cancel them.
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
@@ -33,9 +36,11 @@ jobs:
   # wait forever on "Expected". Instead this workflow always starts, and this cheap job
   # decides whether the heavy .NET jobs run. Heavy jobs skip via job-level `if:`;
   # `verify` still runs (always()) and still fails if anything failed.
-  # `heavy` is false ONLY for a pull_request whose changed files are all under site/.
-  # Push to main, workflow_dispatch-like events, empty diffs and any other path: heavy=true.
+  # Narrow PRs touch only independently checked paths or are documentation-only.
+  # Push, schedule, manual dispatch, empty diffs and all other PR paths: heavy=true.
+  # Do not filter PR events at workflow level: close must always cancel prior runs.
   changes:
+    if: ${{ github.event.action != 'closed' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
@@ -59,7 +64,10 @@ jobs:
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
             git diff --no-renames --name-only "$BASE_SHA" HEAD > changed-files.txt
             echo "Changed files:"; cat changed-files.txt
-            if [ -s changed-files.txt ] && ! grep -qv '^site/' changed-files.txt; then
+            if [ -s changed-files.txt ] && {
+              ! grep -Eqv '^(site/|src/Cna\.Maproom/|tools/|deploy/)' changed-files.txt ||
+              ! grep -Eqv '(^docs/|\.md$)' changed-files.txt
+            }; then
               heavy=false
             fi
           fi
@@ -68,20 +76,25 @@ jobs:
 
   format:
     needs: changes
-    if: ${{ needs.changes.outputs.heavy == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
+      - name: Skip formatting for narrow scope
+        if: ${{ needs.changes.outputs.heavy == 'false' }}
+        run: echo "No .NET formatting required for this PR."
       - name: Check out tested event SHA
+        if: ${{ needs.changes.outputs.heavy == 'true' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
       - name: Set up .NET
+        if: ${{ needs.changes.outputs.heavy == 'true' }}
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
       - name: Cache NuGet packages
+        if: ${{ needs.changes.outputs.heavy == 'true' }}
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.nuget/packages
@@ -89,13 +102,16 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
       - name: Create formatting evidence directory
+        if: ${{ needs.changes.outputs.heavy == 'true' }}
         run: mkdir -p artifacts/format
       - name: Restore for required formatting
+        if: ${{ needs.changes.outputs.heavy == 'true' }}
         run: dotnet restore Sandtable.slnx '/bl:artifacts/format/restore-{}.binlog'
       - name: Verify formatting
+        if: ${{ needs.changes.outputs.heavy == 'true' }}
         run: dotnet format Sandtable.slnx --verify-no-changes --no-restore
       - name: Retain formatting evidence
-        if: ${{ always() }}
+        if: ${{ always() && needs.changes.outputs.heavy == 'true' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: format-evidence-${{ github.sha }}-${{ github.run_attempt }}
@@ -202,7 +218,7 @@ jobs:
       - name: Determine per-trigger shard scope
         id: scope
         # pull_request: fast path (fast-*/r02-*/exercise/contracts only).
-        # push (to main): full suite, exactly as today, nothing excluded.
+        # push, schedule and manual dispatch: full suite, nothing excluded.
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -407,7 +423,7 @@ jobs:
 
   verify:
     needs: [changes, prepare, tests, format, orleans]
-    if: ${{ always() }}
+    if: ${{ always() && github.event.action != 'closed' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -424,14 +440,17 @@ jobs:
           NEEDS_JSON: ${{ toJSON(needs) }}
       - name: Require the scope gate to pass and no dependency to fail or cancel
         # Always runs. Heavy jobs may be `skipped` only when the gate decided heavy=false
-        # (site-only PR); in that mode every other outcome besides success/skipped fails.
+        # (narrow PR); in that mode every other outcome besides success/skipped fails.
         # In heavy mode the exact-coverage steps below remain the authority (unchanged).
         run: |
           set -euo pipefail
           jq -e '.changes.result == "success"' <<<"$NEEDS_JSON" >/dev/null || { echo "scope gate did not succeed"; exit 1; }
-          if [ "$HEAVY" != "true" ]; then
+          if [ "$HEAVY" = "false" ]; then
+            jq -e '.format.result == "success"' <<<"$NEEDS_JSON" >/dev/null || { echo "format check did not succeed"; exit 1; }
             jq -e 'all(.[]; .result == "success" or .result == "skipped")' <<<"$NEEDS_JSON" >/dev/null || { echo "a dependency failed or was cancelled"; exit 1; }
-            echo "Site-only change: heavy .NET jobs skipped by design."
+            echo "Narrow change: heavy .NET jobs skipped by design."
+          elif [ "$HEAVY" != "true" ]; then
+            echo "invalid scope gate output"; exit 1
           fi
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
@@ -474,7 +493,7 @@ jobs:
           retention-days: 14
 
   dependency-review:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
