@@ -45,6 +45,7 @@ public sealed class PendingDecisionReconstructCoverageTests
         [typeof(StageEntryMovePending)] = StageEntryMoveReason,
         [typeof(StageEntrySecondMovePending)] = StageEntryMoveReason,
         [typeof(ThirdStageMovePending)] = StageEntryMoveReason,
+        [typeof(ThirdStageSecondMovePending)] = StageEntryMoveReason,
     };
 
     public static TheoryData<string> Subtypes()
@@ -336,7 +337,12 @@ internal static class PendingFixtures
             // Reserve Release, Cycle Control Finish, Truck Convoy and the four Post Combat Passes.
             var element = audience == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
             session = SubmitFinishWithoutAttack(session, audience, element, CampaignExercises.CompleteThirdStageCombatNoAttack);
-            FinishCycleThroughPostCombatPasses(session, audience);
+            session = FinishCycleThroughPostCombatPasses(session, audience);
+            // S3-6..S3-8: Stage 3's second side Reserve, Movement Completion, Breakdown.
+            var secondAudience = audience == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+            session = Ok(CampaignExercises.SubmitThirdStageSecondReserve(session, secondAudience, Hash("stage3-second-reserve"), elementId: null));
+            session = Ok(CampaignExercises.CompleteThirdStageSecondMovement(session, secondAudience, Hash("stage3-second-movement-completion")));
+            Ok(CampaignExercises.CompleteThirdStageSecondBreakdown(session));
         }
 
         private ExerciseSession Cap(ExerciseSession session)

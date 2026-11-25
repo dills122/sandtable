@@ -14,7 +14,7 @@ public sealed class PendingEquivalenceOracleTests
     // Subtypes no fixture drives today. Shrinks as slices land fixtures; a subtype missing from both the
     // observed set and this list fails the completeness test, and a listed subtype that IS observed
     // fails it too (so the list cannot rot).
-    private static readonly string[] NotDriven = ["StageEntryMovePending", "StageEntrySecondMovePending", "ThirdStageMovePending"];
+    private static readonly string[] NotDriven = ["StageEntryMovePending", "StageEntrySecondMovePending", "ThirdStageMovePending", "ThirdStageSecondMovePending"];
 
     private sealed record Row(string Fixture, string Label, ExerciseSession Session, string? Actual, string PositionId,
         IReadOnlyList<string> NonNull);
@@ -85,7 +85,9 @@ public sealed class PendingEquivalenceOracleTests
             $"unvisited catalog positions {unvisited.Count} (expected {ExpectedUnvisited}):\n" + string.Join("\n", unvisited));
     }
 
-    // 31 after S3-5 (first-side Assault/No-Attack/Truck/Post-Combat sample added; what remains is the Stage 3 second side
+    // 28 after S3-8 (second-side Reserve/Movement/Breakdown sample added; was 31 after S3-5). Remaining: the Stage 3 second
+    // side's Combat/tail (S3-9), the Stage 1/2 combat sub-steps no no-attack scenario visits, and end-of-turn.
+    // (31 after S3-5: first-side Assault/No-Attack/Truck/Post-Combat sample added; what remains is the Stage 3 second side
     // (S3-6..9), the Stage 1/2 combat sub-steps no no-attack scenario visits, and end-of-turn).
-    private const int ExpectedUnvisited = 31;
+    private const int ExpectedUnvisited = 28;
 }

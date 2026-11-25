@@ -40,6 +40,11 @@ public static class CampaignOpenSeatCatalog
     internal static readonly IReadOnlyDictionary<Type, CampaignOpenSeatRow> Rows =
         new Dictionary<Type, CampaignOpenSeatRow>
         {
+            // Stage 3 second side (S3-6..S3-8).
+            [typeof(ThirdStageSecondBreakdownPending)] = CampaignOpenSeatRow.Unwired(Stage3),
+            [typeof(ThirdStageSecondMovementCompletionPending)] = CampaignOpenSeatRow.Unwired(Stage3),
+            [typeof(ThirdStageSecondMovePending)] = CampaignOpenSeatRow.Unwired(Stage3),
+            [typeof(ThirdStageSecondReservePending)] = CampaignOpenSeatRow.Unwired(Stage3),
             // Stage 3 first side.
             [typeof(ThirdStageAssaultPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageNoAttackPending)] = CampaignOpenSeatRow.Unwired(Stage3),

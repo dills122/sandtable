@@ -152,7 +152,13 @@ internal static class SequencingScenarios
         var element3 = aud3 == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
         _ = element3;
         session = FinishWithoutAttack(r, session, aud3, "op3.first", CampaignExercises.CompleteThirdStageCombatNoAttack);
-        CycleThroughPasses(r, session, aud3, "op3.first");
+        session = CycleThroughPasses(r, session, aud3, "op3.first");
+        // S3-6..S3-8: second side Reserve, Movement + Completion, Breakdown (Combat is S3-9).
+        var aud3Second = Other(aud3);
+        session = r.Ok("op3.second.reserve", CampaignExercises.SubmitThirdStageSecondReserve(session, aud3Second, Hash("stage3-second-reserve"), elementId: null));
+        session = TryMove(r, session, aud3Second, "op3.second", CampaignExercises.QueryThirdStageSecondMovementCut, CampaignExercises.SubmitThirdStageSecondMovement);
+        session = r.Ok("op3.second.movement-completion", CampaignExercises.CompleteThirdStageSecondMovement(session, aud3Second, Hash("stage3-second-movement-completion")));
+        session = r.Ok("op3.second.breakdown", CampaignExercises.CompleteThirdStageSecondBreakdown(session));
         return r;
     }
 

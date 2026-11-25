@@ -4064,6 +4064,10 @@ public static class CampaignExercises
         // Stage 3 Combat is wired for the first side's Decision only (S3-4).
         if (IsStageThreeCombatUnwired(session) && session.CurrentThirdStageBreakdown is null)
             throw new InvalidOperationException("Stage 3 Combat selection is not wired.");
+        // S3-6..S3-8: once Stage 3's second side exists, Combat selection is the second side's (S3-9, unwired);
+        // the first-side Breakdown below must not answer for it.
+        if (session.CurrentThirdStageSecondReserve is not null)
+            throw new InvalidOperationException("Stage 3 second-side Combat selection is not wired.");
         if (HasAdvancedCombatSelection(session))
             throw new InvalidOperationException("Combat selection has already advanced this authority cut.");
         if (session.CurrentThirdStageBreakdown is not null)
@@ -4218,6 +4222,14 @@ public static class CampaignExercises
                 return new ExerciseCheckpoint(session.CurrentSecondMove!, session.CurrentSnapshot);
             case SecondReservePending:
                 return new ExerciseCheckpoint(session.CurrentSecondReserve!, session.CurrentSnapshot);
+            case ThirdStageSecondBreakdownPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageSecondBreakdown!, session.CurrentSnapshot);
+            case ThirdStageSecondMovementCompletionPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageSecondMovementCompletion!, session.CurrentSnapshot);
+            case ThirdStageSecondMovePending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageSecondMove!, session.CurrentSnapshot);
+            case ThirdStageSecondReservePending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageSecondReserve!, session.CurrentSnapshot);
             case ThirdStageAssaultPending:
                 return ExerciseCheckpoint.ForSecondAssault(session.CurrentThirdStageAssault!,
                     session.CurrentThirdStageCombatDecision!);
@@ -4639,6 +4651,8 @@ public static class CampaignExercises
         // Stage 3 Combat is not wired (S3-4): the stale Stage 2 fields below
         // would otherwise answer for the wrong stage.
         if (IsStageThreeCombatUnwired(session) && session.CurrentThirdStageBreakdown is null)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        if (session.CurrentThirdStageSecondReserve is not null)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         // #394 extra-2: this method now also serves the second side's first
         // Combat decision after their own Breakdown (V46) completes -- gated
@@ -7049,6 +7063,15 @@ public static class CampaignExercises
         session => session.CurrentThirdStageReserveWorld,
         "Stage 3 Movement requires completed Stage 3 Reserve Designation.");
 
+    private static readonly MovementSourceSlot ThirdStageSecondMovementSourceSlot = new(
+        "Stage 3 second-side ",
+        session => session.CurrentThirdStageSecondMovementCompletion is not null,
+        session => session.CurrentThirdStageSecondMove,
+        session => session.CurrentThirdStageSecondMoveWorld,
+        session => session.CurrentThirdStageSecondReserve,
+        session => session.CurrentThirdStageSecondReserveWorld,
+        "Stage 3 second-side Movement requires completed Stage 3 second-side Reserve Designation.");
+
     private static readonly MovementSourceSlot StageEntrySecondMovementSourceSlot = new(
         "Stage Entry second-side ",
         session => session.CurrentStageEntrySecondMovementCompletion is not null,
@@ -7142,6 +7165,9 @@ public static class CampaignExercises
 
     private static readonly MovementCutSlot ThirdStageMovementCutSlot = new(
         QueryThirdStageMovementSource, ThirdStageOrders);
+
+    private static readonly MovementCutSlot ThirdStageSecondMovementCutSlot = new(
+        QueryThirdStageSecondMovementSource, ThirdStageOrders);
 
     private static readonly MovementCutSlot StageEntrySecondMovementCutSlot = new(
         QueryStageEntrySecondMovementSource, StageEntryOrders);
@@ -7391,6 +7417,17 @@ public static class CampaignExercises
         session => session.CurrentStageEntrySecondAssault?.Release?.World,
         "Stage 3 Reserve requires the prior stage's settled World.",
         "Stage 3 Reserve requires a completed Stage 2->3 preamble.");
+
+    // Stage 3's second side is entered from its own first side's terminal Post Combat Pass; its World is the
+    // first side's settled Release world (same shape as StageEntrySecondReserveSourceSlot).
+    private static readonly ReserveSourceSlot ThirdStageSecondReserveSourceSlot = new(
+        "Stage 3 second-side ",
+        session => session.CurrentThirdStageSecondReserve,
+        session => session.CurrentThirdStageSecondReserveWorld,
+        session => session.CurrentThirdStageAssault is { PostCombatPasses: [.., var lastPass] } ? lastPass : null,
+        session => session.CurrentThirdStageAssault?.Release?.World,
+        "Stage 3 second-side Reserve requires this stage's settled World.",
+        "Stage 3 second-side Reserve requires this stage's completed first-acting-side chain.");
 
     private static readonly ReserveSourceSlot StageEntrySecondReserveSourceSlot = new(
         "Stage Entry second-side ",
@@ -7824,6 +7861,125 @@ public static class CampaignExercises
             var transition = CampaignNativeSecondBreakdownV46.CreateForThirdStage(session);
             var contacts = session.CurrentContacts.AdvanceSecondBreakdown(transition);
             var next = session.WithThirdStageBreakdown(transition, contacts);
+            var bytes = transition.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(transition.CampaignId, transition.PriorStateVersion,
+                transition.StateVersion, transition.NextPositionId, CampaignActionAudience.System,
+                "sha256:" + Convert.ToHexStringLower(SHA256.HashData(bytes)));
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (IsExpectedCampaignException(error))
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
+
+    // S3-6..S3-8 (2026-11-25): Operation Stage 3's own SECOND acting side's Reserve Designation, Movement +
+    // Movement Completion and Breakdown -- the first-side methods above, bound to the second-side slots.
+    // ThirdStageOrders is reused unchanged: the stage's orders do not vary between its two acting sides,
+    // only which side acts (resolved inside the native classes via ActingRole).
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryThirdStageSecondReserveSource(ExerciseSession session) =>
+        QueryReserveSourceCore(session, ThirdStageSecondReserveSourceSlot);
+
+    internal static ExerciseStepResult SubmitThirdStageSecondReserve(ExerciseSession session,
+        CampaignActionAudience audience, string actionId, string? elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Stage 3 second-side Reserve requires an owner."),
+            };
+            var (predecessor, world) = QueryThirdStageSecondReserveSource(session);
+            var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
+                session.Context, ThirdStageOrders(session), side, elementId,
+                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+            var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
+            var next = session.WithThirdStageSecondReserve(reserve, result, contacts);
+            var bytes = reserve.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(reserve.CampaignId,
+                reserve.PriorStateVersion, reserve.StateVersion, reserve.NextPositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (IsExpectedCampaignException(error))
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    internal static (object Predecessor, CampaignWorldSnapshotV6 World) QueryThirdStageSecondMovementSource(ExerciseSession session) =>
+        QueryMovementSourceCore(session, ThirdStageSecondMovementSourceSlot);
+
+    internal static ExerciseStepResult CompleteThirdStageSecondMovement(ExerciseSession session,
+        CampaignActionAudience audience, string actionId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Stage 3 second-side Movement requires an owner."),
+            };
+            var (source, world) = QueryThirdStageSecondMovementSource(session);
+            var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
+                ThirdStageOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                session.CurrentContacts.AuthorityVersion);
+            var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
+            var next = session.WithThirdStageSecondMovementCompletion(completed, contacts);
+            var bytes = completed.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(completed.CampaignId,
+                completed.PriorStateVersion, completed.StateVersion, completed.PositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (IsExpectedCampaignException(error))
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+    }
+
+    internal static CampaignContactOwnerMovementCut QueryThirdStageSecondMovementCut(ExerciseSession session,
+        LandSide side, string elementId) =>
+        QueryMovementCutCore(session, side, elementId, ThirdStageSecondMovementCutSlot);
+
+    internal static ExerciseStepResult SubmitThirdStageSecondMovement(ExerciseSession session,
+        CampaignActionAudience audience, string actionId, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var side = audience switch
+            {
+                CampaignActionAudience.Axis => LandSide.Axis,
+                CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+                _ => throw new InvalidOperationException("Stage 3 second-side Movement requires an owner."),
+            };
+            var (source, world) = QueryThirdStageSecondMovementSource(session);
+            var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
+                ThirdStageOrders(session), session.CurrentContacts, side,
+                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+            var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
+            var next = session.WithThirdStageSecondMove(movement, result, contacts);
+            var bytes = movement.SerializeCanonical();
+            var receipt = new CampaignActionAcceptanceReceipt(movement.CampaignId,
+                movement.PriorStateVersion, movement.StateVersion, movement.PositionId, audience, actionId);
+            return ExerciseStepResult.Accepted(next, new ExerciseStepEvidence(receipt, bytes, bytes));
+        }
+        catch (Exception error) when (IsExpectedCampaignException(error))
+        {
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+        }
+    }
+
+    // Same System-audience verify-and-replay shape as CompleteStageEntryBreakdown.
+    internal static ExerciseStepResult CompleteThirdStageSecondBreakdown(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        try
+        {
+            var transition = CampaignNativeSecondBreakdownV46.CreateForThirdStageSecondSide(session);
+            var contacts = session.CurrentContacts.AdvanceSecondBreakdown(transition);
+            var next = session.WithThirdStageSecondBreakdown(transition, contacts);
             var bytes = transition.SerializeCanonical();
             var receipt = new CampaignActionAcceptanceReceipt(transition.CampaignId, transition.PriorStateVersion,
                 transition.StateVersion, transition.NextPositionId, CampaignActionAudience.System,
@@ -9614,7 +9770,9 @@ public static class CampaignExercises
     private static ExerciseReconstructionResult InvalidNativeHistory(ExerciseSession session)
     {
         // Stage 3 first-side heads hash their own retained record, not a stale Stage 1 one.
-        object head = (object?)session.CurrentThirdStageBreakdown ?? session.CurrentThirdStageMovementCompletion
+        object head = (object?)session.CurrentThirdStageSecondBreakdown ?? session.CurrentThirdStageSecondMovementCompletion
+            ?? (object?)session.CurrentThirdStageSecondMove ?? (object?)session.CurrentThirdStageSecondReserve
+            ?? (object?)session.CurrentThirdStageBreakdown ?? session.CurrentThirdStageMovementCompletion
             ?? (object?)session.CurrentThirdStageMove ?? (object?)session.CurrentThirdStageReserve
             ?? (object?)session.CurrentSecondBreakdown ?? session.CurrentSecondMovementCompletion ?? (object?)session.CurrentSecondMove
             ?? (object?)session.CurrentSecondReserve ?? session.CurrentPostCombatPass ?? (object?)session.CurrentTruckConvoyPass
@@ -10698,6 +10856,141 @@ public static class CampaignExercises
                     catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
                         or ArgumentException or InvalidOperationException)
                     { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, thirdStageDecisionHash, null); }
+                }
+            case ThirdStageSecondBreakdownPending:
+                {
+                    var thirdStageSecondBreakdown = completedSession.CurrentThirdStageSecondBreakdown!;
+                    var expected = thirdStageSecondBreakdown.SerializeCanonical();
+                    var thirdStageSecondBreakdownHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageSecondBreakdownPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Stage 3 second-side Breakdown predecessor is missing.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Breakdown predecessor did not replay.");
+                        var result = CompleteThirdStageSecondBreakdown(predecessor);
+                        if (!result.IsAccepted || result.Evidence is null || result.SuccessorSession is null
+                            || !expected.AsSpan().SequenceEqual(result.Evidence.EventRecords.Single())
+                            || completedSession.CurrentContacts.AuthorityVersion != result.SuccessorSession.CurrentContacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != result.SuccessorSession.CurrentContacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(result.SuccessorSession.CurrentContacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Breakdown differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            expected, streamHash, thirdStageSecondBreakdownHash, Hash(result.Evidence.EventRecords.Single()));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, thirdStageSecondBreakdownHash, null); }
+                }
+            case ThirdStageSecondMovementCompletionPending:
+                {
+                    var thirdStageSecondMovementCompletion = completedSession.CurrentThirdStageSecondMovementCompletion!;
+                    var expected = thirdStageSecondMovementCompletion.SerializeCanonical();
+                    var completionExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageSecondMovementCompletionPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Stage 3 second-side Movement completion has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Movement predecessor did not replay.");
+                        var (source, world) = QueryThirdStageSecondMovementSource(predecessor);
+                        var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
+                            ThirdStageOrders(predecessor), thirdStageSecondMovementCompletion.Side,
+                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                        var bytes = replayed.SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
+                        if (!expected.AsSpan().SequenceEqual(bytes)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Movement completion differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            bytes, streamHash, completionExpectedHash, Hash(bytes));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, completionExpectedHash, null);
+                    }
+                }
+            case ThirdStageSecondMovePending:
+                {
+                    var thirdStageSecondMove = completedSession.CurrentThirdStageSecondMove!;
+                    var expected = thirdStageSecondMove.SerializeCanonical();
+                    var moveExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageSecondMovePredecessor
+                            ?? throw new InvalidCampaignHistoryException("Stage 3 second-side Movement has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Movement predecessor did not replay.");
+                        var (source, world) = QueryThirdStageSecondMovementSource(predecessor);
+                        var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
+                            predecessor.Context, ThirdStageOrders(predecessor), predecessor.CurrentContacts,
+                            thirdStageSecondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, thirdStageSecondMove.ElementId,
+                            thirdStageSecondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
+                        var bytes = replayed.SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
+                        if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentThirdStageSecondMoveWorld != resultWorld
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Movement differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            bytes, streamHash, moveExpectedHash, Hash(bytes));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, moveExpectedHash, null);
+                    }
+                }
+            case ThirdStageSecondReservePending:
+                {
+                    var thirdStageSecondReserve = completedSession.CurrentThirdStageSecondReserve!;
+                    var expected = thirdStageSecondReserve.SerializeCanonical();
+                    var reserveExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageSecondReservePredecessor
+                            ?? throw new InvalidCampaignHistoryException("Stage 3 second-side Reserve has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Reserve predecessor did not replay.");
+                        var (source, world) = QueryThirdStageSecondReserveSource(predecessor);
+                        var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
+                            predecessor.Context, ThirdStageOrders(predecessor), thirdStageSecondReserve.Side,
+                            thirdStageSecondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            predecessor.CurrentContacts.AuthorityVersion);
+                        var bytes = replayed.SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(thirdStageSecondReserve);
+                        if (!expected.AsSpan().SequenceEqual(bytes) || completedSession.CurrentThirdStageSecondReserveWorld != resultWorld
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Stage 3 second-side Reserve differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            bytes, streamHash, reserveExpectedHash, Hash(bytes));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, reserveExpectedHash, null);
+                    }
                 }
             case ThirdStageBreakdownPending:
                 {
