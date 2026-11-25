@@ -617,8 +617,16 @@ class EstimatedWeightTests(unittest.TestCase):
     def test_invalid_present_weights_and_class_parts_still_fail(self):
         bad = copy.deepcopy(self.weights); bad['rows'][next(iter(bad['rows']))] = 0
         with self.assertRaises(ValueError): suites.make_plan(self.rows, bad)
-        bad = copy.deepcopy(self.weights); bad['classes']['Cna.Core.Tests.Campaigns.Example00Tests']['parts'] = 99
-        with self.assertRaises(ValueError): suites.make_plan(self.rows, bad)
+        for parts in (0, True, '4', None):
+            bad = copy.deepcopy(self.weights); bad['classes']['Cna.Core.Tests.Campaigns.Example00Tests']['parts'] = parts
+            with self.subTest(parts=parts), self.assertRaises(ValueError): suites.make_plan(self.rows, bad)
+
+    def test_split_class_that_loses_rows_below_its_parts_still_plans_with_full_coverage(self):
+        name = 'Cna.Core.Tests.Campaigns.Example00Tests'
+        rows = [row for row in self.rows if not row[1].startswith(name) or row[2].endswith('(index: 0)') or row[2].endswith('(index: 1)')]
+        self.assertEqual(2, sum(row[1].startswith(name) for row in rows))  # parts=4 > 2 live rows
+        plan = suites.make_plan(rows, self.weights)
+        self.assertEqual(sorted(tuple(row) for row in rows), self.covered(plan))
 
     def test_refresh_recommended_only_above_threshold(self):
         self.assertFalse(suites.make_plan(self.rows, self.weights)['estimation']['refresh_recommended'])
