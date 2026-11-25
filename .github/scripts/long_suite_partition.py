@@ -43,7 +43,11 @@ def effective_weights(core, weights):
             key = row_key(row)
             if key in weights['rows']: row_ms[key] = weights['rows'][key]
             else: row_ms[key] = guess; estimated.append(key)
-        if name in weights['classes']: class_parts[name] = weights['classes'][name].get('parts')
+        if name in weights['classes']:
+            parts = weights['classes'][name].get('parts')
+            # Tests may have been deleted since the weight was recorded: clamp a well-formed count to the live
+            # rows; malformed values (non-int, bool, < 1) are left for make_plan to reject.
+            class_parts[name] = min(parts, len(class_rows)) if type(parts) is int and parts >= 1 else parts
         else: class_parts[name] = 1; new_classes.append(name)
     estimated_ms = sum(row_ms[key] for key in estimated)
     total_ms = sum(row_ms.values())
