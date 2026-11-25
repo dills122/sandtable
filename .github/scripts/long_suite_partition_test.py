@@ -402,7 +402,13 @@ class WorkflowTests(unittest.TestCase):
         # p01-* are gone from ci.yml's dependency closure entirely (nightly
         # only - see ci-nightly-heavy.yml); orleans gates every trigger again,
         # excluding only the nightly soak row (the #446 rows gate again).
-        self.assertIn('needs: [prepare, tests, format, orleans]', text)
+        # `changes` is the site-only scope gate (Phase 0.2); verify strips it before the
+        # verifier, which still requires exactly {prepare, tests, format, orleans}.
+        self.assertIn('needs: [changes, prepare, tests, format, orleans]', text)
+        self.assertIn("jq -c 'del(.changes)'", text)
+        for heavy_job in ('format', 'architecture-tests', 'prepare', 'orleans'):
+            body = text.split('\n  ' + heavy_job + ':\n', 1)[1].split('\n    steps:', 1)[0]
+            self.assertIn("if: ${{ needs.changes.outputs.heavy == 'true' }}", body)
         orleans_job = text.split('\n  orleans:', 1)[1].split('\n  verify:', 1)[0]
         # The orleans job is sharded 4-way; the dotnet test command, exclusions and per-shard
         # report check live in orleans_partition.py (covered by orleans_partition_test.py), and

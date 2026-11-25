@@ -28,7 +28,47 @@ env:
   # of #439) and also stays in the nightly file.
 
 jobs:
+  # Scope gate (site-overhaul Phase 0.2). A workflow skipped wholesale by `paths-ignore`
+  # never reports its check names, so with required status checks a site-only PR would
+  # wait forever on "Expected". Instead this workflow always starts, and this cheap job
+  # decides whether the heavy .NET jobs run. Heavy jobs skip via job-level `if:`;
+  # `verify` still runs (always()) and still fails if anything failed.
+  # `heavy` is false ONLY for a pull_request whose changed files are all under site/.
+  # Push to main, workflow_dispatch-like events, empty diffs and any other path: heavy=true.
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      heavy: ${{ steps.scope.outputs.heavy }}
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Classify changed paths
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          heavy=true
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            git diff --no-renames --name-only "$BASE_SHA" HEAD > changed-files.txt
+            echo "Changed files:"; cat changed-files.txt
+            if [ -s changed-files.txt ] && ! grep -qv '^site/' changed-files.txt; then
+              heavy=false
+            fi
+          fi
+          echo "heavy=$heavy" >> "$GITHUB_OUTPUT"
+          echo "heavy=$heavy"
+
   format:
+    needs: changes
+    if: ${{ needs.changes.outputs.heavy == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -69,7 +109,8 @@ jobs:
   # and reports as its own check first. Promote it to a required dependency of `verify`
   # once it has run clean in CI for a while.
   architecture-tests:
-    needs: prepare
+    needs: [changes, prepare]
+    if: ${{ needs.changes.outputs.heavy == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -123,6 +164,8 @@ jobs:
           retention-days: 14
 
   prepare:
+    needs: changes
+    if: ${{ needs.changes.outputs.heavy == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -288,6 +331,8 @@ jobs:
           retention-days: 14
 
   orleans:
+    needs: [changes, prepare]
+    if: ${{ needs.changes.outputs.heavy == 'true' }}
     # Phase D of #439 (docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md §1):
     # Cna.OrleansHost.Tests holds every Postgres+Marten (Testcontainers) test of the durable
     # campaign journal, and since #373 it ran nightly only -- so #443-#450 merged with none of
@@ -303,7 +348,6 @@ jobs:
     # complete. Retry-once-on-no-report and the 18m per-attempt cap are preserved inside the script;
     # a failed or report-less run now exits non-zero (the old inline loop reported exit 0 after two
     # timeouts and skipped verification).
-    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -362,7 +406,7 @@ jobs:
           retention-days: 14
 
   verify:
-    needs: [prepare, tests, format, orleans]
+    needs: [changes, prepare, tests, format, orleans]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -378,29 +422,47 @@ jobs:
           printf '%s\n' "$NEEDS_JSON" > artifacts/ci/dependencies.json
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
+      - name: Require the scope gate to pass and no dependency to fail or cancel
+        # Always runs. Heavy jobs may be `skipped` only when the gate decided heavy=false
+        # (site-only PR); in that mode every other outcome besides success/skipped fails.
+        # In heavy mode the exact-coverage steps below remain the authority (unchanged).
+        run: |
+          set -euo pipefail
+          jq -e '.changes.result == "success"' <<<"$NEEDS_JSON" >/dev/null || { echo "scope gate did not succeed"; exit 1; }
+          if [ "$HEAVY" != "true" ]; then
+            jq -e 'all(.[]; .result == "success" or .result == "skipped")' <<<"$NEEDS_JSON" >/dev/null || { echo "a dependency failed or was cancelled"; exit 1; }
+            echo "Site-only change: heavy .NET jobs skipped by design."
+          fi
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          HEAVY: ${{ needs.changes.outputs.heavy }}
       - name: Download inventory and all leaf reports
-        if: ${{ always() }}
+        if: ${{ always() && needs.changes.outputs.heavy == 'true' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           pattern: ci-*-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
           merge-multiple: true
       - name: Download Orleans shard results
-        if: ${{ always() }}
+        if: ${{ always() && needs.changes.outputs.heavy == 'true' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           pattern: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-*
           path: artifacts/orleans
       - name: Require every Orleans shard to cover its planned rows exactly
-        if: ${{ always() }}
+        if: ${{ always() && needs.changes.outputs.heavy == 'true' }}
         run: python3 .github/scripts/orleans_partition.py verify --total 4 artifacts/orleans/*
       - name: Require successful processes and complete exact-head coverage
-        if: ${{ always() }}
-        run: python3 .github/scripts/long_suite_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --exclude-shards "$EXCLUDE_SHARDS"
+        if: ${{ always() && needs.changes.outputs.heavy == 'true' }}
+        run: |
+          # The verifier requires needs == {prepare,tests,format,orleans} exactly; drop the gate.
+          NEEDS_JSON="$(jq -c 'del(.changes)' <<<"$NEEDS_JSON_ALL")"
+          export NEEDS_JSON
+          python3 .github/scripts/long_suite_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --exclude-shards "$EXCLUDE_SHARDS"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
-          NEEDS_JSON: ${{ toJSON(needs) }}
+          NEEDS_JSON_ALL: ${{ toJSON(needs) }}
           EXCLUDE_SHARDS: ${{ needs.prepare.outputs.excluded_shards }}
       - name: Retain aggregate evidence
         if: ${{ always() }}
