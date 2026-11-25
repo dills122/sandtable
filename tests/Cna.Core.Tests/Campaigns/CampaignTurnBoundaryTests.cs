@@ -124,8 +124,11 @@ public sealed class CampaignTurnBoundaryTests
         Assert.Throws<InvalidOperationException>(() => CampaignGameTurn.RequireCurrentGameTurn(1, [], parsed.GameTurn));
 
         var initiative = Initiative();
-        var wrongInitiative = initiative with { PriorRandomCursor = initiative.PriorRandomCursor + 10,
-            ResultRandomCursor = initiative.ResultRandomCursor + 10 };
+        var wrongInitiative = initiative with
+        {
+            PriorRandomCursor = initiative.PriorRandomCursor + 10,
+            ResultRandomCursor = initiative.ResultRandomCursor + 10,
+        };
         var parsedInitiative = CampaignNativeTurnInitiativeV56.Deserialize(wrongInitiative.SerializeCanonical());
         Assert.NotEqual(initiative.SerializeCanonical(), parsedInitiative.SerializeCanonical());
 
