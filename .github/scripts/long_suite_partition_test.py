@@ -635,5 +635,33 @@ class EstimatedWeightTests(unittest.TestCase):
         self.assertTrue(suites.make_plan(self.rows, dict(self.weights, rows=many))['estimation']['refresh_recommended'])
 
 
+class RefreshTests(unittest.TestCase):
+    def test_refresh_consolidates_measures_and_drops_stale_rows(self):
+        rows = [['Cna.Core.Tests', 'Cna.Core.Tests.A.T.M', f'Cna.Core.Tests.A.T.M({i})'] for i in range(10)] + [['Cna.Core.Tests', 'Cna.Core.Tests.B.T.M', 'Cna.Core.Tests.B.T.M']]
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            (root / 'meta.json').write_text(json.dumps({'schema_version': 1}))
+            stale = suites.row_key(['x', 'y', 'z'])
+            (root / 'baseline.jsonl').write_text(weights_module._dump({'class': 'Cna.Core.Tests.A.T', 'parts': 2}) + '\n' + weights_module._dump({'row': stale, 'ms': 5}) + '\n')
+            (root / 'pr.jsonl').write_text(weights_module._dump({'row': suites.row_key(rows[0]), 'ms': 7, 'provisional': 'n'}) + '\n')
+            observed = {(r[1], r[2]): 300000 for r in rows[:10]}
+            observed[(rows[10][1], rows[10][2])] = 40
+            result = weights_module.refresh(root, rows, observed, {'baseline_run_id': '9'})
+            loaded = weights_module.load(root)
+            self.assertEqual(['baseline.jsonl'], [p.name for p in root.glob('*.jsonl')])
+            self.assertEqual({'Cna.Core.Tests.A.T': {'parts': 2}, 'Cna.Core.Tests.B.T': {'parts': 1}}, loaded['classes'])
+            self.assertEqual(11, len(loaded['rows'])); self.assertNotIn(stale, loaded['rows']); self.assertEqual({}, loaded['provisional_rows'])
+            self.assertEqual('9', loaded['baseline_run_id']); self.assertEqual(1, result['dropped_rows'])
+            self.assertEqual(0, suites.effective_weights([tuple(r) for r in rows], loaded)[2]['estimated_rows'])
+
+    def test_refresh_refuses_partial_runs_and_derives_parts_for_new_classes(self):
+        rows = [['Cna.Core.Tests', 'Cna.Core.Tests.A.T.M', f'Cna.Core.Tests.A.T.M({i})'] for i in range(10)]
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / 'meta.json').write_text(json.dumps({'schema_version': 1}))
+            with self.assertRaises(ValueError): weights_module.refresh(root, rows, {(rows[0][1], rows[0][2]): 5})
+            weights_module.refresh(root, rows, {(r[1], r[2]): 90000 for r in rows})
+            self.assertEqual(8, weights_module.load(root)['classes']['Cna.Core.Tests.A.T']['parts'])
+
+
 if __name__ == '__main__':
     unittest.main()

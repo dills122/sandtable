@@ -154,6 +154,45 @@ def measured_ms(xml_directory):
     return observed
 
 
+def refresh(directory, core_rows, observed, meta_update=None, min_coverage=0.9):
+    """Rewrite the manifest from measured timings of ONE complete CI run (used by the scheduled refresh job).
+
+    Consolidates everything into baseline.jsonl (other entry files are removed), keeps `parts` for known
+    classes, derives `parts` for new classes from their measured total, drops stale rows/classes and
+    provisional notes. Rows with no measurement keep their previous weight, else stay unweighted
+    (the plan estimates them). Refuses a partial run (< min_coverage of rows measured).
+    """
+    import math
+    from long_suite_partition import row_key
+    directory = Path(directory)
+    old = load(directory)
+    core = [tuple(row) for row in core_rows]
+    measured = {row_key(row): observed[(row[1], row[2])] for row in core if (row[1], row[2]) in observed}
+    if len(measured) < min_coverage * len(core):
+        raise ValueError(f'only {len(measured)}/{len(core)} rows measured; refusing to refresh from a partial run')
+    rows, per_class = {}, {}
+    for row in core:
+        key = row_key(row)
+        ms = measured.get(key, old['rows'].get(key))
+        if ms is not None:
+            rows[key] = ms
+        per_class.setdefault(row[1].rsplit('.', 1)[0], []).append(key)
+    classes = {}
+    for name, keys in per_class.items():
+        if name in old['classes']:
+            classes[name] = {'parts': max(1, min(old['classes'][name]['parts'], len(keys)))}
+        else:
+            classes[name] = {'parts': max(1, min(len(keys), math.ceil(sum(rows.get(key, 0) for key in keys) / 120000)))}
+    for entry in directory.glob('*.jsonl'):
+        entry.unlink()
+    write_entry_file(directory / BASELINE, records_of({'classes': classes, 'rows': rows}))
+    meta = {key: value for key, value in old.items() if key not in ('classes', 'rows', 'provisional_rows')}
+    meta.update(meta_update or {})
+    (directory / 'meta.json').write_text(json.dumps(meta, indent=2, ensure_ascii=False) + '\n')
+    load(directory)
+    return {'rows': len(rows), 'measured': len(measured), 'classes': len(classes), 'dropped_rows': len(set(old['rows']) - set(rows))}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest='command', required=True)
@@ -171,6 +210,11 @@ def main(argv=None):
     p = sub.add_parser('import-legacy', help='open-PR migration: copy rows/classes missing from the directory out of an old single-file JSON into a NEW entry file')
     p.add_argument('legacy_json', help='your PR branch version of the old long-suite-weights.json (git show <your-sha>:.github/scripts/long-suite-weights.json > /tmp/mine.json)')
     p.add_argument('--name', required=True); p.add_argument('--weights', default=str(DEFAULT_DIR))
+    p = sub.add_parser('refresh', help='rewrite the manifest from the MTP XML of one complete CI run (scheduled job)')
+    p.add_argument('--proof', required=True, help='directory holding r02-inventory.json of that run')
+    p.add_argument('--xml', required=True, help='directory tree of that run\'s shard result XML')
+    p.add_argument('--sha'); p.add_argument('--run-id'); p.add_argument('--attempt', type=int, default=1)
+    p.add_argument('--weights', default=str(DEFAULT_DIR))
     p = sub.add_parser('export', help='print the legacy-shaped JSON (for diffing/inspection)')
     p.add_argument('--weights', default=str(DEFAULT_DIR))
     args = parser.parse_args(argv)
@@ -191,6 +235,12 @@ def main(argv=None):
         write_entry_file(target, records_of(part))
         load(args.weights)
         print(f'wrote {target}: {len(part["classes"])} classes, {len(part["rows"])} rows (stale rows in your legacy file are NOT removed; run check)')
+        return 0
+    if args.command == 'refresh':
+        sys.path.insert(0, str(Path(__file__).parent))
+        core = json.loads((Path(args.proof) / 'r02-inventory.json').read_text())['legacy_core_rows']
+        update = {key: value for key, value in (('baseline_sha', args.sha), ('baseline_run_id', args.run_id), ('baseline_attempt', args.attempt)) if value is not None}
+        print(json.dumps(refresh(args.weights, core, measured_ms(args.xml), update)))
         return 0
     if args.command == 'export':
         print(json.dumps(weights, indent=2, sort_keys=True))

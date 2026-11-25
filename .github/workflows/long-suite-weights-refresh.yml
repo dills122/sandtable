@@ -1,0 +1,62 @@
+name: Refresh long-suite timing weights
+
+# Weights only balance shards; coverage is proven independently (see
+# docs/work/2026-11-25-ci-timing-manifest-zero-registration.md). Nobody has to edit them: this job
+# re-measures every row from the latest successful main CI run and proposes the result as a bot PR.
+# PRs opened with GITHUB_TOKEN do not trigger CI; set the optional WEIGHTS_REFRESH_TOKEN secret (a PAT)
+# so the proposal gets normal checks, otherwise close/reopen the PR to run them.
+
+on:
+  schedule:
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.WEIGHTS_REFRESH_TOKEN || github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WEIGHTS_REFRESH_TOKEN || github.token }}
+      - name: Find latest successful main CI run
+        id: run
+        run: |
+          set -euo pipefail
+          id=$(gh run list --workflow ci.yml --branch main --event push --status success --limit 1 --json databaseId,headSha,attempt --jq '.[0] | "\(.databaseId) \(.headSha) \(.attempt)"')
+          test -n "$id" || { echo "no successful main CI run"; exit 1; }
+          read -r run_id sha attempt <<<"$id"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"; echo "sha=$sha" >> "$GITHUB_OUTPUT"; echo "attempt=$attempt" >> "$GITHUB_OUTPUT"
+      - name: Download inventory and shard results
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/refresh/proof /tmp/refresh/xml
+          gh run download "${{ steps.run.outputs.run_id }}" --pattern 'ci-inventory-*' --dir /tmp/refresh/proof
+          gh run download "${{ steps.run.outputs.run_id }}" --pattern 'ci-long-*' --dir /tmp/refresh/xml
+          gh run download "${{ steps.run.outputs.run_id }}" --pattern 'ci-fast-*' --dir /tmp/refresh/xml
+          find /tmp/refresh/proof -name r02-inventory.json -exec cp {} /tmp/refresh/proof/ \;
+      - name: Unit-test the weight tooling
+        run: python3 .github/scripts/long_suite_partition_test.py
+      - name: Rewrite weights from measurements
+        run: |
+          python3 .github/scripts/long_suite_weights.py refresh --proof /tmp/refresh/proof --xml /tmp/refresh/xml \
+            --sha "${{ steps.run.outputs.sha }}" --run-id "${{ steps.run.outputs.run_id }}" --attempt "${{ steps.run.outputs.attempt }}"
+      - name: Open or update the bot PR
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .github/scripts/long-suite-weights; then echo "weights already current"; exit 0; fi
+          branch=bot/long-suite-weights-refresh
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add .github/scripts/long-suite-weights
+          git commit -m "ci: refresh long-suite timing weights from main run ${{ steps.run.outputs.run_id }}"
+          git push --force origin "$branch"
+          gh pr view "$branch" >/dev/null 2>&1 || gh pr create --base main --head "$branch" --title "ci: refresh long-suite timing weights" \
+            --body "Automated re-measurement from main CI run ${{ steps.run.outputs.run_id }} (${{ steps.run.outputs.sha }}). Only rebalances shards; coverage guards are unchanged. No action needed beyond review/merge."
