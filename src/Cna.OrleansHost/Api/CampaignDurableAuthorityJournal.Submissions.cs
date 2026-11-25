@@ -447,6 +447,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
 
         var checkpoint = CampaignExercises.QueryCheckpoint(head.Session);
+        // Stage 2/3 selection continuations are not wired into the journal yet.
+        // Their current predicates must never route through Stage 1 commands.
+        if (kind == CampaignOwnerOpeningKind.CombatSelection
+            && !checkpoint.PositionId.StartsWith("land.position.operation-1.", StringComparison.Ordinal))
+            return CampaignOwnerSubmissionResult.RuleNotImplemented();
         var submission = new CampaignActionSubmission(1, seat.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, seat.Audience, coreActionId);
         var result = kind switch
@@ -761,7 +766,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             InitializeRbaRound(connection, transaction, barrageHead, seat.CampaignId);
         }
         else if (kind == CampaignOwnerOpeningKind.RepeatCombatSelection
-            && CampaignHostAdapter.IsNativeRepeatCombatVoluntaryFinish(
+            && CampaignHostAdapter.IsNativeRepeatCombatNoAttackPending(
                 result.SuccessorSession!))
         {
             var completion = CampaignHostAdapter.CompleteNativeRepeatCombatNoAttack(
