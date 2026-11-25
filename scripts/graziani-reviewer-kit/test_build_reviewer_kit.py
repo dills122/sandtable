@@ -149,6 +149,11 @@ class KitTests(unittest.TestCase):
         self.assertEqual(set(found), {"scenario"})
         self.assertEqual([Path(p).name for p in unmatched], ["other.pdf"])
 
+    def test_packaged_sources_folder_has_no_unknown_files(self):
+        result = self.run_tool("tools/verify_sources.py", "sources")
+        self.assertNotIn("UNKNOWN", result.stdout)
+        self.assertEqual(result.stdout.count("MISSING"), 9)
+
     def test_rerun_reports_missing_readings_and_never_certifies(self):
         for name in ("a", "b", "s"):
             (Path(self.temp.name) / name).mkdir(exist_ok=True)

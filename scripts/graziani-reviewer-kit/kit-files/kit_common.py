@@ -36,7 +36,7 @@ def discover_sources(directory, index=None):
     if not root.is_dir():
         raise ReviewInputError(f"not a directory: {directory}")
     for path in sorted(root.rglob("*")):
-        if not path.is_file() or path.name.startswith("."):
+        if not path.is_file() or path.name.startswith(".") or path.name == "README.txt":  # kit-provided note
             continue
         source_id = by_hash.get(file_sha256(path))
         if source_id is None:
