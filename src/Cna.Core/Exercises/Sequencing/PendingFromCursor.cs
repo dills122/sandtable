@@ -35,7 +35,7 @@ internal static class PendingFromCursor
         // occurrence's Assault arm owns it. UNVERIFIED for non-legacy occurrences: S0 can only drive
         // a Repeat on the legacy first side (Pending null), so the non-legacy answer is a hypothesis.
         if (last == PendingLastEvent.CycleRepeat)
-            return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } repeatPrefix, CombatArms: true }
+            return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } repeatPrefix, Arms: var repeatArms } && repeatArms.HasFlag(PendingArms.Assault)
                 ? repeatPrefix + "AssaultPending" : null;
 
         // A Reserve event either designated an element (cursor stays on Reserve Designation) or completed
@@ -51,7 +51,8 @@ internal static class PendingFromCursor
         {
             if (PendingOccurrenceTable.Find(done.OperationStage, done.ActorRole) is not { } occurrence) return null;
             if (MechanicOf(done) is not { } mechanic) return null;
-            if (!occurrence.CombatArms && mechanic is Mechanic.CombatSelection or Mechanic.Combat or Mechanic.Truck or Mechanic.PostCombat)
+            if (mechanic is Mechanic.CombatSelection && !occurrence.Arms.HasFlag(PendingArms.CombatSelection)) return null;
+            if (mechanic is Mechanic.Combat or Mechanic.Truck or Mechanic.PostCombat && !occurrence.Arms.HasFlag(PendingArms.Assault))
                 return null;
             if (occurrence.Prefix is null)
                 return mechanic switch { Mechanic.Truck => "TruckConvoyPassPending", Mechanic.PostCombat => "PostCombatPassPending", _ => null };

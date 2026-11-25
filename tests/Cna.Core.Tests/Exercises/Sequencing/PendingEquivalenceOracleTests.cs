@@ -85,5 +85,5 @@ public sealed class PendingEquivalenceOracleTests
             $"unvisited catalog positions {unvisited.Count} (expected {ExpectedUnvisited}):\n" + string.Join("\n", unvisited));
     }
 
-    private const int ExpectedUnvisited = 39;
+    private const int ExpectedUnvisited = 38;
 }
