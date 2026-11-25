@@ -160,19 +160,15 @@ transparently to every caller.
 
 ## Trunk.io flaky-test uploads
 
-`architecture-tests`, `orleans`, and `tests` (CI) each run a
-`trunk-io/analytics-uploader@v3` step (`continue-on-error: true`, so a Trunk
-outage or a missing secret never fails the actual test gate). The
-`architecture-tests` and `orleans` jobs' own `dotnet test` calls emit a
-genuine JUnit-schema report (`--report-junit`, alongside the unchanged
-`--report-xunit-xml` report) that step uploads. The `tests` job's real,
-sharded execution (`.github/scripts/long_suite_partition.py` /
-`r02_partition.py` / `ci_group_runner.py` / `test_partition.py`) does not yet
-emit one -- only this repo's local-only `local_parallel_check.py` convenience
-script does, so that job's upload step is currently a no-op on hosted CI;
-wiring its real command builders is tracked as follow-up work (see the PR
-that added this section for why it was deferred). Until the repo owner sets
-the variables/secret below, every upload step above is a no-op regardless:
+`architecture-tests`, `orleans`, and `tests` (CI) emit JUnit telemetry
+(`results.junit.xml`) alongside the unchanged native xUnit proof in each
+process-specific results directory. A separate advisory `trunk` matrix
+uploads retained evidence by shard using `trunk-io/analytics-uploader@v3`,
+with distinct check/step names and logged report and test-case counts.
+It is limited to two concurrent runners; `verify` does not depend on it.
+Uploads are `continue-on-error: true` and skipped without the repository
+secret (including fork PRs). JUnit is optional telemetry, never row-proof
+input. Configure the following variables and secret to enable uploads:
 
 | Name | Kind | Where to get it |
 | --- | --- | --- |

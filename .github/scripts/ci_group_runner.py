@@ -16,7 +16,7 @@ def execution_command(binary, directory, class_name):
     if not re.fullmatch(r'Cna\.Core\.Tests\.[A-Za-z0-9_.]+', class_name):
         raise ValueError('Invalid exact class filter')
     directory = Path(directory).resolve()
-    return ['dotnet', 'exec', str(Path(binary).resolve()), '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str(directory / 'diagnostics'), '--report-xunit-xml', '--results-directory', str(directory / 'results'), '--filter-class', class_name]
+    return ['dotnet', 'exec', str(Path(binary).resolve()), '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str(directory / 'diagnostics'), '--report-xunit-xml', '--report-junit', '--report-junit-filename', 'results.junit.xml', '--results-directory', str(directory / 'results'), '--filter-class', class_name]
 
 
 def owned_session_members(session_id):

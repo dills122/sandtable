@@ -145,15 +145,6 @@ jobs:
         run: chmod -R +x artifacts/bin
       - name: Run architecture fitness tests
         run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --report-junit --report-junit-filename results.junit.xml --results-directory artifacts/architecture-tests
-      - name: Upload Test Results to Trunk.io
-        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
-        continue-on-error: true  # don't fail this job if the upload fails
-        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
-        with:
-          junit-paths: artifacts/architecture-tests/*.junit.xml
-          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
-          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
-          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -312,15 +303,6 @@ jobs:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           TEST_SHARD: ${{ matrix.shard }}
-      - name: Upload Test Results to Trunk.io
-        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
-        continue-on-error: true  # don't fail this job if the upload fails
-        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
-        with:
-          junit-paths: artifacts/local-parallel-check/**/results/*.junit.xml
-          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
-          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
-          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain results, process status and timings
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -384,18 +366,6 @@ jobs:
           python3 .github/scripts/orleans_partition.py execute --shard "$ORLEANS_SHARD" --total 4 --results artifacts/orleans-results
         env:
           ORLEANS_SHARD: ${{ matrix.shard }}
-      - name: Upload Test Results to Trunk.io
-        # orleans_partition.py's execute still only emits --report-xunit-xml (not JUnit) per
-        # shard -- same known gap as the `tests` job (see docs/runbooks/local-testing.md).
-        # This step is a harmless no-op until that script also emits a .junit.xml report.
-        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
-        continue-on-error: true  # don't fail this job if the upload fails
-        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
-        with:
-          junit-paths: artifacts/orleans-results/*.junit.xml
-          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
-          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
-          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain Orleans test results
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -404,6 +374,73 @@ jobs:
           path: artifacts/orleans-results
           if-no-files-found: error
           retention-days: 14
+
+  # Advisory uploads run from retained shard evidence, never on the verify dependency path.
+  # Limit concurrent upload runners so telemetry cannot flood the runner pool.
+  trunk:
+    name: trunk (${{ matrix.shard }})
+    needs: [prepare, architecture-tests, tests, orleans]
+    if: ${{ !cancelled() && needs.prepare.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && vars.TRUNK_ORG_URL_SLUG != '' && vars.TRUNK_TEST_COLLECTION_ID != '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    continue-on-error: true
+    env:
+      TRUNK_UPLOAD_TOKEN: ${{ secrets.TRUNK_API_KEY }}
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: ${{ fromJSON(needs.prepare.outputs.shards) }}
+        include:
+          - shard: architecture
+            evidence: architecture-tests-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          - shard: orleans-1
+            evidence: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-1
+          - shard: orleans-2
+            evidence: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-2
+          - shard: orleans-3
+            evidence: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-3
+          - shard: orleans-4
+            evidence: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-4
+    steps:
+      - name: Check out tested event SHA
+        if: ${{ env.TRUNK_UPLOAD_TOKEN != '' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download shard evidence
+        id: evidence
+        if: ${{ env.TRUNK_UPLOAD_TOKEN != '' }}
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: ${{ matrix.evidence || format('ci-{0}-{1}-{2}', matrix.shard, github.sha, github.run_attempt) }}
+          path: trunk-results/${{ matrix.shard }}
+      - name: Count emitted JUnit reports and test cases
+        if: ${{ env.TRUNK_UPLOAD_TOKEN != '' }}
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          shard = os.environ['SHARD']
+          reports = list((Path('trunk-results') / shard).rglob('results.junit.xml'))
+          count = sum(len(ET.parse(report).getroot().findall('.//testcase')) for report in reports)
+          print(f'{shard}: {len(reports)} JUnit files, {count} test cases')
+          PYTHON
+        continue-on-error: true
+      - name: Upload Test Results to Trunk.io (${{ matrix.shard }})
+        if: ${{ !cancelled() && env.TRUNK_UPLOAD_TOKEN != '' && steps.evidence.outcome == 'success' && hashFiles('trunk-results/**/results.junit.xml') != '' }}
+        continue-on-error: true
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: trunk-results/${{ matrix.shard }}/**/results.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ env.TRUNK_UPLOAD_TOKEN }}
+          allow-missing-junit-files: false
 
   verify:
     needs: [changes, prepare, tests, format, orleans]

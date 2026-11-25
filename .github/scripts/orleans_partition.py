@@ -100,7 +100,7 @@ def build_plan(rows, weights, total):
 
 def check_report(directory, expected_counts):
     """One passing xUnit XML whose rows exactly match the expected per-method counts."""
-    reports = list(Path(directory).glob('*.xml'))
+    reports = [p for p in Path(directory).glob('*.xml') if p.name != 'results.junit.xml']
     require(len(reports) == 1, f'Expected one Orleans test XML in {directory}, found {len(reports)}')
     assembly = ET.parse(reports[0]).getroot().find('assembly')
     require(assembly is not None and Path(assembly.attrib.get('name', '')).stem == ASSEMBLY, 'Wrong Orleans test assembly')
@@ -172,7 +172,7 @@ def execute(shard, total, results, runner=run_attempt, discoverer=discover, atte
         for stale in results.glob('*.xml'):
             stale.unlink()
         command = ['dotnet', 'test', '--project', PROJECT, '--configuration', 'Release', '--no-build', '--no-restore',
-                   '--report-xunit-xml', '--results-directory', str(results), '--filter-method', *methods]
+                   '--report-xunit-xml', '--report-junit', '--report-junit-filename', 'results.junit.xml', '--results-directory', str(results), '--filter-method', *methods]
         status = runner(command, results / f'console-attempt-{attempt}.log')
         if status == 0:
             break

@@ -78,6 +78,13 @@ class VerifyTests(unittest.TestCase):
         result = op.verify(self.dirs, 2)
         self.assertEqual(result['rows'], sum(self.plan['counts'].values()))
 
+    def test_optional_junit_ignored_but_cannot_replace_xunit(self):
+        for d in self.dirs:
+            (d / 'results.junit.xml').write_text('<testsuites/>')
+        self.assertEqual(op.verify(self.dirs, 2)['rows'], sum(self.plan['counts'].values()))
+        (self.dirs[0] / 'r.xml').unlink()
+        with self.assertRaises(ValueError): op.verify(self.dirs, 2)
+
     def test_missing_shard_fails(self):
         with self.assertRaises(ValueError):
             op.verify(self.dirs[:1], 2)
@@ -123,6 +130,9 @@ class ExecuteTests(unittest.TestCase):
             calls.append(cmd); return 124
         self.assertEqual(self.run_execute(runner), 124)
         self.assertEqual(len(calls), 2)
+        self.assertIn('--report-xunit-xml', calls[0])
+        self.assertIn('--report-junit', calls[0])
+        self.assertEqual(calls[0][calls[0].index('--report-junit-filename') + 1], 'results.junit.xml')
 
     def test_stall_then_success_retries_once(self):
         counts = op.inventory(self.listing)

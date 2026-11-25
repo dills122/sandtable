@@ -135,7 +135,7 @@ def recorded_command(binary, directory, entry):
     classes = sorted({row[1].rsplit('.', 1)[0] for row in rows})
     import re
     require(all(row[0] == 'Cna.Core.Tests' for row in rows) and all(re.fullmatch(r'Cna\.Core\.Tests\.[A-Za-z0-9_.+]+', name) for name in classes), 'Invalid exact Core class')
-    command = ['dotnet', 'exec', str(binary), '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str(directory / 'diagnostics'), '--report-xunit-xml', '--results-directory', str(directory / 'results'), '--parallel', 'collections', '--max-threads', '4']
+    command = ['dotnet', 'exec', str(binary), '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str(directory / 'diagnostics'), '--report-xunit-xml', '--report-junit', '--report-junit-filename', 'results.junit.xml', '--results-directory', str(directory / 'results'), '--parallel', 'collections', '--max-threads', '4']
     if entry['selector_kind'] == 'display':
         require(len(classes) == 1 and all('*' not in row[2] for row in rows), 'Unsafe display selector')
         return command + ['--filter-display-name', *sorted(row[2] for row in rows)]
@@ -319,7 +319,7 @@ def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, n
         expected_reports = {path for child_root in report_directories for path in (child_root / 'results').iterdir()}
         actual_reports = {path for path in root.rglob('*') if path.suffix.lower() == '.xml'}
         require(actual_reports == expected_reports, 'Unexpected XML outside supported process report layout')
-        return {'total_rows': len(executed), 'legacy_core_rows': len(legacy_core), 'r02_rows': sum(len(entry['rows']) for entry in r02_proof['groups'].values()), 'long_suite_processes': len(included_groups), 'r02_child_processes': len(r02_proof['groups']), 'legacy_module_processes': 2, 'execution_processes': len(process_keys) + 2, 'xml_reports': len(expected_reports), 'row_identity_sha256': r02.fingerprint(sorted(executed)), 'semantic_counts': r02.semantic_manifest(fixture)['counts'], 'suite_plan_sha256': plan_digest(plan), 'resource_jobs': sorted(resources), 'excluded_shards': sorted(excluded_shards)}
+        return {'total_rows': len(executed), 'legacy_core_rows': len(legacy_core), 'r02_rows': sum(len(entry['rows']) for entry in r02_proof['groups'].values()), 'long_suite_processes': len(included_groups), 'r02_child_processes': len(r02_proof['groups']), 'legacy_module_processes': 2, 'execution_processes': len(process_keys) + 2, 'xml_reports': sum(path.name != 'results.junit.xml' for path in expected_reports), 'row_identity_sha256': r02.fingerprint(sorted(executed)), 'semantic_counts': r02.semantic_manifest(fixture)['counts'], 'suite_plan_sha256': plan_digest(plan), 'resource_jobs': sorted(resources), 'excluded_shards': sorted(excluded_shards)}
     except (KeyError, TypeError, OSError, ET.ParseError, json.JSONDecodeError) as error:
         raise ValueError('Missing/malformed complete suite evidence: ' + str(error)) from error
 

@@ -89,6 +89,14 @@ class CoverageTests(unittest.TestCase):
         p, t = self.report(); a = t.getroot().find('assembly'); a.find('collection').clear(); a.set('total', '0'); a.set('passed', '0'); t.write(p)
         with self.assertRaises(ValueError): self.check()
 
+    def test_junit_sibling_is_optional_and_never_replaces_proof(self):
+        p, _ = self.report()
+        junit = p.with_name('results.junit.xml')
+        junit.write_text('<testsuites/>')
+        self.assertTrue(self.check())
+        p.unlink()
+        with self.assertRaises(ValueError): self.check()
+
     def test_duplicate_report_fails(self):
         p, _ = self.report(); p.with_name('duplicate.xunit.xml').write_bytes(p.read_bytes())
         with self.assertRaises(ValueError): self.check()
@@ -374,6 +382,8 @@ class DiagnosticCommandTests(unittest.TestCase):
                 self.assertEqual(command[:2], ['dotnet', 'test'])
                 self.assertEqual(command[command.index('--project') + 1], partition.project(module))
                 self.assertIn('--report-xunit-xml', command)
+                self.assertIn('--report-junit', command)
+                self.assertEqual(command[command.index('--report-junit-filename') + 1], 'results.junit.xml')
                 if shard in ['core-a', 'core-b']:
                     key = '--filter-method' if shard == 'core-a' else '--filter-not-method'
                     methods = list(partition.SELECTORS if shard == 'core-a' else partition.SELECTORS[1:])

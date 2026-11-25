@@ -78,7 +78,7 @@ class AllocationTests(unittest.TestCase):
             directory = Path(temporary) / 'long-group'
             command = suites.execution_command(Path(temporary) / 'Cna.Core.Tests.dll', directory, entry)
             self.assertEqual(sorted(row[2] for row in entry['rows']), command[command.index('--filter-display-name') + 1:])
-            for flag in ('--diagnostic', '--diagnostic-synchronous-write', '--report-xunit-xml', '--results-directory'):
+            for flag in ('--diagnostic', '--diagnostic-synchronous-write', '--report-xunit-xml', '--report-junit', '--report-junit-filename', '--results-directory'):
                 self.assertIn(flag, command)
             self.assertNotIn('build', command)
             self.assertNotIn('all', command)
@@ -262,6 +262,14 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
         self.needs['format']['result'] = 'failure'
         with self.assertRaises(ValueError): self.check()
 
+    def test_junit_siblings_do_not_change_exact_row_proof(self):
+        original = self.check()
+        for directory in self.root.rglob('results'):
+            (directory / 'results.junit.xml').write_text('<testsuites/>')
+        self.assertEqual(self.check(), original)
+        (self.root / 'results.junit.xml').write_text('<testsuites/>')
+        with self.assertRaises(ValueError): self.check()
+
     def test_foreign_root_xml_cannot_hide_outside_supported_process_results(self):
         (self.root / 'foreign.xml').write_text('<assemblies/>')
         with self.assertRaises(ValueError): self.check()
@@ -410,7 +418,7 @@ class WorkflowTests(unittest.TestCase):
         for heavy_job in ('format', 'architecture-tests', 'prepare', 'orleans'):
             body = text.split('\n  ' + heavy_job + ':\n', 1)[1].split('\n    steps:', 1)[0]
             self.assertIn("if: ${{ needs.changes.outputs.heavy == 'true' }}", body)
-        orleans_job = text.split('\n  orleans:', 1)[1].split('\n  verify:', 1)[0]
+        orleans_job = text.split('\n  orleans:', 1)[1].split('\n  trunk:', 1)[0]
         # The orleans job is sharded 4-way; the dotnet test command, exclusions and per-shard
         # report check live in orleans_partition.py (covered by orleans_partition_test.py), and
         # the verify job proves the shards are disjoint, complete and passing.
@@ -423,10 +431,15 @@ class WorkflowTests(unittest.TestCase):
         # The orleans test-running step itself must never silently swallow a
         # stall/failure; only the separate, additive Trunk.io upload step
         # (after the real result is known) is allowed continue-on-error.
-        orleans_test_step = orleans_job.split('- name: Run and verify Orleans host shard', 1)[1].split('- name: Upload Test Results to Trunk.io', 1)[0]
+        orleans_test_step = orleans_job.split('- name: Run and verify Orleans host shard', 1)[1].split('- name: Retain Orleans test results', 1)[0]
         self.assertNotIn('continue-on-error', orleans_test_step)
-        self.assertIn('- name: Upload Test Results to Trunk.io', orleans_job)
-        self.assertIn('continue-on-error: true', orleans_job)
+        self.assertNotIn('- name: Upload Test Results to Trunk.io', orleans_job)
+        trunk_job = text.split('\n  trunk:', 1)[1].split('\n  verify:', 1)[0]
+        self.assertIn('needs: [prepare, architecture-tests, tests, orleans]', trunk_job)
+        self.assertIn('- name: Upload Test Results to Trunk.io', trunk_job)
+        self.assertIn('continue-on-error: true', trunk_job)
+        self.assertIn("env.TRUNK_UPLOAD_TOKEN != ''", trunk_job)
+        self.assertIn('junit-paths: trunk-results/${{ matrix.shard }}/**/results.junit.xml', trunk_job)
         self.assertNotIn('\n  p01-', text)
         self.assertIn('--exclude-shards "$EXCLUDE_SHARDS"', text)
         self.assertIn('EXCLUDE_SHARDS: ${{ needs.prepare.outputs.excluded_shards }}', text)

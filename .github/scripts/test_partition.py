@@ -195,11 +195,16 @@ def build_inventory(texts, payload, sha, sdk, attempt='local', excluded_rows=Non
 
 
 def report_rows(root, module):
-    # Supported MTP layout: one immediate regular lowercase .xml file and no
-    # other entries. Reject nested/uppercase/linked reports rather than omit them.
+    # One immediate regular lowercase xUnit XML report, plus an optional
+    # exactly named JUnit sibling for telemetry. Never use JUnit as proof.
+    # Reject nested/uppercase/linked reports rather than omit them.
     results = root / 'results'
     require(results.is_dir() and not results.is_symlink(), 'Missing/linked results directory')
     reports = list(results.iterdir())
+    junit = results / 'results.junit.xml'
+    if junit in reports:
+        require(junit.is_file() and not junit.is_symlink(), 'Invalid JUnit telemetry report layout')
+        reports.remove(junit)
     require(len(reports) == 1 and reports[0].is_file() and not reports[0].is_symlink() and reports[0].suffix == '.xml', 'Missing/duplicate report or unsupported layout')
     document = ET.parse(reports[0]).getroot()
     assemblies = document.findall('assembly')
@@ -267,7 +272,7 @@ def identity(expected_sha):
 
 def execution_command(shard_name, directory, partition=None):
     # Progress is retained for diagnosis; only final reports/status satisfy coverage.
-    command = ['dotnet', 'test', '--project', project(MODULES[shard_name]), '--configuration', 'Release', '--no-build', '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str((directory / 'diagnostics').resolve()), '--report-xunit-xml', '--results-directory', str((directory / 'results').resolve()), '/bl:' + str((directory / 'test-{}.binlog').resolve())]
+    command = ['dotnet', 'test', '--project', project(MODULES[shard_name]), '--configuration', 'Release', '--no-build', '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str((directory / 'diagnostics').resolve()), '--report-xunit-xml', '--report-junit', '--report-junit-filename', 'results.junit.xml', '--results-directory', str((directory / 'results').resolve()), '/bl:' + str((directory / 'test-{}.binlog').resolve())]
     if shard_name in CORE_SHARDS:
         require(partition is not None, 'Fresh complete Core partition required')
         command.extend(partition_filters(shard_name, partition))
