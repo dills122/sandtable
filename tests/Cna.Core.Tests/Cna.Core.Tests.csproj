@@ -142,6 +142,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Heavy source-authority rows (GrazianiSourceAuthorityTests) churn multi-GB of short-lived garbage; with the
+         default heap policy a single row peaked at ~6.4 GiB RSS on hosted runners and tripped the long-suite per-child
+         cap. ConserveMemory makes the GC compact and release memory more eagerly (measured 5.7 GiB -> 2.1 GiB locally). -->
+    <RuntimeHostConfigurationOption Include="System.GC.ConserveMemory" Value="9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="xunit.v3.mtp-v2" />
     <PackageReference Include="Microsoft.Testing.Extensions.JUnitReport" />
   </ItemGroup>
