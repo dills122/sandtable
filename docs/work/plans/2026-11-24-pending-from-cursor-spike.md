@@ -132,7 +132,132 @@ So the first migration PR (A) is 1 PR and the `ComputePending` swap (B) is a sec
 deletion work (C, D) is separate. That matches the "1 to 2 PRs for the first migration"
 branch of the synthesis doc, with C and D as follow-ups, not blockers.
 
-## 5. Reproduce
+## 5. Executor plan (owner decision: Turns 2-6 are in scope this quarter)
+
+The owner has confirmed Turns 2-6 are in scope, so the executor is planned work. §4's
+sketch is superseded by this section. Everything below is conditional on the §3 gaps
+closing in step 1; nothing here was built beyond the spike.
+
+### 5.1 (a) Staged plan, PR-sized
+
+| Step | PR | Content | Size | Files |
+| --- | --- | --- | --- | --- |
+| 0 | S0 | Close the spike gaps: drive a real Move, a real attack (Assault with `Events` from combat), a repeat cycle and Retreat Before Assault in the test driver; record which last-event values appear. | 0.5-1 day | new test files only |
+| 1 | S1 | Shadow derivation: promote `PendingFromCursor` into `src/Cna.Core/Exercises/` as a new internal type, with the occurrence/preamble/mechanic tables as separate data files. Nothing calls it in production. | 0.5 day | new `src` files |
+| 2 | S2 | Equivalence oracle: the differential test of §5.3, run in the normal test project; fails on any divergence and on any `PendingDecision` subtype with no table row. | 1 day | new test files |
+| 3 | S3 | Migrate `ComputePending`: body becomes `PendingFromCursor.Derive(...)` mapped to a subtype; delete the 13 staleness guards. Keeps the subtypes and field pairs so the diff is the cascade only. | 0.5-1 day | **hot:** `ExerciseSession.cs` |
+| 4 | S4 | Migrate `QueryCheckpoint` and `ReconstructOne`: key their 29-case switches off the derived occurrence + mechanic instead of the subtype type; both must pick the same arm for the same history (DET-001/002). Checkpoint payload still comes from the retained event. | 1-1.5 days | **hot:** `CampaignExercises.cs` |
+| 5 | S5 | Occurrence-keyed event store: replace the per-occurrence `Current*`/`*Predecessor` field pairs with one map keyed by (occurrence, mechanic). Includes the 4-way `CurrentRepeatAssault` coalesce and `WithRepeatAssaultEvent`. Largest step; split per occurrence family (preamble, Stage 1 second, Stage 2 first, Stage 2 second). | 2-3 days, 3-4 PRs | **hot:** `ExerciseSession.cs`, `CampaignExercises.cs` |
+| 6 | S6 | Delete `PendingDecision.cs` subtypes and the per-occurrence `With*` methods now unreferenced. | 0.5 day | **hot:** `PendingDecision.cs` and others |
+| 7 | S7 | Tier-2 and Host builders (§5.4). Independent of S5 order; best after S4. | 2-3 days | **hot** plus `CampaignHostAdapter.cs` |
+
+Rough total 8-11 worker-days across 10-12 PRs; step 3 is the first PR that changes
+production behavior of a hot method. Every PR keeps `SerializeCanonical()` output, the
+rules-artifact hashes and event order unchanged (EVT-001); `PendingDecision` is in-memory
+only, so none of it touches the wire. The executor adds no clock, `Guid`, RNG or unordered
+iteration (DET-001/002): tables are ordered arrays or dictionaries read by key only.
+
+### 5.2 (b) What can run in parallel with the Stage 3 chain, and what cannot
+
+The Stage 3 chain keeps all edits to `ExerciseSession.cs`, `CampaignExercises.cs` and
+`PendingDecision.cs` until S3-9 lands.
+
+**Safe in parallel (new files only): S0, S1, S2.**
+- S0 and S2 are new test files and need no production edit. S2 is deliberately robust to
+  Stage 3: it enumerates `PendingDecision` subtypes by reflection and fails with a list of
+  unmapped names, so each Stage 3 arm that lands without a table row turns the oracle red
+  with an actionable message, instead of silently drifting. The Stage 3 worker only adds a
+  table row per new arm (one line each); they do not need to know the executor.
+- S1 is a new `src` file reading existing members. It needs `session.CurrentHistory` and
+  `QueryCheckpoint` to be reachable from a new file in `Cna.Core`; both appear to be
+  (spike tests reach them via `InternalsVisibleTo`, and `Cna.Core` internals are visible
+  inside the assembly). Verify at build time; if a member is `private`, S1 waits.
+- Table rows for Stage 3 can be written by whoever lands each Stage 3 slice, in the new
+  data file, with no hot-file contention.
+
+**Must wait for exclusive ownership of the hot files (after S3-9): S3, S4, S5, S6, S7.**
+They rewrite methods the Stage 3 chain is editing at every slice (`ComputePending`,
+`QueryCheckpoint`, `ReconstructOne`, the Tier-2 methods). Interleaving would force
+repeated rebases across cascades that are hand-ordered, which is the bug class PR #552
+was. One owner, serial PRs, no concurrent Stage 3 work on those files.
+
+**Cost of waiting:** none of S0-S2 is wasted if the chain's final shape differs, and they
+convert Stage 3's per-arm hand-ordering risk into a failing test in the meantime.
+
+### 5.3 (c) Differential-test design
+
+- **Old resolver:** the existing `ExerciseSession.Pending` (the cascade). **New resolver:**
+  `PendingFromCursor.Derive` over `Cna1979LandSequenceV4.CreateTurn(gameTurn)`.
+- **Fixture set (the same list the spike enumerated, plus what S0 adds):**
+  1. the real driven Stage 1 + Stage 2 session, sampled after every accepted step;
+  2. Stage 3 entry session from `CampaignStageThreeEntryVerificationTests` (after #570);
+  3. S0's Move, attack, repeat-cycle and Retreat Before Assault sessions;
+  4. Orleans fixtures, through an extension of the same recorder reached via a read-only
+     hook once S4 gives a legitimate place to expose it (until then they are covered by
+     proxy, since they drive the same session type);
+  5. the `ExerciseSessionPendingTests` bare sessions as a staleness regression set; they
+     have no position, so for these only the old resolver is asserted and the case is
+     expressed as "cursor model has no stale-field input".
+- **Per sample, compare:** (i) subtype name, (ii) `QueryCheckpoint().PositionId`,
+  (iii) after S4, the arm `QueryCheckpoint` and `ReconstructOne` each select, which must be
+  equal to each other and to the derived key (the DET-001 check), (iv) after S5,
+  `SerializeCanonical()` bytes and the canonical event stream hash of the whole session, to
+  prove the field-pair removal is byte-identical (EVT-001).
+- **Completeness checks:** the reflection count of `PendingDecision` subtypes equals
+  (derived + explicit exceptions); every subtype is observed in at least one driven sample
+  or is on a named "not driven" list that shrinks to zero by S3; every catalog position is
+  visited by some sample or listed as unvisited.
+- **Failure output:** label, actual, derived, position id, and the non-null `Current*`
+  field list, so a divergence points straight at a stale field or a missing row.
+- **Run policy:** the real-session driver takes about 3 seconds, so the oracle runs in the
+  normal Core test project filter, not a long suite. Targeted filter only.
+
+### 5.4 (d) What the executor does not cover, and the cost to migrate it
+
+Source: scoping doc §1.4 and the direction doc's explicit exclusions; the builder check
+below was done by reading `CampaignHostAdapter.cs`.
+
+**The 11 Tier-2 Combat methods** in `CampaignExercises.cs`: `QueryNativeReserveReleaseState`,
+`SubmitNativeReserveReleaseChoice`, `CompleteNativeReserveRelease`,
+`QueryPendingNativeCycleControl`, `TimeoutNativeReserveRelease`, `TimeoutNativeCycleControl`,
+`QueryPostCombatPassSource`, `SubmitPostCombatPass`, `QueryTruckConvoyPassSource`,
+`SubmitTruckConvoyPass`, `SubmitNativeCycleControl`.
+- **Why they are outside:** they do not dispatch on `Pending`. They read the per-occurrence
+  Assault runtime directly (`CurrentSecondAssault`, `CurrentStageEntryAssault`, ...) on
+  purpose, because the generic `CurrentRepeatAssault` stops resolving once a side's Patrol
+  finishes, and Reserve Release must still see that side's `.Release`. Each has a
+  hand-written `isStageEntry`/`isSecondSide` branch set, checked newest-first.
+- **What migration takes:** an occurrence resolver. The cursor already yields
+  (operation stage, acting-side role); S5's occurrence-keyed store would expose
+  `AssaultFor(occurrence)`, including the "finished" case, as a single accessor. Each
+  Tier-2 method then replaces its boolean branches with one lookup. Per method this is a
+  small mechanical edit, about 30-60 lines removed each, but the 11 must move together
+  with S5 or they will still reference the old fields. Size: 1.5-2 days, 2 PRs (Reserve
+  Release/Cycle Control group; Truck/Post-Combat group). Risk is medium: these are the
+  methods #551/#552 broke.
+- **Without migrating them:** each Stage 3 Combat slice (S3-4, S3-5, S3-9) still adds one
+  branch to each of the 11. The executor does not remove that cost; it only stops it
+  from compounding with the cascade.
+
+**The Host's 20 `NativeXxxCommand` builders** (`CampaignHostAdapter.cs`).
+- Read of `NativeCombatNoAttackCommand` and `SecondCombatNoAttackCommand`: the bodies are
+  identical (call `QueryCheckpoint`, build a `CampaignActionSubmission` from the receipt);
+  they differ only in the guard that names which `Current*` field must be non-null. About
+  12 references to `CurrentStageEntry*`/`CurrentSecond*` in the file are those guards.
+  I only read two of the 20; the others (timeout builders, successor/settlement builders)
+  may carry real per-occurrence logic. Treat "20 identical bodies" as unverified.
+- **What migration takes:** one generic builder keyed by the accepted step's kind, with the
+  guard expressed as "the accepted step produced an event for this occurrence", from the
+  cursor/occurrence key. The 20 public methods become thin wrappers or are deleted where
+  callers can use the generic one. Size: 1-1.5 days, 1-2 PRs, plus Host/Orleans test
+  re-runs. Low-to-medium risk because the builders do no rule logic, but they are a public
+  surface of `CampaignHostAdapter`: check callers (including Orleans) before deleting.
+
+**Net:** the executor (S1-S6) removes the `Pending` cascade tax and the staleness bug
+class. It removes the Combat per-occurrence tax only if S7 is also done. If the owner
+wants Turns 2-6 at the lowest per-Turn cost, S7 is not optional; budget S5 and S7 together.
+
+## 6. Reproduce
 
 ```
 dotnet test tests/Cna.Core.Tests --filter "FullyQualifiedName~PendingFromCursorSpikeTests"
