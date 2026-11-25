@@ -21,9 +21,15 @@ internal sealed record CampaignSetupDefinition
         ArgumentException.ThrowIfNullOrWhiteSpace(setupId);
         ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
 
-        if (initialGameTurn is < 1 or > 111)
+        if (initialGameTurn is < 1 or > Cna1979Weather.MaxGameTurn)
         {
-            throw new ArgumentOutOfRangeException(nameof(initialGameTurn));
+            // Weather (TURN-DEC-006) supports Game Turns 1-110 only; a setup starting at
+            // GT111 would wedge at the Weather step, so reject it at creation.
+            throw new ArgumentOutOfRangeException(
+                nameof(initialGameTurn),
+                initialGameTurn,
+                $"Initial Game Turn must be 1 through {Cna1979Weather.MaxGameTurn}; "
+                + "Weather does not support later Game Turns.");
         }
 
         ArgumentNullException.ThrowIfNull(initialInitiative);

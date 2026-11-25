@@ -59,7 +59,7 @@ internal static class CampaignSnapshotValidator
             || !Cna1979SetupCatalog.TryGet(setup.SetupId, out var catalogDefinition)
             || string.IsNullOrWhiteSpace(setup.SetupId)
             || string.IsNullOrWhiteSpace(setup.SetupHash)
-            || setup.InitialGameTurn is < 1 or > 111
+            || setup.InitialGameTurn is < 1 or > Cna1979Weather.MaxGameTurn
             || setup.InitialInitiative is null
             || setup.OpeningPreamble is null
             || setup.OpeningPreamble.ContractVersion

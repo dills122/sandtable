@@ -120,6 +120,31 @@ public sealed class CampaignSetupTests
         Assert.False(Cna1979SetupCatalog.TryGet(null, out _));
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(111)]
+    [InlineData(112)]
+    public void SetupRejectsInitialGameTurnOutsideWeatherSupport(int gameTurn)
+    {
+        var baseline = Cna1979SetupCatalog.Definitions[1];
+
+        var error = Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignSetupDefinition(
+            baseline.SchemaVersion,
+            baseline.SetupId,
+            baseline.DisplayName,
+            baseline.IsSynthetic,
+            gameTurn,
+            baseline.InitialInitiative,
+            baseline.OpeningPreamble,
+            baseline.Weather,
+            baseline.StageEntry,
+            baseline.Content,
+            baseline.Sources));
+
+        Assert.Equal("initialGameTurn", error.ParamName);
+        Assert.Contains("Weather does not support", error.Message);
+    }
+
     [Fact]
     public void SetupHashCoversPolicyFactsAndSourcesButNotDisplayName()
     {

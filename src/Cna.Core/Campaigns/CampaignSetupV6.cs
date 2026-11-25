@@ -38,7 +38,7 @@ internal sealed record CampaignSetupSnapshotV6
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(schemaVersion, CurrentSchemaVersion);
         ArgumentOutOfRangeException.ThrowIfLessThan(initialGameTurn, 1);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(initialGameTurn, 111);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(initialGameTurn, Cna1979Weather.MaxGameTurn);
         ArgumentNullException.ThrowIfNull(initialInitiative);
         ArgumentNullException.ThrowIfNull(openingPreamble);
         ArgumentNullException.ThrowIfNull(weather);
