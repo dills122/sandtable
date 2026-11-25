@@ -331,7 +331,7 @@ jobs:
           retention-days: 14
 
   orleans:
-    needs: changes
+    needs: [changes, prepare]
     if: ${{ needs.changes.outputs.heavy == 'true' }}
     # Phase D of #439 (docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md §1):
     # Cna.OrleansHost.Tests holds every Postgres+Marten (Testcontainers) test of the durable
@@ -348,7 +348,6 @@ jobs:
     # complete. Retry-once-on-no-report and the 18m per-attempt cap are preserved inside the script;
     # a failed or report-less run now exits non-zero (the old inline loop reported exit 0 after two
     # timeouts and skipped verification).
-    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
