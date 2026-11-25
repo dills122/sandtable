@@ -77,7 +77,25 @@ describe('describeOpening', () => {
         ['a', 'b'],
       ),
     );
-    expect(d.choices.map((c) => c.label)).toEqual(['Hold', 'Advance']);
+    expect(d.choices.map((c) => c.label)).toEqual(['Hold · Cost 1', 'Advance · Cost 2']);
+  });
+
+  it('keeps the element on reserve-designation style choices (live simulator shape)', () => {
+    const d = describeOpening(
+      view(
+        {
+          choices: [
+            { kind: 'complete', elementId: null },
+            { kind: 'designate', elementId: 'axis-infantry' },
+          ],
+        },
+        ['r1', 'r2'],
+      ),
+    );
+    expect(d.choices.map((c) => c.label)).toEqual([
+      'complete',
+      'designate · Element id axis-infantry',
+    ]);
   });
 
   it('falls back to Option N without dropping any ref when nothing aligns', () => {

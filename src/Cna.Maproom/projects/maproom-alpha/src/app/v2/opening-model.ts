@@ -119,17 +119,39 @@ function findChoiceKey(cut: { [key: string]: JsonValue }, refCount: number): str
   return arrays.length === 1 ? arrays[0] : undefined;
 }
 
-function choiceLabel(entry: JsonValue, details: readonly Fact[], index: number): string {
+/**
+ * Returns the label key whose string values are non-empty and pairwise distinct across every
+ * entry, so a constant like `kind: "move-element"` is never used as the only visible label.
+ */
+function uniqueLabelKey(entries: readonly JsonValue[]): string | undefined {
+  const records = entries.filter(isRecord);
+  if (records.length !== entries.length) return undefined;
+  return LABEL_KEYS.find((key) => {
+    const values = records.map((r) => r[key]);
+    return (
+      values.every((v) => typeof v === 'string' && v !== '') &&
+      new Set(values).size === values.length
+    );
+  });
+}
+
+function choiceLabel(
+  entry: JsonValue,
+  details: readonly Fact[],
+  index: number,
+  labelKey: string | undefined,
+): string {
   if (isScalar(entry)) return scalarText(entry);
   if (isRecord(entry)) {
-    for (const key of LABEL_KEYS) {
-      const v = entry[key];
-      if (typeof v === 'string' && v.length > 0) return v;
-    }
-    const parts = details
-      .filter((f) => f.value !== undefined)
-      .slice(0, 4)
+    const primary = labelKey ? (entry[labelKey] as string) : undefined;
+    // Keep the other populated scalars so "designate" is not shown without its element.
+    const rest = details
+      .filter(
+        (f) => f.value !== undefined && f.value !== 'None' && f.label !== humanize(labelKey ?? ''),
+      )
+      .slice(0, primary ? 3 : 4)
       .map((f) => `${f.label} ${f.value}`);
+    const parts = primary ? [primary, ...rest] : rest;
     if (parts.length > 0) return parts.join(' · ');
   }
   return `Option ${index + 1}`;
@@ -143,11 +165,12 @@ export function describeOpening(opening: OpeningView): OpeningDescription {
   const choiceKey = record && refs.length > 0 ? findChoiceKey(record, refs.length) : undefined;
   const entries = choiceKey ? (record![choiceKey] as JsonValue[]) : undefined;
 
+  const labelKey = entries ? uniqueLabelKey(entries) : undefined;
   const choices: ChoiceView[] = refs.map((ref, i) => {
     const entry = entries?.[i];
     if (entry === undefined) return { ref, label: `Option ${i + 1}`, details: [] };
     const details = isRecord(entry) ? factsOf(entry, 1, budget) : [];
-    return { ref, label: choiceLabel(entry, details, i), details };
+    return { ref, label: choiceLabel(entry, details, i, labelKey), details };
   });
 
   let facts: Fact[];
