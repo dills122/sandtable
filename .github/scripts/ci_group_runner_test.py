@@ -34,6 +34,20 @@ class ChildProcessTests(unittest.TestCase):
         self.assertGreaterEqual(status['elapsed_seconds'], 0)
         self.assertFalse(status['cancelled'])
 
+    def test_mtp_pipe_directory_is_short_private_and_cleaned(self):
+        root = self.root / ('nested-' + 'x' * 120)
+        command = [sys.executable, '-c', 'import json,os; from pathlib import Path; '
+                   'pipe=Path(os.environ["TESTINGPLATFORM_PIPE_DIRECTORY"]); '
+                   'print(json.dumps({"pipe": str(pipe), "tmp": os.environ["TMPDIR"], "exists": pipe.is_dir(), "mode": pipe.stat().st_mode & 0o777}))']
+        status = runner.run_child(command, root, self.template, time.monotonic() + 5)
+        self.assertEqual(status['exit_code'], 0)
+        child = json.loads((root / 'execution.log').read_text())
+        self.assertTrue(child['exists'])
+        self.assertEqual(child['mode'], 0o700)
+        self.assertEqual(child['tmp'], str((root / 'temp').resolve()))
+        self.assertLessEqual(len(os.fsencode(child['pipe'] + '/MONITORTOHOST_' + 'a' * 32)), 103)
+        self.assertFalse(Path(child['pipe']).exists())
+
     def test_deadline_terminates_owned_process_and_cannot_pass(self):
         status = runner.run_child([sys.executable, '-c', 'import time; time.sleep(30)'], self.root, self.template, time.monotonic() + 0.15)
         self.assertNotEqual(status['exit_code'], 0)

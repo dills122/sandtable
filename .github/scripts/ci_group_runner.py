@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import signal
 import subprocess
+import tempfile
 import threading
 import time
 
@@ -85,7 +86,14 @@ def run_child(command, directory, template, deadline, cancellation=None, monitor
     started = time.monotonic()
     status = dict(template, evidence_version=1, output_directory=str(directory.resolve()), command=command, started_utc=datetime.now(timezone.utc).isoformat(), process_id=None, exit_code=127, cancelled=False)
     process = None
+    pipe_directory = None
     try:
+        # JUnit enables MTP's monitor/host socket. Its fixed-length name must
+        # fit the Unix socket limit even when the retained evidence path is deep.
+        # Keep every process's normal temp files isolated; use a separate short
+        # private directory only for sockets and remove it after process cleanup.
+        pipe_directory = tempfile.TemporaryDirectory(prefix='st-mtp-', dir='/tmp')
+        environment['TESTINGPLATFORM_PIPE_DIRECTORY'] = pipe_directory.name
         with (directory / 'execution.log').open('w') as output:
             process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=output, stderr=subprocess.STDOUT, shell=False, env=environment, start_new_session=True)
             status['process_id'] = process.pid
@@ -120,6 +128,14 @@ def run_child(command, directory, template, deadline, cancellation=None, monitor
                 cancellation.set()
                 status['cleanup_error'] = str(error)
             status['exit_code'] = process.returncode if process.returncode not in (None, 0) else 127
+        if pipe_directory is not None:
+            try:
+                pipe_directory.cleanup()
+            except OSError as error:
+                cancellation.set()
+                status['cleanup_error'] = str(error)
+                status['cancelled'] = True
+                status['exit_code'] = 127
         if monitor is not None: monitor.unregister(template['group'])
         status['completed_utc'] = datetime.now(timezone.utc).isoformat()
         status['elapsed_seconds'] = time.monotonic() - started
