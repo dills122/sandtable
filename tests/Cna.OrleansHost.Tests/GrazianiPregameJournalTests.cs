@@ -1241,6 +1241,35 @@ public sealed class GrazianiPregameJournalTests
             Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceCwFrontline(request.CampaignId, new string('0', 64)));
             Assert.True(journal.ActivateSourceCwFrontline(request.CampaignId, Secret));
             Assert.False(journal.ActivateSourceCwFrontline(request.CampaignId, Secret));
+            // #580: ordering is enforced; later steps are unavailable until their predecessor ran.
+            Assert.Throws<InvalidOperationException>(() => journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.Throws<InvalidOperationException>(() => journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<InvalidOperationException>(() => journal.ActivateSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.Throws<InvalidOperationException>(() => journal.ActivateSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceTobrukBardiaGarrison(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceBardiaGarrisonRemainder(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceTripoliTankRegiment(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceTripoliTankRegiment(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceCwAttachedArtillery(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceCwAttachedArtillery(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceCwAttachedArtillery(request.CampaignId, Secret));
             var frontlineChoices = Enumerable.Repeat((Kind: "frontline-attach", ElementId: "1-rtr"), 5)
                 .Concat(Enumerable.Repeat((Kind: "frontline-attach", ElementId: "11-hussars"), 3))
                 .Concat(new[] { (Kind: "frontline-finish", ElementId: "frontline"),

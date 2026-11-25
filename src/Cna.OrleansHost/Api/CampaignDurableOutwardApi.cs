@@ -408,6 +408,70 @@ internal static class CampaignDurableOutwardApi
                     context.Request.Headers["X-Sandtable-Operator"].ToString());
                 return Results.Json(new { contractVersion = 2, campaignId, admitted });
             }));
+        api.MapPost("/{campaignId}/source-tobruk-bardia-garrison-admission", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var admitted = await journal.AdmitSourceTobrukBardiaGarrisonAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted });
+            }));
+        api.MapPost("/{campaignId}/source-tobruk-bardia-garrison-activation", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var activated = await journal.ActivateSourceTobrukBardiaGarrisonAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-bardia-garrison-remainder-admission", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var admitted = await journal.AdmitSourceBardiaGarrisonRemainderAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted });
+            }));
+        api.MapPost("/{campaignId}/source-bardia-garrison-remainder-activation", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var activated = await journal.ActivateSourceBardiaGarrisonRemainderAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-tripoli-tank-regiment-admission", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var admitted = await journal.AdmitSourceTripoliTankRegimentAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted });
+            }));
+        api.MapPost("/{campaignId}/source-tripoli-tank-regiment-activation", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var activated = await journal.ActivateSourceTripoliTankRegimentAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
+        api.MapPost("/{campaignId}/source-cw-attached-artillery-admission", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var admitted = await journal.AdmitSourceCwAttachedArtilleryAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, admitted });
+            }));
+        api.MapPost("/{campaignId}/source-cw-attached-artillery-activation", (HttpContext context,
+            CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
+            {
+                RequireOperator(context, journal);
+                var activated = await journal.ActivateSourceCwAttachedArtilleryAsync(campaignId,
+                    context.Request.Headers["X-Sandtable-Operator"].ToString());
+                return Results.Json(new { contractVersion = 2, campaignId, activated });
+            }));
         api.MapPost("/{campaignId}/source-turn/gt1-multiple-lanes", (HttpContext context,
             CampaignDurableAuthorityJournalStore journal, string campaignId) => ExecuteWithoutBody(context, async () =>
             {
