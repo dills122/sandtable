@@ -130,3 +130,30 @@ CI's Linux resource supervision, exhaustive aggregate, private Python proofs and
 exact-head admission remain separate. The local receipt explicitly identifies a
 selected local run; it is not a CI coverage certificate. Existing Python Combat
 oracles must still be run separately when relevant, retaining source-pin failures.
+
+## Shared Postgres for concurrent workers
+
+`Cna.OrleansHost.Tests` normally starts its own ephemeral Postgres container
+(Testcontainers, `postgres:16-alpine`) per test process. That's fine for CI or
+a single local run, but several concurrent worker sessions (e.g. Orchestrator
+app workers, each in its own git worktree) each starting a container plus a
+concurrent Release build can overload one machine.
+
+Set `SANDTABLE_TEST_POSTGRES_URL` to opt a worker into sharing ONE long-lived,
+externally-started Postgres instance instead:
+
+```sh
+scripts/shared-test-postgres.sh up    # idempotent; prints the export line below
+export SANDTABLE_TEST_POSTGRES_URL="Host=localhost;Port=5433;Username=postgres;Password=postgres;Database=postgres"
+scripts/shared-test-postgres.sh down  # when no worker needs it anymore
+```
+
+Leaving the variable unset keeps today's default behavior exactly as it was:
+each process starts and owns its own container. When it's set, the affected
+fixtures (`PostgresContainerFixture`, `SharedPostgres` in
+`MartenJournalTestSupport.cs`) skip starting a container, point at that
+connection string instead, and never stop it on teardown since other workers
+may still be using it; `PostgresContainerFixture.CreateDatabaseAsync` also
+uniquifies the database name it actually creates (fixed per-test-class
+literal names would otherwise collide across workers sharing one instance),
+transparently to every caller.

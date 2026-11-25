@@ -16,6 +16,13 @@ namespace Cna.OrleansHost.Tests.Persistence;
 /// </summary>
 internal static class SharedPostgres
 {
+    // Same opt-in external-Postgres mode as PostgresContainerFixture (see
+    // docs/runbooks/local-testing.md) -- when set, reuse that shared instance instead of starting
+    // a second, independent container here. The database name already includes a fresh GUID below,
+    // so it is already collision-safe against other concurrent workers without further change.
+    private static readonly string? ExternalConnectionString =
+        Environment.GetEnvironmentVariable("SANDTABLE_TEST_POSTGRES_URL");
+
     private static readonly Lazy<Task<PostgreSqlContainer>> Container = new(async () =>
     {
         var container = new PostgreSqlBuilder("postgres:16-alpine").Build();
@@ -23,16 +30,19 @@ internal static class SharedPostgres
         return container;
     }, LazyThreadSafetyMode.ExecutionAndPublication);
 
+    private static async Task<string> BaseConnectionStringAsync() =>
+        ExternalConnectionString ?? (await Container.Value.ConfigureAwait(false)).GetConnectionString();
+
     internal static async Task<string> CreateDatabaseAsync()
     {
-        var container = await Container.Value.ConfigureAwait(false);
+        var baseConnectionString = await BaseConnectionStringAsync().ConfigureAwait(false);
         var name = "journal_" + Guid.NewGuid().ToString("N");
-        await using var connection = new NpgsqlConnection(container.GetConnectionString());
+        await using var connection = new NpgsqlConnection(baseConnectionString);
         await connection.OpenAsync().ConfigureAwait(false);
         await using var command = connection.CreateCommand();
         command.CommandText = $"CREATE DATABASE \"{name}\"";
         await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-        return new NpgsqlConnectionStringBuilder(container.GetConnectionString()) { Database = name }.ConnectionString;
+        return new NpgsqlConnectionStringBuilder(baseConnectionString) { Database = name }.ConnectionString;
     }
 
     internal static DocumentStore CreateCampaignStore(string connectionString) =>
