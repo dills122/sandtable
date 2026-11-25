@@ -146,7 +146,14 @@ internal static class SequencingScenarios
         session = r.Ok("op3.first.reserve", CampaignExercises.SubmitThirdStageReserve(session, aud3, Hash("stage3-reserve"), elementId: null));
         session = TryMove(r, session, aud3, "op3.first", CampaignExercises.QueryThirdStageMovementCut, CampaignExercises.SubmitThirdStageMovement);
         session = r.Ok("op3.first.movement-completion", CampaignExercises.CompleteThirdStageMovement(session, aud3, Hash("stage3-movement-completion")));
-        r.Ok("op3.first.breakdown", CampaignExercises.CompleteThirdStageBreakdown(session));
+        session = r.Ok("op3.first.breakdown", CampaignExercises.CompleteThirdStageBreakdown(session));
+        // S3-4: first-side Combat Decision (finish without attack); S3-5 adds the Assault/No-Attack chain.
+        var element3 = aud3 == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
+        var breakdownCut = CampaignExercises.QueryCheckpoint(session);
+        r.Ok("op3.first.combat-selection", CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion, breakdownCut.CampaignId,
+                breakdownCut.StateVersion, breakdownCut.PositionId, aud3,
+                new FinishCombatWithoutAttackAction(element3).ActionId), element3));
         return r;
     }
 
