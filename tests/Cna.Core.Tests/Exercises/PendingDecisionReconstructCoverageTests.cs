@@ -43,6 +43,7 @@ public sealed class PendingDecisionReconstructCoverageTests
         [typeof(StageEntrySecondNoAttackPending)] = NoAttackReason,
         [typeof(StageEntryMovePending)] = StageEntryMoveReason,
         [typeof(StageEntrySecondMovePending)] = StageEntryMoveReason,
+        [typeof(ThirdStageMovePending)] = StageEntryMoveReason,
     };
 
     public static TheoryData<string> Subtypes()
@@ -322,8 +323,14 @@ internal static class PendingFixtures
             session = Cap(session.WithThirdStageNoObligationFleetAssignment(assignment,
                 session.CurrentContacts.AdvanceNoObligationFleetAssignment(assignment)));
             var repair = CampaignNativeNoObligationFleetRepairV54.Create(assignment, assignment.StateVersion);
-            Cap(session.WithThirdStageNoObligationFleetRepair(repair,
+            session = Cap(session.WithThirdStageNoObligationFleetRepair(repair,
                 session.CurrentContacts.AdvanceNoObligationFleetRepair(repair)));
+            // Stage 3 first side (S3-1..S3-3): Reserve, Movement Completion, Breakdown.
+            var audience = repair.ToOrder().FirstSide == LandSide.Axis
+                ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+            session = Ok(CampaignExercises.SubmitThirdStageReserve(session, audience, Hash("stage3-reserve"), elementId: null));
+            session = Ok(CampaignExercises.CompleteThirdStageMovement(session, audience, Hash("stage3-movement-completion")));
+            Ok(CampaignExercises.CompleteThirdStageBreakdown(session));
         }
 
         private ExerciseSession Cap(ExerciseSession session)
