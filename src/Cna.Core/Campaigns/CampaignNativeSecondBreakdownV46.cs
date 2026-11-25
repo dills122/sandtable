@@ -66,12 +66,26 @@ internal sealed record CampaignNativeSecondBreakdownV46(
         cursor => cursor.StageEntrySecondMovePredecessor,
         cursor => cursor.CurrentStageEntrySecondMoveWorld);
 
+    private static readonly Slot ThirdStageSlot = new(
+        "Stage 3 ",
+        session => session.CurrentThirdStageMovementCompletion,
+        session => session.CurrentThirdStageBreakdown is not null,
+        session => session.ThirdStageMovementCompletionPredecessor,
+        CampaignExercises.ThirdStageOrders,
+        CampaignExercises.QueryThirdStageMovementSource,
+        cursor => cursor.ThirdStageMovePredecessor,
+        cursor => cursor.CurrentThirdStageMoveWorld);
+
     internal static CampaignNativeSecondBreakdownV46 Create(ExerciseSession session) => CreateCore(session, SecondSlot);
 
     // MTS-TASK-005/006 (2026-11-23): entered from this stage's own completed
     // Movement Completion (CurrentStageEntryMovementCompletion) instead of
     // the first side's.
     internal static CampaignNativeSecondBreakdownV46 CreateForStageEntry(ExerciseSession session) => CreateCore(session, StageEntrySlot);
+
+    // S3-3 (2026-11-24): entered from Operation Stage 3's own first acting
+    // side's completed Movement Completion (CurrentThirdStageMovementCompletion).
+    internal static CampaignNativeSecondBreakdownV46 CreateForThirdStage(ExerciseSession session) => CreateCore(session, ThirdStageSlot);
 
     // MTS-TASK-006 (2026-11-23): entered from this stage's own completed
     // SECOND acting side's Movement Completion
