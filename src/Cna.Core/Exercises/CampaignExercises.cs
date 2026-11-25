@@ -1680,6 +1680,19 @@ public static class CampaignExercises
         return ExerciseStepResult.Accepted(new ExerciseSession(authority.Pregame, session.CurrentContacts.AdvancePregameSource(authority.StateVersion),
             [.. session.PregameHistory, bytes], next), new ExerciseStepEvidence(receipt, bytes, next.SerializeCheckpoint()));
     }
+    private static bool IsSourcePackAdmitted(ExerciseSession session, IReadOnlyList<string> ids) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.Battlefield is { } battlefield
+        && ids.All(id => battlefield.Entries.Any(value => value.ElementId == id && value.AuthorityStatus != "source-evidence"));
+    public static bool IsSourceTobrukBardiaGarrisonAdmitted(ExerciseSession session) =>
+        IsSourcePackAdmitted(session, ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds);
+    public static bool IsSourceTobrukBardiaGarrisonActivated(ExerciseSession session) =>
+        (session.SourceAuthority ?? session.SourceTurn?.Source)?.CwFreeGunsWorld?.TobrukBardiaGarrisonContent is not null;
+    public static bool IsSourceBardiaGarrisonRemainderAdmitted(ExerciseSession session) =>
+        IsSourcePackAdmitted(session, ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds);
+    public static bool IsSourceTripoliTankRegimentAdmitted(ExerciseSession session) =>
+        IsSourcePackAdmitted(session, ContentSourceTripoliTankRegimentPackArtifact.AllIds);
+    public static bool IsSourceCwAttachedArtilleryAdmitted(ExerciseSession session) =>
+        IsSourcePackAdmitted(session, ContentSourceCwAttachedArtilleryPackArtifact.AllIds);
     public static ExerciseStepResult AdmitSourceTobrukBardiaGarrison(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);

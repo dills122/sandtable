@@ -2927,6 +2927,14 @@ public static class CampaignHostAdapter
             or CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind
             or CampaignHostAcceptedStep.SourceCwFrontlineKind
             or CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind
+            or CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind
+            or CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind
+            or CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind
+            or CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind
+            or CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind
+            or CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind
+            or CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind
+            or CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind
             or CampaignHostAcceptedStep.SourceGt1MultiLanesKind
             or CampaignHostAcceptedStep.SourceMatruhFormationKind or CampaignHostAcceptedStep.SourceMatruhFormationChoiceKind
             or CampaignHostAcceptedStep.SourceCwFreeGunsKind or CampaignHostAcceptedStep.SourceCwFreeGunsChoiceKind
@@ -3015,6 +3023,14 @@ public static class CampaignHostAdapter
              (CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind, null) or
              (CampaignHostAcceptedStep.SourceCwFrontlineKind, null) or
              (CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind, null) or
+             (CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind, null) or
+             (CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind, null) or
+             (CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind, null) or
+             (CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind, null) or
+             (CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind, null) or
+             (CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind, null) or
+             (CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind, null) or
+             (CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind, null) or
              (CampaignHostAcceptedStep.SourceGt1MultiLanesKind, null) or
              (CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind, "land.graziani-commonwealth-priority-catalog") or
              (CampaignHostAcceptedStep.SourceMatruhFormationKind, null) or
@@ -3193,6 +3209,14 @@ public static class CampaignHostAdapter
             or CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind
             or CampaignHostAcceptedStep.SourceCwFrontlineKind
             or CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind
+            or CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind
+            or CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind
+            or CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind
+            or CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind
+            or CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind
+            or CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind
+            or CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind
+            or CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind
             or CampaignHostAcceptedStep.SourceGt1MultiLanesKind
                 or CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind
                 or CampaignHostAcceptedStep.SourceMatruhFormationKind
@@ -3453,6 +3477,14 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => ActivateSourceGiarabubMotorMachineGun(session),
                 CampaignHostAcceptedStep.SourceCwFrontlineKind => ActivateSourceCwFrontline(session),
                 CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(session),
+                CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind => CampaignExercises.AdmitSourceTobrukBardiaGarrison(session),
+                CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind => CampaignExercises.ActivateSourceTobrukBardiaGarrison(session),
+                CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind => CampaignExercises.AdmitSourceBardiaGarrisonRemainder(session),
+                CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind => CampaignExercises.ActivateSourceBardiaGarrisonRemainder(session),
+                CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind => CampaignExercises.AdmitSourceTripoliTankRegiment(session),
+                CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind => CampaignExercises.ActivateSourceTripoliTankRegiment(session),
+                CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind => CampaignExercises.AdmitSourceCwAttachedArtillery(session),
+                CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind => CampaignExercises.ActivateSourceCwAttachedArtillery(session),
                 CampaignHostAcceptedStep.SourceGt1MultiLanesKind => AnnounceSourceGt1MultiLanes(session),
                 CampaignHostAcceptedStep.SourceCwPriorityCatalogChoiceKind => SubmitSourceCwPriorityCatalog(session, submission),
                 CampaignHostAcceptedStep.SourceMatruhFormationKind => CampaignExercises.AdmitSourceMatruhFormation(session),
@@ -3668,6 +3700,14 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind
                 or CampaignHostAcceptedStep.SourceCwFrontlineKind
                 or CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind
+                or CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind
+                or CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind
+                or CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind
+                or CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind
+                or CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind
+                or CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind
+                or CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind
+                or CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         SourceTurnSystemCommand(session, accepted)))))
@@ -4253,6 +4293,14 @@ public sealed class CampaignHostAcceptedStep
     public const int SourceGiarabubMotorMachineGunContractVersion = 108;
     public const int SourceCwFrontlineContractVersion = 109;
     public const int SourceGiarabubMotorPlacementPolicyContractVersion = 110;
+    public const int SourceTobrukBardiaGarrisonAdmissionContractVersion = 117;
+    public const int SourceTobrukBardiaGarrisonActivationContractVersion = 118;
+    public const int SourceBardiaGarrisonRemainderAdmissionContractVersion = 119;
+    public const int SourceBardiaGarrisonRemainderActivationContractVersion = 120;
+    public const int SourceTripoliTankRegimentAdmissionContractVersion = 121;
+    public const int SourceTripoliTankRegimentActivationContractVersion = 122;
+    public const int SourceCwAttachedArtilleryAdmissionContractVersion = 123;
+    public const int SourceCwAttachedArtilleryActivationContractVersion = 124;
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
@@ -4348,6 +4396,14 @@ public sealed class CampaignHostAcceptedStep
     public const string SourceGiarabubMotorMachineGunKind = "source-giarabub-motor-machine-gun-activation";
     public const string SourceCwFrontlineKind = "source-cw-frontline-activation";
     public const string SourceGiarabubMotorPlacementPolicyKind = "source-giarabub-motor-placement-policy";
+    public const string SourceTobrukBardiaGarrisonAdmissionKind = "source-tobruk-bardia-garrison-admission";
+    public const string SourceTobrukBardiaGarrisonActivationKind = "source-tobruk-bardia-garrison-activation";
+    public const string SourceBardiaGarrisonRemainderAdmissionKind = "source-bardia-garrison-remainder-admission";
+    public const string SourceBardiaGarrisonRemainderActivationKind = "source-bardia-garrison-remainder-activation";
+    public const string SourceTripoliTankRegimentAdmissionKind = "source-tripoli-tank-regiment-admission";
+    public const string SourceTripoliTankRegimentActivationKind = "source-tripoli-tank-regiment-activation";
+    public const string SourceCwAttachedArtilleryAdmissionKind = "source-cw-attached-artillery-admission";
+    public const string SourceCwAttachedArtilleryActivationKind = "source-cw-attached-artillery-activation";
     public const string SourceCwPriorityCatalogChoiceKind = "source-cw-priority-catalog-choice";
     public const string SourceMatruhFormationKind = "source-matruh-formation";
     public const string SourceMatruhFormationChoiceKind = "source-matruh-formation-choice";
@@ -4391,7 +4447,7 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or ContactMovementSegmentCompletionKind or ContactCombatSelectionKind or ContactStageEntryInitiativeDeclarationKind
+        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceTobrukBardiaGarrisonAdmissionKind or SourceTobrukBardiaGarrisonActivationKind or SourceBardiaGarrisonRemainderAdmissionKind or SourceBardiaGarrisonRemainderActivationKind or SourceTripoliTankRegimentAdmissionKind or SourceTripoliTankRegimentActivationKind or SourceCwAttachedArtilleryAdmissionKind or SourceCwAttachedArtilleryActivationKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or ContactMovementSegmentCompletionKind or ContactCombatSelectionKind or ContactStageEntryInitiativeDeclarationKind
                 or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
@@ -4410,7 +4466,7 @@ public sealed class CampaignHostAcceptedStep
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactStageEntryInitiativeDeclarationKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
                 or ContactRepeatMovementKind or ContactRepeatCombatSelectionKind
                 && string.IsNullOrWhiteSpace(actingElementId))
-            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind
+            || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceTobrukBardiaGarrisonAdmissionKind or SourceTobrukBardiaGarrisonActivationKind or SourceBardiaGarrisonRemainderAdmissionKind or SourceBardiaGarrisonRemainderActivationKind or SourceTripoliTankRegimentAdmissionKind or SourceTripoliTankRegimentActivationKind or SourceCwAttachedArtilleryAdmissionKind or SourceCwAttachedArtilleryActivationKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
                 or NativeCombatAntiArmorKind or NativeCombatCancelledAssaultKind
                 or NativeCombatAssaultResultKind or NativeCombatNoPostAssaultRetreatKind
@@ -4477,6 +4533,14 @@ public sealed class CampaignHostAcceptedStep
             SourceGiarabubMotorMachineGunKind => SourceGiarabubMotorMachineGunContractVersion,
             SourceCwFrontlineKind => SourceCwFrontlineContractVersion,
             SourceGiarabubMotorPlacementPolicyKind => SourceGiarabubMotorPlacementPolicyContractVersion,
+            SourceTobrukBardiaGarrisonAdmissionKind => SourceTobrukBardiaGarrisonAdmissionContractVersion,
+            SourceTobrukBardiaGarrisonActivationKind => SourceTobrukBardiaGarrisonActivationContractVersion,
+            SourceBardiaGarrisonRemainderAdmissionKind => SourceBardiaGarrisonRemainderAdmissionContractVersion,
+            SourceBardiaGarrisonRemainderActivationKind => SourceBardiaGarrisonRemainderActivationContractVersion,
+            SourceTripoliTankRegimentAdmissionKind => SourceTripoliTankRegimentAdmissionContractVersion,
+            SourceTripoliTankRegimentActivationKind => SourceTripoliTankRegimentActivationContractVersion,
+            SourceCwAttachedArtilleryAdmissionKind => SourceCwAttachedArtilleryAdmissionContractVersion,
+            SourceCwAttachedArtilleryActivationKind => SourceCwAttachedArtilleryActivationContractVersion,
             SourceCwPriorityCatalogChoiceKind => SourceCwPriorityCatalogChoiceContractVersion,
             SourceMatruhFormationKind => SourceMatruhFormationContractVersion,
             SourceMatruhFormationChoiceKind => SourceMatruhFormationChoiceContractVersion,

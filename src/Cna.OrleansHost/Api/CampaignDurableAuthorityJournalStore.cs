@@ -708,6 +708,22 @@ internal sealed partial class CampaignDurableAuthorityJournalStore
 
     internal bool AdmitSourceGiarabubMotorPlacementPolicy(string campaignId, string operatorSecret) =>
         JournalFor(campaignId, createIfMissing: false).AdmitSourceGiarabubMotorPlacementPolicy(campaignId, operatorSecret);
+    internal bool AdmitSourceTobrukBardiaGarrison(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).AdmitSourceTobrukBardiaGarrison(campaignId, operatorSecret);
+    internal bool ActivateSourceTobrukBardiaGarrison(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).ActivateSourceTobrukBardiaGarrison(campaignId, operatorSecret);
+    internal bool AdmitSourceBardiaGarrisonRemainder(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).AdmitSourceBardiaGarrisonRemainder(campaignId, operatorSecret);
+    internal bool ActivateSourceBardiaGarrisonRemainder(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).ActivateSourceBardiaGarrisonRemainder(campaignId, operatorSecret);
+    internal bool AdmitSourceTripoliTankRegiment(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).AdmitSourceTripoliTankRegiment(campaignId, operatorSecret);
+    internal bool ActivateSourceTripoliTankRegiment(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).ActivateSourceTripoliTankRegiment(campaignId, operatorSecret);
+    internal bool AdmitSourceCwAttachedArtillery(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).AdmitSourceCwAttachedArtillery(campaignId, operatorSecret);
+    internal bool ActivateSourceCwAttachedArtillery(string campaignId, string operatorSecret) =>
+        JournalFor(campaignId, createIfMissing: false).ActivateSourceCwAttachedArtillery(campaignId, operatorSecret);
 
     internal bool AnnounceSourceGt1MultiLanes(string campaignId, string operatorSecret) =>
         JournalFor(campaignId, createIfMissing: false).AnnounceSourceGt1MultiLanes(campaignId, operatorSecret);
@@ -1040,6 +1056,22 @@ internal sealed partial class CampaignDurableAuthorityJournalStore
 
     internal Task<bool> AdmitSourceGiarabubMotorPlacementPolicyAsync(string campaignId, string operatorSecret) =>
         RunAsync(campaignId, false, journal => journal.AdmitSourceGiarabubMotorPlacementPolicy(campaignId, operatorSecret));
+    internal Task<bool> AdmitSourceTobrukBardiaGarrisonAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceTobrukBardiaGarrison(campaignId, operatorSecret));
+    internal Task<bool> ActivateSourceTobrukBardiaGarrisonAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceTobrukBardiaGarrison(campaignId, operatorSecret));
+    internal Task<bool> AdmitSourceBardiaGarrisonRemainderAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceBardiaGarrisonRemainder(campaignId, operatorSecret));
+    internal Task<bool> ActivateSourceBardiaGarrisonRemainderAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceBardiaGarrisonRemainder(campaignId, operatorSecret));
+    internal Task<bool> AdmitSourceTripoliTankRegimentAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceTripoliTankRegiment(campaignId, operatorSecret));
+    internal Task<bool> ActivateSourceTripoliTankRegimentAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceTripoliTankRegiment(campaignId, operatorSecret));
+    internal Task<bool> AdmitSourceCwAttachedArtilleryAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.AdmitSourceCwAttachedArtillery(campaignId, operatorSecret));
+    internal Task<bool> ActivateSourceCwAttachedArtilleryAsync(string campaignId, string operatorSecret) =>
+        RunAsync(campaignId, false, journal => journal.ActivateSourceCwAttachedArtillery(campaignId, operatorSecret));
 
     internal Task<bool> AnnounceSourceGt1MultiLanesAsync(string campaignId, string operatorSecret) =>
         RunAsync(campaignId, false, journal => journal.AnnounceSourceGt1MultiLanes(campaignId, operatorSecret));
