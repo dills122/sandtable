@@ -346,7 +346,8 @@ public sealed class CampaignStageThreeFirstSideTests
                 CampaignNativeSecondCombatDecisionV47 replacement;
                 try { replacement = CampaignNativeSecondCombatDecisionV47.Deserialize(altered); }
                 catch (Exception error) when (error is System.Text.Json.JsonException or ArgumentException
-                    or InvalidOperationException or FormatException) { continue; }
+                    or InvalidOperationException or FormatException)
+                { continue; }
                 if (replacement.Equals(state.Decision)) continue;
                 var tamperedClone = Clone(session);
                 property.SetValue(tamperedClone, state with { Decision = replacement });
