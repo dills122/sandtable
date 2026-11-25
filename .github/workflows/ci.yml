@@ -423,7 +423,9 @@ jobs:
 
   verify:
     needs: [changes, prepare, tests, format, orleans]
-    if: ${{ always() && github.event.action != 'closed' }}
+    # Keep verifying completed failures, but never start or continue a proof
+    # for a workflow superseded by concurrency or cancelled by the user.
+    if: ${{ always() && !cancelled() && github.event.action != 'closed' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:

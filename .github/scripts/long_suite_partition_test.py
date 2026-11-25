@@ -486,7 +486,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('github.event.pull_request.number || github.ref', workflow)
         self.assertIn('cancel-in-progress: true', workflow)
         self.assertIn('schedule:', workflow)
-        self.assertIn("always() && github.event.action != 'closed'", workflow)
+        self.assertIn("always() && !cancelled() && github.event.action != 'closed'", workflow)
         format_job = workflow.split('  format:', 1)[1].split('  architecture-tests:', 1)[0]
         self.assertIn('name: Skip formatting for narrow scope', format_job)
         self.assertNotIn("    if: ${{ needs.changes.outputs.heavy == 'true' }}\n    runs-on:", format_job)
