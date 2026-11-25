@@ -1,6 +1,7 @@
 name: Maproom
 on:
   pull_request:
+    types: [opened, synchronize, reopened, closed]
     paths:
       - 'src/Cna.Maproom/**'
       - '.github/workflows/maproom.yml'
@@ -12,10 +13,11 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: maproom-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: maproom-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   frontend:
+    if: ${{ github.event.action != 'closed' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:

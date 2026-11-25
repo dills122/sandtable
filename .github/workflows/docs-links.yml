@@ -3,19 +3,23 @@ name: Offline documentation links
 on:
   push:
     branches: [main]
+    paths: ['**/*.md']
   pull_request:
+    types: [opened, synchronize, reopened, closed]
+    paths: ['**/*.md']
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: docs-links-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: docs-links-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   docs-links:
     name: Offline links (observational)
+    if: ${{ github.event.action != 'closed' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 

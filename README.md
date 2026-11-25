@@ -411,10 +411,14 @@ older passing run as current evidence on Combat contracts specifically.
 CI runs in three tiers:
 
 - **Pull requests** run only the `fast-*`/`r02-*`/`exercise`/`contracts` shards (`long-*`
-  excluded), targeting under ten minutes.
-- **Pushes to `main`** run the full suite as the post-merge safety net.
-- **Nightly** (`.github/workflows/ci-nightly-heavy.yml`) runs Orleans and the six `p01-*` proof
-  families, which no longer run on either trigger above.
+  excluded), targeting under ten minutes. PRs confined to `site/`, `src/Cna.Maproom/`,
+  `tools/`, `deploy/`, or documentation-only changes skip .NET work; `format` and `verify`
+  still report success. Closing a PR cancels superseded CI runs.
+- **Pushes to `main`** run the full suite as the post-merge safety net; new pushes cancel older
+  runs.
+- **Nightly** CI runs the full suite in a separate concurrency group, including `long-*`.
+  The separate `.github/workflows/ci-nightly-heavy.yml` runs the six `p01-*` proof families
+  and Orleans. Offline documentation links run on Markdown changes or manual dispatch.
 
 Adding tests requires registering each new row by adding one new entry file under
 `.github/scripts/long-suite-weights/` (see the
