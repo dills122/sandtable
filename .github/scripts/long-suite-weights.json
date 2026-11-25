@@ -4797,7 +4797,7 @@
     "5243a896297c8499eba36ddbb28062463006ae67a162a4e34412d3e970ec9ab9": 76794,
     "4fcc5a3306281f0a920d4c3c926c04f21f8858d84b89f13fc4e696c1498f92fc": 112565,
     "f305700588c8ac6224f22d68ffddc55688e6051364fea1fdf7521e25ebb3053a": 103187,
-    "b38b32ca2d6d5fc70927c6989d93897ed78e5eab53ea72fd3919cb39e0ecf031": 60028
+    "b38b32ca2d6d5fc70927c6989d93897ed78e5eab53ea72fd3919cb39e0ecf031": 60028,
     "33c2f7d8c4f3ea814eb52f0aeb3d00235fa0a3962fccafcd3f6c9955cc1aaf67": 34,
     "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": 1925,
     "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": 1,
@@ -5362,7 +5362,7 @@
     "5243a896297c8499eba36ddbb28062463006ae67a162a4e34412d3e970ec9ab9": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
     "4fcc5a3306281f0a920d4c3c926c04f21f8858d84b89f13fc4e696c1498f92fc": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
     "f305700588c8ac6224f22d68ffddc55688e6051364fea1fdf7521e25ebb3053a": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
-    "b38b32ca2d6d5fc70927c6989d93897ed78e5eab53ea72fd3919cb39e0ecf031": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration"
+    "b38b32ca2d6d5fc70927c6989d93897ed78e5eab53ea72fd3919cb39e0ecf031": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
     "33c2f7d8c4f3ea814eb52f0aeb3d00235fa0a3962fccafcd3f6c9955cc1aaf67": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
     "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
     "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",

@@ -459,5 +459,14 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn('needs: prepare', text)
 
 
+class CommittedManifestTests(unittest.TestCase):
+    def test_committed_weights_manifest_is_valid_json_with_expected_sections(self):
+        path = Path(__file__).with_name('long-suite-weights.json')
+        weights = json.loads(path.read_text())
+        self.assertEqual(1, weights['schema_version'])
+        for section in ('classes', 'rows', 'provisional_rows'):
+            self.assertIsInstance(weights[section], dict, section)
+
+
 if __name__ == '__main__':
     unittest.main()
