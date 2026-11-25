@@ -727,8 +727,11 @@ public sealed class ExerciseSession
         // assault runtime is chronologically latest, so it is checked
         // first -- same ordering discipline as every branch in this
         // dispatch.
+        // S3-5: Stage 3's own first-side assault runtime is chronologically latest.
+        if (CurrentThirdStageAssault is not null)
+            return WithThirdStageAssaultEvent(campaignEvent, contacts);
         if (CurrentThirdStageCombatDecision is not null)
-            throw new InvalidOperationException("Stage 3 Assault events are not wired until S3-5.");
+            throw new InvalidOperationException("Stage 3 assault runtime is missing after its Combat selection.");
         if (CurrentStageEntrySecondAssault is not null)
             return WithStageEntrySecondAssaultEvent(campaignEvent, contacts);
         if (CurrentStageEntryAssault is not null)
@@ -1116,9 +1119,10 @@ public sealed class ExerciseSession
     // otherwise Stage 1's #394 second acting side's, otherwise the first
     // side's later-cycle one.
     internal CampaignNativeRepeatAssaultRuntime? CurrentRepeatAssault =>
-        // Stage 3's own Assault runtime arrives with S3-5; once its Combat Decision exists the
-        // never-reset Stage 2 runtimes below are stale, so none is active.
-        CurrentThirdStageCombatDecision is not null ? null :
+        // S3-5: once Stage 3's own Combat Decision exists the never-reset Stage 2 runtimes below
+        // are stale, so only Stage 3's own runtime (while it has not finished) can be active.
+        CurrentThirdStageCombatDecision is not null
+            ? (CurrentThirdStageAssault is { IsSecondSideFinish: false } ? CurrentThirdStageAssault : null) :
         (CurrentStageEntrySecondAssault is { IsSecondSideFinish: false } ? CurrentStageEntrySecondAssault : null)
             ?? (CurrentStageEntryAssault is { IsSecondSideFinish: false } ? CurrentStageEntryAssault : null)
             ?? (CurrentSecondAssault is { IsSecondSideFinish: false } ? CurrentSecondAssault : null)
@@ -1493,11 +1497,10 @@ public sealed class ExerciseSession
 
     // S3-4 (2026-11-24): Operation Stage 3's own first-acting-side Combat
     // Decision (V47 Select, role-as-data generic), entered from this stage's
-    // own completed Breakdown. Deliberately does NOT create an assault runtime:
-    // the Stage 3 Assault/No-Attack chain is S3-5. Until then
-    // CurrentRepeatAssault resolves to null and WithRepeatAssaultEvent rejects
-    // once this decision exists, so the never-reset Stage 2 runtimes cannot
-    // answer for Stage 3.
+    // own completed Breakdown. S3-5: accepting it also spins up
+    // CurrentThirdStageAssault (zero events), exactly as WithStageEntryCombatSelection
+    // does for Stage 2, and CurrentRepeatAssault/WithRepeatAssaultEvent resolve Stage 3's
+    // own runtime first so the never-reset Stage 2 runtimes cannot answer for Stage 3.
     internal CampaignNativeSecondCombatDecisionStateV47? CurrentThirdStageCombatDecision { get; private set; }
     internal ExerciseSession? ThirdStageCombatSelectionPredecessor { get; private set; }
 
@@ -1515,6 +1518,68 @@ public sealed class ExerciseSession
         successor.CurrentThirdStageCombatDecision = selected;
         successor.CurrentContacts = contacts;
         successor.CurrentHistory = CurrentHistory.Add(selected.Decision);
+        successor.CurrentThirdStageAssault = CampaignNativeRepeatAssaultRuntime.ReplaySecond(
+            SecondAssaultFrame(selected, CurrentSnapshot, CurrentHistory), Context, contacts,
+            successor.CurrentHistory, []);
+        return successor;
+    }
+
+    // S3-5 (2026-11-25): Stage 3's own first-acting-side V14-V26 assault stages after its V47
+    // selection -- same shape as CurrentStageEntryAssault, a distinct slot because that one is
+    // permanently bound to Stage 2's first acting side and no field on this class is ever reset.
+    internal CampaignNativeRepeatAssaultRuntime? CurrentThirdStageAssault { get; private set; }
+    internal ExerciseSession? ThirdStageAssaultPredecessor { get; private set; }
+
+    // Stage 3 counterpart to WithStageEntryAssaultEvent, writing CurrentThirdStageAssault.
+    internal ExerciseSession WithThirdStageAssaultEvent(object campaignEvent,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(campaignEvent);
+        ArgumentNullException.ThrowIfNull(contacts);
+        var runtime = CurrentThirdStageAssault!.Advance(campaignEvent);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion
+            || runtime.Contacts.Records.Count != contacts.Records.Count
+            || runtime.Contacts.Records.Zip(contacts.Records)
+                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+            throw new InvalidOperationException(
+                "Stage 3 assault step differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageAssaultPredecessor = this;
+        successor.CurrentThirdStageAssault = runtime;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(campaignEvent);
+        if (campaignEvent is CampaignNativeCombatSettlementV24)
+            successor.CurrentAmmunitionLedger = CurrentAmmunitionLedger is { } seed
+                ? CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(seed, new object[] { runtime.Result! })
+                : CampaignCombatAmmunitionLedgerV1.FromAcceptedEvents(Context, CurrentHistory);
+        return successor;
+    }
+
+    internal CampaignNativeCombatNoAttackCompletionV13? CurrentThirdStageNoAttackCompletion { get; private set; }
+    internal ExerciseSession? ThirdStageNoAttackPredecessor { get; private set; }
+
+    // Stage 3 counterpart to WithStageEntryNoAttack.
+    internal ExerciseSession WithThirdStageNoAttack(CampaignNativeCombatNoAttackCompletionV13 completion,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completion);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageCombatDecision is not { } selected || CurrentThirdStageNoAttackCompletion is not null
+            || completion.PriorStateVersion != selected.StateVersion
+            || contacts.AuthorityVersion != completion.StateVersion)
+            throw new InvalidOperationException("Stage 3 no-attack completion must advance its retained cut once.");
+        var runtime = (CurrentThirdStageAssault
+            ?? throw new InvalidOperationException("Stage 3 no-attack completion lacks its stage chain."))
+            .Advance(completion);
+        if (runtime.Contacts.AuthorityVersion != contacts.AuthorityVersion)
+            throw new InvalidOperationException("Stage 3 no-attack completion differs from its retained replay.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageNoAttackPredecessor = this;
+        successor.ThirdStageAssaultPredecessor = this;
+        successor.CurrentThirdStageAssault = runtime;
+        successor.CurrentThirdStageNoAttackCompletion = completion;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completion);
         return successor;
     }
 
@@ -2035,6 +2100,10 @@ public sealed class ExerciseSession
     {
         // Stage 3's own first-acting-side cuts (S3-1..S3-3) are chronologically
         // latest, so they come first, most-recent-first.
+        if (CurrentThirdStageAssault is { Events.Count: > 0 })
+            return new ThirdStageAssaultPending(ThirdStageAssaultPredecessor);
+        if (CurrentThirdStageNoAttackCompletion is not null)
+            return new ThirdStageNoAttackPending(ThirdStageNoAttackPredecessor);
         if (CurrentThirdStageCombatDecision is not null)
             return new ThirdStageCombatSelectionPending(ThirdStageCombatSelectionPredecessor);
         if (CurrentThirdStageBreakdown is not null)

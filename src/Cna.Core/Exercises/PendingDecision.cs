@@ -20,6 +20,8 @@ internal abstract record PendingDecision(ExerciseSession? Predecessor);
 
 // --- Stage 3's own FIRST acting side (S3-1..S3-4: Reserve, Movement, Breakdown, Combat Decision) ---
 
+internal sealed record ThirdStageAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageNoAttackPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 internal sealed record ThirdStageCombatSelectionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 internal sealed record ThirdStageBreakdownPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 internal sealed record ThirdStageMovementCompletionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);

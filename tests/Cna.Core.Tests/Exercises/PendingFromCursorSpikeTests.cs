@@ -47,7 +47,7 @@ public sealed class PendingFromCursorSpikeTests
             [(1, LandActorRole.SecondActingSide)] = new("Second", TailOwner.InsideAssault, false),
             [(2, LandActorRole.FirstActingSide)] = new("StageEntry", TailOwner.InsideAssault, true),
             [(2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", TailOwner.InsideAssault, true),
-            // S3-1..S3-4: only Reserve/Move/MovementCompletion/Breakdown/CombatSelection exist so far (see Derive).
+            // S3-1..S3-5: Reserve/Move/MovementCompletion/Breakdown/CombatSelection/Assault (+ unobservable NoAttack).
             [(3, LandActorRole.FirstActingSide)] = new("ThirdStage", TailOwner.InsideAssault, true),
         };
 
@@ -106,10 +106,7 @@ public sealed class PendingFromCursorSpikeTests
             {
                 if (!Occurrences.TryGetValue((done.OperationStage, done.ActorRole), out var occ)) return null;
                 if (MechanicOf(done) is not { } mech) return null;
-                // Stage 3's own Combat/Truck/Post-Combat subtypes arrive with S3-4+; until then
-                // those catalog positions have no PendingDecision to derive.
-                if (done.OperationStage == 3 && mech is Mech.Combat or Mech.Truck or Mech.PostCombat)
-                    return null;
+                // S3-5: Stage 3's own Combat/Truck/Post-Combat subtypes exist (inside the Assault chain).
                 if (occ.Prefix is null) // legacy: only the #394-era tail arms exist
                     return mech switch { Mech.Truck => "TruckConvoyPassPending", Mech.PostCombat => "PostCombatPassPending", _ => null };
                 return mech switch
@@ -123,8 +120,7 @@ public sealed class PendingFromCursorSpikeTests
                 };
             }
 
-            // Stage 3's preamble is retained (#570) but its side occurrences are not built
-            // yet, so it has no Occurrences row; only the preamble name table applies.
+            // Stage 3 preamble positions have no side occurrence; the preamble name table applies.
             return PreambleNames.TryGetValue((done.OperationStage, done.PhaseId, done.SegmentId), out var name) ? name : null;
         }
     }
@@ -133,7 +129,7 @@ public sealed class PendingFromCursorSpikeTests
     [
         // NoAttack: no-attack completion also installs the Assault runtime, whose Events
         // are non-empty, and the Assault arm is checked first -> never observable.
-        "SecondNoAttackPending", "StageEntryNoAttackPending", "StageEntrySecondNoAttackPending",
+        "SecondNoAttackPending", "StageEntryNoAttackPending", "StageEntrySecondNoAttackPending", "ThirdStageNoAttackPending",
     ];
 
     // ---- sampling -----------------------------------------------------------------
@@ -181,7 +177,7 @@ public sealed class PendingFromCursorSpikeTests
     {
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
             .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(40, subtypes.Count); // 29 + 6 Stage 3 preamble (#570) + 5 Stage 3 first side (S3-1..4); a new arm without a table row fails here
+        Assert.Equal(42, subtypes.Count); // 29 + 6 Stage 3 preamble (#570) + 7 Stage 3 first side (S3-1..5); a new arm without a table row fails here
 
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
         var reachable = turn.SelectMany(p => new[] { LastEvent.CompletedPosition, LastEvent.MoveWithinPosition }

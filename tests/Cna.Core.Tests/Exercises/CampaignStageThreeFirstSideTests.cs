@@ -10,12 +10,12 @@ using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Exercises;
 
-// Stage 3 chain, S3-1..S3-3 (docs/work/plans/2026-11-24-stage3-movement-breakdown-combat-scoping.md):
-// Operation Stage 3's own first-acting-side Reserve Designation, Movement + Movement Completion and
-// Breakdown, entered from the Stage 2->3 preamble chain's terminal event. Each new PendingDecision
-// subtype must Reconstruct, answer QueryCheckpoint without throwing, and return InvalidHistory (never
-// throw) after a one-byte tamper of its own record. Stage 3 Combat is not wired, so every Combat entry
-// point that reads never-reset Stage 1/2 fields must fail closed once a Stage 3 mechanic exists.
+// Stage 3 chain, S3-1..S3-5 (docs/work/plans/2026-11-24-stage3-movement-breakdown-combat-scoping.md):
+// Operation Stage 3's own first-acting-side Reserve Designation, Movement + Movement Completion,
+// Breakdown, Combat Decision and Assault/No-Attack chain (through Post Combat Passes), entered from the
+// Stage 2->3 preamble chain's terminal event. Each new PendingDecision subtype must Reconstruct, answer
+// QueryCheckpoint without throwing, and return InvalidHistory (never throw) after a one-byte tamper.
+// Entry points that read never-reset Stage 1/2 fields must not answer for Stage 3.
 public sealed class CampaignStageThreeFirstSideTests
 {
     private static readonly Lazy<StageThreeFixture> Fixture = new(StageThreeDriver.Build);
@@ -62,8 +62,12 @@ public sealed class CampaignStageThreeFirstSideTests
             .Where(type => typeof(PendingDecision).IsAssignableFrom(type) && !type.IsAbstract
                 && type.Name is "ThirdStageReservePending" or "ThirdStageMovePending"
                     or "ThirdStageMovementCompletionPending" or "ThirdStageBreakdownPending"
-                    or "ThirdStageCombatSelectionPending")
+                    or "ThirdStageCombatSelectionPending" or "ThirdStageAssaultPending" or "ThirdStageNoAttackPending")
             .Select(type => type.Name).ToHashSet(StringComparer.Ordinal);
+        // Assault is covered by the dedicated Assault tests below; NoAttack is unobservable (the no-attack
+        // completion installs a non-empty Assault runtime, which Pending checks first).
+        covered.Add("ThirdStageAssaultPending");
+        covered.Add("ThirdStageNoAttackPending");
         Assert.Equal(["ThirdStageMovePending"], all.Except(covered));
     }
 
@@ -95,6 +99,12 @@ public sealed class CampaignStageThreeFirstSideTests
         Set(session, "CurrentStageEntrySecondBreakdown", Record<CampaignNativeSecondBreakdownV46>());
         Set(session, "CurrentStageEntrySecondCombatDecision", Record<CampaignNativeSecondCombatDecisionStateV47>());
         Assert.IsType<ThirdStageCombatSelectionPending>(session.Pending);
+        // S3-5: Stage 3's own no-attack completion and assault runtime take precedence over its Decision
+        // and over every stale Stage 2 assault/no-attack slot.
+        Set(session, "CurrentStageEntrySecondNoAttackCompletion", Record<CampaignNativeCombatNoAttackCompletionV13>());
+        Assert.IsType<ThirdStageCombatSelectionPending>(session.Pending);
+        Set(session, "CurrentThirdStageNoAttackCompletion", Record<CampaignNativeCombatNoAttackCompletionV13>());
+        Assert.IsType<ThirdStageNoAttackPending>(session.Pending);
     }
 
     [Theory]
@@ -258,10 +268,10 @@ public sealed class CampaignStageThreeFirstSideTests
         AssertPostDecisionEntryPointsClosed(session, f.FirstAudience);
     }
 
-    // Stale-field checklist: after the Decision, S3-5's Assault/No-Attack/Post-Combat chain is not wired,
-    // so every entry point that reads never-reset Stage 1/2 fields must fail closed.
+    // Stale-field checklist, S3-5: once the Decision exists Stage 3's own assault runtime is the only active
+    // one; the never-reset Stage 2 runtimes and Stage 1/2 Combat entry points must not answer for Stage 3.
     [Fact]
-    public void EverythingAfterTheStageThreeDecisionFailsClosed()
+    public void AfterTheStageThreeDecisionOnlyStageThreesOwnAssaultRuntimeAnswers()
     {
         var f = Fixture.Value;
         var session = f.AfterCombatDecision;
@@ -276,19 +286,182 @@ public sealed class CampaignStageThreeFirstSideTests
             CampaignExercises.QueryContactOwnerCombatCut(session, f.StageThreeFirstSide, f.FirstElementId));
         Assert.Throws<InvalidOperationException>(() => session.WithThirdStageCombatSelection(
             session.CurrentThirdStageCombatDecision!, session.CurrentContacts));
-        // No active assault runtime: the stale Stage 2 ones must not answer.
-        Assert.NotNull(session.CurrentStageEntrySecondAssault);
+        // Stage 3's runtime is active (zero events); the stale Stage 2 runtimes stay bound to Stage 2.
+        Assert.NotNull(session.CurrentThirdStageAssault);
+        Assert.Empty(session.CurrentThirdStageAssault!.Events);
+        // The fixture's Decision is a voluntary finish (IsSecondSideFinish), so CurrentRepeatAssault is null:
+        // crucially it is not the stale Stage 2 runtime. Every Tier-2 method reads CurrentThirdStageAssault directly.
+        Assert.True(session.CurrentThirdStageAssault.IsSecondSideFinish);
         Assert.Null(session.CurrentRepeatAssault);
-        Assert.Throws<InvalidOperationException>(() => session.WithRepeatAssaultEvent(
-            session.CurrentThirdStageCombatDecision!.Decision, session.CurrentContacts));
+        Assert.NotNull(session.CurrentStageEntrySecondAssault);
+        Assert.Same(f.PreambleTerminal.CurrentStageEntrySecondAssault, session.CurrentStageEntrySecondAssault);
+        Assert.Same(f.PreambleTerminal.CurrentStageEntryAssault, session.CurrentStageEntryAssault);
         AssertPostDecisionEntryPointsClosed(session, f.FirstAudience);
-        // The Stage 2 siblings never accept Stage 3 state.
+        // The Stage 2 siblings never accept Stage 3 state, and nothing runs ahead of the No-Attack completion.
         Assert.False(CampaignExercises.CompleteStageEntryCombatNoAttack(session).IsAccepted);
         Assert.False(CampaignExercises.CompleteStageEntrySecondCombatNoAttack(session).IsAccepted);
         Assert.False(CampaignExercises.CompleteNativeReserveRelease(session).IsAccepted);
         Assert.False(CampaignExercises.SubmitNativeCycleControl(session, f.FirstAudience,
             CampaignNativeCycleControlChoiceV28.Finish, Hash("cycle-control")).IsAccepted);
         Assert.False(CampaignExercises.SubmitTruckConvoyPass(session, f.FirstAudience, Hash("truck")).IsAccepted);
+        // The Stage 3 No-Attack completion is single-use and gated on Stage 3's own Decision.
+        Assert.False(CampaignExercises.CompleteThirdStageCombatNoAttack(f.AfterBreakdown).IsAccepted);
+        Assert.False(CampaignExercises.CompleteThirdStageCombatNoAttack(f.AfterNoAttack).IsAccepted);
+        Assert.False(CampaignExercises.CompleteThirdStageCombatNoAttack(f.PreambleTerminal).IsAccepted);
+        // Stale Stage 1/2 Release/Control/Post-Combat sources must not answer for Stage 3 mid-chain.
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeReserveReleaseState(session));
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryPostCombatPassSource(session));
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryTruckConvoyPassSource(session));
+    }
+
+    [Fact]
+    public void StageThreeAssaultChainAdvancesInOrderThroughPostCombatPassesAndStageTwoStaysUntouched()
+    {
+        var f = Fixture.Value;
+        var chain = new[] { f.AfterCombatDecision, f.AfterNoAttack, f.AfterReserveRelease, f.AfterCycleControl,
+            f.AfterTruckConvoy, f.AfterPostCombatPasses };
+        Assert.Equal(typeof(ThirdStageCombatSelectionPending), f.AfterCombatDecision.Pending!.GetType());
+        // The No-Attack completion installs a non-empty runtime, so every later cut resolves to the Assault arm.
+        Assert.All(chain.Skip(1), session => Assert.IsType<ThirdStageAssaultPending>(session.Pending));
+        Assert.NotNull(f.AfterNoAttack.CurrentThirdStageNoAttackCompletion);
+        Assert.IsType<CampaignNativeCombatNoAttackCompletionV13>(f.AfterNoAttack.CurrentHistory[^1]);
+        Assert.NotNull(f.AfterReserveRelease.CurrentThirdStageAssault!.Release);
+        Assert.Equal(CampaignNativeCycleControlChoiceV28.Finish, f.AfterCycleControl.CurrentThirdStageAssault!.Control!.Choice);
+        Assert.NotNull(f.AfterTruckConvoy.CurrentThirdStageAssault!.TruckConvoyPass);
+        Assert.Equal(4, f.AfterPostCombatPasses.CurrentThirdStageAssault!.PostCombatPasses.Count);
+        // Each step appended history and advanced the contact authority version.
+        for (var index = 1; index < chain.Length; index++)
+        {
+            Assert.True(chain[index].CurrentHistory.Count > chain[index - 1].CurrentHistory.Count);
+            Assert.True(chain[index].CurrentContacts.AuthorityVersion > chain[index - 1].CurrentContacts.AuthorityVersion);
+        }
+        // Stage 3 post-combat passes carry Stage 3 positions; checkpoints never throw along the chain.
+        Assert.All(chain, session => Assert.Contains("operation-3",
+            CampaignExercises.QueryCheckpoint(session).PositionId, StringComparison.Ordinal));
+        // Stage 2's own slots and runtimes are unchanged by the whole Stage 3 chain.
+        Assert.Same(f.PreambleTerminal.CurrentStageEntryAssault, f.AfterPostCombatPasses.CurrentStageEntryAssault);
+        Assert.Same(f.PreambleTerminal.CurrentStageEntrySecondAssault, f.AfterPostCombatPasses.CurrentStageEntrySecondAssault);
+        Assert.Null(f.PreambleTerminal.CurrentThirdStageAssault);
+        // Once Stage 3's own chain finished no runtime is active (never the stale Stage 2 one).
+        Assert.Null(f.AfterPostCombatPasses.CurrentRepeatAssault);
+        // EVT-001: the retained events are the existing types and round-trip canonically.
+        foreach (var session in chain)
+        {
+            var bytes = CampaignCurrentEventSerializer.Serialize(session.CurrentHistory[^1], session.Context);
+            Assert.Equal(bytes, CampaignCurrentEventSerializer.Serialize(
+                CampaignCurrentEventSerializer.Deserialize(bytes), session.Context));
+        }
+    }
+
+    // Reconstruct happy case for every observable Stage 3 Assault cut (the no-attack completion, release,
+    // cycle control, truck convoy and each post-combat pass), plus QueryCheckpoint never throwing.
+    [Fact]
+    public void ReconstructVerifiesEveryStageThreeAssaultCut()
+    {
+        var f = Fixture.Value;
+        var cuts = new List<ExerciseSession> { f.AfterNoAttack, f.AfterReserveRelease, f.AfterCycleControl,
+            f.AfterTruckConvoy, f.AfterPostCombatPasses };
+        for (var session = f.AfterPostCombatPasses; session.Pending is ThirdStageAssaultPending pending
+            && pending.Predecessor is { } predecessor; session = predecessor)
+            if (!cuts.Contains(predecessor)) cuts.Add(predecessor);
+        foreach (var session in cuts.Where(value => value.Pending is ThirdStageAssaultPending))
+        {
+            var result = CampaignExercises.Reconstruct(session);
+            Assert.True(result.IsVerified, "assault step " + session.CurrentThirdStageAssault!.Events.Count + ": " + result.FailureReason);
+            Assert.NotNull(result.EventStreamHash);
+            Assert.Equal(CampaignCurrentEventSerializer.Serialize(session.CurrentHistory[^1], session.Context),
+                result.ReconstructedSnapshotBytes);
+        }
+    }
+
+    // One-byte tamper of the Assault step's own retained event (the runtime itself has no byte form, so the
+    // last event inside a cloned runtime is flipped). Reconstruct must return InvalidHistory and never throw.
+    [Fact]
+    public void OneByteTamperOfTheStageThreeAssaultStepsOwnEventReturnsInvalidHistoryNotAnException()
+    {
+        var f = Fixture.Value;
+        foreach (var session in new[] { f.AfterNoAttack, f.AfterReserveRelease, f.AfterCycleControl, f.AfterTruckConvoy,
+            f.AfterPostCombatPasses })
+        {
+            var tampered = TamperAssaultLastEvent(session);
+            ExerciseReconstructionResult result = null!;
+            var thrown = Record.Exception(() => result = CampaignExercises.Reconstruct(tampered));
+            Assert.Null(thrown);
+            Assert.False(result.IsVerified);
+            Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory, result.FailureReason);
+        }
+    }
+
+    // A tampered earlier Stage 3 record (here the Combat Decision) is caught from the terminal Assault head.
+    [Fact]
+    public void TamperingTheStageThreeDecisionIsCaughtFromTheTerminalAssaultHead()
+    {
+        var f = Fixture.Value;
+        var chain = new List<ExerciseSession>();
+        for (var cursor = f.AfterPostCombatPasses; cursor.Pending is { } pending && pending.Predecessor is not null; cursor = pending.Predecessor)
+            chain.Add(cursor);
+        var target = chain.Single(value => value.Pending is ThirdStageCombatSelectionPending);
+        var rebuilt = TamperOwnRecord(target, nameof(ExerciseSession.CurrentThirdStageCombatDecision));
+        for (var index = chain.IndexOf(target) - 1; index >= 0; index--)
+            rebuilt = Repoint(chain[index], rebuilt);
+        var result = CampaignExercises.Reconstruct(rebuilt);
+        Assert.False(result.IsVerified);
+        Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory, result.FailureReason);
+    }
+
+    // Rejections: wrong audience / duplicates / out of order along the Stage 3 assault tail.
+    [Fact]
+    public void WrongAudienceDuplicateAndOutOfOrderAssaultTailSubmissionsAreRejected()
+    {
+        var f = Fixture.Value;
+        var first = f.FirstAudience;
+        var second = first == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        // Reserve Release only after the No-Attack completion; Cycle Control only after Release.
+        Assert.False(CampaignExercises.CompleteNativeReserveRelease(f.AfterReserveRelease).IsAccepted);
+        Assert.False(CampaignExercises.SubmitNativeCycleControl(f.AfterNoAttack, first,
+            CampaignNativeCycleControlChoiceV28.Finish, Hash("early-cycle")).IsAccepted);
+        // Wrong side for Cycle Control and Truck Convoy / Post Combat Pass.
+        Assert.False(CampaignExercises.SubmitNativeCycleControl(f.AfterReserveRelease, second,
+            CampaignNativeCycleControlChoiceV28.Finish, Hash("wrong-side-cycle")).IsAccepted);
+        Assert.False(CampaignExercises.SubmitTruckConvoyPass(f.AfterCycleControl, CampaignActionAudience.System, Hash("sys-truck")).IsAccepted);
+        // Duplicates.
+        Assert.False(CampaignExercises.SubmitNativeCycleControl(f.AfterCycleControl, first,
+            CampaignNativeCycleControlChoiceV28.Finish, Hash("dup-cycle")).IsAccepted);
+        Assert.False(CampaignExercises.SubmitTruckConvoyPass(f.AfterTruckConvoy, first, Hash("dup-truck")).IsAccepted);
+        // Post Combat Pass before Truck Convoy; System is not an owner.
+        Assert.False(CampaignExercises.SubmitPostCombatPass(f.AfterCycleControl, first, Hash("early-pass")).IsAccepted);
+        Assert.False(CampaignExercises.SubmitPostCombatPass(f.AfterTruckConvoy, CampaignActionAudience.System, Hash("sys-pass")).IsAccepted);
+        // The fifth pass does not exist.
+        Assert.False(CampaignExercises.SubmitPostCombatPass(f.AfterPostCombatPasses, first, Hash("fifth-pass")).IsAccepted);
+    }
+
+    private static ExerciseSession TamperAssaultLastEvent(ExerciseSession session)
+    {
+        const BindingFlags any = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        var runtime = session.CurrentThirdStageAssault!;
+        var last = runtime.Events[^1];
+        var bytes = CampaignCurrentEventSerializer.Serialize(last, session.Context);
+        for (var index = bytes.Length - 1; index >= 0; index--)
+        {
+            var altered = (byte[])bytes.Clone();
+            altered[index] ^= 1;
+            object replacement;
+            try { replacement = CampaignCurrentEventSerializer.Deserialize(altered); }
+            catch (Exception error) when (error is System.Text.Json.JsonException or ArgumentException
+                or InvalidOperationException or FormatException or KeyNotFoundException)
+            { continue; }
+            if (replacement.Equals(last) || replacement.GetType() != last.GetType()) continue;
+            var runtimeClone = (CampaignNativeRepeatAssaultRuntime)typeof(object)
+                .GetMethod("MemberwiseClone", any)!.Invoke(runtime, null)!;
+            var eventsField = typeof(CampaignNativeRepeatAssaultRuntime).GetField("events", any)!;
+            var events = new List<object>(runtime.Events) { [runtime.Events.Count - 1] = replacement };
+            eventsField.SetValue(runtimeClone, events);
+            var clone = Clone(session);
+            typeof(ExerciseSession).GetProperty(nameof(ExerciseSession.CurrentThirdStageAssault), any)!
+                .SetValue(clone, runtimeClone);
+            return clone;
+        }
+        throw new InvalidOperationException("No one-byte flip of the Stage 3 assault event still deserializes.");
     }
 
     private static void AssertPostDecisionEntryPointsClosed(ExerciseSession session, CampaignActionAudience audience)
@@ -394,11 +567,14 @@ public sealed class CampaignStageThreeFirstSideTests
 
     private sealed record StageThreeFixture(ExerciseSession StageTwoTerminal, ExerciseSession PreambleTerminal,
         ExerciseSession AfterReserve, ExerciseSession AfterMovementCompletion,
-        ExerciseSession AfterBreakdown, ExerciseSession AfterCombatDecision, CampaignActionAudience FirstAudience, LandSide StageThreeFirstSide,
+        ExerciseSession AfterBreakdown, ExerciseSession AfterCombatDecision, ExerciseSession AfterNoAttack,
+        ExerciseSession AfterReserveRelease, ExerciseSession AfterCycleControl, ExerciseSession AfterTruckConvoy,
+        ExerciseSession AfterPostCombatPasses, CampaignActionAudience FirstAudience, LandSide StageThreeFirstSide,
         string FirstElementId);
 
     // Drives one real session through Operation Stages 1 and 2 (both acting sides) and the Stage 2->3
-    // preamble, then through Stage 3's own first-side Reserve, Movement Completion, Breakdown and Combat Decision.
+    // preamble, then through Stage 3's own first-side Reserve, Movement Completion, Breakdown, Combat Decision,
+    // No-Attack, Reserve Release, Cycle Control Finish, Truck Convoy and the four Post Combat Passes.
     // Same Core dispatch shape as CampaignStageThreeEntryVerificationTests.
     private static class StageThreeDriver
     {
@@ -481,8 +657,17 @@ public sealed class CampaignStageThreeFirstSideTests
                 new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion, breakdownCut.CampaignId,
                     breakdownCut.StateVersion, breakdownCut.PositionId, audience,
                     new FinishCombatWithoutAttackAction(elementId).ActionId), elementId));
+            var afterNoAttack = Ok(CampaignExercises.CompleteThirdStageCombatNoAttack(afterCombatDecision));
+            var afterRelease = Ok(CampaignExercises.CompleteNativeReserveRelease(afterNoAttack));
+            var afterCycle = Ok(CampaignExercises.SubmitNativeCycleControl(afterRelease, audience,
+                CampaignNativeCycleControlChoiceV28.Finish, Hash("stage3-cycle-control-finish")));
+            var afterTruck = Ok(CampaignExercises.SubmitTruckConvoyPass(afterCycle, audience, Hash("stage3-truck-convoy-pass")));
+            var afterPasses = afterTruck;
+            for (var index = 0; index < 4; index++)
+                afterPasses = Ok(CampaignExercises.SubmitPostCombatPass(afterPasses, audience, Hash($"stage3-post-combat-pass-{index}")));
             return new StageThreeFixture(stageTwoTerminal, preambleTerminal, afterReserve,
-                afterMovementCompletion, afterBreakdown, afterCombatDecision, audience, stageThreeFirstSide, elementId);
+                afterMovementCompletion, afterBreakdown, afterCombatDecision, afterNoAttack, afterRelease, afterCycle,
+                afterTruck, afterPasses, audience, stageThreeFirstSide, elementId);
         }
 
         private static ExerciseSession Ok(ExerciseStepResult result)
