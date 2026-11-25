@@ -95,6 +95,13 @@ jobs:
         with:
           name: build-output-${{ github.sha }}-${{ github.run_attempt }}
           path: .
+      - name: Restore executable bit lost in the artifact round-trip
+        # actions/upload-artifact and download-artifact zip the content in transit
+        # and don't preserve the Unix execute bit, so the MTP native apphost
+        # (invoked directly, not via `dotnet exec <dll>`) comes back non-executable
+        # (confirmed against a real run: Win32Exception 13 "Permission denied"
+        # starting .../artifacts/bin/Cna.ArchitectureTests/release/Cna.ArchitectureTests).
+        run: chmod -R +x artifacts/bin
       - name: Run architecture fitness tests
         run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/architecture-tests
       - name: Retain evidence
@@ -239,6 +246,9 @@ jobs:
         with:
           name: build-output-${{ github.sha }}-${{ github.run_attempt }}
           path: .
+      - name: Restore executable bit lost in the artifact round-trip
+        # See the matching comment on architecture-tests's chmod step.
+        run: chmod -R +x artifacts/bin
       - name: Download current attempt Release row proof
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -300,6 +310,9 @@ jobs:
         with:
           name: build-output-${{ github.sha }}-${{ github.run_attempt }}
           path: .
+      - name: Restore executable bit lost in the artifact round-trip
+        # See the matching comment on architecture-tests's chmod step.
+        run: chmod -R +x artifacts/bin
       - name: Run and verify Orleans host shard
         timeout-minutes: 40
         shell: bash
