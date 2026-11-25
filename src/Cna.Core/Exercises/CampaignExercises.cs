@@ -4411,6 +4411,10 @@ public static class CampaignExercises
                     or CampaignSourceAuthorityState.AxisMinorGarrisonsCheckpointContractVersion
                     or CampaignSourceAuthorityState.AxisGarrisonRemainderCheckpointContractVersion
                     or CampaignSourceAuthorityState.CwFrontlineCheckpointContractVersion
+                    or CampaignSourceAuthorityState.SourceTobrukBardiaGarrisonCheckpointContractVersion
+                    or CampaignSourceAuthorityState.SourceBardiaGarrisonRemainderCheckpointContractVersion
+                    or CampaignSourceAuthorityState.SourceTripoliTankRegimentCheckpointContractVersion
+                    or CampaignSourceAuthorityState.SourceCwAttachedArtilleryCheckpointContractVersion
                     or CampaignSourceAuthorityState.GiarabubMotorMachineGunCheckpointContractVersion
                     or CampaignSourceAuthorityState.FinalizedLegacyCheckpointContractVersion
                     or CampaignSourceAuthorityState.FinalizedCompactCheckpointContractVersion)
@@ -8968,6 +8972,78 @@ public static class CampaignExercises
                     var successor = authority.AcceptGiarabubMotorMgRuling();
                     if (!record.AsSpan().SequenceEqual(authority.SerializeGiarabubMotorMgRulingEvent(successor)))
                         throw new InvalidOperationException("Giarabub motor MG ruling differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-tobruk-bardia-garrison-admitted")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.AdmitSourceTobrukBardiaGarrison();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceTobrukBardiaGarrisonAdmission(successor)))
+                        throw new InvalidOperationException("Source TobrukBardiaGarrison admit differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-tobruk-bardia-garrison-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateSourceTobrukBardiaGarrison();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceTobrukBardiaGarrisonEvent(successor)))
+                        throw new InvalidOperationException("Source TobrukBardiaGarrison activate differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-bardia-garrison-remainder-admitted")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.AdmitSourceBardiaGarrisonRemainder();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceBardiaGarrisonRemainderAdmission(successor)))
+                        throw new InvalidOperationException("Source BardiaGarrisonRemainder admit differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-bardia-garrison-remainder-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateSourceBardiaGarrisonRemainder();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceBardiaGarrisonRemainderEvent(successor)))
+                        throw new InvalidOperationException("Source BardiaGarrisonRemainder activate differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-tripoli-tank-regiment-admitted")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.AdmitSourceTripoliTankRegiment();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceTripoliTankRegimentAdmission(successor)))
+                        throw new InvalidOperationException("Source TripoliTankRegiment admit differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-tripoli-tank-regiment-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateSourceTripoliTankRegiment();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceTripoliTankRegimentEvent(successor)))
+                        throw new InvalidOperationException("Source TripoliTankRegiment activate differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-cw-attached-artillery-admitted")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.AdmitSourceCwAttachedArtillery();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceCwAttachedArtilleryAdmission(successor)))
+                        throw new InvalidOperationException("Source CwAttachedArtillery admit differs from re-adjudication.");
+                    authority = successor;
+                    continue;
+                }
+                if (eventType == "source-cw-attached-artillery-activated")
+                {
+                    if (authority is null) throw new InvalidOperationException("Source setup has not started.");
+                    var successor = authority.ActivateSourceCwAttachedArtillery();
+                    if (!record.AsSpan().SequenceEqual(authority.SerializeSourceCwAttachedArtilleryEvent(successor)))
+                        throw new InvalidOperationException("Source CwAttachedArtillery activate differs from re-adjudication.");
                     authority = successor;
                     continue;
                 }

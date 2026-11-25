@@ -536,6 +536,10 @@ internal sealed partial record CampaignSourceAuthorityState
     internal const int AxisGarrisonRemainderCheckpointContractVersion = 61;
     internal const int GiarabubMotorMachineGunCheckpointContractVersion = 62;
     internal const int CwFrontlineCheckpointContractVersion = 63;
+    internal const int SourceTobrukBardiaGarrisonCheckpointContractVersion = 64;
+    internal const int SourceBardiaGarrisonRemainderCheckpointContractVersion = 65;
+    internal const int SourceTripoliTankRegimentCheckpointContractVersion = 66;
+    internal const int SourceCwAttachedArtilleryCheckpointContractVersion = 67;
     // ProfileVersion / BaseProfileVersion / LegacyProfileVersion / UnderlyingLegacyProfileVersion
     // pick the on-wire checkpoint contract version (a persisted/replayed value) from an
     // ORDERED table of (predicate, version) rules, first match wins. This replaces what was
@@ -551,6 +555,10 @@ internal sealed partial record CampaignSourceAuthorityState
     }
     private static readonly (Func<CampaignSourceAuthorityState, bool> When, int Version)[] ProfileVersionRules =
     [
+        (state => state.CwFreeGunsWorld?.CwAttachedArtilleryContent is not null, SourceCwAttachedArtilleryCheckpointContractVersion),
+        (state => state.CwFreeGunsWorld?.TripoliTankRegimentContent is not null, SourceTripoliTankRegimentCheckpointContractVersion),
+        (state => state.CwFreeGunsWorld?.BardiaGarrisonRemainderContent is not null, SourceBardiaGarrisonRemainderCheckpointContractVersion),
+        (state => state.CwFreeGunsWorld?.TobrukBardiaGarrisonContent is not null, SourceTobrukBardiaGarrisonCheckpointContractVersion),
         (state => state.CwFreeGunsWorld?.CwFrontlineContent is not null, CwFrontlineCheckpointContractVersion),
         (state => state.CwFreeGunsWorld?.MotorMachineGunContent is not null, GiarabubMotorMachineGunCheckpointContractVersion),
         (state => state.CwFreeGunsWorld?.GarrisonRemainderContent is not null, AxisGarrisonRemainderCheckpointContractVersion),
@@ -1599,7 +1607,7 @@ internal sealed partial record CampaignSourceAuthorityState
     // and its siblings below) materialization into the active World8.
     internal bool CanAdmitSourceTobrukBardiaGarrison => Battlefield is not null && AxisGarrisons is not null
         && ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence")) && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState AdmitSourceTobrukBardiaGarrison()
     {
@@ -1613,7 +1621,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceTobrukBardiaGarrisonCheckpointContractVersion);
             writer.WriteString("eventType", "source-tobruk-bardia-garrison-admitted");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1628,7 +1636,7 @@ internal sealed partial record CampaignSourceAuthorityState
 
     internal bool CanActivateSourceTobrukBardiaGarrison => CwFreeGunsWorld is { TobrukBardiaGarrisonContent: null }
         && Battlefield is not null && ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-tobruk-bardia-garrison-admitted"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-tobruk-bardia-garrison-admitted")) && CompactCheckpoint && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState ActivateSourceTobrukBardiaGarrison()
     {
@@ -1642,7 +1650,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceTobrukBardiaGarrisonCheckpointContractVersion);
             writer.WriteString("eventType", "source-tobruk-bardia-garrison-activated");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1669,7 +1677,7 @@ internal sealed partial record CampaignSourceAuthorityState
     internal bool CanAdmitSourceBardiaGarrisonRemainder => Battlefield is not null
         && CwFreeGunsWorld is { TobrukBardiaGarrisonContent: not null }
         && ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence")) && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState AdmitSourceBardiaGarrisonRemainder()
     {
@@ -1683,7 +1691,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceBardiaGarrisonRemainderCheckpointContractVersion);
             writer.WriteString("eventType", "source-bardia-garrison-remainder-admitted");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1698,7 +1706,7 @@ internal sealed partial record CampaignSourceAuthorityState
 
     internal bool CanActivateSourceBardiaGarrisonRemainder => CwFreeGunsWorld is { BardiaGarrisonRemainderContent: null }
         && Battlefield is not null && ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-bardia-garrison-remainder-admitted"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-bardia-garrison-remainder-admitted")) && CompactCheckpoint && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState ActivateSourceBardiaGarrisonRemainder()
     {
@@ -1712,7 +1720,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceBardiaGarrisonRemainderCheckpointContractVersion);
             writer.WriteString("eventType", "source-bardia-garrison-remainder-activated");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1738,7 +1746,7 @@ internal sealed partial record CampaignSourceAuthorityState
     // does not require any other pack to be active first.
     internal bool CanAdmitSourceTripoliTankRegiment => Battlefield is not null && AxisSupplement is not null
         && ContentSourceTripoliTankRegimentPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence")) && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState AdmitSourceTripoliTankRegiment()
     {
@@ -1752,7 +1760,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceTripoliTankRegimentCheckpointContractVersion);
             writer.WriteString("eventType", "source-tripoli-tank-regiment-admitted");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1767,7 +1775,7 @@ internal sealed partial record CampaignSourceAuthorityState
 
     internal bool CanActivateSourceTripoliTankRegiment => CwFreeGunsWorld is { TripoliTankRegimentContent: null }
         && Battlefield is not null && ContentSourceTripoliTankRegimentPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-tripoli-tank-regiment-admitted"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-tripoli-tank-regiment-admitted")) && CompactCheckpoint && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState ActivateSourceTripoliTankRegiment()
     {
@@ -1781,7 +1789,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceTripoliTankRegimentCheckpointContractVersion);
             writer.WriteString("eventType", "source-tripoli-tank-regiment-activated");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1808,7 +1816,7 @@ internal sealed partial record CampaignSourceAuthorityState
     internal bool CanAdmitSourceCwAttachedArtillery => Battlefield is not null
         && CwFreeGunsWorld is { CwFrontlineContent: not null }
         && ContentSourceCwAttachedArtilleryPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-evidence")) && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState AdmitSourceCwAttachedArtillery()
     {
@@ -1822,7 +1830,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceCwAttachedArtilleryCheckpointContractVersion);
             writer.WriteString("eventType", "source-cw-attached-artillery-admitted");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -1837,7 +1845,7 @@ internal sealed partial record CampaignSourceAuthorityState
 
     internal bool CanActivateSourceCwAttachedArtillery => CwFreeGunsWorld is { CwAttachedArtilleryContent: null }
         && Battlefield is not null && ContentSourceCwAttachedArtilleryPackArtifact.AllIds.All(id => Battlefield.Entries
-            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-cw-attached-artillery-admitted"));
+            .Any(value => value.ElementId == id && value.AuthorityStatus == "source-cw-attached-artillery-admitted")) && CompactCheckpoint && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState ActivateSourceCwAttachedArtillery()
     {
@@ -1851,7 +1859,7 @@ internal sealed partial record CampaignSourceAuthorityState
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
-            writer.WriteStartObject();
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", SourceCwAttachedArtilleryCheckpointContractVersion);
             writer.WriteString("eventType", "source-cw-attached-artillery-activated");
             writer.WriteString("campaignId", Request.CampaignId);
             writer.WriteNumber("priorStateVersion", StateVersion);
@@ -3231,6 +3239,32 @@ internal sealed partial record CampaignSourceAuthorityState
     }
 
     internal byte[] SerializeCheckpoint()
+    {
+        var checkpoint = SerializeBeforeSourcePackCheckpoint();
+        if (CwFreeGunsWorld is not { } world) return checkpoint;
+        checkpoint = WrapSourcePackCheckpoint(checkpoint, SourceTobrukBardiaGarrisonCheckpointContractVersion, "tobrukBardiaGarrisonContentHash", world.TobrukBardiaGarrisonContent?.Identity.Hash);
+        checkpoint = WrapSourcePackCheckpoint(checkpoint, SourceBardiaGarrisonRemainderCheckpointContractVersion, "bardiaGarrisonRemainderContentHash", world.BardiaGarrisonRemainderContent?.Identity.Hash);
+        checkpoint = WrapSourcePackCheckpoint(checkpoint, SourceTripoliTankRegimentCheckpointContractVersion, "tripoliTankRegimentContentHash", world.TripoliTankRegimentContent?.Identity.Hash);
+        return WrapSourcePackCheckpoint(checkpoint, SourceCwAttachedArtilleryCheckpointContractVersion, "cwAttachedArtilleryContentHash", world.CwAttachedArtilleryContent?.Identity.Hash);
+    }
+
+    private byte[] WrapSourcePackCheckpoint(byte[] baseline, int version, string hashName, string? contentHash)
+    {
+        if (contentHash is null) return baseline;
+        if (!CompactCheckpoint) throw new InvalidOperationException("Source packs require compact checkpoint replay.");
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", version);
+            writer.WriteString("campaignId", Request.CampaignId); writer.WriteNumber("stateVersion", StateVersion);
+            writer.WriteString("status", "setup-in-progress"); writer.WriteBase64String("baseCheckpoint", baseline);
+            writer.WriteString(hashName, contentHash);
+            writer.WriteString("nativeWorldHash", CwFreeGunsWorld!.Hash()); writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
+    private byte[] SerializeBeforeSourcePackCheckpoint()
     {
         var baseline = SerializeBeforeCwFrontlineCheckpoint();
         if (CwFreeGunsWorld?.CwFrontlineContent is not { } content) return baseline;
