@@ -60,7 +60,7 @@ internal static class CampaignSourceFourthIndianMovement
                     && member.ComponentType == (source.Toe is null ? null : source.Kind)
                     && member.AdditionalComponents is not { Count: > 0 }
                     && member.CapabilityPointAllowance == source.CapabilityPoints
-                    && member.CapabilityPointsExpended == CapabilityPointAmount.Zero && member.CohesionLevel > -26
+                    && member.CapabilityPointsExpended == CapabilityPointAmount.Zero && member.CohesionLevel > Cna1979Zoc.MinimumExclusiveCohesion
                     && member.AssignedMotorPoints == (member.ElementId == "central-india-horse" ? 6 : 0);
             });
     }

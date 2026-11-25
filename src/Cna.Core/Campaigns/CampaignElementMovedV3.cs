@@ -141,7 +141,7 @@ internal sealed record ElementMovedV3 : CampaignSuccessorEvent
             || !Enum.IsDefined(ActingSide)
             || SequencePosition.ActiveSide != ActingSide
             || OriginLocationId == DestinationLocationId
-            || CohesionBefore is <= -26 or > 10
+            || CohesionBefore is <= Cna1979Zoc.MinimumExclusiveCohesion or > 10
             || CohesionBefore != CohesionAfter
             || CapabilityPointsExpendedBefore + Cost.TotalCost
                 != CapabilityPointsExpendedAfter

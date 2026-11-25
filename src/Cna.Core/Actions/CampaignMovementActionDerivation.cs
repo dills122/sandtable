@@ -37,7 +37,7 @@ internal static class CampaignMovementActionDerivation
         ObservedOwnElement element)
     {
         if (element.ReserveStatus != CampaignObservationReserveStatus.None
-            || element.CohesionLevel <= -26
+            || element.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
             || element.LedgerGameTurn != observation.Position.GameTurn
             || element.LedgerOperationStage != observation.Position.OperationStage)
         {

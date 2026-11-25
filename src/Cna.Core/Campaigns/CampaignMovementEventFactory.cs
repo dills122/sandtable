@@ -79,7 +79,7 @@ internal static class CampaignMovementEventFactory
                 command.OriginLocationId,
                 StringComparison.Ordinal)
             || element.ReserveStatus != CampaignElementReserveStatus.None
-            || element.OperationalState.CohesionLevel <= -26
+            || element.OperationalState.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
             || element.OperationalState.LedgerGameTurn != snapshot.GameTurn
             || element.OperationalState.LedgerOperationStage != snapshot.OperationStage)
         {

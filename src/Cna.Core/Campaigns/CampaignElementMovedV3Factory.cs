@@ -299,7 +299,7 @@ internal static class CampaignElementMovedV3Factory
             var element = elements[elementId];
             return IsIndependentCombatUnit(facts[elementId])
                 && element.ReserveStatus == CampaignElementReserveStatus.None
-                && element.OperationalState.CohesionLevel > -26
+                && element.OperationalState.CohesionLevel > Cna1979Zoc.MinimumExclusiveCohesion
                 && element.OperationalState.LedgerGameTurn == movement.GameTurn
                 && element.OperationalState.LedgerOperationStage == movement.OperationStage
                 && (element.OperationalState.MovementEnded is null
@@ -616,7 +616,7 @@ internal static class CampaignElementMovedV3Factory
             || !string.Equals(representation.CurrentLocationId, input.OriginLocationId, StringComparison.Ordinal)
             || element.ReserveStatus != CampaignElementReserveStatus.None
             || element.OperationalState.VehicleBreakdownState is { WorkingPointCount: 0 }
-            || element.OperationalState.CohesionLevel <= -26
+            || element.OperationalState.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
             || element.OperationalState.LedgerGameTurn != movement.GameTurn
             || element.OperationalState.LedgerOperationStage != movement.OperationStage
             || element.OperationalState.MovementEnded == CampaignMovementEndedState.CreateForBreakdown(movement)
