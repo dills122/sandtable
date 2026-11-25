@@ -51,6 +51,25 @@ function seatShape(raw: unknown, what: string): SeatCredential {
   };
 }
 
+/** Parses a pasted seat credential, the shape the simulator and `/seats` both print. */
+export function parseSeatCredentialJson(text: string): SeatCredential {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    throw new CampaignV2Error('That is not valid credential JSON.');
+  }
+  const o =
+    typeof raw === 'object' && raw !== null && 'credential' in raw
+      ? (raw as Obj)['credential']
+      : raw;
+  try {
+    return seatShape(o, 'credential');
+  } catch {
+    throw new CampaignV2Error('That is not a seat credential.');
+  }
+}
+
 export function parseGrantResponse(raw: unknown): SeatGrant {
   const o = obj(raw, 'grant response');
   version(o);

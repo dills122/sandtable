@@ -1,0 +1,126 @@
+<div class="shell">
+  @switch (session.phase()) {
+    @case ('setup') {
+      <header>
+        <p class="fa-eyebrow">Maproom · hot-seat</p>
+        <h1 #heading tabindex="-1">Start a hot-seat session</h1>
+        <p class="fa-muted">
+          Two players share this screen. Credentials stay in this tab's memory only and are
+          forgotten when you end the session or leave the page.
+        </p>
+      </header>
+      <div class="panels">
+        <fa-panel heading="Paste seat credentials" eyebrow="Operator setup">
+          <form
+            #credentialForm
+            (submit)="
+              $event.preventDefault();
+              setupFromCredentials(axisInput.value, cwInput.value, credentialForm)
+            "
+          >
+            <label for="hs-axis">Axis seat credential (JSON)</label>
+            <input id="hs-axis" #axisInput type="password" autocomplete="off" spellcheck="false" />
+            <label for="hs-cw">Commonwealth seat credential (JSON)</label>
+            <input id="hs-cw" #cwInput type="password" autocomplete="off" spellcheck="false" />
+            <div class="actions"><button type="submit">Start session</button></div>
+          </form>
+        </fa-panel>
+        <fa-panel heading="Use the operator secret" eyebrow="Operator setup">
+          <form
+            #operatorForm
+            (submit)="
+              $event.preventDefault(); setupFromOperator(campaign.value, secret.value, operatorForm)
+            "
+          >
+            <label for="hs-campaign">Campaign id</label>
+            <input id="hs-campaign" #campaign type="text" autocomplete="off" spellcheck="false" />
+            <label for="hs-secret">Operator secret</label>
+            <input id="hs-secret" #secret type="password" autocomplete="off" spellcheck="false" />
+            <div class="actions">
+              <button type="submit" [disabled]="setupBusy()">Issue seats and start</button>
+            </div>
+          </form>
+        </fa-panel>
+      </div>
+      <div role="alert" class="notice">
+        @if (setupError()) {
+          <fa-status tone="danger">{{ setupError() }}</fa-status>
+        }
+      </div>
+    }
+    @case ('handoff') {
+      <section class="handoff" aria-labelledby="hs-handoff">
+        <p class="fa-eyebrow">Hand-off</p>
+        <h1 id="hs-handoff" #heading tabindex="-1">
+          Pass the device to the {{ label(session.seat()!) }} player
+        </h1>
+        <p>
+          The previous player's view has been cleared from this screen. Nothing about the game is
+          shown until the {{ label(session.seat()!) }} player confirms they are at the screen.
+        </p>
+        <div role="status">
+          Screen cleared. Waiting for the {{ label(session.seat()!) }} player.
+        </div>
+        <div class="actions">
+          <button type="button" (click)="session.reveal()">
+            I am the {{ label(session.seat()!) }} player: continue
+          </button>
+          <button type="button" class="quiet" (click)="session.reset()">End session</button>
+        </div>
+      </section>
+    }
+    @case ('seat') {
+      <header>
+        <p class="fa-eyebrow">Private to this seat</p>
+        <h1 #heading tabindex="-1">{{ label(session.seat()!) }} seat</h1>
+        <p class="fa-muted">Campaign {{ session.campaignId() }}</p>
+      </header>
+      <form
+        class="find"
+        (submit)="$event.preventDefault(); session.findDecisions(session.unitId())"
+        [attr.aria-busy]="session.busy()"
+      >
+        <label for="hs-unit">Acting unit id (optional, for movement and combat decisions)</label>
+        <input
+          id="hs-unit"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          [value]="session.unitId()"
+          (input)="setUnit($event)"
+        />
+        <div class="actions">
+          <button type="submit" [disabled]="session.busy()">Find my decisions</button>
+        </div>
+      </form>
+      <div role="status" class="notice">
+        @if (session.searched() && session.openings().length === 0 && !session.error()) {
+          <fa-status
+            >No decision is open for the {{ label(session.seat()!) }} seat right now.</fa-status
+          >
+        }
+      </div>
+      <div role="alert" class="notice">
+        @if (session.error()) {
+          <fa-status tone="danger">{{ session.error() }}</fa-status>
+        }
+      </div>
+      @for (found of session.openings(); track found.opening.stage) {
+        <mr-opening-form
+          [opening]="found.opening"
+          [heading]="found.entry.title"
+          [eyebrow]="label(found.opening.audience) + ' seat'"
+          [busy]="session.busy()"
+          [outcome]="outcomeFor(found)"
+          (chosen)="choose(found, $event)"
+        />
+      }
+      <div class="actions end">
+        <button type="button" (click)="handoff(session.otherSeat())">
+          Done: hand the device to the {{ label(session.otherSeat()!) }} player
+        </button>
+        <button type="button" class="quiet" (click)="session.reset()">End session</button>
+      </div>
+    }
+  }
+</div>

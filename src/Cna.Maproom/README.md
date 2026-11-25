@@ -37,6 +37,20 @@ state machine, but the shipped component supplies no action adapter or admitted 
 lost submit reply requires receipt readback with the same request ID; it never triggers a second
 POST. Seat identity changes revoke that presentation capability. This adds no public action route.
 
+## Hot-seat v2 lane (`/hot-seat`)
+
+`projects/maproom-alpha/src/app/v2` is a typed client for the durable Host's `/api/v2/campaigns`
+owner API (`/openings`, `/actions`, `/seats`, `/grants`, `/opening-kinds`) plus a generic opening form
+that renders any opening from its `visibleCut` and public action refs. `hot-seat` shares one browser
+between two seats: a neutral hand-off screen separates them, and the prior seat's decisions, outcome,
+errors and live-region text are destroyed before it renders. Credentials live in memory only (no
+storage, cookies or URL), and a reply that lands after a hand-off is discarded. Setup is operator
+driven: paste the two seat credentials (the Local Campaign Simulator prints them) or supply the
+operator secret. Run `npm run start:connected` against a Development host, then open `/hot-seat`.
+The Host has no "which opening is open for me" endpoint, so "Find my decisions" probes the seat-level
+gameplay stages on an explicit click (opening queries write durable state on the Host); unit stages
+need an acting unit id.
+
 ## Project boundaries
 
 | Path                                          | Responsibility                                                                                      |
