@@ -806,7 +806,7 @@ internal sealed partial record CampaignSourceAuthorityState
         Encoding.UTF8.GetBytes("graziani.source.giarabub-motor-placement-policy.admit.v2"));
 
     internal bool CanAdmitGiarabubMotorPlacementPolicy => !AxisMotorization.GiarabubPlacementAdmitted
-        && AxisUnattachedCargo is null && !IsOwnerFinalized(CampaignActionAudience.Axis);
+        && AxisUnattachedCargo is null && FinalizedOwners == 0;
 
     internal CampaignSourceAuthorityState AdmitGiarabubMotorPlacementPolicy()
     {
