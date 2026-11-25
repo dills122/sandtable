@@ -529,6 +529,25 @@ class MergeFriendlyManifestTests(unittest.TestCase):
             self.assertEqual(legacy, weights_module.load(Path(root) / 'new'))
             self.assertEqual(legacy, weights_module.load(source))
 
+    def test_add_command_writes_one_new_file_registering_only_missing_rows(self):
+        known = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.XTests.Old', 'Cna.Core.Tests.Campaigns.XTests.Old']
+        fresh = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.YTests.New', 'Cna.Core.Tests.Campaigns.YTests.New']
+        with tempfile.TemporaryDirectory() as root:
+            directory, proof = Path(root) / 'manifest', Path(root) / 'proof'
+            directory.mkdir(); proof.mkdir()
+            (directory / 'meta.json').write_text(json.dumps({'schema_version': 1}))
+            self.write(directory, 'baseline.jsonl', ['{"class":"Cna.Core.Tests.Campaigns.XTests","parts":1}', '{"row":"%s","ms":5}' % suites.row_key(known)])
+            (proof / 'r02-inventory.json').write_text(json.dumps({'legacy_core_rows': [known, fresh]}))
+            common = ['--proof', str(proof), '--weights', str(directory)]
+            self.assertEqual(1, weights_module.main(['check', *common]))
+            self.assertEqual(0, weights_module.main(['add', *common, '--name', 'topic-one', '--note', 'n']))
+            self.assertEqual(0, weights_module.main(['check', *common]))
+            self.assertEqual(['baseline.jsonl', 'topic-one.jsonl'], sorted(path.name for path in directory.glob('*.jsonl')))
+            added = weights_module.parse_records(directory / 'topic-one.jsonl')
+            self.assertEqual([{'class': 'Cna.Core.Tests.Campaigns.YTests', 'parts': 1}, {'row': suites.row_key(fresh), 'ms': 1000, 'provisional': 'n'}], added)
+            with self.assertRaises(SystemExit):
+                weights_module.main(['add', *common, '--name', 'topic-one', '--note', 'n'])
+
     def test_make_plan_still_rejects_unknown_and_missing_rows_from_directory_manifest(self):
         row = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.XTests.M', 'Cna.Core.Tests.Campaigns.XTests.M']
         with tempfile.TemporaryDirectory() as root:
