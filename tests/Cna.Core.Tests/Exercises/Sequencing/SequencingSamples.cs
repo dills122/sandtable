@@ -53,7 +53,7 @@ internal sealed class SequencingRecorder(string scenario)
             .Select(p => p.Name).Order(StringComparer.Ordinal).ToList();
         samples.Add(new SequencingSample(scenario, label, session, session.Pending?.GetType().Name, position,
             last is CampaignNativeSecondMoveV44 ? SampleLastEvent.MoveWithinPosition : SampleLastEvent.CompletedPosition,
-            last?.GetType().Name ?? "<none>", session.CurrentSnapshot.Setup.InitialGameTurn, nonNull));
+            last?.GetType().Name ?? "<none>", CampaignGameTurn.CurrentGameTurn(session), nonNull));
         return session;
     }
 
@@ -70,22 +70,27 @@ internal static class SequencingScenarios
         "sha256:" + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(label)));
 
     private static readonly Lazy<SequencingRecorder> PregameLazy = new(() => DrivePregameThroughStageThreeFirstSide());
+    private static readonly Lazy<SequencingRecorder> BoundaryLazy = new(() => DriveTurnBoundary(1, 12345));
     private static readonly Lazy<SequencingRecorder> AttackLazy = new(() => DriveRealAttack("real-attack", repeat: false));
     private static readonly Lazy<SequencingRecorder> RepeatLazy = new(() => DriveRealAttack("real-attack-repeat", repeat: true));
 
     // name -> recorder. Add a scenario by adding one line here; the S2 oracle iterates this list.
     internal static IReadOnlyList<SequencingRecorder> All { get; } =
-        [PregameLazy.Value, AttackLazy.Value, RepeatLazy.Value];
+        [PregameLazy.Value, AttackLazy.Value, RepeatLazy.Value, BoundaryLazy.Value];
 
     // ---- scenario 1: no-attack chain, Stage 1 -> Stage 3 first side, real Moves where offered ----
 
-    private static SequencingRecorder DrivePregameThroughStageThreeFirstSide()
+    internal static SequencingRecorder DriveTurnBoundary(int initialGameTurn, ulong seed) =>
+        DrivePregameThroughStageThreeFirstSide($"rules-lab.breakdown.turn-boundary.gt{initialGameTurn}.v1", seed, true);
+
+    private static SequencingRecorder DrivePregameThroughStageThreeFirstSide(
+        string setupId = Cna1979BreakdownSetupCatalog.TruckSetupId, ulong seed = 12345, bool rollover = false)
     {
-        var r = new SequencingRecorder("pregame-no-attack");
+        var r = new SequencingRecorder(rollover ? $"turn-boundary-{seed}-{setupId}" : "pregame-no-attack");
         var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions
-            .Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId));
+            .Single(value => value.SetupId == setupId));
         var session = r.Rec("begin", CampaignExercises.Begin(new CampaignCreationRequest(1,
-            "campaign-sequencing-samples", Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.SetupHash,
+            "campaign-sequencing-samples", Cna1979Ruleset.Manifest.Hash, seed, setup.SetupId, setup.SetupHash,
             setup.Content.Pack.PackId, setup.Content.Pack.Hash, setup.Content.ScenarioId)).Session!);
         session = AdvanceToCombatPositionDetermination(r, session, "op1.first.legacy");
         var order1 = session.CurrentSnapshot.OperationStageOrders.Single(v => v.OperationStage == 1);
@@ -160,7 +165,22 @@ internal static class SequencingScenarios
         session = r.Ok("op3.second.movement-completion", CampaignExercises.CompleteThirdStageSecondMovement(session, aud3Second, Hash("stage3-second-movement-completion")));
         session = r.Ok("op3.second.breakdown", CampaignExercises.CompleteThirdStageSecondBreakdown(session));
         session = FinishWithoutAttack(r, session, aud3Second, "op3.second", CampaignExercises.CompleteThirdStageSecondCombatNoAttack);
-        CycleThroughPasses(r, session, aud3Second, "op3.second");
+        session = CycleThroughPasses(r, session, aud3Second, "op3.second");
+        if (rollover)
+        {
+            session = r.Ok("turn.end", CampaignExercises.CompleteEndOfTurn(session));
+            session = r.Ok("turn.initiative", CampaignExercises.CompleteTurnInitiative(session));
+            var initiative = (CampaignNativeTurnInitiativeV56)session.CurrentHistory[^1];
+            session = r.Ok("turn.schedule", CampaignExercises.CompleteTurnConvoySchedule(session));
+            session = r.Ok("turn.shipping", CampaignExercises.CompleteTurnTacticalShipping(session));
+            session = r.Ok("turn.declaration", CampaignExercises.SubmitStageOneDeclaration(session,
+                Audience(initiative.Holder), Hash("turn-declaration"), actFirst: false));
+            session = r.Ok("turn.weather", CampaignExercises.CompleteTurnStartWeather(session));
+            session = r.Ok("turn.organization", CampaignExercises.CompleteTurnStartOrganization(session));
+            session = r.Ok("turn.arrival", CampaignExercises.CompleteTurnStartConvoyArrival(session));
+            session = r.Ok("turn.assignment", CampaignExercises.CompleteTurnStartFleetAssignment(session));
+            r.Ok("turn.repair", CampaignExercises.CompleteTurnStartFleetRepair(session));
+        }
         return r;
     }
 

@@ -5,18 +5,22 @@ namespace Cna.Core.Setups;
 internal enum CampaignOpeningPreambleKind
 {
     NoOpeningNavalConvoyObligations = 1,
+    NoOpeningOrLaterTurnNavalConvoyObligations = 2,
 }
 
 internal sealed record CampaignOpeningPreamblePolicy
 {
     public const int CurrentContractVersion = 1;
+    public const int LaterTurnContractVersion = 2;
 
     public CampaignOpeningPreamblePolicy(
         int contractVersion,
         CampaignOpeningPreambleKind kind,
         IReadOnlyList<RuleReference> sources)
     {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(contractVersion, CurrentContractVersion);
+        ArgumentOutOfRangeException.ThrowIfNotEqual(contractVersion,
+            kind == CampaignOpeningPreambleKind.NoOpeningOrLaterTurnNavalConvoyObligations
+                ? LaterTurnContractVersion : CurrentContractVersion);
 
         if (!Enum.IsDefined(kind))
         {

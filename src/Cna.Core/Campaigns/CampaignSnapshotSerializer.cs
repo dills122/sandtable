@@ -401,6 +401,8 @@ internal static class CampaignSnapshotSerializer
             {
                 CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations =>
                     "no-opening-naval-convoy-obligations",
+                CampaignOpeningPreambleKind.NoOpeningOrLaterTurnNavalConvoyObligations =>
+                    "no-opening-or-later-turn-naval-convoy-obligations",
                 _ => throw new JsonException("Unknown opening preamble policy."),
             });
         WriteSources(writer, policy.Sources);
@@ -414,6 +416,8 @@ internal static class CampaignSnapshotSerializer
         {
             "no-opening-naval-convoy-obligations" =>
                 CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+            "no-opening-or-later-turn-naval-convoy-obligations" =>
+                CampaignOpeningPreambleKind.NoOpeningOrLaterTurnNavalConvoyObligations,
             var value => throw new JsonException($"Unknown opening preamble policy '{value}'."),
         };
 

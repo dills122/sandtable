@@ -41,34 +41,44 @@ public sealed class PendingFromCursorSpikeTests
     {
         // Role-class is read off the catalog position (LandActorRole), so the "side
         // role" input of the proposal is already carried by positionId.
-        private static readonly Dictionary<(int Stage, LandActorRole Role), Occurrence> Occurrences = new()
+        private static readonly Dictionary<(bool IsFirstTurn, int Stage, LandActorRole Role), Occurrence> Occurrences = new()
         {
-            [(1, LandActorRole.FirstActingSide)] = new(null, TailOwner.Standalone, false),
-            [(1, LandActorRole.SecondActingSide)] = new("Second", TailOwner.InsideAssault, false),
-            [(2, LandActorRole.FirstActingSide)] = new("StageEntry", TailOwner.InsideAssault, true),
-            [(2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", TailOwner.InsideAssault, true),
+            [(true, 1, LandActorRole.FirstActingSide)] = new(null, TailOwner.Standalone, false),
+            [(true, 1, LandActorRole.SecondActingSide)] = new("Second", TailOwner.InsideAssault, false),
+            [(true, 2, LandActorRole.FirstActingSide)] = new("StageEntry", TailOwner.InsideAssault, true),
+            [(true, 2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", TailOwner.InsideAssault, true),
             // S3-1..S3-5: Reserve/Move/MovementCompletion/Breakdown/CombatSelection/Assault (+ unobservable NoAttack).
-            [(3, LandActorRole.FirstActingSide)] = new("ThirdStage", TailOwner.InsideAssault, true),
+            [(true, 3, LandActorRole.FirstActingSide)] = new("ThirdStage", TailOwner.InsideAssault, true),
             // S3-6..S3-9: second-side Reserve through Combat and its tail.
-            [(3, LandActorRole.SecondActingSide)] = new("ThirdStageSecond", TailOwner.InsideAssault, true),
+            [(true, 3, LandActorRole.SecondActingSide)] = new("ThirdStageSecond", TailOwner.InsideAssault, true),
         };
 
         // Stage-2 preamble: catalog phase/segment -> subtype name. The names are
         // irregular ("StageEntryWeather" vs "NoObligation*"), so they are table data.
-        private static readonly Dictionary<(int Stage, string Phase, string? Segment), string> PreambleNames = new()
+        private static readonly Dictionary<(bool IsFirstTurn, int Stage, string Phase, string? Segment), string> PreambleNames = new()
         {
-            [(3, LandPhaseIds.InitiativeDeclaration, null)] = "ThirdStageInitiativeDeclarationPending",
-            [(3, LandPhaseIds.WeatherDetermination, null)] = "ThirdStageWeatherPending",
-            [(3, LandPhaseIds.Organization, null)] = "ThirdStageNoObligationOrganizationPending",
-            [(3, LandPhaseIds.NavalConvoyArrival, null)] = "ThirdStageNoObligationNavalConvoyArrivalPending",
-            [(3, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "ThirdStageNoObligationFleetAssignmentPending",
-            [(3, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "ThirdStageNoObligationFleetRepairPending",
-            [(2, LandPhaseIds.InitiativeDeclaration, null)] = "InitiativeDeclarationPending",
-            [(2, LandPhaseIds.WeatherDetermination, null)] = "StageEntryWeatherPending",
-            [(2, LandPhaseIds.Organization, null)] = "NoObligationOrganizationPending",
-            [(2, LandPhaseIds.NavalConvoyArrival, null)] = "NoObligationNavalConvoyArrivalPending",
-            [(2, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "NoObligationFleetAssignmentPending",
-            [(2, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "NoObligationFleetRepairPending",
+            [(false, 0, LandPhaseIds.EndOfTurn, null)] = "TurnBoundaryPending",
+            [(false, 0, LandPhaseIds.InitiativeDetermination, null)] = "TurnBoundaryPending",
+            [(false, 0, LandPhaseIds.NavalConvoySchedule, null)] = "TurnBoundaryPending",
+            [(false, 0, LandPhaseIds.TacticalShipping, null)] = "TurnBoundaryPending",
+            [(false, 1, LandPhaseIds.InitiativeDeclaration, null)] = "TurnBoundaryPending",
+            [(false, 1, LandPhaseIds.WeatherDetermination, null)] = "TurnBoundaryPending",
+            [(false, 1, LandPhaseIds.Organization, null)] = "TurnBoundaryPending",
+            [(false, 1, LandPhaseIds.NavalConvoyArrival, null)] = "TurnBoundaryPending",
+            [(false, 1, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "TurnBoundaryPending",
+            [(false, 1, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "TurnBoundaryPending",
+            [(true, 3, LandPhaseIds.InitiativeDeclaration, null)] = "ThirdStageInitiativeDeclarationPending",
+            [(true, 3, LandPhaseIds.WeatherDetermination, null)] = "ThirdStageWeatherPending",
+            [(true, 3, LandPhaseIds.Organization, null)] = "ThirdStageNoObligationOrganizationPending",
+            [(true, 3, LandPhaseIds.NavalConvoyArrival, null)] = "ThirdStageNoObligationNavalConvoyArrivalPending",
+            [(true, 3, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "ThirdStageNoObligationFleetAssignmentPending",
+            [(true, 3, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "ThirdStageNoObligationFleetRepairPending",
+            [(true, 2, LandPhaseIds.InitiativeDeclaration, null)] = "InitiativeDeclarationPending",
+            [(true, 2, LandPhaseIds.WeatherDetermination, null)] = "StageEntryWeatherPending",
+            [(true, 2, LandPhaseIds.Organization, null)] = "NoObligationOrganizationPending",
+            [(true, 2, LandPhaseIds.NavalConvoyArrival, null)] = "NoObligationNavalConvoyArrivalPending",
+            [(true, 2, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "NoObligationFleetAssignmentPending",
+            [(true, 2, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "NoObligationFleetRepairPending",
         };
 
         private enum Mech { Reserve, MovementCompletion, Breakdown, CombatSelection, Combat, Truck, PostCombat }
@@ -90,7 +100,7 @@ public sealed class PendingFromCursorSpikeTests
             _ => null,
         };
 
-        public static string? Derive(IReadOnlyList<LandSequencePosition> turn, string checkpointPositionId, LastEvent last)
+        public static string? Derive(IReadOnlyList<LandSequencePosition> turn, string checkpointPositionId, LastEvent last, bool isFirstTurn = true)
         {
             var index = turn.ToList().FindIndex(p => p.PositionId == checkpointPositionId);
             if (index < 0) throw new ArgumentException("Position is not in this turn.", nameof(checkpointPositionId));
@@ -98,15 +108,15 @@ public sealed class PendingFromCursorSpikeTests
 
             if (last == LastEvent.MoveWithinPosition)
                 return at.PhaseId == LandPhaseIds.MovementAndCombat && at.SegmentId == LandSegmentIds.Movement
-                    && Occurrences.TryGetValue((at.OperationStage, at.ActorRole), out var mo) && mo.Prefix is { } mp
+                    && Occurrences.TryGetValue((isFirstTurn, at.OperationStage, at.ActorRole), out var mo) && mo.Prefix is { } mp
                     ? mp + "MovePending" : null;
 
-            if (index == 0) return null;
-            var done = turn[index - 1];
+            if (index == 0 && isFirstTurn) return null;
+            var done = index == 0 ? Cna1979LandSequenceV4.CreateTurn(at.GameTurn - 1)[^1] : turn[index - 1];
 
             if (done.ActorRole is LandActorRole.FirstActingSide or LandActorRole.SecondActingSide)
             {
-                if (!Occurrences.TryGetValue((done.OperationStage, done.ActorRole), out var occ)) return null;
+                if (!Occurrences.TryGetValue((isFirstTurn, done.OperationStage, done.ActorRole), out var occ)) return null;
                 if (MechanicOf(done) is not { } mech) return null;
                 if (occ.Prefix is null) // legacy: only the #394-era tail arms exist
                     return mech switch { Mech.Truck => "TruckConvoyPassPending", Mech.PostCombat => "PostCombatPassPending", _ => null };
@@ -122,7 +132,7 @@ public sealed class PendingFromCursorSpikeTests
             }
 
             // Stage 3 preamble positions have no side occurrence; the preamble name table applies.
-            return PreambleNames.TryGetValue((done.OperationStage, done.PhaseId, done.SegmentId), out var name) ? name : null;
+            return PreambleNames.TryGetValue((isFirstTurn, done.OperationStage, done.PhaseId, done.SegmentId), out var name) ? name : null;
         }
     }
 
@@ -149,7 +159,7 @@ public sealed class PendingFromCursorSpikeTests
             .Count(p => p.Name.StartsWith("Current", StringComparison.Ordinal)
                 && p.PropertyType.Name.StartsWith("CampaignNative", StringComparison.Ordinal)
                 && p.GetValue(session) is not null);
-        samples.Add(new Sample(label, pending, position, nonNull, session.CurrentSnapshot.Setup.InitialGameTurn));
+        samples.Add(new Sample(label, pending, position, nonNull, CampaignGameTurn.CurrentGameTurn(session)));
     }
 
     [Fact]
@@ -174,15 +184,28 @@ public sealed class PendingFromCursorSpikeTests
     }
 
     [Fact]
+    public void LaterTurnReferenceDerivesTheBoundaryPendingFromRepeatedPositionIds()
+    {
+        foreach (var sample in Sequencing.SequencingScenarios.All.SelectMany(s => s.Samples)
+            .Where(sample => sample.Label.StartsWith("turn.", StringComparison.Ordinal)))
+        {
+            var turn = Cna1979LandSequenceV4.CreateTurn(sample.GameTurn);
+            Assert.Equal(sample.PendingName, PendingFromCursor.Derive(turn, sample.PositionId, LastEvent.CompletedPosition, false));
+        }
+    }
+
+    [Fact]
     public void EverySubtypeIsDerivableFromTheCatalogExceptTheExplicitExceptionList()
     {
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
             .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(49, subtypes.Count); // 29 + 6 Stage 3 preamble + 7 per Stage 3 acting side.
+        Assert.Equal(50, subtypes.Count); // 29 + 6 Stage 3 preamble + 7 per Stage 3 acting side.
 
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        var later = Cna1979LandSequenceV4.CreateTurn(2);
         var reachable = turn.SelectMany(p => new[] { LastEvent.CompletedPosition, LastEvent.MoveWithinPosition }
                 .Select(e => PendingFromCursor.Derive(turn, p.PositionId, e)))
+            .Concat(later.Select(p => PendingFromCursor.Derive(later, p.PositionId, LastEvent.CompletedPosition, false)))
             .Where(x => x is not null).Select(x => x!).ToHashSet(StringComparer.Ordinal);
 
         Assert.Empty(reachable.Except(subtypes)); // derivation never invents a type

@@ -430,6 +430,30 @@ internal sealed class CampaignContactJournal
         return AtAuthorityVersion(resolved.StateVersion);
     }
 
+    internal CampaignContactJournal AdvanceEndOfTurn(CampaignNativeEndOfTurnV55 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Turn boundary does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceTurnInitiative(CampaignNativeTurnInitiativeV56 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Turn boundary does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNoObligationTurnPhase(CampaignNativeNoObligationTurnPhaseV57 resolved)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        if (resolved.CampaignId != CampaignId || resolved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Turn boundary does not bind contact authority.", nameof(resolved));
+        return AtAuthorityVersion(resolved.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNoObligationFleetRepair(CampaignNativeNoObligationFleetRepairV54 resolved)
     {
         ArgumentNullException.ThrowIfNull(resolved);

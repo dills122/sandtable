@@ -13,7 +13,7 @@ internal enum PendingTailOwner
 }
 
 /// <summary>
-/// One row per (operation stage, acting role) occurrence. <paramref name="Prefix"/> is the
+/// One row per (initial/later turn, operation stage, acting role) occurrence. <paramref name="Prefix"/> is the
 /// PendingDecision type-name prefix ("Second", "StageEntry", ...); null means the pre-#394 legacy
 /// chain, which has no PendingDecision for Reserve/Move/Breakdown/Combat.
 /// <paramref name="CombatArms"/> says whether the occurrence's own
@@ -23,22 +23,22 @@ internal enum PendingTailOwner
 internal sealed record PendingOccurrence(string? Prefix, PendingTailOwner Tail, bool CombatArms);
 
 /// <summary>
-/// DATA, not branches. To cover a new occurrence (Stage 3 second side, Turns 2-6), add one row.
+/// DATA, not branches. To cover a new occurrence, add one row. Later-turn side blocks are not yet admitted.
 /// </summary>
 internal static class PendingOccurrenceTable
 {
-    private static readonly Dictionary<(int Stage, LandActorRole Role), PendingOccurrence> Rows = new()
+    private static readonly Dictionary<(bool IsFirstTurn, int Stage, LandActorRole Role), PendingOccurrence> Rows = new()
     {
-        [(1, LandActorRole.FirstActingSide)] = new(null, PendingTailOwner.Standalone, true),
-        [(1, LandActorRole.SecondActingSide)] = new("Second", PendingTailOwner.InsideAssault, true),
-        [(2, LandActorRole.FirstActingSide)] = new("StageEntry", PendingTailOwner.InsideAssault, true),
-        [(2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", PendingTailOwner.InsideAssault, true),
+        [(true, 1, LandActorRole.FirstActingSide)] = new(null, PendingTailOwner.Standalone, true),
+        [(true, 1, LandActorRole.SecondActingSide)] = new("Second", PendingTailOwner.InsideAssault, true),
+        [(true, 2, LandActorRole.FirstActingSide)] = new("StageEntry", PendingTailOwner.InsideAssault, true),
+        [(true, 2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", PendingTailOwner.InsideAssault, true),
         // S3-1..S3-5: Reserve/Move/MovementCompletion/Breakdown/CombatSelection/Assault/NoAttack (CombatArms flipped by S3-5).
-        [(3, LandActorRole.FirstActingSide)] = new("ThirdStage", PendingTailOwner.InsideAssault, true),
+        [(true, 3, LandActorRole.FirstActingSide)] = new("ThirdStage", PendingTailOwner.InsideAssault, true),
         // S3-6..S3-9: second-side Reserve through Combat and its tail.
-        [(3, LandActorRole.SecondActingSide)] = new("ThirdStageSecond", PendingTailOwner.InsideAssault, true),
+        [(true, 3, LandActorRole.SecondActingSide)] = new("ThirdStageSecond", PendingTailOwner.InsideAssault, true),
     };
 
-    internal static PendingOccurrence? Find(int operationStage, LandActorRole role) =>
-        Rows.GetValueOrDefault((operationStage, role));
+    internal static PendingOccurrence? Find(int operationStage, LandActorRole role, bool isFirstTurn) =>
+        Rows.GetValueOrDefault((isFirstTurn, operationStage, role));
 }

@@ -24,15 +24,9 @@ internal sealed record CampaignNativeInitiativeDeclarationV49(
     internal const int CurrentContractVersion = 49;
     internal long StateVersion => checked(PriorStateVersion + 1);
 
-    // `holder` is the campaign's turn-wide initiative holder -- a fact fixed
-    // once per Game Turn at campaign creation (Cna1979LandSequence places
-    // Initiative Determination once per turn, before any Operation Stage),
-    // not re-derived here. It is supplied by the caller from whatever still
-    // holds it (today, the frozen genesis CampaignSnapshotV11.InitiativeHolder,
-    // which stays correct for the whole of Game Turn 1) rather than
-    // rediscovered, the same way every other native class in this chain
-    // takes its inputs (World, orders, side) as explicit parameters instead
-    // of self-discovering them.
+    // The holder is resolved once per Game Turn, before any Operation Stage. The
+    // caller supplies the accepted holder from history (or the frozen initial
+    // snapshot for the opening turn). This event only declares acting order.
     internal static CampaignNativeInitiativeDeclarationV49 Create(
         object predecessor, LandSide holder, bool actFirst, int gameTurn, long contactVersion)
     {
@@ -41,6 +35,9 @@ internal sealed record CampaignNativeInitiativeDeclarationV49(
         var (campaignId, version, positionId, worldHash, priorBytes) = predecessor switch
         {
             CampaignNativePostCombatPassV42 phase => (phase.CampaignId, phase.StateVersion,
+                phase.NextPositionId, phase.WorldHash, phase.SerializeCanonical()),
+            CampaignNativeNoObligationTurnPhaseV57 phase when phase.GameTurn == gameTurn
+                && phase.PositionId == "land.position.naval-convoy.tactical-shipping" => (phase.CampaignId, phase.StateVersion,
                 phase.NextPositionId, phase.WorldHash, phase.SerializeCanonical()),
             _ => throw new InvalidOperationException("Initiative Declaration requires an accepted predecessor."),
         };

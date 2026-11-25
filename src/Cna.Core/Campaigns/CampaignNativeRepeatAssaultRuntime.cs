@@ -1,4 +1,5 @@
 using Cna.Core.Content;
+using Cna.Core.Exercises;
 using Cna.Core.Randomness;
 using Cna.Core.Visibility;
 
@@ -459,7 +460,7 @@ internal sealed class CampaignNativeRepeatAssaultRuntime
                 "Second-side post-Combat phases accept only an owner pass.");
         object predecessor = postCombatPasses.Count == 0 ? TruckConvoyPass : postCombatPasses[^1];
         var replayed = CampaignNativePostCombatPassV42.Create(predecessor, side,
-            Selection.PriorSnapshot.Setup.InitialGameTurn, Contacts.AuthorityVersion);
+            CampaignGameTurn.CurrentGameTurn(Selection.PriorSnapshot, PriorHistory), Contacts.AuthorityVersion);
         if (!passed.SerializeCanonical().AsSpan().SequenceEqual(replayed.SerializeCanonical()))
             throw new InvalidCampaignHistoryException(
                 "Second-side post-Combat pass differs from Core replay.");

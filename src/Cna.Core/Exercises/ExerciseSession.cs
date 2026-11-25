@@ -903,13 +903,7 @@ public sealed class ExerciseSession
     // The latest accepted draw in chronological history owns the next cursor.
     // The retained V11 state already includes the legacy opening preamble.
     internal static RandomStreamState LatestCursor(RandomStreamState initial, IEnumerable<object> history) =>
-        history.LastOrDefault(value => value is CampaignNativeCombatAssaultResultV22 or CampaignNativeWeatherDeterminationV50) switch
-        {
-            CampaignNativeCombatAssaultResultV22 assault => assault.AfterRandomState,
-            CampaignNativeWeatherDeterminationV50 weather => new RandomStreamState(initial.ContractVersion,
-                initial.AlgorithmId, initial.Seed, weather.ResultRandomCursor),
-            _ => initial,
-        };
+        CampaignGameTurn.LatestCursor(initial, history);
 
     internal static CampaignCombatSelectionFrame SecondAssaultFrame(
         CampaignNativeSecondCombatDecisionStateV47 selected, CampaignSnapshotV11 turnFacts,
@@ -2279,8 +2273,30 @@ public sealed class ExerciseSession
     // The guard is applied to the whole group now, not just the one arm.
     internal PendingDecision? Pending => ComputePending();
 
+    internal ExerciseSession? TurnBoundaryPredecessor { get; private set; }
+
+    internal ExerciseSession WithTurnBoundaryEvent(object campaignEvent, CampaignContactJournal contacts)
+    {
+        var info = CampaignGameTurn.BoundaryInfo(campaignEvent);
+        if (info.CampaignId != CurrentSnapshot.CampaignId || info.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != info.PriorStateVersion + 1 || contacts.CampaignId != info.CampaignId)
+            throw new InvalidOperationException("Turn boundary event must bind the current cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.TurnBoundaryPredecessor = this;
+        successor.CurrentHistory = CurrentHistory.Add(campaignEvent);
+        successor.CurrentContacts = contacts;
+        return successor;
+    }
+
     private PendingDecision? ComputePending()
     {
+        if (CurrentHistory is { Count: > 0 } && (CurrentHistory[^1] is CampaignNativeEndOfTurnV55
+                or CampaignNativeTurnInitiativeV56 or CampaignNativeNoObligationTurnPhaseV57
+            || (CurrentHistory[^1] is CampaignNativeInitiativeDeclarationV49 or CampaignNativeWeatherDeterminationV50
+                or CampaignNativeNoObligationOrganizationV51 or CampaignNativeNoObligationNavalConvoyArrivalV52
+                or CampaignNativeNoObligationFleetAssignmentV53 or CampaignNativeNoObligationFleetRepairV54
+                && CurrentHistory.Any(value => value is CampaignNativeEndOfTurnV55))))
+            return new TurnBoundaryPending(TurnBoundaryPredecessor);
         // Stage 3's own second-acting-side cuts (S3-6..S3-9) are chronologically
         // latest of all, so they come first, most-recent-first.
         if (CurrentThirdStageSecondAssault is { Events.Count: > 0 })

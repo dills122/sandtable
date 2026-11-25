@@ -18,6 +18,9 @@ namespace Cna.Core.Exercises;
 // CampaignPhasingContinuation/CampaignBreakdownFlow (CampaignBreakdownRecords.cs).
 internal abstract record PendingDecision(ExerciseSession? Predecessor);
 
+// The later-turn prelude reads its current cut from the last accepted history event.
+internal sealed record TurnBoundaryPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+
 // --- Stage 3's own SECOND acting side (S3-6..S3-9: Reserve through Combat) ---
 
 internal sealed record ThirdStageSecondAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);

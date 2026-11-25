@@ -11,6 +11,21 @@ internal static class Cna1979BreakdownSetupCatalog
     public const string TruckSetupId = "rules-lab.breakdown.truck.v1";
     public const string ReactionSetupId = "rules-lab.breakdown.reaction.v1";
 
+    internal static CampaignOpeningPreamblePolicy TurnBoundaryPreamblePolicy { get; } = new(
+        CampaignOpeningPreamblePolicy.LaterTurnContractVersion,
+        CampaignOpeningPreambleKind.NoOpeningOrLaterTurnNavalConvoyObligations,
+        [new RuleReference("sandtable-breakdown-lab", "turn-boundary.no-naval-convoy-obligations.v2")]);
+
+    internal static bool IsAdmittedOpeningPreamble(CampaignSetupSnapshotV6 setup) =>
+        setup.OpeningPreamble == Cna1979SetupCatalog.OpeningPreamblePolicy
+        || AdmitsLaterTurnPasses(setup);
+
+    internal static bool AdmitsLaterTurnPasses(CampaignSetupSnapshotV6 setup) =>
+        setup.IsSynthetic && setup.OpeningPreamble == TurnBoundaryPreamblePolicy
+        && Cna1979BreakdownContentCatalog.TurnBoundaryArtifacts.Any(artifact =>
+            artifact.Identity == setup.Content.Pack && artifact.Definition.LegacyDefinition.Scenarios.Any(scenario =>
+                scenario.ScenarioId == setup.Content.ScenarioId && scenario.Start.GameTurn == setup.InitialGameTurn));
+
     public static IReadOnlyList<CampaignSetupDefinitionV6> Definitions { get; } =
         Array.AsReadOnly<CampaignSetupDefinitionV6>([
             CreateSetup(TruckSetupId, "Rules Lab: Certified Truck Breakdown", Cna1979SyntheticContentCatalog.ArtifactV6,
@@ -19,6 +34,7 @@ internal static class Cna1979BreakdownSetupCatalog
                 "breakdown.reaction-setup.v1"),
             .. Cna1979SyntheticContentCatalog.BreakdownRunnerArtifactsV6.SelectMany(artifact =>
                 artifact.Definition.LegacyDefinition.Scenarios.Select(scenario => CreateRunnerSetup(artifact, scenario))),
+            .. Cna1979BreakdownContentCatalog.TurnBoundaryArtifacts.Select(CreateTurnBoundarySetup),
         ]);
 
     public static bool TryGet(string? setupId,
@@ -30,7 +46,7 @@ internal static class Cna1979BreakdownSetupCatalog
 
     private static CampaignSetupDefinitionV6 CreateSetup(string setupId, string displayName,
         ContentPackV6Artifact artifact, string sourceLocator, ContentScenario? selectedScenario = null,
-        InitiativePolicy? initiative = null)
+        InitiativePolicy? initiative = null, CampaignOpeningPreamblePolicy? openingPreamble = null)
     {
         var scenario = selectedScenario ?? artifact.Definition.LegacyDefinition.Scenarios.Single();
         return new CampaignSetupDefinitionV6(
@@ -41,7 +57,7 @@ internal static class Cna1979BreakdownSetupCatalog
             ContentPackV6Definition.SupportedCapabilityProfileId,
             scenario.Start.GameTurn,
             initiative ?? new PredeterminedInitiative(LandSide.Axis),
-            Cna1979SetupCatalog.OpeningPreamblePolicy,
+            openingPreamble ?? Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.WeatherPolicy,
             new CampaignStageEntryPolicy(
                 CampaignStageEntryPolicy.CurrentContractVersion, scenario.Start.GameTurn, 1,
@@ -53,6 +69,15 @@ internal static class Cna1979BreakdownSetupCatalog
             new CampaignContentV6Selection(artifact.Identity,
                 scenario.ScenarioId),
             [new RuleReference("sandtable-breakdown-lab", sourceLocator)]);
+    }
+
+    private static CampaignSetupDefinitionV6 CreateTurnBoundarySetup(ContentPackV6Artifact artifact)
+    {
+        var turn = artifact.Definition.LegacyDefinition.Scenarios.Single().Start.GameTurn;
+        return CreateSetup($"rules-lab.breakdown.turn-boundary.gt{turn}.v1", $"Rules Lab: Turn Boundary GT{turn}",
+            artifact, $"turn-boundary.gt{turn}.v1", initiative: new ContestedInitiative(new AxisInitiativeSourceFacts(
+                AxisInitiativeLocation.OffMapOrUnavailable, [AxisInitiativeLocation.QualifyingGameMap])),
+            openingPreamble: TurnBoundaryPreamblePolicy);
     }
 
     private static CampaignSetupDefinitionV6 CreateRunnerSetup(ContentPackV6Artifact artifact, ContentScenario scenario)

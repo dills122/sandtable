@@ -62,7 +62,7 @@ internal static class CampaignCreationV10Factory
             || setup.SetupHash != CampaignSetupV6Codec.CalculateHash(setup)
             || setup.InitialGameTurn != scenario.Start.GameTurn
             || setup.StageEntry.OperationStage != scenario.Start.OperationStage
-            || setup.OpeningPreamble != Cna1979SetupCatalog.OpeningPreamblePolicy
+            || !Cna1979BreakdownSetupCatalog.IsAdmittedOpeningPreamble(setup)
             || !Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather)
             || !Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(setup.StageEntry, setup.InitialGameTurn)
             || randomState.ContractVersion != SandtableRandom.ContractVersion

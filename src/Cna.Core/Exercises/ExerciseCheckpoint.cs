@@ -7,6 +7,17 @@ public sealed class ExerciseCheckpoint
 {
     public const int CurrentContractVersion = 1;
 
+    internal ExerciseCheckpoint(CampaignGameTurn.EventInfo boundary, CampaignSnapshotV11 initial)
+    {
+        if (boundary.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Turn boundary belongs to another campaign.");
+        ContractVersion = boundary.ContractVersion;
+        CampaignId = boundary.CampaignId;
+        StateVersion = checked(boundary.PriorStateVersion + 1);
+        RulesetHash = initial.RulesetHash;
+        PositionId = boundary.NextPositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignSourceTurnAuthority turn)
     {
         ArgumentNullException.ThrowIfNull(turn);

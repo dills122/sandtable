@@ -54,8 +54,10 @@ public sealed class PendingEquivalenceOracleTests
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
             .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToArray();
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        var later = Cna1979LandSequenceV4.CreateTurn(2);
         var derivable = turn.SelectMany(p => Enum.GetValues<PendingLastEvent>()
                 .Select(e => PendingFromCursor.Derive(turn, p.PositionId, e)))
+            .Concat(later.Select(p => PendingFromCursor.Derive(later, p.PositionId, PendingLastEvent.CompletedPosition, false)))
             .Where(x => x is not null).Select(x => x!).ToHashSet(StringComparer.Ordinal);
         var unmapped = subtypes.Where(t => !derivable.Contains(t) && !PendingExceptionTable.Unobservable.Contains(t)).ToArray();
         Assert.True(unmapped.Length == 0,
@@ -74,18 +76,22 @@ public sealed class PendingEquivalenceOracleTests
     [Fact]
     public void EveryCatalogPositionTheFixturesVisitIsAccountedForAndTheUnvisitedSetIsPinned()
     {
-        var visited = Rows().Select(r => r.PositionId).ToHashSet(StringComparer.Ordinal);
-        var turn = Cna1979LandSequenceV4.CreateTurn(1);
-        var catalog = turn.Select(p => p.PositionId).ToHashSet(StringComparer.Ordinal);
-        Assert.All(visited, v => Assert.Contains(v, catalog));
-        var unvisited = turn.Select(p => p.PositionId).Where(p => !visited.Contains(p)).ToList();
-        // Pinned by count, with the list printed on drift: shrinking is progress, growing means a catalog
-        // position (new Stage 3 slice) has no fixture.
-        Assert.True(unvisited.Count == ExpectedUnvisited,
-            $"unvisited catalog positions {unvisited.Count} (expected {ExpectedUnvisited}):\n" + string.Join("\n", unvisited));
+        foreach (var firstTurn in new[] { true, false })
+        {
+            var visited = Rows().Where(row => (CampaignGameTurn.CurrentGameTurn(row.Session) == row.Session.CurrentSnapshot.Setup.InitialGameTurn) == firstTurn)
+                .Select(r => r.PositionId).ToHashSet(StringComparer.Ordinal);
+            var turn = Cna1979LandSequenceV4.CreateTurn(firstTurn ? 1 : 2);
+            var catalog = turn.Select(p => p.PositionId).ToHashSet(StringComparer.Ordinal);
+            Assert.All(visited, v => Assert.Contains(v, catalog));
+            var unvisited = turn.Select(p => p.PositionId).Where(p => !visited.Contains(p)).ToList();
+            var expected = firstTurn ? ExpectedUnvisited : ExpectedLaterTurnUnvisited;
+            Assert.True(unvisited.Count == expected,
+                $"unvisited catalog positions {unvisited.Count} (expected {expected}):\n" + string.Join("\n", unvisited));
+        }
     }
 
     // S3-9 visits the eight second-side selection/tail positions, including the end-of-turn
     // frontier. The remaining 20 are the four unvisited actual-combat cuts in each non-legacy occurrence.
     private const int ExpectedUnvisited = 20;
+    private const int ExpectedLaterTurnUnvisited = 102;
 }

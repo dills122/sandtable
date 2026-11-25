@@ -42,6 +42,7 @@ public static class CampaignOpenSeatCatalog
         {
             // Stage 3 second side (S3-6..S3-8).
             [typeof(ThirdStageSecondCombatSelectionPending)] = CampaignOpenSeatRow.Unwired(Stage3),
+            [typeof(TurnBoundaryPending)] = CampaignOpenSeatRow.Unwired("Turn-start Host openings are deferred to B5."),
             [typeof(ThirdStageSecondAssaultPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageSecondNoAttackPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageSecondBreakdownPending)] = CampaignOpenSeatRow.Unwired(Stage3),

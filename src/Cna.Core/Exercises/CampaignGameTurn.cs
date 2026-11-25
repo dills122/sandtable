@@ -9,7 +9,10 @@ namespace Cna.Core.Exercises;
 internal static class CampaignGameTurn
 {
     internal static int CurrentGameTurn(ExerciseSession session) =>
-        CurrentGameTurn(session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentHistory);
+        CurrentGameTurn(session.CurrentSnapshot, session.CurrentHistory);
+
+    internal static int CurrentGameTurn(CampaignSnapshotV11 initial, IEnumerable<object> history) =>
+        CurrentGameTurn(initial.Setup.InitialGameTurn, history);
 
     internal static int CurrentGameTurn(int initialGameTurn, IEnumerable<object> history)
     {
@@ -27,6 +30,9 @@ internal static class CampaignGameTurn
 
     // Replay must apply this check to every turn-stamped candidate before
     // rebuilding it; catalog position IDs alone do not distinguish turns.
+    internal static void RequireCurrentGameTurn(ExerciseSession predecessor, int gameTurn) =>
+        RequireCurrentGameTurn(predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentHistory, gameTurn);
+
     internal static void RequireCurrentGameTurn(int initialGameTurn, IEnumerable<object> predecessorHistory, int gameTurn)
     {
         if (gameTurn != CurrentGameTurn(initialGameTurn, predecessorHistory))
@@ -36,8 +42,7 @@ internal static class CampaignGameTurn
     internal static LandSide LatestInitiativeHolder(IEnumerable<object> history, LandSide snapshotHolder) =>
         history.OfType<CampaignNativeTurnInitiativeV56>().LastOrDefault()?.Holder ?? snapshotHolder;
 
-    // B4 will delegate ExerciseSession.LatestCursor to this helper (or add
-    // V56 to its existing last-drawing-event filter and corresponding arm).
+    // ExerciseSession delegates to this chronological last-drawing-event helper.
     internal static RandomStreamState LatestCursor(RandomStreamState initial, IEnumerable<object> history) =>
         history.LastOrDefault(value => value is CampaignNativeCombatAssaultResultV22
             or CampaignNativeWeatherDeterminationV50 or CampaignNativeTurnInitiativeV56) switch
@@ -49,4 +54,20 @@ internal static class CampaignGameTurn
                 initial.AlgorithmId, initial.Seed, initiative.ResultRandomCursor),
             _ => initial,
         };
+    internal readonly record struct EventInfo(int ContractVersion, string CampaignId, long PriorStateVersion,
+        string NextPositionId, int GameTurn, string WorldHash);
+
+    internal static EventInfo BoundaryInfo(object value) => value switch
+    {
+        CampaignNativeEndOfTurnV55 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeTurnInitiativeV56 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeNoObligationTurnPhaseV57 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeInitiativeDeclarationV49 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeWeatherDeterminationV50 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeNoObligationOrganizationV51 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeNoObligationNavalConvoyArrivalV52 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeNoObligationFleetAssignmentV53 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        CampaignNativeNoObligationFleetRepairV54 e => new(e.ContractVersion, e.CampaignId, e.PriorStateVersion, e.NextPositionId, e.GameTurn, e.WorldHash),
+        _ => throw new InvalidOperationException("Not a turn-boundary event."),
+    };
 }

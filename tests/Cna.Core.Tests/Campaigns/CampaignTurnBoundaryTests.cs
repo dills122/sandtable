@@ -29,7 +29,7 @@ public sealed class CampaignTurnBoundaryTests
     private static CampaignNativeEndOfTurnV55 Rollover(int turn = 1)
     {
         var predecessor = Terminal(turn);
-        return CampaignNativeEndOfTurnV55.Create(predecessor, turn, predecessor.StateVersion);
+        return CampaignNativeEndOfTurnV55.Create(predecessor, turn, predecessor.StateVersion, Cna1979Weather.MaxGameTurn);
     }
 
     private static CampaignNativeTurnInitiativeV56 Initiative(ulong seed = 0)
@@ -55,19 +55,33 @@ public sealed class CampaignTurnBoundaryTests
     }
 
     [Theory]
-    [InlineData(6)]
-    [InlineData(12)]
     [InlineData(110)]
     public void UnsupportedEndOfTurnRefuses(int turn) =>
         Assert.Throws<CampaignRuleNotImplementedException>(() => Rollover(turn));
+
+    [Theory]
+    [InlineData(6)]
+    [InlineData(12)]
+    [InlineData(109)]
+    public void RolloverWithinWeatherRangeIsSupported(int turn) =>
+        Assert.Equal(turn + 1, Rollover(turn).NextGameTurn);
+
+    [Fact]
+    public void ScenarioEndIsAnInclusiveMaximumTurnNotARolloverPosition()
+    {
+        var terminal = Terminal(12);
+        Assert.Equal(13, CampaignNativeEndOfTurnV55.Create(terminal, 12, terminal.StateVersion, 13).NextGameTurn);
+        Assert.Throws<CampaignRuleNotImplementedException>(() =>
+            CampaignNativeEndOfTurnV55.Create(terminal, 12, terminal.StateVersion, 12));
+    }
 
     [Fact]
     public void WrongPositionAndContactVersionRefuse()
     {
         var terminal = Terminal(1);
         Assert.Throws<InvalidOperationException>(() => CampaignNativeEndOfTurnV55.Create(
-            terminal with { NextPositionId = terminal.PositionId }, 1, terminal.StateVersion));
-        Assert.Throws<InvalidOperationException>(() => CampaignNativeEndOfTurnV55.Create(terminal, 1, terminal.PriorStateVersion));
+            terminal with { NextPositionId = terminal.PositionId }, 1, terminal.StateVersion, Cna1979Weather.MaxGameTurn));
+        Assert.Throws<InvalidOperationException>(() => CampaignNativeEndOfTurnV55.Create(terminal, 1, terminal.PriorStateVersion, Cna1979Weather.MaxGameTurn));
         var rollover = Rollover();
         Assert.Throws<InvalidOperationException>(() => CampaignNativeTurnInitiativeV56.Create(
             rollover with { NextPositionId = rollover.PositionId }, Policy, SandtableRandom.Create(0), rollover.StateVersion));

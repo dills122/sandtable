@@ -863,9 +863,18 @@ The [Graziani setup draft](docs/specs/graziani-setup-draft.md) records the remai
 The physical game's hierarchical sequence must remain visible in the model. A weekly Game Turn
 contains Operation Stages, player phases, and repeatable movement/combat segments. The engine
 therefore uses versioned phase/segment identifiers instead of a monolithic `AdvanceTurn` operation.
-The immutable Land sequence catalog retains its most recently requested turn to avoid rebuilding
-positions during replay. This single-entry cache contains only rules data; campaign state, actor
-resolution, and replay validation remain outside it. Concurrent misses may rebuild the catalog.
+The immutable Land sequence catalog caches admitted turns independently to avoid rebuilding
+positions during interleaved replay. The cache contains only rules data; campaign state, actor
+resolution, and replay validation remain outside it.
+
+The synthetic Core turn-boundary path retains Snapshot 11 unchanged. End of Turn (V55) carries
+forward the settled world and advances to the next turn only below the scenario's declared end
+and the Weather maximum (GT110). V56 determines a new contested initiative holder on the
+accepted random stream; V57 explicitly passes the schedule and shipping positions only under
+the opt-in version 2 synthetic opening/later-turn policy. V49–V54 continue the next stage's
+prelude using accepted-history turn, holder, and cursor. The single `TurnBoundaryPending`
+state owns these cuts through the read-only first-side Reserve Designation opening. No Reserve
+submission, terminal scoring, ledger rollover, or Host opening/import is included.
 
 ## Project responsibilities and current boundaries
 

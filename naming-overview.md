@@ -364,6 +364,10 @@ The pure Core uses technical namespaces for Rules, Randomness, Setups, Content, 
 Observations and Actions. Current capability status belongs to the
 [roadmap](docs/roadmap/pre-alpha-roadmap.md), not this vocabulary.
 
+Turn boundaries use the plain technical names `EndOfTurn`, `TurnInitiative`, and
+`NoObligationTurnPhase` for native events. `TurnBoundaryPending` is an in-process Core
+continuation, not a separate authority or transport. The existing Umpire remains authoritative.
+
 ## Simulation and evaluation
 
 An **Exercise** is one fresh local simulation. A **Maneuver** is an ordered set of Exercises;
