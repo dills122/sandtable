@@ -15,7 +15,7 @@ namespace Cna.OrleansHost.Api;
 /// Versioned local entry to the normal durable campaign authority. All owner operations go
 /// through the retained seat and opening fences in CampaignDurableAuthorityJournal.
 /// </summary>
-internal static class CampaignDurableOutwardApi
+internal static partial class CampaignDurableOutwardApi
 {
     private const int MaxBodyBytes = 8192;
     private const int MaxSourceBodyBytes = 24 * 1024 * 1024;
@@ -48,6 +48,7 @@ internal static class CampaignDurableOutwardApi
             }));
 
         var api = app.MapGroup("/api/v2/campaigns");
+        MapOpenForSeat(api);
         api.MapPost("/source", async (HttpContext context, CampaignDurableAuthorityJournalStore journal) =>
             await Execute(context, async () =>
             {
