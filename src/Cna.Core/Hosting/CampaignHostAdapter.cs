@@ -1632,7 +1632,10 @@ public static class CampaignHostAdapter
         // EntryHash QuerySecondCombatSelectionRoundBinding computed when the
         // round was first initialized (CampaignExercises.cs), or a
         // genuinely correct second-side round looks tampered-with on replay.
-        if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind && step.EventRecords.Count == 1)
+        // Stage-aware selection uses the canonical V46 bytes for each distinct occurrence.
+        // TODO(NativeStageEntrySecondBreakdownKind): add that kind here with its Host wiring.
+        if (step.Kind is CampaignHostAcceptedStep.NativeSecondBreakdownKind
+                or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind && step.EventRecords.Count == 1)
         {
             var secondBreakdown = CampaignNativeSecondBreakdownV46.Deserialize(step.EventRecords[0]);
             return (CampaignSelectionTimeoutEvidenceV38.Digest(secondBreakdown.SerializeCanonical()), secondBreakdown.StateVersion);

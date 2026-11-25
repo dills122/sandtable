@@ -670,9 +670,28 @@ internal sealed partial class CampaignDurableAuthorityJournal
                         return head;
                     throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
                 }
+                var selectionEntry = native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind;
+                long opened = 0;
+                // Only persist a recognized entry if its durable round can be retained with it.
+                // TODO(StageEntrySelectionUnavailable): wire the Stage 2 untimed continuation
+                // when the stage-aware selection/no-attack authority and Host path are ready.
+                if (selectionEntry && (head.Timing is null || !TryTrustedNow(out opened)))
+                    return head;
                 var command = CampaignHostAdapter.StageEntrySystemCommand(head.Session, native.Result);
                 head = PersistAccepted(connection, transaction, campaignId, head,
                     native.Kind, null, null, null, null, command, native.Result);
+                if (selectionEntry)
+                {
+                    var evidence = native.Result.Evidence!;
+                    var step = new CampaignHostAcceptedStep(CampaignActionSubmissionSerializer.SerializeCanonical(command),
+                        evidence.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt),
+                        evidence.SnapshotCheckpoint, native.Kind);
+                    var binding = CampaignHostAdapter.QueryNativeCombatSelectionEntryBinding(step)
+                        ?? throw new InvalidOperationException("Stage Entry Breakdown has no selection entry binding.");
+                    // The replay binding is derived from accepted V46 bytes, independent of
+                    // live selection/timeout dispatch, which arrives in the stage-aware Core PR.
+                    RetainSelectionRound(connection, transaction, head, campaignId, binding, opened);
+                }
                 continue;
             }
             var query = CampaignHostAdapter.QuerySystem(head.Session);
