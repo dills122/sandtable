@@ -57,7 +57,7 @@ jobs:
           heavy=true
           if [ "$EVENT_NAME" = "pull_request" ]; then
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
-            git diff --name-only "$BASE_SHA" HEAD > changed-files.txt
+            git diff --no-renames --name-only "$BASE_SHA" HEAD > changed-files.txt
             echo "Changed files:"; cat changed-files.txt
             if [ -s changed-files.txt ] && ! grep -qv '^site/' changed-files.txt; then
               heavy=false
