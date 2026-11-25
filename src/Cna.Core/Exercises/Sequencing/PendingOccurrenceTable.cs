@@ -35,9 +35,8 @@ internal static class PendingOccurrenceTable
         [(2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", PendingTailOwner.InsideAssault, true),
         // S3-1..S3-5: Reserve/Move/MovementCompletion/Breakdown/CombatSelection/Assault/NoAttack (CombatArms flipped by S3-5).
         [(3, LandActorRole.FirstActingSide)] = new("ThirdStage", PendingTailOwner.InsideAssault, true),
-        // S3-6..S3-8: second-side Reserve/Move/MovementCompletion/Breakdown. CombatArms stays false until S3-9
-        // adds its CombatSelection/Assault/Truck/Post-Combat subtypes.
-        [(3, LandActorRole.SecondActingSide)] = new("ThirdStageSecond", PendingTailOwner.InsideAssault, false),
+        // S3-6..S3-9: second-side Reserve through Combat and its tail.
+        [(3, LandActorRole.SecondActingSide)] = new("ThirdStageSecond", PendingTailOwner.InsideAssault, true),
     };
 
     internal static PendingOccurrence? Find(int operationStage, LandActorRole role) =>

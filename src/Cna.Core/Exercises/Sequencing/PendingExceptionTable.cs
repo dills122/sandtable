@@ -16,5 +16,6 @@ internal static class PendingExceptionTable
         "StageEntryNoAttackPending",
         "StageEntrySecondNoAttackPending",
         "ThirdStageNoAttackPending",
+        "ThirdStageSecondNoAttackPending",
     ];
 }

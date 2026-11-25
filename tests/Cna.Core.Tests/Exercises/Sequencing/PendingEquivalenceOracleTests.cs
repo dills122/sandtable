@@ -85,9 +85,7 @@ public sealed class PendingEquivalenceOracleTests
             $"unvisited catalog positions {unvisited.Count} (expected {ExpectedUnvisited}):\n" + string.Join("\n", unvisited));
     }
 
-    // 28 after S3-8 (second-side Reserve/Movement/Breakdown sample added; was 31 after S3-5). Remaining: the Stage 3 second
-    // side's Combat/tail (S3-9), the Stage 1/2 combat sub-steps no no-attack scenario visits, and end-of-turn.
-    // (31 after S3-5: first-side Assault/No-Attack/Truck/Post-Combat sample added; what remains is the Stage 3 second side
-    // (S3-6..9), the Stage 1/2 combat sub-steps no no-attack scenario visits, and end-of-turn).
-    private const int ExpectedUnvisited = 28;
+    // S3-9 visits the eight second-side selection/tail positions, including the end-of-turn
+    // frontier. The remaining 20 are the four unvisited actual-combat cuts in each non-legacy occurrence.
+    private const int ExpectedUnvisited = 20;
 }

@@ -264,8 +264,10 @@ public sealed class CampaignStageThreeFirstSideTests
         Assert.Equal(expectedCursor, f.AfterCombatDecision.CurrentThirdStageCombatDecision!.RandomState);
         Assert.NotEqual(session.CurrentSnapshot.RandomState, expectedCursor);
 
-        // Everything after the Decision stays closed at this cut.
-        AssertPostDecisionEntryPointsClosed(session, f.FirstAudience);
+        // Selection opens at Breakdown; the tail and legacy action classifier remain closed.
+        Assert.Equal(session.CurrentContacts.AuthorityVersion, CampaignExercises.QueryNativeCombatSelectionRoundBinding(session).StateVersion);
+        Assert.Null(CampaignCombatExerciseActions.Query(session, f.FirstAudience));
+        Assert.False(CampaignExercises.SubmitPostCombatPass(session, f.FirstAudience, Hash("post-combat")).IsAccepted);
     }
 
     // Stale-field checklist, S3-5: once the Decision exists Stage 3's own assault runtime is the only active
@@ -483,13 +485,16 @@ public sealed class CampaignStageThreeFirstSideTests
         var session = SessionFor(typeName);
         Assert.Null(CampaignCombatExerciseActions.Query(session, Fixture.Value.FirstAudience));
         Assert.False(CampaignExercises.SubmitPostCombatPass(session, Fixture.Value.FirstAudience, Hash("post-combat")).IsAccepted);
-        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeCombatSelectionRoundBinding(session));
+        if (session.Pending is ThirdStageBreakdownPending)
+            Assert.Equal(session.CurrentContacts.AuthorityVersion, CampaignExercises.QueryNativeCombatSelectionRoundBinding(session).StateVersion);
+        else
+            Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeCombatSelectionRoundBinding(session));
     }
 
     [Fact]
     public void StageTwoSessionsAreNotAffectedByTheStageThreeCombatGuard()
     {
-        // The guard keys on Stage 3's own Initiative Declaration, so a Stage 2 terminal still reaches Classify as before.
+        // The Stage 3 marker keys on its own Initiative Declaration, not Stage 2's retained declaration.
         Assert.False(CampaignExercises.IsStageThreeCombatUnwired(Fixture.Value.StageTwoTerminal));
         Assert.True(CampaignExercises.IsStageThreeCombatUnwired(Fixture.Value.PreambleTerminal));
     }

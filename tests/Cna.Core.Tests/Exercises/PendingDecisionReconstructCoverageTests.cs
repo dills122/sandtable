@@ -28,9 +28,8 @@ public sealed class PendingDecisionReconstructCoverageTests
     // Subtypes deliberately without a fixture. Key = type, value = why.
     private const string NoAttackReason =
         "Unreachable through public flows: CompleteXCombatNoAttack installs the no-attack completion "
-        + "together with the Assault runtime, so Pending resolves to the later XAssaultPending. Only a "
-        + "hand-called WithXNoAttack (guard-only tests) yields this pending, and that needs a real "
-        + "World/Position pair no existing With* fixture supplies.";
+        + "together with the non-empty Assault runtime, so Pending always resolves to XAssaultPending. "
+        + "The no-attack event is tested through that observable Assault head.";
     private const string StageEntryMoveReason =
         "No fixture: this driver only reaches movement through the host owner-draft API, which exists "
         + "for the Operation Stage 1 second side only. Stage Entry Move needs a hand-built movement cut; "
@@ -42,6 +41,7 @@ public sealed class PendingDecisionReconstructCoverageTests
         [typeof(StageEntryNoAttackPending)] = NoAttackReason,
         [typeof(StageEntrySecondNoAttackPending)] = NoAttackReason,
         [typeof(ThirdStageNoAttackPending)] = NoAttackReason,
+        [typeof(ThirdStageSecondNoAttackPending)] = NoAttackReason,
         [typeof(StageEntryMovePending)] = StageEntryMoveReason,
         [typeof(StageEntrySecondMovePending)] = StageEntryMoveReason,
         [typeof(ThirdStageMovePending)] = StageEntryMoveReason,
@@ -58,8 +58,8 @@ public sealed class PendingDecisionReconstructCoverageTests
 
     // Tamper rows exist only for subtypes whose own retained record has a byte-level form
     // (CI rejects skipped rows, so unsupported subtypes are simply not generated). The
-    // *CombatSelection / *Assault subtypes are excluded: their records are
-    // CampaignNativeSecondCombatDecisionStateV47 / CampaignNativeRepeatAssaultRuntime.
+    // Earlier *CombatSelection / *Assault wrappers lack direct byte-level serialization;
+    // the new Stage 3 second-side wrappers are tampered through their retained events.
     public static TheoryData<string> TamperableSubtypes()
     {
         var data = new TheoryData<string>();
@@ -179,6 +179,23 @@ internal static class SessionTamper
             ?? throw new MissingMemberException(nameof(ExerciseSession), propertyName);
         var current = property.GetValue(session)
             ?? throw new InvalidOperationException(propertyName + " is null on its own fixture.");
+        if (current is CampaignNativeSecondCombatDecisionStateV47 state && session.Pending is ThirdStageSecondCombatSelectionPending)
+        {
+            var replacement = (CampaignNativeSecondCombatDecisionV47)FlipEvent(state.Decision, session);
+            var clone = Clone(session);
+            property.SetValue(clone, state with { Decision = replacement });
+            return (clone, propertyName);
+        }
+        if (current is CampaignNativeRepeatAssaultRuntime runtime && session.Pending is ThirdStageSecondAssaultPending)
+        {
+            var replacement = FlipEvent(runtime.Events[^1], session);
+            var runtimeClone = (CampaignNativeRepeatAssaultRuntime)typeof(object).GetMethod("MemberwiseClone", Any)!.Invoke(runtime, null)!;
+            typeof(CampaignNativeRepeatAssaultRuntime).GetField("events", Any)!.SetValue(runtimeClone,
+                new List<object>(runtime.Events) { [runtime.Events.Count - 1] = replacement });
+            var clone = Clone(session);
+            property.SetValue(clone, runtimeClone);
+            return (clone, propertyName);
+        }
         var serialize = current.GetType().GetMethod("SerializeCanonical", Any, Type.EmptyTypes);
         var deserialize = current.GetType().GetMethod("Deserialize", BindingFlags.Static | BindingFlags.Public
             | BindingFlags.NonPublic, [typeof(ReadOnlyMemory<byte>)]);
@@ -198,6 +215,24 @@ internal static class SessionTamper
             return (clone, propertyName);
         }
         throw new InvalidOperationException("No one-byte flip of " + propertyName + " still deserializes.");
+    }
+
+    private static object FlipEvent(object original, ExerciseSession session)
+    {
+        var bytes = CampaignCurrentEventSerializer.Serialize(original, session.Context);
+        for (var index = bytes.Length - 1; index >= 0; index--)
+        {
+            var altered = (byte[])bytes.Clone();
+            altered[index] ^= 1;
+            object replacement;
+            try { replacement = CampaignCurrentEventSerializer.Deserialize(altered); }
+            catch (Exception error) when (error is System.Text.Json.JsonException or ArgumentException
+                or InvalidOperationException or FormatException or KeyNotFoundException)
+            { continue; }
+            if (replacement.GetType() == original.GetType() && !replacement.Equals(original))
+                return replacement;
+        }
+        throw new InvalidOperationException("No one-byte flip of the retained event still deserializes.");
     }
 
     // Clones the predecessor with `slot` nulled and re-points the head at the clone.
@@ -342,7 +377,10 @@ internal static class PendingFixtures
             var secondAudience = audience == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
             session = Ok(CampaignExercises.SubmitThirdStageSecondReserve(session, secondAudience, Hash("stage3-second-reserve"), elementId: null));
             session = Ok(CampaignExercises.CompleteThirdStageSecondMovement(session, secondAudience, Hash("stage3-second-movement-completion")));
-            Ok(CampaignExercises.CompleteThirdStageSecondBreakdown(session));
+            session = Ok(CampaignExercises.CompleteThirdStageSecondBreakdown(session));
+            var secondElement = secondAudience == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
+            session = SubmitFinishWithoutAttack(session, secondAudience, secondElement, CampaignExercises.CompleteThirdStageSecondCombatNoAttack);
+            FinishCycleThroughPostCombatPasses(session, secondAudience);
         }
 
         private ExerciseSession Cap(ExerciseSession session)
