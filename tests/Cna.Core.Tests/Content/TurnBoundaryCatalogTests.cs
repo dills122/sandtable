@@ -1,5 +1,5 @@
-using Cna.Core.Content;
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 

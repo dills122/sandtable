@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
-using Cna.Core.Setups;
 using Cna.Core.Exercises;
+using Cna.Core.Setups;
 using Cna.Core.Tests.Exercises.Sequencing;
 
 namespace Cna.Core.Tests.Content;
