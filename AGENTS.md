@@ -86,6 +86,19 @@ honestly. See `docs/runbooks/local-testing.md`. These local commands build Relea
 The repository uses .NET 10 native Microsoft.Testing.Platform mode. Always pass a solution through
 `--solution` and a test project through `--project`; do not use a bare positional test path.
 
+## Registering New Test Rows (CI timing manifest)
+
+Every actual Release Core test row needs a measured weight, or CI `prepare` fails with
+"Unknown/missing measured row". The manifest is the directory `.github/scripts/long-suite-weights/`
+(JSON Lines). Do NOT edit `baseline.jsonl` or `meta.json` to add rows, and never hand-append to a
+shared file: each PR adds ONE NEW entry file so independent PRs merge without conflicts.
+
+1. Build Release, then run `python3 .github/scripts/r02_partition.py discover --sha "$(git rev-parse HEAD)" --attempt local --directory artifacts/ci` (commit first; tree must be clean).
+2. `python3 .github/scripts/long_suite_weights.py add --proof artifacts/ci --name <topic-or-issue> --note "<date> <platform> <what>, pending hosted calibration" [--xml <MTP xml dir>]`
+   writes `long-suite-weights/<topic>.jsonl` (use a unique `<topic>`). `check --proof artifacts/ci` lists missing/stale rows.
+3. Removed/renamed tests: delete the stale line from whichever `.jsonl` holds it.
+4. Details and history: `.github/scripts/long-suite-weights.md`.
+
 ## Branch And PR Metadata
 
 - Use feature branches for behavior, contract, test, or documentation changes.

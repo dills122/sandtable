@@ -112,7 +112,7 @@ def main(argv=None):
             sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
             proof = r02.discover(directory / 'discovery', r02.FIXTURE_PATH,
                                  sha, partition.identity(sha), 'local')
-            weights = json.loads((ROOT / suites.WEIGHTS_PATH).read_text())
+            weights = suites.load_weights(ROOT / suites.WEIGHTS_PATH)
             commands = shard_commands(args.suite, proof, weights)
         for index, (group, command) in enumerate(commands):
             results = directory / ('results-' + str(index))

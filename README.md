@@ -416,8 +416,9 @@ CI runs in three tiers:
 - **Nightly** (`.github/workflows/ci-nightly-heavy.yml`) runs Orleans and the six `p01-*` proof
   families, which no longer run on either trigger above.
 
-Adding a large test class may require updating the
-[long-suite manifest](.github/scripts/long-suite-weights.md). An optional, label-triggered PR
+Adding tests requires registering each new row by adding one new entry file under
+`.github/scripts/long-suite-weights/` (see the
+[long-suite manifest guide](.github/scripts/long-suite-weights.md)). An optional, label-triggered PR
 review pass for high-risk changes is also available; see the
 [runbook](docs/runbooks/optional-code-review.md). It supplements ordinary CI and review, and does
 not replace either.

@@ -1,5 +1,37 @@
 # Refreshing long-suite scheduling weights
 
+## How to add a test row (read this first)
+
+The timing manifest is the directory `.github/scripts/long-suite-weights/`, not a single file:
+
+- `meta.json` holds baseline metadata (rarely changes).
+- `baseline.jsonl` holds the migrated historical classes/rows (4,272 lines at migration). Do not append to it.
+- Every other `*.jsonl` is an entry file: one JSON object per line, either
+  `{"class":"<class>","parts":1}` or `{"row":"<64-hex row_key>","ms":<int>}` with an optional
+  `"provisional":"<provenance note>"` on a row. Each class/row may appear in exactly one file.
+
+`long_suite_weights.load()` merges them into the same dict the old `long-suite-weights.json` held, so
+`make_plan`, the row proof, the exact complementary allocation, stale-row detection, the memory reserve
+and deadlines are unchanged.
+
+To register rows for a PR (one new file per PR, so concurrent PRs do not touch the same lines):
+
+1. Commit the tests; build Release and the helper (`dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release`).
+2. `python3 .github/scripts/r02_partition.py discover --sha "$(git rev-parse HEAD)" --attempt local --directory artifacts/ci`.
+3. `python3 .github/scripts/long_suite_weights.py check --proof artifacts/ci` lists missing and stale rows.
+4. `python3 .github/scripts/long_suite_weights.py add --proof artifacts/ci --name <unique-topic> --note "<date> <platform>; <why>; pending hosted calibration" [--xml <dir of MTP XML>]`
+   writes `.github/scripts/long-suite-weights/<unique-topic>.jsonl` (measured ms from `--xml`, else `--default-ms`, default 1000).
+5. Remove tests that no longer exist by deleting that row's line from whichever file holds it.
+6. Put narrative evidence (commands, hashes, observations) in the PR description or a `docs/work` note.
+   Do not append to this file: it is frozen history below, and appending reintroduces end-of-file merge conflicts.
+
+Why: an append to one shared JSON file conflicted with every other PR, and two auto-merged appends once
+produced invalid JSON with no textual conflict. Line-per-record files cannot be syntactically broken by a
+merge, and a unique new file per PR cannot conflict. A duplicate row/class across two files fails `load()`.
+
+Everything below this line is historical context; procedures that mention editing
+`long-suite-weights.json` now mean "add an entry file" as above.
+
 ## Private proof runner pairing (October 20, 2026)
 
 The paid fresh-process and RBA decline/cancellation proof matrices pair their
@@ -118,7 +150,7 @@ Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --con
 
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
 2. Measure the new/changed cases with the installed MTP runner and literal selectors. Keep every assertion, strict XML, process exit, source/attempt/SDK and resource evidence. For a complete refresh use an already verified full artifact whose prepared inventory and all actual rows reconcile. Never derive weights from a failed, skipped, truncated or unbound report. Retain the prior manifest and observation as evidence.
-3. The following lightweight recipe recreates a fully measured manifest from such a complete proof directory. Set `PROOF` to the local selected artifact directory containing `r02-inventory.json` and all execution XML. Run from the repository root; save/review the output before replacing the tracked file.
+3. The following lightweight recipe recreates a fully measured manifest from such a complete proof directory. Set `PROOF` to the local selected artifact directory containing `r02-inventory.json` and all execution XML. Run from the repository root; save/review the output, then convert it with `python3 .github/scripts/long_suite_weights.py migrate /private/tmp/refreshed-long-suite-weights.json .github/scripts/long-suite-weights` (a complete refresh replaces the directory; a PR adding only rows should use `add` instead).
 
 ```sh
 PROOF=/absolute/path/to/verified-proof
