@@ -1,0 +1,38 @@
+Sandtable
+Copyright 2026 Sandtable contributors
+
+This product includes software developed by the Sandtable contributors.
+The original source code is licensed under the Apache License, Version 2.0
+(see the LICENSE file). Source-derived game data and related research notes,
+identified under "Material not licensed under Apache-2.0" in the README, are
+not licensed under Apache-2.0. Provisional position, not legal advice.
+
+Non-affiliation
+
+Sandtable is an independent, unofficial implementation. It is not affiliated
+with, endorsed by, or sponsored by SPI or any current or former rights holder
+of "The Campaign for North Africa". Names are used only to identify the game
+that Sandtable implements.
+
+The repository contains no original box art, logos, counter art, map or chart
+images, scans, or rulebook pages. It does contain transcribed charts and
+tables, unit rosters, and a map derived from third-party data, plus notes that
+paraphrase rules with section citations. Rights-holder review of that
+source-derived data has not been completed.
+
+Credits (attribution as good practice; no license is asserted beyond what the
+upstream projects themselves state)
+
+- The hex and hexside map data in src/Cna.Core/Content/HistoricalMap/ was
+  taken from the CNA Living Rules project (basmith7/cna on GitHub, data
+  directory published by its maintainers under CC0-1.0), which in turn derives
+  from the VASSAL module "The Campaign for North Africa: The Desert War
+  1940-43" (v2.1.0, redrawn by Mitch Guthrie) as checked by the Living Rules
+  maintainers.
+- The Living Rules project is also consulted as a comparison reference.
+
+Third-party components
+
+Maproom depends on third-party fonts (Newsreader, IBM Plex Sans) and icons
+(Lucide), distributed under their own licenses. License texts are in
+src/Cna.Maproom/projects/field-atlas/licenses/.
