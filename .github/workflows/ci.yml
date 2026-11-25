@@ -41,6 +41,13 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
       - name: Create formatting evidence directory
         run: mkdir -p artifacts/format
       - name: Restore for required formatting
@@ -74,6 +81,13 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
       - name: Restore
         run: dotnet restore tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj '/bl:artifacts/architecture-tests/restore-{}.binlog'
       - name: Build
@@ -105,6 +119,13 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
       - name: Report selected SDK
         run: dotnet --version
       - name: Determine per-trigger shard scope
@@ -173,6 +194,13 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
       - name: Create evidence directory
         run: mkdir -p artifacts/ci
       - name: Restore
