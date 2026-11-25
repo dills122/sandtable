@@ -1389,6 +1389,103 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // S3-1..S3-3 (2026-11-24): Operation Stage 3's own first-acting-side
+    // Reserve Designation, Movement + Movement Completion and Breakdown,
+    // entered from the Stage 2->3 preamble chain's terminal event
+    // (CurrentThirdStageNoObligationFleetRepair). Same native event types as
+    // Stage 2's first side (V43/V44/V45/V46, role-as-data generic); a distinct
+    // slot set is required because every CurrentStageEntry* field is already
+    // permanently bound to Stage 2's first acting side and no field on this
+    // class is ever reset once set. Combat (S3-4+) is NOT wired: while
+    // CurrentThirdStageBreakdown is the head, every Combat entry point must
+    // fail closed (see CampaignExercises.IsStageThreeCombatUnwired).
+    internal CampaignNativeSecondReserveV43? CurrentThirdStageReserve { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentThirdStageReserveWorld { get; private set; }
+    internal ExerciseSession? ThirdStageReservePredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageReserve(CampaignNativeSecondReserveV43 reserve,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(reserve);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageNoObligationFleetRepair is null || CurrentThirdStageReserve is not null
+            || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != reserve.StateVersion
+            || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Stage 3 Reserve must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageReservePredecessor = this;
+        successor.CurrentThirdStageReserve = reserve;
+        successor.CurrentThirdStageReserveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(reserve);
+        return successor;
+    }
+
+    internal CampaignNativeSecondMoveV44? CurrentThirdStageMove { get; private set; }
+    internal CampaignWorldSnapshotV6? CurrentThirdStageMoveWorld { get; private set; }
+    internal ExerciseSession? ThirdStageMovePredecessor { get; private set; }
+    internal CampaignNativeSecondMovementCompletedV45? CurrentThirdStageMovementCompletion { get; private set; }
+    internal ExerciseSession? ThirdStageMovementCompletionPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageMovementCompletion(CampaignNativeSecondMovementCompletedV45 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageReserve is not { Completed: true } || CurrentThirdStageMovementCompletion is not null
+            || completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Stage 3 Movement completion must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageMovementCompletionPredecessor = this;
+        successor.CurrentThirdStageMovementCompletion = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
+    internal ExerciseSession WithThirdStageMove(CampaignNativeSecondMoveV44 movement,
+        CampaignWorldSnapshotV6 world, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(movement);
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageReserve is not { Completed: true } || CurrentThirdStageMovementCompletion is not null
+            || movement.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != movement.StateVersion
+            || movement.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
+            throw new InvalidOperationException("Stage 3 Movement must advance its retained World and contact cut.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageMovePredecessor = this;
+        successor.CurrentThirdStageMove = movement;
+        successor.CurrentThirdStageMoveWorld = world;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(movement);
+        return successor;
+    }
+
+    internal CampaignNativeSecondBreakdownV46? CurrentThirdStageBreakdown { get; private set; }
+    internal ExerciseSession? ThirdStageBreakdownPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageBreakdown(CampaignNativeSecondBreakdownV46 completed,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(completed);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageBreakdown is not null || CurrentThirdStageMovementCompletion is null
+            || completed.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != completed.StateVersion)
+            throw new InvalidOperationException("Stage 3 Breakdown must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageBreakdownPredecessor = this;
+        successor.CurrentThirdStageBreakdown = completed;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(completed);
+        return successor;
+    }
+
     // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side Reserve
     // Designation, entered from the six-event preamble chain's terminal
     // (CurrentNoObligationFleetRepair). Reuses CampaignNativeSecondReserveV43
@@ -1904,18 +2001,31 @@ public sealed class ExerciseSession
 
     private PendingDecision? ComputePending()
     {
+        // Stage 3's own first-acting-side cuts (S3-1..S3-3) are chronologically
+        // latest, so they come first, most-recent-first.
+        if (CurrentThirdStageBreakdown is not null)
+            return new ThirdStageBreakdownPending(ThirdStageBreakdownPredecessor);
+        if (CurrentThirdStageMovementCompletion is not null)
+            return new ThirdStageMovementCompletionPending(ThirdStageMovementCompletionPredecessor);
+        if (CurrentThirdStageMove is not null)
+            return new ThirdStageMovePending(ThirdStageMovePredecessor);
+        if (CurrentThirdStageReserve is not null)
+            return new ThirdStageReservePending(ThirdStageReservePredecessor);
         // Later-stage preamble cuts take precedence over every retained Stage 2 cut.
-        if (CurrentThirdStageNoObligationFleetRepair is not null)
+        // Same staleness shape as the Stage 2 preamble group further down:
+        // these fields are never reset, so once Stage 3's own Reserve exists
+        // (that group's first field) they must not shadow it.
+        if (CurrentThirdStageReserve is null && CurrentThirdStageNoObligationFleetRepair is not null)
             return new ThirdStageNoObligationFleetRepairPending(ThirdStageNoObligationFleetRepairPredecessor);
-        if (CurrentThirdStageNoObligationFleetAssignment is not null)
+        if (CurrentThirdStageReserve is null && CurrentThirdStageNoObligationFleetAssignment is not null)
             return new ThirdStageNoObligationFleetAssignmentPending(ThirdStageNoObligationFleetAssignmentPredecessor);
-        if (CurrentThirdStageNoObligationNavalConvoyArrival is not null)
+        if (CurrentThirdStageReserve is null && CurrentThirdStageNoObligationNavalConvoyArrival is not null)
             return new ThirdStageNoObligationNavalConvoyArrivalPending(ThirdStageNoObligationNavalConvoyArrivalPredecessor);
-        if (CurrentThirdStageNoObligationOrganization is not null)
+        if (CurrentThirdStageReserve is null && CurrentThirdStageNoObligationOrganization is not null)
             return new ThirdStageNoObligationOrganizationPending(ThirdStageNoObligationOrganizationPredecessor);
-        if (CurrentThirdStageWeather is not null)
+        if (CurrentThirdStageReserve is null && CurrentThirdStageWeather is not null)
             return new ThirdStageWeatherPending(ThirdStageWeatherPredecessor);
-        if (CurrentThirdStageInitiativeDeclaration is not null)
+        if (CurrentThirdStageReserve is null && CurrentThirdStageInitiativeDeclaration is not null)
             return new ThirdStageInitiativeDeclarationPending(ThirdStageInitiativeDeclarationPredecessor);
         if (CurrentStageEntrySecondAssault is { Events.Count: > 0 })
             return new StageEntrySecondAssaultPending(StageEntrySecondAssaultPredecessor);

@@ -1224,3 +1224,12 @@ Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --con
 ## #579 Giarab motor placement finalization guard (2026-11-25)
 
 Adds one `GrazianiSourceAuthorityTests` row, `GiarabubMotorPlacementPolicyIsRejectedOnceCommonwealthIsFinalizedAndHistoryStillReconstructs` (hash `72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367`, 1932 ms), as a local scheduling hint from a passing macOS arm64 .NET 10 Debug MTP XML run (1 passed, 0 failed, 0 skipped) -- pending hosted CI calibration, not a hosted latency claim. The hash is `row_key` over `[module, method, display name]`. It is also recorded in `provisional_rows`. Existing weights and baseline metadata are unchanged.
+
+## Stage 3 S3-1..S3-3 first-side Reserve/Movement/Breakdown (November 25, 2026)
+
+`CampaignStageThreeFirstSideTests` adds 22 passing rows (one ordinary suite part;
+no existing row is renamed or removed). Weights are local macOS arm64 .NET 10
+Release MTP XML elapsed times, provisional pending hosted calibration; the
+shared session fixture is built once, so its cost lands on whichever row runs
+first (about 0.5 s). Command: `dotnet test tests/Cna.Core.Tests --configuration Release --no-build --filter "FullyQualifiedName~CampaignStageThreeFirstSideTests" --report-xunit-xml --results-directory <local-dir>`.
+`PendingFromCursorSpikeTests` gains no rows; its subtype count and Stage 3 first-side occurrence row were updated in place.

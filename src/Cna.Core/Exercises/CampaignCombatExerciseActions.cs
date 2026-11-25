@@ -133,6 +133,8 @@ internal static class CampaignCombatExerciseActions
             // The second side's own assault runtime is classified by SecondPlayer below.
             || (session.CurrentRepeatAssault is not null && session.CurrentSecondAssault is null)
             || session.CurrentPostRepeat is not null
+            // Stage 3 Combat is not wired (S3-4); every field read below is Stage 1.
+            || CampaignExercises.IsStageThreeCombatUnwired(session)
             || session.Context.ArtifactV6 is null)
             return new(Stage.None);
         // 022D: after the first side's Cycle Control Finish, the second player's phase.

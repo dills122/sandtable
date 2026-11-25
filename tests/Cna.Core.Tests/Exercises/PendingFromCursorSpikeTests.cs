@@ -47,6 +47,8 @@ public sealed class PendingFromCursorSpikeTests
             [(1, LandActorRole.SecondActingSide)] = new("Second", TailOwner.InsideAssault, false),
             [(2, LandActorRole.FirstActingSide)] = new("StageEntry", TailOwner.InsideAssault, true),
             [(2, LandActorRole.SecondActingSide)] = new("StageEntrySecond", TailOwner.InsideAssault, true),
+            // S3-1..S3-3: only Reserve/Move/MovementCompletion/Breakdown exist so far (see Derive).
+            [(3, LandActorRole.FirstActingSide)] = new("ThirdStage", TailOwner.InsideAssault, true),
         };
 
         // Stage-2 preamble: catalog phase/segment -> subtype name. The names are
@@ -104,6 +106,10 @@ public sealed class PendingFromCursorSpikeTests
             {
                 if (!Occurrences.TryGetValue((done.OperationStage, done.ActorRole), out var occ)) return null;
                 if (MechanicOf(done) is not { } mech) return null;
+                // Stage 3's own Combat/Truck/Post-Combat subtypes arrive with S3-4+; until then
+                // those catalog positions have no PendingDecision to derive.
+                if (done.OperationStage == 3 && mech is Mech.CombatSelection or Mech.Combat or Mech.Truck or Mech.PostCombat)
+                    return null;
                 if (occ.Prefix is null) // legacy: only the #394-era tail arms exist
                     return mech switch { Mech.Truck => "TruckConvoyPassPending", Mech.PostCombat => "PostCombatPassPending", _ => null };
                 return mech switch
@@ -175,7 +181,7 @@ public sealed class PendingFromCursorSpikeTests
     {
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
             .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(35, subtypes.Count); // 29 + 6 Stage 3 preamble (#570); a new arm without a table row fails here
+        Assert.Equal(39, subtypes.Count); // 29 + 6 Stage 3 preamble (#570) + 4 Stage 3 first side (S3-1..3); a new arm without a table row fails here
 
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
         var reachable = turn.SelectMany(p => new[] { LastEvent.CompletedPosition, LastEvent.MoveWithinPosition }
@@ -194,13 +200,14 @@ public sealed class PendingFromCursorSpikeTests
         var ambiguous = turn.Where(p => Enum.GetValues<LastEvent>()
                 .Select(e => PendingFromCursor.Derive(turn, p.PositionId, e)).Where(x => x is not null).Distinct().Count() > 1)
             .Select(p => p.PositionId).ToList();
-        // Exactly the three Movement positions that can be reached by Reserve-completion
+        // Exactly the four Movement positions that can be reached by Reserve-completion
         // OR Move (stage 1 first side is legacy and has no Move arm).
         Assert.Equal(
         [
             "land.position.operation-1.second-player.movement-and-combat.movement",
             "land.position.operation-2.first-player.movement-and-combat.movement",
             "land.position.operation-2.second-player.movement-and-combat.movement",
+            "land.position.operation-3.first-player.movement-and-combat.movement",
         ], ambiguous);
     }
 
