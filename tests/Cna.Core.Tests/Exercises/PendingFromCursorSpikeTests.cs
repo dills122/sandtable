@@ -4,6 +4,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 using Xunit;
@@ -50,14 +51,20 @@ public sealed class PendingFromCursorSpikeTests
 
         // Stage-2 preamble: catalog phase/segment -> subtype name. The names are
         // irregular ("StageEntryWeather" vs "NoObligation*"), so they are table data.
-        private static readonly Dictionary<(string Phase, string? Segment), string> PreambleNames = new()
+        private static readonly Dictionary<(int Stage, string Phase, string? Segment), string> PreambleNames = new()
         {
-            [(LandPhaseIds.InitiativeDeclaration, null)] = "InitiativeDeclarationPending",
-            [(LandPhaseIds.WeatherDetermination, null)] = "StageEntryWeatherPending",
-            [(LandPhaseIds.Organization, null)] = "NoObligationOrganizationPending",
-            [(LandPhaseIds.NavalConvoyArrival, null)] = "NoObligationNavalConvoyArrivalPending",
-            [(LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "NoObligationFleetAssignmentPending",
-            [(LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "NoObligationFleetRepairPending",
+            [(3, LandPhaseIds.InitiativeDeclaration, null)] = "ThirdStageInitiativeDeclarationPending",
+            [(3, LandPhaseIds.WeatherDetermination, null)] = "ThirdStageWeatherPending",
+            [(3, LandPhaseIds.Organization, null)] = "ThirdStageNoObligationOrganizationPending",
+            [(3, LandPhaseIds.NavalConvoyArrival, null)] = "ThirdStageNoObligationNavalConvoyArrivalPending",
+            [(3, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "ThirdStageNoObligationFleetAssignmentPending",
+            [(3, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "ThirdStageNoObligationFleetRepairPending",
+            [(2, LandPhaseIds.InitiativeDeclaration, null)] = "InitiativeDeclarationPending",
+            [(2, LandPhaseIds.WeatherDetermination, null)] = "StageEntryWeatherPending",
+            [(2, LandPhaseIds.Organization, null)] = "NoObligationOrganizationPending",
+            [(2, LandPhaseIds.NavalConvoyArrival, null)] = "NoObligationNavalConvoyArrivalPending",
+            [(2, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment)] = "NoObligationFleetAssignmentPending",
+            [(2, LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair)] = "NoObligationFleetRepairPending",
         };
 
         private enum Mech { Reserve, MovementCompletion, Breakdown, CombatSelection, Combat, Truck, PostCombat }
@@ -110,9 +117,9 @@ public sealed class PendingFromCursorSpikeTests
                 };
             }
 
-            return Occurrences.TryGetValue((done.OperationStage, LandActorRole.FirstActingSide), out var pre)
-                && pre.HasPreamble
-                && PreambleNames.TryGetValue((done.PhaseId, done.SegmentId), out var name) ? name : null;
+            // Stage 3's preamble is retained (#570) but its side occurrences are not built
+            // yet, so it has no Occurrences row; only the preamble name table applies.
+            return PreambleNames.TryGetValue((done.OperationStage, done.PhaseId, done.SegmentId), out var name) ? name : null;
         }
     }
 
@@ -168,7 +175,7 @@ public sealed class PendingFromCursorSpikeTests
     {
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
             .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(29, subtypes.Count);
+        Assert.Equal(35, subtypes.Count); // 29 + 6 Stage 3 preamble (#570); a new arm without a table row fails here
 
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
         var reachable = turn.SelectMany(p => new[] { LastEvent.CompletedPosition, LastEvent.MoveWithinPosition }
@@ -246,6 +253,31 @@ public sealed class PendingFromCursorSpikeTests
 
         session = CloseOutStageEntrySide(session, holderAud, holderEl, isSecondSide: false);
         session = CloseOutStageEntrySide(session, otherAud, otherEl, isSecondSide: true);
+
+        // Stage 3 preamble (retained by #570), same construction as
+        // CampaignStageThreeEntryVerificationTests.
+        var terminal = session.CurrentStageEntrySecondAssault!.PostCombatPasses[^1];
+        var declared3 = CampaignNativeInitiativeDeclarationV49.Create(terminal, holder, actFirst: false, gameTurn, terminal.StateVersion);
+        session = session.WithThirdStageInitiativeDeclaration(declared3, session.CurrentContacts.AdvanceInitiativeDeclaration(declared3));
+        Rec("op3.initiative-declaration", session);
+        var initialRandom = session.CurrentSnapshot.RandomState;
+        var random = new RandomStreamState(initialRandom.ContractVersion, initialRandom.AlgorithmId,
+            initialRandom.Seed, weather.ResultRandomCursor);
+        var weather3 = CampaignNativeWeatherDeterminationV50.Create(declared3, random, gameTurn, session.CurrentContacts.AuthorityVersion);
+        session = session.WithThirdStageWeather(weather3, session.CurrentContacts.AdvanceWeatherDetermination(weather3));
+        Rec("op3.weather", session);
+        var org3 = CampaignNativeNoObligationOrganizationV51.Create(weather3, weather3.StateVersion);
+        session = session.WithThirdStageNoObligationOrganization(org3, session.CurrentContacts.AdvanceNoObligationOrganization(org3));
+        Rec("op3.organization", session);
+        var arrival3 = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(org3, session.Context, org3.StateVersion);
+        session = session.WithThirdStageNoObligationNavalConvoyArrival(arrival3, session.CurrentContacts.AdvanceNoObligationNavalConvoyArrival(arrival3));
+        Rec("op3.naval-convoy-arrival", session);
+        var assign3 = CampaignNativeNoObligationFleetAssignmentV53.Create(arrival3, arrival3.StateVersion);
+        session = session.WithThirdStageNoObligationFleetAssignment(assign3, session.CurrentContacts.AdvanceNoObligationFleetAssignment(assign3));
+        Rec("op3.fleet-assignment", session);
+        var repair3 = CampaignNativeNoObligationFleetRepairV54.Create(assign3, assign3.StateVersion);
+        session = session.WithThirdStageNoObligationFleetRepair(repair3, session.CurrentContacts.AdvanceNoObligationFleetRepair(repair3));
+        Rec("op3.fleet-repair", session);
     }
 
 
