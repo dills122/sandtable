@@ -1,0 +1,85 @@
+<ng-template #factList let-facts>
+  <dl class="facts">
+    @for (fact of facts; track $index) {
+      <div>
+        <dt>{{ fact.label }}</dt>
+        <dd>
+          @if (fact.value !== undefined) {
+            {{ fact.value }}
+          } @else if (fact.items) {
+            <ul>
+              @for (item of fact.items; track $index) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          } @else if (fact.children) {
+            <ng-container
+              [ngTemplateOutlet]="factList"
+              [ngTemplateOutletContext]="{ $implicit: fact.children }"
+            />
+          }
+        </dd>
+      </div>
+    }
+  </dl>
+</ng-template>
+
+<fa-panel [heading]="heading()" [eyebrow]="eyebrow()">
+  @if (hasFacts(description().facts)) {
+    <section [attr.aria-labelledby]="uid + '-facts'" class="state">
+      <h3 [id]="uid + '-facts'" class="fa-eyebrow">Visible to your seat</h3>
+      <ng-container
+        [ngTemplateOutlet]="factList"
+        [ngTemplateOutletContext]="{ $implicit: description().facts }"
+      />
+      @if (description().truncated) {
+        <p class="fa-muted">Some nested detail is not shown.</p>
+      }
+    </section>
+  }
+  <form (submit)="submit($event)" [attr.aria-busy]="busy()">
+    <fieldset [disabled]="busy() || accepted()">
+      <legend>Legal choices</legend>
+      @if (description().choices.length === 0) {
+        <p class="fa-muted">No legal choice is open for your seat.</p>
+      }
+      @for (choice of description().choices; track choice.ref; let i = $index) {
+        <div class="choice">
+          <input
+            type="radio"
+            [id]="uid + '-c' + i"
+            [name]="uid"
+            [value]="choice.ref"
+            [checked]="selected() === choice.ref"
+            [attr.aria-describedby]="choice.details.length > 0 ? uid + '-d' + i : null"
+            (change)="select(choice.ref)"
+          />
+          <label [for]="uid + '-c' + i" class="choice-label">{{ choice.label }}</label>
+          @if (choice.details.length > 0) {
+            <div class="choice-details" [id]="uid + '-d' + i">
+              <ng-container
+                [ngTemplateOutlet]="factList"
+                [ngTemplateOutletContext]="{ $implicit: choice.details }"
+              />
+            </div>
+          }
+        </div>
+      }
+      @if (!description().aligned) {
+        <p class="fa-muted">Choices are listed in the order the host offered them.</p>
+      }
+    </fieldset>
+    <div class="actions">
+      <button type="submit" [disabled]="!canSubmit() || accepted()">Submit choice</button>
+    </div>
+    <div class="result" role="status" aria-live="polite">
+      @if (accepted()) {
+        <fa-status tone="success">Choice accepted.</fa-status>
+      } @else if (rejectedText()) {
+        <fa-status tone="warning">{{ rejectedText() }}</fa-status>
+      } @else if (error()) {
+        <fa-status tone="danger">{{ error() }}</fa-status>
+      }
+    </div>
+  </form>
+</fa-panel>
