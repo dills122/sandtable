@@ -407,12 +407,18 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', orleans_job)
         self.assertIn('python3 .github/scripts/verify_orleans_results.py', orleans_job)
         self.assertNotIn('--filter-not-trait', orleans_job)
-        self.assertNotIn('continue-on-error', orleans_job)
+        # The orleans test-running step itself must never silently swallow a
+        # stall/failure; only the separate, additive Trunk.io upload step
+        # (after the real result is known) is allowed continue-on-error.
+        orleans_test_step = orleans_job.split('- name: Run and verify Orleans host rows', 1)[1].split('- name: Upload Test Results to Trunk.io', 1)[0]
+        self.assertNotIn('continue-on-error', orleans_test_step)
+        self.assertIn('- name: Upload Test Results to Trunk.io', orleans_job)
+        self.assertIn('continue-on-error: true', orleans_job)
         self.assertNotIn('\n  p01-', text)
         self.assertIn('--exclude-shards "$EXCLUDE_SHARDS"', text)
         self.assertIn('EXCLUDE_SHARDS: ${{ needs.prepare.outputs.excluded_shards }}', text)
         self.assertNotIn('Verify formatting', text.split('  prepare:', 1)[1].split('  tests:', 1)[0])
-        format_job = text.split('  format:', 1)[1].split('  prepare:', 1)[0]
+        format_job = text.split('  format:', 1)[1].split('  architecture-tests:', 1)[0]
         self.assertIn('dotnet format Sandtable.slnx --verify-no-changes --no-restore', format_job)
         self.assertNotIn('continue-on-error', format_job)
         for mode in ('discover', 'execute', 'verify'):

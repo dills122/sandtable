@@ -33,5 +33,6 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.21.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.17.0" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.3" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.JUnitReport" Version="1.0.0-alpha.26561.10" />
   </ItemGroup>
 </Project>

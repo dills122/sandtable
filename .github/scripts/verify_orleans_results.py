@@ -13,7 +13,12 @@ REQUIRED = {
 
 
 def main(directory):
-    reports = list(Path(directory).glob('*.xml'))
+    # Only the native xUnit.net v3 report (*.xunit.xml) carries the assembly-level
+    # pass/fail counters this check verifies. A JUnit-schema report may also be
+    # present in the same directory (--report-junit, additive, for Trunk.io
+    # upload) -- it is a different schema entirely and is deliberately excluded
+    # from this glob rather than parsed here.
+    reports = list(Path(directory).glob('*.xunit.xml'))
     if len(reports) != 1:
         raise ValueError(f'Expected one Orleans test XML, found {len(reports)}')
     assembly = ET.parse(reports[0]).getroot().find('assembly')

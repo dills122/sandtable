@@ -77,7 +77,8 @@ def run_one(name, command, directory):
     results = directory / name / 'results'
     log = directory / name / 'log.txt'
     log.parent.mkdir(parents=True, exist_ok=True)
-    full_command = command + ['--report-xunit-xml', '--results-directory', str(results)]
+    full_command = command + ['--report-xunit-xml', '--report-junit', '--report-junit-filename',
+                               'results.junit.xml', '--results-directory', str(results)]
     started = time.monotonic()
     with log.open('w') as output:
         result = subprocess.run(full_command, cwd=ROOT, stdout=output, stderr=subprocess.STDOUT)
