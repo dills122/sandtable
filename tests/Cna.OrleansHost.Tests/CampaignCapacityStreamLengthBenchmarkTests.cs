@@ -105,7 +105,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                         using var copy = connection.CreateCommand();
                         copy.CommandText = """
                             INSERT INTO accepted_steps SELECT campaign_id,$next,action_kind,acting_element_id,
-                              owner_public_ref,seat_epoch,owner_revision,canonical_command,canonical_event,
+                              owner_public_ref,seat_epoch,owner_revision,owner_side,canonical_command,canonical_event,
                               canonical_receipt,snapshot_checkpoint,canonical_contacts,$prior,$hash
                             FROM accepted_steps WHERE campaign_id=$id AND sequence=$head;
                             UPDATE campaigns SET head_sequence=$next, head_hash=$hash WHERE campaign_id=$id;
