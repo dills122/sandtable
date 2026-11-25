@@ -13,8 +13,10 @@ This is not a simplified game using the same theme. The rules target is the orig
 edition, corrected by the September 1979 errata. Any place that required a judgment call is
 recorded explicitly rather than quietly decided.
 
-The original game's scans, rules text, maps, and counter art are not part of this repository. They
-stay with the published game.
+The original game's box art, logos, counter art, scans, and page images are not part of this
+repository. They stay with the published game. Transcribed charts, tables, rosters, and a map
+derived from third-party data are part of this repository; see
+[IP and non-affiliation](#ip-and-non-affiliation).
 
 ## How a game plays
 
@@ -468,35 +470,49 @@ the same license (section 5 of the license).
 
 ### Material not licensed under Apache-2.0
 
-The Apache-2.0 license covers the code only. The following paths hold material derived from the
-published game's rules, charts, scenarios, or map, or internal working notes. They are **not**
-licensed under Apache-2.0. All rights are reserved on them until the project owner has reviewed
-them; no permission to copy, redistribute, or reuse them is granted. This is a provisional,
-conservative position, not legal advice.
+The Apache-2.0 license covers original Sandtable code and original engineering writing. It does
+**not** cover material that reproduces or closely restates the published game's charts, tables,
+rosters, scenario setups, or map, nor related research notes. Rights-holder review of that
+source-derived data has not been completed, so no license is granted to view, copy, redistribute, or
+reuse it, and being publicly visible in this repository does not change that. This is a provisional,
+conservative position, not legal advice, and is subject to owner and counsel review.
 
-- `src/Cna.Core/Content/Cna1979GrazianiSourceFacts.cs`,
-  `src/Cna.Core/Content/Cna1979GrazianiCounterFacts.cs`,
-  `src/Cna.Core/Content/Cna1979GrazianiCairoSourceExcerpt.cs`
-- `src/Cna.Core/Content/Cna1979HistoricalMap.cs` and `src/Cna.Core/Content/HistoricalMap/`
-- `src/Cna.Core/Content/ContentSource*.cs` (the source-derived content pack builders)
-- `src/Cna.Core/Content/Cna1979BreakdownContentCatalog.cs`,
-  `src/Cna.Core/Content/Cna1979CombatContentCatalog.cs`,
-  `src/Cna.Core/Content/Cna1979ReactionContentCatalog.cs`
-- `docs/` (including the specifications and `docs/specs/fixtures/` evidence bundles)
-- `.planning/`
+Not licensed under Apache-2.0 (provisional):
 
-Everything else in the repository is covered by Apache-2.0, including the synthetic rules-lab
-fixtures (`src/Cna.Core/Content/Fixtures/`) and the exercise manifests in `scenarios/`.
-Third-party fonts and icons under `src/Cna.Maproom/projects/field-atlas/licenses/` keep their own
-licenses.
+- Rules tables in `src/Cna.Core/Rules/`: `Cna1979CombatAdjudication.cs`, `Cna1979Weather.cs`,
+  `Cna1979Breakdown.cs`, `Cna1979Movement.cs`, `Cna1979InitiativeRatings.cs`,
+  `Cna1979HistoricalTerrainEffects.cs`
+- Rosters and setup facts in `src/Cna.Core/Content/`: `Cna1979GrazianiSourceFacts.cs`,
+  `Cna1979GrazianiCounterFacts.cs`, `Cna1979GrazianiCairoSourceExcerpt.cs`
+- Map: `src/Cna.Core/Content/HistoricalMap/` (data) and `Cna1979HistoricalMap.cs`
+- `src/Cna.Core/Campaigns/CampaignSource*.cs` (source-derived campaign setups; conservative glob)
+- Tests and fixtures that embed the above: `tests/Cna.Core.Tests/Rules/Fixtures/*.golden.json` and
+  test files that reference `ContentOriginKind.SourceDerived`, `spi-1979-` source ids, or
+  `Cna1979GrazianiSourceFacts`
+- Source fixtures and evidence: `docs/research/fixtures/`, `docs/specs/fixtures/` (including the
+  `combat-evidence-*.zip` bundles and `combat-content-v7.*.json`)
+- Source-derived research and notes: `docs/work/plans/*graziani*`,
+  `docs/work/plans/verify-graziani-*.py`, `docs/research/*source*`,
+  `docs/research/combat-source-freeze-v1.md`, `docs/specs/graziani-*.md`,
+  `docs/specs/weather-determination-v1.md`, `docs/specs/combat-weather-v1.md`
+
+Apache-2.0 applies to everything else, including the remainder of `docs/` (design, contracts,
+roadmap, runbooks, and CI notes), `.planning/` (internal working notes with no game content),
+`scenarios/`, the synthetic rules-lab fixtures in `src/Cna.Core/Content/Fixtures/`, and the
+`*ContentCatalog.cs` loaders. Third-party fonts and icons (Newsreader, IBM Plex Sans, Lucide) are
+distributed under their own licenses; texts are in `src/Cna.Maproom/projects/field-atlas/licenses/`.
 
 ## IP and non-affiliation
 
 Sandtable is an independent, unofficial implementation. It is not affiliated with, endorsed by, or
-sponsored by SPI, the Avalon Hill/Hasbro lineage, or any rights holder of *The Campaign for North
-Africa*. The repository contains no original box art, logos, counter art, scans, or rules text;
-rules are cited by section number only. Game and company names are used descriptively and belong to
-their respective owners.
+sponsored by SPI or any current or former rights holder of *The Campaign for North Africa*. Names
+are used only to identify the game that Sandtable implements.
+
+The repository contains no original box art, logos, counter art, map or chart images, scans, or
+rulebook pages. It does contain transcribed charts and tables, unit rosters, and a map derived from
+third-party data, plus notes that paraphrase rules with section citations. Rights-holder review of
+that source-derived data has not been completed; see the carve-out above.
 
 Short form for the site footer: *Independent, unofficial project. Not affiliated with or endorsed by
-SPI or any rights holder of The Campaign for North Africa. No original art or rules text included.*
+SPI or any rights holder of The Campaign for North Africa. No original art, scans, or rulebook pages
+included.*
