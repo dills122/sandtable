@@ -84,7 +84,7 @@ internal static class CampaignReactingElementMovedV2Factory
         if (Cna1979Combat.FindClassification(facts.CombatClassificationId)?.Kind != ZocCombatClassificationKind.CombatUnit
             || content.SideId != CampaignSnapshotSerializer.FormatSide(prior.ReactionWindow!.ReactingSide)
             || element.ReserveStatus != CampaignElementReserveStatus.None
-            || element.OperationalState.CohesionLevel <= -26
+            || element.OperationalState.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
             || (flow.ReactorRoute is { } route && (route.ElementId != id || route.RepresentationId != representation.RepresentationId))
             || (flow.ReactorRoute is null && element.CurrentLocationId != opportunity.ReactingRepresentation.CurrentLocationId))
             return [];

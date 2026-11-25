@@ -328,7 +328,7 @@ internal sealed record ElementMoved : CampaignEvent
             || OperationStage != 1
             || !Enum.IsDefined(ActingSide)
             || OriginLocationId == DestinationLocationId
-            || CohesionBefore is <= -26 or > 10
+            || CohesionBefore is <= Cna1979Zoc.MinimumExclusiveCohesion or > 10
             || CohesionBefore != CohesionAfter
             || CapabilityPointsExpendedBefore + Cost.TotalCost
                 != CapabilityPointsExpendedAfter
