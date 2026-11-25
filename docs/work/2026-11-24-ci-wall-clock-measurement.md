@@ -82,7 +82,20 @@ Test-shard `Run complete-row partition` medians (post-retry): fast-01 134 s, fas
 | #586 | NuGet package cache in format/architecture-tests/prepare/tests | about 5-10 s per job, 10-20 s on critical path (small) |
 | #571 (other worker) | `long-01` capped at 2 lanes | fixes main being permanently red; not touched here |
 
-Hosted before/after numbers are in the PR comments.
+### Hosted result for #584 (run 45524094531, commit a27cc2c2)
+
+`verify` passed and proved 4 shards, 335 methods, 421 rows (same set as before: discovered rows minus the 5 documented exclusions).
+
+| Orleans shard | Job time | Test step | Build+restore | Rows |
+| --- | --- | --- | --- | --- |
+| 1 | 10.9 min | 9.1 min | 1.5 min | 167 |
+| 2 | 7.6 min | 6.3 min | 1.0 min | 92 |
+| 3 | 7.1 min | 5.7 min | 1.1 min | 81 |
+| 4 | 8.0 min | 6.5 min | 1.3 min | 80 |
+
+Orleans critical path went from 36.0 min (2 x 18 m timeout, 0 rows run) to 10.9 min (all 421 rows run and verified); the other jobs still finish in about 8-9 min, so the PR is now bounded by Orleans shard 1 at roughly 11 min of job time. Wall-clock of this particular run was 39.5 min, but that is runner queueing, not job time: other workers' runs were consuming the shared concurrency pool and several jobs sat queued for 5-20 min (for example `tests (fast-03)` and `tests (r02-1)` were created at 01:26:48 and started at 01:47:18 and 01:46:41). A number measured on a quiet pool is needed for the final comparison; do not read the 39.5 min as a regression.
+
+Shard 1 ran about 40% longer than the others although the weights file balanced all four at 330 s. The weights come from one prior serial run; heavy rows run slower once Postgres is shared with fewer concurrent rows or the first-in-process rows pay warm-up. Refreshing `orleans-weights.json` from these shard XMLs should bring shards to about 6.5 min each (about 2-3 min off the critical path); that is a follow-up, not part of #584.
 
 ## Recommendations needing an owner decision (not done)
 
