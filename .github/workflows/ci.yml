@@ -65,6 +65,14 @@ jobs:
     needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # Must match `prepare`'s NUGET_PACKAGES so the shared build-output artifact's
+      # obj/ restore assets (which reference packages by this path) resolve here too --
+      # a fresh runner's default ~/.nuget/packages is otherwise empty, and MSBuild needs
+      # package-provided targets/props at evaluation time even with --no-build --no-restore
+      # (confirmed locally: without this, `dotnet test --no-build --no-restore` fails with
+      # "No test projects were found" even though artifacts/bin and artifacts/obj are present).
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget_packages
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -94,6 +102,11 @@ jobs:
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # Redirect the global NuGet package cache into the workspace so it can be
+      # shipped to downstream jobs alongside the compiled build output -- see the
+      # matching comment on architecture-tests/tests/orleans's NUGET_PACKAGES.
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget_packages
     outputs:
       shards: ${{ steps.scope.outputs.shards }}
       excluded_shards: ${{ steps.scope.outputs.excluded_shards }}
@@ -133,12 +146,20 @@ jobs:
       - name: Build
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/build-{}.binlog'
       - name: Retain shared solution build for downstream jobs
+        # Three paths on purpose, not two: with only artifacts/bin + artifacts/obj,
+        # upload-artifact's "least common ancestor" root collapses to .../artifacts
+        # itself, so the zip's entries come out as bin/... and obj/... -- stripped
+        # of the artifacts/ prefix downstream jobs actually read from (confirmed
+        # against a real run). Including .nuget_packages, which lives outside
+        # artifacts/, forces the ancestor up to the workspace root so artifacts/bin,
+        # artifacts/obj and .nuget_packages all land at their real relative paths.
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: build-output-${{ github.sha }}-${{ github.run_attempt }}
           path: |
             artifacts/bin
             artifacts/obj
+            .nuget_packages
           if-no-files-found: error
           retention-days: 1
       - name: Check fail-closed coverage helper
@@ -169,6 +190,9 @@ jobs:
     needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # See the matching comment on architecture-tests's NUGET_PACKAGES.
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget_packages
     strategy:
       fail-fast: false
       max-parallel: 17
@@ -222,6 +246,9 @@ jobs:
     needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      # See the matching comment on architecture-tests's NUGET_PACKAGES.
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget_packages
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
