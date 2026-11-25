@@ -2203,6 +2203,30 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 TestContext.Current.CancellationToken));
         }
 
+        // Read-only "what is open for my seat" (POST /openings/open, issue #621).
+        internal async Task<(HttpStatusCode Status, string Body)> OpenForSeatResponse(
+            CampaignSeatCredential credential, bool sameOrigin = true)
+        {
+            var body = JsonSerializer.Serialize(new
+            {
+                contractVersion = 2,
+                credential = new
+                {
+                    campaignId = credential.CampaignId,
+                    audience = credential.Audience == CampaignActionAudience.Axis ? "axis" : "commonwealth",
+                    epoch = credential.Epoch,
+                    secret = credential.Secret,
+                    expiresUnixMs = credential.ExpiresUnixMs,
+                },
+            });
+            using var raw = sameOrigin ? null : new HttpClient { BaseAddress = client.BaseAddress };
+            using var response = await (raw ?? client).PostAsync($"/api/v2/campaigns/{campaignId}/openings/open",
+                new StringContent(body, Encoding.UTF8, "application/json"),
+                TestContext.Current.CancellationToken);
+            return (response.StatusCode, await response.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+        }
+
         public async ValueTask DisposeAsync()
         {
             await app.StopAsync(TestContext.Current.CancellationToken);
