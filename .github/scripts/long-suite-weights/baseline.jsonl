@@ -195,7 +195,7 @@
 {"class":"Cna.Core.Tests.Campaigns.GrazianiHorseSetupTests","parts":1}
 {"class":"Cna.Core.Tests.Campaigns.GrazianiPregameSupplyTests","parts":1}
 {"class":"Cna.Core.Tests.Campaigns.GrazianiRetainedFormationTests","parts":1}
-{"class":"Cna.Core.Tests.Campaigns.GrazianiSourceAuthorityTests","parts":4}
+{"class":"Cna.Core.Tests.Campaigns.GrazianiSourceAuthorityTests","parts":12}
 {"class":"Cna.Core.Tests.Campaigns.GrazianiSourceAutoblindaSetupTests","parts":1}
 {"class":"Cna.Core.Tests.Campaigns.GrazianiSourceAxisGarrisonForcesTests","parts":1}
 {"class":"Cna.Core.Tests.Campaigns.GrazianiSourceAxisPriorityMotorizationTests","parts":1}
