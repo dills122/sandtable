@@ -7,6 +7,7 @@
     <InternalsVisibleTo Include="Cna.OrleansHost.Tests" />
     <InternalsVisibleTo Include="Cna.OrleansHost.FoundationChild" />
     <InternalsVisibleTo Include="Cna.LocalCampaignSimulator" />
+    <InternalsVisibleTo Include="Cna.LoadHarness" />
   </ItemGroup>
 
   <ItemGroup>

@@ -89,6 +89,7 @@ outside any UI.
 | `src/Cna.Game.Contracts` | The typed HTTP contract between Maproom and the host, including a generated client. |
 | `src/Cna.Intelligence.Gateway` / `Cna.Intelligence.Contracts` | The gRPC boundary for any future model-backed commander. |
 | `src/Cna.ExerciseRunner` | CLI for running and comparing deterministic simulation scenarios without a UI. |
+| `tools/Cna.LoadHarness` | [Development-only in-process Host load harness](tools/Cna.LoadHarness/README.md); standalone build outside the solution. |
 | `src/Cna.DecisionWorker`, `Cna.ServiceDefaults` | Supporting services for the Aspire stack. |
 | `docs/` | Specs, design docs, research notes, and the current roadmap. |
 

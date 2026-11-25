@@ -1,0 +1,31 @@
+name: Load harness
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'tools/Cna.LoadHarness/**'
+      - '.github/workflows/load-harness.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/Cna.LoadHarness/**'
+      - '.github/workflows/load-harness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: load-harness-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - run: dotnet build tools/Cna.LoadHarness/Cna.LoadHarness.csproj -c Release
+      - run: python3 tools/Cna.LoadHarness/test_harness.py
