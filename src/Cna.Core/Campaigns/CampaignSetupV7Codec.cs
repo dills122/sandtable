@@ -22,7 +22,7 @@ internal sealed record CampaignSetupSnapshotV7
         ArgumentNullException.ThrowIfNull(stageEntry);
         ArgumentNullException.ThrowIfNull(combatInitialization);
         SetupId = ContentContractGuards.RequireStableId(setupId, nameof(setupId));
-        if (initialGameTurn is < 1 or > 111 || initialInitiative is not PredeterminedInitiative ||
+        if (initialGameTurn is < 1 or > Cna1979Weather.MaxGameTurn || initialInitiative is not PredeterminedInitiative ||
             artifact.Definition.CapabilityProfileId != ContentPackV7Definition.SupportedCapabilityProfileId ||
             artifact.Identity.RulesetId != Cna1979Ruleset.RulesetId ||
             !artifact.Definition.Scenarios.Contains(scenario) || scenario.Start.GameTurn != initialGameTurn ||
