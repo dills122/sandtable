@@ -1370,6 +1370,37 @@ public sealed class GrazianiPregameJournalTests
                 compactQuery.Parameters.AddWithValue("$seq", legacyHeadSequence);
                 Assert.Equal(finalCheckpointBytes, (byte[])compactQuery.ExecuteScalar()!);
             }
+            // #580: the eight source-pack steps run after the pinned compact-checkpoint assertions above
+            // (they add checkpoint layers 64-67 on top), still before any owner finalizes.
+            // #580: ordering is enforced; later steps are unavailable until their predecessor ran.
+            Assert.Throws<InvalidOperationException>(() => journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.Throws<InvalidOperationException>(() => journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<InvalidOperationException>(() => journal.ActivateSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.Throws<InvalidOperationException>(() => journal.ActivateSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceTobrukBardiaGarrison(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceTobrukBardiaGarrison(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceBardiaGarrisonRemainder(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceBardiaGarrisonRemainder(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceTripoliTankRegiment(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceTripoliTankRegiment(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceTripoliTankRegiment(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.AdmitSourceCwAttachedArtillery(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.AdmitSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.False(journal.AdmitSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.Throws<UnauthorizedAccessException>(() => journal.ActivateSourceCwAttachedArtillery(request.CampaignId, new string('0', 64)));
+            Assert.True(journal.ActivateSourceCwAttachedArtillery(request.CampaignId, Secret));
+            Assert.False(journal.ActivateSourceCwAttachedArtillery(request.CampaignId, Secret));
             using var corruptConnection = new SqliteConnection($"Data Source={path};Mode=ReadWrite;Pooling=False");
             corruptConnection.Open();
             void CheckCorruptRecordHash(long sequence)

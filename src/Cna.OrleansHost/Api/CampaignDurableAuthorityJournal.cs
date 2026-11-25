@@ -969,6 +969,30 @@ internal sealed partial class CampaignDurableAuthorityJournal
     internal bool AdmitSourceGiarabubMotorPlacementPolicy(string campaignId, string operatorSecret) =>
         ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind);
 
+    internal bool AdmitSourceTobrukBardiaGarrison(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind);
+
+    internal bool ActivateSourceTobrukBardiaGarrison(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind);
+
+    internal bool AdmitSourceBardiaGarrisonRemainder(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind);
+
+    internal bool ActivateSourceBardiaGarrisonRemainder(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind);
+
+    internal bool AdmitSourceTripoliTankRegiment(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind);
+
+    internal bool ActivateSourceTripoliTankRegiment(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind);
+
+    internal bool AdmitSourceCwAttachedArtillery(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind);
+
+    internal bool ActivateSourceCwAttachedArtillery(string campaignId, string operatorSecret) =>
+        ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind);
+
     internal bool AnnounceSourceGt1MultiLanes(string campaignId, string operatorSecret) =>
         ApplySourceTurnSystemStep(campaignId, operatorSecret, CampaignHostAcceptedStep.SourceGt1MultiLanesKind);
 
@@ -999,6 +1023,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => CampaignExercises.IsSourceGiarabubMotorMachineGunActivated(head.Session),
             CampaignHostAcceptedStep.SourceCwFrontlineKind => CampaignExercises.IsSourceCwFrontlineActivated(head.Session),
             CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignExercises.IsSourceGiarabubMotorPlacementPolicyAdmitted(head.Session),
+            CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind => CampaignExercises.IsSourceTobrukBardiaGarrisonAdmitted(head.Session),
+            CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind => CampaignExercises.IsSourceTobrukBardiaGarrisonActivated(head.Session),
+            CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind => CampaignExercises.IsSourceBardiaGarrisonRemainderAdmitted(head.Session),
+            CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind => CampaignExercises.IsSourceBardiaGarrisonRemainderActivated(head.Session),
+            CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind => CampaignExercises.IsSourceTripoliTankRegimentAdmitted(head.Session),
+            CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind => CampaignExercises.IsSourceTripoliTankRegimentActivated(head.Session),
+            CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind => CampaignExercises.IsSourceCwAttachedArtilleryAdmitted(head.Session),
+            CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind => CampaignExercises.IsSourceCwAttachedArtilleryActivated(head.Session),
             CampaignHostAcceptedStep.SourceGt1MultiLanesKind => CampaignExercises.IsSourceGt1MultiLanesAnnounced(head.Session),
             _ => throw new ArgumentException("Unknown source turn step.", nameof(kind)),
         };
@@ -1022,6 +1054,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAcceptedStep.SourceGiarabubMotorMachineGunKind => CampaignHostAdapter.ActivateSourceGiarabubMotorMachineGun(head.Session),
             CampaignHostAcceptedStep.SourceCwFrontlineKind => CampaignHostAdapter.ActivateSourceCwFrontline(head.Session),
             CampaignHostAcceptedStep.SourceGiarabubMotorPlacementPolicyKind => CampaignExercises.AdmitSourceGiarabubMotorPlacementPolicy(head.Session),
+            CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonAdmissionKind => CampaignExercises.AdmitSourceTobrukBardiaGarrison(head.Session),
+            CampaignHostAcceptedStep.SourceTobrukBardiaGarrisonActivationKind => CampaignExercises.ActivateSourceTobrukBardiaGarrison(head.Session),
+            CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderAdmissionKind => CampaignExercises.AdmitSourceBardiaGarrisonRemainder(head.Session),
+            CampaignHostAcceptedStep.SourceBardiaGarrisonRemainderActivationKind => CampaignExercises.ActivateSourceBardiaGarrisonRemainder(head.Session),
+            CampaignHostAcceptedStep.SourceTripoliTankRegimentAdmissionKind => CampaignExercises.AdmitSourceTripoliTankRegiment(head.Session),
+            CampaignHostAcceptedStep.SourceTripoliTankRegimentActivationKind => CampaignExercises.ActivateSourceTripoliTankRegiment(head.Session),
+            CampaignHostAcceptedStep.SourceCwAttachedArtilleryAdmissionKind => CampaignExercises.AdmitSourceCwAttachedArtillery(head.Session),
+            CampaignHostAcceptedStep.SourceCwAttachedArtilleryActivationKind => CampaignExercises.ActivateSourceCwAttachedArtillery(head.Session),
             CampaignHostAcceptedStep.SourceGt1MultiLanesKind => CampaignHostAdapter.AnnounceSourceGt1MultiLanes(head.Session),
             _ => throw new ArgumentException("Unknown source turn step.", nameof(kind)),
         };
