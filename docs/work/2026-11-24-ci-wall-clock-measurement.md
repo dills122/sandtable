@@ -69,7 +69,7 @@ Test-shard `Run complete-row partition` medians (post-retry): fast-01 134 s, fas
 
 - Queue: median 3-4 s per job. No capacity queueing in the sample above. During this investigation, with several workers' PRs running together, hosted queueing of 5-13 min was observed on #584's own run, so shared concurrency (20 jobs) matters if shard counts grow.
 - Cache hit rate: 0%. No `actions/cache` is used anywhere; restore and build run from scratch in every job.
-- Flaky reruns: 5 of 60 PR runs had `run_attempt` > 1 (up to 4), all in the 2026-11-23 17:23 to 2026-11-24 01:41 window, before the retry change; 7 PR runs failed outright.
+- Flaky reruns: 5 of 60 PR runs had `run_attempt` > 1 (up to 4), all between 2026-11-23 17:23 and 2026-11-24 01:41 UTC, before the retry change; 7 PR runs ended in `failure` (5 before it, 2 after).
 - Runner-minutes per PR run: median 68.5 before the retry change, 85.0 after (+16.5, entirely the second 18 m `orleans` attempt).
 - CodeQL (dynamic): 3.5-8 min per run, runs in parallel, never on the critical path. docs-links: under 1 min.
 - Slowest test classes: only `orleans` has per-test timing in retained artifacts (above). Core shard XML timings are in each shard's artifact but their own history documents (linked above) note that per-test durations overlap and are not safe to use as capacity forecasts.
