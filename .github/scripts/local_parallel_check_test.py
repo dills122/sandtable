@@ -144,8 +144,9 @@ class RunOneTests(unittest.TestCase):
             directory = Path(directory)
             outcome = check.run_one('demo', [sys.executable, '-c', 'import sys; print("hi"); sys.exit(3)'], directory)
             self.assertEqual(3, outcome['exit_code'])
-            self.assertEqual(['--report-xunit-xml', '--results-directory', str(directory / 'demo' / 'results')],
-                              outcome['command'][-3:])
+            self.assertEqual(['--report-xunit-xml', '--report-junit', '--report-junit-filename',
+                              'results.junit.xml', '--results-directory', str(directory / 'demo' / 'results')],
+                              outcome['command'][-6:])
             self.assertIn('hi', Path(outcome['log']).read_text())
 
 

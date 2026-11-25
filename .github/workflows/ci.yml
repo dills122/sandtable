@@ -69,8 +69,17 @@ jobs:
   # and reports as its own check first. Promote it to a required dependency of `verify`
   # once it has run clean in CI for a while.
   architecture-tests:
+    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # Must match `prepare`'s NUGET_PACKAGES so the shared build-output artifact's
+      # obj/ restore assets (which reference packages by this path) resolve here too --
+      # a fresh runner's default ~/.nuget/packages is otherwise empty, and MSBuild needs
+      # package-provided targets/props at evaluation time even with --no-build --no-restore
+      # (confirmed locally: without this, `dotnet test --no-build --no-restore` fails with
+      # "No test projects were found" even though artifacts/bin and artifacts/obj are present).
+      NUGET_PACKAGES: ${{ github.workspace }}/nuget_packages
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -81,19 +90,29 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
-      - name: Cache NuGet packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Download shared solution build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
-      - name: Restore
-        run: dotnet restore tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj '/bl:artifacts/architecture-tests/restore-{}.binlog'
-      - name: Build
-        run: dotnet build tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-restore '/bl:artifacts/architecture-tests/build-{}.binlog'
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: .
+      - name: Restore executable bit lost in the artifact round-trip
+        # actions/upload-artifact and download-artifact zip the content in transit
+        # and don't preserve the Unix execute bit, so the MTP native apphost
+        # (invoked directly, not via `dotnet exec <dll>`) comes back non-executable
+        # (confirmed against a real run: Win32Exception 13 "Permission denied"
+        # starting .../artifacts/bin/Cna.ArchitectureTests/release/Cna.ArchitectureTests).
+        run: chmod -R +x artifacts/bin
       - name: Run architecture fitness tests
-        run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/architecture-tests
+        run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --report-junit --report-junit-filename results.junit.xml --results-directory artifacts/architecture-tests
+      - name: Upload Test Results to Trunk.io
+        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
+        continue-on-error: true  # don't fail this job if the upload fails
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: artifacts/architecture-tests/*.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -106,6 +125,11 @@ jobs:
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # Redirect the global NuGet package cache into the workspace so it can be
+      # shipped to downstream jobs alongside the compiled build output -- see the
+      # matching comment on architecture-tests/tests/orleans's NUGET_PACKAGES.
+      NUGET_PACKAGES: ${{ github.workspace }}/nuget_packages
     outputs:
       shards: ${{ steps.scope.outputs.shards }}
       excluded_shards: ${{ steps.scope.outputs.excluded_shards }}
@@ -120,9 +144,13 @@ jobs:
         with:
           global-json-file: global.json
       - name: Cache NuGet packages
+        # Points at nuget_packages (NUGET_PACKAGES above), not the default
+        # ~/.nuget/packages, so this doubles as this run's within-run share with
+        # architecture-tests/tests/orleans (via the build-output artifact below)
+        # as well as the usual cross-run cache warmth.
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: ~/.nuget/packages
+          path: nuget_packages
           key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
           restore-keys: |
             nuget-${{ runner.os }}-
@@ -151,6 +179,28 @@ jobs:
         run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/restore-{}.binlog'
       - name: Build
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/build-{}.binlog'
+      - name: Retain shared solution build for downstream jobs
+        # Three paths on purpose, not two: with only artifacts/bin + artifacts/obj,
+        # upload-artifact's "least common ancestor" root collapses to .../artifacts
+        # itself, so the zip's entries come out as bin/... and obj/... -- stripped
+        # of the artifacts/ prefix downstream jobs actually read from (confirmed
+        # against a real run). Including nuget_packages, which lives outside
+        # artifacts/, forces the ancestor up to the workspace root so artifacts/bin,
+        # artifacts/obj and nuget_packages all land at their real relative paths.
+        # The NuGet cache folder is deliberately NOT dot-prefixed (not .nuget_packages):
+        # upload-artifact's include-hidden-files defaults to false and silently drops a
+        # dotfile/dotdir root entirely -- confirmed against a real run where a
+        # .nuget_packages path uploaded with byte-for-byte the same artifact size as
+        # when it wasn't listed at all.
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            artifacts/bin
+            artifacts/obj
+            nuget_packages
+          if-no-files-found: error
+          retention-days: 1
       - name: Check fail-closed coverage helper
         run: python3 .github/scripts/test_partition_test.py
       - name: Check exhaustive R02 allocation and process supervision
@@ -180,6 +230,9 @@ jobs:
     needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # See the matching comment on architecture-tests's NUGET_PACKAGES.
+      NUGET_PACKAGES: ${{ github.workspace }}/nuget_packages
     strategy:
       fail-fast: false
       max-parallel: 17
@@ -195,19 +248,16 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
-      - name: Cache NuGet packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', 'Directory.Build.props', 'NuGet.Config') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
       - name: Create evidence directory
         run: mkdir -p artifacts/ci
-      - name: Restore
-        run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/${{ matrix.shard }}-restore-{}.binlog'
-      - name: Build
-        run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/${{ matrix.shard }}-build-{}.binlog'
+      - name: Download shared solution build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: .
+      - name: Restore executable bit lost in the artifact round-trip
+        # See the matching comment on architecture-tests's chmod step.
+        run: chmod -R +x artifacts/bin
       - name: Download current attempt Release row proof
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -219,6 +269,15 @@ jobs:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           TEST_SHARD: ${{ matrix.shard }}
+      - name: Upload Test Results to Trunk.io
+        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
+        continue-on-error: true  # don't fail this job if the upload fails
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: artifacts/local-parallel-check/**/results/*.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain results, process status and timings
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -244,8 +303,12 @@ jobs:
     # complete. Retry-once-on-no-report and the 18m per-attempt cap are preserved inside the script;
     # a failed or report-less run now exits non-zero (the old inline loop reported exit 0 after two
     # timeouts and skipped verification).
+    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      # See the matching comment on architecture-tests's NUGET_PACKAGES.
+      NUGET_PACKAGES: ${{ github.workspace }}/nuget_packages
     strategy:
       fail-fast: false
       matrix:
@@ -260,10 +323,14 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
-      - name: Restore and build Orleans host tests
-        run: |
-          dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
-          dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
+      - name: Download shared solution build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: .
+      - name: Restore executable bit lost in the artifact round-trip
+        # See the matching comment on architecture-tests's chmod step.
+        run: chmod -R +x artifacts/bin
       - name: Run and verify Orleans host shard
         timeout-minutes: 40
         shell: bash
@@ -273,6 +340,18 @@ jobs:
           python3 .github/scripts/orleans_partition.py execute --shard "$ORLEANS_SHARD" --total 4 --results artifacts/orleans-results
         env:
           ORLEANS_SHARD: ${{ matrix.shard }}
+      - name: Upload Test Results to Trunk.io
+        # orleans_partition.py's execute still only emits --report-xunit-xml (not JUnit) per
+        # shard -- same known gap as the `tests` job (see docs/runbooks/local-testing.md).
+        # This step is a harmless no-op until that script also emits a .junit.xml report.
+        if: ${{ !cancelled() }}  # Upload the results even if the tests fail
+        continue-on-error: true  # don't fail this job if the upload fails
+        uses: trunk-io/analytics-uploader@6bc623e3c4b7a80d7a35badde2a8e8be1e78605d # v3
+        with:
+          junit-paths: artifacts/orleans-results/*.junit.xml
+          org-slug: ${{ vars.TRUNK_ORG_URL_SLUG }}
+          test-collection-id: ${{ vars.TRUNK_TEST_COLLECTION_ID }}
+          token: ${{ secrets.TRUNK_API_KEY }}
       - name: Retain Orleans test results
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

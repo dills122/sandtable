@@ -376,9 +376,9 @@ internal sealed record CampaignCombatSettlementState
             {
                 var expectedElement = PreLossElements.Single(value => value.ElementId == loss.Component.Unit.ElementId);
                 var expectedPercent = loss.Role == "attacker" ? Result.AttackerPercent : Result.DefenderPercent;
-                var expectedRefusal = loss.Role == "defender" ? 10 * disposition!.UnfulfilledDistance : 0;
+                var expectedRefusal = loss.Role == "defender" ? CampaignCombatSettlementArithmetic.RefusalPercent(disposition!.UnfulfilledDistance) : 0;
                 var expectedCaptured = loss.Role == Result.CapturedRole
-                    ? (loss.LossToe * Result.CaptureShare + 99) / 100 : 0;
+                    ? CampaignCombatSettlementArithmetic.CapturedToe(loss.LossToe, Result.CaptureShare) : 0;
                 if (loss.TablePercent != expectedPercent || loss.RefusalPercent != expectedRefusal ||
                     loss.CapturedToe != expectedCaptured ||
                     !expectedElement.Components.Any(value => value.ComponentId == loss.Component.ComponentId &&

@@ -92,3 +92,11 @@ To collect XML locally, append
 [test runtime measurements](docs/research/test-runtime-optimization.md). Package versions are
 centralized in `Directory.Packages.props`; build/analyzer settings are in `Directory.Build.props`
 and `.editorconfig`. Warnings are errors. Keep generated `artifacts/bin` and `artifacts/obj` out of Git.
+
+## License
+
+Sandtable code is licensed under Apache-2.0. Contributions are accepted under the same license, as
+described in section 5 of the license; no CLA is required. Do not contribute material that is not
+yours to license. Do not add original art, scans, or rulebook pages. Source-derived game data
+(tables, rosters, map data, or chart transcriptions) may not be contributed without prior
+maintainer review; see the README's "Material not licensed under Apache-2.0".
