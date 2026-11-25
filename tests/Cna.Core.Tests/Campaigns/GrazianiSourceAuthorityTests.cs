@@ -2762,6 +2762,114 @@ public sealed class GrazianiSourceAuthorityTests
         Assert.All(categoryBIds, id => Assert.Contains(id, unrepresentedBefore.Except(unrepresentedAfter, StringComparer.Ordinal)));
     }
 
+    private static ExerciseSession BuildSessionThroughCwFrontlineForSourcePacks()
+    {
+        var (fullyMotorized, _, _, _, _, _, _, _) = BuildFullyMotorizedReadinessCheckpoint(0UL, 3, 1);
+        var activated = CampaignExercises.ActivateSourceAxisMinorGarrisons(fullyMotorized).SuccessorSession!;
+        activated = CampaignExercises.AdmitSourceCompactCheckpoint(activated).SuccessorSession!;
+        activated = CampaignExercises.ActivateSourceAxisGarrisonRemainder(activated).SuccessorSession!;
+        activated = CampaignExercises.ActivateSourceGiarabubMotorMachineGun(activated).SuccessorSession!;
+        return CampaignExercises.ActivateSourceCwFrontline(activated).SuccessorSession!;
+    }
+
+    private static readonly (string Name, Func<ExerciseSession, ExerciseStepResult> Step, string EventType, int Version)[] SourcePackSteps =
+    [
+        ("AdmitTobrukBardia", CampaignExercises.AdmitSourceTobrukBardiaGarrison, "source-tobruk-bardia-garrison-admitted", CampaignSourceAuthorityState.SourceTobrukBardiaGarrisonCheckpointContractVersion),
+        ("ActivateTobrukBardia", CampaignExercises.ActivateSourceTobrukBardiaGarrison, "source-tobruk-bardia-garrison-activated", CampaignSourceAuthorityState.SourceTobrukBardiaGarrisonCheckpointContractVersion),
+        ("AdmitBardiaRemainder", CampaignExercises.AdmitSourceBardiaGarrisonRemainder, "source-bardia-garrison-remainder-admitted", CampaignSourceAuthorityState.SourceBardiaGarrisonRemainderCheckpointContractVersion),
+        ("ActivateBardiaRemainder", CampaignExercises.ActivateSourceBardiaGarrisonRemainder, "source-bardia-garrison-remainder-activated", CampaignSourceAuthorityState.SourceBardiaGarrisonRemainderCheckpointContractVersion),
+        ("AdmitTripoli", CampaignExercises.AdmitSourceTripoliTankRegiment, "source-tripoli-tank-regiment-admitted", CampaignSourceAuthorityState.SourceTripoliTankRegimentCheckpointContractVersion),
+        ("ActivateTripoli", CampaignExercises.ActivateSourceTripoliTankRegiment, "source-tripoli-tank-regiment-activated", CampaignSourceAuthorityState.SourceTripoliTankRegimentCheckpointContractVersion),
+        ("AdmitCwArtillery", CampaignExercises.AdmitSourceCwAttachedArtillery, "source-cw-attached-artillery-admitted", CampaignSourceAuthorityState.SourceCwAttachedArtilleryCheckpointContractVersion),
+        ("ActivateCwArtillery", CampaignExercises.ActivateSourceCwAttachedArtillery, "source-cw-attached-artillery-activated", CampaignSourceAuthorityState.SourceCwAttachedArtilleryCheckpointContractVersion),
+    ];
+
+    // EVT-001 / #580: each of the 8 source-pack steps now carries contractVersion,
+    // has a replay branch, and a live-accepted history always reconstructs.
+    [Fact]
+    public void EverySourcePackStepIsReplayableAndCarriesContractVersion()
+    {
+        var session = BuildSessionThroughCwFrontlineForSourcePacks();
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+        foreach (var (name, step, eventType, version) in SourcePackSteps)
+        {
+            var result = step(session);
+            Assert.True(result.IsAccepted, name);
+            session = result.SuccessorSession!;
+            using var document = JsonDocument.Parse(session.PregameHistory[^1]);
+            Assert.Equal(eventType, document.RootElement.GetProperty("eventType").GetString());
+            Assert.Equal(version, document.RootElement.GetProperty("contractVersion").GetInt32());
+            Assert.True(CampaignExercises.Reconstruct(session).IsVerified, name);
+        }
+        Assert.Equal(CampaignSourceAuthorityState.SourceCwAttachedArtilleryCheckpointContractVersion, session.SourceAuthority!.ProfileVersion);
+    }
+
+    [Fact]
+    public void TamperedSourcePackEventFailsReconstruct()
+    {
+        var session = BuildSessionThroughCwFrontlineForSourcePacks();
+        foreach (var (name, step, _, _) in SourcePackSteps)
+        {
+            session = step(session).SuccessorSession!;
+            var history = session.PregameHistory.Select(value => value.ToArray()).ToArray();
+            var last = history[^1];
+            // Flip one byte inside the final record's hash text.
+            var index = Array.FindLastIndex(last, value => value is >= (byte)'0' and <= (byte)'8');
+            last[index]++;
+            var tampered = new ExerciseSession(session.Pregame!, session.CurrentContacts, history, session.SourceAuthority);
+            var result = CampaignExercises.Reconstruct(tampered);
+            Assert.False(result.IsVerified, name);
+            Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory, result.FailureReason);
+        }
+    }
+
+    [Fact]
+    public void SourcePackStepsAreRejectedOnceAnOwnerFinalizesSetup()
+    {
+        var session = BuildSessionThroughCwFrontlineForSourcePacks();
+        Assert.True(session.SourceAuthority!.CanAdmitSourceTobrukBardiaGarrison);
+        var finalized = Act(session, CampaignActionAudience.Axis, "owner-finalization", "finish");
+        Assert.NotEqual(0, finalized.SourceAuthority!.FinalizedOwners);
+        Assert.False(finalized.SourceAuthority.CanAdmitSourceTobrukBardiaGarrison);
+        Assert.False(finalized.SourceAuthority.CanAdmitSourceTripoliTankRegiment);
+        Assert.False(finalized.SourceAuthority.CanAdmitSourceCwAttachedArtillery);
+        Assert.False(CampaignExercises.AdmitSourceTobrukBardiaGarrison(finalized).IsAccepted);
+        Assert.False(CampaignExercises.AdmitSourceTripoliTankRegiment(finalized).IsAccepted);
+        Assert.False(CampaignExercises.AdmitSourceCwAttachedArtillery(finalized).IsAccepted);
+        Assert.True(CampaignExercises.Reconstruct(finalized).IsVerified);
+    }
+
+    [Fact]
+    public void SourcePackStepsClearForcesIncompleteAndStayReplayVerified()
+    {
+        var session = BuildSessionThroughCwFrontlineForSourcePacks();
+        var before = CampaignSourcePlayableWorld.Create(session.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        Assert.Contains("forces-incomplete", before.ReadinessBlockers());
+        var unrepresentedBefore = UnrepresentedIds(before);
+        var packIds = ContentSourceTobrukBardiaGarrisonPackArtifact.AllIds
+            .Concat(ContentSourceBardiaGarrisonRemainderPackArtifact.AllIds)
+            .Concat(ContentSourceTripoliTankRegimentPackArtifact.AllIds)
+            .Concat(ContentSourceCwAttachedArtilleryPackArtifact.AllIds).ToArray();
+        Assert.All(packIds, id => Assert.Contains(id, unrepresentedBefore));
+        foreach (var (_, step, _, _) in SourcePackSteps)
+            session = step(session).SuccessorSession!;
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+        var after = CampaignSourcePlayableWorld.Create(session.SourceAuthority!, mapIdentityBound: true, cdSeamBound: true);
+        var unrepresentedAfter = UnrepresentedIds(after);
+        Assert.All(packIds, id => Assert.DoesNotContain(id, unrepresentedAfter));
+        Assert.True(unrepresentedAfter.Count < unrepresentedBefore.Count);
+    }
+
+    private static HashSet<string> UnrepresentedIds(CampaignSourcePlayableWorld world)
+    {
+        var represented = world.GroupedWorld.Prior.World.Representations.SelectMany(value => value.BoundElementIds)
+            .Concat(world.GroupedWorld.Groups.SelectMany(value => value.Members.Select(member => member.ElementId)))
+            .Concat(world.GroupedWorld.Detached.Select(value => value.Member.ElementId))
+            .ToHashSet(StringComparer.Ordinal);
+        return world.Battlefield.Entries.Where(entry => !represented.Contains(entry.ElementId))
+            .Select(entry => entry.ElementId).ToHashSet(StringComparer.Ordinal);
+    }
+
     private static readonly System.Reflection.ConstructorInfo SourceTurnAuthorityConstructor =
         typeof(CampaignSourceTurnAuthority).GetConstructors(
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Single();
