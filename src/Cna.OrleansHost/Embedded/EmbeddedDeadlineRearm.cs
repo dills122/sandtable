@@ -78,9 +78,9 @@ internal sealed class EmbeddedDeadlineRearm(CampaignDurableAuthorityJournalStore
                             .ArmAsync(DateTimeOffset.FromUnixTimeMilliseconds(ms)).ConfigureAwait(false);
                         armed++;
                     }
-                    catch (Exception exception) when (exception is InvalidOperationException or ArgumentException
-                        or Microsoft.Data.Sqlite.SqliteException)
+                    catch (Exception exception) when (exception is not (OperationCanceledException or OutOfMemoryException))
                     {
+                        // Any non-fatal failure (IO, Orleans, SQLite) is skipped so one campaign cannot abort silo start.
                         LogRearmFailed(logger, campaignId, kind, exception);
                     }
                 }
