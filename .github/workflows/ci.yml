@@ -62,6 +62,7 @@ jobs:
   # and reports as its own check first. Promote it to a required dependency of `verify`
   # once it has run clean in CI for a while.
   architecture-tests:
+    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -74,10 +75,11 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
-      - name: Restore
-        run: dotnet restore tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj '/bl:artifacts/architecture-tests/restore-{}.binlog'
-      - name: Build
-        run: dotnet build tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-restore '/bl:artifacts/architecture-tests/build-{}.binlog'
+      - name: Download shared solution build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: .
       - name: Run architecture fitness tests
         run: dotnet test --project tests/Cna.ArchitectureTests/Cna.ArchitectureTests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/architecture-tests
       - name: Retain evidence
@@ -130,6 +132,15 @@ jobs:
         run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/restore-{}.binlog'
       - name: Build
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/build-{}.binlog'
+      - name: Retain shared solution build for downstream jobs
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            artifacts/bin
+            artifacts/obj
+          if-no-files-found: error
+          retention-days: 1
       - name: Check fail-closed coverage helper
         run: python3 .github/scripts/test_partition_test.py
       - name: Check exhaustive R02 allocation and process supervision
@@ -175,10 +186,11 @@ jobs:
           global-json-file: global.json
       - name: Create evidence directory
         run: mkdir -p artifacts/ci
-      - name: Restore
-        run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/${{ matrix.shard }}-restore-{}.binlog'
-      - name: Build
-        run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/${{ matrix.shard }}-build-{}.binlog'
+      - name: Download shared solution build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: .
       - name: Download current attempt Release row proof
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -207,6 +219,7 @@ jobs:
     # Docker daemon, so no services: block is needed. Excluded row, still run nightly:
     # the ~30m Graziani replay soak (orleans-slow.yml). The former KnownIssue=446 rows gate
     # again since the #446 ammunition-seed fix.
+    needs: prepare
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -219,10 +232,11 @@ jobs:
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
-      - name: Restore and build Orleans host tests
-        run: |
-          dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
-          dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
+      - name: Download shared solution build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: build-output-${{ github.sha }}-${{ github.run_attempt }}
+          path: .
       - name: Run and verify Orleans host rows
         # A healthy run's test step measures ~15m (observed, run 45309217076). The
         # Testcontainers (Postgres) bootstrap has repeatedly stalled with ZERO test
