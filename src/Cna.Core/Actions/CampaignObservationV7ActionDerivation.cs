@@ -290,7 +290,7 @@ internal static class CampaignObservationV7ActionDerivation
         Func<string, MovementActionCostBreakdown, TCandidate> create)
     {
         if (element.ReserveStatus != CampaignObservationReserveStatus.None
-            || element.CohesionLevel <= -26
+            || element.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
             || element.LedgerGameTurn != position.GameTurn
             || element.LedgerOperationStage != position.OperationStage)
         {

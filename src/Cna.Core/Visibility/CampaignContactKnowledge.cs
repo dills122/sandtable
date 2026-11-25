@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Security.Cryptography;
 using System.Text;
 using Cna.Core.Rules;
@@ -80,9 +81,12 @@ internal sealed class CampaignContactKnowledge
     public const int CurrentContractVersion = 1;
     public const int IndependentObserverContractVersion = 2;
 
-    private readonly Dictionary<string, CampaignContact> contacts = new(StringComparer.Ordinal);
-    private readonly HashSet<(string SourceEventId, string ContactHandle)> appliedSources = [];
-    private readonly Dictionary<(CampaignContactObserverKind Kind, string Id), long> observerRevisions = [];
+    private ImmutableDictionary<string, CampaignContact> contacts =
+        ImmutableDictionary.Create<string, CampaignContact>(StringComparer.Ordinal);
+    private ImmutableHashSet<(string SourceEventId, string ContactHandle)> appliedSources =
+        ImmutableHashSet<(string SourceEventId, string ContactHandle)>.Empty;
+    private ImmutableDictionary<(CampaignContactObserverKind Kind, string Id), long> observerRevisions =
+        ImmutableDictionary<(CampaignContactObserverKind Kind, string Id), long>.Empty;
     private long sideSharedRevision;
 
     public CampaignContactKnowledge(string campaignId, LandSide side)
@@ -145,17 +149,16 @@ internal sealed class CampaignContactKnowledge
 
     internal CampaignContactKnowledge Copy()
     {
-        var copy = new CampaignContactKnowledge(CampaignId, Side)
+        // Each writable cut owns its roots; immutable entries and unchanged branches are shared.
+        return new CampaignContactKnowledge(CampaignId, Side)
         {
             AudienceRevision = AudienceRevision,
             LastAuthorityVersion = LastAuthorityVersion,
+            contacts = contacts,
+            appliedSources = appliedSources,
+            observerRevisions = observerRevisions,
+            sideSharedRevision = sideSharedRevision,
         };
-        foreach (var (handle, contact) in contacts) copy.contacts.Add(handle, contact);
-        foreach (var source in appliedSources) copy.appliedSources.Add(source);
-        foreach (var (observer, revision) in observerRevisions)
-            copy.observerRevisions.Add(observer, revision);
-        copy.sideSharedRevision = sideSharedRevision;
-        return copy;
     }
 
     internal CampaignContact? FindPrivateContact(string boundRepresentationId, string observerFormationId) =>
@@ -282,8 +285,8 @@ internal sealed class CampaignContactKnowledge
                     IncrementObserver(prior.ObserverKind, prior.ObserverFormationId);
             }
         }
-        contacts[transition.ContactHandle] = next;
-        appliedSources.Add(sourceKey);
+        contacts = contacts.SetItem(transition.ContactHandle, next);
+        appliedSources = appliedSources.Add(sourceKey);
         LastAuthorityVersion = transition.AuthorityVersion;
     }
 
@@ -294,7 +297,7 @@ internal sealed class CampaignContactKnowledge
     private void IncrementObserver(CampaignContactObserverKind kind, string observerId)
     {
         observerRevisions.TryGetValue((kind, observerId), out var prior);
-        observerRevisions[(kind, observerId)] = checked(prior + 1);
+        observerRevisions = observerRevisions.SetItem((kind, observerId), checked(prior + 1));
     }
 
     private static void RequireId(string value)

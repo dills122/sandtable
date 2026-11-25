@@ -129,7 +129,7 @@ internal sealed record CampaignContactRetreatBeforeAssaultCut(
         var initiallyAdjacent = initialAdjacency ?? knowledge.CurrentTargets.Any(target =>
             adjacent.Contains(target.ApparentLocationId));
         var eligible = state.ReserveStatus == CampaignElementReserveStatus.None
-            && observed.CohesionLevel > -26
+            && observed.CohesionLevel > Cna1979Zoc.MinimumExclusiveCohesion
             && observed.VehicleBreakdownRisk is not { WorkingPointCount: 0 };
         var moves = eligible && allowFurtherMoves
             && (initialAdjacency is null || !currentlyAdjacent)

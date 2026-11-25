@@ -5,6 +5,13 @@ namespace Cna.Core.Rules;
 
 public static class Cna1979Zoc
 {
+    /// <summary>
+    /// Exclusive lower cohesion bound: an element at or below this level cannot move or
+    /// exert a Zone of Control. Also the value published in the artifact as
+    /// <c>minimumExclusiveCohesion</c>.
+    /// </summary>
+    public const int MinimumExclusiveCohesion = -26;
+
     public const string AuthorityId = "cna-1979.1.zoc-rules";
     public const string AllSeaHexsideId = "land.edge.all-sea";
     public const string MajorRiverHexsideId = "land.edge.major-river";
@@ -80,7 +87,7 @@ public static class Cna1979Zoc
             writer.WriteEndArray();
             writer.WriteBoolean("headquartersRequiresAttachedCombatUnits", true);
             writer.WriteNumber("minimumExclusiveStackingPoints", 1);
-            writer.WriteNumber("minimumExclusiveCohesion", -26);
+            writer.WriteNumber("minimumExclusiveCohesion", MinimumExclusiveCohesion);
             writer.WriteNumber("minimumRawDefensiveCloseAssaultPoints", 10);
             writer.WriteStartArray("topologyFeatures");
             foreach (var feature in TopologyAuthority.OrderBy(
@@ -160,7 +167,7 @@ public static class Cna1979Zoc
             sources.Add(QualificationSource);
         }
 
-        if (facts.CohesionLevel <= -26)
+        if (facts.CohesionLevel <= MinimumExclusiveCohesion)
         {
             failures.Add(ZocSourceFailureKind.CohesionTooLow);
             sources.Add(CohesionSource);
