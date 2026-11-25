@@ -1,0 +1,68 @@
+using Cna.Core.Exercises;
+using Cna.Core.Exercises.Sequencing;
+using Cna.Core.Rules;
+using Xunit;
+using Spike = Cna.Core.Tests.Exercises.PendingFromCursorSpikeTests;
+
+namespace Cna.Core.Tests.Exercises.Sequencing;
+
+// S1: the promoted src derivation (Cna.Core.Exercises.Sequencing.PendingFromCursor) is checked against the
+// spike's test-local reference over the whole catalog, and its table coverage is pinned by reflection.
+// Real-session equivalence with ExerciseSession.Pending is the S2 oracle's job.
+public sealed class PendingFromCursorShadowTests
+{
+    private static string[] Subtypes() => typeof(PendingDecision).Assembly.GetTypes()
+        .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToArray();
+
+    [Fact]
+    public void ShadowDerivationEqualsTheSpikeReferenceAtEveryCatalogPositionForBothSpikeLastEvents()
+    {
+        foreach (var gameTurn in new[] { 1, 2 })
+        {
+            var turn = Cna1979LandSequenceV4.CreateTurn(gameTurn);
+            foreach (var position in turn)
+            {
+                Assert.Equal(
+                    Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.CompletedPosition),
+                    PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.CompletedPosition));
+                Assert.Equal(
+                    Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.MoveWithinPosition),
+                    PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.MoveWithinPosition));
+            }
+        }
+    }
+
+    [Fact]
+    public void EverySubtypeIsDerivableOrOnTheNamedExceptionListAndNothingIsInvented()
+    {
+        var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        var derived = turn.SelectMany(p => Enum.GetValues<PendingLastEvent>()
+                .Select(e => PendingFromCursor.Derive(turn, p.PositionId, e)))
+            .Where(x => x is not null).Select(x => x!).ToHashSet(StringComparer.Ordinal);
+        var subtypes = Subtypes();
+        Assert.Empty(derived.Except(subtypes));
+        var underived = subtypes.Except(derived).Order(StringComparer.Ordinal).ToArray();
+        Assert.True(underived.SequenceEqual(PendingExceptionTable.Unobservable.Order(StringComparer.Ordinal)),
+            "Subtype(s) with no derivation row and no exception entry: " + string.Join(", ",
+                underived.Except(PendingExceptionTable.Unobservable)));
+    }
+
+    [Fact]
+    public void CycleRepeatReturnsTheOccurrenceAssaultArmOrNullForTheLegacyOccurrence()
+    {
+        var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        string At(string suffix) => turn.Single(p => p.PositionId.EndsWith(suffix, StringComparison.Ordinal)).PositionId;
+        Assert.Null(PendingFromCursor.Derive(turn, At("operation-1.first-player.movement-and-combat.movement"), PendingLastEvent.CycleRepeat));
+        Assert.Equal("SecondAssaultPending",
+            PendingFromCursor.Derive(turn, At("operation-1.second-player.movement-and-combat.movement"), PendingLastEvent.CycleRepeat));
+        Assert.Equal("StageEntryAssaultPending",
+            PendingFromCursor.Derive(turn, At("operation-2.first-player.movement-and-combat.movement"), PendingLastEvent.CycleRepeat));
+    }
+
+    [Fact]
+    public void UnknownPositionIsRejected()
+    {
+        var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        Assert.Throws<ArgumentException>(() => PendingFromCursor.Derive(turn, "no.such.position", PendingLastEvent.CompletedPosition));
+    }
+}
