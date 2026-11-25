@@ -533,6 +533,12 @@ class MergeFriendlyManifestTests(unittest.TestCase):
         self.assertTrue(set(weights['provisional_rows']) <= set(weights['rows']))
         self.assertEqual(weights, suites.load_weights(Path(__file__).with_name('long-suite-weights')))
 
+    def test_graziani_source_authority_class_is_one_row_per_process(self):
+        # long-01 aborted at the 6GiB per-child cap when 3-row groups of this class shared a process
+        # (run 45649857794). parts must stay >= the live row count so every row gets a fresh process.
+        weights = weights_module.load()
+        self.assertGreaterEqual(weights['classes']['Cna.Core.Tests.Campaigns.GrazianiSourceAuthorityTests']['parts'], 12)
+
     def test_every_committed_line_is_independently_valid_and_canonical(self):
         for entry in Path(__file__).with_name('long-suite-weights').glob('*.jsonl'):
             records = weights_module.parse_records(entry)
