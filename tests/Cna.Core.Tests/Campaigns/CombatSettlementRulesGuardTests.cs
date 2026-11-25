@@ -108,6 +108,30 @@ public sealed class CombatSettlementRulesGuardTests
         Assert.True(pairs > 0);
     }
 
+    [Fact]
+    public void JsonPathLossCatalogueAgreesWithSelectedRules()
+    {
+        // The JSON path (CampaignCombatActualPaidAssaultSupport) is hash-pinned evidence and still carries
+        // literals; this read-only check fails if the rules move without it (#576).
+        var rules = Cna1979CombatAdjudication.Definition; var rows = 0;
+        static int Ceil(int n) => (n + 99) / 100;
+        foreach (var row in CampaignCombatActualPaidAssaultSupport.Catalogue().Where(r => r["kind"]!.GetValue<string>() == "capture-refusal"))
+        {
+            var facts = row["facts"] ?? row; var toe = rules.Costs.CommittedToePerRole;
+            var refusal = rules.Settlement.RefusalPercentPerHex * row["refusalHexes"]!.GetValue<int>();
+            var attacker = Ceil(toe * facts["attackerPercent"]!.GetValue<int>());
+            var defender = toe * (facts["defenderPercent"]!.GetValue<int>() + refusal) / 100;
+            Assert.Equal(attacker, row["attackerLossToe"]!.GetValue<int>());
+            Assert.Equal(defender, row["defenderLossToe"]!.GetValue<int>());
+            Assert.Equal(toe - attacker, row["attackerRemainingToe"]!.GetValue<int>());
+            Assert.Equal(toe - defender, row["defenderRemainingToe"]!.GetValue<int>());
+            Assert.Equal(attacker >= rules.Settlement.LossDpThresholdToe ? rules.Settlement.LossDpPoints : 0, row["attackerLossDp"]!.GetValue<int>());
+            Assert.Equal(defender >= rules.Settlement.LossDpThresholdToe ? rules.Settlement.LossDpPoints : 0, row["defenderLossDp"]!.GetValue<int>());
+            rows++;
+        }
+        Assert.Equal(8840, rows);
+    }
+
     private static ContentHexEdge Edge(string first, string second) => new(first, second, [],
         new(ContentOriginKind.Synthetic, [new RuleReference("sandtable-rules-lab", "content.edge.tie-test")]));
     private static JsonDocument Fixture() => JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Campaigns", "Fixtures", "combat-result-settlement-v2.json")));
