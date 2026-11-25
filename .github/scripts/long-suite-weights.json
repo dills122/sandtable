@@ -563,6 +563,9 @@
     "Cna.Core.Tests.Hosting.StaleRepeatCombatSelectionGuardTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Exercises.PendingFromCursorSpikeTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Observations.CampaignContactCombatSelectionCutTests": {
       "parts": 1
     },
@@ -4755,7 +4758,10 @@
     "9bf1c6c541bdf9a6d5732d387fe0a66b50d68d21cde518aa1f168f8ce4654cdb": 15,
     "25e5bb7c3f2aedb21cec83f2419b0bc276d56a5cd5174c6df46f5da8380f32aa": 118,
     "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": 115,
-    "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": 3264
+    "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": 3264,
+    "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": 16,
+    "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": 22,
+    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": 564
   },
   "provisional_rows": {
     "0be08ab6576129fee2f7003df70dc4af8fbc581c9c02455c097a75cb9db138c1": "2026-11-24 macOS arm64 .NET 10 Release MTP XML; new CampaignNativeSecondBreakdownTests row (maintainability Slice 1, pre-refactor-gap regression for CampaignNativeSecondBreakdownV46.Create), pending hosted calibration",
@@ -5305,7 +5311,10 @@
     "9bf1c6c541bdf9a6d5732d387fe0a66b50d68d21cde518aa1f168f8ce4654cdb": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondBreakdownTests rows (MTS-TASK-006), pending hosted calibration",
     "25e5bb7c3f2aedb21cec83f2419b0bc276d56a5cd5174c6df46f5da8380f32aa": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondCombatSelectionTests row (MTS-TASK-006), pending hosted calibration",
     "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondCombatAssaultTests row (MTS-TASK-006), pending hosted calibration",
-    "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; CampaignContactJournalTests.SixTurnContactJournalCopying (#391), pending hosted calibration"
+    "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; CampaignContactJournalTests.SixTurnContactJournalCopying (#391), pending hosted calibration",
+    "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.EverySubtypeIsDerivableFromTheCatalogExceptTheExplicitExceptionList (spike S1), pending hosted calibration",
+    "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.MoveIsTheOnlyStateThatNeedsTheLastEventTypeBeyondTheCursor (spike S1), pending hosted calibration",
+    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.CursorDerivationReproducesPendingOverEveryDrivenRealSessionState (spike S1), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
