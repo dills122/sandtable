@@ -103,7 +103,7 @@ internal sealed record CampaignContactOwnerMovementCut(
                 feature.FeatureId, feature.DirectionFromLocationId)).ToArray())).ToArray();
         var state = world.Elements.Single(value => value.ElementId == actingElementId);
         var eligible = owner.ReserveStatus == CampaignObservationReserveStatus.None
-            && owner.VehicleBreakdownRisk is null && owner.CohesionLevel > -26
+            && owner.VehicleBreakdownRisk is null && owner.CohesionLevel > Cna1979Zoc.MinimumExclusiveCohesion
             && owner.LedgerGameTurn == position.GameTurn && owner.LedgerOperationStage == position.OperationStage
             && !CampaignOwnElementProjection.IsMovementEndedFor(state.OperationalState.MovementEnded, position);
         var offers = eligible ? DeriveAdjacentOffers(owner, own, knowledge, locations, edges) : [];
@@ -175,7 +175,7 @@ internal sealed record CampaignContactOwnerMovementCut(
             || sequence.ActiveSide != knowledge.Side
             || owner.ReserveStatus != CampaignObservationReserveStatus.None
             || owner.VehicleBreakdownRisk is { WorkingPointCount: 0 }
-            || owner.CohesionLevel <= -26
+            || owner.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
             || owner.LedgerGameTurn != sequence.GameTurn
             || owner.LedgerOperationStage != sequence.OperationStage
             || CampaignOwnElementProjection.IsMovementEndedFor(

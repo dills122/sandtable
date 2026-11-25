@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Actions;
@@ -14,6 +17,105 @@ namespace Cna.Core.Tests.Observations;
 
 public sealed class CampaignContactJournalTests
 {
+    [Fact]
+    public void SixTurnContactJournalCopying()
+    {
+        var benchmark = Environment.GetEnvironmentVariable("SANDTABLE_CONTACT_BENCHMARK") == "1";
+        // The ordinary run covers both canonical compatibility and the allocation regression.
+        var lengths = benchmark ? new[] { 64, 256, 1024 } : new[] { 4, 256 };
+        var output = Path.Combine(Path.GetTempPath(), "sandtable-contact-benchmark.csv");
+        if (benchmark)
+            File.WriteAllText(output, "movements,records,contact_ms,contact_bytes,quiet_ms,quiet_bytes\n");
+        foreach (var movementsPerTurn in lengths)
+        {
+            var artifact = BreakdownContentFixture.Artifact();
+            var scenario = BreakdownSnapshotTests.Scenario();
+            var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
+            var prior = BreakdownMovementTests.ChangeElement(BreakdownSnapshotTests.Create(true),
+                "commonwealth-infantry", "north-east");
+            var initial = CampaignContactJournal.Initialize(prior, context);
+            var initialRecords = initial.Records;
+            var initialObservation = initial.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation");
+            var journal = initial;
+            var cuts = new List<(CampaignSnapshotV11 Before, CampaignSnapshotV11 After, ElementMovedV3 Move)>();
+            // Six turn-sized batches of synthetic authority cuts, not a legal full campaign replay.
+            // The first three grow the journal; the final three leave all contacts unchanged.
+            for (var turn = 0; turn < 6; turn++)
+            {
+                for (var step = 0; step < movementsPerTurn; step++)
+                {
+                    var other = turn < 3 ? "north" : "west";
+                    var origin = step % 2 == 0 ? "north-west" : other;
+                    var destination = step % 2 == 0 ? other : "north-west";
+                    var movement = CampaignElementMovedV3Factory.Create(prior, artifact, scenario,
+                        new ElementMovedV3ReplayInput(prior.CampaignId, prior.StateVersion,
+                            prior.CurrentPosition.SequenceContext.PositionId, LandSide.Axis, "axis-infantry", origin, destination));
+                    var movedWorld = BreakdownMovementTests.ChangeElement(prior, "axis-infantry", destination).World;
+                    var after = new CampaignSnapshotV11(11, prior.CampaignId, movement.StateVersion,
+                        prior.RulesetHash, prior.Setup, movedWorld, prior.InitiativeHolder,
+                        prior.OperationStageOrders, prior.OperationStageWeather, prior.RandomState,
+                        prior.CurrentPosition, null, prior.BreakdownFlow);
+                    cuts.Add((prior, after, movement));
+                    prior = after;
+                }
+            }
+
+            // Measure the journal only, excluding fixture construction, observation and record readback.
+            var watch = Stopwatch.StartNew();
+            var startBytes = GC.GetAllocatedBytesForCurrentThread();
+            foreach (var cut in cuts.Take(cuts.Count / 2))
+                journal = journal.AppendMovement(cut.Before, cut.After, cut.Move, context);
+            var contactBytes = GC.GetAllocatedBytesForCurrentThread() - startBytes;
+            var contactMs = watch.Elapsed.TotalMilliseconds;
+            var contactCut = journal;
+            var records = contactCut.Records;
+            var observation = contactCut.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation");
+            Assert.NotEmpty(records);
+
+            watch.Restart();
+            startBytes = GC.GetAllocatedBytesForCurrentThread();
+            foreach (var cut in cuts.Skip(cuts.Count / 2))
+                journal = journal.AppendMovement(cut.Before, cut.After, cut.Move, context);
+            var quietBytes = GC.GetAllocatedBytesForCurrentThread() - startBytes;
+            var quietMs = watch.Elapsed.TotalMilliseconds;
+            Assert.Equal(records, journal.Records);
+            Assert.Equal(observation, journal.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
+            Assert.Equal(records, contactCut.Records);
+            Assert.Equal(observation, contactCut.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
+            Assert.Equal(initialRecords, initial.Records);
+            Assert.Equal(initialObservation, initial.ObserveCanonical(LandSide.Commonwealth, "commonwealth-infantry.formation"));
+            Assert.Equal(prior.StateVersion, journal.AuthorityVersion);
+            Assert.Equal(movementsPerTurn * 6, records.Count);
+
+            if (benchmark)
+                File.AppendAllText(output,
+                    string.Create(CultureInfo.InvariantCulture,
+                        $"{cuts.Count},{records.Count},{contactMs:F2},{contactBytes},{quietMs:F2},{quietBytes}\n"));
+            if (movementsPerTurn == 4)
+            {
+                using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+                foreach (var record in records)
+                    hash.AppendData(record);
+                foreach (var (side, observer) in new[]
+                         {
+                             (LandSide.Axis, "axis-infantry.formation"), (LandSide.Axis, "axis-truck.formation"),
+                             (LandSide.Commonwealth, "commonwealth-infantry.formation"),
+                             (LandSide.Commonwealth, "commonwealth-truck.formation"),
+                         })
+                    hash.AppendData(journal.ObserveCanonical(side, observer));
+                // Golden digest captured on main @ 8cc81446, before changing collection storage.
+                Assert.Equal("31DA6789350D8207525E2B1702D399F702E3385EA1B69DA929DC8B9673F60BCC",
+                    Convert.ToHexString(hash.GetHashAndReset()));
+            }
+
+            // Allocation is deterministic enough to gate; wall time depends on the runner.
+            // Allow 64 KiB per append in either phase, including derivation and serialization.
+            var phaseBudget = cuts.Count / 2 * 64L * 1024;
+            Assert.True(contactBytes <= phaseBudget, $"Contact phase allocated {contactBytes} bytes; budget {phaseBudget}.");
+            Assert.True(quietBytes <= phaseBudget, $"Quiet phase allocated {quietBytes} bytes; budget {phaseBudget}.");
+        }
+    }
+
     [Fact]
     public void AdjacentMovementIsRecordedForBothSidesAndSurvivesColdReplay()
     {

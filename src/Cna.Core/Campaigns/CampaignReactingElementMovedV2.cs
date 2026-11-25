@@ -153,7 +153,7 @@ internal sealed record ReactingElementMovedV2 : CampaignSuccessorEvent
             || GameTurn != suspended.GameTurn
             || OperationStage != suspended.OperationStage
             || string.Equals(OriginLocationId, DestinationLocationId, StringComparison.Ordinal)
-            || CohesionBefore is <= -26 or > 10
+            || CohesionBefore is <= Cna1979Zoc.MinimumExclusiveCohesion or > 10
             || CohesionBefore != CohesionAfter
             || CapabilityPointsExpendedBefore + Cost.TotalCost
                 != CapabilityPointsExpendedAfter)

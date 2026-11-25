@@ -1206,3 +1206,17 @@ suite part; no existing row is renamed or removed.
 | `BreakdownRejectsASessionWithoutItsOwnCompletedMovement(entryPoint: "CreateForStageEntrySecondSide", ...)` | `7e3620ef571ab145ef1080430f95c5cd52664b6f6e2a4413197ff031307b58a0` | 15 |
 
 Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --filter-class Cna.Core.Tests.Campaigns.CampaignNativeSecondBreakdownTests --report-xunit-xml --results-directory <local-dir>` on a macOS arm64 .NET 10 Release local run on 2026-11-24 (3 passed, 0 failed, 0 skipped) -- a local scheduling hint, pending hosted CI calibration, not a hosted latency claim. Row hashes were computed from the literal `dotnet test --list-tests --pre-enumerate-theories on --no-ansi` discovery output per `.github/scripts/test_partition.py`'s `row_identity`, not from the xunit XML report (whose writer backslash-escapes quotes in Theory string arguments and would hash differently). All three row hashes are also recorded in `provisional_rows` pending hosted calibration. Existing weights and baseline metadata are otherwise unchanged.
+
+## Stage Entry weather cursor contract, issue #578 (2026-11-24)
+
+PR #593 adds two passing Fact rows: independent preamble cursor/holder replay
+validation and continuity from a completed assault result into weather. The
+contract class has one ordinary suite part; no existing row is renamed or
+removed.
+
+| New row | Full row hash | Measured ms |
+| --- | --- | ---: |
+| `BothPreamblesDeriveCursorAndHolderAndRejectTamperedReplay` | `6f912767f35b9413264d5f18ea87190bbe5729c1b54c0384f04851703f4d9420` | 2013 |
+| `WeatherAfterAssaultUsesTheNextCursorWithoutOverlap` | `5a8c29290efd77f35a3371c2048f8d3a47f5599965f60ed4557cfbbd789994c8` | 1401 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-method '*<method>*' --report-xunit-xml --results-directory <local-dir>` for each method (2 passed, 0 failed, 0 skipped). macOS arm64 .NET 10 Release, source head `2adbea4823c5a9649e0375e0e2b243aa57dd0f52`; Core test DLL SHA-256 `5761171bde81d03cddc98954925ab37e448fac71d07d51ca713623e2f293c7ed`; contract XML SHA-256 `bbd4111c0e648c4c4ea2cf12bd562f3a02e26318a9c1f329518dadcf4712ba77`; continuity XML SHA-256 `55b1a239fc697db824b6c102c2f16575baf60f837d1faaadda98b3dcdcedd906`. The retained prepare inventory from failed run `45524655776` (tested merge SHA `0b40ff6b7c4d04198b7f2925765ca257f778142f`) contained exactly these two missing hashes and no stale ones. The updated manifest passes `make_plan` for all 3,843 ordinary Core rows in that inventory. Both rows are provisional local scheduling hints, not hosted performance claims; exact-head CI remains required.

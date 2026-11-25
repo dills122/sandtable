@@ -95,26 +95,14 @@ public sealed class StaleRepeatCombatSelectionGuardTests
         ]);
     }
 
-    // Builds a CampaignContactJournal at an arbitrary authority version,
-    // using its own private constructor the same way the production
-    // AtAuthorityVersion helper does internally, so the version on the
-    // journal is independent from (and here, deliberately later than) the
-    // stale repeat selection's own StateVersion.
+    // Advances empty contact authority independently of the repeat selection's StateVersion.
     private static CampaignContactJournal ContactsAtVersion(long authorityVersion)
     {
-        var constructor = typeof(CampaignContactJournal).GetConstructor(
-            BindingFlags.Instance | BindingFlags.NonPublic,
-            [typeof(string), typeof(long), typeof(CampaignContactKnowledge),
-                typeof(CampaignContactKnowledge), typeof(byte[][])])
-            ?? throw new MissingMemberException(nameof(CampaignContactJournal), "ctor");
-        return (CampaignContactJournal)constructor.Invoke(
-        [
-            "campaign-1",
-            authorityVersion,
-            new CampaignContactKnowledge("campaign-1", LandSide.Axis),
-            new CampaignContactKnowledge("campaign-1", LandSide.Commonwealth),
-            Array.Empty<byte[]>(),
-        ]);
+        var journal = CampaignContactJournal.InitializePregameSource("campaign-1");
+        while (journal.AuthorityVersion < authorityVersion)
+            journal = journal.AdvancePregameSource(journal.AuthorityVersion);
+        Assert.Equal(authorityVersion, journal.AuthorityVersion);
+        return journal;
     }
 
     [Fact]

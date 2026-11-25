@@ -63,6 +63,28 @@ public sealed class ZocRulesTests
     }
 
     [Fact]
+    public void CohesionFloorConstantAgreesWithLiveSourceRule()
+    {
+        // The constant feeds both the artifact's minimumExclusiveCohesion hash input and the
+        // live comparison; the pinned ruleset-manifest/setup hashes guard that the hash input stays -26.
+        Assert.Equal(-26, Cna1979Zoc.MinimumExclusiveCohesion);
+
+        ZocSourceFacts AtCohesion(int cohesion) => new(
+            Cna1979Combat.CombatUnitClassificationId,
+            aggregateStackingPoints: 2,
+            cohesion,
+            rawDefensiveCloseAssaultPoints: 10,
+            hasAttachedCombatUnits: false);
+
+        Assert.Contains(
+            ZocSourceFailureKind.CohesionTooLow,
+            Cna1979Zoc.EvaluateSource(
+                AtCohesion(Cna1979Zoc.MinimumExclusiveCohesion)).Failures);
+        Assert.True(Cna1979Zoc.EvaluateSource(
+            AtCohesion(Cna1979Zoc.MinimumExclusiveCohesion + 1)).IsQualified);
+    }
+
+    [Fact]
     public void QualifyingCombatForceRetainsCompleteRuleProvenance()
     {
         var result = Cna1979Zoc.EvaluateSource(new ZocSourceFacts(

@@ -85,7 +85,7 @@ internal static class CampaignCycleContinuationMovementWitnessV28
             var owner = own.Single(value => value.ElementId == allowance.ElementId);
             if (owner.ReserveStatus != CampaignObservationReserveStatus.None
                 || owner.VehicleBreakdownRisk is { WorkingPointCount: 0 }
-                || owner.CohesionLevel <= -26)
+                || owner.CohesionLevel <= Cna.Core.Rules.Cna1979Zoc.MinimumExclusiveCohesion)
                 continue;
             var knowledge = contacts.ObserveFor(release.ActingSide,
                 content.ParentFormationId);
