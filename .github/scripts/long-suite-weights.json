@@ -4798,7 +4798,11 @@
     "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": 1925,
     "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": 1,
     "4a48080dca55ec575ab58e2915ad02887638b7be5fa038d5f9107ad3c8aa5ce5": 2389,
-    "7b0cb26b3c22175655dbcafd3a3f71090a025ca61c10473b0be55616c07ba505": 326
+    "7b0cb26b3c22175655dbcafd3a3f71090a025ca61c10473b0be55616c07ba505": 326,
+    "5243a896297c8499eba36ddbb28062463006ae67a162a4e34412d3e970ec9ab9": 76794,
+    "4fcc5a3306281f0a920d4c3c926c04f21f8858d84b89f13fc4e696c1498f92fc": 112565,
+    "f305700588c8ac6224f22d68ffddc55688e6051364fea1fdf7521e25ebb3053a": 103187,
+    "b38b32ca2d6d5fc70927c6989d93897ed78e5eab53ea72fd3919cb39e0ecf031": 60028
   },
   "provisional_rows": {
     "5a8c29290efd77f35a3371c2048f8d3a47f5599965f60ed4557cfbbd789994c8": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; new issue #578 cursor-contract rows, pending hosted calibration",
@@ -5359,7 +5363,11 @@
     "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
     "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
     "4a48080dca55ec575ab58e2915ad02887638b7be5fa038d5f9107ad3c8aa5ce5": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
-    "7b0cb26b3c22175655dbcafd3a3f71090a025ca61c10473b0be55616c07ba505": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration"
+    "7b0cb26b3c22175655dbcafd3a3f71090a025ca61c10473b0be55616c07ba505": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "5243a896297c8499eba36ddbb28062463006ae67a162a4e34412d3e970ec9ab9": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
+    "4fcc5a3306281f0a920d4c3c926c04f21f8858d84b89f13fc4e696c1498f92fc": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
+    "f305700588c8ac6224f22d68ffddc55688e6051364fea1fdf7521e25ebb3053a": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration",
+    "b38b32ca2d6d5fc70927c6989d93897ed78e5eab53ea72fd3919cb39e0ecf031": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests source-pack replay row (#580), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
