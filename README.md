@@ -2,8 +2,9 @@
 
 > Command the campaign. Let the Umpire handle the paperwork.
 
-Sandtable is a digital adaptation of SPI's 1979 board wargame *The Campaign for North Africa: The
-Desert War, 1940–43*. The original game simulates the desert war at an extreme level of detail:
+Sandtable is an independent, unofficial implementation of the rules of the 1979 board wargame *The
+Campaign for North Africa: The Desert War, 1940–43* (see [IP and non-affiliation](#ip-and-non-affiliation)).
+The original game simulates the desert war at an extreme level of detail:
 formations, supply, transport, hidden information, all of it. Sandtable keeps those decisions
 intact for the player and hands the bookkeeping to the computer: legality checks, dice, hidden
 information, and the campaign record.
@@ -461,4 +462,41 @@ not replace either.
 
 ## License
 
-No license has been selected yet. All rights are reserved until a license file is added.
+The Sandtable source code is licensed under the [Apache License, Version 2.0](LICENSE). See
+[NOTICE](NOTICE) for attribution and the non-affiliation statement. Contributions are accepted under
+the same license (section 5 of the license).
+
+### Material not licensed under Apache-2.0
+
+The Apache-2.0 license covers the code only. The following paths hold material derived from the
+published game's rules, charts, scenarios, or map, or internal working notes. They are **not**
+licensed under Apache-2.0. All rights are reserved on them until the project owner has reviewed
+them; no permission to copy, redistribute, or reuse them is granted. This is a provisional,
+conservative position, not legal advice.
+
+- `src/Cna.Core/Content/Cna1979GrazianiSourceFacts.cs`,
+  `src/Cna.Core/Content/Cna1979GrazianiCounterFacts.cs`,
+  `src/Cna.Core/Content/Cna1979GrazianiCairoSourceExcerpt.cs`
+- `src/Cna.Core/Content/Cna1979HistoricalMap.cs` and `src/Cna.Core/Content/HistoricalMap/`
+- `src/Cna.Core/Content/ContentSource*.cs` (the source-derived content pack builders)
+- `src/Cna.Core/Content/Cna1979BreakdownContentCatalog.cs`,
+  `src/Cna.Core/Content/Cna1979CombatContentCatalog.cs`,
+  `src/Cna.Core/Content/Cna1979ReactionContentCatalog.cs`
+- `docs/` (including the specifications and `docs/specs/fixtures/` evidence bundles)
+- `.planning/`
+
+Everything else in the repository is covered by Apache-2.0, including the synthetic rules-lab
+fixtures (`src/Cna.Core/Content/Fixtures/`) and the exercise manifests in `scenarios/`.
+Third-party fonts and icons under `src/Cna.Maproom/projects/field-atlas/licenses/` keep their own
+licenses.
+
+## IP and non-affiliation
+
+Sandtable is an independent, unofficial implementation. It is not affiliated with, endorsed by, or
+sponsored by SPI, the Avalon Hill/Hasbro lineage, or any rights holder of *The Campaign for North
+Africa*. The repository contains no original box art, logos, counter art, scans, or rules text;
+rules are cited by section number only. Game and company names are used descriptively and belong to
+their respective owners.
+
+Short form for the site footer: *Independent, unofficial project. Not affiliated with or endorsed by
+SPI or any rights holder of The Campaign for North Africa. No original art or rules text included.*
