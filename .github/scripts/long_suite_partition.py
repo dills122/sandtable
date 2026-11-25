@@ -12,6 +12,48 @@ def load_weights(path):
     return load(path)
 
 
+DEFAULT_ROW_MS = 1000
+# Share of discovered rows (or of planned milliseconds) running on estimated weights above which
+# `discover` emits a CI warning asking for a refresh of the committed weights (see
+# docs/work/2026-11-25-ci-timing-manifest-zero-registration.md). Informational only; never fails CI.
+REFRESH_ROW_SHARE = 0.05
+REFRESH_MS_SHARE = 0.10
+
+
+def estimate_row_ms(known):
+    """Conservative estimate for a row with no committed weight: p90 of its class's known rows, floored."""
+    if not known: return DEFAULT_ROW_MS
+    ordered = sorted(known)
+    return max(DEFAULT_ROW_MS, ordered[min(len(ordered) - 1, (len(ordered) * 9 + 9) // 10 - 1)])
+
+
+def effective_weights(core, weights):
+    """Return (row_ms, class_parts, estimation) covering EVERY discovered row.
+
+    Weights only balance shards; coverage is proven separately from discovery. Unknown rows get a
+    conservative class-based estimate and unknown classes run unsplit; stale weights are ignored.
+    """
+    row_ms, class_parts, estimated, new_classes = {}, {}, [], []
+    by_class = {}
+    for row in core: by_class.setdefault(row[1].rsplit('.', 1)[0], []).append(row)
+    for name, class_rows in by_class.items():
+        known = [weights['rows'][row_key(row)] for row in class_rows if row_key(row) in weights['rows']]
+        guess = estimate_row_ms(known)
+        for row in class_rows:
+            key = row_key(row)
+            if key in weights['rows']: row_ms[key] = weights['rows'][key]
+            else: row_ms[key] = guess; estimated.append(key)
+        if name in weights['classes']: class_parts[name] = weights['classes'][name].get('parts')
+        else: class_parts[name] = 1; new_classes.append(name)
+    estimated_ms = sum(row_ms[key] for key in estimated)
+    total_ms = sum(row_ms.values())
+    return row_ms, class_parts, {
+        'estimated_rows': len(estimated), 'total_rows': len(core), 'estimated_ms': estimated_ms, 'total_ms': total_ms,
+        'new_classes': sorted(new_classes),
+        'stale_weight_rows': len(set(weights['rows']) - set(row_ms)),
+        'refresh_recommended': len(estimated) > REFRESH_ROW_SHARE * len(core) or estimated_ms > REFRESH_MS_SHARE * total_ms}
+
+
 def make_plan(rows, weights):
     import re
     from test_partition import require, unique, row_identity
@@ -19,22 +61,22 @@ def make_plan(rows, weights):
     require(all(row[0] == 'Cna.Core.Tests' and row_identity(row[0], row[2])[1] == row[1] for row in core), 'Foreign/custom Core row')
     require(len({row[2].casefold() for row in core}) == len(core) and all('*' not in row[2] for row in core), 'Ambiguous/wildcard display row')
     require(type(weights.get('schema_version')) is int and weights['schema_version'] == 1 and isinstance(weights.get('rows'), dict) and isinstance(weights.get('classes'), dict), 'Unsupported timing manifest')
-    require(set(weights['rows']) == {row_key(row) for row in core}, 'Unknown/missing measured row; update reviewed timing manifest')
     require(all(re.fullmatch('[a-f0-9]{64}', key) and type(value) is int and value > 0 for key, value in weights['rows'].items()), 'Invalid measured row weight')
     classes = {}
     for row in sorted(core): classes.setdefault(row[1].rsplit('.', 1)[0], []).append(row)
-    require(set(classes) == set(weights['classes']), 'Unknown/missing measured class')
+    require(all(type(value) is dict for value in weights['classes'].values()), 'Invalid class weights')
+    row_ms, class_parts, estimation = effective_weights(core, weights)
     long_groups, fast = [], []
     for name, class_rows in sorted(classes.items()):
-        parts = weights['classes'][name].get('parts')
+        parts = class_parts[name]
         require(type(parts) is int and 1 <= parts <= len(class_rows), 'Invalid class split count')
         if parts == 1:
-            fast.append((name, class_rows, sum(weights['rows'][row_key(row)] for row in class_rows)))
+            fast.append((name, class_rows, sum(row_ms[row_key(row)] for row in class_rows)))
             continue
         bins, costs = [[] for _ in range(parts)], [0] * parts
-        for row in sorted(class_rows, key=lambda value: (-weights['rows'][row_key(value)], value)):
+        for row in sorted(class_rows, key=lambda value: (-row_ms[row_key(value)], value)):
             index = min(range(parts), key=lambda value: (costs[value], value))
-            bins[index].append(row); costs[index] += weights['rows'][row_key(row)]
+            bins[index].append(row); costs[index] += row_ms[row_key(row)]
         for index, selected in enumerate(bins):
             long_groups.append(('row-' + hashlib.sha256(name.encode()).hexdigest()[:12] + f'-{index + 1:02}', sorted(selected), costs[index]))
     groups, lane_costs = {}, [0] * 32
@@ -53,7 +95,7 @@ def make_plan(rows, weights):
     actual = [row for entry in groups.values() for row in entry['rows']]
     require(unique(actual, 'Allocated Core rows') == core, 'Incomplete/overlapping allocation')
     digest = lambda value: hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
-    return {'schema_version': 1, 'weights_sha256': digest(weights), 'rows_sha256': digest(sorted(core)), 'groups': dict(sorted(groups.items()))}
+    return {'schema_version': 1, 'weights_sha256': digest(weights), 'rows_sha256': digest(sorted(core)), 'estimation': estimation, 'groups': dict(sorted(groups.items()))}
 
 
 def validate_plan(plan, rows, weights):
@@ -317,6 +359,10 @@ def main():
         prepared = make_suite_proof(proof, weights)
         require({entry['job'] for entry in prepared['plan']['groups'].values()} == set(LONG_JOBS + FAST_JOBS), 'Empty dedicated matrix suite')
         (root / 'long-suites.json').write_text(json.dumps(prepared, indent=2) + '\n')
+        estimation = prepared['plan']['estimation']
+        if estimation['estimated_rows']:
+            note = f"{estimation['estimated_rows']}/{estimation['total_rows']} rows ({len(estimation['new_classes'])} new classes) use ESTIMATED weights; coverage is still exact. Heavy new rows fail loudly via the per-process deadline."
+            print(('::warning title=Estimated long-suite weights::' + note + ' Refresh recommended (run the long-suite weight refresh workflow).') if estimation['refresh_recommended'] else 'NOTE: ' + note)
         print({'legacy_core_rows': len(proof['legacy_core_rows']), 'long_processes': len(prepared['plan']['groups']), 'matrix_jobs': len(JOBS), 'suite_plan_sha256': plan_digest(prepared['plan'])})
         return
     prepared_root = root if args.mode == 'verify' else Path(args.inventory).parent
