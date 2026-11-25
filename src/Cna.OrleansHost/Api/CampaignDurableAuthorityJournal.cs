@@ -658,6 +658,26 @@ internal sealed partial class CampaignDurableAuthorityJournal
     {
         while (true)
         {
+            if (CampaignHostAdapter.TryCompleteStageEntrySystemStep(head.Session) is { } native)
+            {
+                // A supported, obligation-free native cut is drained with its own durable
+                // contract, not through the legacy snapshot action set.
+                if (!native.Result.IsAccepted)
+                {
+                    // Breakdown may have outstanding obligations outside this slice; preserve
+                    // the player's accepted completion rather than inventing an empty result.
+                    if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                        return head;
+                    throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
+                }
+                var command = CampaignHostAdapter.StageEntrySystemCommand(head.Session, native.Result);
+                head = PersistAccepted(connection, transaction, campaignId, head,
+                    native.Kind, null, null, null, null, command, native.Result);
+                // TODO(StageEntrySelectionRounds): initialize the round here only when
+                // the Stage 2 selection and timeout paths are wired end to end (including
+                // the V46 replay binding). Do not arm an uncloseable collecting round.
+                continue;
+            }
             var query = CampaignHostAdapter.QuerySystem(head.Session);
             if (!query.IsSuccessful || query.ActionSet is not { } set || set.Candidates.Count == 0)
                 return head;

@@ -1632,6 +1632,11 @@ public static class CampaignHostAdapter
         // EntryHash QuerySecondCombatSelectionRoundBinding computed when the
         // round was first initialized (CampaignExercises.cs), or a
         // genuinely correct second-side round looks tampered-with on replay.
+        // TODO(StageEntrySelectionRounds): add NativeStageEntryBreakdownKind and
+        // NativeStageEntrySecondBreakdownKind here when the Stage 2 owner/timeout
+        // paths retain and close their rounds. The stage-aware Core binding uses
+        // this same V46 digest and version. Recognizing an unwired terminal
+        // Breakdown now would make VerifySelectionRounds require a missing row.
         if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind && step.EventRecords.Count == 1)
         {
             var secondBreakdown = CampaignNativeSecondBreakdownV46.Deserialize(step.EventRecords[0]);
@@ -1836,6 +1841,213 @@ public static class CampaignHostAdapter
             CampaignActionAudience.System, evidence.Receipt.ActionId);
     }
 
+    private static void RequireStageEntryPosition(ExerciseSession session, string position)
+    {
+        if (CampaignExercises.QueryCheckpoint(session).PositionId != position)
+            throw new InvalidOperationException("Stage Entry opening is not available at this position.");
+    }
+
+    /// <summary>Deterministic Stage 2 System transitions, selected from the current native cut.</summary>
+    public static (string Kind, ExerciseStepResult Result)? TryCompleteStageEntrySystemStep(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return session.Pending switch
+        {
+            InitiativeDeclarationPending => (CampaignHostAcceptedStep.NativeStageEntryWeatherKind, CampaignExercises.CompleteStageEntryWeather(session)),
+            StageEntryWeatherPending => (CampaignHostAcceptedStep.NativeStageEntryOrganizationKind, CampaignStageEntryPreambleAuthority.CompleteStageEntryOrganization(session)),
+            NoObligationOrganizationPending => (CampaignHostAcceptedStep.NativeStageEntryNavalConvoyArrivalKind, CampaignStageEntryPreambleAuthority.CompleteStageEntryNavalConvoyArrival(session)),
+            NoObligationNavalConvoyArrivalPending => (CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind, CampaignStageEntryPreambleAuthority.CompleteStageEntryFleetAssignment(session)),
+            NoObligationFleetAssignmentPending => (CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind, CampaignStageEntryPreambleAuthority.CompleteStageEntryFleetRepair(session)),
+            StageEntryMovementCompletionPending => (CampaignHostAcceptedStep.NativeStageEntryBreakdownKind, CampaignExercises.CompleteStageEntryBreakdown(session)),
+            _ => null,
+        };
+    }
+
+    private static ExerciseStepResult CompleteStageEntrySystemStep(ExerciseSession session, string kind) =>
+        TryCompleteStageEntrySystemStep(session) is { } step && step.Kind == kind
+            ? step.Result : ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+
+    public static CampaignActionSubmission StageEntrySystemCommand(ExerciseSession predecessor, ExerciseStepResult accepted)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentNullException.ThrowIfNull(accepted);
+        var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
+        if (!accepted.IsAccepted || accepted.Evidence is not { Receipt: { Audience: CampaignActionAudience.System } receipt }
+            || receipt.CampaignId != checkpoint.CampaignId || receipt.PriorStateVersion != checkpoint.StateVersion)
+            throw new ArgumentException("Accepted Stage Entry System step required.", nameof(accepted));
+        return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, CampaignActionAudience.System, receipt.ActionId);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QueryStageEntryMovementOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        RequireStageEntryPosition(session, "land.position.operation-2.first-player.movement-and-combat.movement");
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Stage Entry Movement needs an owner side."),
+        };
+        var cut = CampaignExercises.QueryStageEntryMovementCut(session, side, elementId);
+        var actions = cut.MovementOffers.OrderBy(value => value.OriginLocationId, StringComparer.Ordinal)
+            .ThenBy(value => value.DestinationLocationId, StringComparer.Ordinal)
+            .Select(CampaignNativeSecondMoveV44.ActionIdFor).ToArray();
+        return new CampaignHostCycleControlOwnerDraft(cut.AuthorityVersion,
+            CampaignContactOwnerVisibleCutV1.SerializeStageEntryMovement(cut,
+                CampaignExercises.QueryCheckpoint(session).PositionId), actions);
+    }
+
+    public static ExerciseStepResult SubmitStageEntryMovement(ExerciseSession session,
+        CampaignActionSubmission submission, string elementId)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QueryStageEntryMovementOwnerDraft(session, submission.Audience, elementId); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitStageEntryMovement(session, submission.Audience, submission.ActionId, elementId);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QueryStageEntryMovementCompletionOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        RequireStageEntryPosition(session, "land.position.operation-2.first-player.movement-and-combat.movement");
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Stage Entry Movement completion needs an owner."),
+        };
+        var (predecessor, world) = CampaignExercises.QueryStageEntryMovementSource(session);
+        var proposed = CampaignNativeSecondMovementCompletedV45.Create(predecessor, world, session.Context,
+            CampaignExercises.StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentContacts.AuthorityVersion);
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativeSecondMovementCompletedV45.CurrentContractVersion);
+            writer.WriteString("campaignId", proposed.CampaignId);
+            writer.WriteString("side", side.ToString());
+            writer.WriteString("positionId", proposed.PositionId);
+            writer.WriteString("choice", "complete-movement");
+            writer.WriteEndObject();
+        }
+        var visible = stream.ToArray();
+        var action = "sha256:" + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+            (byte[])[.. visible, 0, .. System.Text.Encoding.UTF8.GetBytes("complete-movement")]));
+        return new CampaignHostCycleControlOwnerDraft(proposed.PriorStateVersion, visible, [action]);
+    }
+
+    public static ExerciseStepResult SubmitStageEntryMovementCompletion(ExerciseSession session,
+        CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        CampaignHostCycleControlOwnerDraft draft;
+        try { draft = QueryStageEntryMovementCompletionOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.CompleteStageEntryMovement(session, submission.Audience, submission.ActionId);
+    }
+
+    private static (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions)
+        CreateStageEntryReserveOwnerDraft(ExerciseSession session, CampaignActionAudience audience)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        RequireStageEntryPosition(session, "land.position.operation-2.first-player.reserve-designation");
+        var side = audience switch
+        {
+            CampaignActionAudience.Axis => LandSide.Axis,
+            CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
+            _ => throw new InvalidOperationException("Stage Entry Reserve needs an owner side."),
+        };
+        var (predecessor, world) = CampaignExercises.QueryStageEntryReserveSource(session);
+        var (check, _) = CampaignNativeSecondReserveV43.Create(predecessor, world, session.Context,
+            CampaignExercises.StageEntryOrders(session), side, null, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentContacts.AuthorityVersion);
+        var definition = session.Context.ArtifactV6!.Definition.LegacyDefinition;
+        var actions = CampaignOwnElementProjection.ProjectPlaced(definition, world, side)
+            .Where(element => element.ReserveStatus == CampaignObservationReserveStatus.None
+                && element.VehicleBreakdownRisk is null)
+            .Select(element => (CampaignActionCandidate)new DesignateReserveAction(element.ElementId))
+            .Append(new CompleteReserveDesignationAction()).ToArray();
+        using var stream = new MemoryStream();
+        using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CampaignNativeSecondReserveV43.CurrentContractVersion);
+            writer.WriteString("campaignId", check.CampaignId);
+            writer.WriteString("side", side.ToString());
+            writer.WriteString("positionId", check.PositionId);
+            writer.WriteStartArray("choices");
+            foreach (var action in actions)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", action is DesignateReserveAction ? "designate" : "complete");
+                if (action is DesignateReserveAction designated) writer.WriteString("elementId", designated.ElementId);
+                else writer.WriteNull("elementId");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+        return (new CampaignHostCycleControlOwnerDraft(check.PriorStateVersion, stream.ToArray(),
+            actions.Select(action => action.ActionId).ToArray()), actions);
+    }
+
+    public static CampaignHostCycleControlOwnerDraft QueryStageEntryReserveOwnerDraft(
+        ExerciseSession session, CampaignActionAudience audience) => CreateStageEntryReserveOwnerDraft(session, audience).Draft;
+
+    public static ExerciseStepResult SubmitStageEntryReserve(ExerciseSession session, CampaignActionSubmission submission)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(submission);
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
+        (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions) cut;
+        try { cut = CreateStageEntryReserveOwnerDraft(session, submission.Audience); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException)
+        { return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority); }
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (submission.CampaignId != checkpoint.CampaignId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
+        if (submission.ExpectedStateVersion != checkpoint.StateVersion)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        if (submission.ExpectedPositionId != checkpoint.PositionId)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
+        var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
+        if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        return CampaignExercises.SubmitStageEntryReserve(session, submission.Audience, submission.ActionId,
+            action is DesignateReserveAction designated ? designated.ElementId : null);
+    }
+
     public static CampaignHostCycleControlOwnerDraft QuerySecondMovementOwnerDraft(
         ExerciseSession session, CampaignActionAudience audience, string elementId)
     {
@@ -1945,6 +2157,7 @@ public static class CampaignHostAdapter
             ?? throw new InvalidOperationException("Initiative Declaration requires a resolved holder.");
         if (side != holder)
             throw new InvalidOperationException("Only the initiative holder may declare.");
+        RequireStageEntryPosition(session, "land.position.operation-2.initiative-declaration");
         var predecessor = CampaignExercises.QueryStageEntryInitiativeDeclarationSource(session);
         // Same catalog lookup CampaignNativeInitiativeDeclarationV49.Create performs internally --
         // duplicated here (read-only, no event produced) because Create itself requires actFirst,
@@ -3277,6 +3490,15 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactSecondMovementKind
                 or CampaignHostAcceptedStep.ContactSecondMovementCompletionKind
                 or CampaignHostAcceptedStep.NativeSecondBreakdownKind
+                or CampaignHostAcceptedStep.NativeStageEntryWeatherKind
+                or CampaignHostAcceptedStep.NativeStageEntryOrganizationKind
+                or CampaignHostAcceptedStep.NativeStageEntryNavalConvoyArrivalKind
+                or CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind
+                or CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind
+                or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                or CampaignHostAcceptedStep.ContactStageEntryReserveKind
+                or CampaignHostAcceptedStep.ContactStageEntryMovementKind
+                or CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind
                 or CampaignHostAcceptedStep.ContactRepeatMovementKind
                 or CampaignHostAcceptedStep.NativeRepeatBreakdownKind
                 or CampaignHostAcceptedStep.ContactRepeatCombatSelectionKind
@@ -3575,6 +3797,15 @@ public static class CampaignHostAdapter
                     SubmitSecondMovementCompletion(session, submission),
                 CampaignHostAcceptedStep.NativeSecondBreakdownKind =>
                     CompleteSecondBreakdown(session),
+                CampaignHostAcceptedStep.NativeStageEntryWeatherKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeStageEntryOrganizationKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeStageEntryNavalConvoyArrivalKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeStageEntryBreakdownKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.ContactStageEntryReserveKind => SubmitStageEntryReserve(session, submission),
+                CampaignHostAcceptedStep.ContactStageEntryMovementKind => SubmitStageEntryMovement(session, submission, step.ActingElementId!),
+                CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind => SubmitStageEntryMovementCompletion(session, submission),
                 CampaignHostAcceptedStep.ContactRepeatMovementKind =>
                     SubmitNativeRepeatMovement(session, submission),
                 CampaignHostAcceptedStep.NativeRepeatBreakdownKind =>
@@ -3796,6 +4027,10 @@ public static class CampaignHostAdapter
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         SourceLocalMapCommand(session, accepted)))))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            if (step.Kind is CampaignHostAcceptedStep.NativeStageEntryWeatherKind or CampaignHostAcceptedStep.NativeStageEntryOrganizationKind or CampaignHostAcceptedStep.NativeStageEntryNavalConvoyArrivalKind or CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind or CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(StageEntrySystemCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
@@ -4301,6 +4536,15 @@ public sealed class CampaignHostAcceptedStep
     public const int SourceTripoliTankRegimentActivationContractVersion = 122;
     public const int SourceCwAttachedArtilleryAdmissionContractVersion = 123;
     public const int SourceCwAttachedArtilleryActivationContractVersion = 124;
+    public const int NativeStageEntryWeatherContractVersion = 125;
+    public const int NativeStageEntryOrganizationContractVersion = 126;
+    public const int NativeStageEntryNavalConvoyArrivalContractVersion = 127;
+    public const int NativeStageEntryFleetAssignmentContractVersion = 128;
+    public const int NativeStageEntryFleetRepairContractVersion = 129;
+    public const int NativeStageEntryBreakdownContractVersion = 130;
+    public const int ContactStageEntryReserveContractVersion = 131;
+    public const int ContactStageEntryMovementContractVersion = 132;
+    public const int ContactStageEntryMovementCompletionContractVersion = 133;
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
@@ -4427,6 +4671,15 @@ public sealed class CampaignHostAcceptedStep
     public const string SourceCwPriorityWorldKind = "source-cw-priority-world";
     public const string SourceCwFreeGunsWorldKind = "source-cw-free-guns-world";
     public const string NativeSecondBreakdownKind = "native-second-breakdown";
+    public const string NativeStageEntryWeatherKind = "native-stage-entry-weather";
+    public const string NativeStageEntryOrganizationKind = "native-stage-entry-organization";
+    public const string NativeStageEntryNavalConvoyArrivalKind = "native-stage-entry-naval-convoy-arrival";
+    public const string NativeStageEntryFleetAssignmentKind = "native-stage-entry-fleet-assignment";
+    public const string NativeStageEntryFleetRepairKind = "native-stage-entry-fleet-repair";
+    public const string NativeStageEntryBreakdownKind = "native-stage-entry-breakdown";
+    public const string ContactStageEntryReserveKind = "contact-stage-entry-reserve";
+    public const string ContactStageEntryMovementKind = "contact-stage-entry-movement";
+    public const string ContactStageEntryMovementCompletionKind = "contact-stage-entry-movement-completion";
     public const string ContactRepeatMovementKind = "contact-repeat-movement";
     public const string NativeRepeatBreakdownKind = "native-repeat-breakdown";
     public const string ContactRepeatCombatSelectionKind = "contact-repeat-combat-selection";
@@ -4458,6 +4711,15 @@ public sealed class CampaignHostAcceptedStep
                 or NativeReserveReleaseCompletionKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactStageEntryInitiativeDeclarationKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
                 or ContactRepeatMovementKind or NativeRepeatBreakdownKind or NativeSecondBreakdownKind
+                or NativeStageEntryWeatherKind
+                or NativeStageEntryOrganizationKind
+                or NativeStageEntryNavalConvoyArrivalKind
+                or NativeStageEntryFleetAssignmentKind
+                or NativeStageEntryFleetRepairKind
+                or NativeStageEntryBreakdownKind
+                or ContactStageEntryReserveKind
+                or ContactStageEntryMovementKind
+                or ContactStageEntryMovementCompletionKind
                 or ContactRepeatCombatSelectionKind or NativeRepeatCombatNoAttackKind
                 or NativeCombatRbaCancellationKind or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind)
             || (kind is PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAutoblindaKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogChoiceKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityChoiceKind or SourceCairoUnitKind or ContactMovementKind or ContactCombatSelectionKind or ContactRbaDeclineKind
@@ -4465,6 +4727,9 @@ public sealed class CampaignHostAcceptedStep
                 or ContactPostAssaultRetreatKind or ContactCombatCustodyKind
                 or ContactReserveReleaseChoiceKind or ContactCycleControlKind or ContactTruckConvoyPassKind or ContactPostCombatPassKind or ContactSecondReserveKind or ContactStageEntryInitiativeDeclarationKind or ContactSecondMovementKind or ContactSecondMovementCompletionKind
                 or ContactRepeatMovementKind or ContactRepeatCombatSelectionKind
+                or ContactStageEntryReserveKind
+                or ContactStageEntryMovementKind
+                or ContactStageEntryMovementCompletionKind
                 && string.IsNullOrWhiteSpace(actingElementId))
             || (kind is LegacyKind or SourceAxisSupplementKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourceAttachedInitialLoadsKind or SourceInitialWrecksKind or SourceAxisFreeSetupKind or SourceAxisCorpsSetupKind or SourceMalettiHierarchyKind or SourceGt2CorrectionKind or SourceCwPriorityCatalogKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceTobrukBardiaGarrisonAdmissionKind or SourceTobrukBardiaGarrisonActivationKind or SourceBardiaGarrisonRemainderAdmissionKind or SourceBardiaGarrisonRemainderActivationKind or SourceTripoliTankRegimentAdmissionKind or SourceTripoliTankRegimentActivationKind or SourceCwAttachedArtilleryAdmissionKind or SourceCwAttachedArtilleryActivationKind or SourceMatruhFormationKind or SourceCwFreeGunsKind or SourceAxisPriorityMotorizationKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind
                 or NativeCombatForceCompletionKind or NativeCombatForceCancellationKind
@@ -4473,6 +4738,12 @@ public sealed class CampaignHostAcceptedStep
                 or NativeCombatSettlementKind or NativeCombatNoCustodyKind
                 or NativeCombatSuccessorKind or NativeReserveReleaseCompletionKind
                 or NativeRepeatBreakdownKind or NativeSecondBreakdownKind or NativeRepeatCombatNoAttackKind or NativeCombatRbaCancellationKind
+                or NativeStageEntryWeatherKind
+                or NativeStageEntryOrganizationKind
+                or NativeStageEntryNavalConvoyArrivalKind
+                or NativeStageEntryFleetAssignmentKind
+                or NativeStageEntryFleetRepairKind
+                or NativeStageEntryBreakdownKind
                 or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
@@ -4564,6 +4835,15 @@ public sealed class CampaignHostAcceptedStep
             SourceCwPriorityWorldKind => SourceCwPriorityWorldContractVersion,
             SourceCwFreeGunsWorldKind => SourceCwFreeGunsWorldContractVersion,
             NativeSecondBreakdownKind => NativeSecondBreakdownContractVersion,
+            NativeStageEntryWeatherKind => NativeStageEntryWeatherContractVersion,
+            NativeStageEntryOrganizationKind => NativeStageEntryOrganizationContractVersion,
+            NativeStageEntryNavalConvoyArrivalKind => NativeStageEntryNavalConvoyArrivalContractVersion,
+            NativeStageEntryFleetAssignmentKind => NativeStageEntryFleetAssignmentContractVersion,
+            NativeStageEntryFleetRepairKind => NativeStageEntryFleetRepairContractVersion,
+            NativeStageEntryBreakdownKind => NativeStageEntryBreakdownContractVersion,
+            ContactStageEntryReserveKind => ContactStageEntryReserveContractVersion,
+            ContactStageEntryMovementKind => ContactStageEntryMovementContractVersion,
+            ContactStageEntryMovementCompletionKind => ContactStageEntryMovementCompletionContractVersion,
             ContactMovementKind => ContactMovementContractVersion,
             ContactInitiativeOrderKind => ContactInitiativeOrderContractVersion,
             ContactReserveDesignationKind => ContactReserveDesignationContractVersion,

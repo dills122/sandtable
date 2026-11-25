@@ -47,8 +47,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         new("truck-convoy-pass", "truck-convoy-pass", CampaignOwnerOpeningKind.TruckConvoyPass, TruckConvoyPassOpeningKey),
         new("post-combat-pass", "post-combat-pass", CampaignOwnerOpeningKind.PostCombatPass, PostCombatPassOpeningKey),
         new("second-reserve", "second-reserve", CampaignOwnerOpeningKind.SecondReserve, SecondReserveOpeningKey),
+        new("stage-entry-reserve", "stage-entry-reserve", CampaignOwnerOpeningKind.StageEntryReserve, StageEntryReserveOpeningKey),
         new("second-movement", "second-movement", CampaignOwnerOpeningKind.SecondMovement, null),
+        new("stage-entry-movement", "stage-entry-movement", CampaignOwnerOpeningKind.StageEntryMovement, null),
         new("second-movement-completion", "second-movement-completion", CampaignOwnerOpeningKind.SecondMovementCompletion, SecondMovementCompletionOpeningKey),
+        new("stage-entry-movement-completion", "stage-entry-movement-completion", CampaignOwnerOpeningKind.StageEntryMovementCompletion, StageEntryMovementCompletionOpeningKey),
         new("stage-entry-initiative-declaration", "stage-entry-initiative-declaration", CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration, StageEntryInitiativeDeclarationOpeningKey),
         new("repeat-movement", "repeat-movement", CampaignOwnerOpeningKind.RepeatMovement, RepeatMovementOpeningKey),
         new("repeat-combat-selection", "repeat-combat-selection", CampaignOwnerOpeningKind.RepeatCombatSelection, null),
@@ -140,6 +143,17 @@ internal sealed partial class CampaignDurableAuthorityJournal
     {
         while (true)
         {
+            if (CampaignHostAdapter.TryCompleteStageEntrySystemStep(session) is { } native)
+            {
+                if (!native.Result.IsAccepted)
+                {
+                    if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                        return session;
+                    throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
+                }
+                session = native.Result.SuccessorSession!;
+                continue;
+            }
             var query = CampaignHostAdapter.QuerySystem(session);
             if (!query.IsSuccessful || query.ActionSet is not { } set || set.Candidates.Count == 0)
                 return session;

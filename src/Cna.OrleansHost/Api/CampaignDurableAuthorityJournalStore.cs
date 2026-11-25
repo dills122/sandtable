@@ -577,14 +577,23 @@ internal sealed partial class CampaignDurableAuthorityJournalStore
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondReserve(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerSecondReserve(credential, openingRevision, publicActionRef);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryReserve(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerStageEntryReserve(credential, openingRevision, publicActionRef);
+
     internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryInitiativeDeclaration(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerStageEntryInitiativeDeclaration(credential, openingRevision, publicActionRef);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovement(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerSecondMovement(credential, elementId, openingRevision, publicActionRef);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryMovement(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerStageEntryMovement(credential, elementId, openingRevision, publicActionRef);
+
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovementCompletion(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerSecondMovementCompletion(credential, openingRevision, publicActionRef);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryMovementCompletion(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerStageEntryMovementCompletion(credential, openingRevision, publicActionRef);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerRepeatMovement(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         JournalFor(credential.CampaignId, createIfMissing: false).SubmitOwnerRepeatMovement(credential, openingRevision, publicActionRef);
@@ -925,14 +934,23 @@ internal sealed partial class CampaignDurableAuthorityJournalStore
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondReserveAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondReserve(credential, openingRevision, publicActionRef));
 
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerStageEntryReserveAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerStageEntryReserve(credential, openingRevision, publicActionRef));
+
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerStageEntryInitiativeDeclarationAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerStageEntryInitiativeDeclaration(credential, openingRevision, publicActionRef));
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondMovementAsync(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondMovement(credential, elementId, openingRevision, publicActionRef));
 
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerStageEntryMovementAsync(CampaignSeatCredential credential, string elementId, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerStageEntryMovement(credential, elementId, openingRevision, publicActionRef));
+
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerSecondMovementCompletionAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerSecondMovementCompletion(credential, openingRevision, publicActionRef));
+
+    internal Task<CampaignOwnerSubmissionResult> SubmitOwnerStageEntryMovementCompletionAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
+        RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerStageEntryMovementCompletion(credential, openingRevision, publicActionRef));
 
     internal Task<CampaignOwnerSubmissionResult> SubmitOwnerRepeatMovementAsync(CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         RunAsync(credential.CampaignId, false, journal => journal.SubmitOwnerRepeatMovement(credential, openingRevision, publicActionRef));

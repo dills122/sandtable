@@ -30,6 +30,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(first.Rows, second.Rows);
         Assert.Equal(first.Cuts, second.Cuts);
         Assert.Equal(first.Submissions, second.Submissions);
+        Assert.DoesNotContain(first.Rows, row => row.Contains(": fallback ", StringComparison.Ordinal));
         Assert.Equal(first.References.Length, second.References.Length);
         Assert.NotEqual(first.References[0], second.References[0]);
         TestContext.Current.TestOutputHelper?.WriteLine(string.Join('\n', first.Rows));
