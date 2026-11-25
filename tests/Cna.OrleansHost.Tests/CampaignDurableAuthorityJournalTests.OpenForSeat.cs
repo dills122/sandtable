@@ -107,6 +107,29 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     }
 
     [Fact]
+    public async Task OpenForSeatReportsUnavailableNotEmptyWhenTheJournalFailsToLoad()
+    {
+        if (JournalFixture.UsesMarten) return;
+        using var fixture = new JournalFixture();
+        var journal = fixture.Create();
+        var request = CombatInfantryRequest();
+        await using var outward = await OwnerHttpHarness.Start(journal, request.CampaignId);
+        await outward.CreateCampaign(request, Timing(request), OperatorSecret);
+        var axis = await outward.IssueAndRedeemSeat(CampaignActionAudience.Axis, OperatorSecret);
+        Assert.Equal(HttpStatusCode.OK, (await outward.OpenForSeatResponse(axis)).Status);
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={fixture.Path};Pooling=False"))
+        {
+            connection.Open();
+            using var update = connection.CreateCommand();
+            update.CommandText = "UPDATE campaigns SET head_hash='tampered'";
+            Assert.Equal(1, update.ExecuteNonQuery());
+        }
+        var (status, body) = await outward.OpenForSeatResponse(axis);
+        Assert.True(status == HttpStatusCode.Conflict, $"{status} {body}");
+        Assert.DoesNotContain("\"open\"", body);
+    }
+
+    [Fact]
     public async Task OpenForSeatRejectsForgedWrongCampaignAndNonSameOriginCallers()
     {
         using var fixture = new JournalFixture();

@@ -95,13 +95,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var transaction = connection.BeginTransaction();
         var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
-        ExerciseSession session;
-        try { session = (verifiedHead ?? Load(connection, transaction, seat.CampaignId)).Session; }
-        catch (InvalidOperationException)
-        {
-            // No admitted gameplay session yet (source initialization): nothing is open here.
+        // Load failures (missing row, integrity/replay errors) must surface as errors, not as
+        // "nothing open"; only a source-initialization head with no gameplay session means empty.
+        var head = verifiedHead ?? Load(connection, transaction, seat.CampaignId);
+        if (head.LegacySession is not { } session)
             return new CampaignOpenSeatResult(seat.CampaignId, seat.Audience, []);
-        }
         session = PreviewDrainSystemSteps(session);
         var candidates = CampaignOpenSeatCatalog.CandidatesFor(session);
         var stages = candidates.IsLegacyChain
