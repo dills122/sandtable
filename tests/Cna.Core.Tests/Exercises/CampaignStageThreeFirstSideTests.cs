@@ -25,6 +25,7 @@ public sealed class CampaignStageThreeFirstSideTests
         nameof(ThirdStageReservePending),
         nameof(ThirdStageMovementCompletionPending),
         nameof(ThirdStageBreakdownPending),
+        nameof(ThirdStageCombatSelectionPending),
     ];
 
     public static TheoryData<string> Subtypes() => [.. CoveredSubtypes];
@@ -34,6 +35,7 @@ public sealed class CampaignStageThreeFirstSideTests
         nameof(ThirdStageReservePending) => Fixture.Value.AfterReserve,
         nameof(ThirdStageMovementCompletionPending) => Fixture.Value.AfterMovementCompletion,
         nameof(ThirdStageBreakdownPending) => Fixture.Value.AfterBreakdown,
+        nameof(ThirdStageCombatSelectionPending) => Fixture.Value.AfterCombatDecision,
         _ => throw new ArgumentOutOfRangeException(nameof(typeName)),
     };
 
@@ -42,6 +44,7 @@ public sealed class CampaignStageThreeFirstSideTests
         nameof(ThirdStageReservePending) => nameof(ExerciseSession.CurrentThirdStageReserve),
         nameof(ThirdStageMovementCompletionPending) => nameof(ExerciseSession.CurrentThirdStageMovementCompletion),
         nameof(ThirdStageBreakdownPending) => nameof(ExerciseSession.CurrentThirdStageBreakdown),
+        nameof(ThirdStageCombatSelectionPending) => nameof(ExerciseSession.CurrentThirdStageCombatDecision),
         _ => throw new ArgumentOutOfRangeException(nameof(typeName)),
     };
 
@@ -58,7 +61,8 @@ public sealed class CampaignStageThreeFirstSideTests
         var all = typeof(PendingDecision).Assembly.GetTypes()
             .Where(type => typeof(PendingDecision).IsAssignableFrom(type) && !type.IsAbstract
                 && type.Name is "ThirdStageReservePending" or "ThirdStageMovePending"
-                    or "ThirdStageMovementCompletionPending" or "ThirdStageBreakdownPending")
+                    or "ThirdStageMovementCompletionPending" or "ThirdStageBreakdownPending"
+                    or "ThirdStageCombatSelectionPending")
             .Select(type => type.Name).ToHashSet(StringComparer.Ordinal);
         Assert.Equal(["ThirdStageMovePending"], all.Except(covered));
     }
@@ -85,9 +89,12 @@ public sealed class CampaignStageThreeFirstSideTests
         Assert.IsType<ThirdStageMovementCompletionPending>(session.Pending);
         Set(session, "CurrentThirdStageBreakdown", Record<CampaignNativeSecondBreakdownV46>());
         Assert.IsType<ThirdStageBreakdownPending>(session.Pending);
+        Set(session, "CurrentThirdStageCombatDecision", Record<CampaignNativeSecondCombatDecisionStateV47>());
+        Assert.IsType<ThirdStageCombatSelectionPending>(session.Pending);
         // Stale Stage 2 fields (never reset) must not shadow Stage 3's cuts either.
         Set(session, "CurrentStageEntrySecondBreakdown", Record<CampaignNativeSecondBreakdownV46>());
-        Assert.IsType<ThirdStageBreakdownPending>(session.Pending);
+        Set(session, "CurrentStageEntrySecondCombatDecision", Record<CampaignNativeSecondCombatDecisionStateV47>());
+        Assert.IsType<ThirdStageCombatSelectionPending>(session.Pending);
     }
 
     [Theory]
@@ -132,7 +139,7 @@ public sealed class CampaignStageThreeFirstSideTests
     {
         // Head = Breakdown; flip a byte of this subtype's own record on the retained chain by
         // walking to that predecessor session, then re-pointing the head chain at the tampered clone.
-        var head = Fixture.Value.AfterBreakdown;
+        var head = Fixture.Value.AfterCombatDecision;
         var chain = new List<ExerciseSession>();
         for (var cursor = head; cursor.Pending is { } pending && pending.Predecessor is not null; cursor = pending.Predecessor)
             chain.Add(cursor);
@@ -201,27 +208,96 @@ public sealed class CampaignStageThreeFirstSideTests
         Assert.False(CampaignExercises.CompleteStageEntryBreakdown(f.AfterMovementCompletion).IsAccepted);
     }
 
-    // Stale-field checklist: with Stage 3 Combat unwired, every Combat entry point that reads
-    // never-reset Stage 1/2 fields must fail closed once Stage 3 Breakdown has completed.
+    // S3-4: Stage 3's own first-side Combat Decision is wired at the Breakdown cut; the owner,
+    // element, action, state version and position are all enforced.
     [Fact]
-    public void CombatEntryPointsFailClosedAtTheStageThreeBreakdownCut()
+    public void CombatDecisionAtTheBreakdownCutRequiresTheActingSideElementAndLiveAction()
     {
-        var session = Fixture.Value.AfterBreakdown;
+        var f = Fixture.Value;
+        var session = f.AfterBreakdown;
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
-        foreach (var audience in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
-        {
-            // CampaignCombatExerciseActions.Classify: no Stage Entry guard before this slice.
-            Assert.Null(CampaignCombatExerciseActions.Query(session, audience));
-            var element = audience == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
-            var finish = new FinishCombatWithoutAttackAction(element);
-            var submission = new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
-                checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, audience, finish.ActionId);
-            Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, element).IsAccepted);
-            Assert.Null(CampaignCombatExerciseActions.Submit(session, submission));
-            Assert.False(CampaignExercises.SubmitPostCombatPass(session, audience, Hash("post-combat")).IsAccepted);
-            var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
-            Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryContactOwnerCombatCut(session, side, element));
-        }
+        var other = f.FirstAudience == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        var otherElement = other == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
+        CampaignActionSubmission Submission(CampaignActionAudience audience, string actionId, long? version = null, string? position = null) =>
+            new(CampaignActionSubmission.CurrentContractVersion, checkpoint.CampaignId, version ?? checkpoint.StateVersion,
+                position ?? checkpoint.PositionId, audience, actionId);
+        var finish = new FinishCombatWithoutAttackAction(f.FirstElementId).ActionId;
+
+        // Wrong side / wrong element / System audience / bogus action / stale cut.
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            Submission(other, new FinishCombatWithoutAttackAction(otherElement).ActionId), otherElement).IsAccepted);
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            Submission(f.FirstAudience, finish), otherElement).IsAccepted);
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            Submission(CampaignActionAudience.System, finish), f.FirstElementId).IsAccepted);
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            Submission(f.FirstAudience, Hash("bogus-action")), f.FirstElementId).IsAccepted);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            Submission(f.FirstAudience, finish, version: checkpoint.StateVersion - 1), f.FirstElementId).RejectionReason);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.UnexpectedPosition, CampaignExercises.SubmitContactOwnerCombatSelection(session,
+            Submission(f.FirstAudience, finish, position: "land.position.operation-2.first-player.movement-and-combat.combat"),
+            f.FirstElementId).RejectionReason);
+
+        // The cut projects from Stage 3's own World and position; the accepted decision names Stage 3.
+        var cut = CampaignExercises.QueryContactOwnerCombatCut(session,
+            f.StageThreeFirstSide, f.FirstElementId);
+        Assert.Equal(finish, cut.FinishOffer?.ActionId);
+        var decision = f.AfterCombatDecision.CurrentThirdStageCombatDecision!.Decision;
+        Assert.Equal(f.StageThreeFirstSide, decision.Side);
+        Assert.Equal(f.FirstElementId, decision.ActingElementId);
+        Assert.Contains("operation-3", decision.PositionId, StringComparison.Ordinal);
+        Assert.Equal(f.AfterBreakdown.CurrentThirdStageBreakdown!.NextPositionId, decision.PositionId);
+        Assert.Same(f.AfterBreakdown, f.AfterCombatDecision.ThirdStageCombatSelectionPredecessor);
+
+        // Dice cursor (#593): selection does not draw, and the state carries the retained history's latest cursor.
+        var expectedCursor = ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState, session.CurrentHistory);
+        Assert.Equal(expectedCursor, f.AfterCombatDecision.CurrentThirdStageCombatDecision!.RandomState);
+        Assert.NotEqual(session.CurrentSnapshot.RandomState, expectedCursor);
+
+        // Everything after the Decision stays closed at this cut.
+        AssertPostDecisionEntryPointsClosed(session, f.FirstAudience);
+    }
+
+    // Stale-field checklist: after the Decision, S3-5's Assault/No-Attack/Post-Combat chain is not wired,
+    // so every entry point that reads never-reset Stage 1/2 fields must fail closed.
+    [Fact]
+    public void EverythingAfterTheStageThreeDecisionFailsClosed()
+    {
+        var f = Fixture.Value;
+        var session = f.AfterCombatDecision;
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        Assert.Contains("operation-3", checkpoint.PositionId, StringComparison.Ordinal);
+        var finish = new FinishCombatWithoutAttackAction(f.FirstElementId).ActionId;
+        var submission = new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, f.FirstAudience, finish);
+        // Duplicate Decision.
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, f.FirstElementId).IsAccepted);
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignExercises.QueryContactOwnerCombatCut(session, f.StageThreeFirstSide, f.FirstElementId));
+        Assert.Throws<InvalidOperationException>(() => session.WithThirdStageCombatSelection(
+            session.CurrentThirdStageCombatDecision!, session.CurrentContacts));
+        // No active assault runtime: the stale Stage 2 ones must not answer.
+        Assert.NotNull(session.CurrentStageEntrySecondAssault);
+        Assert.Null(session.CurrentRepeatAssault);
+        Assert.Throws<InvalidOperationException>(() => session.WithRepeatAssaultEvent(
+            session.CurrentThirdStageCombatDecision!.Decision, session.CurrentContacts));
+        AssertPostDecisionEntryPointsClosed(session, f.FirstAudience);
+        // The Stage 2 siblings never accept Stage 3 state.
+        Assert.False(CampaignExercises.CompleteStageEntryCombatNoAttack(session).IsAccepted);
+        Assert.False(CampaignExercises.CompleteStageEntrySecondCombatNoAttack(session).IsAccepted);
+        Assert.False(CampaignExercises.CompleteNativeReserveRelease(session).IsAccepted);
+        Assert.False(CampaignExercises.SubmitNativeCycleControl(session, f.FirstAudience,
+            CampaignNativeCycleControlChoiceV28.Finish, Hash("cycle-control")).IsAccepted);
+        Assert.False(CampaignExercises.SubmitTruckConvoyPass(session, f.FirstAudience, Hash("truck")).IsAccepted);
+    }
+
+    private static void AssertPostDecisionEntryPointsClosed(ExerciseSession session, CampaignActionAudience audience)
+    {
+        // CampaignCombatExerciseActions.Classify: reads Stage 1 fields, had no Stage Entry guard.
+        Assert.Null(CampaignCombatExerciseActions.Query(session, audience));
+        // SubmitPostCombatPass lacked the CurrentInitiativeDeclaration-is-null guard its siblings have.
+        Assert.False(CampaignExercises.SubmitPostCombatPass(session, audience, Hash("post-combat")).IsAccepted);
+        // Round binding / timeout keyed off the never-reset CurrentSecondBreakdown.
         Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeCombatSelectionRoundBinding(session));
         Assert.False(CampaignExercises.TimeoutNativeCombatSelection(session, null, 0, 0, 0, null, "selection-unavailable").IsAccepted);
     }
@@ -259,6 +335,25 @@ public sealed class CampaignStageThreeFirstSideTests
         const BindingFlags any = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         var property = typeof(ExerciseSession).GetProperty(propertyName, any)!;
         var current = property.GetValue(session)!;
+        if (current is CampaignNativeSecondCombatDecisionStateV47 state)
+        {
+            // The retained V47 state wraps a byte-addressable Decision; flip one byte of it.
+            var decisionBytes = state.Decision.SerializeCanonical();
+            for (var index = decisionBytes.Length - 1; index >= 0; index--)
+            {
+                var altered = (byte[])decisionBytes.Clone();
+                altered[index] ^= 1;
+                CampaignNativeSecondCombatDecisionV47 replacement;
+                try { replacement = CampaignNativeSecondCombatDecisionV47.Deserialize(altered); }
+                catch (Exception error) when (error is System.Text.Json.JsonException or ArgumentException
+                    or InvalidOperationException or FormatException) { continue; }
+                if (replacement.Equals(state.Decision)) continue;
+                var tamperedClone = Clone(session);
+                property.SetValue(tamperedClone, state with { Decision = replacement });
+                return tamperedClone;
+            }
+            throw new InvalidOperationException("No one-byte flip of the Stage 3 Combat Decision still deserializes.");
+        }
         var serialize = current.GetType().GetMethod("SerializeCanonical", any, Type.EmptyTypes)!;
         var deserialize = current.GetType().GetMethod("Deserialize", BindingFlags.Static | BindingFlags.Public
             | BindingFlags.NonPublic, [typeof(ReadOnlyMemory<byte>)])!;
@@ -298,11 +393,11 @@ public sealed class CampaignStageThreeFirstSideTests
 
     private sealed record StageThreeFixture(ExerciseSession StageTwoTerminal, ExerciseSession PreambleTerminal,
         ExerciseSession AfterReserve, ExerciseSession AfterMovementCompletion,
-        ExerciseSession AfterBreakdown, CampaignActionAudience FirstAudience, LandSide StageThreeFirstSide,
+        ExerciseSession AfterBreakdown, ExerciseSession AfterCombatDecision, CampaignActionAudience FirstAudience, LandSide StageThreeFirstSide,
         string FirstElementId);
 
     // Drives one real session through Operation Stages 1 and 2 (both acting sides) and the Stage 2->3
-    // preamble, then through Stage 3's own first-side Reserve, Movement, Movement Completion and Breakdown.
+    // preamble, then through Stage 3's own first-side Reserve, Movement Completion, Breakdown and Combat Decision.
     // Same Core dispatch shape as CampaignStageThreeEntryVerificationTests.
     private static class StageThreeDriver
     {
@@ -380,8 +475,13 @@ public sealed class CampaignStageThreeFirstSideTests
 
             var afterMovementCompletion = Ok(CampaignExercises.CompleteThirdStageMovement(afterReserve, audience, Hash("stage3-movement-completion")));
             var afterBreakdown = Ok(CampaignExercises.CompleteThirdStageBreakdown(afterMovementCompletion));
+            var breakdownCut = CampaignExercises.QueryCheckpoint(afterBreakdown);
+            var afterCombatDecision = Ok(CampaignExercises.SubmitContactOwnerCombatSelection(afterBreakdown,
+                new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion, breakdownCut.CampaignId,
+                    breakdownCut.StateVersion, breakdownCut.PositionId, audience,
+                    new FinishCombatWithoutAttackAction(elementId).ActionId), elementId));
             return new StageThreeFixture(stageTwoTerminal, preambleTerminal, afterReserve,
-                afterMovementCompletion, afterBreakdown, audience, stageThreeFirstSide, elementId);
+                afterMovementCompletion, afterBreakdown, afterCombatDecision, audience, stageThreeFirstSide, elementId);
         }
 
         private static ExerciseSession Ok(ExerciseStepResult result)

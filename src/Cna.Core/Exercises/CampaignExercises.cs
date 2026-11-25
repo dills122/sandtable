@@ -3949,7 +3949,9 @@ public static class CampaignExercises
     // second-side query is unconditionally rejected as "already advanced"
     // even though no second-side decision exists yet.
     private static bool HasAdvancedCombatSelection(ExerciseSession session) =>
-        session.CurrentStageEntrySecondBreakdown is not null
+        session.CurrentThirdStageBreakdown is not null
+            ? session.CurrentThirdStageCombatDecision is not null
+            : session.CurrentStageEntrySecondBreakdown is not null
             ? session.CurrentStageEntrySecondCombatDecision is not null
             : session.CurrentStageEntryBreakdown is not null
             ? session.CurrentStageEntryCombatDecision is not null
@@ -3996,6 +3998,23 @@ public static class CampaignExercises
         return (world, position);
     }
 
+    // S3-4 (2026-11-24): Operation Stage 3's own first-acting-side (World, Position)
+    // pair for Combat selection, same shape as QueryStageEntryCombatWorldAndPosition.
+    private static (CampaignWorldSnapshotV6 World, LandSequencePosition Position)
+        QueryThirdStageCombatWorldAndPosition(ExerciseSession session)
+    {
+        var breakdown = session.CurrentThirdStageBreakdown
+            ?? throw new InvalidOperationException("Stage 3 Combat selection requires a completed Stage 3 Breakdown.");
+        var world = session.CurrentThirdStageMoveWorld ?? session.CurrentThirdStageReserveWorld
+            ?? throw new InvalidOperationException("Stage 3 Combat selection requires a retained World.");
+        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+            .Single(value => value.PositionId == breakdown.NextPositionId);
+        var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
+            catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
+            catalog.ActorRole, breakdown.Side, catalog.Sources);
+        return (world, position);
+    }
+
     // MTS-TASK-006 (2026-11-23): this stage's own SECOND acting side's
     // (World, Position) pair for Combat selection, same shape as
     // QueryStageEntryCombatWorldAndPosition above, substituting this
@@ -4029,10 +4048,17 @@ public static class CampaignExercises
         ExerciseSession session, LandSide side, string actingElementId)
     {
         ArgumentNullException.ThrowIfNull(session);
-        if (IsStageThreeCombatUnwired(session))
+        // Stage 3 Combat is wired for the first side's Decision only (S3-4).
+        if (IsStageThreeCombatUnwired(session) && session.CurrentThirdStageBreakdown is null)
             throw new InvalidOperationException("Stage 3 Combat selection is not wired.");
         if (HasAdvancedCombatSelection(session))
             throw new InvalidOperationException("Combat selection has already advanced this authority cut.");
+        if (session.CurrentThirdStageBreakdown is not null)
+        {
+            var (thirdWorld, thirdPosition) = QueryThirdStageCombatWorldAndPosition(session);
+            return CampaignContactCombatSelectionCut.ProjectSecondCombat(thirdWorld, thirdPosition,
+                session.Context, session.CurrentContacts, side, actingElementId);
+        }
         if (session.CurrentStageEntrySecondBreakdown is not null)
         {
             var (stageEntrySecondWorld, stageEntrySecondPosition) = QueryStageEntrySecondCombatWorldAndPosition(session);
@@ -4179,6 +4205,8 @@ public static class CampaignExercises
                 return new ExerciseCheckpoint(session.CurrentSecondMove!, session.CurrentSnapshot);
             case SecondReservePending:
                 return new ExerciseCheckpoint(session.CurrentSecondReserve!, session.CurrentSnapshot);
+            case ThirdStageCombatSelectionPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageCombatDecision!);
             case ThirdStageBreakdownPending:
                 return new ExerciseCheckpoint(session.CurrentThirdStageBreakdown!, session.CurrentSnapshot);
             case ThirdStageMovementCompletionPending:
@@ -4591,7 +4619,7 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidSubmission);
         // Stage 3 Combat is not wired (S3-4): the stale Stage 2 fields below
         // would otherwise answer for the wrong stage.
-        if (IsStageThreeCombatUnwired(session))
+        if (IsStageThreeCombatUnwired(session) && session.CurrentThirdStageBreakdown is null)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         // #394 extra-2: this method now also serves the second side's first
         // Combat decision after their own Breakdown (V46) completes -- gated
@@ -4609,10 +4637,15 @@ public static class CampaignExercises
         // stage's own SECOND acting side's Combat Decision, gated by
         // CurrentStageEntrySecondBreakdown, checked first since it is
         // chronologically latest.
-        var isStageEntrySecondSide = session.CurrentStageEntrySecondBreakdown is not null;
-        var isStageEntry = !isStageEntrySecondSide && session.CurrentStageEntryBreakdown is not null;
-        var isSecondSide = !isStageEntrySecondSide && !isStageEntry && session.CurrentSecondBreakdown is not null;
-        var expectedStateVersion = isStageEntrySecondSide
+        // S3-4 (2026-11-24): Stage 3's own first-side Decision, gated by
+        // CurrentThirdStageBreakdown, checked first since it is chronologically latest.
+        var isThirdStage = session.CurrentThirdStageBreakdown is not null;
+        var isStageEntrySecondSide = !isThirdStage && session.CurrentStageEntrySecondBreakdown is not null;
+        var isStageEntry = !isThirdStage && !isStageEntrySecondSide && session.CurrentStageEntryBreakdown is not null;
+        var isSecondSide = !isThirdStage && !isStageEntrySecondSide && !isStageEntry && session.CurrentSecondBreakdown is not null;
+        var expectedStateVersion = isThirdStage
+            ? session.CurrentThirdStageBreakdown!.StateVersion
+            : isStageEntrySecondSide
             ? session.CurrentStageEntrySecondBreakdown!.StateVersion
             : isStageEntry
             ? session.CurrentStageEntryBreakdown!.StateVersion
@@ -4628,7 +4661,9 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.CampaignMismatch);
         if (submission.ExpectedStateVersion != expectedStateVersion)
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
-        var expectedPositionId = isStageEntrySecondSide
+        var expectedPositionId = isThirdStage
+            ? session.CurrentThirdStageBreakdown!.NextPositionId
+            : isStageEntrySecondSide
             ? session.CurrentStageEntrySecondBreakdown!.NextPositionId
             : isStageEntry
             ? session.CurrentStageEntryBreakdown!.NextPositionId
@@ -4647,6 +4682,32 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
         try
         {
+            if (isThirdStage)
+            {
+                // Net-new path: no legacy decision event can exist for Stage 3. Selection itself
+                // does not draw; the input cursor is the retained history's LatestCursor (#593).
+                var (world, position) = QueryThirdStageCombatWorldAndPosition(session);
+                var thirdCut = CampaignContactCombatSelectionCut.ProjectSecondCombat(world, position,
+                    session.Context, session.CurrentContacts, side.Value, actingElementId);
+                if (!thirdCut.AssaultOffers.Any(offer => offer.ActionId == submission.ActionId)
+                    && thirdCut.FinishOffer?.ActionId != submission.ActionId)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                var thirdSelected = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                    session.CurrentSnapshot, ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState,
+                        session.CurrentHistory), session.Context,
+                    session.CurrentContacts, side.Value, actingElementId, submission.ActionId);
+                if (thirdSelected.Decision.Side != side || thirdSelected.Decision.ActingElementId != actingElementId
+                    || thirdSelected.Decision.ActionId != submission.ActionId)
+                    return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                var thirdContacts = session.CurrentContacts.AdvanceSecondCombatSelection(thirdSelected.Decision);
+                var thirdSuccessor = session.WithThirdStageCombatSelection(thirdSelected, thirdContacts);
+                var thirdBytes = thirdSelected.Decision.SerializeCanonical();
+                var thirdReceipt = new CampaignActionAcceptanceReceipt(thirdSelected.CampaignId,
+                    thirdSelected.Decision.PriorStateVersion, thirdSelected.StateVersion,
+                    thirdSelected.Decision.PositionId, submission.Audience, submission.ActionId);
+                return ExerciseStepResult.Accepted(thirdSuccessor,
+                    new ExerciseStepEvidence(thirdReceipt, thirdBytes, thirdBytes));
+            }
             if (isStageEntrySecondSide)
             {
                 // Net-new path: no legacy decision event can exist for this
@@ -7589,7 +7650,9 @@ public static class CampaignExercises
             : StageEntryOrders(session);
     }
 
-    // Stage 3 Combat (S3-4+) is not wired yet. Every Combat entry point reads
+    // Stage 3 Combat is wired only as far as the first side's Combat Decision (S3-4,
+    // SubmitContactOwnerCombatSelection/QueryContactOwnerCombatCut, which bypass this guard once Stage 3
+    // Breakdown exists). Everything after it (Assault/No-Attack, Post Combat Passes: S3-5+) is not wired. Every Combat entry point reads
     // Stage 1/2 fields that are never reset (CurrentSecondBreakdown,
     // CurrentStageEntrySecondBreakdown, ...), so once any Stage 3 mechanic
     // exists they would silently answer for the wrong stage. Fail closed until
@@ -10457,6 +10520,40 @@ public static class CampaignExercises
                         return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
                             null, null, fleetRepairExpectedHash, null);
                     }
+                }
+            case ThirdStageCombatSelectionPending:
+                {
+                    var thirdStageDecision = completedSession.CurrentThirdStageCombatDecision!;
+                    var expected = thirdStageDecision.Decision.SerializeCanonical();
+                    var thirdStageDecisionHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageCombatSelectionPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Stage 3 Combat selection has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Stage 3 Combat selection predecessor did not replay.");
+                        var (world, position) = QueryThirdStageCombatWorldAndPosition(predecessor);
+                        var replayedDecision = CampaignNativeSecondCombatDecisionStateV47.Select(world, position,
+                            predecessor.CurrentSnapshot, ExerciseSession.LatestCursor(predecessor.CurrentSnapshot.RandomState,
+                                predecessor.CurrentHistory), predecessor.Context,
+                            predecessor.CurrentContacts, thirdStageDecision.Decision.Side, thirdStageDecision.Decision.ActingElementId,
+                            thirdStageDecision.Decision.ActionId).Decision;
+                        var bytes = replayedDecision.SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceSecondCombatSelection(replayedDecision);
+                        if (!expected.AsSpan().SequenceEqual(bytes)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Stage 3 Combat selection differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            bytes, streamHash, thirdStageDecisionHash, Hash(bytes));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    { return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory, null, null, thirdStageDecisionHash, null); }
                 }
             case ThirdStageBreakdownPending:
                 {

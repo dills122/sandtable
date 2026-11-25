@@ -330,7 +330,14 @@ internal static class PendingFixtures
                 ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
             session = Ok(CampaignExercises.SubmitThirdStageReserve(session, audience, Hash("stage3-reserve"), elementId: null));
             session = Ok(CampaignExercises.CompleteThirdStageMovement(session, audience, Hash("stage3-movement-completion")));
-            Ok(CampaignExercises.CompleteThirdStageBreakdown(session));
+            session = Ok(CampaignExercises.CompleteThirdStageBreakdown(session));
+            // S3-4: first-side Combat Decision (finish without attack).
+            var cut = CampaignExercises.QueryCheckpoint(session);
+            var element = audience == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry";
+            Ok(CampaignExercises.SubmitContactOwnerCombatSelection(session,
+                new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion, cut.CampaignId,
+                    cut.StateVersion, cut.PositionId, audience, new FinishCombatWithoutAttackAction(element).ActionId),
+                element));
         }
 
         private ExerciseSession Cap(ExerciseSession session)
