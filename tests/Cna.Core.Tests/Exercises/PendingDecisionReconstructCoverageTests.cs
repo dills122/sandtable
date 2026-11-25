@@ -4,6 +4,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 
@@ -44,20 +45,6 @@ public sealed class PendingDecisionReconstructCoverageTests
         [typeof(StageEntrySecondMovePending)] = StageEntryMoveReason,
     };
 
-    // PRODUCTION FINDING (not fixed here, test-only task): CampaignCurrentEventSerializer.Serialize
-    // throws JsonException("Unsupported current Campaign event.") for the Stage Entry / preamble
-    // native events, and Reconstruct's stream-hash step (HashFramed over CurrentHistory) turns that
-    // into InvalidHistory. So public Reconstruct returns InvalidHistory for every legitimately
-    // built session whose history contains such an event. Those subtypes cannot prove the happy
-    // path or a discriminating tamper until that is fixed; a canary test pins the gap so removing
-    // it from production forces removal of this list.
-    private static bool IsKnownSerializerGap(string typeName) =>
-        SessionTamper.HistoryHasUnserializableEvent(Fixture(typeName));
-
-    private const string SerializerGapReason =
-        "Known production bug: CampaignCurrentEventSerializer does not support an event in this session's "
-        + "history, so Reconstruct returns InvalidHistory for a valid session (see PR body finding 1).";
-
     public static TheoryData<string> Subtypes()
     {
         var data = new TheoryData<string>();
@@ -95,7 +82,6 @@ public sealed class PendingDecisionReconstructCoverageTests
     {
         var session = Fixture(typeName);
         Assert.Equal(typeName, session.Pending!.GetType().Name);
-        Assert.SkipWhen(IsKnownSerializerGap(typeName), SerializerGapReason);
         var result = CampaignExercises.Reconstruct(session);
         Assert.True(result.IsVerified, typeName + ": " + result.FailureReason);
     }
@@ -113,25 +99,11 @@ public sealed class PendingDecisionReconstructCoverageTests
     public void OneByteTamperReturnsInvalidHistoryForEachSubtype(string typeName)
     {
         var session = Fixture(typeName);
-        Assert.SkipWhen(IsKnownSerializerGap(typeName),
-            SerializerGapReason + " The tamper result would be vacuous, so it is not asserted.");
         var (tampered, property) = SessionTamper.TamperOwnRecord(session);
         Assert.SkipWhen(tampered is null, "No byte-level record to tamper: " + property);
         var result = CampaignExercises.Reconstruct(tampered!);
         Assert.False(result.IsVerified, typeName + " tampered " + property + " still verified");
         Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory, result.FailureReason);
-    }
-
-    // Canary: every skipped subtype really is broken by the serializer gap and nothing else.
-    // Fails (telling you to delete the skip) once the serializer supports the event.
-    [Fact]
-    public void KnownSerializerGapStillReproduces()
-    {
-        var gapped = PendingFixtures.All.Keys.Where(type => IsKnownSerializerGap(type.Name)).ToArray();
-        Assert.NotEmpty(gapped);
-        foreach (var type in gapped)
-            Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory,
-                CampaignExercises.Reconstruct(Fixture(type.Name)).FailureReason);
     }
 
     // Audit finding 4 (campaign-exercises-7250-end-audit.md): six replay arms
@@ -173,16 +145,6 @@ internal static class SessionTamper
 
     internal static ExerciseSession Clone(ExerciseSession session) =>
         (ExerciseSession)typeof(object).GetMethod("MemberwiseClone", Any)!.Invoke(session, null)!;
-
-    internal static bool HistoryHasUnserializableEvent(ExerciseSession session)
-    {
-        foreach (var item in session.CurrentHistory)
-        {
-            try { CampaignCurrentEventSerializer.Serialize(item, session.Context); }
-            catch (System.Text.Json.JsonException) { return true; }
-        }
-        return false;
-    }
 
     private static void Set(ExerciseSession session, string property, object? value) =>
         (typeof(ExerciseSession).GetProperty(property, Any)
@@ -316,7 +278,39 @@ internal static class PendingFixtures
 
             session = CloseOutStageEntrySide(session, holderAudience, holderElement, isSecondSide: false);
             session = CloseOutStageEntrySide(session, otherAudience, otherElement, isSecondSide: true);
+            DriveThirdStagePreamble(session, holder, gameTurn, weather);
             return seen;
+        }
+
+        // Stage 3 preamble, same shape as CampaignStageThreeEntryVerificationTests.
+        private void DriveThirdStagePreamble(ExerciseSession session, LandSide holder, int gameTurn,
+            CampaignNativeWeatherDeterminationV50 stageTwoWeather)
+        {
+            var realPredecessor = session.CurrentStageEntrySecondAssault!.PostCombatPasses[^1];
+            var declared = CampaignNativeInitiativeDeclarationV49.Create(
+                realPredecessor, holder, actFirst: false, gameTurn, realPredecessor.StateVersion);
+            session = Cap(session.WithThirdStageInitiativeDeclaration(declared,
+                session.CurrentContacts.AdvanceInitiativeDeclaration(declared)));
+            var initialRandom = session.CurrentSnapshot.RandomState;
+            var random = new RandomStreamState(initialRandom.ContractVersion, initialRandom.AlgorithmId,
+                initialRandom.Seed, stageTwoWeather.ResultRandomCursor);
+            var weather = CampaignNativeWeatherDeterminationV50.Create(declared, random, gameTurn,
+                session.CurrentContacts.AuthorityVersion);
+            session = Cap(session.WithThirdStageWeather(weather,
+                session.CurrentContacts.AdvanceWeatherDetermination(weather)));
+            var organization = CampaignNativeNoObligationOrganizationV51.Create(weather, weather.StateVersion);
+            session = Cap(session.WithThirdStageNoObligationOrganization(organization,
+                session.CurrentContacts.AdvanceNoObligationOrganization(organization)));
+            var arrival = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(organization,
+                session.Context, organization.StateVersion);
+            session = Cap(session.WithThirdStageNoObligationNavalConvoyArrival(arrival,
+                session.CurrentContacts.AdvanceNoObligationNavalConvoyArrival(arrival)));
+            var assignment = CampaignNativeNoObligationFleetAssignmentV53.Create(arrival, arrival.StateVersion);
+            session = Cap(session.WithThirdStageNoObligationFleetAssignment(assignment,
+                session.CurrentContacts.AdvanceNoObligationFleetAssignment(assignment)));
+            var repair = CampaignNativeNoObligationFleetRepairV54.Create(assignment, assignment.StateVersion);
+            Cap(session.WithThirdStageNoObligationFleetRepair(repair,
+                session.CurrentContacts.AdvanceNoObligationFleetRepair(repair)));
         }
 
         private ExerciseSession Cap(ExerciseSession session)
