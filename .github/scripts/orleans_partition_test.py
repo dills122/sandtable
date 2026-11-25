@@ -145,6 +145,21 @@ class ExecuteTests(unittest.TestCase):
         self.assertEqual(self.run_execute(runner), 0)
         self.assertEqual(len(calls), 2)
 
+    def test_junit_only_failed_attempt_does_not_prevent_retry(self):
+        calls = []
+        counts = op.inventory(self.listing)
+        def runner(cmd, log):
+            calls.append(cmd)
+            junit = self.out / 'results.junit.xml'
+            self.assertFalse(junit.exists(), 'Prior attempt telemetry must be removed')
+            if len(calls) == 1:
+                junit.write_text('<testsuites/>')
+                return 124
+            (self.out / 'r.xml').write_text(xml(rows_for(counts)))
+            return 0
+        self.assertEqual(self.run_execute(runner), 0)
+        self.assertEqual(len(calls), 2)
+
     def test_real_failure_with_report_is_not_retried(self):
         calls = []
         def runner(cmd, log):
