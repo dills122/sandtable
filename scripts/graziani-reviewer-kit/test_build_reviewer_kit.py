@@ -126,6 +126,18 @@ class KitTests(unittest.TestCase):
         result = self.run_tool("tools/check_reading.py", "--packet", "supply", "--reading", path)
         self.assertIn("manifest_sha256 does not match", result.stdout)
 
+    def test_unhashable_row_ids_are_reported_not_crashed(self):
+        reading = json.loads((self.kit / "packets/supply/reading-template.json").read_text())
+        reading["reader_id"] = "test-reader"
+        reading["rows"][0]["id"] = ["a", "list"]
+        reading["rows"][1]["id"] = {"an": "object"}
+        path = Path(self.temp.name) / "badid.json"
+        path.write_text(json.dumps(reading))
+        result = self.run_tool("tools/check_reading.py", "--packet", "supply", "--reading", path)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertIn("invalid id", result.stdout)
+
     def test_duplicate_json_keys_are_invalid_input(self):
         path = Path(self.temp.name) / "dup.json"
         path.write_text('{"version": 1, "version": 1}')

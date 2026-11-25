@@ -37,6 +37,9 @@ def check(manifest, reading, available_sources):
             problems.append("every row needs exactly: id, locator, values")
             continue
         row_id = row["id"]
+        if not nonempty(row_id):
+            problems.append(f"a row has an invalid id (must be non-empty text): {json.dumps(row_id)[:60]}")
+            continue
         if row_id in seen:
             problems.append(f"duplicate row {row_id}")
         seen.add(row_id)
@@ -103,7 +106,11 @@ def main(argv=None):
     except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
         print(f"cannot check: {error}", file=sys.stderr)
         return 2
-    problems, notes = check(manifest, reading, sources)
+    try:
+        problems, notes = check(manifest, reading, sources)
+    except (TypeError, KeyError, AttributeError) as error:
+        print(f"cannot check: malformed reading structure ({type(error).__name__}: {error})", file=sys.stderr)
+        return 2
     for note in notes[:1] + ([n for n in notes[1:] if not n.endswith("(recorded as unknown)")]):
         print(f"note: {note}")
     unknowns = [n for n in notes if n.endswith("(recorded as unknown)")]
