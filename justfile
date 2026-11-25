@@ -51,6 +51,10 @@ test-method suite pattern:
 test-shard shard:
     python3 .github/scripts/local_tests.py {{quote(shard)}}
 
+# Capacity benchmarks (Server GC, JSONL + env header). See docs/work/2026-11-25-capacity-benchmark-baseline.md.
+capacity-benchmark *args:
+    scripts/capacity-benchmark.sh {{ args }}
+
 # Install the pinned Lychee release described in the CIH-IMP-004 baseline packet.
 docs-links:
     #!/usr/bin/env bash
