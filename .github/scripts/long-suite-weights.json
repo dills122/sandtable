@@ -4766,7 +4766,8 @@
     "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": 3264,
     "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": 16,
     "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": 22,
-    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": 564
+    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": 564,
+    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": 1932
   },
   "provisional_rows": {
     "5a8c29290efd77f35a3371c2048f8d3a47f5599965f60ed4557cfbbd789994c8": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; new issue #578 cursor-contract rows, pending hosted calibration",
@@ -5321,7 +5322,8 @@
     "20e52c16bb0227c8aa6dea428ae803412d3450ae03fdda7d217909355620cc85": "2026-11-24 macOS arm64 .NET 10 Release focused MTP XML; CampaignContactJournalTests.SixTurnContactJournalCopying (#391), pending hosted calibration",
     "5b50ebced78940ecbf8b466de5fb84f010d3990ded01680bd4646ab0d03f763c": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.EverySubtypeIsDerivableFromTheCatalogExceptTheExplicitExceptionList (spike S1), pending hosted calibration",
     "4a57e86ad0f1105b24b74aff1f706c744c9c1c0da128f1b468f155a9d1c9c6da": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.MoveIsTheOnlyStateThatNeedsTheLastEventTypeBeyondTheCursor (spike S1), pending hosted calibration",
-    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.CursorDerivationReproducesPendingOverEveryDrivenRealSessionState (spike S1), pending hosted calibration"
+    "3138ef6066fb098dda24960744e248453643a76c004d4f94b0ff792e182a3f48": "2026-11-25 macOS arm64 .NET 10 Release MTP XML; new PendingFromCursorSpikeTests.CursorDerivationReproducesPendingOverEveryDrivenRealSessionState (spike S1), pending hosted calibration",
+    "72c08158173e346acc0e3362b60ffb77e88b24bd3127f3fa683215164246a367": "2026-11-25 macOS arm64 .NET 10 Debug MTP XML; new GrazianiSourceAuthorityTests row (#579 Giarab motor placement finalization guard), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
