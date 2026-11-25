@@ -404,8 +404,14 @@ class WorkflowTests(unittest.TestCase):
         # excluding only the nightly soak row (the #446 rows gate again).
         self.assertIn('needs: [prepare, tests, format, orleans]', text)
         orleans_job = text.split('\n  orleans:', 1)[1].split('\n  verify:', 1)[0]
-        self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', orleans_job)
-        self.assertIn('python3 .github/scripts/verify_orleans_results.py', orleans_job)
+        # The orleans job is sharded 4-way; the dotnet test command, exclusions and per-shard
+        # report check live in orleans_partition.py (covered by orleans_partition_test.py), and
+        # the verify job proves the shards are disjoint, complete and passing.
+        self.assertIn('python3 .github/scripts/orleans_partition.py execute --shard "$ORLEANS_SHARD" --total 4', orleans_job)
+        self.assertIn('shard: [1, 2, 3, 4]', orleans_job)
+        self.assertIn('python3 .github/scripts/orleans_partition.py verify --total 4', text)
+        partition_source = Path(__file__).with_name('orleans_partition.py').read_text()
+        self.assertIn("'dotnet', 'test', '--project', PROJECT", partition_source)
         self.assertNotIn('--filter-not-trait', orleans_job)
         self.assertNotIn('continue-on-error', orleans_job)
         self.assertNotIn('\n  p01-', text)
