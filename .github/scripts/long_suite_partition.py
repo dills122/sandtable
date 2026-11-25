@@ -7,6 +7,11 @@ def row_key(row):
     return hashlib.sha256(json.dumps(list(row), separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
 
 
+def load_weights(path):
+    from long_suite_weights import load
+    return load(path)
+
+
 def make_plan(rows, weights):
     import re
     from test_partition import require, unique, row_identity
@@ -273,7 +278,7 @@ def verify_all(suite_proof, weights, r02_proof, fixture, inventory, directory, n
         raise ValueError('Missing/malformed complete suite evidence: ' + str(error)) from error
 
 
-WEIGHTS_PATH = '.github/scripts/long-suite-weights.json'
+WEIGHTS_PATH = '.github/scripts/long-suite-weights'  # directory of JSONL entry files; see long_suite_weights.py
 JOBS = (*LONG_JOBS, *FAST_JOBS, 'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts')
 
 
@@ -305,7 +310,7 @@ def main():
     require(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == args.sha, 'Checkout differs from tested event SHA')
     require(subprocess.run(['git', 'diff', '--quiet', 'HEAD'], check=False).returncode == 0, 'Dirty tracked source cannot supply exact-head evidence')
     for path in (args.fixture, args.weights): subprocess.run(['git', 'ls-files', '--error-unmatch', path], stdout=subprocess.DEVNULL, check=True)
-    root = Path(args.directory); weights = json.loads(Path(args.weights).read_text()); fixture = json.loads(Path(args.fixture).read_text())
+    root = Path(args.directory); weights = load_weights(args.weights); fixture = json.loads(Path(args.fixture).read_text())
     if args.mode == 'discover':
         require(not (root / 'long-suites.json').exists(), 'Stale dedicated suite proof')
         proof = r02.discover(root, args.fixture, args.sha, legacy.identity(args.sha), args.attempt, args.binary_directory, args.run_id)
@@ -344,7 +349,7 @@ def main():
         command = [sys.executable, str(Path(__file__).with_name('r02_partition.py')), 'execute', '--sha', args.sha, '--attempt', args.attempt, '--run-id', args.run_id, '--fixture', args.fixture, '--binary-directory', args.binary_directory, '--directory', args.directory, '--inventory', args.inventory, '--shard', args.shard]
         require(subprocess.run(command, check=False).returncode == 0, 'Retained R02/module suite failed')
     require(r02.binary_fingerprints(args.binary_directory) == fingerprints and r02.binding_for(args.fixture, args.sha, sdk, args.attempt, fingerprints, args.run_id) == binding, 'Binary/fixture inputs changed during execution')
-    require(json.loads(Path(args.weights).read_text()) == weights and subprocess.run(['git', 'diff', '--quiet', 'HEAD'], check=False).returncode == 0, 'Tracked source/timing inputs changed during execution')
+    require(load_weights(args.weights) == weights and subprocess.run(['git', 'diff', '--quiet', 'HEAD'], check=False).returncode == 0, 'Tracked source/timing inputs changed during execution')
 
 
 if __name__ == '__main__':

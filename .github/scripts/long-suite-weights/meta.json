@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "baseline_sha": "121baa56820fffce42316b48ac551cb24c012a6c",
+  "baseline_run_id": "38830848442",
+  "baseline_attempt": 1,
+  "weight_units": "observed per-row elapsed milliseconds; contention included, not CPU",
+  "supplemental_measurements": {
+    "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
+    "rows": 5,
+    "classes": [
+      "Cna.Core.Tests.Actions.CombatCycleDisclosureHostDraftParityTests"
+    ],
+    "configuration": "Release",
+    "hosted": false,
+    "note": "New rows measured in a successful local XML report; existing baseline rows and weights preserved. Hosted CI remains a separate gate."
+  }
+}

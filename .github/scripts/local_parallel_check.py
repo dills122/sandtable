@@ -150,7 +150,7 @@ def main(argv=None):
     artifact_root.mkdir(parents=True, exist_ok=True)
     directory = Path(tempfile.mkdtemp(prefix='check-', dir=artifact_root))
     proof = r02.discover(directory / 'discovery', r02.FIXTURE_PATH, sha, partition.identity(sha), 'local')
-    weights = json.loads((ROOT / suites.WEIGHTS_PATH).read_text())
+    weights = suites.load_weights(ROOT / suites.WEIGHTS_PATH)
     jobs = plan_jobs(proof, weights)
     snapshot = runner.resource_snapshot()
     max_workers = args.max_workers or concurrency_limit(snapshot, len(jobs))

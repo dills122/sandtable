@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 import long_suite_partition as suites
+import long_suite_weights as weights_module
 
 
 class AllocationTests(unittest.TestCase):
@@ -459,13 +460,109 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn('needs: prepare', text)
 
 
-class CommittedManifestTests(unittest.TestCase):
-    def test_committed_weights_manifest_is_valid_json_with_expected_sections(self):
-        path = Path(__file__).with_name('long-suite-weights.json')
-        weights = json.loads(path.read_text())
+class MergeFriendlyManifestTests(unittest.TestCase):
+    KEY_A, KEY_B = 'a' * 64, 'b' * 64
+
+    def write(self, directory, name, lines):
+        (Path(directory) / name).write_text(''.join(line + '\n' for line in lines))
+
+    def make(self, root):
+        (Path(root) / 'meta.json').write_text(json.dumps({'schema_version': 1, 'weight_units': 'ms'}))
+        self.write(root, 'baseline.jsonl', ['{"class":"C.A","parts":1}', '{"row":"%s","ms":5}' % self.KEY_A])
+
+    def test_committed_manifest_loads_with_expected_sections(self):
+        weights = weights_module.load()
         self.assertEqual(1, weights['schema_version'])
         for section in ('classes', 'rows', 'provisional_rows'):
             self.assertIsInstance(weights[section], dict, section)
+        self.assertTrue(weights['rows'])
+        self.assertTrue(set(weights['provisional_rows']) <= set(weights['rows']))
+        self.assertEqual(weights, suites.load_weights(Path(__file__).with_name('long-suite-weights')))
+
+    def test_every_committed_line_is_independently_valid_and_canonical(self):
+        for entry in Path(__file__).with_name('long-suite-weights').glob('*.jsonl'):
+            records = weights_module.parse_records(entry)
+            self.assertEqual(entry.read_text(), ''.join(weights_module._dump(record) + '\n' for record in records), entry.name)
+
+    def test_entry_files_merge_by_union_and_match_legacy_dict(self):
+        with tempfile.TemporaryDirectory() as root:
+            self.make(root)
+            self.write(root, 'pr-one.jsonl', ['{"class":"C.B","parts":1}', '{"row":"%s","ms":7,"provisional":"note"}' % self.KEY_B])
+            weights = weights_module.load(root)
+            self.assertEqual({'C.A': {'parts': 1}, 'C.B': {'parts': 1}}, weights['classes'])
+            self.assertEqual({self.KEY_A: 5, self.KEY_B: 7}, weights['rows'])
+            self.assertEqual({self.KEY_B: 'note'}, weights['provisional_rows'])
+            self.assertEqual(weights, weights_module.load(root))
+
+    def test_duplicate_malformed_and_bad_names_fail_closed(self):
+        cases = {
+            'duplicate row': ('x.jsonl', ['{"row":"%s","ms":9}' % 'a' * 64]),
+            'duplicate class': ('x.jsonl', ['{"class":"C.A","parts":2}']),
+            'broken json': ('x.jsonl', ['{"row":']),
+            'extra field': ('x.jsonl', ['{"row":"%s","ms":9,"x":1}' % self.KEY_B]),
+            'bad key': ('x.jsonl', ['{"row":"zz","ms":9}']),
+            'bool ms': ('x.jsonl', ['{"row":"%s","ms":true}' % self.KEY_B]),
+            'bad file name': ('Bad Name.jsonl', ['{"class":"C.Z","parts":1}']),
+        }
+        for label, (name, lines) in cases.items():
+            with self.subTest(label), tempfile.TemporaryDirectory() as root:
+                self.make(root)
+                self.write(root, name, lines)
+                with self.assertRaises(ValueError):
+                    weights_module.load(root)
+
+    def test_provisional_without_row_and_blank_lines_fail_closed(self):
+        with tempfile.TemporaryDirectory() as root:
+            self.make(root)
+            self.write(root, 'x.jsonl', [''])
+            with self.assertRaises(ValueError):
+                weights_module.load(root)
+
+    def test_migrate_round_trips_legacy_file_exactly(self):
+        legacy = {'schema_version': 1, 'baseline_sha': 'x', 'classes': {'C.A': {'parts': 2}, 'C.B': {'parts': 1}},
+                  'rows': {self.KEY_B: 3, self.KEY_A: 4}, 'provisional_rows': {self.KEY_B: 'why'}, 'supplemental_measurements': {'rows': 1}}
+        with tempfile.TemporaryDirectory() as root:
+            source = Path(root) / 'old.json'
+            source.write_text(json.dumps(legacy))
+            result = weights_module.migrate(source, Path(root) / 'new')
+            self.assertEqual((2, 2, 1), (result['rows'], result['classes'], result['provisional_rows']))
+            self.assertEqual(legacy, weights_module.load(Path(root) / 'new'))
+            self.assertEqual(legacy, weights_module.load(source))
+
+    def test_add_command_writes_one_new_file_registering_only_missing_rows(self):
+        known = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.XTests.Old', 'Cna.Core.Tests.Campaigns.XTests.Old']
+        fresh = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.YTests.New', 'Cna.Core.Tests.Campaigns.YTests.New']
+        with tempfile.TemporaryDirectory() as root:
+            directory, proof = Path(root) / 'manifest', Path(root) / 'proof'
+            directory.mkdir(); proof.mkdir()
+            (directory / 'meta.json').write_text(json.dumps({'schema_version': 1}))
+            self.write(directory, 'baseline.jsonl', ['{"class":"Cna.Core.Tests.Campaigns.XTests","parts":1}', '{"row":"%s","ms":5}' % suites.row_key(known)])
+            (proof / 'r02-inventory.json').write_text(json.dumps({'legacy_core_rows': [known, fresh]}))
+            common = ['--proof', str(proof), '--weights', str(directory)]
+            self.assertEqual(1, weights_module.main(['check', *common]))
+            self.assertEqual(0, weights_module.main(['add', *common, '--name', 'topic-one', '--note', 'n']))
+            self.assertEqual(0, weights_module.main(['check', *common]))
+            self.assertEqual(['baseline.jsonl', 'topic-one.jsonl'], sorted(path.name for path in directory.glob('*.jsonl')))
+            added = weights_module.parse_records(directory / 'topic-one.jsonl')
+            self.assertEqual([{'class': 'Cna.Core.Tests.Campaigns.YTests', 'parts': 1}, {'row': suites.row_key(fresh), 'ms': 1000, 'provisional': 'n'}], added)
+            with self.assertRaises(SystemExit):
+                weights_module.main(['add', *common, '--name', 'topic-one', '--note', 'n'])
+
+    def test_import_legacy_copies_only_rows_missing_from_directory(self):
+        with tempfile.TemporaryDirectory() as root:
+            directory = Path(root) / 'm'; directory.mkdir(); self.make(directory)
+            mine = Path(root) / 'mine.json'
+            mine.write_text(json.dumps({'classes': {'C.A': {'parts': 1}, 'C.N': {'parts': 1}}, 'rows': {self.KEY_A: 5, self.KEY_B: 9}, 'provisional_rows': {self.KEY_B: 'mine'}}))
+            self.assertEqual(0, weights_module.main(['import-legacy', str(mine), '--name', 'my-pr', '--weights', str(directory)]))
+            self.assertEqual([{'class': 'C.N', 'parts': 1}, {'row': self.KEY_B, 'ms': 9, 'provisional': 'mine'}], weights_module.parse_records(directory / 'my-pr.jsonl'))
+
+    def test_make_plan_still_rejects_unknown_and_missing_rows_from_directory_manifest(self):
+        row = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.XTests.M', 'Cna.Core.Tests.Campaigns.XTests.M']
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / 'meta.json').write_text(json.dumps({'schema_version': 1}))
+            self.write(root, 'baseline.jsonl', ['{"class":"Cna.Core.Tests.Campaigns.XTests","parts":1}'])
+            with self.assertRaisesRegex(ValueError, 'Unknown/missing measured row'):
+                suites.make_plan([row], weights_module.load(root))
 
 
 if __name__ == '__main__':
