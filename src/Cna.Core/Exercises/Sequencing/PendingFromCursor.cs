@@ -38,6 +38,12 @@ internal static class PendingFromCursor
             return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } repeatPrefix, CombatArms: true }
                 ? repeatPrefix + "AssaultPending" : null;
 
+        // A Reserve event either designated an element (cursor stays on Reserve Designation) or completed
+        // the phase (cursor advanced; the generic completed-position path below applies).
+        if (last == PendingLastEvent.ReserveWithinPosition && at.PhaseId == LandPhaseIds.ReserveDesignation
+            && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } reservePrefix })
+            return reservePrefix + "ReservePending";
+
         if (index == 0) return null;
         var done = turn[index - 1];
 
