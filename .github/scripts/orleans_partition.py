@@ -144,7 +144,7 @@ def verify(directories, total):
 
 
 def discover(binary=BINARY):
-    result = subprocess.run(['dotnet', 'exec', binary, '--list-tests', '--no-ansi'], capture_output=True, text=True, check=True, timeout=300)
+    result = subprocess.run(['dotnet', 'exec', binary, '--list-tests', '--pre-enumerate-theories', 'on', '--no-ansi'], capture_output=True, text=True, check=True, timeout=300)
     return parse_listing(result.stdout)
 
 
