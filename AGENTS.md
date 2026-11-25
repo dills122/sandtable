@@ -4,9 +4,13 @@ AI coding guidance for Sandtable.
 
 ## Purpose
 
-Sandtable is a deterministic campaign simulation with an optional, non-authoritative intelligence
-plane. Optimize for reproducible adjudication, strict fog-of-war boundaries, versioned typed
-contracts, and graceful scripted fallback when model-backed services are unavailable.
+Sandtable is the rules engine for a digital edition of a published 1979 tabletop board game. It
+implements the game's counters, dice and chart tables, hex map, and turn sequence as a deterministic,
+event-sourced C#/.NET state machine with tests, CI, a web UI, and an optional, non-authoritative
+intelligence plane. Terms such as campaign, combat, assault, movement, supply, and umpire refer to
+board-game rules steps and game-design terms. Optimize for reproducible rules resolution, strict
+hidden-information (fog-of-war) boundaries between the two players, versioned typed contracts, and
+graceful scripted fallback when model-backed services are unavailable.
 
 The repository is scaffolded as `Sandtable.slnx`. Treat `tech-design.md` and `naming-overview.md`
 as architectural rationale, `README.md` as the current project map, and keep all three synchronized
