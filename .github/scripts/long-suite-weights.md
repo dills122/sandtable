@@ -21,6 +21,8 @@ To register rows for a PR (one new file per PR, so concurrent PRs do not touch t
 3. `python3 .github/scripts/long_suite_weights.py check --proof artifacts/ci` lists missing and stale rows.
 4. `python3 .github/scripts/long_suite_weights.py add --proof artifacts/ci --name <unique-topic> --note "<date> <platform>; <why>; pending hosted calibration" [--xml <dir of MTP XML>]`
    writes `.github/scripts/long-suite-weights/<unique-topic>.jsonl` (measured ms from `--xml`, else `--default-ms`, default 1000).
+   Migrating a PR that already edited the old single JSON file: `git show <your-branch-sha>:.github/scripts/long-suite-weights.json > /tmp/mine.json`,
+   then `python3 .github/scripts/long_suite_weights.py import-legacy /tmp/mine.json --name <unique-topic>` copies your measured rows/classes (not already in the directory) into one new entry file.
 5. Remove tests that no longer exist by deleting that row's line from whichever file holds it.
 6. Put narrative evidence (commands, hashes, observations) in the PR description or a `docs/work` note.
    Do not append to this file: it is frozen history below, and appending reintroduces end-of-file merge conflicts.

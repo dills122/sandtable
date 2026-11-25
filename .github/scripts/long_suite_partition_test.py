@@ -548,6 +548,14 @@ class MergeFriendlyManifestTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 weights_module.main(['add', *common, '--name', 'topic-one', '--note', 'n'])
 
+    def test_import_legacy_copies_only_rows_missing_from_directory(self):
+        with tempfile.TemporaryDirectory() as root:
+            directory = Path(root) / 'm'; directory.mkdir(); self.make(directory)
+            mine = Path(root) / 'mine.json'
+            mine.write_text(json.dumps({'classes': {'C.A': {'parts': 1}, 'C.N': {'parts': 1}}, 'rows': {self.KEY_A: 5, self.KEY_B: 9}, 'provisional_rows': {self.KEY_B: 'mine'}}))
+            self.assertEqual(0, weights_module.main(['import-legacy', str(mine), '--name', 'my-pr', '--weights', str(directory)]))
+            self.assertEqual([{'class': 'C.N', 'parts': 1}, {'row': self.KEY_B, 'ms': 9, 'provisional': 'mine'}], weights_module.parse_records(directory / 'my-pr.jsonl'))
+
     def test_make_plan_still_rejects_unknown_and_missing_rows_from_directory_manifest(self):
         row = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.XTests.M', 'Cna.Core.Tests.Campaigns.XTests.M']
         with tempfile.TemporaryDirectory() as root:

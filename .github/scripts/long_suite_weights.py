@@ -164,6 +164,9 @@ def main(argv=None):
     p.add_argument('--xml', help='directory of MTP XML reports measuring the new rows; unmeasured rows use --default-ms')
     p.add_argument('--default-ms', type=int, default=1000)
     p.add_argument('--weights', default=str(DEFAULT_DIR))
+    p = sub.add_parser('import-legacy', help='open-PR migration: copy rows/classes missing from the directory out of an old single-file JSON into a NEW entry file')
+    p.add_argument('legacy_json', help='your PR branch version of the old long-suite-weights.json (git show <your-sha>:.github/scripts/long-suite-weights.json > /tmp/mine.json)')
+    p.add_argument('--name', required=True); p.add_argument('--weights', default=str(DEFAULT_DIR))
     p = sub.add_parser('export', help='print the legacy-shaped JSON (for diffing/inspection)')
     p.add_argument('--weights', default=str(DEFAULT_DIR))
     args = parser.parse_args(argv)
@@ -171,6 +174,20 @@ def main(argv=None):
         print(json.dumps(migrate(args.source, args.directory)))
         return 0
     weights = load(args.weights)
+    if args.command == 'import-legacy':
+        legacy = json.loads(Path(args.legacy_json).read_text())
+        part = {'classes': {k: v for k, v in legacy['classes'].items() if k not in weights['classes']},
+                'rows': {k: v for k, v in legacy['rows'].items() if k not in weights['rows']},
+                'provisional_rows': legacy.get('provisional_rows', {})}
+        part['provisional_rows'] = {k: v for k, v in part['provisional_rows'].items() if k in part['rows']}
+        name = args.name if args.name.endswith('.jsonl') else args.name + '.jsonl'
+        target = Path(args.weights) / name
+        if not NAME.fullmatch(name) or target.exists():
+            raise SystemExit(f'--name must be a new file matching {NAME.pattern}')
+        write_entry_file(target, records_of(part))
+        load(args.weights)
+        print(f'wrote {target}: {len(part["classes"])} classes, {len(part["rows"])} rows (stale rows in your legacy file are NOT removed; run check)')
+        return 0
     if args.command == 'export':
         print(json.dumps(weights, indent=2, sort_keys=True))
         return 0
