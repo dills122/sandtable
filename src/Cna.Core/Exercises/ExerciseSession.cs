@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Cna.Core.Campaigns;
+using Cna.Core.Randomness;
 using Cna.Core.Visibility;
 
 namespace Cna.Core.Exercises;
@@ -890,18 +891,23 @@ public sealed class ExerciseSession
     internal CampaignNativeRepeatAssaultRuntime? CurrentSecondAssault { get; private set; }
     internal ExerciseSession? SecondAssaultPredecessor { get; private set; }
 
-    // The frame's random cursor is the campaign's latest accepted Combat
-    // draw: the last Close Assault result's successor cursor, or the retained
-    // V11 cursor when no assault has resolved this turn. V47 itself carries
-    // no cursor, and reusing the stale V11 one would replay earlier draws.
+    // The latest accepted draw in chronological history owns the next cursor.
+    // The retained V11 state already includes the legacy opening preamble.
+    internal static RandomStreamState LatestCursor(RandomStreamState initial, IEnumerable<object> history) =>
+        history.LastOrDefault(value => value is CampaignNativeCombatAssaultResultV22 or CampaignNativeWeatherDeterminationV50) switch
+        {
+            CampaignNativeCombatAssaultResultV22 assault => assault.AfterRandomState,
+            CampaignNativeWeatherDeterminationV50 weather => new RandomStreamState(initial.ContractVersion,
+                initial.AlgorithmId, initial.Seed, weather.ResultRandomCursor),
+            _ => initial,
+        };
+
     internal static CampaignCombatSelectionFrame SecondAssaultFrame(
         CampaignNativeSecondCombatDecisionStateV47 selected, CampaignSnapshotV11 turnFacts,
         IEnumerable<object> history)
     {
         CampaignCombatSelectionFrame frame = selected;
-        var cursor = history.OfType<CampaignNativeCombatAssaultResultV22>().LastOrDefault()
-            ?.AfterRandomState ?? turnFacts.RandomState;
-        return frame with { RandomState = cursor };
+        return frame with { RandomState = LatestCursor(turnFacts.RandomState, history) };
     }
 
     internal ExerciseSession WithSecondAssaultEvent(object campaignEvent,
