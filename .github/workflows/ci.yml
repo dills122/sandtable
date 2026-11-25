@@ -138,6 +138,7 @@ jobs:
           python3 .github/scripts/ci_group_runner_test.py
           python3 .github/scripts/long_suite_partition_test.py
           python3 .github/scripts/local_tests_test.py
+          python3 .github/scripts/orleans_partition_test.py
       - name: Build Release row discovery helper
         run: dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release '/bl:artifacts/ci/row-helper-{}.binlog'
       - name: Discover actual Release rows and prove complementary filters
@@ -204,11 +205,23 @@ jobs:
     # Cna.OrleansHost.Tests holds every Postgres+Marten (Testcontainers) test of the durable
     # campaign journal, and since #373 it ran nightly only -- so #443-#450 merged with none of
     # it gating a PR. It gates PR/push again. Testcontainers drives the GitHub-hosted runner's own
-    # Docker daemon, so no services: block is needed. Excluded row, still run nightly:
-    # the ~30m Graziani replay soak (orleans-slow.yml). The former KnownIssue=446 rows gate
-    # again since the #446 ammunition-seed fix.
+    # Docker daemon, so no services: block is needed. Excluded rows, still run nightly:
+    # the ~30m Graziani replay soak (orleans-slow.yml) and the four live recommendation-connector
+    # rows (see EXCLUDED in .github/scripts/orleans_partition.py).
+    #
+    # The module is one ~20-minute serial class, so it is split by test method across
+    # 4 parallel jobs (docs/work/2026-11-24-ci-wall-clock-measurement.md). Each shard runs its own
+    # Testcontainers Postgres. orleans_partition.py proves per shard that every planned row ran and
+    # passed, and the `verify` job proves all shards share one plan whose allocation is disjoint and
+    # complete. Retry-once-on-no-report and the 18m per-attempt cap are preserved inside the script;
+    # a failed or report-less run now exits non-zero (the old inline loop reported exit 0 after two
+    # timeouts and skipped verification).
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -223,44 +236,20 @@ jobs:
         run: |
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
-      - name: Run and verify Orleans host rows
-        # A healthy run's test step measures ~15m (observed, run 45309217076). The
-        # Testcontainers (Postgres) bootstrap has repeatedly stalled with ZERO test
-        # output and then run out the clock on a 30-minute single-attempt timeout --
-        # every occurrence this was checked, the retry log confirmed a real test
-        # never started, not a real failure. That shape (no XML report produced)
-        # is retried once automatically, in-job, with a tighter per-attempt cap, so
-        # a stall costs ~18 minutes instead of 30 and needs no external rerun. Any
-        # attempt that DOES produce a report -- a real pass or a real failure --
-        # exits immediately; this never retries past an actual test result.
+      - name: Run and verify Orleans host shard
         timeout-minutes: 40
         shell: bash
         run: |
           set -o pipefail
           mkdir -p artifacts/orleans-results
-          attempts=2
-          for attempt in $(seq 1 "$attempts"); do
-            rm -f artifacts/orleans-results/*.xml
-            if timeout 18m dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results --filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedReserveAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedMovementAdviceAgainstARealCampaign" "Cna.OrleansHost.Tests.CampaignDurableAuthorityJournalTests.RecommendationConnectorGivesGroundedSecondReserveAdviceAgainstARealCampaign" 2>&1 | tee "artifacts/orleans-results/console-attempt-${attempt}.log"; then
-              break
-            fi
-            status=$?
-            if compgen -G "artifacts/orleans-results/*.xml" > /dev/null; then
-              echo "::error::Orleans host tests produced a report and still failed on attempt ${attempt} (exit ${status}) -- a real failure, not retrying."
-              exit "$status"
-            fi
-            if [ "$attempt" -eq "$attempts" ]; then
-              echo "::error::Orleans host test run produced no report after ${attempts} attempts (exit ${status})."
-              exit "$status"
-            fi
-            echo "::warning::Orleans host test run produced no report before timing out on attempt ${attempt} (exit ${status}) -- likely a Testcontainers/Docker bootstrap stall, not a test failure. Retrying once."
-          done
-          python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
+          python3 .github/scripts/orleans_partition.py execute --shard "$ORLEANS_SHARD" --total 4 --results artifacts/orleans-results
+        env:
+          ORLEANS_SHARD: ${{ matrix.shard }}
       - name: Retain Orleans test results
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: orleans-${{ github.sha }}-${{ github.run_attempt }}
+          name: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
           path: artifacts/orleans-results
           if-no-files-found: error
           retention-days: 14
@@ -289,6 +278,15 @@ jobs:
           pattern: ci-*-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
           merge-multiple: true
+      - name: Download Orleans shard results
+        if: ${{ always() }}
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: orleans-${{ github.sha }}-${{ github.run_attempt }}-shard-*
+          path: artifacts/orleans
+      - name: Require every Orleans shard to cover its planned rows exactly
+        if: ${{ always() }}
+        run: python3 .github/scripts/orleans_partition.py verify --total 4 artifacts/orleans/*
       - name: Require successful processes and complete exact-head coverage
         if: ${{ always() }}
         run: python3 .github/scripts/long_suite_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --exclude-shards "$EXCLUDE_SHARDS"
