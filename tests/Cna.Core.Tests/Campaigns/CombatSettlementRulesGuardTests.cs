@@ -83,7 +83,7 @@ public sealed class CombatSettlementRulesGuardTests
         // S has two equal-length routes to E: via "b" (first listed) and via "a" (ordinal-first).
         var edges = new[] { Edge("s", "b"), Edge("s", "a"), Edge("b", "e"), Edge("a", "e") };
         var native = CampaignNativeCombatCustodyCutV25.ShortestRoute(edges, "s", "e")!;
-        var typed = CampaignCombatLossRetreat.ContentPath(["s", "a", "b", "e"], edges, "s", "e");
+        var typed = CampaignCombatLossRetreat.ContentPath(edges, "s", "e");
         Assert.Equal(["s", "a", "e"], native);
         Assert.Equal(native, typed);
     }
@@ -101,8 +101,8 @@ public sealed class CombatSettlementRulesGuardTests
             foreach (var from in ids) foreach (var to in ids)
             {
                 var native = CampaignNativeCombatCustodyCutV25.ShortestRoute(definition.Edges, from, to);
-                if (native is null) { Assert.ThrowsAny<JsonException>(() => { _ = CampaignCombatLossRetreat.ContentPath(ids, definition.Edges, from, to); }); continue; }
-                Assert.Equal(native, CampaignCombatLossRetreat.ContentPath(ids, definition.Edges, from, to)); pairs++;
+                if (native is null) { Assert.ThrowsAny<JsonException>(() => { _ = CampaignCombatLossRetreat.ContentPath(definition.Edges, from, to); }); continue; }
+                Assert.Equal(native, CampaignCombatLossRetreat.ContentPath(definition.Edges, from, to)); pairs++;
             }
         }
         Assert.True(pairs > 0);

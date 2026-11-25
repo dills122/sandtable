@@ -910,6 +910,9 @@
     },
     "Cna.Core.Tests.Campaigns.CampaignNativeStageEntrySecondCombatAssaultTests": {
       "parts": 1
+    },
+    "Cna.Core.Tests.Campaigns.CombatSettlementRulesGuardTests": {
+      "parts": 1
     }
   },
   "rows": {
@@ -4753,7 +4756,11 @@
     "b1254b011365df828f50f3e85ce680fb5c03a19356d9c7a7866775b1a2aed733": 101,
     "9bf1c6c541bdf9a6d5732d387fe0a66b50d68d21cde518aa1f168f8ce4654cdb": 15,
     "25e5bb7c3f2aedb21cec83f2419b0bc276d56a5cd5174c6df46f5da8380f32aa": 118,
-    "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": 115
+    "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": 115,
+    "33c2f7d8c4f3ea814eb52f0aeb3d00235fa0a3962fccafcd3f6c9955cc1aaf67": 34,
+    "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": 1925,
+    "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": 1,
+    "4a48080dca55ec575ab58e2915ad02887638b7be5fa038d5f9107ad3c8aa5ce5": 2389
   },
   "provisional_rows": {
     "0be08ab6576129fee2f7003df70dc4af8fbc581c9c02455c097a75cb9db138c1": "2026-11-24 macOS arm64 .NET 10 Release MTP XML; new CampaignNativeSecondBreakdownTests row (maintainability Slice 1, pre-refactor-gap regression for CampaignNativeSecondBreakdownV46.Create), pending hosted calibration",
@@ -5302,7 +5309,11 @@
     "b1254b011365df828f50f3e85ce680fb5c03a19356d9c7a7866775b1a2aed733": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondBreakdownTests rows (MTS-TASK-006), pending hosted calibration",
     "9bf1c6c541bdf9a6d5732d387fe0a66b50d68d21cde518aa1f168f8ce4654cdb": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondBreakdownTests rows (MTS-TASK-006), pending hosted calibration",
     "25e5bb7c3f2aedb21cec83f2419b0bc276d56a5cd5174c6df46f5da8380f32aa": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondCombatSelectionTests row (MTS-TASK-006), pending hosted calibration",
-    "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondCombatAssaultTests row (MTS-TASK-006), pending hosted calibration"
+    "319d468315a1213e0a531cb61685a577e76eb02e4ebfc9372bd12830242a5726": "2026-11-23 macOS arm64 .NET 10 Release focused MTP XML; new CampaignNativeStageEntrySecondCombatAssaultTests row (MTS-TASK-006), pending hosted calibration",
+    "33c2f7d8c4f3ea814eb52f0aeb3d00235fa0a3962fccafcd3f6c9955cc1aaf67": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "e8c10d54da703d0f86179e1db1b6feb30972f036d1c7ad40a64c70bb3b18f28d": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "2e936c56a4fa53b1e982d046d3abcd5f588789aeec6b8e1617afa8e1ace1c714": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration",
+    "4a48080dca55ec575ab58e2915ad02887638b7be5fa038d5f9107ad3c8aa5ce5": "2026-11-24 macOS arm64 .NET 10 Debug MTP XML; new CombatSettlementRulesGuardTests row (#576/#577 settlement-rules and custody-route guard), pending hosted calibration"
   },
   "supplemental_measurements": {
     "source": "Local .NET 10 Microsoft.Testing.Platform XML, CombatCycleDisclosureHostDraftParityTests (Task 020D parity)",
