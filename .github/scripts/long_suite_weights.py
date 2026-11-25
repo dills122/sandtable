@@ -8,8 +8,8 @@ Layout of `.github/scripts/long-suite-weights/`:
                        {"class": "<fully qualified class>", "parts": <int>}
                        {"row": "<64 hex row_key>", "ms": <int>}
                        {"row": "<64 hex row_key>", "ms": <int>, "provisional": "<note>"}
-                     Files are merged in name order; a class or row may appear in exactly one
-                     file. `baseline.jsonl` holds the migrated historical rows. A PR that adds
+                     Files are merged in name order; a class or row repeated across files is
+                     resolved by name order (later wins); repeats inside one file are an error. `baseline.jsonl` holds the migrated historical rows. A PR that adds
                      tests adds ONE NEW file (`python3 long_suite_weights.py add ...`), so
                      independent PRs never edit the same lines and git merges them cleanly. Every
                      line is valid on its own, so an auto-merge cannot produce invalid JSON.
@@ -77,10 +77,14 @@ def load(path=DEFAULT_DIR):
                 section, key, value = 'classes', record['class'], {'parts': record['parts']}
             else:
                 section, key, value = 'rows', record['row'], record['ms']
-            if key in where.get(section, {}):
-                raise ValueError(f'Duplicate {section[:-1]} {key} in {where[section][key]} and {entry.name}')
+            if where.get(section, {}).get(key) == entry.name:
+                raise ValueError(f'Duplicate {section[:-1]} {key} inside {entry.name}')
+            # A key repeated across files (e.g. a PR's hand-registered row after an automated refresh
+            # recorded it) is harmless: weights only balance shards, so the later file name wins.
             where.setdefault(section, {})[key] = entry.name
             weights[section][key] = value
+            if section == 'rows':
+                weights['provisional_rows'].pop(key, None)
             if 'provisional' in record:
                 weights['provisional_rows'][key] = record['provisional']
     for key in weights['provisional_rows']:

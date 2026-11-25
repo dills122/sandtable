@@ -2,34 +2,33 @@
 
 ## How to add a test row (read this first)
 
-The timing manifest is the directory `.github/scripts/long-suite-weights/`, not a single file:
+**You do nothing.** Adding, renaming or removing tests needs no manifest edit. `make_plan` gives rows
+without a committed weight a conservative estimate (p90 of their class's known rows, at least 1000 ms),
+runs unknown classes unsplit, and ignores weights for rows that no longer exist. Coverage is unchanged:
+every discovered row must run exactly once, proven by discovery, the exact complementary allocation and
+the verify step. Design: `docs/work/2026-11-25-ci-timing-manifest-zero-registration.md`.
+
+If a new test is heavy, it fails loudly (per-process 720 s deadline, 750 s evidence cap, memory reserve),
+never silently. Only then add measured weights with the optional commands below. `discover` prints a
+`::warning::` when more than 5% of rows (or 10% of planned time) rely on estimates; that is a cue to run
+the weight refresh, not a failure.
+
+The timing manifest is the directory `.github/scripts/long-suite-weights/`:
 
 - `meta.json` holds baseline metadata (rarely changes).
-- `baseline.jsonl` holds the migrated historical classes/rows (4,272 lines at migration). Do not append to it.
-- Every other `*.jsonl` is an entry file: one JSON object per line, either
-  `{"class":"<class>","parts":1}` or `{"row":"<64-hex row_key>","ms":<int>}` with an optional
-  `"provisional":"<provenance note>"` on a row. Each class/row may appear in exactly one file.
+- `baseline.jsonl` holds the historical classes/rows. Do not hand-edit it; the refresh rewrites it.
+- Every other `*.jsonl` is an optional entry file: `{"class":"<class>","parts":1}` or
+  `{"row":"<64-hex row_key>","ms":<int>}` with optional `"provisional"`. A key repeated across files
+  resolves by file-name order (later wins); a repeat inside one file is an error.
 
-`long_suite_weights.load()` merges them into the same dict the old `long-suite-weights.json` held, so
-`make_plan`, the row proof, the exact complementary allocation, stale-row detection, the memory reserve
-and deadlines are unchanged.
+`long_suite_weights.load()` merges them into the dict the old `long-suite-weights.json` held.
 
-To register rows for a PR (one new file per PR, so concurrent PRs do not touch the same lines):
+Optional, for a heavy or split-worthy new test (one new file per PR so PRs never conflict):
 
-1. Commit the tests; build Release and the helper (`dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release`).
-2. `python3 .github/scripts/r02_partition.py discover --sha "$(git rev-parse HEAD)" --attempt local --directory artifacts/ci`.
-3. `python3 .github/scripts/long_suite_weights.py check --proof artifacts/ci` lists missing and stale rows.
-4. `python3 .github/scripts/long_suite_weights.py add --proof artifacts/ci --name <unique-topic> --note "<date> <platform>; <why>; pending hosted calibration" [--xml <dir of MTP XML>]`
-   writes `.github/scripts/long-suite-weights/<unique-topic>.jsonl` (measured ms from `--xml`, else `--default-ms`, default 1000).
-   Migrating a PR that already edited the old single JSON file: `git show <your-branch-sha>:.github/scripts/long-suite-weights.json > /tmp/mine.json`,
-   then `python3 .github/scripts/long_suite_weights.py import-legacy /tmp/mine.json --name <unique-topic>` copies your measured rows/classes (not already in the directory) into one new entry file.
-5. Remove tests that no longer exist by deleting that row's line from whichever file holds it.
-6. Put narrative evidence (commands, hashes, observations) in the PR description or a `docs/work` note.
-   Do not append to this file: it is frozen history below, and appending reintroduces end-of-file merge conflicts.
-
-Why: an append to one shared JSON file conflicted with every other PR, and two auto-merged appends once
-produced invalid JSON with no textual conflict. Line-per-record files cannot be syntactically broken by a
-merge, and a unique new file per PR cannot conflict. A duplicate row/class across two files fails `load()`.
+1. Commit the tests; build Release and the helper; run `python3 .github/scripts/r02_partition.py discover --sha "$(git rev-parse HEAD)" --attempt local --directory artifacts/ci`.
+2. `python3 .github/scripts/long_suite_weights.py check --proof artifacts/ci` lists rows/classes without weights (informational).
+3. `python3 .github/scripts/long_suite_weights.py add --proof artifacts/ci --name <unique-topic> --note "<note>" [--xml <dir of MTP XML>]` writes `<unique-topic>.jsonl`.
+4. Narrative evidence goes in the PR description or a `docs/work` note, not this file.
 
 Everything below this line is historical context; procedures that mention editing
 `long-suite-weights.json` now mean "add an entry file" as above.

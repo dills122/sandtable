@@ -47,8 +47,8 @@ class AllocationTests(unittest.TestCase):
     def test_order_independent_allocation(self):
         self.assertEqual(suites.make_plan(self.rows, self.weights), suites.make_plan(list(reversed(self.rows)), self.weights))
 
-    def test_unknown_missing_duplicate_and_foreign_rows_fail_closed(self):
-        variants = [self.rows[:-1], self.rows + [self.rows[0]], self.rows + [['Cna.Core.Tests', 'Cna.Core.Tests.New.Tests', 'Cna.Core.Tests.New.Tests']], self.rows + [['Foreign', 'Foreign.A.B.C', 'Foreign.A.B.C']]]
+    def test_duplicate_and_foreign_rows_fail_closed(self):
+        variants = [self.rows + [self.rows[0]], self.rows + [['Foreign', 'Foreign.A.B.C', 'Foreign.A.B.C']]]
         for rows in variants:
             with self.subTest(rows=len(rows)), self.assertRaises(ValueError):
                 suites.make_plan(rows, self.weights)
@@ -60,7 +60,7 @@ class AllocationTests(unittest.TestCase):
                 suites.make_plan(rows, self.weights)
 
     def test_bad_or_unmatched_timing_manifest_fails_closed(self):
-        for field,value in (('schema_version', 2), ('schema_version', True), ('rows', {}), ('classes', {})):
+        for field,value in (('schema_version', 2), ('schema_version', True), ('rows', []), ('classes', [])):
             bad = copy.deepcopy(self.weights); bad[field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
                 suites.make_plan(self.rows, bad)
@@ -496,8 +496,8 @@ class MergeFriendlyManifestTests(unittest.TestCase):
 
     def test_duplicate_malformed_and_bad_names_fail_closed(self):
         cases = {
-            'duplicate row': ('x.jsonl', ['{"row":"%s","ms":9}' % 'a' * 64]),
-            'duplicate class': ('x.jsonl', ['{"class":"C.A","parts":2}']),
+            'duplicate row in one file': ('x.jsonl', ['{"row":"%s","ms":9}' % self.KEY_B] * 2),
+            'duplicate class in one file': ('x.jsonl', ['{"class":"C.Z","parts":2}'] * 2),
             'broken json': ('x.jsonl', ['{"row":']),
             'extra field': ('x.jsonl', ['{"row":"%s","ms":9,"x":1}' % self.KEY_B]),
             'bad key': ('x.jsonl', ['{"row":"zz","ms":9}']),
@@ -556,13 +556,83 @@ class MergeFriendlyManifestTests(unittest.TestCase):
             self.assertEqual(0, weights_module.main(['import-legacy', str(mine), '--name', 'my-pr', '--weights', str(directory)]))
             self.assertEqual([{'class': 'C.N', 'parts': 1}, {'row': self.KEY_B, 'ms': 9, 'provisional': 'mine'}], weights_module.parse_records(directory / 'my-pr.jsonl'))
 
-    def test_make_plan_still_rejects_unknown_and_missing_rows_from_directory_manifest(self):
-        row = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.XTests.M', 'Cna.Core.Tests.Campaigns.XTests.M']
+    def test_cross_file_duplicates_resolve_by_name_order(self):
         with tempfile.TemporaryDirectory() as root:
-            (Path(root) / 'meta.json').write_text(json.dumps({'schema_version': 1}))
-            self.write(root, 'baseline.jsonl', ['{"class":"Cna.Core.Tests.Campaigns.XTests","parts":1}'])
-            with self.assertRaisesRegex(ValueError, 'Unknown/missing measured row'):
-                suites.make_plan([row], weights_module.load(root))
+            self.make(root)
+            self.write(root, 'zz.jsonl', ['{"row":"%s","ms":99}' % self.KEY_A, '{"class":"C.A","parts":3}'])
+            weights = weights_module.load(root)
+            self.assertEqual(99, weights['rows'][self.KEY_A]); self.assertEqual(3, weights['classes']['C.A']['parts'])
+
+
+class EstimatedWeightTests(unittest.TestCase):
+    """Rows/classes without committed weights are planned on estimates; coverage stays exact."""
+    def setUp(self):
+        self.rows, self.weights = [], {'schema_version': 1, 'classes': {}, 'rows': {}}
+        for number in range(16):
+            name = f'Cna.Core.Tests.Campaigns.Example{number:02}Tests'
+            self.weights['classes'][name] = {'parts': 4 if number < 8 else 1}
+            for index in range(8 if number < 8 else 2):
+                row = ['Cna.Core.Tests', name + '.M', name + f'.M(index: {index})']
+                self.rows.append(row)
+                self.weights['rows'][suites.row_key(row)] = 60000 if number < 8 else 1000
+
+    def covered(self, plan):
+        return sorted(tuple(row) for group in plan['groups'].values() for row in group['rows'])
+
+    def test_new_row_in_known_class_and_new_class_plan_without_weights(self):
+        known = ['Cna.Core.Tests', 'Cna.Core.Tests.Campaigns.Example00Tests.M', 'Cna.Core.Tests.Campaigns.Example00Tests.M(index: 99)']
+        fresh = ['Cna.Core.Tests', 'Cna.Core.Tests.Brand.NewTests.M', 'Cna.Core.Tests.Brand.NewTests.M']
+        rows = self.rows + [known, fresh]
+        plan = suites.make_plan(rows, self.weights)
+        self.assertEqual(sorted(tuple(row) for row in rows), self.covered(plan))
+        estimation = plan['estimation']
+        self.assertEqual(2, estimation['estimated_rows']); self.assertEqual(['Cna.Core.Tests.Brand.NewTests'], estimation['new_classes'])
+        self.assertEqual(60000, estimation['estimated_ms'] - suites.DEFAULT_ROW_MS)  # known class: p90 of its rows; new class: default
+        self.assertEqual(plan, suites.validate_plan(json.loads(json.dumps(plan)), rows, self.weights))
+
+    def test_estimate_is_class_p90_floored_and_deterministic(self):
+        self.assertEqual(suites.DEFAULT_ROW_MS, suites.estimate_row_ms([]))
+        self.assertEqual(suites.DEFAULT_ROW_MS, suites.estimate_row_ms([5, 6, 7]))
+        self.assertEqual(9000, suites.estimate_row_ms(list(range(1000, 10000, 1000))))
+        self.assertEqual(suites.make_plan(self.rows[:-1], self.weights), suites.make_plan(list(reversed(self.rows[:-1])), self.weights))
+
+    def test_stale_weights_are_ignored_not_fatal(self):
+        plan = suites.make_plan(self.rows[:-3], self.weights)
+        self.assertEqual(3, plan['estimation']['stale_weight_rows'])
+        self.assertEqual(sorted(tuple(row) for row in self.rows[:-3]), self.covered(plan))
+
+    def test_coverage_stays_strict_for_duplicate_foreign_and_wildcard_rows(self):
+        fresh = ['Cna.Core.Tests', 'Cna.Core.Tests.Brand.NewTests.M', 'Cna.Core.Tests.Brand.NewTests.M']
+        for rows in (self.rows + [fresh, fresh], self.rows + [['Foreign', 'Foreign.A.B.C', 'Foreign.A.B.C']], self.rows + [['Cna.Core.Tests', 'Cna.Core.Tests.Brand.NewTests.M', 'Cna.Core.Tests.Brand.NewTests.*']]):
+            with self.subTest(rows=len(rows)), self.assertRaises(ValueError):
+                suites.make_plan(rows, self.weights)
+
+    def test_plan_that_drops_or_duplicates_a_discovered_row_fails_validation(self):
+        plan = suites.make_plan(self.rows, self.weights)
+        for mutate in (lambda g: g['rows'].pop(), lambda g: g['rows'].append(g['rows'][0])):
+            bad = copy.deepcopy(plan); mutate(next(iter(bad['groups'].values())))
+            with self.subTest(), self.assertRaises(ValueError):
+                suites.validate_plan(bad, self.rows, self.weights)
+
+    def test_invalid_present_weights_and_class_parts_still_fail(self):
+        bad = copy.deepcopy(self.weights); bad['rows'][next(iter(bad['rows']))] = 0
+        with self.assertRaises(ValueError): suites.make_plan(self.rows, bad)
+        for parts in (0, True, '4', None):
+            bad = copy.deepcopy(self.weights); bad['classes']['Cna.Core.Tests.Campaigns.Example00Tests']['parts'] = parts
+            with self.subTest(parts=parts), self.assertRaises(ValueError): suites.make_plan(self.rows, bad)
+
+    def test_split_class_that_loses_rows_below_its_parts_still_plans_with_full_coverage(self):
+        name = 'Cna.Core.Tests.Campaigns.Example00Tests'
+        rows = [row for row in self.rows if not row[1].startswith(name) or row[2].endswith('(index: 0)') or row[2].endswith('(index: 1)')]
+        self.assertEqual(2, sum(row[1].startswith(name) for row in rows))  # parts=4 > 2 live rows
+        plan = suites.make_plan(rows, self.weights)
+        self.assertEqual(sorted(tuple(row) for row in rows), self.covered(plan))
+
+    def test_refresh_recommended_only_above_threshold(self):
+        self.assertFalse(suites.make_plan(self.rows, self.weights)['estimation']['refresh_recommended'])
+        many = {key: value for key, value in self.weights['rows'].items()}
+        for key in list(many)[:20]: del many[key]
+        self.assertTrue(suites.make_plan(self.rows, dict(self.weights, rows=many))['estimation']['refresh_recommended'])
 
 
 if __name__ == '__main__':
