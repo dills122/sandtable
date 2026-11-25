@@ -103,4 +103,18 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         }
         finally { await StopCampaignGrainHostAsync(host); }
     }
+
+    [Fact]
+    public void EmbeddedEnumerationSurvivesACorruptJournalFileInTheDirectory()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new ManualClock();
+        var (request, _) = PrepareSelectionRound(fixture.Create(clock));
+        var directory = System.IO.Path.GetDirectoryName(fixture.Path)!;
+        // Sorts before campaign.sqlite; not a SQLite database at all.
+        File.WriteAllText(System.IO.Path.Combine(directory, "0000-corrupt.sqlite"), "not a sqlite database");
+        File.WriteAllText(System.IO.Path.Combine(directory, "1111-corrupt.sqlite"), "also not sqlite");
+        var store = new CampaignDurableAuthorityJournalStore(directory, OperatorSecret, clock);
+        Assert.Contains(request.CampaignId, store.CollectingSelectionCampaigns("", 16));
+    }
 }

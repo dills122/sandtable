@@ -283,9 +283,15 @@ internal sealed partial class CampaignDurableAuthorityJournalStore
         string[] siblings;
         try { siblings = Directory.GetFiles(directory, "*" + CampaignDurableAuthorityJournal.CampaignFileExtension); }
         catch (DirectoryNotFoundException) { return null; }
-        if (siblings.Length == 0) return null;
-        try { return CampaignDurableAuthorityJournal.OpenExisting(siblings[0], clock, contentResolver); }
-        catch (InvalidOperationException) { return null; }
+        // Directory.GetFiles order is unspecified: try each file until one opens, so a single
+        // corrupt or unrecognized file cannot make every Collecting* enumeration return empty.
+        // CollectingAcrossSiblingFiles then tolerates bad siblings per file.
+        foreach (var sibling in siblings)
+        {
+            try { return CampaignDurableAuthorityJournal.OpenExisting(sibling, clock, contentResolver); }
+            catch (InvalidOperationException) { }
+        }
+        return null;
     }
 
     /// <summary>
