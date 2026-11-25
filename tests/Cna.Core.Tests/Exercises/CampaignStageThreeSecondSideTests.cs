@@ -12,9 +12,9 @@ namespace Cna.Core.Tests.Exercises;
 // Sessions come from the shared real-session scenario (SequencingScenarios, "pregame-no-attack").
 // What this proves: Reconstruct verifies and tamper-checks Reserve, Movement Completion and Breakdown
 // (the observable subtypes); QueryCheckpoint names a Stage 3 position; the first side's Stage 3 slots are
-// untouched; Combat entry points stay closed. What it does NOT prove: ThirdStageSecondMovePending (no own
+// untouched; Combat entry points stay closed until Breakdown. What it does NOT prove: ThirdStageSecondMovePending (no own
 // element has a legal movement offer in the only drivable setup, same limitation as S3-2/StageEntry*Move),
-// any Combat step of the second side (S3-9), or any Host/Runner flow.
+// a real attack, repeat cycle, or any Host/Runner flow. The finish-without-attack tail is driven.
 public sealed class CampaignStageThreeSecondSideTests
 {
     private static readonly Lazy<IReadOnlyList<SequencingSample>> Samples = new(() =>
@@ -169,8 +169,8 @@ public sealed class CampaignStageThreeSecondSideTests
         Assert.False(CampaignExercises.SubmitStageEntrySecondReserve(AfterFirstSide, secondAudience, hash, null).IsAccepted);
     }
 
-    // Stale-field checklist: with the second side underway every Combat/Release/Post-Combat entry point
-    // must stay closed (S3-9 not wired), and never answer from the never-reset Stage 2 / first-side runtimes.
+    // Stale-field checklist: Combat selection opens only at the current Breakdown; its tail
+    // must stay closed and never answer from the retained Stage 2 / first-side runtimes.
     [Theory]
     [MemberData(nameof(Subtypes))]
     public void CombatAndTailEntryPointsFailClosedAtEverySecondSideCut(string typeName)
@@ -179,15 +179,83 @@ public sealed class CampaignStageThreeSecondSideTests
         var audience = session.CurrentThirdStageSecondReserve!.Side == LandSide.Axis
             ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
         Assert.Null(CampaignCombatExerciseActions.Query(session, audience));
+        Assert.Null(session.CurrentRepeatAssault);
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeReserveReleaseState(session));
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryPostCombatPassSource(session));
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryTruckConvoyPassSource(session));
         Assert.False(CampaignExercises.SubmitPostCombatPass(session, audience, "sha256:" + new string('b', 64)).IsAccepted);
-        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeCombatSelectionRoundBinding(session));
-        Assert.Throws<InvalidOperationException>(() =>
-            CampaignExercises.QueryContactOwnerCombatCut(session, session.CurrentThirdStageSecondReserve.Side, "axis-infantry"));
+        if (session.Pending is ThirdStageSecondBreakdownPending)
+            Assert.Equal(session.CurrentContacts.AuthorityVersion, CampaignExercises.QueryNativeCombatSelectionRoundBinding(session).StateVersion);
+        else
+        {
+            Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeCombatSelectionRoundBinding(session));
+            Assert.Throws<InvalidOperationException>(() =>
+                CampaignExercises.QueryContactOwnerCombatCut(session, session.CurrentThirdStageSecondReserve.Side, "axis-infantry"));
+        }
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
         var submission = new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion, checkpoint.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, audience, new FinishCombatWithoutAttackAction("axis-infantry").ActionId);
-        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, "axis-infantry").IsAccepted);
+        if (session.Pending is not ThirdStageSecondBreakdownPending)
+            Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, "axis-infantry").IsAccepted);
         Assert.False(CampaignExercises.SubmitTruckConvoyPass(session, audience, "sha256:" + new string('c', 64)).IsAccepted);
+    }
+
+    [Theory]
+    [InlineData("combat-selection")]
+    [InlineData("combat-no-attack")]
+    [InlineData("reserve-release")]
+    [InlineData("cycle-control-finish")]
+    [InlineData("truck-convoy-pass")]
+    [InlineData("post-combat-pass-0")]
+    [InlineData("post-combat-pass-1")]
+    [InlineData("post-combat-pass-2")]
+    [InlineData("post-combat-pass-3")]
+    public void SecondSideCombatCutsReconstructAndRejectTheirOwnTamperedEvents(string label)
+    {
+        var session = At("op3.second." + label);
+        Assert.Equal(label == "combat-selection" ? nameof(ThirdStageSecondCombatSelectionPending) : nameof(ThirdStageSecondAssaultPending),
+            session.Pending!.GetType().Name);
+        var bytes = CampaignCurrentEventSerializer.Serialize(session.CurrentHistory[^1], session.Context);
+        var reconstructed = CampaignExercises.Reconstruct(session);
+        Assert.True(reconstructed.IsVerified, reconstructed.FailureReason.ToString());
+        Assert.Equal(bytes, reconstructed.ReconstructedSnapshotBytes);
+        Assert.Equal(session.CurrentContacts.AuthorityVersion, CampaignExercises.QueryCheckpoint(session).StateVersion);
+        var (tampered, _) = SessionTamper.TamperOwnRecord(session);
+        Assert.NotNull(tampered);
+        Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory, CampaignExercises.Reconstruct(tampered).FailureReason);
+        Assert.Same(Breakdown.CurrentThirdStageAssault, session.CurrentThirdStageAssault);
+        Assert.Same(Breakdown.CurrentStageEntrySecondAssault, session.CurrentStageEntrySecondAssault);
+        Assert.Same(session.CurrentThirdStageSecondAssault, session.ActiveThirdStageAssault);
+        Assert.Throws<InvalidOperationException>(() => CampaignExercises.QueryNativeCombatSelectionRoundBinding(session));
+    }
+
+    [Fact]
+    public void SecondSideSelectionAndTailRejectWrongAudienceAndDuplicateSteps()
+    {
+        var breakdown = Breakdown.CurrentThirdStageSecondBreakdown!;
+        var side = breakdown.Side;
+        var audience = side == LandSide.Axis ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        var other = side == LandSide.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        var element = side == LandSide.Axis ? "axis-infantry" : "commonwealth-infantry";
+        var checkpoint = CampaignExercises.QueryCheckpoint(Breakdown);
+        CampaignActionSubmission Submission(CampaignActionAudience who) => new(CampaignActionSubmission.CurrentContractVersion,
+            checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, who, new FinishCombatWithoutAttackAction(element).ActionId);
+        Assert.Equal(Submission(audience).ActionId,
+            CampaignExercises.QueryContactOwnerCombatCut(Breakdown, side, element).FinishOffer?.ActionId);
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(Breakdown, Submission(other), element).IsAccepted);
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(Breakdown, Submission(CampaignActionAudience.System), element).IsAccepted);
+        var selected = At("op3.second.combat-selection");
+        Assert.False(CampaignExercises.SubmitContactOwnerCombatSelection(selected, Submission(audience), element).IsAccepted);
+        Assert.False(CampaignExercises.CompleteThirdStageCombatNoAttack(selected).IsAccepted);
+        Assert.False(CampaignExercises.CompleteThirdStageSecondCombatNoAttack(Breakdown).IsAccepted);
+        var noAttack = At("op3.second.combat-no-attack");
+        Assert.False(CampaignExercises.CompleteThirdStageSecondCombatNoAttack(noAttack).IsAccepted);
+        var release = At("op3.second.reserve-release");
+        var hash = SequencingScenarios.Hash("invalid-tail");
+        Assert.False(CampaignExercises.SubmitNativeCycleControl(release, other, CampaignNativeCycleControlChoiceV28.Finish, hash).IsAccepted);
+        var terminal = At("op3.second.post-combat-pass-3");
+        Assert.Null(terminal.CurrentRepeatAssault);
+        Assert.False(CampaignExercises.SubmitPostCombatPass(terminal, audience, hash).IsAccepted);
     }
 
     [Fact]

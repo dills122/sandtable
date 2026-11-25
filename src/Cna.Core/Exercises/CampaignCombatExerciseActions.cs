@@ -133,7 +133,9 @@ internal static class CampaignCombatExerciseActions
             // The second side's own assault runtime is classified by SecondPlayer below.
             || (session.CurrentRepeatAssault is not null && session.CurrentSecondAssault is null)
             || session.CurrentPostRepeat is not null
-            // Stage 3 Combat is not wired (S3-4); every field read below is Stage 1.
+            // This legacy classifier reads Stage 1 fields, which are retained after Stage 2 begins.
+            // Later stages have distinct Core entry points and must not dispatch through these fields.
+            || session.CurrentInitiativeDeclaration is not null
             || CampaignExercises.IsStageThreeCombatUnwired(session)
             || session.Context.ArtifactV6 is null)
             return new(Stage.None);

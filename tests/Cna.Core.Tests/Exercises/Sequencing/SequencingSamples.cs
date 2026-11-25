@@ -159,6 +159,8 @@ internal static class SequencingScenarios
         session = TryMove(r, session, aud3Second, "op3.second", CampaignExercises.QueryThirdStageSecondMovementCut, CampaignExercises.SubmitThirdStageSecondMovement);
         session = r.Ok("op3.second.movement-completion", CampaignExercises.CompleteThirdStageSecondMovement(session, aud3Second, Hash("stage3-second-movement-completion")));
         session = r.Ok("op3.second.breakdown", CampaignExercises.CompleteThirdStageSecondBreakdown(session));
+        session = FinishWithoutAttack(r, session, aud3Second, "op3.second", CampaignExercises.CompleteThirdStageSecondCombatNoAttack);
+        CycleThroughPasses(r, session, aud3Second, "op3.second");
         return r;
     }
 
@@ -220,7 +222,10 @@ internal static class SequencingScenarios
             checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, audience,
             new FinishCombatWithoutAttackAction(element).ActionId);
         session = r.Ok($"{tag}.combat-selection", CampaignExercises.SubmitContactOwnerCombatSelection(session, submission, element));
-        session = r.Ok($"{tag}.combat-no-attack", completeNoAttack(session));
+        var noAttack = completeNoAttack(session);
+        if (tag.StartsWith("op3.", StringComparison.Ordinal))
+            Assert.Equal(noAttack.Evidence!.EventRecords.Single(), noAttack.Evidence.SnapshotCheckpoint);
+        session = r.Ok($"{tag}.combat-no-attack", noAttack);
         return r.Ok($"{tag}.reserve-release", CampaignExercises.CompleteNativeReserveRelease(session));
     }
 
