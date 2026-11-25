@@ -90,7 +90,7 @@ The three options below are stated so each can be evaluated on facts. None is re
 - Whether documentation that restates rules (section 3.3) stays in the public repository.
 - Whether distributing a tool that knows the pack format and the names of source-derived identifiers is itself acceptable. This memo does not judge that.
 
-**Effort and reversibility.** Largest engineering cost of the three (ASSUMED 190-410 wh across phases; see the design doc). The separation is reversible: data can be re-embedded later if permission is obtained.
+**Effort and reversibility.** Largest engineering cost of the three (ASSUMED 270-540 wh across phases; see the design doc). The separation is reversible: data can be re-embedded later if permission is obtained.
 
 ### Option B: seek rights-holder permission
 
@@ -116,7 +116,7 @@ The three options below are stated so each can be evaluated on facts. None is re
 
 | | A: engine + user pack | B: seek permission | C: ship derived data |
 | --- | --- | --- | --- |
-| Engineering cost | High (ASSUMED 190-410 wh) | Low | Lowest |
+| Engineering cost | High (ASSUMED 270-540 wh) | Low | Lowest |
 | Depends on third party | No | Yes | No (but depends on owner/counsel comfort) |
 | Real-content RC reachable | Yes, with a local pack | Possibly with grant | Yes |
 | Engine RC on synthetic content reachable | Yes (prerequisite) | Not affected | Not affected |
