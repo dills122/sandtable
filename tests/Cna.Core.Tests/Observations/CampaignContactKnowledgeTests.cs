@@ -120,6 +120,18 @@ public sealed class CampaignContactKnowledgeTests
         Assert.Throws<ArgumentException>(() => knowledge.Apply(Transition(2, "duplicate-binding",
             CampaignContactTransitionKind.Observed, knowledge.NextHandle("observer"))));
         Assert.Equal(1, knowledge.AudienceRevision);
+
+        var fork = knowledge.Copy();
+        Assert.Throws<ArgumentException>(() => fork.Apply(Transition(2, "sight-1",
+            CampaignContactTransitionKind.Updated, handle)));
+        var next = Transition(2, "sight-2", CampaignContactTransitionKind.Updated, handle, "hex-2");
+        fork.Apply(next);
+        Assert.Equal("hex-1", Assert.Single(knowledge.ObserveFor("observer")).ApparentLocationId);
+        Assert.Equal(1, knowledge.AudienceRevisionFor("observer"));
+        Assert.Equal("hex-2", Assert.Single(fork.ObserveFor("observer")).ApparentLocationId);
+        Assert.Equal(2, fork.AudienceRevisionFor("observer"));
+        knowledge.Apply(next); // The fork must not mutate the predecessor's applied-source set.
+        Assert.Equal(fork.ObserveFor("observer"), knowledge.ObserveFor("observer"));
     }
 
     [Fact]

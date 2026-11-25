@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Rules;
@@ -14,10 +15,10 @@ internal sealed class CampaignContactJournal
     private const int MaximumRecordBytes = 4_096;
     private readonly CampaignContactKnowledge axis;
     private readonly CampaignContactKnowledge commonwealth;
-    private readonly byte[][] records;
+    private readonly ImmutableList<byte[]> records;
 
     private CampaignContactJournal(string campaignId, long authorityVersion,
-        CampaignContactKnowledge axis, CampaignContactKnowledge commonwealth, byte[][] records)
+        CampaignContactKnowledge axis, CampaignContactKnowledge commonwealth, ImmutableList<byte[]> records)
     {
         CampaignId = campaignId;
         AuthorityVersion = authorityVersion;
@@ -36,7 +37,7 @@ internal sealed class CampaignContactJournal
         ArgumentException.ThrowIfNullOrWhiteSpace(campaignId);
         return new CampaignContactJournal(campaignId, 0,
             new CampaignContactKnowledge(campaignId, LandSide.Axis),
-            new CampaignContactKnowledge(campaignId, LandSide.Commonwealth), []);
+            new CampaignContactKnowledge(campaignId, LandSide.Commonwealth), ImmutableList<byte[]>.Empty);
     }
 
     // The pinned Cairo excerpt has no Axis counters and hence no initial contacts.
@@ -45,7 +46,7 @@ internal sealed class CampaignContactJournal
 
     internal CampaignContactJournal AdvancePregameSource(long priorVersion)
     {
-        if (AuthorityVersion != priorVersion || priorVersion < 1 || records.Length != 0)
+        if (AuthorityVersion != priorVersion || priorVersion < 1 || records.Count != 0)
             throw new InvalidOperationException("Invalid pre-game contact authority.");
         return AtAuthorityVersion(checked(priorVersion + 1));
     }
@@ -64,7 +65,7 @@ internal sealed class CampaignContactJournal
     {
         ArgumentNullException.ThrowIfNull(started);
         if (CampaignId != started.Source.Request.CampaignId || AuthorityVersion != started.Source.StateVersion
-            || started.StateVersion != checked(AuthorityVersion + 1) || records.Length != 0)
+            || started.StateVersion != checked(AuthorityVersion + 1) || records.Count != 0)
             throw new InvalidOperationException("Source contact creation does not bind the pregame authority.");
         return ApplySources(
             CampaignSourceInitialContacts.Derive(started.World, started.StateVersion, axis),
@@ -574,14 +575,14 @@ internal sealed class CampaignContactJournal
         IReadOnlyList<CampaignContactTransition> axisTransitions,
         IReadOnlyList<CampaignContactTransition> commonwealthTransitions)
     {
+        if (axisTransitions.Count + commonwealthTransitions.Count > MaximumRecords - records.Count)
+            throw new JsonException("Contact journal exceeds its record limit.");
+        if (axisTransitions.Count == 0 && commonwealthTransitions.Count == 0)
+            return this;
+
         var nextAxis = axis.Copy();
         var nextCommonwealth = commonwealth.Copy();
-        if (axisTransitions.Count + commonwealthTransitions.Count > MaximumRecords - records.Length)
-            throw new JsonException("Contact journal exceeds its record limit.");
-
-        var appended = new byte[records.Length + axisTransitions.Count + commonwealthTransitions.Count][];
-        Array.Copy(records, appended, records.Length);
-        var index = records.Length;
+        var appended = records;
         foreach (var (knowledge, transitions) in new[]
                  {
                      (nextAxis, axisTransitions), (nextCommonwealth, commonwealthTransitions),
@@ -592,7 +593,7 @@ internal sealed class CampaignContactJournal
                 if (canonical.Length > MaximumRecordBytes)
                     throw new JsonException("Contact record exceeds its byte limit.");
                 knowledge.Apply(transition);
-                appended[index++] = canonical;
+                appended = appended.Add(canonical);
             }
         return new CampaignContactJournal(CampaignId, AuthorityVersion,
             nextAxis, nextCommonwealth, appended);
@@ -624,10 +625,11 @@ internal sealed class CampaignContactJournal
             journal = journal.AppendMovement(before, after, movement, context);
             before = after;
         }
-        if (journal.records.Length != retainedRecords.Count)
+        if (journal.records.Count != retainedRecords.Count)
             throw new JsonException("Contact records do not match committed movements.");
-        for (var index = 0; index < journal.records.Length; index++)
-            if (!journal.records[index].AsSpan().SequenceEqual(retainedRecords[index]))
+        var index = 0;
+        foreach (var record in journal.records)
+            if (!record.AsSpan().SequenceEqual(retainedRecords[index++]))
                 throw new JsonException("Contact record differs from its committed movement source.");
         return journal;
     }
