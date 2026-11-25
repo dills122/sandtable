@@ -12,6 +12,12 @@ internal static class CampaignCurrentEventSerializer
 
     public static byte[] Serialize(object campaignEvent) => campaignEvent switch
     {
+        CampaignNativeInitiativeDeclarationV49 declared => declared.SerializeCanonical(),
+        CampaignNativeWeatherDeterminationV50 determined => determined.SerializeCanonical(),
+        CampaignNativeNoObligationOrganizationV51 organization => organization.SerializeCanonical(),
+        CampaignNativeNoObligationNavalConvoyArrivalV52 arrival => arrival.SerializeCanonical(),
+        CampaignNativeNoObligationFleetAssignmentV53 assignment => assignment.SerializeCanonical(),
+        CampaignNativeNoObligationFleetRepairV54 repair => repair.SerializeCanonical(),
         CampaignNativeTruckConvoyPassV41 passed => passed.SerializeCanonical(),
         CampaignNativePostCombatPassV42 passed => passed.SerializeCanonical(),
         CampaignNativeSecondReserveV43 reserve => reserve.SerializeCanonical(),
@@ -77,6 +83,12 @@ internal static class CampaignCurrentEventSerializer
         }
         return eventType switch
         {
+            "native-initiative-declared" => CampaignNativeInitiativeDeclarationV49.Deserialize(canonicalJson),
+            "native-weather-determined" => CampaignNativeWeatherDeterminationV50.Deserialize(canonicalJson),
+            "native-no-obligation-organization-resolved" => CampaignNativeNoObligationOrganizationV51.Deserialize(canonicalJson),
+            "native-no-obligation-naval-convoy-arrival-resolved" => CampaignNativeNoObligationNavalConvoyArrivalV52.Deserialize(canonicalJson),
+            "native-no-obligation-fleet-assignment-resolved" => CampaignNativeNoObligationFleetAssignmentV53.Deserialize(canonicalJson),
+            "native-no-obligation-fleet-repair-resolved" => CampaignNativeNoObligationFleetRepairV54.Deserialize(canonicalJson),
             "truck-convoy-movement-passed" => CampaignNativeTruckConvoyPassV41.Deserialize(canonicalJson),
             "post-combat-phase-passed" => CampaignNativePostCombatPassV42.Deserialize(canonicalJson),
             "second-reserve-decided" => CampaignNativeSecondReserveV43.Deserialize(canonicalJson),

@@ -4119,13 +4119,13 @@ public static class CampaignExercises
         if (session.Pregame is { } pregame) return new ExerciseCheckpoint(pregame);
         // Overhaul doc (docs/work/plans/2026-11-23-codebase-overhaul-direction.md),
         // Section 0.6 step 2: dispatch off session.Pending's runtime type
-        // instead of a 29-branch ordered null-check cascade. session.Pending
+        // instead of an ordered null-check cascade. session.Pending
         // is computed once, in the exact order this cascade used to check
         // directly (see ExerciseSession.Pending's remarks) -- this switch is
         // a mechanical transcription, not a reordering: "stop reading the
         // fields directly, read the derived value."
         // Exhaustiveness: every PendingDecision subtype (PendingDecision.cs) has a case
-        // below -- verified against all 29 sealed records there, no wildcard/default arm.
+        // below -- one case per sealed record there, no wildcard/default arm.
         // This stays a switch STATEMENT rather than a switch EXPRESSION on purpose: converting
         // it to `session.Pending switch { ... }` so the compiler could flag a future missing
         // case via CS8509 was tried and reverted, because Roslyn's switch-expression
@@ -4177,6 +4177,18 @@ public static class CampaignExercises
                 return new ExerciseCheckpoint(session.CurrentSecondMove!, session.CurrentSnapshot);
             case SecondReservePending:
                 return new ExerciseCheckpoint(session.CurrentSecondReserve!, session.CurrentSnapshot);
+            case ThirdStageNoObligationFleetRepairPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageNoObligationFleetRepair!, session.CurrentSnapshot);
+            case ThirdStageNoObligationFleetAssignmentPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageNoObligationFleetAssignment!, session.CurrentSnapshot);
+            case ThirdStageNoObligationNavalConvoyArrivalPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageNoObligationNavalConvoyArrival!, session.CurrentSnapshot);
+            case ThirdStageNoObligationOrganizationPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageNoObligationOrganization!, session.CurrentSnapshot);
+            case ThirdStageWeatherPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageWeather!, session.CurrentSnapshot);
+            case ThirdStageInitiativeDeclarationPending:
+                return new ExerciseCheckpoint(session.CurrentThirdStageInitiativeDeclaration!, session.CurrentSnapshot);
             case NoObligationFleetRepairPending:
                 return new ExerciseCheckpoint(session.CurrentNoObligationFleetRepair!, session.CurrentSnapshot);
             case NoObligationFleetAssignmentPending:
@@ -9153,7 +9165,7 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(completedSession);
         // Overhaul doc (docs/work/plans/2026-11-23-codebase-overhaul-direction.md),
         // Section 0.6 step 2: dispatch off completedSession.Pending's runtime type
-        // instead of a 29-branch ordered null-check cascade. completedSession.Pending
+        // instead of an ordered null-check cascade. completedSession.Pending
         // is the SAME derived value QueryCheckpoint dispatches off (ExerciseSession.Pending,
         // computed once, in QueryCheckpoint's own already-correct most-recent-first order)
         // -- so this cascade can no longer drift out of sync with QueryCheckpoint's ordering
@@ -9162,7 +9174,7 @@ public static class CampaignExercises
         // earliest-first order). There is no manual order left to get wrong: dispatch is by
         // the matched decision's runtime type, not by null-check sequence.
         // Exhaustiveness: every PendingDecision subtype (PendingDecision.cs) has a case
-        // below -- verified against all 29 sealed records there, no wildcard/default arm.
+        // below -- one case per sealed record there, no wildcard/default arm.
         // See QueryCheckpoint's own switch above it for why this stays a switch STATEMENT
         // instead of a switch EXPRESSION: converting it to get CS8509 compiler-enforced
         // exhaustiveness was tried and reverted, because Roslyn's switch-expression
@@ -10120,6 +10132,208 @@ public static class CampaignExercises
                             throw new InvalidCampaignHistoryException("Fleet Repair predecessor did not replay.");
                         var replayed = CampaignNativeNoObligationFleetRepairV54.Create(
                             predecessor.CurrentNoObligationFleetAssignment!,
+                            predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetRepair(fleetRepairResolved);
+                        if (!expected.AsSpan().SequenceEqual(replayed)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Fleet Repair resolution differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            replayed, streamHash, fleetRepairExpectedHash, Hash(replayed));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, fleetRepairExpectedHash, null);
+                    }
+                }
+            case ThirdStageInitiativeDeclarationPending:
+                {
+                    var declared = completedSession.CurrentThirdStageInitiativeDeclaration!;
+                    var expected = declared.SerializeCanonical();
+                    var declaredExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageInitiativeDeclarationPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Initiative Declaration has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Initiative Declaration predecessor did not replay.");
+                        var replayed = CampaignNativeInitiativeDeclarationV49.Create(
+                            predecessor.CurrentStageEntrySecondAssault!.PostCombatPasses[^1],
+                            declared.DeclaringHolder, declared.FirstSide == declared.DeclaringHolder,
+                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion)
+                            .SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceInitiativeDeclaration(declared);
+                        if (!expected.AsSpan().SequenceEqual(replayed)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Initiative Declaration differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            replayed, streamHash, declaredExpectedHash, Hash(replayed));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, declaredExpectedHash, null);
+                    }
+                }
+            case ThirdStageWeatherPending:
+                {
+                    var determined = completedSession.CurrentThirdStageWeather!;
+                    var expected = determined.SerializeCanonical();
+                    var determinedExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageWeatherPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Weather Determination has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Weather Determination predecessor did not replay.");
+                        var genesisRandom = predecessor.CurrentSnapshot.RandomState;
+                        var priorRandomState = new RandomStreamState(genesisRandom.ContractVersion, genesisRandom.AlgorithmId,
+                            genesisRandom.Seed, determined.PriorRandomCursor);
+                        var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentThirdStageInitiativeDeclaration!,
+                            priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceWeatherDetermination(determined);
+                        if (!expected.AsSpan().SequenceEqual(replayed)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Weather Determination differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            replayed, streamHash, determinedExpectedHash, Hash(replayed));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, determinedExpectedHash, null);
+                    }
+                }
+            case ThirdStageNoObligationOrganizationPending:
+                {
+                    var organizationResolved = completedSession.CurrentThirdStageNoObligationOrganization!;
+                    var expected = organizationResolved.SerializeCanonical();
+                    var organizationExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageNoObligationOrganizationPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Organization resolution has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Organization predecessor did not replay.");
+                        var replayed = CampaignNativeNoObligationOrganizationV51.Create(predecessor.CurrentThirdStageWeather!,
+                            predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceNoObligationOrganization(organizationResolved);
+                        if (!expected.AsSpan().SequenceEqual(replayed)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Organization resolution differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            replayed, streamHash, organizationExpectedHash, Hash(replayed));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, organizationExpectedHash, null);
+                    }
+                }
+            case ThirdStageNoObligationNavalConvoyArrivalPending:
+                {
+                    var convoyArrivalResolved = completedSession.CurrentThirdStageNoObligationNavalConvoyArrival!;
+                    var expected = convoyArrivalResolved.SerializeCanonical();
+                    var convoyArrivalExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageNoObligationNavalConvoyArrivalPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Naval Convoy Arrival resolution has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Naval Convoy Arrival predecessor did not replay.");
+                        var replayed = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(
+                            predecessor.CurrentThirdStageNoObligationOrganization!, predecessor.Context,
+                            predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceNoObligationNavalConvoyArrival(convoyArrivalResolved);
+                        if (!expected.AsSpan().SequenceEqual(replayed)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Naval Convoy Arrival resolution differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            replayed, streamHash, convoyArrivalExpectedHash, Hash(replayed));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, convoyArrivalExpectedHash, null);
+                    }
+                }
+            case ThirdStageNoObligationFleetAssignmentPending:
+                {
+                    var fleetAssignmentResolved = completedSession.CurrentThirdStageNoObligationFleetAssignment!;
+                    var expected = fleetAssignmentResolved.SerializeCanonical();
+                    var fleetAssignmentExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageNoObligationFleetAssignmentPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Fleet Assignment resolution has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Fleet Assignment predecessor did not replay.");
+                        var replayed = CampaignNativeNoObligationFleetAssignmentV53.Create(
+                            predecessor.CurrentThirdStageNoObligationNavalConvoyArrival!,
+                            predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
+                        var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetAssignment(fleetAssignmentResolved);
+                        if (!expected.AsSpan().SequenceEqual(replayed)
+                            || completedSession.CurrentContacts.AuthorityVersion != contacts.AuthorityVersion
+                            || completedSession.CurrentContacts.Records.Count != contacts.Records.Count
+                            || completedSession.CurrentContacts.Records.Zip(contacts.Records)
+                                .Any(pair => !pair.First.AsSpan().SequenceEqual(pair.Second)))
+                            throw new InvalidCampaignHistoryException("Fleet Assignment resolution differs from replay.");
+                        var streamHash = includeStreamHash
+                            ? HashFramed(completedSession.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, completedSession.Context))) : null;
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.None,
+                            replayed, streamHash, fleetAssignmentExpectedHash, Hash(replayed));
+                    }
+                    catch (Exception error) when (error is JsonException or InvalidCampaignHistoryException
+                        or ArgumentException or InvalidOperationException)
+                    {
+                        return new ExerciseReconstructionResult(ExerciseReconstructionFailureReason.InvalidHistory,
+                            null, null, fleetAssignmentExpectedHash, null);
+                    }
+                }
+            case ThirdStageNoObligationFleetRepairPending:
+                {
+                    var fleetRepairResolved = completedSession.CurrentThirdStageNoObligationFleetRepair!;
+                    var expected = fleetRepairResolved.SerializeCanonical();
+                    var fleetRepairExpectedHash = Hash(expected);
+                    try
+                    {
+                        var predecessor = completedSession.ThirdStageNoObligationFleetRepairPredecessor
+                            ?? throw new InvalidCampaignHistoryException("Fleet Repair resolution has no predecessor.");
+                        if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
+                            throw new InvalidCampaignHistoryException("Fleet Repair predecessor did not replay.");
+                        var replayed = CampaignNativeNoObligationFleetRepairV54.Create(
+                            predecessor.CurrentThirdStageNoObligationFleetAssignment!,
                             predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceNoObligationFleetRepair(fleetRepairResolved);
                         if (!expected.AsSpan().SequenceEqual(replayed)

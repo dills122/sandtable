@@ -3,6 +3,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 
@@ -19,19 +20,11 @@ namespace Cna.Core.Tests.Exercises;
 // was written). MTS-TASK-005/006 have since landed both acting sides' own
 // Reserve/Movement/Breakdown/Combat Decision/Assault/No-Attack for Stage 2.
 //
-// This test drives a REAL session (not a synthetic predecessor, unlike
-// CampaignNativeStageEntryPreambleTests/CampaignNativeStageEntryReserveTests,
-// which predate Stage 2's own close-out existing at all) through Operation
-// Stage 1 (both sides) and Stage 2 (both sides, preamble chain included), all
-// via the real Core dispatch (CampaignExercises/ExerciseSession -- the same
-// internals the Host itself delegates to; the Host has wired only Stage 2's
-// own Initiative Declaration to real HTTP so far, MTS-TASK-003, not the rest
-// of the six-event preamble chain nor Stage 2's own Reserve/Movement/
-// Breakdown/Combat for either side), to reach a REAL terminal second-side
-// Post Combat Pass at Operation Stage 2. That real event (not a hand-built
-// record) is then fed directly into CampaignNativeInitiativeDeclarationV49.Create
-// to confirm, empirically, that it advances cleanly into Operation Stage 3
-// with no change to any native class -- the doc's one unproven "provided".
+// This test drives a real session through both sides of Stages 1 and 2,
+// then advances all six Stage 3 preamble events through the native Core
+// session transitions. It verifies the later cuts win over the retained
+// Stage 2 history, preserve both occurrences, and reconstruct canonically.
+// Host/HTTP and Stage 3 Reserve onward are deliberately out of scope.
 public sealed class CampaignStageThreeEntryVerificationTests
 {
     [Fact]
@@ -157,7 +150,7 @@ public sealed class CampaignStageThreeEntryVerificationTests
         // this is the unmodified Create method, called with a real Stage-2-produced
         // predecessor instead of a synthetic one.
         var stageThreeDeclared = CampaignNativeInitiativeDeclarationV49.Create(
-            realPredecessor, holder, actFirst: true, gameTurn, realPredecessor.StateVersion);
+            realPredecessor, holder, actFirst: false, gameTurn, realPredecessor.StateVersion);
 
         Assert.Equal(3, stageThreeDeclared.OperationStage);
         Assert.Equal(realPredecessor.NextPositionId, stageThreeDeclared.PositionId);
@@ -167,6 +160,83 @@ public sealed class CampaignStageThreeEntryVerificationTests
 
         var bytes = stageThreeDeclared.SerializeCanonical();
         Assert.Equal(stageThreeDeclared, CampaignNativeInitiativeDeclarationV49.Deserialize(bytes));
+
+        // Retain the second occurrence of every preamble event, without replacing
+        // Stage 2's retained cuts. Each checkpoint must select the latest event
+        // instead of the completed Stage 2 second-side chain.
+        var stageTwoTerminal = session;
+        Assert.True(CampaignExercises.Reconstruct(stageTwoTerminal).IsVerified, "Stage 2 terminal did not replay.");
+        session = session.WithThirdStageInitiativeDeclaration(stageThreeDeclared,
+            session.CurrentContacts.AdvanceInitiativeDeclaration(stageThreeDeclared));
+        AssertStageThreeCut(session, stageTwoTerminal, stageThreeDeclared.StateVersion,
+            stageThreeDeclared.NextPositionId, stageThreeDeclared.SerializeCanonical());
+
+        // The native weather contract takes an explicit cursor, just as for Stage 2.
+        // This no-attack fixture can thread the preceding weather result directly.
+        var initialRandom = session.CurrentSnapshot.RandomState;
+        var random = new RandomStreamState(initialRandom.ContractVersion, initialRandom.AlgorithmId,
+            initialRandom.Seed, weather.ResultRandomCursor);
+        var thirdWeather = CampaignNativeWeatherDeterminationV50.Create(stageThreeDeclared,
+            random, gameTurn, session.CurrentContacts.AuthorityVersion);
+        var predecessor = session;
+        session = session.WithThirdStageWeather(thirdWeather,
+            session.CurrentContacts.AdvanceWeatherDetermination(thirdWeather));
+        AssertStageThreeCut(session, predecessor, thirdWeather.StateVersion, thirdWeather.NextPositionId, thirdWeather.SerializeCanonical());
+
+        var thirdOrganization = CampaignNativeNoObligationOrganizationV51.Create(thirdWeather, thirdWeather.StateVersion);
+        predecessor = session;
+        session = session.WithThirdStageNoObligationOrganization(thirdOrganization,
+            session.CurrentContacts.AdvanceNoObligationOrganization(thirdOrganization));
+        AssertStageThreeCut(session, predecessor, thirdOrganization.StateVersion, thirdOrganization.NextPositionId, thirdOrganization.SerializeCanonical());
+
+        var thirdArrival = CampaignNativeNoObligationNavalConvoyArrivalV52.Create(thirdOrganization,
+            session.Context, thirdOrganization.StateVersion);
+        predecessor = session;
+        session = session.WithThirdStageNoObligationNavalConvoyArrival(thirdArrival,
+            session.CurrentContacts.AdvanceNoObligationNavalConvoyArrival(thirdArrival));
+        AssertStageThreeCut(session, predecessor, thirdArrival.StateVersion, thirdArrival.NextPositionId, thirdArrival.SerializeCanonical());
+
+        var thirdAssignment = CampaignNativeNoObligationFleetAssignmentV53.Create(thirdArrival, thirdArrival.StateVersion);
+        predecessor = session;
+        session = session.WithThirdStageNoObligationFleetAssignment(thirdAssignment,
+            session.CurrentContacts.AdvanceNoObligationFleetAssignment(thirdAssignment));
+        AssertStageThreeCut(session, predecessor, thirdAssignment.StateVersion, thirdAssignment.NextPositionId, thirdAssignment.SerializeCanonical());
+
+        var thirdRepair = CampaignNativeNoObligationFleetRepairV54.Create(thirdAssignment, thirdAssignment.StateVersion);
+        predecessor = session;
+        session = session.WithThirdStageNoObligationFleetRepair(thirdRepair,
+            session.CurrentContacts.AdvanceNoObligationFleetRepair(thirdRepair));
+        AssertStageThreeCut(session, predecessor, thirdRepair.StateVersion, thirdRepair.NextPositionId, thirdRepair.SerializeCanonical());
+
+        Assert.Same(fleetRepair, session.CurrentNoObligationFleetRepair);
+        Assert.Same(thirdRepair, session.CurrentThirdStageNoObligationFleetRepair);
+        Assert.Null(stageTwoTerminal.CurrentThirdStageInitiativeDeclaration);
+        Assert.Equal(3, thirdRepair.ToOrder().OperationStage);
+        Assert.Equal("land.position.operation-3.first-player.reserve-designation",
+            CampaignExercises.QueryCheckpoint(session).PositionId);
+        Assert.NotEqual(fleetRepair.ToOrder().FirstSide, thirdRepair.ToOrder().FirstSide);
+        Assert.Single(session.CurrentSnapshot.OperationStageOrders);
+        var reconstruction = CampaignExercises.Reconstruct(session);
+        Assert.True(reconstruction.IsVerified);
+        Assert.Equal(thirdRepair.SerializeCanonical(), reconstruction.ReconstructedSnapshotBytes);
+        Assert.NotNull(reconstruction.EventStreamHash);
+    }
+
+    private static void AssertStageThreeCut(ExerciseSession session, ExerciseSession predecessor,
+        long stateVersion, string nextPositionId, byte[] canonicalBytes)
+    {
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        Assert.Equal(stateVersion, checkpoint.StateVersion);
+        Assert.Equal(nextPositionId, checkpoint.PositionId);
+        Assert.Equal(stateVersion, session.CurrentContacts.AuthorityVersion);
+        Assert.Same(predecessor, session.Pending!.Predecessor);
+        Assert.Equal(predecessor.CurrentHistory.Count + 1, session.CurrentHistory.Count);
+        var nativeEvent = session.CurrentHistory[^1];
+        var bytes = CampaignCurrentEventSerializer.Serialize(nativeEvent);
+        Assert.Equal(canonicalBytes, bytes);
+        var restored = CampaignCurrentEventSerializer.Deserialize(bytes);
+        Assert.Equal(nativeEvent.GetType(), restored.GetType());
+        Assert.Equal(bytes, CampaignCurrentEventSerializer.Serialize(restored));
     }
 
     private static CampaignCreationRequest CreateRequest()
