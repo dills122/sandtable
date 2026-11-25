@@ -18,6 +18,13 @@ namespace Cna.Core.Exercises;
 // CampaignPhasingContinuation/CampaignBreakdownFlow (CampaignBreakdownRecords.cs).
 internal abstract record PendingDecision(ExerciseSession? Predecessor);
 
+// --- Stage 3's own SECOND acting side (S3-6..S3-8: Reserve, Movement, Breakdown; Combat is S3-9) ---
+
+internal sealed record ThirdStageSecondBreakdownPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageSecondMovementCompletionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageSecondMovePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageSecondReservePending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+
 // --- Stage 3's own FIRST acting side (S3-1..S3-4: Reserve, Movement, Breakdown, Combat Decision) ---
 
 internal sealed record ThirdStageAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
