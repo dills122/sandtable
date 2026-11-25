@@ -1,0 +1,16 @@
+{
+  "sweepId": "battalion-matrix-200",
+  "description": "L7 first dataset: 100 seeds x 2 controller policies on the battalion-matrix Breakdown setup, run to an unreachable terminal (max 400 steps).",
+  "baseManifest": "scenarios/exercises/rules-lab.reserve.breakdown.v1.json",
+  "overrides": {
+    "terminalBoundary": "land.position.unreachable",
+    "maximumSteps": 400
+  },
+  "policies": [
+    "first-by-action-id",
+    "act-first-reserve-all-move-each-once-then-complete"
+  ],
+  "seeds": { "start": 0, "count": 100 },
+  "parallelism": 8,
+  "repeats": 2
+}
