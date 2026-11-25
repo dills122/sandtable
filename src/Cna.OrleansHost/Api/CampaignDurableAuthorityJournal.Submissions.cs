@@ -213,6 +213,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
         SubmitOwnerActionCore(credential, SecondReserveOpeningKey, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.SecondReserve);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryReserve(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, StageEntryReserveOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.StageEntryReserve);
+
     internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryInitiativeDeclaration(
         CampaignSeatCredential credential, long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, StageEntryInitiativeDeclarationOpeningKey, openingRevision,
@@ -222,10 +227,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
         string elementId, long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, elementId, openingRevision, publicActionRef, CampaignOwnerOpeningKind.SecondMovement);
 
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryMovement(CampaignSeatCredential credential,
+        string elementId, long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, elementId, openingRevision, publicActionRef, CampaignOwnerOpeningKind.StageEntryMovement);
+
     internal CampaignOwnerSubmissionResult SubmitOwnerSecondMovementCompletion(CampaignSeatCredential credential,
         long openingRevision, string publicActionRef) =>
         SubmitOwnerActionCore(credential, SecondMovementCompletionOpeningKey, openingRevision,
             publicActionRef, CampaignOwnerOpeningKind.SecondMovementCompletion);
+
+    internal CampaignOwnerSubmissionResult SubmitOwnerStageEntryMovementCompletion(CampaignSeatCredential credential,
+        long openingRevision, string publicActionRef) =>
+        SubmitOwnerActionCore(credential, StageEntryMovementCompletionOpeningKey, openingRevision,
+            publicActionRef, CampaignOwnerOpeningKind.StageEntryMovementCompletion);
 
     internal CampaignOwnerSubmissionResult SubmitOwnerRepeatMovement(
         CampaignSeatCredential credential, long openingRevision,
@@ -494,12 +508,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 CampaignHostAdapter.SubmitPostCombatPass(head.Session, submission),
             CampaignOwnerOpeningKind.SecondReserve =>
                 CampaignHostAdapter.SubmitSecondReserve(head.Session, submission),
+            CampaignOwnerOpeningKind.StageEntryReserve =>
+                CampaignHostAdapter.SubmitStageEntryReserve(head.Session, submission),
             CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration =>
                 CampaignHostAdapter.SubmitStageEntryInitiativeDeclaration(head.Session, submission),
             CampaignOwnerOpeningKind.SecondMovement =>
                 CampaignHostAdapter.SubmitSecondMovement(head.Session, submission, actingElementId),
+            CampaignOwnerOpeningKind.StageEntryMovement =>
+                CampaignHostAdapter.SubmitStageEntryMovement(head.Session, submission, actingElementId),
             CampaignOwnerOpeningKind.SecondMovementCompletion =>
                 CampaignHostAdapter.SubmitSecondMovementCompletion(head.Session, submission),
+            CampaignOwnerOpeningKind.StageEntryMovementCompletion =>
+                CampaignHostAdapter.SubmitStageEntryMovementCompletion(head.Session, submission),
             CampaignOwnerOpeningKind.RepeatMovement =>
                 CampaignHostAdapter.SubmitNativeRepeatMovement(head.Session, submission),
             CampaignOwnerOpeningKind.RepeatCombatSelection =>
@@ -646,6 +666,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 TryInitializeSelectionRound(connection, transaction, breakdownHead, seat.CampaignId);
             }
         }
+        if (kind == CampaignOwnerOpeningKind.StageEntryMovementCompletion)
+            DrainPendingSystemSteps(connection, transaction, seat.CampaignId, acceptedHead);
         if (kind == CampaignOwnerOpeningKind.Custody)
         {
             UpdateCustodyRound(connection, transaction, custodyRound! with { Status = "completed" });
@@ -835,12 +857,18 @@ internal sealed partial class CampaignDurableAuthorityJournal
             CampaignHostAcceptedStep.ContactPostCombatPassKind,
         CampaignOwnerOpeningKind.SecondReserve =>
             CampaignHostAcceptedStep.ContactSecondReserveKind,
+        CampaignOwnerOpeningKind.StageEntryReserve =>
+            CampaignHostAcceptedStep.ContactStageEntryReserveKind,
         CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration =>
             CampaignHostAcceptedStep.ContactStageEntryInitiativeDeclarationKind,
         CampaignOwnerOpeningKind.SecondMovement =>
             CampaignHostAcceptedStep.ContactSecondMovementKind,
+        CampaignOwnerOpeningKind.StageEntryMovement =>
+            CampaignHostAcceptedStep.ContactStageEntryMovementKind,
         CampaignOwnerOpeningKind.SecondMovementCompletion =>
             CampaignHostAcceptedStep.ContactSecondMovementCompletionKind,
+        CampaignOwnerOpeningKind.StageEntryMovementCompletion =>
+            CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind,
         CampaignOwnerOpeningKind.RepeatMovement =>
             CampaignHostAcceptedStep.ContactRepeatMovementKind,
         CampaignOwnerOpeningKind.RepeatCombatSelection =>

@@ -16,7 +16,10 @@ internal static class CampaignContactOwnerVisibleCutV1
 
     internal static byte[] SerializeSecondMovement(CampaignContactOwnerMovementCut cut) => Serialize(cut, true);
 
-    private static byte[] Serialize(CampaignContactOwnerMovementCut cut, bool moveAndStop)
+    internal static byte[] SerializeStageEntryMovement(CampaignContactOwnerMovementCut cut, string positionId) =>
+        Serialize(cut, true, positionId);
+
+    private static byte[] Serialize(CampaignContactOwnerMovementCut cut, bool moveAndStop, string? positionId = null)
     {
         ArgumentNullException.ThrowIfNull(cut);
         var observation = cut.ContactObservation;
@@ -28,8 +31,9 @@ internal static class CampaignContactOwnerVisibleCutV1
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", moveAndStop ? 2 : ContractVersion);
+            writer.WriteNumber("contractVersion", positionId is not null ? 3 : moveAndStop ? 2 : ContractVersion);
             writer.WriteString("campaignId", observation.CampaignId);
+            if (positionId is not null) writer.WriteString("positionId", positionId);
             writer.WriteString("side", observation.Side == LandSide.Axis ? "axis" : "commonwealth");
             writer.WriteString("actingFormationId", observation.ActingFormationId);
             writer.WriteNumber("contactAudienceRevision", observation.AudienceRevision);

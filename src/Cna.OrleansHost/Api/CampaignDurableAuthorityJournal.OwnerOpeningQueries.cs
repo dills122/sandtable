@@ -210,6 +210,11 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var draft = CampaignHostAdapter.QuerySecondReserveOwnerDraft(session, audience);
                 return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
             },
+            [CampaignOwnerOpeningKind.StageEntryReserve] = (session, audience, actingElementId) =>
+            {
+                var draft = CampaignHostAdapter.QueryStageEntryReserveOwnerDraft(session, audience);
+                return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
+            },
             [CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration] = (session, audience, actingElementId) =>
             {
                 var draft = CampaignHostAdapter.QueryStageEntryInitiativeDeclarationOwnerDraft(session, audience);
@@ -220,9 +225,19 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var draft = CampaignHostAdapter.QuerySecondMovementOwnerDraft(session, audience, actingElementId);
                 return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
             },
+            [CampaignOwnerOpeningKind.StageEntryMovement] = (session, audience, actingElementId) =>
+            {
+                var draft = CampaignHostAdapter.QueryStageEntryMovementOwnerDraft(session, audience, actingElementId);
+                return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
+            },
             [CampaignOwnerOpeningKind.SecondMovementCompletion] = (session, audience, actingElementId) =>
             {
                 var draft = CampaignHostAdapter.QuerySecondMovementCompletionOwnerDraft(session, audience);
+                return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
+            },
+            [CampaignOwnerOpeningKind.StageEntryMovementCompletion] = (session, audience, actingElementId) =>
+            {
+                var draft = CampaignHostAdapter.QueryStageEntryMovementCompletionOwnerDraft(session, audience);
                 return new OwnerOpeningDraft(draft.VisibleBytes, draft.AuthorityVersion, draft.PrivateActionIds.ToArray());
             },
             [CampaignOwnerOpeningKind.RepeatMovement] = (session, audience, actingElementId) =>

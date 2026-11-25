@@ -88,6 +88,42 @@ appears throughout `CampaignDurableAuthorityJournalTests.cs`, e.g. lines
 
 ## Experimental / in-flux
 
+### Stage 2 entry and first-side owner openings
+
+The Stage 2 declaration is available only at `land.position.operation-2.initiative-declaration`,
+to the resolved initiative holder. Weather, Organization, Naval Convoy Arrival, Fleet Assignment,
+and Fleet Repair then auto-drain in the durable owner-opening path; the read-only open-for-seat
+route previews the same transitions without committing them. The first-side movement completion
+also attempts its existing obligation-free Breakdown transition. None of these System steps is a
+player or operator HTTP action.
+
+| Stage / opening kind | `actingElementId` | Core adapter query / submit |
+| --- | --- | --- |
+| `stage-entry-reserve` / `StageEntryReserve` | `land.stage-entry-reserve` | `QueryStageEntryReserveOwnerDraft` / `SubmitStageEntryReserve` |
+| `stage-entry-movement` / `StageEntryMovement` | own independently placed non-vehicle element ID | `QueryStageEntryMovementOwnerDraft` / `SubmitStageEntryMovement` |
+| `stage-entry-movement-completion` / `StageEntryMovementCompletion` | `land.stage-entry-movement-completion` | `QueryStageEntryMovementCompletionOwnerDraft` / `SubmitStageEntryMovementCompletion` |
+
+Only the first acting side may open or submit these kinds. The movement cut uses visible contract
+version 3, including the position ID to distinguish it from retained Stage 1 per-element cuts;
+the reserve and completion cuts use the existing native V43/V45 shape. Accepted-step contract
+versions 125–130 identify the six System transitions, and 131–133 identify the three owner kinds.
+
+`CampaignDurableAuthorityJournalTests.StageEntryFirstSide.cs` verifies the actual HTTP declaration
+fence, read-only preamble preview, durable System advancement, reserve and movement-completion
+submission/retry/rejection, and cold replay to Breakdown. The movement endpoint returns a valid
+empty cut in this fixture: the retained owned-element ledger still reports operation stage 1, and
+the Core movement projection requires the current stage. This is a Core authority gap, not a Host
+permission to manufacture offers. No positive Stage 2 move is verified yet. Combat selection
+and its timeout round remain unwired: the current round-binding and timeout methods in
+`CampaignExercises` only dispatch to the retained Stage 1 selection state. The complete two-side
+Stage 2 HTTP proof remains pending both follow-ups. Maproom's fixed stage catalog does not yet
+list the three new stages; this Host-only slice does not change that client.
+
+Discovery correction for #637: the catalog's rows describe retained event types, not always the
+next action. Include the successor openings after the first and second sides' close-out passes,
+reserve completion, and breakdown. The fixed Stage 1 load-harness trace reaches Stage 2 with 21
+submissions, 25 openings, and no fallback probes; its test now asserts that last property.
+
 | Stage / opening kind | Audience(s) | Core method | Caveat |
 | --- | --- | --- | --- |
 | `reaction` / `Reaction` | whichever side has the open window | `QueryReactionOwnerDraft` / `SubmitReaction` | **Real and HTTP-reachable, but resolves to an explicit rejection, not real resolution.** A Reaction window opened by a second-side Movement throws `CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException`, caught at `CampaignDurableAuthorityJournal.Openings.cs:527-534` / `.Submissions.cs:304-305` and surfaced by the outward API as HTTP 409 `rule-not-implemented` (`CampaignDurableOutwardApi.cs:934-935,948-949`). This is intentional, tracked design debt, not a bug: PR #502 (merged, commit `1cf5d7c5`) converted what used to be an unhandled crash into this explicit FID-002-style rejection. The real fix (#394 "Gap 3" — no existing Core method converts a second-side native result into a queryable `CampaignSnapshotV11`) is its own future design decision per `docs/work/plans/2026-11-18-combat-continuation-second-side-design-proposal.md`. Tests: `tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.Reaction.cs:118` `ReactionOpenedBySecondSideMovementIsRejectedAsRuleNotImplementedNotUnavailable`, `:160` `ReactionOpenedBySecondSideMovementReturnsHttp409RuleNotImplementedNotACrash` (genuine HTTP round trip, not just in-process). |

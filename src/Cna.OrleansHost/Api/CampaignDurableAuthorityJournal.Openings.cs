@@ -15,8 +15,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private const string TruckConvoyPassOpeningKey = "land.truck-convoy-pass";
     private const string PostCombatPassOpeningKey = "land.post-combat-pass";
     private const string SecondReserveOpeningKey = "land.second-reserve";
+    private const string StageEntryReserveOpeningKey = "land.stage-entry-reserve";
     private const string StageEntryInitiativeDeclarationOpeningKey = "land.stage-entry-initiative-declaration";
     private const string SecondMovementCompletionOpeningKey = "land.second-movement-completion";
+    private const string StageEntryMovementCompletionOpeningKey = "land.stage-entry-movement-completion";
     private const string RepeatMovementOpeningKey = "land.repeat-movement";
     private const string PregameAxisSupplyOpeningKey = "land.pregame-axis-supply";
     private const string PregameAxisSupplyFinishOpeningKey = "land.pregame-axis-supply-finish";
@@ -205,6 +207,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
     internal CampaignOwnerOpening QuerySecondReserveOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, SecondReserveOpeningKey, CampaignOwnerOpeningKind.SecondReserve);
 
+    internal CampaignOwnerOpening QueryStageEntryReserveOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, StageEntryReserveOpeningKey, CampaignOwnerOpeningKind.StageEntryReserve);
+
     internal CampaignOwnerOpening QueryStageEntryInitiativeDeclarationOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, StageEntryInitiativeDeclarationOpeningKey,
             CampaignOwnerOpeningKind.StageEntryInitiativeDeclaration);
@@ -212,8 +217,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
     internal CampaignOwnerOpening QuerySecondMovementOwnerOpening(CampaignSeatCredential credential, string elementId) =>
         QueryOwnerOpeningCore(credential, elementId, CampaignOwnerOpeningKind.SecondMovement);
 
+    internal CampaignOwnerOpening QueryStageEntryMovementOwnerOpening(CampaignSeatCredential credential, string elementId) =>
+        QueryOwnerOpeningCore(credential, elementId, CampaignOwnerOpeningKind.StageEntryMovement);
+
     internal CampaignOwnerOpening QuerySecondMovementCompletionOwnerOpening(CampaignSeatCredential credential) =>
         QueryOwnerOpeningCore(credential, SecondMovementCompletionOpeningKey, CampaignOwnerOpeningKind.SecondMovementCompletion);
+
+    internal CampaignOwnerOpening QueryStageEntryMovementCompletionOwnerOpening(CampaignSeatCredential credential) =>
+        QueryOwnerOpeningCore(credential, StageEntryMovementCompletionOpeningKey, CampaignOwnerOpeningKind.StageEntryMovementCompletion);
 
     internal CampaignOwnerOpening QueryRepeatMovementOwnerOpening(
         CampaignSeatCredential credential) =>
@@ -512,6 +523,9 @@ internal enum CampaignOwnerOpeningKind
     SourceCwFreeGuns,
     SourceAxisPriority,
     SourceCairoSetup,
+    StageEntryReserve,
+    StageEntryMovement,
+    StageEntryMovementCompletion,
 }
 
 internal sealed class CampaignOwnerOpening
