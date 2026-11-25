@@ -18,6 +18,15 @@ namespace Cna.Core.Exercises;
 // CampaignPhasingContinuation/CampaignBreakdownFlow (CampaignBreakdownRecords.cs).
 internal abstract record PendingDecision(ExerciseSession? Predecessor);
 
+// --- Stage 2->3 entry-bridge preamble chain (MTS-TASK-008) ---
+
+internal sealed record ThirdStageNoObligationFleetRepairPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageNoObligationFleetAssignmentPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageNoObligationNavalConvoyArrivalPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageNoObligationOrganizationPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageWeatherPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+internal sealed record ThirdStageInitiativeDeclarationPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+
 // --- This stage's own SECOND acting side (#394/MTS-TASK-006) ---
 
 internal sealed record StageEntrySecondAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);

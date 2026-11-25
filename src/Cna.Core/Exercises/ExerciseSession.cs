@@ -1261,6 +1261,128 @@ public sealed class ExerciseSession
         return successor;
     }
 
+    // Stage 2->3 bridge: retain a separate occurrence of the same native
+    // preamble chain, starting from Stage 2's own second-side terminal pass.
+    internal CampaignNativeInitiativeDeclarationV49? CurrentThirdStageInitiativeDeclaration { get; private set; }
+    internal ExerciseSession? ThirdStageInitiativeDeclarationPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageInitiativeDeclaration(CampaignNativeInitiativeDeclarationV49 declared,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(declared);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentStageEntrySecondAssault is not { PostCombatPasses.Count: > 0 } || CurrentThirdStageInitiativeDeclaration is not null
+            || declared.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != declared.StateVersion)
+            throw new InvalidOperationException("Initiative Declaration must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageInitiativeDeclarationPredecessor = this;
+        successor.CurrentThirdStageInitiativeDeclaration = declared;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(declared);
+        return successor;
+    }
+
+    internal CampaignNativeWeatherDeterminationV50? CurrentThirdStageWeather { get; private set; }
+    internal ExerciseSession? ThirdStageWeatherPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageWeather(CampaignNativeWeatherDeterminationV50 determined,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(determined);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageInitiativeDeclaration is null || CurrentThirdStageWeather is not null
+            || determined.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != determined.StateVersion)
+            throw new InvalidOperationException("Weather Determination must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageWeatherPredecessor = this;
+        successor.CurrentThirdStageWeather = determined;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(determined);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationOrganizationV51? CurrentThirdStageNoObligationOrganization { get; private set; }
+    internal ExerciseSession? ThirdStageNoObligationOrganizationPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageNoObligationOrganization(CampaignNativeNoObligationOrganizationV51 resolved,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageWeather is null || CurrentThirdStageNoObligationOrganization is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Organization resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageNoObligationOrganizationPredecessor = this;
+        successor.CurrentThirdStageNoObligationOrganization = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationNavalConvoyArrivalV52? CurrentThirdStageNoObligationNavalConvoyArrival { get; private set; }
+    internal ExerciseSession? ThirdStageNoObligationNavalConvoyArrivalPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageNoObligationNavalConvoyArrival(
+        CampaignNativeNoObligationNavalConvoyArrivalV52 resolved, CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageNoObligationOrganization is null || CurrentThirdStageNoObligationNavalConvoyArrival is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Naval Convoy Arrival resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageNoObligationNavalConvoyArrivalPredecessor = this;
+        successor.CurrentThirdStageNoObligationNavalConvoyArrival = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationFleetAssignmentV53? CurrentThirdStageNoObligationFleetAssignment { get; private set; }
+    internal ExerciseSession? ThirdStageNoObligationFleetAssignmentPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageNoObligationFleetAssignment(CampaignNativeNoObligationFleetAssignmentV53 resolved,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageNoObligationNavalConvoyArrival is null || CurrentThirdStageNoObligationFleetAssignment is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Fleet Assignment resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageNoObligationFleetAssignmentPredecessor = this;
+        successor.CurrentThirdStageNoObligationFleetAssignment = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
+    internal CampaignNativeNoObligationFleetRepairV54? CurrentThirdStageNoObligationFleetRepair { get; private set; }
+    internal ExerciseSession? ThirdStageNoObligationFleetRepairPredecessor { get; private set; }
+
+    internal ExerciseSession WithThirdStageNoObligationFleetRepair(CampaignNativeNoObligationFleetRepairV54 resolved,
+        CampaignContactJournal contacts)
+    {
+        ArgumentNullException.ThrowIfNull(resolved);
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (CurrentThirdStageNoObligationFleetAssignment is null || CurrentThirdStageNoObligationFleetRepair is not null
+            || resolved.PriorStateVersion != CurrentContacts.AuthorityVersion
+            || contacts.AuthorityVersion != resolved.StateVersion)
+            throw new InvalidOperationException("Fleet Repair resolution must advance its retained cut once.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.ThirdStageNoObligationFleetRepairPredecessor = this;
+        successor.CurrentThirdStageNoObligationFleetRepair = resolved;
+        successor.CurrentContacts = contacts;
+        successor.CurrentHistory = CurrentHistory.Add(resolved);
+        return successor;
+    }
+
     // MTS-TASK-005 (2026-11-22): the new stage's own first-acting-side Reserve
     // Designation, entered from the six-event preamble chain's terminal
     // (CurrentNoObligationFleetRepair). Reuses CampaignNativeSecondReserveV43
@@ -1776,6 +1898,19 @@ public sealed class ExerciseSession
 
     private PendingDecision? ComputePending()
     {
+        // Later-stage preamble cuts take precedence over every retained Stage 2 cut.
+        if (CurrentThirdStageNoObligationFleetRepair is not null)
+            return new ThirdStageNoObligationFleetRepairPending(ThirdStageNoObligationFleetRepairPredecessor);
+        if (CurrentThirdStageNoObligationFleetAssignment is not null)
+            return new ThirdStageNoObligationFleetAssignmentPending(ThirdStageNoObligationFleetAssignmentPredecessor);
+        if (CurrentThirdStageNoObligationNavalConvoyArrival is not null)
+            return new ThirdStageNoObligationNavalConvoyArrivalPending(ThirdStageNoObligationNavalConvoyArrivalPredecessor);
+        if (CurrentThirdStageNoObligationOrganization is not null)
+            return new ThirdStageNoObligationOrganizationPending(ThirdStageNoObligationOrganizationPredecessor);
+        if (CurrentThirdStageWeather is not null)
+            return new ThirdStageWeatherPending(ThirdStageWeatherPredecessor);
+        if (CurrentThirdStageInitiativeDeclaration is not null)
+            return new ThirdStageInitiativeDeclarationPending(ThirdStageInitiativeDeclarationPredecessor);
         if (CurrentStageEntrySecondAssault is { Events.Count: > 0 })
             return new StageEntrySecondAssaultPending(StageEntrySecondAssaultPredecessor);
         if (CurrentStageEntrySecondNoAttackCompletion is not null)
