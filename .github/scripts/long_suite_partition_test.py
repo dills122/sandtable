@@ -416,7 +416,7 @@ class WorkflowTests(unittest.TestCase):
         # The orleans test-running step itself must never silently swallow a
         # stall/failure; only the separate, additive Trunk.io upload step
         # (after the real result is known) is allowed continue-on-error.
-        orleans_test_step = orleans_job.split('- name: Run and verify Orleans host rows', 1)[1].split('- name: Upload Test Results to Trunk.io', 1)[0]
+        orleans_test_step = orleans_job.split('- name: Run and verify Orleans host shard', 1)[1].split('- name: Upload Test Results to Trunk.io', 1)[0]
         self.assertNotIn('continue-on-error', orleans_test_step)
         self.assertIn('- name: Upload Test Results to Trunk.io', orleans_job)
         self.assertIn('continue-on-error: true', orleans_job)
