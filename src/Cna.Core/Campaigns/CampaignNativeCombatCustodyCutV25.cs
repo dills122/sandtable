@@ -122,7 +122,7 @@ internal sealed record CampaignNativeCombatCustodyCutV25(
         }
     }
 
-    private static System.Collections.ObjectModel.ReadOnlyCollection<string>? ShortestRoute(
+    internal static System.Collections.ObjectModel.ReadOnlyCollection<string>? ShortestRoute(
         IReadOnlyList<ContentHexEdge> edges, string start, string end)
     {
         var graph = new Dictionary<string, List<string>>(StringComparer.Ordinal);

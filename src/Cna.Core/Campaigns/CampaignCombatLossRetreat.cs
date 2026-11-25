@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cna.Core.Content;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
@@ -220,8 +221,12 @@ internal static class CampaignCombatLossRetreat
     private static string[] ContentPath(CombatResolutionContext context, string start, string end)
     {
         var content = context.Creation.Setup.Artifact.Definition;
-        var graph = content.Locations.ToDictionary(l => l.LocationId, _ => new List<string>(), StringComparer.Ordinal);
-        foreach (var edge in content.Edges) { graph[edge.FirstLocationId].Add(edge.SecondLocationId); graph[edge.SecondLocationId].Add(edge.FirstLocationId); }
+        return ContentPath(content.Locations.Select(l => l.LocationId), content.Edges, start, end);
+    }
+    internal static string[] ContentPath(IEnumerable<string> locationIds, IEnumerable<ContentHexEdge> edges, string start, string end)
+    {
+        var graph = locationIds.ToDictionary(l => l, _ => new List<string>(), StringComparer.Ordinal);
+        foreach (var edge in edges) { graph[edge.FirstLocationId].Add(edge.SecondLocationId); graph[edge.SecondLocationId].Add(edge.FirstLocationId); }
         var queue = new Queue<string[]>(); queue.Enqueue([start]); var seen = new HashSet<string>(StringComparer.Ordinal) { start };
         while (queue.TryDequeue(out var path))
         {
