@@ -873,6 +873,7 @@ resolution, and replay validation remain outside it. Concurrent misses may rebui
 | --- | --- |
 | `Cna.Core` | Pure deterministic rules, authority, content/setup validation, RNG, events, replay, observations and legal actions |
 | `Cna.ExerciseRunner` | Fresh local Exercises, serial Maneuvers, controller policies and trusted evidence |
+| `Cna.LoadHarness` (tools) | Standalone development load driver for real Host campaign grains; seat-scoped actions and decision fingerprints, no authoritative behavior |
 | `Cna.OrleansHost` | Development-only single-fixture temporary campaign grain; in-memory state survives activation churn but not host restart; no client gateway or production clustering/storage provider |
 | `Cna.DecisionWorker` | Discovered gRPC client scaffold; no live campaign dispatcher or fallback executor |
 | `Cna.Intelligence.Contracts` | Versioned protobuf and generated transport contracts |
