@@ -49,6 +49,17 @@ class AllocationTests(unittest.TestCase):
     def test_order_independent_allocation(self):
         self.assertEqual(suites.make_plan(self.rows, self.weights), suites.make_plan(list(reversed(self.rows)), self.weights))
 
+    def test_planned_lanes_match_execution_concurrency(self):
+        plan = suites.make_plan(self.rows, self.weights)
+        lanes = {}
+        for entry in plan['groups'].values():
+            if entry['job'].startswith('long-'):
+                lanes.setdefault(entry['job'], set()).add(entry['lane'])
+        self.assertEqual(set(suites.LONG_JOBS), set(lanes))
+        for job, actual in lanes.items():
+            cap = suites.LONG_01_MAX_CONCURRENT_LANES if job == 'long-01' else suites.MAX_CONCURRENT_LANES
+            self.assertEqual(set(range(1, cap + 1)), actual, job)
+
     def test_duplicate_and_foreign_rows_fail_closed(self):
         variants = [self.rows + [self.rows[0]], self.rows + [['Foreign', 'Foreign.A.B.C', 'Foreign.A.B.C']]]
         for rows in variants:
@@ -141,7 +152,7 @@ class LongProcessEvidenceTests(prior_tests.ChildEvidenceTests):
 class SupervisorTests(unittest.TestCase):
     setUp = AllocationTests.setUp
 
-    def test_bounded_four_lanes_execute_each_selected_group_once(self):
+    def test_bounded_lanes_execute_each_selected_group_once(self):
         import sys
         from unittest import mock
         import ci_group_runner
@@ -170,7 +181,11 @@ class SupervisorTests(unittest.TestCase):
         import ci_group_runner
         snapshot = {'platform': 'Darwin', 'physical_memory_bytes': 16 * 2**30, 'effective_memory_limit_bytes': 16 * 2**30, 'memory_available_bytes': 12 * 2**30, 'effective_cpu_count': 4}
         plan = suites.make_plan(self.rows, self.weights)
-        expected_groups = {name for name, entry in plan['groups'].items() if entry['job'] == job}
+        # Explicitly construct four queued lanes, independent of planner caps,
+        # so this still tests the supervisor's own concurrency enforcement.
+        selected = [(name, entry) for name, entry in plan['groups'].items() if entry['job'].startswith('long-')][:4]
+        plan['groups'] = {name: dict(entry, job=job, lane=lane) for lane, (name, entry) in enumerate(selected, 1)}
+        expected_groups = set(plan['groups'])
         self.assertEqual(4, len(expected_groups))
         with tempfile.TemporaryDirectory() as temporary, mock.patch.object(ci_group_runner, 'resource_snapshot', return_value=snapshot):
             root = Path(temporary) / 'groups'
@@ -282,7 +297,7 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
         # job's evidence was never produced.
         import shutil
         plan = self.suite_proof['plan']
-        self.assertEqual({'long-01'}, {entry['job'] for entry in plan['groups'].values()} - {'fast-01', 'fast-02', 'fast-03', 'fast-04'})
+        self.assertIn('long-01', {entry['job'] for entry in plan['groups'].values()})
         for group, entry in plan['groups'].items():
             if entry['job'] == 'long-01': shutil.rmtree(self.root / 'long-groups' / group)
         (self.root / 'long-01-resource.json').unlink()
