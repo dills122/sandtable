@@ -29,8 +29,8 @@ internal sealed class RunMetrics(PostgresBacking? postgres) : IDisposable
                     await postgres.CountConnectionsAsync(cancellationToken).ConfigureAwait(false));
                 connectionSamples++;
             }
-            catch (Exception exception) when (!cancellationToken.IsCancellationRequested
-                && exception is NpgsqlException or TimeoutException or OperationCanceledException)
+            catch (Exception exception) when (exception is NpgsqlException or TimeoutException
+                || (exception is OperationCanceledException && !cancellationToken.IsCancellationRequested))
             {
                 // Sampling is diagnostic; a saturated or unreachable monitor must not discard
                 // campaign results. Do not emit exception text or connection details.
