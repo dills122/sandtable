@@ -83,8 +83,11 @@ internal static class SequencingScenarios
     internal static SequencingRecorder DriveTurnBoundary(int initialGameTurn, ulong seed) =>
         DrivePregameThroughStageThreeFirstSide($"rules-lab.breakdown.turn-boundary.gt{initialGameTurn}.v1", seed, true);
 
+    internal static SequencingRecorder DriveReactionRefusalFixture() =>
+        DrivePregameThroughStageThreeFirstSide(Cna1979BreakdownSetupCatalog.ReactionSetupId, completionOnly: true);
+
     private static SequencingRecorder DrivePregameThroughStageThreeFirstSide(
-        string setupId = Cna1979BreakdownSetupCatalog.TruckSetupId, ulong seed = 12345, bool rollover = false)
+        string setupId = Cna1979BreakdownSetupCatalog.TruckSetupId, ulong seed = 12345, bool rollover = false, bool completionOnly = false)
     {
         var r = new SequencingRecorder(rollover ? $"turn-boundary-{seed}-{setupId}" : "pregame-no-attack");
         var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions
@@ -101,7 +104,7 @@ internal static class SequencingScenarios
         session = CycleThroughPasses(r, session, firstAud, "op1.first");
         // Stage 1 second side
         session = r.Ok("op1.second.reserve", CampaignExercises.SubmitSecondReserve(session, secondAud, Hash("second-reserve"), elementId: null));
-        session = TryMove(r, session, secondAud, "op1.second", CampaignExercises.QuerySecondMovementCut, CampaignExercises.SubmitSecondMovement);
+        if (!completionOnly) session = TryMove(r, session, secondAud, "op1.second", CampaignExercises.QuerySecondMovementCut, CampaignExercises.SubmitSecondMovement);
         session = r.Ok("op1.second.movement-completion", CampaignExercises.CompleteSecondMovement(session, secondAud, Hash("second-movement-completion")));
         session = r.Ok("op1.second.breakdown", CampaignExercises.CompleteSecondBreakdown(session));
         session = FinishWithoutAttack(r, session, secondAud, "op1.second", CampaignExercises.CompleteSecondCombatNoAttack);
@@ -126,8 +129,8 @@ internal static class SequencingScenarios
         var repair = CampaignNativeNoObligationFleetRepairV54.Create(assign, assign.StateVersion);
         session = r.Rec("op2.fleet-repair", session.WithNoObligationFleetRepair(repair, session.CurrentContacts.AdvanceNoObligationFleetRepair(repair)));
 
-        session = StageEntrySide(r, session, holderAud, second: false);
-        session = StageEntrySide(r, session, otherAud, second: true);
+        session = StageEntrySide(r, session, holderAud, second: false, completionOnly);
+        session = StageEntrySide(r, session, otherAud, second: true, completionOnly);
 
         // Stage 3 preamble + first side (S3-1..S3-3)
         var terminal = session.CurrentStageEntrySecondAssault!.PostCombatPasses[^1];
@@ -149,7 +152,7 @@ internal static class SequencingScenarios
         var firstSide3 = repair3.ToOrder().FirstSide;
         var aud3 = Audience(firstSide3);
         session = r.Ok("op3.first.reserve", CampaignExercises.SubmitThirdStageReserve(session, aud3, Hash("stage3-reserve"), elementId: null));
-        session = TryMove(r, session, aud3, "op3.first", CampaignExercises.QueryThirdStageMovementCut, CampaignExercises.SubmitThirdStageMovement);
+        if (!completionOnly) session = TryMove(r, session, aud3, "op3.first", CampaignExercises.QueryThirdStageMovementCut, CampaignExercises.SubmitThirdStageMovement);
         session = r.Ok("op3.first.movement-completion", CampaignExercises.CompleteThirdStageMovement(session, aud3, Hash("stage3-movement-completion")));
         session = r.Ok("op3.first.breakdown", CampaignExercises.CompleteThirdStageBreakdown(session));
         // S3-4/S3-5: first-side Combat Decision (finish without attack), No-Attack completion, Reserve Release,
@@ -161,7 +164,7 @@ internal static class SequencingScenarios
         // S3-6..S3-8: second side Reserve, Movement + Completion, Breakdown (Combat is S3-9).
         var aud3Second = Other(aud3);
         session = r.Ok("op3.second.reserve", CampaignExercises.SubmitThirdStageSecondReserve(session, aud3Second, Hash("stage3-second-reserve"), elementId: null));
-        session = TryMove(r, session, aud3Second, "op3.second", CampaignExercises.QueryThirdStageSecondMovementCut, CampaignExercises.SubmitThirdStageSecondMovement);
+        if (!completionOnly) session = TryMove(r, session, aud3Second, "op3.second", CampaignExercises.QueryThirdStageSecondMovementCut, CampaignExercises.SubmitThirdStageSecondMovement);
         session = r.Ok("op3.second.movement-completion", CampaignExercises.CompleteThirdStageSecondMovement(session, aud3Second, Hash("stage3-second-movement-completion")));
         session = r.Ok("op3.second.breakdown", CampaignExercises.CompleteThirdStageSecondBreakdown(session));
         session = FinishWithoutAttack(r, session, aud3Second, "op3.second", CampaignExercises.CompleteThirdStageSecondCombatNoAttack);
@@ -185,13 +188,13 @@ internal static class SequencingScenarios
     }
 
     private static ExerciseSession StageEntrySide(SequencingRecorder r, ExerciseSession session,
-        CampaignActionAudience audience, bool second)
+        CampaignActionAudience audience, bool second, bool completionOnly)
     {
         var tag = second ? "op2.second" : "op2.first";
         session = r.Ok($"{tag}.reserve", second
             ? CampaignExercises.SubmitStageEntrySecondReserve(session, audience, Hash("stage2-reserve"), elementId: null)
             : CampaignExercises.SubmitStageEntryReserve(session, audience, Hash("stage2-reserve"), elementId: null));
-        session = second
+        if (!completionOnly) session = second
             ? TryMove(r, session, audience, tag, CampaignExercises.QueryStageEntrySecondMovementCut, CampaignExercises.SubmitStageEntrySecondMovement)
             : TryMove(r, session, audience, tag, CampaignExercises.QueryStageEntryMovementCut, CampaignExercises.SubmitStageEntryMovement);
         session = r.Ok($"{tag}.movement-completion", second
@@ -224,16 +227,13 @@ internal static class SequencingScenarios
             {
                 offered++;
                 var moved = submit(session, audience, CampaignNativeSecondMoveV44.ActionIdFor(offer), element);
-                if (!moved.IsAccepted) continue;
-                // Later-stage Reaction continuation is deliberately outside the checkpoint's scope.
-                // A detached trial that opens a window must not advance this no-attack driver.
-                if (tag.StartsWith("op2.", StringComparison.Ordinal) || tag.StartsWith("op3.", StringComparison.Ordinal))
+                // E4b (#655): a refused optional move leaves the session at the same
+                // opening. Try another offer, or fall through to movement completion.
+                if (!moved.IsAccepted)
                 {
-                    if (moved.SuccessorSession!.CurrentHistory[^1] is CampaignNativeSecondMoveV44 { ReactionWindow: not null })
-                    {
+                    if (moved.RejectionReason == CampaignActionSubmissionRejectionReason.RuleNotImplemented)
                         r.Notes.Add($"{tag}: optional move opens unsupported Reaction window (D-E)");
-                        continue;
-                    }
+                    continue;
                 }
                 r.Notes.Add($"{tag}: real move accepted ({element})");
                 return r.Rec($"{tag}.move", moved.SuccessorSession!);

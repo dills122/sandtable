@@ -3,6 +3,7 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 using Cna.Core.Tests.Exercises.Sequencing;
@@ -123,6 +124,79 @@ public sealed class TurnBoundaryIntegrationTests
         var records = session.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, session.Context)).ToArray();
         Assert.Equal(count, records.Length);
         Assert.Equal(digest, Convert.ToHexStringLower(SHA256.HashData(records.SelectMany(value => value).ToArray())));
+    }
+
+    [Theory]
+    [InlineData(2, false)]
+    [InlineData(2, true)]
+    [InlineData(3, false)]
+    [InlineData(3, true)]
+    public void LaterStageReactionMoveIsRefusedWithoutAdvancingAuthority(int stage, bool second)
+    {
+        var session = SequencingScenarios.DriveReactionRefusalFixture().Samples
+            .Single(sample => sample.Label == $"op{stage}.{(second ? "second" : "first")}.reserve").Session;
+        var reserve = Assert.IsType<CampaignNativeSecondReserveV43>(session.CurrentHistory[^1]);
+        var audience = reserve.Side == LandSide.Axis ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
+        var element = reserve.Side == LandSide.Axis ? "axis-infantry" : "commonwealth-infantry";
+        var cut = (stage, second) switch
+        {
+            (2, false) => CampaignExercises.QueryStageEntryMovementCut(session, reserve.Side, element),
+            (2, true) => CampaignExercises.QueryStageEntrySecondMovementCut(session, reserve.Side, element),
+            (3, false) => CampaignExercises.QueryThirdStageMovementCut(session, reserve.Side, element),
+            _ => CampaignExercises.QueryThirdStageSecondMovementCut(session, reserve.Side, element),
+        };
+        var offer = Assert.Single(cut.MovementOffers, value => value.DestinationLocationId == "north");
+        var action = CampaignNativeSecondMoveV44.ActionIdFor(offer);
+        var (source, world) = (stage, second) switch
+        {
+            (2, false) => CampaignExercises.QueryStageEntryMovementSource(session),
+            (2, true) => CampaignExercises.QueryStageEntrySecondMovementSource(session),
+            (3, false) => CampaignExercises.QueryThirdStageMovementSource(session),
+            _ => CampaignExercises.QueryThirdStageSecondMovementSource(session),
+        };
+        var gameTurn = CampaignGameTurn.CurrentGameTurn(session);
+        var orders = stage == 2 ? CampaignExercises.StageEntryOrders(session) : CampaignExercises.ThirdStageOrders(session);
+        var (candidate, projected) = CampaignNativeSecondMoveV44.Create(source, world, session.Context, orders,
+            session.CurrentContacts, reserve.Side, gameTurn, element, action, session.CurrentSnapshot.RulesetHash);
+        Assert.NotNull(candidate.ReactionWindow);
+        var position = candidate.ReactionWindow.ReactingPosition.SuspendedMovementPosition;
+        Assert.Equal(gameTurn, position.GameTurn);
+        Assert.Equal(stage, position.OperationStage);
+        Assert.Equal(second ? LandActorRole.SecondActingSide : LandActorRole.FirstActingSide, position.ActorRole);
+        Assert.All(world.Elements, value =>
+        {
+            Assert.Equal(gameTurn, value.OperationalState.LedgerGameTurn);
+            Assert.Equal(stage, value.OperationalState.LedgerOperationStage);
+        });
+        var contacts = session.CurrentContacts.AppendNativeSecondMove(world, projected, candidate, session.Context);
+        var detached = (stage, second) switch
+        {
+            (2, false) => session.WithStageEntryMove(candidate, projected, contacts),
+            (2, true) => session.WithStageEntrySecondMove(candidate, projected, contacts),
+            (3, false) => session.WithThirdStageMove(candidate, projected, contacts),
+            _ => session.WithThirdStageSecondMove(candidate, projected, contacts),
+        };
+        Assert.True(CampaignExercises.Reconstruct(detached).IsVerified);
+        Assert.Throws<CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException>(() =>
+            CampaignHostAdapter.QueryReactionOwnerDraft(detached, audience));
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        var before = CampaignExercises.Reconstruct(session);
+        Assert.True(before.IsVerified);
+        for (var attempt = 0; attempt < 2; attempt++)
+        {
+            var rejected = (stage, second) switch
+            {
+                (2, false) => CampaignExercises.SubmitStageEntryMovement(session, audience, action, element),
+                (2, true) => CampaignExercises.SubmitStageEntrySecondMovement(session, audience, action, element),
+                (3, false) => CampaignExercises.SubmitThirdStageMovement(session, audience, action, element),
+                _ => CampaignExercises.SubmitThirdStageSecondMovement(session, audience, action, element),
+            };
+            Assert.False(rejected.IsAccepted);
+            Assert.Equal(CampaignActionSubmissionRejectionReason.RuleNotImplemented, rejected.RejectionReason);
+            Assert.Null(rejected.Evidence);
+            Assert.Equal(checkpoint.StateVersion, CampaignExercises.QueryCheckpoint(session).StateVersion);
+            Assert.Equal(before.EventStreamHash, CampaignExercises.Reconstruct(session).EventStreamHash);
+        }
     }
 
     [Fact]
