@@ -24,6 +24,7 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
 {
     internal const string SetupId = "rules-lab.breakdown.reaction.combat-infantry.v1";
     internal const string TurnBoundarySetupId = "rules-lab.breakdown.turn-boundary.gt1.v1";
+    internal const string CombatGt1SetupId = "rules-lab.breakdown.turn-boundary.combat.gt1.v1";
     internal const ulong LabSeed = 12345;
     internal const int BudgetMs = 3_600_000;
     internal const string Boundary = "land.position.operation-2.initiative-declaration";
@@ -93,7 +94,13 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
 
     internal static (CampaignCreationRequest Request, CampaignDecisionTimingConfigurationV1 Timing) Creation(HarnessConfig config, string id)
     {
-        var request = config.Until == "turn2-reserve"
+        var request = config.CombatGt1
+            ? new CampaignCreationRequest(1, id, Cna1979Ruleset.Manifest.Hash, LabSeed, CombatGt1SetupId,
+                "sha256:f5e5b4a48ca9da4f7bbfa48e56183a9ca3f22b1acb735a8500a78a0b241083d4",
+                "rules-lab.content.breakdown-turn-boundary.combat.gt1.v1",
+                "sha256:37724a4ae5e69acdd71e30e458029a9d74bb93df90caca7d922c259014cdde04",
+                "breakdown-turn-boundary-combat-gt1")
+            : config.Until == "turn2-reserve"
             ? new CampaignCreationRequest(1, id, Cna1979Ruleset.Manifest.Hash, LabSeed, TurnBoundarySetupId,
                 "sha256:e6f9d8de65a7f01fec9089d3f58e8f94871214a7d628c52508c9aecadca68dc6",
                 "rules-lab.content.breakdown-turn-boundary.gt1.v1",

@@ -64,7 +64,8 @@ internal static class HarnessRun
             config.Policy,
             config.RootSeed,
             config.MaxStepsPerCampaign,
-            scenario = config.Until == "stage2" ? InProcessDriver.SetupId : InProcessDriver.TurnBoundarySetupId,
+            scenario = config.CombatGt1 ? InProcessDriver.CombatGt1SetupId
+                : config.Until == "stage2" ? InProcessDriver.SetupId : InProcessDriver.TurnBoundarySetupId,
             labSeed = InProcessDriver.LabSeed,
             decisionBudgetMs = InProcessDriver.BudgetMs,
             processorCount = Environment.ProcessorCount,

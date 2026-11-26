@@ -12,7 +12,7 @@ internal static class Cna1979BreakdownContentCatalog
             .Select(variant => CreateArtifact($"rules-lab.content.breakdown-{variant}.v1.json")).ToArray());
 
     internal static IReadOnlyList<ContentPackV6Artifact> TurnBoundaryArtifacts { get; } = Array.AsReadOnly(
-        new[] { 1, 12 }.Select(turn => CreateArtifact($"rules-lab.content.breakdown-turn-boundary.gt{turn}.v1.json")).ToArray());
+        new[] { "gt1", "gt12", "combat.gt1" }.Select(variant => CreateArtifact($"rules-lab.content.breakdown-turn-boundary.{variant}.v1.json")).ToArray());
 
     private static ContentPackV6Artifact CreateArtifact(string resourceName)
     {

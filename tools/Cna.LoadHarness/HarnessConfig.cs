@@ -5,21 +5,29 @@ namespace Cna.LoadHarness;
 internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSeed, int MaxStepsPerCampaign,
     string Output, string Store, string Until, int HotPool, string Driver, Uri? BaseUrl,
     int RampSeconds, int ThinkMsMin, int ThinkMsMax, int MaxInflight, double? StopSubmitP95Ms, double? StopErrorRate,
-    string[] RequireCoverage, bool VerifyState = false)
+    string[] RequireCoverage, bool VerifyState = false, bool CombatGt1 = false)
 {
     internal const string Usage = "Usage: cna-load --output <new-directory> [--campaigns 1..16 (inproc) or 1..100 (http)] " +
         "[--policy first|last|random-legal|random-legal-full] [--root-seed 7] [--max-steps-per-campaign 50|112|512] " +
         "[--store sqlite|postgres] [--until stage2|turn2-reserve] [--hot-pool 16] " +
         "[--driver inproc|http] [--base-url http://127.0.0.1:port] [--ramp-seconds 0] " +
         "[--think-ms-min 0] [--think-ms-max 0] [--max-inflight 16] " +
-        "[--stop-submit-p95-ms ms] [--stop-error-rate fraction] [--require-coverage moves,attacks] [--verify-state]";
+        "[--stop-submit-p95-ms ms] [--stop-error-rate fraction] [--require-coverage moves,attacks] [--verify-state] [--combat-gt1]";
 
     internal static HarnessConfig Parse(string[] args)
     {
         var options = new Dictionary<string, string>(StringComparer.Ordinal);
         var verifyState = false;
+        var combatGt1 = false;
         for (var i = 0; i < args.Length;)
         {
+            if (args[i] == "--combat-gt1")
+            {
+                if (combatGt1) throw new ArgumentException("Duplicate --combat-gt1.");
+                combatGt1 = true;
+                i++;
+                continue;
+            }
             if (args[i] == "--verify-state")
             {
                 if (verifyState) throw new ArgumentException("Duplicate --verify-state.");
@@ -40,6 +48,7 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
         if (store is not ("sqlite" or "postgres")) throw new ArgumentException("Invalid --store.");
         var until = options.GetValueOrDefault("--until", "stage2");
         if (until is not ("stage2" or "turn2-reserve")) throw new ArgumentException("Invalid --until.");
+        if (combatGt1 && until != "turn2-reserve") throw new ArgumentException("--combat-gt1 requires --until turn2-reserve.");
         var policy = options.GetValueOrDefault("--policy", "last");
         if (policy is not ("first" or "last" or "random-legal" or "random-legal-full")) throw new ArgumentException("Invalid --policy.");
         var stepLimit = policy == "random-legal-full" ? 512 : until == "stage2" ? 50 : 112;
@@ -74,7 +83,7 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
             throw new ArgumentException("Invalid --require-coverage; expected moves,attacks.");
         return new(campaigns, policy, seed, steps, output, store, until, hotPool, driver, baseUrl,
             ramp, minThink, maxThink, maxInflight, Threshold("--stop-submit-p95-ms", double.MaxValue),
-            Threshold("--stop-error-rate", 1, allowZero: true), required, verifyState);
+            Threshold("--stop-error-rate", 1, allowZero: true), required, verifyState, combatGt1);
 
         double? Threshold(string key, double max, bool allowZero = false)
         {
