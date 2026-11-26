@@ -1,4 +1,4 @@
-# Cna.LoadHarness (L2/L3)
+# Cna.LoadHarness (L2–L4)
 
 Development-only load tool for the existing synthetic board-game labs.
 It is deliberately outside `Sandtable.slnx`; the separate path-filtered
@@ -15,7 +15,7 @@ Run again with a fresh output directory and compare `fingerprints.json`.
 For a concurrency comparison, compare `campaigns/0.jsonl` with the same file
 from a `--campaigns 1` run. The output directory must not already exist.
 
-## Scope and semantics
+## In-process scope and shared decision semantics
 
 - One in-process localhost Orleans silo, independent SQLite journals (default)
   or the production Marten/Postgres journal, real seat grant/redeem, read-only
@@ -46,7 +46,7 @@ from a `--campaigns 1` run. The output directory must not already exist.
   unavailable probes are counted separately. Missing/unsupported openings and
   max-step exhaustion are partial runs, not successful completions. Alternate
   legal paths are not guaranteed wired; no hidden state is used to choose actions.
-- Exit 0 requires every campaign to reach the verified boundary; exit 1 means
+- In-process exit 0 requires every campaign to reach the verified boundary; exit 1 means
   incomplete campaign(s); exit 2 means invalid CLI configuration. Ctrl+C stops
   at the next owner step and records incomplete campaigns where possible.
 
@@ -68,11 +68,81 @@ uses Host's Marten factory/schema/backend, and removes only that database on
 disposal. Do not point it at a production server. Orleans clustering/reminders
 remain in-process and in-memory; only the campaign journal is Postgres-backed.
 
-`--hot-pool 1..16` defaults to 16, limits concurrent campaign loops and caps
+`--hot-pool 1..16` defaults to 16, limits concurrent in-process campaign loops and caps
 the Npgsql hot database pool; the monitor uses a separate unpooled connection
-to the administrative database. Campaign loops waiting for a slot do not create
+to the administrative database. In-process campaign loops waiting for a slot do not create
 campaigns until admitted. This is not a grain activation-cache limit; the
 production Marten store reconstructs a fresh working set per call.
+
+## Real HTTP runs (L4)
+
+```sh
+dotnet artifacts/bin/Cna.LoadHarness/release/Cna.LoadHarness.dll \
+  --driver http --store postgres --until turn2-reserve --campaigns 16 \
+  --policy random-legal --root-seed 7 --output /tmp/load-http-a
+```
+
+`--driver inproc` remains the default. HTTP mode starts a real loopback Kestrel
+listener and local Orleans silo in the harness process, with Development,
+`CampaignJournal:EnableOutwardApi` and a generated operator secret. It uses the
+existing Host v2 route map, not a mocked HTTP handler or newly added route.
+SQLite uses the test journal backend (the production executable no longer
+configures SQLite); Postgres uses the same factory as L3. Each campaign worker
+owns one HttpClient and uses the real create, grant, redeem, discovery, opening
+and submission routes. Requests carry the same-origin header. Operator secrets
+are sent only on operator calls, never output, and redirects/proxies are disabled.
+
+For an existing Development host on loopback with the outward API enabled:
+
+```sh
+# Set SANDTABLE_LOAD_OPERATOR_SECRET in your shell to the configured host secret.
+dotnet artifacts/bin/Cna.LoadHarness/release/Cna.LoadHarness.dll \
+  --driver http --base-url http://127.0.0.1:5080 --store postgres \
+  --campaigns 2 --output /tmp/load-attached
+```
+
+Attachment never starts, modifies configuration, or stops the external host, and
+uses fresh run-prefixed campaign IDs (controller seed identities remain
+ordinal-based). Campaigns remain in the attached host's journal. Its actual
+backing, version, pool, and resources cannot be inspected through the owner API;
+`--store` is a caller-supplied description and GC/RSS describe only the harness.
+PG connection metrics are null in attach mode.
+
+HTTP-only options:
+
+| Flag | Meaning |
+|---|---|
+| `--campaigns 1..100` | Number of campaign workers (inproc remains capped at 16) |
+| `--ramp-seconds 0..3600` | Evenly stagger starts across this interval, first at zero and last at the end |
+| `--think-ms-min/--think-ms-max 0..60000` | Inclusive uniform wait before each submit; defaults zero, independent System controller seed stream |
+| `--max-inflight 1..100` | Global cap across **all** HTTP requests, including setup; default 16 |
+| `--stop-submit-p95-ms <positive ms>` | Stop admission as soon as cumulative nearest-rank p95 of successful submissions exceeds limit |
+| `--stop-error-rate <0..1>` | Stop admission when cumulative real request errors / completed HTTP requests exceeds limit |
+
+Both cliff gates are opt-in and evaluated online without a warmup. In-flight calls
+finish, pending/ramping/thinking workers stop, and partial artifacts are written
+with `stoppedOnCliff`, `cliffReason`, and exit 1. This is a capacity test, not a
+retrying client. `--hot-pool` continues to cap the launched Postgres pool;
+it does not limit HTTP campaign workers. Keep paced runs within the one-hour
+decision budget if comparing fingerprints.
+
+HTTP summary adds peak in-flight requests, discovery/advertised-opening/fallback
+probe counts, expected 409s, real error count/rate, and cliff fields. The Stage 2
+ladder permits only 409 `unavailable` from opening probes; other 409s (including
+submission conflicts) are errors. B6 requires successful advertised opens.
+Latency includes HTTP request/response, including decoding, but excludes time
+waiting for admission and think time. Local metrics include Host and harness.
+
+**Evidence boundary:** v2 returns only public opening revisions, not private
+committed state versions. HTTP rows preserve L3's property order but encode
+`resultingRevision: null`; the HTTP decision hash is reproducible across HTTP
+repeats but is not the full L3 hash. Compare common fields by replacing
+`resultingRevision` with null in the L3 JSONL before hashing. Stage 2 requires an attainable cut naming the Stage 2 position after other
+discovered and fallback owner offers have been exhausted; Turn 2 Reserve requires four
+accepted declarations and the observed open position, including Stage 2/3
+and Turn 2 declaration cuts. This proves the public checkpoint path, not the
+private End of Turn history or authoritative replay. L5 owns verified state
+fingerprints; no private reads or guessed revisions are used to drive HTTP mode.
 
 ## Output (version 1)
 
@@ -91,12 +161,12 @@ Timing, opaque refs, seat secrets and temporary paths are not fingerprinted or
 written to artifacts. Decision fingerprints measure observed choices, not full
 state identity. Summary throughput covers campaign creation through boundary
 verification, excluding silo startup/shutdown. Full T1 state fingerprint
-verification is deferred to L5. HTTP driver, 64/100-campaign
-nightly soak and performance budgets belong to later slices.
+verification is deferred to L5. The 64/100-campaign nightly soak and capacity
+certification belong to later slices.
 
 Default SQLite/Stage 2 retains the version 1 output layout and fingerprint
 encoding (timestamps and measured latency are inherently variable).
-Postgres, extended checkpoint, or non-default pool runs add `until` and
+HTTP, Postgres, extended checkpoint, or non-default pool runs add `until` and
 `hotPool` to the manifest and append metrics to the summary:
 `postgresConnectionPeak` (sampled peak client backends for this run's database,
 excluding the monitor; null if no samples succeed or SQLite),
@@ -168,3 +238,62 @@ limit zero on the monitor database, then restored) recorded eight failed and
 48 successful samples. The one campaign retained all 14 accepted owner steps
 and every aggregate artifact; the expected step-limit exit and database cleanup
 were preserved.
+
+## L4 HTTP measurements (2026-11-25)
+
+Same lab and policy inputs as L3: Postgres 16 Alpine via fresh Testcontainers,
+Server GC, .NET 10.0.400, Apple Silicon, hot pool 16, in-flight cap 16, no
+ramp or think time, random-legal root seed 7, `--until turn2-reserve`. Each run
+observed the public Turn 2 Reserve checkpoint. Timings are indicative on a
+shared machine; N=16 overlapped focused validation and showed thread-pool/GC
+pressure, not a T2 capacity promise.
+
+| Run | Completed | Steps | Elapsed (s) | Submit p50/p95 (ms) | Discover p50/p95 (ms) | Discover/open/fallback probes | Expected 409s/errors | PG peak | Gen0/1/2 | GC pause (ms) | Heap peak/final (MiB) | RSS peak (MiB) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1-A | 1/1 | 58 | 36.19 | 131/388 | 112/226 | 118/65/0 | 0/0 | 1 | 653/2/1 | 1768 | 132.8/120.7 | 371.0 |
+| 1-B | 1/1 | 58 | 40.61 | 132/431 | 112/330 | 118/65/0 | 0/0 | 1 | 665/5/2 | 3263 | 134.5/101.1 | 366.0 |
+| 16-A | 16/16 | 928 | 268.02 | 665/4876 | 546/3168 | 1888/1040/0 | 0/0 | 16 | 10926/1393/287 | 140448 | 179.6/151.7 | 431.1 |
+| 16-B | 16/16 | 928 | 225.65 | 870/2741 | 687/2154 | 1888/1040/0 | 0/0 | 16 | 10945/1500/310 | 101306 | 173.0/116.1 | 427.4 |
+
+Both HTTP repeat pairs had byte-identical `fingerprints.json` and per-campaign
+JSONL. Ordinal 0 matched across both concurrency levels and all four runs.
+The N=16 HTTP aggregate was
+`sha256:0668d14a8e6d399cb29c1ce40d30ae37929fd9ad6e4b0a9f5b8a83c241cdd3a1`;
+N=1 aggregate
+`sha256:1ce1ec0cf36acddfffe15108c7200aec6ed6c7d73c50b046ce066a2c94b04ea7`.
+Compared against the actual saved L3 A/B decision JSONL, whose aggregate matches
+the documented L3 baseline:
+
+| Ordinal | HTTP repeat identical | Exact L3 JSONL/hash | L3 with private revision set to null |
+|---:|:---:|:---:|:---:|
+| 0 | Yes (N=1 and N=16) | No | Yes |
+| 1 | Yes | No | Yes |
+| 2 | Yes | No | Yes |
+| 3 | Yes | No | Yes |
+| 4 | Yes | No | Yes |
+| 5 | Yes | No | Yes |
+| 6 | Yes | No | Yes |
+| 7 | Yes | No | Yes |
+| 8 | Yes | No | Yes |
+| 9 | Yes | No | Yes |
+| 10 | Yes | No | Yes |
+| 11 | Yes | No | Yes |
+| 12 | Yes | No | Yes |
+| 13 | Yes | No | Yes |
+| 14 | Yes | No | Yes |
+| 15 | Yes | No | Yes |
+
+The exact L3-hash criterion is **not met**: every HTTP row lacks the private
+committed revision, by v2 contract. No other field differs. This passes
+public-decision repeat/concurrency parity, not full T1 or L5 state verification.
+No T2 100-campaign workload was measured. The earlier measurements preceded
+final response-shape validation and cliff accounting refinements; the same
+unpaced selection loop and identity encoding were used in all four runs. A
+post-change in-process N=1 Postgres run also produced the exact original L3
+ordinal 0 decision JSONL.
+
+A SQLite HTTP run also reached Turn 2 Reserve with identical N=1 HTTP
+fingerprints. A separate production Host process attachment using fresh local Postgres
+completed one accepted owner step (expected step-limit exit), then the Host
+and database container were stopped. No HTTP errors; attached metrics correctly
+identified harness-only scope.

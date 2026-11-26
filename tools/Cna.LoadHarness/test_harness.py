@@ -1,5 +1,7 @@
 """Black-box load harness contract tests; run with the Release harness already built."""
 import hashlib
+import http.server
+import threading
 import json
 import os
 import pathlib
@@ -11,9 +13,9 @@ DLL = pathlib.Path(__file__).resolve().parents[2] / 'artifacts/bin/Cna.LoadHarne
 
 
 class HarnessTests(unittest.TestCase):
-    def run_harness(self, output, *args):
+    def run_harness(self, output, *args, env=None):
         return subprocess.run(['dotnet', str(DLL), '--output', str(output), *args],
-                              capture_output=True, text=True, timeout=600)
+                              capture_output=True, text=True, timeout=600, env=env)
 
     def test_invalid_config(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -27,6 +29,159 @@ class HarnessTests(unittest.TestCase):
                 with self.subTest(args=args):
                     result = self.run_harness(pathlib.Path(tmp) / 'run', *args)
                     self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+
+    def test_invalid_http_options(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for args in [('--driver', 'unknown'), ('--driver', 'http', '--base-url', 'https://example.com'),
+                         ('--driver', 'http', '--max-inflight', '0'),
+                         ('--driver', 'http', '--think-ms-min', '2', '--think-ms-max', '1')]:
+                with self.subTest(args=args):
+                    result = self.run_harness(pathlib.Path(tmp) / 'run', *args)
+                    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+
+    def test_http_step_limit_and_cliff(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = pathlib.Path(tmp) / 'run'
+            result = self.run_harness(output, '--driver', 'http', '--max-steps-per-campaign', '1',
+                                      '--campaigns', '2', '--max-inflight', '1', '--ramp-seconds', '1',
+                                      '--think-ms-min', '1', '--think-ms-max', '2')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            summary = json.loads((output / 'summary.json').read_text())
+            self.assertEqual(summary['outcomes'], {'step-limit': 2})
+            self.assertEqual(summary['steps'], 2)
+            self.assertEqual(summary['peakInflight'], 1)
+            self.assertGreater(summary['discoveryProbes'], 0)
+            self.assertFalse(summary['stoppedOnCliff'])
+            cliff = pathlib.Path(tmp) / 'cliff'
+            result = self.run_harness(cliff, '--driver', 'http', '--stop-submit-p95-ms', '0.01')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            summary = json.loads((cliff / 'summary.json').read_text())
+            self.assertTrue(summary['stoppedOnCliff'])
+            self.assertEqual(summary['cliffReason'], 'submit-p95')
+
+    @staticmethod
+    def public_rows(output, ordinal=0):
+        rows = [json.loads(line) for line in (output / f'campaigns/{ordinal}.jsonl').read_text().splitlines()]
+        for row in rows:
+            row['resultingRevision'] = None
+        return rows
+
+    def test_http_stage2_matches_public_decisions_and_pacing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base, http, paced = (pathlib.Path(tmp) / name for name in ('base', 'http', 'paced'))
+            for output, extra in ((base, ()), (http, ('--driver', 'http')),
+                                  (paced, ('--driver', 'http', '--think-ms-min', '2', '--think-ms-max', '9'))):
+                result = self.run_harness(output, '--policy', 'random-legal', '--root-seed', '7', *extra)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(self.public_rows(base), self.public_rows(http))
+            self.assertEqual((http / 'fingerprints.json').read_bytes(), (paced / 'fingerprints.json').read_bytes())
+            rows = [json.loads(line) for line in (http / 'campaigns/0.jsonl').read_text().splitlines()]
+            self.assertTrue(all(row['resultingRevision'] is None for row in rows))
+            summary = json.loads((http / 'summary.json').read_text())
+            self.assertEqual(summary['fallbackProbes'], summary['calls'].get('probe', {}).get('count', 0))
+            self.assertEqual(summary['expected409s'], sum(call['conflicts'] for call in summary['calls'].values()))
+            self.assertEqual(summary['errorCount'], 0)
+
+    def test_http_attach_error_cliff(self):
+        # A loopback transport double injects a server failure; real route success is covered
+        # by the launched-host tests. No remote URL or real operator credentials are involved.
+        observed = []
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                observed.append((self.path, self.headers.get('Sec-Fetch-Site'),
+                                 self.headers.get('X-Sandtable-Operator')))
+                self.send_response(503)
+                self.end_headers()
+
+            def log_message(self, *args):
+                pass
+
+        with http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server, tempfile.TemporaryDirectory() as tmp:
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                output = pathlib.Path(tmp) / 'run'
+                secret = 'test-only-operator-secret'
+                result = self.run_harness(output, '--driver', 'http',
+                                          '--base-url', f'http://127.0.0.1:{server.server_port}',
+                                          '--campaigns', '2', '--max-inflight', '1',
+                                          '--stop-error-rate', '0',
+                                          env={**os.environ, 'SANDTABLE_LOAD_OPERATOR_SECRET': secret})
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                summary = json.loads((output / 'summary.json').read_text())
+                self.assertEqual(summary['errorCount'], 1)
+                self.assertEqual(summary['expected409s'], 0)
+                self.assertEqual(summary['cliffReason'], 'error-rate')
+                self.assertEqual(observed, [('/api/v2/campaigns/', 'same-origin', secret)])
+                for path in output.rglob('*'):
+                    if path.is_file():
+                        self.assertNotIn(secret, path.read_text())
+            finally:
+                server.shutdown()
+                thread.join()
+
+    def test_http_expected_probe_conflict_is_not_a_cliff(self):
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                if self.headers.get('Transfer-Encoding') == 'chunked':
+                    chunks = []
+                    while size := int(self.rfile.readline().strip(), 16):
+                        chunks.append(self.rfile.read(size))
+                        self.rfile.readline()
+                    self.rfile.readline()
+                    body = json.loads(b''.join(chunks))
+                else:
+                    body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                parts = self.path.strip('/').split('/')
+                route = '/'.join(parts[4:])
+                status = 200
+                if self.path == '/api/v2/campaigns/':
+                    value = {'campaignId': body['campaignId']}
+                    status = 201
+                elif route.startswith('grants/'):
+                    value = {'grant': {'campaignId': parts[3], 'audience': parts[-1],
+                                       'epoch': 1, 'secret': 'test-grant', 'expiresUnixMs': 100}}
+                elif route == 'seats':
+                    value = {'credential': body['grant']}
+                elif route == 'openings/open' and body['credential']['audience'] == 'axis':
+                    value = {'campaignId': parts[3], 'audience': 'axis', 'open': [{
+                        'openingStage': 'movement', 'actionStage': 'movement',
+                        'actingElementIds': ['test-element'], 'ruleNotImplemented': False}]}
+                elif route == 'openings':
+                    value = {'code': 'unavailable'}
+                    status = 409
+                else:
+                    value = {'code': 'unavailable'}
+                    status = 409  # Discovery conflict is not an expected opening-probe conflict.
+                data = json.dumps({'contractVersion': 2, **value}).encode()
+                self.send_response(status)
+                self.send_header('Content-Length', str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+            def log_message(self, *args):
+                pass
+
+        with http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server, tempfile.TemporaryDirectory() as tmp:
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                output = pathlib.Path(tmp) / 'run'
+                result = self.run_harness(output, '--driver', 'http',
+                                          '--base-url', f'http://127.0.0.1:{server.server_port}',
+                                          '--stop-error-rate', '0',
+                                          env={**os.environ, 'SANDTABLE_LOAD_OPERATOR_SECRET': 'test-only'})
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                summary = json.loads((output / 'summary.json').read_text())
+                self.assertEqual(summary['expected409s'], 1)
+                self.assertEqual(summary['errorCount'], 1)
+                self.assertEqual(summary['calls']['open']['conflicts'], 1)
+                self.assertEqual(summary['calls']['discover']['errors'], 1)
+                self.assertEqual(summary['cliffReason'], 'error-rate')
+            finally:
+                server.shutdown()
+                thread.join()
 
     def test_explicit_sqlite_preserves_contract(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -59,6 +214,15 @@ class HarnessTests(unittest.TestCase):
             self.assertEqual(sum(row['stage'] in ('initiative-order', 'stage-entry-initiative-declaration')
                                  for row in rows), 4)
             self.assertEqual(rows[-1]['stage'], 'stage-entry-initiative-declaration')
+            http = pathlib.Path(tmp) / 'http'
+            result = self.run_harness(http, '--driver', 'http', '--store', 'postgres', '--until', 'turn2-reserve',
+                                      '--policy', 'random-legal', '--root-seed', '7', '--max-inflight', '1')
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            http_summary = json.loads((http / 'summary.json').read_text())
+            self.assertEqual(http_summary['completed'], 1)
+            self.assertEqual(http_summary['errorCount'], 0)
+            self.assertEqual(self.public_rows(output), self.public_rows(http))
+
 
     @unittest.skipUnless(os.getenv('SANDTABLE_LOAD_POSTGRES_TEST') == '1', 'opt-in Postgres integration')
     def test_postgres_hot_pool_and_step_limit(self):
