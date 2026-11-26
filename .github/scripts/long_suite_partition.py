@@ -83,11 +83,14 @@ def make_plan(rows, weights):
             bins[index].append(row); costs[index] += row_ms[row_key(row)]
         for index, selected in enumerate(bins):
             long_groups.append(('row-' + hashlib.sha256(name.encode()).hexdigest()[:12] + f'-{index + 1:02}', sorted(selected), costs[index]))
-    groups, lane_costs = {}, [0] * 32
+    # Allocate to concurrent lanes, not queued waves of four lanes per shard.
+    # The lower memory-safe cap on long-01 must also constrain its planned load.
+    groups = {}
+    lane_costs = {(job, lane): 0 for job in LONG_JOBS for lane in range(1, concurrent_lanes(job) + 1)}
     for group, selected, cost in sorted(long_groups, key=lambda value: (-value[2], value[0])):
-        lane = min(range(32), key=lambda index: (lane_costs[index], index))
-        lane_costs[lane] += cost + 2000
-        groups[group] = {'job': f'long-{lane // 4 + 1:02}', 'lane': lane % 4 + 1, 'phase': 'parallel', 'selector_kind': 'display', 'rows': [list(row) for row in selected]}
+        job, lane = min(lane_costs, key=lambda key: (lane_costs[key], key))
+        lane_costs[job, lane] += cost + 2000
+        groups[group] = {'job': job, 'lane': lane, 'phase': 'parallel', 'selector_kind': 'display', 'rows': [list(row) for row in selected]}
     fast_bins, fast_costs = [[] for _ in range(4)], [0] * 4
     for name, selected, cost in sorted(fast, key=lambda value: (-value[2], value[0])):
         index = min(range(4), key=lambda value: (fast_costs[value], value))
@@ -184,12 +187,15 @@ def verify_process(group, entry, directory, binding, expected_plan_sha256):
 LONG_JOBS = tuple(f'long-{index:02}' for index in range(1, 9))
 FAST_JOBS = tuple(f'fast-{index:02}' for index in range(1, 5))
 
-# Keep the four allocated lanes and plan digest unchanged. After #505 capped
-# concurrency at three, long-01 still tripped the 3GiB runtime reserve in
+# After #505 capped concurrency at three, long-01 still tripped the 3GiB runtime reserve in
 # main runs 45484789074 and 45512996374. Limit only that shard to two
 # concurrent lanes; all other shards retain the existing cap.
 MAX_CONCURRENT_LANES = 3
 LONG_01_MAX_CONCURRENT_LANES = 2
+
+
+def concurrent_lanes(job):
+    return LONG_01_MAX_CONCURRENT_LANES if job == 'long-01' else MAX_CONCURRENT_LANES
 
 
 def run_suite_job(plan, job, root, binding, binary, timeout_seconds=720, command_builder=execution_command):
@@ -234,7 +240,7 @@ def run_suite_job(plan, job, root, binding, binary, timeout_seconds=720, command
     statuses = {}
     try:
         guard.start()
-        max_workers = LONG_01_MAX_CONCURRENT_LANES if job == 'long-01' else MAX_CONCURRENT_LANES
+        max_workers = concurrent_lanes(job)
         with ThreadPoolExecutor(max_workers=max_workers) as workers:
             futures = [workers.submit(lane, number) for number in range(1, 5)]
             for future in futures: statuses.update(future.result())
