@@ -666,18 +666,20 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 {
                     // Breakdown may have outstanding obligations outside this slice; preserve
                     // the player's accepted completion rather than inventing an empty result.
-                    if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                    if (native.Kind is CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                        or CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind)
                         return head;
                     throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
                 }
                 var command = CampaignHostAdapter.StageEntrySystemCommand(head.Session, native.Result);
                 head = PersistAccepted(connection, transaction, campaignId, head,
                     native.Kind, null, null, null, null, command, native.Result);
-                // W4: the Breakdown that opens a Combat Selection occurrence arms its own
+                // Either Stage 2 Breakdown that opens a Combat Selection occurrence arms its own
                 // Selection round and deadline. The round closes through the slot-resolved
                 // no-attack continuation (submit or timeout), and VerifySelectionRounds binds
                 // it to this step's V46 digest through QueryNativeCombatSelectionEntryBinding.
-                if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                if (native.Kind is CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                        or CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind)
                 {
                     TryInitializeSelectionRound(connection, transaction, head, campaignId);
                     // Without trusted timing the round closes inside that call (timeout, no-attack,

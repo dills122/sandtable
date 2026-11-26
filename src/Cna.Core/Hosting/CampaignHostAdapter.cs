@@ -4,6 +4,7 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
+using Cna.Core.Exercises.Sequencing;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
 using Cna.Core.Visibility;
@@ -1720,10 +1721,11 @@ public static class CampaignHostAdapter
         // EntryHash QuerySecondCombatSelectionRoundBinding computed when the
         // round was first initialized (CampaignExercises.cs), or a
         // genuinely correct second-side round looks tampered-with on replay.
-        // W4: a Stage 2 first-side Breakdown opens its own V46-bound Selection round exactly like the
-        // Stage 1 second side (the Host journal now arms and closes that round).
+        // Stage 2 Breakdown for either role opens its own V46-bound Selection round exactly
+        // like Stage 1 second side. Live arming and cold replay use the same entry digest.
         if (step.Kind is CampaignHostAcceptedStep.NativeSecondBreakdownKind
-                or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind && step.EventRecords.Count == 1)
+                or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                or CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind && step.EventRecords.Count == 1)
         {
             var secondBreakdown = CampaignNativeSecondBreakdownV46.Deserialize(step.EventRecords[0]);
             return (CampaignSelectionTimeoutEvidenceV38.Digest(secondBreakdown.SerializeCanonical()), secondBreakdown.StateVersion);
@@ -1933,6 +1935,19 @@ public static class CampaignHostAdapter
             throw new InvalidOperationException("Stage Entry opening is not available at this position.");
     }
 
+    // The same Stage Entry wire kinds serve both acting roles. Retained Pending fields can
+    // belong to the previous role at a boundary, so resolve the occurrence from the cursor.
+    private static bool IsStageEntrySecondRole(ExerciseSession session, string phase, string? segment = null)
+    {
+        var turn = CampaignGameTurn.CurrentGameTurn(session);
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        var position = Cna1979LandSequence.CreateTurn(turn).SingleOrDefault(p => p.PositionId == checkpoint.PositionId);
+        if (position is not { OperationStage: 2 } || position.PhaseId != phase || position.SegmentId != segment
+            || PendingOccurrenceTable.Find(2, position.ActorRole, turn == session.CurrentSnapshot.Setup.InitialGameTurn) is null)
+            throw new InvalidOperationException("Stage Entry opening is not available at this position.");
+        return position.ActorRole == LandActorRole.SecondActingSide;
+    }
+
     /// <summary>Deterministic Stage 2 System transitions, selected from the current native cut.</summary>
     public static (string Kind, ExerciseStepResult Result)? TryCompleteStageEntrySystemStep(ExerciseSession session)
     {
@@ -1945,6 +1960,7 @@ public static class CampaignHostAdapter
             NoObligationNavalConvoyArrivalPending => (CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind, CampaignStageEntryPreambleAuthority.CompleteStageEntryFleetAssignment(session)),
             NoObligationFleetAssignmentPending => (CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind, CampaignStageEntryPreambleAuthority.CompleteStageEntryFleetRepair(session)),
             StageEntryMovementCompletionPending => (CampaignHostAcceptedStep.NativeStageEntryBreakdownKind, CampaignExercises.CompleteStageEntryBreakdown(session)),
+            StageEntrySecondMovementCompletionPending => (CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind, CampaignExercises.CompleteStageEntrySecondBreakdown(session)),
             _ => null,
         };
     }
@@ -1969,14 +1985,15 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionAudience audience, string elementId)
     {
         ArgumentNullException.ThrowIfNull(session);
-        RequireStageEntryPosition(session, "land.position.operation-2.first-player.movement-and-combat.movement");
+        var second = IsStageEntrySecondRole(session, LandPhaseIds.MovementAndCombat, LandSegmentIds.Movement);
         var side = audience switch
         {
             CampaignActionAudience.Axis => LandSide.Axis,
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Stage Entry Movement needs an owner side."),
         };
-        var cut = CampaignExercises.QueryStageEntryMovementCut(session, side, elementId);
+        var cut = second ? CampaignExercises.QueryStageEntrySecondMovementCut(session, side, elementId)
+            : CampaignExercises.QueryStageEntryMovementCut(session, side, elementId);
         var actions = cut.MovementOffers.OrderBy(value => value.OriginLocationId, StringComparer.Ordinal)
             .ThenBy(value => value.DestinationLocationId, StringComparer.Ordinal)
             .Select(CampaignNativeSecondMoveV44.ActionIdFor).ToArray();
@@ -2005,21 +2022,24 @@ public static class CampaignHostAdapter
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
-        return CampaignExercises.SubmitStageEntryMovement(session, submission.Audience, submission.ActionId, elementId);
+        return IsStageEntrySecondRole(session, LandPhaseIds.MovementAndCombat, LandSegmentIds.Movement)
+            ? CampaignExercises.SubmitStageEntrySecondMovement(session, submission.Audience, submission.ActionId, elementId)
+            : CampaignExercises.SubmitStageEntryMovement(session, submission.Audience, submission.ActionId, elementId);
     }
 
     public static CampaignHostCycleControlOwnerDraft QueryStageEntryMovementCompletionOwnerDraft(
         ExerciseSession session, CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
-        RequireStageEntryPosition(session, "land.position.operation-2.first-player.movement-and-combat.movement");
+        var second = IsStageEntrySecondRole(session, LandPhaseIds.MovementAndCombat, LandSegmentIds.Movement);
         var side = audience switch
         {
             CampaignActionAudience.Axis => LandSide.Axis,
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Stage Entry Movement completion needs an owner."),
         };
-        var (predecessor, world) = CampaignExercises.QueryStageEntryMovementSource(session);
+        var (predecessor, world) = second ? CampaignExercises.QueryStageEntrySecondMovementSource(session)
+            : CampaignExercises.QueryStageEntryMovementSource(session);
         var proposed = CampaignNativeSecondMovementCompletedV45.Create(predecessor, world, session.Context,
             CampaignExercises.StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
             session.CurrentContacts.AuthorityVersion);
@@ -2060,21 +2080,24 @@ public static class CampaignHostAdapter
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         if (!draft.PrivateActionIds.Contains(submission.ActionId, StringComparer.Ordinal))
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
-        return CampaignExercises.CompleteStageEntryMovement(session, submission.Audience, submission.ActionId);
+        return IsStageEntrySecondRole(session, LandPhaseIds.MovementAndCombat, LandSegmentIds.Movement)
+            ? CampaignExercises.CompleteStageEntrySecondMovement(session, submission.Audience, submission.ActionId)
+            : CampaignExercises.CompleteStageEntryMovement(session, submission.Audience, submission.ActionId);
     }
 
     private static (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions)
         CreateStageEntryReserveOwnerDraft(ExerciseSession session, CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
-        RequireStageEntryPosition(session, "land.position.operation-2.first-player.reserve-designation");
+        var second = IsStageEntrySecondRole(session, LandPhaseIds.ReserveDesignation);
         var side = audience switch
         {
             CampaignActionAudience.Axis => LandSide.Axis,
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Stage Entry Reserve needs an owner side."),
         };
-        var (predecessor, world) = CampaignExercises.QueryStageEntryReserveSource(session);
+        var (predecessor, world) = second ? CampaignExercises.QueryStageEntrySecondReserveSource(session)
+            : CampaignExercises.QueryStageEntryReserveSource(session);
         var (check, _) = CampaignNativeSecondReserveV43.Create(predecessor, world, session.Context,
             CampaignExercises.StageEntryOrders(session), side, null, session.CurrentSnapshot.Setup.InitialGameTurn,
             session.CurrentContacts.AuthorityVersion);
@@ -2130,8 +2153,10 @@ public static class CampaignHostAdapter
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
         if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
-        return CampaignExercises.SubmitStageEntryReserve(session, submission.Audience, submission.ActionId,
-            action is DesignateReserveAction designated ? designated.ElementId : null);
+        var elementId = action is DesignateReserveAction designated ? designated.ElementId : null;
+        return IsStageEntrySecondRole(session, LandPhaseIds.ReserveDesignation)
+            ? CampaignExercises.SubmitStageEntrySecondReserve(session, submission.Audience, submission.ActionId, elementId)
+            : CampaignExercises.SubmitStageEntryReserve(session, submission.Audience, submission.ActionId, elementId);
     }
 
     public static CampaignHostCycleControlOwnerDraft QuerySecondMovementOwnerDraft(
@@ -3566,6 +3591,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind
                 or CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind
                 or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                or CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind
                 or CampaignHostAcceptedStep.ContactStageEntryReserveKind
                 or CampaignHostAcceptedStep.ContactStageEntryMovementKind
                 or CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind
@@ -3873,6 +3899,7 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind => CompleteStageEntrySystemStep(session, step.Kind),
                 CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind => CompleteStageEntrySystemStep(session, step.Kind),
                 CampaignHostAcceptedStep.NativeStageEntryBreakdownKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind => CompleteStageEntrySystemStep(session, step.Kind),
                 CampaignHostAcceptedStep.ContactStageEntryReserveKind => SubmitStageEntryReserve(session, submission),
                 CampaignHostAcceptedStep.ContactStageEntryMovementKind => SubmitStageEntryMovement(session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind => SubmitStageEntryMovementCompletion(session, submission),
@@ -4098,7 +4125,7 @@ public static class CampaignHostAdapter
                     CampaignActionSubmissionSerializer.SerializeCanonical(
                         SourceLocalMapCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
-            if (step.Kind is CampaignHostAcceptedStep.NativeStageEntryWeatherKind or CampaignHostAcceptedStep.NativeStageEntryOrganizationKind or CampaignHostAcceptedStep.NativeStageEntryNavalConvoyArrivalKind or CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind or CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+            if (step.Kind is CampaignHostAcceptedStep.NativeStageEntryWeatherKind or CampaignHostAcceptedStep.NativeStageEntryOrganizationKind or CampaignHostAcceptedStep.NativeStageEntryNavalConvoyArrivalKind or CampaignHostAcceptedStep.NativeStageEntryFleetAssignmentKind or CampaignHostAcceptedStep.NativeStageEntryFleetRepairKind or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind or CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(StageEntrySystemCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
@@ -4621,6 +4648,7 @@ public sealed class CampaignHostAcceptedStep
     public const int ContactStageEntryReserveContractVersion = 131;
     public const int ContactStageEntryMovementContractVersion = 132;
     public const int ContactStageEntryMovementCompletionContractVersion = 133;
+    public const int NativeStageEntrySecondBreakdownContractVersion = 134;
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
@@ -4753,6 +4781,7 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeStageEntryFleetAssignmentKind = "native-stage-entry-fleet-assignment";
     public const string NativeStageEntryFleetRepairKind = "native-stage-entry-fleet-repair";
     public const string NativeStageEntryBreakdownKind = "native-stage-entry-breakdown";
+    public const string NativeStageEntrySecondBreakdownKind = "native-stage-entry-second-breakdown";
     public const string ContactStageEntryReserveKind = "contact-stage-entry-reserve";
     public const string ContactStageEntryMovementKind = "contact-stage-entry-movement";
     public const string ContactStageEntryMovementCompletionKind = "contact-stage-entry-movement-completion";
@@ -4793,6 +4822,7 @@ public sealed class CampaignHostAcceptedStep
                 or NativeStageEntryFleetAssignmentKind
                 or NativeStageEntryFleetRepairKind
                 or NativeStageEntryBreakdownKind
+                or NativeStageEntrySecondBreakdownKind
                 or ContactStageEntryReserveKind
                 or ContactStageEntryMovementKind
                 or ContactStageEntryMovementCompletionKind
@@ -4820,6 +4850,7 @@ public sealed class CampaignHostAcceptedStep
                 or NativeStageEntryFleetAssignmentKind
                 or NativeStageEntryFleetRepairKind
                 or NativeStageEntryBreakdownKind
+                or NativeStageEntrySecondBreakdownKind
                 or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
@@ -4917,6 +4948,7 @@ public sealed class CampaignHostAcceptedStep
             NativeStageEntryFleetAssignmentKind => NativeStageEntryFleetAssignmentContractVersion,
             NativeStageEntryFleetRepairKind => NativeStageEntryFleetRepairContractVersion,
             NativeStageEntryBreakdownKind => NativeStageEntryBreakdownContractVersion,
+            NativeStageEntrySecondBreakdownKind => NativeStageEntrySecondBreakdownContractVersion,
             ContactStageEntryReserveKind => ContactStageEntryReserveContractVersion,
             ContactStageEntryMovementKind => ContactStageEntryMovementContractVersion,
             ContactStageEntryMovementCompletionKind => ContactStageEntryMovementCompletionContractVersion,

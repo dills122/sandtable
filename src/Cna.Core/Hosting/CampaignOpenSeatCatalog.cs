@@ -2,6 +2,8 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
+using Cna.Core.Exercises.Sequencing;
+using Cna.Core.Rules;
 
 namespace Cna.Core.Hosting;
 
@@ -29,8 +31,9 @@ public static class CampaignOpenSeatCatalog
     // Stage 3 is the sequential chain owned by the executor/hot-file workers; its rows are
     // Unwired until its Host kinds exist. Replace the reason with the stage list when wired.
     private const string Stage3 = "Stage 3 Host opening kinds are not wired yet (Stage 3 Core chain).";
-    private const string Stage2Auto = "Automatic Core completion; Host System-step auto-drain not wired yet (T3 Stage 2 wiring).";
-    private const string Stage2Owner = "Stage 2 owner opening kind is not wired yet (T3 Stage 2 wiring).";
+    private static readonly string[] StageEntryReserve = ["stage-entry-reserve", "stage-entry-movement", "stage-entry-movement-completion"];
+    private static readonly string[] StageEntryMove = ["stage-entry-movement", "stage-entry-movement-completion"];
+    private static readonly string[] StageEntryTail = ["reserve-release", "cycle-control", "truck-convoy-pass", "post-combat-pass"];
 
     /// <summary>
     /// ONE-LINE PROCEDURE when adding a <see cref="PendingDecision"/> subtype: add
@@ -65,21 +68,21 @@ public static class CampaignOpenSeatCatalog
             [typeof(ThirdStageWeatherPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             [typeof(ThirdStageInitiativeDeclarationPending)] = CampaignOpenSeatRow.Unwired(Stage3),
             // Stage 2 second side.
-            [typeof(StageEntrySecondAssaultPending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntrySecondNoAttackPending)] = CampaignOpenSeatRow.Unwired(Stage2Auto),
-            [typeof(StageEntrySecondCombatSelectionPending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntrySecondBreakdownPending)] = CampaignOpenSeatRow.Unwired(Stage2Auto),
-            [typeof(StageEntrySecondMovementCompletionPending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntrySecondMovePending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntrySecondReservePending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
+            [typeof(StageEntrySecondAssaultPending)] = CampaignOpenSeatRow.Stages(StageEntryTail),
+            [typeof(StageEntrySecondNoAttackPending)] = CampaignOpenSeatRow.SystemOnly("No-attack auto-completes."),
+            [typeof(StageEntrySecondCombatSelectionPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
+            [typeof(StageEntrySecondBreakdownPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
+            [typeof(StageEntrySecondMovementCompletionPending)] = CampaignOpenSeatRow.SystemOnly("Stage 2 Breakdown auto-drains."),
+            [typeof(StageEntrySecondMovePending)] = CampaignOpenSeatRow.Stages(StageEntryMove),
+            [typeof(StageEntrySecondReservePending)] = CampaignOpenSeatRow.Stages(StageEntryReserve),
             // Stage 2 first side.
-            [typeof(StageEntryAssaultPending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntryNoAttackPending)] = CampaignOpenSeatRow.Unwired(Stage2Auto),
-            [typeof(StageEntryCombatSelectionPending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntryBreakdownPending)] = CampaignOpenSeatRow.Unwired(Stage2Owner),
-            [typeof(StageEntryMovementCompletionPending)] = CampaignOpenSeatRow.SystemOnly("Stage 2 first-side Breakdown auto-drains."),
-            [typeof(StageEntryMovePending)] = CampaignOpenSeatRow.Stages("stage-entry-movement", "stage-entry-movement-completion"),
-            [typeof(StageEntryReservePending)] = CampaignOpenSeatRow.Stages("stage-entry-reserve", "stage-entry-movement", "stage-entry-movement-completion"),
+            [typeof(StageEntryAssaultPending)] = CampaignOpenSeatRow.Stages(StageEntryTail),
+            [typeof(StageEntryNoAttackPending)] = CampaignOpenSeatRow.SystemOnly("No-attack auto-completes."),
+            [typeof(StageEntryCombatSelectionPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
+            [typeof(StageEntryBreakdownPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
+            [typeof(StageEntryMovementCompletionPending)] = CampaignOpenSeatRow.SystemOnly("Stage 2 Breakdown auto-drains."),
+            [typeof(StageEntryMovePending)] = CampaignOpenSeatRow.Stages(StageEntryMove),
+            [typeof(StageEntryReservePending)] = CampaignOpenSeatRow.Stages(StageEntryReserve),
             // Prior cycle's second-acting side tail (Stage 1).
             [typeof(SecondAssaultPending)] = CampaignOpenSeatRow.Stages([.. CombatChain, "truck-convoy-pass", "post-combat-pass", "stage-entry-initiative-declaration"]),
             [typeof(SecondNoAttackPending)] = CampaignOpenSeatRow.Stages(CombatChain),
@@ -117,7 +120,42 @@ public static class CampaignOpenSeatCatalog
         if (!Rows.TryGetValue(pending.GetType(), out var row))
             throw new InvalidOperationException(
                 $"Pending subtype {pending.GetType().Name} has no CampaignOpenSeatCatalog row.");
-        return new CampaignOpenSeatCandidates(false, row.StageNames, row.ExceptionReason);
+        // The retained subtype describes the last accepted event, not necessarily the new
+        // decision at the cursor. In particular the first role's final pass leaves an Assault
+        // subtype at the second role's Reserve Designation. Use the exact catalog position
+        // for Stage 2 and at the Stage 3 boundary (whose Host kinds remain deferred to W6).
+        var gameTurn = CampaignGameTurn.CurrentGameTurn(session);
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        var position = Cna1979LandSequence.CreateTurn(gameTurn).SingleOrDefault(p => p.PositionId == checkpoint.PositionId);
+        var cursorStages = position is null ? null : StagesAt(position, gameTurn == session.CurrentSnapshot.Setup.InitialGameTurn);
+        if (cursorStages is null) return new CampaignOpenSeatCandidates(false, row.StageNames, row.ExceptionReason);
+        var reason = cursorStages.Count > 0 ? null
+            : position!.OperationStage == 3 ? Stage3
+            : row.ExceptionReason ?? "No wired owner opening at this position.";
+        return new CampaignOpenSeatCandidates(false, cursorStages, reason);
+    }
+
+    // null means use the subtype row; an empty list means no wired owner opening at this cursor.
+    internal static IReadOnlyList<string>? StagesAt(LandSequencePosition position, bool isFirstTurn)
+    {
+        if (!isFirstTurn || position.OperationStage < 2) return null;
+        if (position.OperationStage == 3) return [];
+        if (position.PhaseId == LandPhaseIds.InitiativeDeclaration) return ["stage-entry-initiative-declaration"];
+        if (PendingOccurrenceTable.Find(position.OperationStage, position.ActorRole, isFirstTurn) is null) return [];
+        return position.PhaseId switch
+        {
+            LandPhaseIds.ReserveDesignation => ["stage-entry-reserve"],
+            LandPhaseIds.MovementAndCombat => position.SegmentId switch
+            {
+                LandSegmentIds.Movement => StageEntryMove,
+                LandSegmentIds.Combat when position.StepId == LandStepIds.PositionDetermination => ["combat-selection"],
+                LandSegmentIds.ReserveRelease => ["reserve-release", "cycle-control"],
+                _ => [],
+            },
+            LandPhaseIds.TruckConvoyMovement => ["truck-convoy-pass"],
+            LandPhaseIds.CommonwealthRailMovement or LandPhaseIds.Repair or LandPhaseIds.Patrol => ["post-combat-pass"],
+            _ => [],
+        };
     }
 
     /// <summary>

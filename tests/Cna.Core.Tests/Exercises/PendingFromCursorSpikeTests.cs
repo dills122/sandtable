@@ -4,6 +4,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
@@ -181,6 +182,16 @@ public sealed class PendingFromCursorSpikeTests
         Assert.True(rows.Count > 50);
         // Staleness really was exercised: many states carry >1 never-reset Current* fields.
         Assert.Contains(rows, r => r.sample.NonNullCurrentFields >= 5 && r.derived == r.sample.Pending);
+    }
+
+    [Fact]
+    public void RetainedFirstRoleAssaultAtSecondRoleBoundaryDoesNotDetermineHostOpening()
+    {
+        RunRealSession();
+        var boundary = Assert.Single(samples, s => s.PositionId == "land.position.operation-2.second-player.reserve-designation");
+        Assert.Equal("StageEntryAssaultPending", boundary.Pending);
+        var position = Cna1979LandSequenceV4.CreateTurn(boundary.GameTurn).Single(p => p.PositionId == boundary.PositionId);
+        Assert.Equal(["stage-entry-reserve"], CampaignOpenSeatCatalog.StagesAt(position, true));
     }
 
     [Fact]

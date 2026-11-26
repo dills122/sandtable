@@ -1,5 +1,6 @@
 using Cna.Core.Exercises;
 using Cna.Core.Exercises.Sequencing;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Xunit;
 using Spike = Cna.Core.Tests.Exercises.PendingFromCursorSpikeTests;
@@ -29,6 +30,18 @@ public sealed class PendingFromCursorShadowTests
                     Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.MoveWithinPosition, gameTurn == 1),
                     PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.MoveWithinPosition, gameTurn == 1));
             }
+        }
+    }
+
+    [Fact]
+    public void BothStageTwoOccurrencesUseTheSameHostStagesAtMatchingPositions()
+    {
+        var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        foreach (var first in turn.Where(p => p.OperationStage == 2 && p.ActorRole == LandActorRole.FirstActingSide))
+        {
+            var second = turn.Single(p => p.OperationStage == 2 && p.ActorRole == LandActorRole.SecondActingSide
+                && p.PhaseId == first.PhaseId && p.SegmentId == first.SegmentId && p.StepId == first.StepId);
+            Assert.Equal(CampaignOpenSeatCatalog.StagesAt(first, true), CampaignOpenSeatCatalog.StagesAt(second, true));
         }
     }
 
