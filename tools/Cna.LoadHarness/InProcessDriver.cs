@@ -10,6 +10,7 @@ using Cna.OrleansHost.Api;
 using Cna.OrleansHost.Campaigns;
 using Cna.OrleansHost.Timeouts;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -146,6 +147,38 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
         var session = await Store.ReadVerifiedAsync(id).ConfigureAwait(false);
         return CampaignExercises.QueryCheckpoint(session).PositionId == position
             && CampaignExercises.Reconstruct(session).IsVerified;
+    }
+
+    internal async Task<bool> VerifyReplayAsync(string id, ActionCoverage coverage)
+    {
+        var session = await Store.ReadVerifiedAsync(id).ConfigureAwait(false);
+        var verified = CampaignExercises.Reconstruct(session).IsVerified;
+        if (verified) coverage.RecordJournal(await ReadCanonicalEventsAsync(id).ConfigureAwait(false));
+        return verified;
+    }
+
+    private async Task<byte[][]> ReadCanonicalEventsAsync(string id)
+    {
+        if (postgres is not null) return await postgres.ReadCanonicalEventsAsync(id).ConfigureAwait(false);
+        var path = Path.Combine(directory, id + CampaignDurableAuthorityJournal.CampaignFileExtension);
+        await using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = path, Mode = SqliteOpenMode.ReadOnly, Pooling = false,
+        }.ConnectionString);
+        await connection.OpenAsync().ConfigureAwait(false);
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT canonical FROM (
+                SELECT 0 AS sequence, creation_event AS canonical FROM campaigns WHERE campaign_id=$id
+                UNION ALL
+                SELECT sequence, canonical_event FROM accepted_steps WHERE campaign_id=$id
+            ) ORDER BY sequence
+            """;
+        command.Parameters.AddWithValue("$id", id);
+        await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+        var records = new List<byte[]>();
+        while (await reader.ReadAsync().ConfigureAwait(false)) records.Add((byte[])reader.GetValue(0));
+        return records.ToArray();
     }
 
     private static int FreePort()

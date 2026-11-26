@@ -134,6 +134,14 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
                         throw new OpeningUnavailableException();
                     }
                 }
+                if (response.StatusCode == HttpStatusCode.Conflict && config.Policy == "random-legal-full"
+                    && operation == "submit")
+                {
+                    using var error = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
+                    var code = error.RootElement.GetProperty("code").GetString();
+                    if (code == "rule-not-implemented") outcome = "reaction-refused";
+                    return (T)(object)new Submission(false, code, null);
+                }
                 throw new HttpRequestException("Unexpected HTTP status.", null, response.StatusCode);
             }
             using var document = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
