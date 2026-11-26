@@ -1182,15 +1182,15 @@ public static class CampaignHostAdapter
     public static string NoTimingRbaCancellationHash =>
         CampaignNativeCombatRbaCancellationV33.NoTimingConfigurationHash;
 
-    private static CampaignNativeRepeatAssaultRuntime? CurrentOccurrenceAssault(ExerciseSession session) =>
-        session.Pending switch
+    private static CampaignNativeRepeatAssaultRuntime? CurrentOccurrenceAssault(ExerciseSession? session) =>
+        session?.Pending switch
         {
-            SecondAssaultPending => session.CurrentSecondAssault,
-            StageEntryAssaultPending => session.CurrentStageEntryAssault,
-            StageEntrySecondAssaultPending => session.CurrentStageEntrySecondAssault,
-            ThirdStageAssaultPending => session.CurrentThirdStageAssault,
-            ThirdStageSecondAssaultPending => session.CurrentThirdStageSecondAssault,
-            null => session.CurrentRepeatAssault,
+            SecondCombatSelectionPending or SecondAssaultPending => session.CurrentSecondAssault,
+            StageEntryCombatSelectionPending or StageEntryAssaultPending => session.CurrentStageEntryAssault,
+            StageEntrySecondCombatSelectionPending or StageEntrySecondAssaultPending => session.CurrentStageEntrySecondAssault,
+            ThirdStageCombatSelectionPending or ThirdStageAssaultPending => session.CurrentThirdStageAssault,
+            ThirdStageSecondCombatSelectionPending or ThirdStageSecondAssaultPending => session.CurrentThirdStageSecondAssault,
+            null => session?.CurrentRepeatAssault,
             _ => null,
         };
 
@@ -1475,9 +1475,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || (predecessor.CurrentRepeatAssault is { Barrage: null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.Barrage is null
-                : predecessor.CurrentCombatDecision is null
+            || (CurrentOccurrenceAssault(predecessor) is { Barrage: null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.Barrage is null
+                : predecessor.Pending is not null || predecessor.CurrentCombatDecision is null
                     || accepted.SuccessorSession?.CurrentCombatBarrage is null))
             throw new ArgumentException("Accepted Barrage completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
@@ -1491,9 +1491,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted ||
-            (predecessor.CurrentRepeatAssault is { Seals.Count: 2 }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.ForceCompletion is null
-                : predecessor.CurrentCombatForceSeals.Count != 2
+            (CurrentOccurrenceAssault(predecessor) is { Seals.Count: 2 }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.ForceCompletion is null
+                : predecessor.Pending is not null || predecessor.CurrentCombatForceSeals.Count != 2
                     || accepted.SuccessorSession?.CurrentCombatForceCompletion is null))
             throw new ArgumentException("Accepted Force completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
@@ -1507,10 +1507,10 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || (predecessor.CurrentRepeatAssault is { } repeated
+            || (CurrentOccurrenceAssault(predecessor) is { } repeated
                 ? repeated.Seals.Count > 1
-                    || accepted.SuccessorSession?.CurrentRepeatAssault?.ForceCancellation is null
-                : predecessor.CurrentCombatForceSeals.Count > 1
+                    || CurrentOccurrenceAssault(accepted.SuccessorSession)?.ForceCancellation is null
+                : predecessor.Pending is not null || predecessor.CurrentCombatForceSeals.Count > 1
                     || accepted.SuccessorSession?.CurrentCombatForceCancellation is null))
             throw new ArgumentException("Accepted Force cancellation required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
@@ -1524,9 +1524,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted || accepted.Evidence is not { EventRecords.Count: 1 } evidence
-            || (predecessor.CurrentRepeatAssault is not null
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.RbaCancellation is null
-                : accepted.SuccessorSession?.CurrentCombatRbaCancellation is null))
+            || (CurrentOccurrenceAssault(predecessor) is not null
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.RbaCancellation is null
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatRbaCancellation is null))
             throw new ArgumentException("Accepted RBA cancellation required.", nameof(accepted));
         var cancellation = CampaignNativeCombatRbaCancellationV33.Deserialize(evidence.EventRecords[0]);
         var binding = QueryNativeCombatRbaRoundBinding(predecessor);
@@ -1547,10 +1547,10 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted ||
-            (predecessor.CurrentRepeatAssault is
+            (CurrentOccurrenceAssault(predecessor) is
         { ForceCompletion: not null } or { ForceCancellation: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.AntiArmor is null
-                : accepted.SuccessorSession?.CurrentCombatAntiArmor is null))
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.AntiArmor is null
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatAntiArmor is null))
             throw new ArgumentException("Accepted Anti Armor completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -1563,9 +1563,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || (predecessor.CurrentRepeatAssault is { ForceCancellation: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.CancelledAssault is null
-                : accepted.SuccessorSession?.CurrentCombatCancelledAssault is null))
+            || (CurrentOccurrenceAssault(predecessor) is { ForceCancellation: not null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.CancelledAssault is null
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatCancelledAssault is null))
             throw new ArgumentException("Accepted cancelled assault completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -1578,9 +1578,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted ||
-            (predecessor.CurrentRepeatAssault is { AntiArmor: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.Result is null
-                : accepted.SuccessorSession?.CurrentCombatAssaultResult is null))
+            (CurrentOccurrenceAssault(predecessor) is { AntiArmor: not null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.Result is null
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatAssaultResult is null))
             throw new ArgumentException("Accepted native assault result required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -1593,10 +1593,10 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || (predecessor.CurrentRepeatAssault is { Result: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.PostResultRetreat
+            || (CurrentOccurrenceAssault(predecessor) is { Result: not null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.PostResultRetreat
                     is not { Disposition: "not-required" }
-                : accepted.SuccessorSession?.CurrentCombatPostResultRetreat
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatPostResultRetreat
                     is not { Disposition: "not-required" }))
             throw new ArgumentException("Accepted no-retreat completion required.",
                 nameof(accepted));
@@ -1778,8 +1778,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(session);
         var cut = CampaignExercises.QueryContactPostResultRetreatCut(session);
-        var result = session.CurrentRepeatAssault is { Result: not null, PostResultRetreat: null } repeat
-            ? repeat.Result : session.CurrentCombatAssaultResult!;
+        var result = CurrentOccurrenceAssault(session) is { Result: not null, PostResultRetreat: null } repeat
+            ? repeat.Result : session.Pending is null && session.CurrentCombatAssaultResult is { } legacy
+                ? legacy : throw new InvalidOperationException("No collecting Retreat round is available.");
         return ($"sha256:{Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(result.SerializeCanonical()))}", result.StateVersion);
     }
 
@@ -3151,9 +3152,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || (predecessor.CurrentRepeatAssault is { Custody: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.Successor is null
-                : accepted.SuccessorSession?.CurrentCombatSuccessor is null))
+            || (CurrentOccurrenceAssault(predecessor) is { Custody: not null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.Successor is null
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatSuccessor is null))
             throw new ArgumentException("Accepted Combat successor required.",
                 nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
@@ -3206,9 +3207,9 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted ||
-            (predecessor.CurrentRepeatAssault is { PostResultRetreat: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.Settlement is null
-                : accepted.SuccessorSession?.CurrentCombatSettlement is null))
+            (CurrentOccurrenceAssault(predecessor) is { PostResultRetreat: not null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.Settlement is null
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatSettlement is null))
             throw new ArgumentException("Accepted native settlement required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -3221,10 +3222,10 @@ public static class CampaignHostAdapter
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         if (!accepted.IsAccepted
-            || (predecessor.CurrentRepeatAssault is { Settlement: not null }
-                ? accepted.SuccessorSession?.CurrentRepeatAssault?.Custody
+            || (CurrentOccurrenceAssault(predecessor) is { Settlement: not null }
+                ? CurrentOccurrenceAssault(accepted.SuccessorSession)?.Custody
                     is not { ChoiceKind: "not-required" }
-                : accepted.SuccessorSession?.CurrentCombatCustodyDisposition
+                : predecessor.Pending is not null || accepted.SuccessorSession?.CurrentCombatCustodyDisposition
                     is not { ChoiceKind: "not-required" }))
             throw new ArgumentException("Accepted no-custody completion required.",
                 nameof(accepted));

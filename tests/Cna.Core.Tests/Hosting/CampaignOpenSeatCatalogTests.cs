@@ -48,6 +48,26 @@ public sealed class CampaignOpenSeatCatalogTests
     }
 
     [Theory]
+    [InlineData(2, LandActorRole.FirstActingSide)]
+    [InlineData(2, LandActorRole.SecondActingSide)]
+    [InlineData(3, LandActorRole.FirstActingSide)]
+    [InlineData(3, LandActorRole.SecondActingSide)]
+    public void LaterStageCombatOwnerStagesAreResolvedFromExactPosition(int stage, LandActorRole role)
+    {
+        var positions = Cna1979LandSequence.CreateTurn(1).Where(position =>
+            position.OperationStage == stage && position.ActorRole == role && position.SegmentId == LandSegmentIds.Combat);
+        Assert.Equal(["combat-selection"], At(LandStepIds.PositionDetermination));
+        Assert.Equal(["retreat-before-assault"], At(LandStepIds.RetreatBeforeAssault));
+        Assert.Equal(["force-assignment"], At(LandStepIds.ForceAssignment));
+        Assert.Equal(["post-assault-retreat", "custody"], At(LandStepIds.CloseAssault));
+        Assert.Empty(At(LandStepIds.Barrage));
+        Assert.Empty(At(LandStepIds.AntiArmor));
+
+        IReadOnlyList<string> At(string step) => CampaignOpenSeatCatalog.StagesAt(
+            positions.Single(position => position.StepId == step), true)!;
+    }
+
+    [Theory]
     [InlineData(2)]
     [InlineData(13)]
     public void LaterTurnCatalogExposesOnlyTheTwoSupportedOwnerPositions(int gameTurn)

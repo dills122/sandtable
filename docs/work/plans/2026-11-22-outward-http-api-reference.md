@@ -130,18 +130,21 @@ authoritative completions:
 
 `CampaignDurableAuthorityJournalTests.StageEntryFirstSide.cs` verifies the actual HTTP declaration
 fence, read-only preamble preview, durable System advancement, reserve and movement-completion
-submission/retry/rejection, and cold replay to Breakdown. The movement endpoint returns a valid
-empty cut in this fixture: the retained owned-element ledger still reports operation stage 1, and
-the Core movement projection requires the current stage. This is a Core authority gap, not a Host
-permission to manufacture offers. No positive Stage 2 move is verified yet (D-B deferred).
+submission/retry/rejection, and cold replay to Breakdown. The movement endpoint originally
+returned an empty cut because the retained ledger still reported operation stage 1. The D-B
+ledger rollover now provides valid current-stage movement offers.
 `CampaignDurableAuthorityJournalTests.StageTwoHttp.cs` exercises a fresh campaign through Stage 1
 and both Stage 2 roles on the no-attack path, verifying read-only seat discovery and cold replay.
 The position-aware catalog selects candidates from the checkpoint rather than retained prior-role
 state. `CampaignDurableAuthorityJournalTests.StageThreeHttp.cs` extends that synthetic trace
 through both Stage 3 roles with cold replay and seat discovery, stopping at End of Turn for
 setups without an admitted later-turn policy.
-Positive Stage 2/3 moves remain unavailable in these fixtures (D-B); positive attack
-continuations and Reaction remain deferred (D-D and D-E).
+Later-stage movement offers are available after the per-stage ledger rollover (D-B).
+The existing combat owner and System kinds also apply to all four Stage 2/3 role
+occurrences; Selection continuation and seat discovery resolve the current occurrence.
+No wire names, accepted-step versions, or synthetic content identities change.
+`CampaignDurableAuthorityJournalTests.LaterStageCombatHttp.cs` exercises these
+occurrences over the public HTTP API. Later-stage Reaction remains rejected (D-E).
 For the opt-in turn-boundary synthetic setups, the same Host drain advances End of Turn and the
 successor prelude. The successor Stage 1 declaration uses `stage-entry-initiative-declaration`
 (contract 116); the read-only `stage-entry-reserve` opening uses the same owner cut as the earlier
