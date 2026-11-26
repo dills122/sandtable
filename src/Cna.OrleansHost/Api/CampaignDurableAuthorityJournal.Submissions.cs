@@ -537,14 +537,6 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 ? CampaignOwnerSubmissionResult.RuleNotImplemented()
                 : CampaignOwnerSubmissionResult.Rejected(
                     CampaignOwnerSubmissionResult.CoreRejectionCode(result.RejectionReason));
-        // Stage 2/3 only wire the voluntary finish; an assault pick would enter the Stage 1-bound
-        // Barrage/RBA chain, so it is rejected deterministically before anything is persisted.
-        if (selectionSlot is { } slot
-            && slot is not (CampaignCombatSelectionSlot.StageOneFirst or CampaignCombatSelectionSlot.StageOneSecond)
-            && !(slot is CampaignCombatSelectionSlot.StageTwoFirst or CampaignCombatSelectionSlot.StageThreeFirst
-                ? CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!)
-                : CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(result.SuccessorSession!)))
-            return CampaignOwnerSubmissionResult.RuleNotImplemented();
         if (kind == CampaignOwnerOpeningKind.CombatSelection && selectionSlot is null)
             return CampaignOwnerSubmissionResult.RuleNotImplemented();
         RbaRound? rbaRound = null;
@@ -744,6 +736,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // (CampaignNativeRepeatAssaultRuntime.ReplaySecond) and open the
         // defender's RBA round.
         else if (selectionSlot is CampaignCombatSelectionSlot.StageOneSecond
+                or CampaignCombatSelectionSlot.StageTwoSecond or CampaignCombatSelectionSlot.StageThreeSecond
             && CampaignHostAdapter.IsNativeSecondCombatSelectedAssault(result.SuccessorSession!))
         {
             var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);
@@ -760,6 +753,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // Guarded so a stale first-side "select-contact-assault" pick can
         // never alias onto a second-side submission.
         else if (selectionSlot is CampaignCombatSelectionSlot.StageOneFirst
+                or CampaignCombatSelectionSlot.StageTwoFirst or CampaignCombatSelectionSlot.StageThreeFirst
             && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
         {
             var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);

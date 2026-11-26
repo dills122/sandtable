@@ -152,6 +152,9 @@ public static class CampaignOpenSeatCatalog
             {
                 LandSegmentIds.Movement => StageEntryMove,
                 LandSegmentIds.Combat when position.StepId == LandStepIds.PositionDetermination => ["combat-selection"],
+                LandSegmentIds.Combat when position.StepId == LandStepIds.RetreatBeforeAssault => ["retreat-before-assault"],
+                LandSegmentIds.Combat when position.StepId == LandStepIds.ForceAssignment => ["force-assignment"],
+                LandSegmentIds.Combat when position.StepId == LandStepIds.CloseAssault => ["post-assault-retreat", "custody"],
                 LandSegmentIds.ReserveRelease => ["reserve-release", "cycle-control"],
                 _ => [],
             },
