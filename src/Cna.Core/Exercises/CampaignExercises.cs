@@ -7308,7 +7308,7 @@ public static partial class CampaignExercises
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 session.CurrentSnapshot.OperationStageOrders, session.CurrentContacts, side,
                 CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
-            if (movement.RequiresUnsupportedReaction(session.CurrentSnapshot.Setup.InitialGameTurn))
+            if (movement.RequiresUnsupportedReaction(CampaignGameTurn.IsInitialTurn(session)))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithSecondMove(movement, result, contacts);
@@ -7706,7 +7706,7 @@ public static partial class CampaignExercises
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 StageEntryOrders(session), session.CurrentContacts, side,
                 CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
-            if (movement.RequiresUnsupportedReaction(session.CurrentSnapshot.Setup.InitialGameTurn))
+            if (movement.RequiresUnsupportedReaction(CampaignGameTurn.IsInitialTurn(session)))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithStageEntrySecondMove(movement, result, contacts);
@@ -7806,7 +7806,7 @@ public static partial class CampaignExercises
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 StageEntryOrders(session), session.CurrentContacts, side,
                 CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
-            if (movement.RequiresUnsupportedReaction(session.CurrentSnapshot.Setup.InitialGameTurn))
+            if (movement.RequiresUnsupportedReaction(CampaignGameTurn.IsInitialTurn(session)))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithStageEntryMove(movement, result, contacts);
@@ -7952,7 +7952,7 @@ public static partial class CampaignExercises
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 ThirdStageOrders(session), session.CurrentContacts, side,
                 CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
-            if (movement.RequiresUnsupportedReaction(session.CurrentSnapshot.Setup.InitialGameTurn))
+            if (movement.RequiresUnsupportedReaction(CampaignGameTurn.IsInitialTurn(session)))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithThirdStageMove(movement, result, contacts);
@@ -8073,7 +8073,7 @@ public static partial class CampaignExercises
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 ThirdStageOrders(session), session.CurrentContacts, side,
                 CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
-            if (movement.RequiresUnsupportedReaction(session.CurrentSnapshot.Setup.InitialGameTurn))
+            if (movement.RequiresUnsupportedReaction(CampaignGameTurn.IsInitialTurn(session)))
                 return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithThirdStageSecondMove(movement, result, contacts);

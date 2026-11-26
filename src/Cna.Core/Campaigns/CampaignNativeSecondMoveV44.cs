@@ -20,9 +20,9 @@ internal sealed record CampaignNativeSecondMoveV44(
     // E4b (#655): keep the initial-turn Stage 1 second-side contract unchanged,
     // but refuse any other native move that would enter an unsupported Reaction.
     // The detached window already binds the actual turn/stage movement position.
-    internal bool RequiresUnsupportedReaction(int initialGameTurn) =>
+    internal bool RequiresUnsupportedReaction(bool isInitialTurn) =>
         ReactionWindow is { ReactingPosition.SuspendedMovementPosition: var position }
-        && (position.GameTurn != initialGameTurn || position.OperationStage != 1
+        && (!isInitialTurn || position.OperationStage != 1
             || position.ActorRole != LandActorRole.SecondActingSide);
 
     internal static string ActionIdFor(MoveElementAction offer) => "sha256:" + Convert.ToHexStringLower(

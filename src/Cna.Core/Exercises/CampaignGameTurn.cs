@@ -8,6 +8,9 @@ namespace Cna.Core.Exercises;
 // reconstructed. The frozen V11 setup and random stream remain unchanged.
 internal static class CampaignGameTurn
 {
+    internal static bool IsInitialTurn(ExerciseSession session) =>
+        !session.CurrentHistory.Any(value => value is CampaignNativeEndOfTurnV55);
+
     internal static int CurrentGameTurn(ExerciseSession session) =>
         CurrentGameTurn(session.CurrentSnapshot, session.CurrentHistory);
 

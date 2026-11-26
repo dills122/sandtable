@@ -24,6 +24,7 @@ public sealed class TurnBoundaryIntegrationTests
         var lastInitial = samples.Single(sample => sample.Label == "op3.second.post-combat-pass-3").Session;
         var terminalPass = Assert.IsType<CampaignNativePostCombatPassV42>(lastInitial.CurrentHistory[^1]);
         var end = Assert.IsType<CampaignNativeEndOfTurnV55>(boundary[0].Session.CurrentHistory[^1]);
+        Assert.True(CampaignGameTurn.IsInitialTurn(lastInitial));
         Assert.Equal(initialTurn, end.GameTurn);
         Assert.Equal(initialTurn + 1, end.NextGameTurn);
         Assert.Equal(terminalPass.WorldHash, end.WorldHash);
@@ -32,6 +33,7 @@ public sealed class TurnBoundaryIntegrationTests
         {
             var session = sample.Session;
             Assert.IsType<TurnBoundaryPending>(session.Pending);
+            Assert.False(CampaignGameTurn.IsInitialTurn(session));
             Assert.Equal(initialTurn + 1, CampaignGameTurn.CurrentGameTurn(session));
             var info = CampaignGameTurn.BoundaryInfo(session.CurrentHistory[^1]);
             Assert.Equal(sample.Label == "turn.end" ? initialTurn : initialTurn + 1, info.GameTurn);
