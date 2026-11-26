@@ -1,7 +1,8 @@
 namespace Cna.LoadHarness;
 
 // Admission is across all workers, including setup and discovery; stop admitting requests
-// when a configured cliff is crossed. Already admitted requests finish normally.
+// when a configured cliff is crossed. Already admitted requests finish normally;
+// read-only post-campaign verification still runs within the same concurrency cap.
 internal sealed class HttpRunControl(HarnessConfig config, CancellationTokenSource stop) : IDisposable
 {
     private readonly SemaphoreSlim slots = new(config.MaxInflight);
@@ -15,12 +16,12 @@ internal sealed class HttpRunControl(HarnessConfig config, CancellationTokenSour
 
     internal bool StoppedOnCliff => reason is not null;
 
-    internal async Task EnterAsync()
+    internal async Task EnterAsync(bool verification = false)
     {
-        await slots.WaitAsync(stop.Token).ConfigureAwait(false);
+        await slots.WaitAsync(verification ? CancellationToken.None : stop.Token).ConfigureAwait(false);
         lock (gate)
         {
-            if (stop.IsCancellationRequested)
+            if (!verification && stop.IsCancellationRequested)
             {
                 slots.Release();
                 stop.Token.ThrowIfCancellationRequested();

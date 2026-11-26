@@ -20,6 +20,8 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
     private readonly string prefix;
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
+    internal bool CampaignCreated { get; private set; }
+
     internal HttpDriver(HarnessConfig config, Uri address, string secret, HttpRunControl control,
         Action<string, string, string, string, double> record, string prefix)
     {
@@ -44,6 +46,7 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
             request.ScenarioId, timing = timingJson.RootElement,
         }, root => root.GetProperty("campaignId").GetString() == id ? true : throw new JsonException("Campaign mismatch."),
             "create", operatorCall: true, expected: HttpStatusCode.Created).ConfigureAwait(false);
+        CampaignCreated = true;
 
         var seats = new List<CampaignSeatCredential>();
         foreach (var audience in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
@@ -123,7 +126,7 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
     private async Task<T> Send<T>(string path, object? body, Func<JsonElement, T> parse, string operation,
         string audience = "", string stage = "", bool operatorCall = false, HttpStatusCode expected = HttpStatusCode.OK)
     {
-        await control.EnterAsync().ConfigureAwait(false);
+        await control.EnterAsync(verification: operation == "verify").ConfigureAwait(false);
         var watch = Stopwatch.StartNew();
         var outcome = "error";
         try

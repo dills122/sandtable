@@ -181,6 +181,91 @@ class HarnessTests(unittest.TestCase):
             self.assertEqual(fingerprints['campaigns'][0]['stateFingerprint'], campaign['stateFingerprint'])
             self.assertIsNotNone(fingerprints['aggregateStateFingerprint'])
 
+    def test_verify_state_after_owner_failure(self):
+        fingerprint = {'chainHeadHash': 'a' * 64, 'reconstructionHash': 'b' * 64,
+                       'eventCount': 1, 'canonicalByteCount': 123,
+                       'positionId': 'test-position', 'gameTurn': 1}
+        for mode in ('unsupported', 'discovery', 'grant', 'cliff', 'unverified', 'verify-http-error', 'create'):
+            with self.subTest(mode=mode):
+                observed = []
+
+                class Handler(http.server.BaseHTTPRequestHandler):
+                    def do_POST(self):
+                        if self.headers.get('Transfer-Encoding') == 'chunked':
+                            chunks = []
+                            while size := int(self.rfile.readline().strip(), 16):
+                                chunks.append(self.rfile.read(size))
+                                self.rfile.readline()
+                            self.rfile.readline()
+                            body = json.loads(b''.join(chunks))
+                        else:
+                            body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                        parts = self.path.strip('/').split('/')
+                        route = '/'.join(parts[4:])
+                        if self.path == '/api/v2/campaigns/':
+                            observed.append(body['campaignId'])
+                            self.respond(503 if mode == 'create' else 201,
+                                         {'campaignId': body['campaignId']})
+                        elif route.startswith('grants/'):
+                            grant = {'campaignId': parts[3], 'audience': parts[-1], 'epoch': 1,
+                                     'secret': 'test-grant', 'expiresUnixMs': 100}
+                            self.respond(503 if mode == 'grant' else 200, {'grant': grant})
+                        elif route == 'seats':
+                            self.respond(200, {'credential': body['grant']})
+                        elif route == 'openings/open' and mode == 'unsupported':
+                            self.respond(200, {'campaignId': parts[3], 'audience': body['credential']['audience'],
+                                               'open': [{'openingStage': 'unsupported', 'actionStage': 'unsupported',
+                                                         'actingElementIds': ['test-element'], 'ruleNotImplemented': True}]})
+                        elif route == 'openings/open':
+                            self.respond(503, {})
+                        else:
+                            self.respond(404, {})
+
+                    def do_GET(self):
+                        observed.append((self.path, self.headers.get('X-Sandtable-Operator'),
+                                         self.headers.get('Sec-Fetch-Site')))
+                        self.respond(503 if mode == 'verify-http-error' else 200,
+                                     {'isVerified': mode != 'unverified', **fingerprint})
+
+                    def respond(self, status, value):
+                        data = json.dumps({'contractVersion': 2, **value}).encode()
+                        self.send_response(status)
+                        self.send_header('Content-Length', str(len(data)))
+                        self.end_headers()
+                        self.wfile.write(data)
+
+                    def log_message(self, *args):
+                        pass
+
+                with http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server, tempfile.TemporaryDirectory() as tmp:
+                    thread = threading.Thread(target=server.serve_forever, daemon=True)
+                    thread.start()
+                    try:
+                        output = pathlib.Path(tmp) / 'run'
+                        result = self.run_harness(output, '--driver', 'http', '--verify-state',
+                                                  '--base-url', f'http://127.0.0.1:{server.server_port}', '--until', 'turn2-reserve',
+                                                  *(['--stop-error-rate', '0'] if mode == 'cliff' else []),
+                                                  env={**os.environ, 'SANDTABLE_LOAD_OPERATOR_SECRET': 'test-only'})
+                        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                        summary = json.loads((output / 'summary.json').read_text())
+                        failure = 'InvalidOperationException' if mode == 'unsupported' else 'HttpRequestException'
+                        self.assertEqual(summary['outcomes'], {f'error:{failure}': 1})
+                        expected = None if mode in ('unverified', 'verify-http-error', 'create') else fingerprint
+                        self.assertEqual(summary['perCampaign'][0]['stateFingerprint'], expected)
+                        fingerprints = json.loads((output / 'fingerprints.json').read_text())
+                        self.assertEqual(fingerprints['campaigns'][0]['stateFingerprint'], expected)
+                        self.assertEqual(fingerprints['aggregateStateFingerprint'] is None, expected is None)
+                        diagnostics = [json.loads(line) for line in (output / 'diagnostics.jsonl').read_text().splitlines()]
+                        verify = [row['outcome'] for row in diagnostics if row['operation'] == 'verify']
+                        self.assertEqual(verify, {'create': [], 'unverified': ['verification-failed'],
+                                                  'verify-http-error': ['http-503']}.get(mode, ['ok']))
+                        self.assertEqual(observed[1:], [] if mode == 'create' else
+                                         [(f'/api/v2/campaigns/{observed[0]}/verification', 'test-only', 'same-origin')])
+                        self.assertEqual(summary['stoppedOnCliff'], mode == 'cliff')
+                    finally:
+                        server.shutdown()
+                        thread.join()
+
     def test_invalid_l3_options(self):
         with tempfile.TemporaryDirectory() as tmp:
             for args in [('--store', 'unknown'), ('--until', 'invalid'), ('--hot-pool', '0')]:
