@@ -206,6 +206,9 @@ public sealed class PendingFromCursorSpikeTests
         {
             var turn = Cna1979LandSequenceV4.CreateTurn(sample.GameTurn);
             Assert.Equal(sample.PendingName, PendingFromCursor.Derive(turn, sample.PositionId, LastEvent.CompletedPosition, false));
+            var position = turn.Single(value => value.PositionId == sample.PositionId);
+            Assert.Equal(CampaignOpenSeatCatalog.StagesAt(position, false),
+                CampaignOpenSeatCatalog.CandidatesFor(sample.Session).Stages);
         }
     }
 

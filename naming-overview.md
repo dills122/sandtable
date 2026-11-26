@@ -366,7 +366,9 @@ Observations and Actions. Current capability status belongs to the
 
 Turn boundaries use the plain technical names `EndOfTurn`, `TurnInitiative`, and
 `NoObligationTurnPhase` for native events. `TurnBoundaryPending` is an in-process Core
-continuation, not a separate authority or transport. The existing Umpire remains authoritative.
+continuation, not a separate authority or transport. The Host reuses the existing stage-entry
+opening names and assigns additive accepted-step versions to the boundary completions. The
+existing Umpire remains authoritative.
 
 ## Simulation and evaluation
 

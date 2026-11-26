@@ -47,6 +47,24 @@ public sealed class CampaignOpenSeatCatalogTests
         }
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(13)]
+    public void LaterTurnCatalogExposesOnlyTheTwoSupportedOwnerPositions(int gameTurn)
+    {
+        foreach (var position in Cna1979LandSequence.CreateTurn(gameTurn))
+        {
+            var expected = position.PositionId switch
+            {
+                "land.position.operation-1.initiative-declaration" => new[] { "stage-entry-initiative-declaration" },
+                "land.position.operation-1.first-player.reserve-designation" => new[] { "stage-entry-reserve" },
+                _ => Array.Empty<string>(),
+            };
+            Assert.Equal(expected, CampaignOpenSeatCatalog.StagesAt(position, false));
+            Assert.All(expected, stage => Assert.Contains(stage, CampaignOpenSeatCatalog.ReferencedStageNames));
+        }
+    }
+
     [Fact]
     public void EveryRowNamesStagesOrAnExceptionReasonNeverBothNeverNeither()
     {

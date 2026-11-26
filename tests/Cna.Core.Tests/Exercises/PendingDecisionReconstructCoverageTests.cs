@@ -274,7 +274,7 @@ internal static class PendingFixtures
         new Dictionary<Type, Func<ExerciseSession>>
         {
             [typeof(TurnBoundaryPending)] = () => Sequencing.SequencingScenarios.All.SelectMany(s => s.Samples)
-                .First(sample => sample.Session.Pending is TurnBoundaryPending).Session,
+                .Last(sample => sample.Session.Pending is TurnBoundaryPending).Session,
         };
 
     private static readonly Lazy<IReadOnlyDictionary<Type, Func<ExerciseSession>>> Lazy = new(Build);

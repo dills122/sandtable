@@ -152,7 +152,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                         or CampaignHostAcceptedStep.NativeStageThreeBreakdownKind
                         or CampaignHostAcceptedStep.NativeStageThreeSecondBreakdownKind)
                         return session;
-                    throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
+                    if (native.Result.RejectionReason == CampaignActionSubmissionRejectionReason.RuleNotImplemented)
+                        throw new CampaignBoundarySystemStepRejectedException(native.Kind);
+                    throw new InvalidOperationException($"Core rejected forced System step {native.Kind}: {native.Result.RejectionReason}.");
                 }
                 session = native.Result.SuccessorSession!;
                 continue;
@@ -171,3 +173,5 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
     }
 }
+
+internal sealed class CampaignBoundarySystemStepRejectedException(string kind) : InvalidOperationException($"System step {kind} is not implemented.");

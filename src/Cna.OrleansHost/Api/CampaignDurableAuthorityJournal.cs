@@ -671,7 +671,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                         or CampaignHostAcceptedStep.NativeStageThreeBreakdownKind
                         or CampaignHostAcceptedStep.NativeStageThreeSecondBreakdownKind)
                         return head;
-                    throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
+                    if (native.Result.RejectionReason == CampaignActionSubmissionRejectionReason.RuleNotImplemented)
+                        throw new CampaignBoundarySystemStepRejectedException(native.Kind);
+                    throw new InvalidOperationException($"Core rejected forced System step {native.Kind}: {native.Result.RejectionReason}.");
                 }
                 var command = CampaignHostAdapter.StageEntrySystemCommand(head.Session, native.Result);
                 head = PersistAccepted(connection, transaction, campaignId, head,

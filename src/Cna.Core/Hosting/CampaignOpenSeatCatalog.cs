@@ -42,7 +42,7 @@ public static class CampaignOpenSeatCatalog
         {
             // Stage 3 second side.
             [typeof(ThirdStageSecondCombatSelectionPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
-            [typeof(TurnBoundaryPending)] = CampaignOpenSeatRow.Unwired("Turn-start Host openings are deferred to B5."),
+            [typeof(TurnBoundaryPending)] = CampaignOpenSeatRow.Stages("stage-entry-initiative-declaration", "stage-entry-reserve"),
             [typeof(ThirdStageSecondAssaultPending)] = CampaignOpenSeatRow.Stages(StageEntryTail),
             [typeof(ThirdStageSecondNoAttackPending)] = CampaignOpenSeatRow.SystemOnly("No-attack auto-completes."),
             [typeof(ThirdStageSecondBreakdownPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
@@ -134,8 +134,15 @@ public static class CampaignOpenSeatCatalog
     // null means use the subtype row; an empty list means no wired owner opening at this cursor.
     internal static IReadOnlyList<string>? StagesAt(LandSequencePosition position, bool isFirstTurn)
     {
-        if (isFirstTurn && position.PhaseId == LandPhaseIds.EndOfTurn) return [];
-        if (!isFirstTurn || position.OperationStage < 2) return null;
+        if (position.PhaseId == LandPhaseIds.EndOfTurn) return [];
+        if (!isFirstTurn)
+            return position.OperationStage == 1 ? position.PhaseId switch
+            {
+                LandPhaseIds.InitiativeDeclaration => ["stage-entry-initiative-declaration"],
+                LandPhaseIds.ReserveDesignation when position.ActorRole == LandActorRole.FirstActingSide => ["stage-entry-reserve"],
+                _ => [],
+            } : [];
+        if (position.OperationStage < 2) return null;
         if (position.PhaseId == LandPhaseIds.InitiativeDeclaration) return ["stage-entry-initiative-declaration"];
         if (PendingOccurrenceTable.Find(position.OperationStage, position.ActorRole, isFirstTurn) is null) return [];
         return position.PhaseId switch

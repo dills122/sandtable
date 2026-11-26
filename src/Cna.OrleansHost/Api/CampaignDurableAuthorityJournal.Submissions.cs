@@ -263,13 +263,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         using var transaction = connection.BeginTransaction(deferred: false);
         var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
             ?? throw new UnauthorizedAccessException("Seat credential rejected.");
-        // UX-001 (PR #504): same drain as the query side -- see
-        // CampaignDurableAuthorityJournal.cs's DrainPendingSystemSteps remarks. A submission
-        // against a stale owner_openings row (because System steps advanced since it was
-        // queried) still fails the usual revision/visible-cut checks below, exactly as any
-        // other authority advance between query and submit already does.
-        var head = DrainPendingSystemSteps(connection, transaction, seat.CampaignId,
-            verifiedHead ?? Load(connection, transaction, seat.CampaignId));
+        // Validate retained authority before checking an accepted retry. A retry must return
+        // its original receipt even if the next System step cannot be completed.
+        var head = verifiedHead ?? Load(connection, transaction, seat.CampaignId);
         if (kind == CampaignOwnerOpeningKind.ForceAssignment && head.Timing is null)
             return CampaignOwnerSubmissionResult.Rejected(CampaignOwnerSubmissionResult.ForceRoundUnavailableCode);
         if (string.IsNullOrWhiteSpace(actingElementId) || actingElementId.Length > 128
@@ -309,6 +305,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 return CampaignOwnerSubmissionResult.Accepted(retainedReceipt);
             }
         }
+
+        // UX-001 (PR #504): new submissions still drain before checking the current opening.
+        // If System authority has advanced, the ordinary revision/visible-cut fences apply.
+        head = DrainPendingSystemSteps(connection, transaction, seat.CampaignId, head);
 
         ForceRound? forceRound = null;
         if (kind == CampaignOwnerOpeningKind.ForceAssignment)

@@ -64,6 +64,23 @@ public sealed class PendingEquivalenceOracleTests
     }
 
     [Fact]
+    public void BoundaryDiscoveryUsesCursorRatherThanTheSharedPendingSubtype()
+    {
+        var rows = Rows().Where(row => row.Actual == nameof(TurnBoundaryPending)).ToArray();
+        Assert.NotEmpty(rows);
+        foreach (var row in rows)
+        {
+            var expected = row.PositionId switch
+            {
+                "land.position.operation-1.initiative-declaration" => new[] { "stage-entry-initiative-declaration" },
+                "land.position.operation-1.first-player.reserve-designation" => new[] { "stage-entry-reserve" },
+                _ => Array.Empty<string>(),
+            };
+            Assert.Equal(expected, CampaignOpenSeatCatalog.CandidatesFor(row.Session).Stages);
+        }
+    }
+
+    [Fact]
     public void EverySubtypeIsDerivableOrExceptionListedAndObservedOrNamedNotDriven()
     {
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
