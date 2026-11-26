@@ -1,5 +1,6 @@
 using Cna.Core.Exercises;
 using Cna.Core.Exercises.Sequencing;
+using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Xunit;
 
@@ -46,6 +47,17 @@ public sealed class PendingEquivalenceOracleTests
             File.WriteAllLines(dump + ".mismatch", mismatches.Append(
                 $"rows={rows.Count} fixtures={rows.Select(r => r.Fixture).Distinct().Count()} distinctSubtypes={rows.Select(r => r.Actual).Where(x => x is not null).Distinct().Count()}"));
         Assert.Empty(mismatches);
+    }
+
+    [Theory]
+    [InlineData("land.position.operation-2.initiative-declaration", "stage-entry-initiative-declaration")]
+    [InlineData("land.position.operation-2.first-player.reserve-designation", "stage-entry-reserve")]
+    [InlineData("land.position.operation-2.second-player.reserve-designation", "stage-entry-reserve")]
+    public void DiscoveryUsesTheCursorAtStageTwoBoundaries(string position, string stage)
+    {
+        var rows = Rows().Where(row => row.PositionId == position).ToArray();
+        Assert.NotEmpty(rows);
+        Assert.All(rows, row => Assert.Equal([stage], CampaignOpenSeatCatalog.CandidatesFor(row.Session).Stages));
     }
 
     [Fact]

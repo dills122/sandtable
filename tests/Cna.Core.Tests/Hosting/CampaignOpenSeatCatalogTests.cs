@@ -1,5 +1,6 @@
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
+using Cna.Core.Rules;
 
 namespace Cna.Core.Tests.Hosting;
 
@@ -26,6 +27,18 @@ public sealed class CampaignOpenSeatCatalogTests
         var stale = CampaignOpenSeatCatalog.Rows.Keys.Where(type => !subtypes.Contains(type))
             .Select(type => type.Name).ToArray();
         Assert.True(stale.Length == 0, "CampaignOpenSeatCatalog rows for removed subtypes: " + string.Join(", ", stale));
+    }
+
+    [Fact]
+    public void EveryCursorStageIsRegisteredAndStageThreeIsNotAdvertisedYet()
+    {
+        foreach (var position in Cna1979LandSequence.CreateTurn(1))
+        {
+            var stages = CampaignOpenSeatCatalog.StagesAt(position, true);
+            if (stages is null) continue;
+            Assert.All(stages, stage => Assert.Contains(stage, CampaignOpenSeatCatalog.ReferencedStageNames));
+            if (position.OperationStage == 3) Assert.Empty(stages);
+        }
     }
 
     [Fact]

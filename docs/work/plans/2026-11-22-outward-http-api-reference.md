@@ -88,17 +88,16 @@ appears throughout `CampaignDurableAuthorityJournalTests.cs`, e.g. lines
 
 ## Experimental / in-flux
 
-### Stage 2 entry and first-side owner openings
+### Stage 2 entry and both-side owner openings
 
 The Stage 2 declaration is available only at `land.position.operation-2.initiative-declaration`,
 to the resolved initiative holder. Weather, Organization, Naval Convoy Arrival, Fleet Assignment,
 and Fleet Repair then auto-drain in the durable owner-opening path; the read-only open-for-seat
-route previews the same transitions without committing them. The first-side movement completion
-also attempts its existing obligation-free Breakdown transition, but does not create or arm a
-selection round until Stage 2 selection and its timeout continuation are wired. The future V46
-round binding is the canonical event digest and state version, as verified against the in-flight
-stage-aware Core changes. None of these System steps is a
-player or operator HTTP action.
+route previews the same transitions without committing them. Each side's movement completion
+attempts its existing obligation-free Breakdown transition and arms that occurrence's Selection
+round. The V46 round binding is the canonical event digest and state version. No-attack and
+empty Reserve Release then use the existing slot-dispatched System continuations from W4.
+None of these System steps is a player or operator HTTP action.
 
 | Stage / opening kind | `actingElementId` | Core adapter query / submit |
 | --- | --- | --- |
@@ -106,21 +105,25 @@ player or operator HTTP action.
 | `stage-entry-movement` / `StageEntryMovement` | own independently placed non-vehicle element ID | `QueryStageEntryMovementOwnerDraft` / `SubmitStageEntryMovement` |
 | `stage-entry-movement-completion` / `StageEntryMovementCompletion` | `land.stage-entry-movement-completion` | `QueryStageEntryMovementCompletionOwnerDraft` / `SubmitStageEntryMovementCompletion` |
 
-Only the first acting side may open or submit these kinds. The movement cut uses visible contract
+Only the currently acting side may open or submit these kinds. Both roles share the same wire
+names: the checkpoint position and occurrence table select the matching authority. The movement cut uses visible contract
 version 3, including the position ID to distinguish it from retained Stage 1 per-element cuts;
 the reserve and completion cuts use the existing native V43/V45 shape. Accepted-step contract
-versions 125–130 identify the six System transitions, and 131–133 identify the three owner kinds.
+versions 125–130 identify the six first-side/preamble System transitions, and 131–133 identify
+the three shared owner kinds. Version 134 identifies second-side Breakdown; the other four
+role-specific no-attack and Reserve Release transitions use the existing W4 replay contracts.
 
 `CampaignDurableAuthorityJournalTests.StageEntryFirstSide.cs` verifies the actual HTTP declaration
 fence, read-only preamble preview, durable System advancement, reserve and movement-completion
 submission/retry/rejection, and cold replay to Breakdown. The movement endpoint returns a valid
 empty cut in this fixture: the retained owned-element ledger still reports operation stage 1, and
 the Core movement projection requires the current stage. This is a Core authority gap, not a Host
-permission to manufacture offers. No positive Stage 2 move is verified yet. Combat selection
-and its timeout round remain unwired: the current round-binding and timeout methods in
-`CampaignExercises` only dispatch to the retained Stage 1 selection state. The complete two-side
-Stage 2 HTTP proof remains pending both follow-ups. Maproom's fixed stage catalog does not yet
-list the three new stages; this Host-only slice does not change that client.
+permission to manufacture offers. No positive Stage 2 move is verified yet (D-B deferred).
+`CampaignDurableAuthorityJournalTests.StageTwoHttp.cs` exercises a fresh campaign through Stage 1
+and both Stage 2 roles on the no-attack path, verifying read-only seat discovery and cold replay.
+The position-aware catalog selects candidates from the checkpoint rather than retained prior-role
+state. Stage 3 Host openings, positive attack continuations, and Reaction remain deferred.
+Maproom's fixed stage catalog is outside this Host-only slice.
 
 Discovery correction for #637: the catalog's rows describe retained event types, not always the
 next action. Include the successor openings after the first and second sides' close-out passes,

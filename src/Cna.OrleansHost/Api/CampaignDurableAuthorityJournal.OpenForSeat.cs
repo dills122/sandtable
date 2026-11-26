@@ -147,7 +147,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             {
                 if (!native.Result.IsAccepted)
                 {
-                    if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                    if (native.Kind is CampaignHostAcceptedStep.NativeStageEntryBreakdownKind
+                        or CampaignHostAcceptedStep.NativeStageEntrySecondBreakdownKind)
                         return session;
                     throw new InvalidOperationException("Core rejected its own forced Stage Entry preamble step.");
                 }

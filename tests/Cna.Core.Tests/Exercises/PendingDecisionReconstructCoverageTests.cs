@@ -4,6 +4,7 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
@@ -31,9 +32,8 @@ public sealed class PendingDecisionReconstructCoverageTests
         + "together with the non-empty Assault runtime, so Pending always resolves to XAssaultPending. "
         + "The no-attack event is tested through that observable Assault head.";
     private const string StageEntryMoveReason =
-        "No fixture: this driver only reaches movement through the host owner-draft API, which exists "
-        + "for the Operation Stage 1 second side only. Stage Entry Move needs a hand-built movement cut; "
-        + "follow-up fixture, one line in PendingFixtures.ExtraFixtures.";
+        "No fixture: the retained movement ledger is still operation stage 1, so the later-stage "
+        + "owner cuts have no move offers. Ledger rollover is deferred (D-B).";
 
     private static readonly Dictionary<Type, string> UnreachableAllowList = new()
     {
@@ -100,6 +100,10 @@ public sealed class PendingDecisionReconstructCoverageTests
         Assert.Equal(typeName, session.Pending!.GetType().Name);
         var result = CampaignExercises.Reconstruct(session);
         Assert.True(result.IsVerified, typeName + ": " + result.FailureReason);
+        // Discovery must be derivable at every reconstructable subtype, even when the
+        // retained type describes the prior position and the cursor has crossed a boundary.
+        var candidates = CampaignOpenSeatCatalog.CandidatesFor(session);
+        Assert.All(candidates.Stages, stage => Assert.Contains(stage, CampaignOpenSeatCatalog.ReferencedStageNames));
     }
 
     [Theory]
