@@ -86,7 +86,7 @@ public static class CampaignOpenSeatCatalog
             [typeof(SecondCombatSelectionPending)] = CampaignOpenSeatRow.Stages(CombatChain),
             [typeof(SecondBreakdownPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
             [typeof(SecondMovementCompletionPending)] = CampaignOpenSeatRow.SystemOnly("Breakdown is a System step the Host auto-drains."),
-            [typeof(SecondMovePending)] = CampaignOpenSeatRow.Stages("second-movement", "second-movement-completion"),
+            [typeof(SecondMovePending)] = CampaignOpenSeatRow.Stages("second-movement", "second-movement-completion", "reaction"),
             [typeof(SecondReservePending)] = CampaignOpenSeatRow.Stages("second-reserve", "second-movement", "second-movement-completion"),
             // Stage 1 -> 2 entry-bridge preamble.
             [typeof(NoObligationFleetRepairPending)] = CampaignOpenSeatRow.Stages("stage-entry-reserve"),
