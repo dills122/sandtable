@@ -35,7 +35,7 @@ internal sealed class HttpRunControl(HarnessConfig config, CancellationTokenSour
         {
             inflight--;
             calls++;
-            if (outcome != "ok" && outcome != "unavailable") errors++;
+            if (outcome is not ("ok" or "unavailable" or "reaction-refused")) errors++;
             if (operation == "submit" && outcome == "ok" && config.StopSubmitP95Ms is { } limit)
             {
                 var index = submits.BinarySearch(elapsedMs);

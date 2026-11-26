@@ -4,14 +4,15 @@ namespace Cna.LoadHarness;
 
 internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSeed, int MaxStepsPerCampaign,
     string Output, string Store, string Until, int HotPool, string Driver, Uri? BaseUrl,
-    int RampSeconds, int ThinkMsMin, int ThinkMsMax, int MaxInflight, double? StopSubmitP95Ms, double? StopErrorRate, bool VerifyState = false)
+    int RampSeconds, int ThinkMsMin, int ThinkMsMax, int MaxInflight, double? StopSubmitP95Ms, double? StopErrorRate,
+    string[] RequireCoverage, bool VerifyState = false)
 {
     internal const string Usage = "Usage: cna-load --output <new-directory> [--campaigns 1..16 (inproc) or 1..100 (http)] " +
-        "[--policy first|last|random-legal] [--root-seed 7] [--max-steps-per-campaign 50|112] " +
+        "[--policy first|last|random-legal|random-legal-full] [--root-seed 7] [--max-steps-per-campaign 50|112|512] " +
         "[--store sqlite|postgres] [--until stage2|turn2-reserve] [--hot-pool 16] " +
         "[--driver inproc|http] [--base-url http://127.0.0.1:port] [--ramp-seconds 0] " +
         "[--think-ms-min 0] [--think-ms-max 0] [--max-inflight 16] " +
-        "[--stop-submit-p95-ms ms] [--stop-error-rate fraction] [--verify-state]";
+        "[--stop-submit-p95-ms ms] [--stop-error-rate fraction] [--require-coverage moves,attacks] [--verify-state]";
 
     internal static HarnessConfig Parse(string[] args)
     {
@@ -27,7 +28,7 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
                 continue;
             }
             if (i + 1 == args.Length || args[i] is not ("--output" or "--campaigns" or "--policy" or "--root-seed" or "--max-steps-per-campaign" or "--store" or "--until" or "--hot-pool" or "--driver" or "--base-url" or "--ramp-seconds"
-                or "--think-ms-min" or "--think-ms-max" or "--max-inflight" or "--stop-submit-p95-ms" or "--stop-error-rate")
+                or "--think-ms-min" or "--think-ms-max" or "--max-inflight" or "--stop-submit-p95-ms" or "--stop-error-rate" or "--require-coverage")
                 || !options.TryAdd(args[i], args[i + 1]))
                 throw new ArgumentException("Unknown, duplicate or missing option: " + args[i]);
             i += 2;
@@ -39,11 +40,11 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
         if (store is not ("sqlite" or "postgres")) throw new ArgumentException("Invalid --store.");
         var until = options.GetValueOrDefault("--until", "stage2");
         if (until is not ("stage2" or "turn2-reserve")) throw new ArgumentException("Invalid --until.");
-        var stepLimit = until == "stage2" ? 50 : 112;
+        var policy = options.GetValueOrDefault("--policy", "last");
+        if (policy is not ("first" or "last" or "random-legal" or "random-legal-full")) throw new ArgumentException("Invalid --policy.");
+        var stepLimit = policy == "random-legal-full" ? 512 : until == "stage2" ? 50 : 112;
         var steps = ParseInt("--max-steps-per-campaign", 1, stepLimit, stepLimit.ToString(CultureInfo.InvariantCulture));
         var hotPool = ParseInt("--hot-pool", 1, 16, "16");
-        var policy = options.GetValueOrDefault("--policy", "last");
-        if (policy is not ("first" or "last" or "random-legal")) throw new ArgumentException("Invalid --policy.");
         if (!ulong.TryParse(options.GetValueOrDefault("--root-seed", "7"), NumberStyles.None,
                 CultureInfo.InvariantCulture, out var seed)) throw new ArgumentException("Invalid --root-seed.");
         if (!options.TryGetValue("--output", out var output) || string.IsNullOrWhiteSpace(output))
@@ -68,9 +69,12 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
         var minThink = ParseInt("--think-ms-min", 0, 60000, "0");
         var maxThink = ParseInt("--think-ms-max", minThink, 60000, minThink.ToString(CultureInfo.InvariantCulture));
         var maxInflight = ParseInt("--max-inflight", 1, 100, "16");
+        var required = options.TryGetValue("--require-coverage", out var requirement) ? requirement.Split(',') : [];
+        if (required.Any(value => value is not ("moves" or "attacks")) || required.Distinct().Count() != required.Length)
+            throw new ArgumentException("Invalid --require-coverage; expected moves,attacks.");
         return new(campaigns, policy, seed, steps, output, store, until, hotPool, driver, baseUrl,
             ramp, minThink, maxThink, maxInflight, Threshold("--stop-submit-p95-ms", double.MaxValue),
-            Threshold("--stop-error-rate", 1, allowZero: true), verifyState);
+            Threshold("--stop-error-rate", 1, allowZero: true), required, verifyState);
 
         double? Threshold(string key, double max, bool allowZero = false)
         {

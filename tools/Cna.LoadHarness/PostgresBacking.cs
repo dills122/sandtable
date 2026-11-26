@@ -57,6 +57,18 @@ internal sealed class PostgresBacking(int hotPool) : IAsyncDisposable
         return new CampaignDurableAuthorityJournalStore(backend);
     }
 
+    internal async Task<byte[][]> ReadCanonicalEventsAsync(string campaignId)
+    {
+        using var query = documentStore!.QuerySession();
+        var events = await query.Events.FetchStreamAsync(campaignId).ConfigureAwait(false);
+        return events.Select(value => value.Data switch
+        {
+            CampaignGenesisEvent genesis => genesis.CreationEvent,
+            CampaignAcceptedStepEvent accepted => accepted.CanonicalEvent,
+            _ => throw new InvalidOperationException("Unexpected campaign stream envelope."),
+        }).ToArray();
+    }
+
     internal async Task<int> CountConnectionsAsync(CancellationToken cancellationToken)
     {
         // Monitor from the administrative database without adding a connection to the hot pool.

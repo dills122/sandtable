@@ -50,6 +50,76 @@ from a `--campaigns 1` run. The output directory must not already exist.
   incomplete campaign(s); exit 2 means invalid CLI configuration. Ctrl+C stops
   at the next owner step and records incomplete campaigns where possible.
 
+## Full owner-action bot (Bot S1)
+
+```sh
+dotnet artifacts/bin/Cna.LoadHarness/release/Cna.LoadHarness.dll \
+  --policy random-legal-full --until turn2-reserve --root-seed 7 \
+  --require-coverage moves,attacks --output /tmp/full-bot
+```
+
+`random-legal-full` samples uniformly from the union of all currently advertised
+owner refs, ordered by audience, action stage, acting element and original choice
+index. It uses the campaign's System controller entry in the Runner seed ledger
+with its own SplitMix64 stream (separate from HTTP pacing). Unlike the checkpoint
+policies it does not skip optional movement, constrain Reserve choices, or prefer
+no-attack combat. The accepted-step limit is 512 by default for this policy; an
+explicit step limit bounds incomplete runs. Existing policies, defaults, manifest
+and decision-fingerprint encoding are unchanged.
+
+A submit refusal with code `rule-not-implemented` (HTTP 409, currently the known
+later-stage Reaction gap #655) is counted as `reactionRefused`, not an error.
+The bot removes that exact candidate from the current pool; completion/finish
+choices remain eligible. It samples the remaining pool until one action succeeds
+or the pool is exhausted (`wedge`). Other rejections, unsupported discovery, empty
+discovery, checkpoint/replay failures, and step-limit exhaustion fail the run.
+Locally launched full-policy campaigns also verify replay on exit, including
+partial campaigns; this post-run diagnostic never drives owner choice. Attached
+HTTP mode retains its public-checkpoint-only evidence boundary unless explicitly
+using L5 `--verify-state`; that option adds a state fingerprint, not local
+canonical journal position coverage.
+
+Full-policy `summary.json` includes aggregate and per-campaign `coverage`:
+accepted moves, visible move CP cost, attack selections, combat-step counts and
+choice-kind counts, Reaction refusals, finish/completion actions, and distinct
+turn-qualified owner-visible position IDs. The position count is an **observed
+lower bound**: not every cut includes a position ID, and automatic/system-only
+positions in the 112-position Turn 1 catalog and Turn 2 prelude are not owner
+openings. For locally launched full-policy hosts, `journalPositionsVisited` and
+`journalPositionIds` count explicit turn-qualified canonical event positions
+(including recorded automatic edges), read only after campaign completion or
+failure and verified replay. `journalCampaigns` identifies how many campaigns
+contribute journal evidence; attached HTTP runs cannot provide it.
+Aggregate positions are a union, not a sum. An accepted attack selection
+is not proof that an assault resolved; force, retreat, custody and RBA are
+counted separately. `zeroCoverage` identifies zero moves/attacks per campaign and
+aggregate. `--require-coverage moves,attacks` additionally fails the process if
+either aggregate count is zero, even if all campaigns reached the checkpoint.
+These coverage fields are opt-in for existing policies via `--require-coverage`.
+
+`attempts/<ordinal>.jsonl` records the deterministic owner choice immediately
+before each submit (including refusals), followed by an outcome row after its
+return. The accepted decision JSONL is flushed incrementally as well, so even
+an interrupted or hung process leaves a replay prefix. Neither contains
+credentials or opaque refs. The existing `campaigns/<ordinal>.jsonl` and
+fingerprints still describe accepted submissions only.
+
+Repeatable bug-hunt sweep (new output directories, Release binary already built):
+
+```sh
+python3 tools/Cna.LoadHarness/sweep.py --output /tmp/full-sqlite \
+  --seeds $(seq 1 32) --parallel 4 --timeout 600
+python3 tools/Cna.LoadHarness/sweep.py --output /tmp/full-http-pg \
+  --driver http --store postgres --campaigns 16 --seeds 1 7 16 32 --timeout 1200
+```
+
+Each seed is run twice at the requested concurrency, and the script compares every
+accepted-decision and attempt JSONL byte-for-byte. Per-run `result.json` records
+the exact arguments, seed, ordinal, status, and prefix paths for each incomplete
+campaign. A process timeout is classified as `hang-timeout`; missing summaries
+are not counted as successes. Keep the output tree together when reproducing a
+failure. The sweep is diagnostic, not part of the normal CI smoke gate.
+
 ## Postgres capacity runs (L3)
 
 ```sh
@@ -129,7 +199,8 @@ decision budget if comparing fingerprints.
 HTTP summary adds peak in-flight requests, discovery/advertised-opening/fallback
 probe counts, expected 409s, real error count/rate, and cliff fields. The Stage 2
 ladder permits only 409 `unavailable` from opening probes; other 409s (including
-submission conflicts) are errors. B6 requires successful advertised opens.
+submission conflicts) are errors unless explicitly handled as `reactionRefused` by
+the full policy. B6 requires successful advertised opens.
 Latency includes HTTP request/response, including decoding, but excludes time
 waiting for admission and think time. Local metrics include Host and harness.
 
