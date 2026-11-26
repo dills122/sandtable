@@ -1,5 +1,11 @@
 # Maintainability refactor: completion summary (2026-11-24)
 
+> **2026-11-26 follow-up:** This is a dated baseline, not the current implementation ledger.
+> #640, #645, #648–#650 and #658 cover bounded synthetic Stage 2/3 HTTP progression and real
+> Combat rounds; #646, #651 and #652 prove Turn 1 through the next turn’s open Reserve.
+> Turn 2 acceptance and later turns, native Reaction (#655) and executor migration remain open.
+> See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 **Status:** every slice in `2026-11-24-maintainability-refactor-direction.md` is shipped
 and merged. This doc records what actually landed, against that plan's Section 5
 sequencing table, so the direction doc doesn't need to be re-read to answer "did this
@@ -66,9 +72,8 @@ CI's own `orleans` job, which has Docker and passed clean on every merged PR.
 
 ## Still open (unrelated to this plan, carried from release-readiness tracking)
 
-- Stage 3's own Movement/Breakdown/Combat cycle — not yet built (comparable size to
-  Stage 2's multi-PR effort).
-- Turn-to-turn looping — never built or proven.
+- Stage 3 and first rollover were open at this plan's close; now bounded synthetic HTTP
+  paths reach open Turn 2 Reserve (#652, #658). Acceptance and further looping remain open.
 
 Neither was in scope for this round; noted here only so this summary doubles as a current
 pointer, not because this plan touches them.

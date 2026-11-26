@@ -1,8 +1,11 @@
-# Cna.LoadHarness (L2–L4)
+# Cna.LoadHarness (L2–L5)
 
 Development-only load tool for the existing synthetic board-game labs.
 It is deliberately outside `Sandtable.slnx`; the separate path-filtered
-Load harness workflow builds it and runs its black-box tests.
+Load harness workflow builds it and runs its black-box tests. As of main #669 (2026-11-26),
+both drivers support the synthetic Turn 1 → open Turn 2 Reserve checkpoint. The commands below
+were checked against CLI configuration and merged PR evidence, not rerun in this docs-only pass.
+No real scenario content or later-turn acceptance is available.
 
 ```sh
 dotnet build tools/Cna.LoadHarness/Cna.LoadHarness.csproj -c Release
@@ -28,7 +31,9 @@ from a `--campaigns 1` run. The output directory must not already exist.
   (same lab seed). Follows the synthetic discovery path through all three
   operation stages, verifies the End of Turn checkpoint before opening Turn 2's
   declaration, and stops at the verified, open but unaccepted Turn 2 Reserve.
-  The step limit defaults to 112 (range 1–112). Both paths use a one-hour decision
+  The step limit defaults to 112 (range 1–112) for checkpoint policies. The additive
+  `--combat-gt1` variant (#669) requires `--until turn2-reserve`, selects the combat-capable synthetic
+  setup for either driver, and records that setup in the manifest. Both paths use a one-hour decision
   budget to exclude timeouts from determinism measurements.
 - Seats and discovery entries are visited in stable L1 order. The last available
   opening is selected by default; each policy chooses its **index** within that opening:
@@ -69,6 +74,9 @@ and decision-fingerprint encoding are unchanged.
 
 A submit refusal with code `rule-not-implemented` (HTTP 409, currently the known
 later-stage Reaction gap #655) is counted as `reactionRefused`, not an error.
+A retained initial Stage 1 second-side Reaction window is instead exposed as an unsupported
+discovery marker (#666); no legal refs are offered and the campaign remains partial. #655 tracks
+the missing native resolution.
 The bot removes that exact candidate from the current pool; completion/finish
 choices remain eligible. It samples the remaining pool until one action succeeds
 or the pool is exhausted (`wedge`). Other rejections, unsupported discovery, empty
@@ -299,7 +307,7 @@ Individual N=16 campaigns had 19–24 accepted steps. The discovery tax was
 The second run experienced scheduler/thread-pool degradation warnings under
 shared-machine load (including a concurrent format check). These are observations,
 not latency or throughput gates;
-state fingerprints remain a future slice.
+state fingerprints were not measured in this L2 baseline (added later in L5).
 
 ## L3 baseline (2026-11-25)
 
@@ -324,8 +332,7 @@ matched byte-for-byte across all four runs: decision hash
 N=16 aggregate decision fingerprint:
 `sha256:0824fedc0407209c99538615c018cbb464e01094b77eb74b499bca565b95eece`.
 This passes the decision-fingerprint portion of T1, including the concurrency
-comparison (only ordinal 0 exists at N=1); full state fingerprint verification
-is L5. T2's 100-campaign paced workload and latency budgets were not tested.
+comparison (only ordinal 0 exists at N=1); state fingerprint verification was added later in L5 (#660, #668). T2's 100-campaign paced workload and latency budgets were not tested.
 
 A separate external-server smoke used two campaigns, a hot-pool cap of one,
 and a one-step limit. Both stopped at the limit as expected, peak connection
@@ -383,7 +390,7 @@ the documented L3 baseline:
 
 The exact L3-hash criterion is **not met**: every HTTP row lacks the private
 committed revision, by v2 contract. No other field differs. This passes
-public-decision repeat/concurrency parity, not full T1 or L5 state verification.
+public-decision repeat/concurrency parity, not full T1 or the later L5 state verification.
 No T2 100-campaign workload was measured. The earlier measurements preceded
 final response-shape validation and cliff accounting refinements; the same
 unpaced selection loop and identity encoding were used in all four runs. A
@@ -395,3 +402,22 @@ fingerprints. A separate production Host process attachment using fresh local Po
 completed one accepted owner step (expected step-limit exit), then the Host
 and database container were stopped. No HTTP errors; attached metrics correctly
 identified harness-only scope.
+
+## November 26 checkpoint and sweep evidence
+
+#652 and #654 prove the 112-position initial-turn completion path, with stage-local ledger
+rollover and seeded canonical event equality at stage/turn boundaries. #658 separately proves
+bounded real Combat rounds for both roles in Stages 2 and 3. The #669 opt-in GT1 variant also
+records replay-checked selected owner outcomes, with 16/16 in-process sweep campaigns reaching
+Turn 2 Reserve. The Bot S2 report on main `c6fda932` (#664, #665, #666) records 242/256 completed
+(120/128 in-process SQLite; 122/128 HTTP Postgres). All 14 partial campaigns hit the retained
+Stage 1 second-side Reaction window. All 256 local replays verified; decision and attempt bytes
+matched repeated seeded runs. Three HTTP reconstruction fingerprint pairs were unavailable,
+not mismatches: #668 subsequently fixed verification after owner-loop failure (#667).
+These are reported sweep measurements, not a rerun on #669.
+
+L5 (#660, #668) verifies persisted state after any successful HTTP campaign creation, even if the
+owner loop fails. In the reported #660 PostgreSQL runs (N=1, N=16 twice), all campaigns reached
+the open checkpoint and verification succeeded; repeats matched decision and reconstruction
+hashes but not persisted chain hashes (fresh opaque references). Do not equate full fingerprint
+object equality with deterministic reconstructed state. No six-turn or general capacity claim follows.

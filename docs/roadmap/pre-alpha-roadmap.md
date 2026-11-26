@@ -4,28 +4,10 @@ Current execution checkpoint: [RC checklist](../work/plans/2026-10-24-rc-checkli
 It records bounded implementation evidence and pass criteria without replacing
 the canonical Combat and MVP gates below.
 
-**Status correction, 2026-11-21:** the "Public Core 020-021" and "Exercise and
-Runner 022-024" rows below, and the "Combat and continual cycle" / "Exercise
-Harness" rows in the delivery-status table, are stale. Tasks 020 and 021
-(public, audience-safe Combat actions on the real Host API) and Tasks 022-023
-(Exercise Harness Combat adoption) have since merged — see commits through PR
-#483. The real Host API
-(`src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.Openings.cs` /
-`.Submissions.cs`) now exposes and resolves a full first-side Combat cycle
-(Selection through Reserve Release and Cycle Control), Truck Convoy Pass, and
-second-side Reserve/Movement/Movement-completion, each backed by passing Host
-tests including cold replay. A real, confirmed gap remains: a **second-side**
-Combat assault does not auto-continue past Combat Selection to a result or to
-its own Reserve Release on the real Host path (see
-`src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.Submissions.cs:820-874`,
-explicit "#394 extra-2/extra-3" comments). This is **not** the same gap as
-"the Exercise Harness/Runner cannot reach Combat" (issue #448) — that is a
-separate, test-automation-only limitation of `Cna.ExerciseRunner`. The two
-must not be conflated; see
-[the frozen initial-release scope](../work/plans/2026-11-21-initial-engine-release-scope.md)
-and the
-[initial-release readiness check](../work/plans/2026-11-21-initial-engine-release-readiness-check.md)
-for current, per-item status with citations.
+**Status correction, 2026-11-26:** Current checkpoint below supersedes the November 21
+readiness finding and older task-status prose. Tasks 020–021 and bounded Exercise/Runner
+adoption 022–023 landed; the Development HTTP path and Runner remain distinct. Original P01
+certification and release acceptance remain separate from the synthetic checkpoint.
 
 **Status:** Active
 
@@ -64,19 +46,41 @@ in the same change.
 
 ## Current checkpoint and next gates
 
-[Author doc/planning review](../reviews/combat-delivery-plan-author-review.md) records the accepted
-planning direction. Public actions and checked Runner evidence remain Rules9 through first-side Combat **entry**. Private native actual paid assault reaches immediate closure into Reserve Release (019F6, PR177). PAC01 and its private consumer reach guarded repeat or finish; the actual repeated-Movement and Breakdown consumers reach the authenticated R03 ordinal-two Combat Position boundary. Original P01 work remains a separate provisional reference and certification lineage: 44 provisional positive / 256 absent roots, zero admitted/public. The permanent contact-based Core/normal durable Host path now covers an initial assault plus two selected repeated assaults, including RBA, Force Assignment, settlement, custody and cold replay. V28 Repeat requires a legal movement witness and retained Combat cursor; the tested third Reserve Release is Finish-only because its witness set is empty, not because of a fixed cycle limit. Development loopback access does not close public020–021 or original P01 certification. See [current baseline evidence](../work/reviews/2026-10-24-rc-baseline-evidence.md).
-Parent003 Combat authority contracts now compose 28 selected creation-rooted histories through
-released-I armed continuation, Movement completion, active-participant System fallback and guarded
-repeat/finish. They do not establish public Combat or Reserve Release activation in Core or simulator. Historical
-review and simulator reports apply only to their stated commits and capabilities.
+As of 2026-11-26 (main through #669), the real Development/loopback HTTP Host can
+create a fresh synthetic campaign, discover openings for both seats, traverse all 112
+Turn 1 catalog positions across Operation Stages 1–3, and cross End of Turn through
+Turn 2 initiative declaration and weather to the **open, unaccepted** Reserve Designation.
+The completion/pass checkpoint proof (#646, #651, #652) compares cold replay with live state
+at each stage/turn boundary and repeats identical seeded canonical event bytes. The additive
+GT12→13 fixture also crosses the season boundary. Current turn is derived from accepted history,
+with the initial setup stamp as the starting value, never treated as the current turn. Stage 2/3 Movement has stage-local CP accounting (native Reserve
+V58, #654); occurrence-scoped HTTP owner and System continuations (#640, #645, #648–#650)
+and bounded real Combat owner rounds (#658) have separate replay tests. The combat-capable
+GT1 fixture (#669) additionally proves selected owner outcomes and seeded full-turn replay.
+
+This is a synthetic engine checkpoint, not a complete scenario, not exhaustive legal-branch
+coverage, and not an end-user release. Native Reaction-triggering moves outside the initial-turn
+Stage 1 second-side window refuse deterministically (`rule-not-implemented`, HTTP 409,
+#656); that retained window is explicitly marked unsupported in discovery (#666). #655 tracks
+native Reaction resolution/closure and resumption of the interrupted Movement occurrence; the
+E4b design is not implemented. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
+as do source-backed campaign admission, supply/victory rulings, executor migration, release
+packaging and Maproom play. The intended distribution excludes source-derived data; the
+[content-pack separation design](../work/plans/2026-11-25-content-pack-separation-design.md)
+is not yet implemented, and source-derived research/data remain in the repository.
+
+The [RC checklist](../work/plans/2026-10-24-rc-checklist.md) and
+[load harness](../../tools/Cna.LoadHarness/README.md) distinguish remaining release gates from
+this proof. Original P01 retains its separate provisional certification lineage; the October 24
+[baseline evidence matrix](../work/reviews/2026-10-24-rc-baseline-evidence.md) is historical.
+The engine-only RC requires further native progression and is distinct from first playable MVP.
 
 | Next gate | Concrete outcome |
 | --- | --- |
 | Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004A/B side and private Exercise contracts, round-v2, result-v2 and native cycle-finish composition are accepted under [strict clock privacy](../design/combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15). Task004C integrated readback and all72 AC reconciliation are accepted; checkpoint B is complete. |
 | Dormant Core,005–019 | Foundations, creation and selected inherited adapters are implemented. [Initial H](../design/combat-cycle-implementation-plan.md#task008-execution-index) is accepted with 368 exact restore roots across 286 retained histories; actual-publication evidence remains open. Tasks009–016 are accepted: identity, selection, private orders, atomic costs, deterministic results, losses, retreat, custody, relationships and round closure. Isolated Release base validation017A1 is also accepted; isolated lifecycle017A2 is accepted with timed choices, fallback, replay and explicit completion. Task017B connects settled Combat to empty Release. The held-I no-move predecessor now replays actual first opening through empty Combat without releasing the unit. Task017C connects that history to native release-I and deterministic conversion fallback. Task018A adds relationship-aware costs;018B adds isolated atomic ordinary Movement/replay. Task019A adds pure trusted-boundary Movement witnesses. Task019B authenticates inherited released-I progress/armed continuation. Task019C adds authenticated guarded repeat/finish for that path. Task018C admits one actual released-I ordinal2 move. Task018D completes that Movement at authority31 and expires the receipt-bound exception. Task019D1 supplies native Result2 settled evidence with synthetic earlier Movement. Task019D2 freezes the separate [settled-control executable contract](../specs/combat-settled-control-v1.md); Task019D3 implements private native settled control. Task019E0/019E1 admit two actual opening histories through a supported candidate before selection; the subsequent019F0–019F6 sequence now provides actual selection, round entry, assault admission and native paid assault through immediate closure into Reserve Release. PAC01 freezes the next actual empty Release and repeat/finish contract, now consumed by private native continuation. The actual repeated-Movement reference contract now defines up to four safe ordinary moves from the authentic repeat terminal. NRM01 implements private native consumption of those moves; C02 adds the private actual completion executable contract and C04 implements its private native consumer; later-II/consumed lineage remains a separate gate; [bounded delivery plan](../design/combat-cycle-movement-delivery-plan.md). Every state-changing family retains cumulative replay and recovery obligations. |
-| Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
-| Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
+| Public Core,020–021 | Merged bounded audience-safe Combat actions and capability admission; continue to reject unsupported profiles. Development HTTP support does not establish public release certification. |
+| Exercise and Runner,022–024 | Bounded adoption 022–023 merged; remaining evidence and complete continual-cycle Runner support are separate from HTTP checkpoint proof. |
 | Skeleton closeout,025 | Reconcile all Combat ACs and remaining Contact/Engaged gaps, run the full gate, and demonstrate one authentic start-to-repeat-or-finish loop before declaring the working skeleton reached. |
 | MVP expansion | The [six-turn source-surface inventory](../research/2026-10-18-graziani-six-turn-surface-inventory.md), [working release inventory](../work/plans/2026-11-12-graziani-playable-rc-inventory.md), [source register](../work/plans/2026-11-12-graziani-source-register.md) and [next work order](../work/plans/2026-11-12-graziani-rc-work-order.md) are retained; reconcile their gaps and measure exact exercised rules/data before freezing implementation slices. Source-verified content, remaining Land rules/victory, durable save/resume, hot-seat privacy, and minimal Maproom retain separate exit gates below. |
 
@@ -94,7 +98,7 @@ repeats the existing Truck study. Broader Combat seed/branch coverage belongs af
 Core integration evidence is required earlier at E/G/H. Balance
 claims and model-backed commander evaluation remain separate future studies.
 
-The earlier temporary Rules9 grain remains a separate fixture path. The normal local Host now supplies a SQLite-backed journal, authenticated owner submissions/receipts and cold replay for bounded contact Combat. Its opt-in Development loopback routes do not certify production hosting, public Combat or the complete user-facing save/resume lifecycle.
+The earlier temporary Rules9 grain remains a separate fixture path. The normal local Host uses the PostgreSQL/Marten journal (SQLite remains a Development/test baseline), authenticated owner submissions/receipts and cold replay for bounded synthetic Combat and the open Turn 2 Reserve checkpoint. Its opt-in Development loopback routes do not certify production hosting, public Combat or the complete user-facing save/resume lifecycle.
 DecisionWorker registers its client but does not dispatch campaign decisions. The earlier planning
 direction after `b8be39a` has been executed through checkpoint B and the bounded Orleans probe;
 the inherited-path handoff and progressive Core evidence remain implementation gates.
@@ -166,7 +170,7 @@ and acceptance checks; the [design system](../design/maproom-design-system-v0.md
 
 Bring forward Angular scaffolding, tokens and representative workspace fixtures, browser/host
 contracts and a temporary in-memory Rules9 test host. This explicitly labeled developer lane can
-exercise current public actions before full Combat activation. It must stop at unsupported phases
+exercise admitted Development actions. It must stop at unsupported phases
 and cannot claim persistence, complete scenario play or a passed MVP gate. Design work precedes
 live screens so forms, map/list selection and order states share one baseline.
 
@@ -262,22 +266,19 @@ Optional parser evidence gate
 | --- | --- | --- | --- |
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
-| Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Checkpoint B, Initial H Core restore and dormant Tasks009–016 accepted; private actual paid assault019F6, PAC01 continuation, repeated Movement/Breakdown and R03 ordinal-two Position implemented for bounded histories. Original P01 certification and Task008 publication remain open | Bounded contact-based Core/normal durable Host covers initial plus two repeated selected assaults; original P01 has zero admitted roots and public Combat remains uncertified | Complete P01 action/source, automatic-surrender/RBA, outward privacy and replay/cap support certificate; then P02/P03 and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
-| Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
+| Movement, Reaction, Breakdown | Versioned native stage ledger (V58); legacy bounded Reaction and Breakdown | Both acting sides at Stages 1–3 have bounded Movement/Breakdown paths; later-stage Reaction-triggering moves refuse, retained Stage 1 second-side window is unsupported | Native Reaction resolution/closure (#655), Turn 2 acceptance, broader admitted mechanics |
+| Combat and continual cycle | Bounded native round contracts, separate original P01 evidence lineage | Selected real HTTP owner rounds across all three stages; #658 covers both roles of Stages 2/3 | Broaden legal-branch coverage, retain original P01 certification gates and complete remaining Runner evidence |
+| Working pre-alpha skeleton | Acceptance boundary defined | Complete synthetic Turn 1-to-open-Turn 2 Reserve checkpoint, not six-turn engine RC | Accept successor Reserve and continue later turns; close Reaction and remaining release/fidelity gates |
 | Six-turn scenario and remaining Land rules | Initial source-surface inventory merged in PR #254; exact exercised-rule/data reconciliation remains open | No complete six-turn scenario implementation | Measure and freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Angular workspace, Field Atlas library/Storybook, MAP-04–08 initial host contracts and private MAP-09/diary tracker | Temporary Rules9 grain and initial authorized connected read; synthetic fixture workflow remains separate | Two-seat successor/diary projection, public submit/receipt and MAP-11 order flow; product acceptance additionally requires durable save/resume, hot-seat isolation and complete scenario path |
-| Exercise Harness | Evidence contracts and current Movement/Reaction/Breakdown profiles established | Single Exercise, serial-unpaired Maneuver, controller matrices, and bounded paired comparisons | Add Combat public actions/terminals only after Task021 |
+| Exercise Harness | Evidence contracts and historical Rules9 profiles established | Single Exercise, serial Maneuver, paired comparisons; bounded Combat adoption 022–023 | Complete remaining Runner evidence independently of HTTP |
+| Load harness | Standalone development tool outside solution | In-process/HTTP, SQLite/Postgres, checkpoint and full legal-choice policy, optional state verification | Fix Reaction gap and extend supported engine horizon before claiming six-turn load completion |
 
-The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
-is substantially established. Bounded Movement, Reaction and Breakdown authority now reaches
-first-side Combat entry. [Breakdown closeout](../research/breakdown-runner-closeout.md) records two
-matching clean runs of47 campaigns; [transcript/privacy follow-up](../research/breakdown-transcript-privacy.md)
-records1,670 tests and81 boundary cases. Dormant Combat now has reviewed decisions, costs, results and loss/retreat settlement through
-Task016, including relationships and round closure after three fresh independent reviews. Native019F6 joins authentic paid-assault costs, results and immediate closure into Reserve Release. PAC01 and private consumers add empty Release, repeat/finish, repeated Movement and Breakdown through R03. Original P01 remains provisional and unadmitted; the separate contact-based durable path covers initial plus two repeated selected assaults. The campaign
-is not yet playable: full Combat support, public Combat actions, the complete continual cycle,
-published scenario content, remaining Land rules, victory, successor browser orders and accepted user-facing campaign
-persistence remain future work.
+The roadmap deliberately distinguishes foundation maturity from playable breadth. The bounded
+synthetic HTTP checkpoint is not first playable MVP: real content, Reaction, Turn 2 onward,
+remaining Land rules, victory, content-pack separation, Maproom and product lifecycle remain open.
+Historical sprint demonstrations below describe the evidence at their original checkpoint, not
+independent present-day limits.
 
 ### Sprint status summary
 
@@ -286,11 +287,11 @@ persistence remain future work.
 | 0 — Source and fidelity baseline | Complete | Preserve the approved source hierarchy, rights posture, and recorded rulings |
 | 1 — Replayable Umpire spine | Complete for the admitted synthetic path | Extend versioned authority, event, replay, and deterministic-random contracts with each mechanic |
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
-| 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
-| 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Bounded contact-based Core/normal durable Host covers initial plus two repeated selected assaults; original P01 remains unadmitted; public Combat certification open | Complete P01 support certificate, then P02/P03 and remaining017–019; activate020–021 and prove022–024 before closeout025 |
-| 6 — Scenario Group One content | Initial six-turn source-surface inventory retained in PR #254; content implementation not started | Reconcile exact exercised-rule/data/source/rights gaps, then freeze bounded scenario content packets |
-| 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
+| 3 — Mandatory turn preamble | Complete for admitted synthetic no-obligation path through Turn 2 prelude | Positive scenario obligations and later-turn acceptance remain open |
+| 4 — Movement, Breakdown, and Reaction boundary | Bounded Movement/Breakdown across Stages 1–3; native Reaction gap open | Resolve #655 and validate later-turn ledger continuation; broader mechanics remain extensions |
+| 5 — Combat and continual-cycle loop | Bounded native real HTTP rounds at Stages 1–3 and complete synthetic Turn 1 checkpoint; original P01 certification remains separate | Broaden branch evidence, finish later-turn progression and remaining Runner/RC gates |
+| 6 — Scenario Group One content | Partial source-backed setup and internal authority, no playable source campaign | Finish source/rights/rulings and content-pack separation |
+| 7 — Remaining required Land systems | Partial bounded mechanics; supply and victory rulings open | Implement measured scenario surface with authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Development-only Maproom fixtures, temporary Rules9 host and initial connected read are active; product milestone remains open | Prove successor views, public orders and local two-seat flow, then durable save/resume, hot-seat privacy and complete no-model scenario lifecycle |
 
 Sprint numbers describe dependency order, not equal effort or a project-completion percentage.
@@ -869,7 +870,7 @@ research below remains evidence; it is not an instruction to restart those inves
 
 | Lane | Current priority and boundary |
 | --- | --- |
-| Combat critical path | Dormant authority accepted through015 →016–019 closure/release/repeat → public020–021 → Runner022–024 → closeout025. Actual publication evidence remains open. |
+| Combat critical path | Historical dependency order: dormant authority through015 →016–019 →020–021 → Runner022–024 →025. Bounded 020–023 and later HTTP rounds landed; full publication/closeout evidence remains open. |
 | Product critical path | Sprint5 authentic loop → measured six-turn scenario inventory → source/content and remaining Land/victory work → durable save/resume → minimal Maproom/hot-seat privacy → two complete deterministic playthroughs. |
 | Orleans feasibility / `HOST-RSH-001` | Research/probe complete; atomic commit-batch and derived-checkpoint proposal awaits owner acceptance. Production work waits for public Core activation, one verified Runner trace, and an approved storage contract. |
 | Completed foundations | Movement/ZOC/Breakdown and Combat research remain regression/source evidence. Reopen only for a concrete failure, new source evidence, or approved capability expansion. |

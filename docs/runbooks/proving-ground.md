@@ -46,7 +46,7 @@ does not hot reload.
 | --- | --- | --- | --- |
 | Maproom (nginx + built Angular) | Static synthetic operations shell | `127.0.0.1:4200` | No server calls or player data yet. MAP-03A/B/C finish fixture workflows; MAP-10 connects reads. |
 | Orleans host (.NET 10) | One Development silo and health endpoints | `127.0.0.1:5180` | No campaign grain/API. MAP-04–09 add contracts, trusted adapter, temporary grain and ingress. |
-| `Cna.Core` | Linked into Orleans host image | None | Only authority; current public supported path stops before Combat adjudication. |
+| `Cna.Core` | Linked into Orleans host image | None | Only authority; bounded synthetic HTTP Combat and Turn 1 checkpoint work in the development Host, not a playable browser release. |
 | Exercise Runner | Host CLI outside Compose | None | Checked synthetic manifests produce deterministic evidence; not a campaign seed API. |
 | Intelligence Gateway + Decision Worker | Optional Aspire `just run` scaffolds | Aspire assigned | Not needed for the intended human rules-lab path; no configured model provider or live dispatch. |
 | PostgreSQL / Archives | Absent | None | MAP-14 contract and MAP-15 provider proof precede MAP-16 durable host. No database container implies no save/resume claim. |

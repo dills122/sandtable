@@ -4,7 +4,7 @@ Review instance: **1 of 9**, round1/pass1; recovery **0 of 2**.
 
 **No actionable code or implementation-plan defect identified.**
 
-**Known delivery blocker remains unresolved:** required Release verify run38082003227 cancelled at the unchanged 15-minute limit. Retained log shows Contracts and ExerciseRunner completed, Core remained unfinished, and execution was cancelled. No complete hosted Core result exists. See [CI evidence handoff](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/work/handoffs/2026-10-10-native-actual-round-entry.md:52). This is distinct from a code finding and prevents merge readiness.
+**Known delivery blocker remains unresolved:** required Release verify run38082003227 cancelled at the unchanged 15-minute limit. Retained log shows Contracts and ExerciseRunner completed, Core remained unfinished, and execution was cancelled. No complete hosted Core result exists. See [CI evidence handoff](../handoffs/2026-10-10-native-actual-round-entry.md) (historical line 52). This is distinct from a code finding and prevents merge readiness.
 
 ## Preliminary Ledger
 
@@ -30,10 +30,10 @@ Historical pending statements in the frozen plan are explicitly supplemented by 
 
 The substantial test surface follows the merged contract’s history, grammar, mutation, and temporal requirements. The memo adds bounded synchronization complexity, but I found no authority bypass:
 
-- [ReplayMemo](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs:36) serializes insertion, eviction, result attachment, and accounting.
-- [SnapshotEvidence](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs:103) frames owned source, both ordered ledgers, serialized trusted Setup/configuration, and RulesetHash; hash lookup also compares complete evidence.
-- [Replay](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs:186) retains dependency and canonical guards before reuse, including consumed-AA Content checks.
-- [Transition](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs:292) independently validates current Apply commands, retry actor identity, lifecycle, allocation, clocks, and admission.
+- [ReplayMemo](../../../src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs) (historical line 36) serializes insertion, eviction, result attachment, and accounting.
+- [SnapshotEvidence](../../../src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs) (historical line 103) frames owned source, both ordered ledgers, serialized trusted Setup/configuration, and RulesetHash; hash lookup also compares complete evidence.
+- [Replay](../../../src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs) (historical line 186) retains dependency and canonical guards before reuse, including consumed-AA Content checks.
+- [Transition](../../../src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs) (historical line 292) independently validates current Apply commands, retry actor identity, lifecycle, allocation, clocks, and admission.
 - Readback claims receive fresh parsing and complete byte comparison. Returned buffers are copies.
 
 ## Author-Claim Reconciliation

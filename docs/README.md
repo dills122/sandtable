@@ -7,7 +7,7 @@ Research and reviews record their dated checkpoints; they are not competing stat
 
 ## Start here
 
-- [First-release audit](research/2026-10-05-first-release-audit.md): current gaps and release exit gates
+- [First-release audit](research/2026-10-05-first-release-audit.md): October 5 evidence and release exit gates
 - [Roadmap checkpoint and next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 - [Angular workspace and Storybook](../src/Cna.Maproom/README.md): implementation setup, components, patterns and checks
 - [Local server and Angular Maproom plan](design/local-game-server-maproom-plan.md): accepted stack, small slices and temporary/durable hosting gates
@@ -23,14 +23,15 @@ Research and reviews record their dated checkpoints; they are not competing stat
 - [Combat verifier pin maintenance inventory](research/combat-verification-pin-maintenance.md)
 - [Measured CI Core capacity split](research/2026-10-14-ci-core-capacity-proposal.md): five exact-row leaves, unchanged budgets and exhaustive coverage
 
-Public Rules9 authority and Runner evidence stop at first-side Combat entry. Private Combat Core
-adapters and contracts remain separate. Task019F1's native actual-selection adapter merged in
-PR #165, reaching Force Assignment without completion or no-attack Reserve Release for both
-supported owners. Trusted production input authentication, actual round/result completion,
-public activation and authentic continual-cycle proof remain pending. The first six-turn Land-only
-scenario, connected Maproom hot-seat play and durable save/resume are not implemented. Maproom's
-Angular workspace, Field Atlas library, Storybook and standalone operations preview are available. Host/worker/provider
-integration remains scaffolded; AI is optional future work.
+Current checkpoint (2026-11-26, #669): the Development/loopback HTTP Host traverses
+all 112 Turn 1 catalog positions for a fresh synthetic campaign through both sides of
+Stages 1–3 and stops at the open, unaccepted Turn 2 Reserve. Seeded replay and bounded
+Combat owner rounds are witnessed; native Reaction resolution remains unsupported (#655).
+See the [roadmap](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) and
+[load harness](../tools/Cna.LoadHarness/README.md) for distinct HTTP and automation scope.
+The six-turn sourced scenario, Maproom hot-seat acceptance, Turn 2 Reserve acceptance,
+victory/supply rulings and source-content separation are not complete. Dated research,
+reviews, specs and scoping papers retain their original evidence cut, not today's status.
 
 ## Governing capability packages
 

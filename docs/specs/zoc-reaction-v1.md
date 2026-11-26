@@ -1,5 +1,7 @@
 # ZOC and Reaction v1 Specification
 
+> **2026-11-26 status note:** This contract describes the retained legacy Reaction profile. The native chain still lacks Reaction resolution/closure: later-stage triggering moves refuse with HTTP 409 `rule-not-implemented` (#656), and the retained Stage 1 second-side window is marked unsupported (#666). The E4b design (#655) is not implemented.
+
 **Status:** Complete — `ZOR-TASK-002A`-`007B` implemented and verified; independent review Ready
 
 **Date:** 2026-08-30

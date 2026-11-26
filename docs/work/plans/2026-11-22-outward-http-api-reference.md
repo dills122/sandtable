@@ -1,5 +1,15 @@
 # The outward HTTP API (what the Maproom UI will actually consume)
 
+> **2026-11-26 update:** Tables below describe the November 22 source cut. Since then
+> #628 added read-only `POST /api/v2/campaigns/{id}/openings/open` (see [contract](2026-11-25-open-for-seat-contract.md));
+> #640, #645, #648–#650 and #658 wire bounded Stage 2/3 progression and Combat across both roles.
+> #651–#652 prove the synthetic next-turn opening without accepting it. #656 refuses
+> later-native Reaction-triggering moves with HTTP 409 `rule-not-implemented`; #666 reports
+> the retained Stage 1 second-side unsupported window. #660 adds operator-only read-only
+> `GET /api/v2/campaigns/{id}/verification` behind the existing Development/loopback/origin
+> and operator-secret checks. It reconstructs the persisted head without activating a grain,
+> writing or draining timers. No public API certification or Turn 2 acceptance follows.
+
 This documents every route in
 `src/Cna.OrleansHost/Api/CampaignDurableOutwardApi.cs` (the real
 `/api/v2/campaigns/...` HTTP surface) and every

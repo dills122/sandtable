@@ -1,5 +1,9 @@
 # Maintainability refactor direction: Findings A–C, scoped and sequenced (2026-11-24)
 
+> **2026-11-26 status pointer:** The original scope/design/evidence below is unchanged. The
+> real synthetic HTTP checkpoint now reaches open Turn 2 Reserve, not six-turn completion,
+> and native Reaction/executor migration remain open. See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 **Status:** design/direction doc only — no source code changed in this pass. Produced by
 independently re-reading every file the 2026-11-24 audit cited (not trusting the audit
 summary), cross-checking against the prior same-week overhaul doc

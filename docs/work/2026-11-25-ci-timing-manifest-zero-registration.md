@@ -1,6 +1,6 @@
 # CI timing manifest: zero registration for PRs that add tests (2026-11-25)
 
-Status: design + implementation proposal. Supersedes the "register every new row" workflow that
+Status: design record; zero-registration behavior is implemented in #618 as of 2026-11-26. See the [current guide](../../.github/scripts/long-suite-weights.md). Supersedes the "register every new row" workflow that
 #604 made merge-friendly but did not remove.
 
 ## Problem

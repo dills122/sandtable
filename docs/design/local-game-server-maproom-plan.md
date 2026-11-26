@@ -72,7 +72,7 @@ consider a renderer/worker optimization only when measured browser work warrants
   metadata readback is not an executable restore API. Do not make Exercise internals browser DTOs.
 - The [hosting study](../research/orleans-publication-feasibility.md) proves bounded in-memory
   cases, not process durability. Its atomic batch recommendation informs MAP-05 and MAP-14.
-- Current public play stops at first-side Combat entry. Private Combat tests do not supply a
+- The real Development HTTP Host now supports a bounded full synthetic Turn 1 checkpoint; this does not supply a
   public browser action surface. The developer client must show this supported-boundary stop.
 
 ## Module and deployment shape

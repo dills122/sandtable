@@ -1,5 +1,10 @@
 # Refreshing long-suite scheduling weights
 
+As of 2026-11-26, #647 balances the long shards against their actual concurrency caps (two
+lanes on long-01, three on the others), while retaining the deadline/resource and exact-row
+coverage guards. The [#669 main run](https://github.com/dills122/sandtable/actions/runs/45804203637)
+passed all full CI jobs in 23m31s. Historical measurements below are not current timing promises.
+
 ## How to add a test row (read this first)
 
 **You do nothing.** Adding, renaming or removing tests needs no manifest edit. `make_plan` gives rows

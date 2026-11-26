@@ -24,7 +24,7 @@ replay uses a separately retained Rules10/Content7
 Orleans fixture establishes how the eleven R03 ledgers become owned campaign
 history ([handle](../../src/Cna.Core/Campaigns/CampaignAuthorityHandle.cs),
 [creation path](../../src/Cna.Core/Campaigns/CampaignCreationExecution.cs),
-[local host limits](../../README.md#project-at-a-glance)).
+[local host limits](../../README.md#where-things-stand)).
 The [overnight P01 plan](../work/plans/2026-10-19-p01-admission-overnight.md)
 currently defers P03 native consumption until the complete support certificate.
 Adding a disconnected Core state wrapper or importing an asserted Control hash
@@ -156,7 +156,7 @@ promoted to production authority
   recoverable pending/committed protocol. A host process restart cannot resume
   from an in-memory-only hash. The present temporary grain is process-lifetime
   memory and is **not** a durable P01 store
-  ([README](../../README.md#project-at-a-glance),
+  ([README](../../README.md#where-things-stand),
   [tech design](../../tech-design.md#accepted-local-server-and-maproom-direction)).
 - Append uses campaign-scoped expected sequence/version/prefix and a storage
   fence. Competing appenders cannot both publish the same successor. After an

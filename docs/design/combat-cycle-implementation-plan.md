@@ -1,6 +1,12 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status (reconciled 2026-10-24):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and two selected repeated assaults, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. V28 has no fixed cycle cutoff; Repeat requires a source-legal released-unit movement witness and retained Combat cursor. The tested third Reserve Release exposes Finish only because its witness set is empty. Further cycle shapes remain an evidence gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
+**Current status (2026-11-26):** Bounded Tasks020–021 and Runner022–023 have landed. The
+real Development/loopback HTTP host covers all 112 synthetic Turn 1 positions and the open Turn 2
+Reserve checkpoint (#652, #654, #658, #669). Native Reaction (#655), later-turn acceptance,
+remaining Runner evidence, original P01 certification and product publication remain open.
+See the [current roadmap](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
+**Historical status (reconciled 2026-10-24):** The permanent contact-based Core/normal durable Host implementation in this branch accepts an initial assault and two selected repeated assaults, with RBA, Force Assignment, paid result, World settlement, custody, retained receipts and cold replay. V28 has no fixed cycle cutoff; Repeat requires a source-legal released-unit movement witness and retained Combat cursor. The tested third Reserve Release exposes Finish only because its witness set is empty. Further cycle shapes remain an evidence gate. The opt-in loopback Development route is not public Combat activation. Original P01 remains 44 provisional positive/256 absent, zero admitted or public; its full support certificate and public publication evidence remain open.
 
 The initial voluntary finish and initial cancelled assault now pass through V27
 Reserve Release and V28 cycle control. A selected assault with no payable pinned
@@ -11,15 +17,15 @@ the visible contact offer itself is not conditioned on hidden defender resources
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and Tasks009–016 are accepted. Bounded children of017–019 are merged; full parent reconciliation, Tasks020–025 and HOST-PUB-001 remain open.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and Tasks009–016 are accepted. Bounded children of017–019 are merged; full parent reconciliation, Tasks020–025 and HOST-PUB-001 remained open at that checkpoint.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Permanent contact-based native Core/normal durable Host path reaches a first and two repeated selected assaults through settlement and Reserve Release; repeat is gated by a legal witness, not a fixed cycle count | Verify more later-cycle shapes, complete original-300-root support certificate and parent017–019 reconciliation |
-| Public and simulator | Tasks020–024 have no certified ordinal-two Combat admission | Activate only a reviewed, certified side-safe profile through020–021, then prove strict Exercise/Runner reconstruction and repeatability through022–024 |
+| Runtime | Bounded native Core/normal durable Host covers selected real Combat rounds for both roles in Stages 1–3 and the synthetic turn-boundary checkpoint | Verify more legal shapes, implement native Reaction and later-turn acceptance; retain original-300-root support certificate and parent017–019 reconciliation gates |
+| Public and simulator | Bounded 020–021 and 022–023 implemented; original P01/public release certification remains separate | Finish strict Runner reconstruction/repeat evidence and Task024; activate only reviewed, certified profiles |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
 The [preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance

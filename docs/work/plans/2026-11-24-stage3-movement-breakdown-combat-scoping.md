@@ -1,5 +1,11 @@
 # Stage 3 Movement/Breakdown/Combat: per-mechanic scoping against current code (2026-11-24)
 
+> **2026-11-26 follow-up:** This is a dated baseline, not the current implementation ledger.
+> #640, #645, #648–#650 and #658 cover bounded synthetic Stage 2/3 HTTP progression and real
+> Combat rounds; #646, #651 and #652 prove Turn 1 through the next turn’s open Reserve.
+> Turn 2 acceptance and later turns, native Reaction (#655) and executor migration remain open.
+> See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 **Status:** scoping/design doc only. No engine code changed. Written against current
 `main`-equivalent state of this worktree (tip `5d659b20`, PR #566 merged — every slice of
 `2026-11-24-maintainability-refactor-direction.md` landed and merged per

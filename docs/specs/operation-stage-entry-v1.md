@@ -1,5 +1,7 @@
 # Operation-Stage Entry v1 Specification
 
+> **2026-11-26 status note:** This is the frozen v1 contract, not a live coverage matrix. Additive native stage-entry and turn-boundary contracts cover the bounded synthetic HTTP checkpoint through open Turn 2 Reserve (#640, #649–#652, #654); v1 acceptance criteria retain their original scope.
+
 **Status:** Implemented; STG-TASK-001 through STG-TASK-022 and STG-TASK-014A complete
 
 **Date:** 2026-08-24
