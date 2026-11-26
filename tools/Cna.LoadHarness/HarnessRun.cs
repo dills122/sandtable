@@ -88,7 +88,7 @@ internal static class HarnessRun
         await using var driver = new InProcessDriver(config);
         await driver.StartAsync(cancellationToken).ConfigureAwait(false);
         using var runStop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        using var control = http ? new HttpRunControl(config, runStop) : null;
+        using var control = http ? new HttpRunControl(config, runStop, cancellationToken) : null;
         var prefix = config.BaseUrl is null ? "" : "load-" + Guid.NewGuid().ToString("N") + "-";
         using var metrics = extended ? new RunMetrics(driver.Postgres) : null;
         using var sampleStop = new CancellationTokenSource();
@@ -399,16 +399,6 @@ internal static class HarnessRun
                 }
                 Accept(selected, index, result, acceptedChoice);
             }
-            if (config.VerifyState)
-            {
-                stateFingerprint = await worker!.VerifyAsync(id).ConfigureAwait(false);
-                if (stateFingerprint is null) status = "verification-failed";
-                else if (status == "turn2-reserve" && (stateFingerprint.GameTurn != 2
-                    || stateFingerprint.PositionId != "land.position.operation-1.first-player.reserve-designation"))
-                    status = "boundary-not-verified";
-                else if (status == "stage-2-boundary" && stateFingerprint.PositionId != InProcessDriver.Boundary)
-                    status = "boundary-not-verified";
-            }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { status = "cancelled"; }
         catch (Exception exception)
@@ -416,6 +406,28 @@ internal static class HarnessRun
             // Never include credentials or opaque action references in artifacts.
             status = "error:" + exception.GetType().Name;
             Console.Error.WriteLine($"Campaign {ordinal}: {status} after {rows.Count} accepted owner submissions.");
+        }
+        if (config.VerifyState && worker is { CampaignCreated: true })
+        {
+            // Verification is independent of owner-loop success. HTTP diagnostics record
+            // verification failures without replacing an already failed owner status.
+            try
+            {
+                stateFingerprint = await worker.VerifyAsync(id).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                Console.Error.WriteLine($"Campaign {ordinal}: verification-error:{exception.GetType().Name}.");
+            }
+            if (status is "turn2-reserve" or "stage-2-boundary")
+            {
+                if (stateFingerprint is null) status = "verification-failed";
+                else if (status == "turn2-reserve" && (stateFingerprint.GameTurn != 2
+                    || stateFingerprint.PositionId != "land.position.operation-1.first-player.reserve-designation"))
+                    status = "boundary-not-verified";
+                else if (status == "stage-2-boundary" && stateFingerprint.PositionId != InProcessDriver.Boundary)
+                    status = "boundary-not-verified";
+            }
         }
         if (full && config.BaseUrl is null && created)
         {

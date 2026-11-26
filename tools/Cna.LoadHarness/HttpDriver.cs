@@ -20,6 +20,8 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
     private readonly string prefix;
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
+    internal bool CampaignCreated { get; private set; }
+
     internal HttpDriver(HarnessConfig config, Uri address, string secret, HttpRunControl control,
         Action<string, string, string, string, double> record, string prefix)
     {
@@ -44,6 +46,7 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
             request.ScenarioId, timing = timingJson.RootElement,
         }, root => root.GetProperty("campaignId").GetString() == id ? true : throw new JsonException("Campaign mismatch."),
             "create", operatorCall: true, expected: HttpStatusCode.Created).ConfigureAwait(false);
+        CampaignCreated = true;
 
         var seats = new List<CampaignSeatCredential>();
         foreach (var audience in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
@@ -123,7 +126,7 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
     private async Task<T> Send<T>(string path, object? body, Func<JsonElement, T> parse, string operation,
         string audience = "", string stage = "", bool operatorCall = false, HttpStatusCode expected = HttpStatusCode.OK)
     {
-        await control.EnterAsync().ConfigureAwait(false);
+        await control.EnterAsync(verification: operation == "verify").ConfigureAwait(false);
         var watch = Stopwatch.StartNew();
         var outcome = "error";
         try
@@ -131,7 +134,8 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
             using var request = new HttpRequestMessage(body is null ? HttpMethod.Get : HttpMethod.Post, path);
             if (body is not null) request.Content = JsonContent.Create(body, options: Json);
             if (operatorCall) request.Headers.Add("X-Sandtable-Operator", secret);
-            using var response = await client.SendAsync(request).ConfigureAwait(false);
+            using var response = await client.SendAsync(request, operation == "verify"
+                ? control.VerificationCancellation : CancellationToken.None).ConfigureAwait(false);
             if (response.StatusCode != expected)
             {
                 outcome = "http-" + (int)response.StatusCode;

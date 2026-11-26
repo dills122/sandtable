@@ -190,9 +190,11 @@ HTTP-only options:
 | `--stop-error-rate <0..1>` | Stop admission when cumulative real request errors / completed HTTP requests exceeds limit |
 
 Both cliff gates are opt-in and evaluated online without a warmup. In-flight calls
-finish, pending/ramping/thinking workers stop, and partial artifacts are written
+finish, pending/ramping/thinking owner loops stop, and optional read-only verification
+still runs for created campaigns within the same concurrency cap. Partial artifacts are written
 with `stoppedOnCliff`, `cliffReason`, and exit 1. This is a capacity test, not a
-retrying client. `--hot-pool` continues to cap the launched Postgres pool;
+retrying client. Explicit user cancellation (Ctrl-C) also cancels verification.
+`--hot-pool` continues to cap the launched Postgres pool;
 it does not limit HTTP campaign workers. Keep paced runs within the one-hour
 decision budget if comparing fingerprints.
 
@@ -213,8 +215,8 @@ discovered and fallback owner offers have been exhausted; Turn 2 Reserve require
 accepted declarations and the observed open position, including Stage 2/3
 and Turn 2 declaration cuts. This proves the public checkpoint path, not the
 private End of Turn history or authoritative replay by itself. The optional
-`--verify-state` flag adds a read-only operator verification after each campaign
-finishes; it does not drive decisions or expose private committed revisions to
+`--verify-state` flag adds a read-only operator verification after each created campaign
+finishes, including partial or failed campaigns; it does not drive decisions or expose private committed revisions to
 the owner driver.
 
 ## Output (version 1)
@@ -249,8 +251,10 @@ contains the verified persisted chain head, reconstructed snapshot hash, event
 count (including genesis), canonical event byte count, checkpoint position and
 game turn. The aggregate state hash is computed over the ordered fingerprint
 objects as JSONL; a failed verification leaves that campaign fingerprint and
-the aggregate null and fails the run. The existing decision hash calculation
-is unchanged.
+the aggregate null and fails the run. Verification failures are recorded separately
+in `diagnostics.jsonl` (`operation: verify`), retaining any existing owner-loop failure
+status. A successful owner loop with failed verification becomes `verification-failed`.
+The existing decision hash calculation is unchanged.
 
 Compare the reconstruction hashes independently of the persisted chain hashes:
 record hashes bind opaque owner references, which use fresh host randomness.
