@@ -1,5 +1,10 @@
 # Read-only "what is open for my seat" (issue #621)
 
+> **2026-11-26 follow-up:** Discovery is now occurrence-aware for all three synthetic stages
+> and the successor-turn prelude (#640, #649–#651). #666 reports the retained Stage 1 second-side
+> Reaction window via `ruleNotImplemented`, without legal refs; this is not a resolution.
+> Turn 2 Reserve is an open, unaccepted checkpoint, not a playable next turn.
+
 Status: implemented in this PR (route, catalog, tests). Resolves #621 gaps 1-3 and the Host side of gap 4's data.
 
 ## Route

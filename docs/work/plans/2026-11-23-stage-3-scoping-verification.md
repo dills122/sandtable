@@ -1,5 +1,11 @@
 # Stage 3 scoping — verification against actual code (2026-11-23)
 
+> **2026-11-26 follow-up:** This is a dated baseline, not the current implementation ledger.
+> #640, #645, #648–#650 and #658 cover bounded synthetic Stage 2/3 HTTP progression and real
+> Combat rounds; #646, #651 and #652 prove Turn 1 through the next turn’s open Reserve.
+> Turn 2 acceptance and later turns, native Reaction (#655) and executor migration remain open.
+> See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 **Status:** research/scoping only. No code changed. Written while MTS-TASK-005/006
 (Stage 2 Movement/Breakdown/Combat) is still landing, to answer ahead of time whether
 Stage 3 genuinely mirrors Stage 2 or hides new surface area — per the owner's request to

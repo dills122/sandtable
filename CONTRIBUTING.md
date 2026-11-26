@@ -17,7 +17,7 @@ dotnet build Sandtable.slnx --no-restore
 just test-suite contracts
 ```
 
-[Project setup](README.md#start-run-and-develop) and the
+[Project setup](README.md#getting-started) and the
 [Exercise Runner runbook](docs/runbooks/exercise-runner.md) cover local commands.
 
 `just setup` performs the version check and restore. Use focused suites during iteration;
@@ -77,7 +77,8 @@ set `AI_CENTRAL_HOME` for another location. The allowlisted seeder preserves wor
 
 CI row discovery validates the compiled xUnit `4.0.2` formatter and the reviewed data
 providers before preparing complementary Core shards. The C# helper and Python proof reader
-both accept only this reviewed version. For a future runner upgrade, compare actual discovery,
+both accept only this reviewed version. New or removed rows do not require timing-weight registration;
+see the [manifest guide](.github/scripts/long-suite-weights.md). For a future runner upgrade, compare actual discovery,
 provider rows and formatter controls before changing both guards; unknown versions fail closed.
 See the [xUnit release notes](https://xunit.net/releases/v3/4.0.2).
 

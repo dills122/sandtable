@@ -397,7 +397,7 @@ and retained history. The [cycle-control packet](../../docs/specs/combat-cycle-c
 repeat/finish and Movement exception expiry:19 cases/64 traces,164 cuts. Its exhausted-ammunition
 continuation surface remains private; D2c.4 now composes full history, armed Combat assessment and
 Snapshot integration evidence. Later dormant World7 and codec work is summarized in the current
-[delivery table](../../README.md#project-at-a-glance); Combat gameplay remains inactive.
+[delivery table](../../README.md#where-things-stand); Combat gameplay remains inactive.
 
 See the [pre-alpha roadmap](../../docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.

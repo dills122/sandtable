@@ -1,5 +1,7 @@
 # Spike S1: can `ExerciseSession.Pending` be derived from a sequence cursor? (2026-11-24)
 
+> **2026-11-26 status note:** This is a dated design spike. The synthetic HTTP checkpoint through open Turn 2 Reserve is implemented (#652), but the executor migration proposed here is not complete; Turn 2 acceptance and further progression remain open.
+
 **Status:** spike report. New files only: this doc and
 `tests/Cna.Core.Tests/Exercises/PendingFromCursorSpikeTests.cs`. No production source
 changed, including the three hot files. Executes §3.6 of the synthesis doc (proposal 3's

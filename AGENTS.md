@@ -75,6 +75,7 @@ Do not introduce a microservice where a domain module is sufficient.
 - Test: `dotnet test --solution Sandtable.slnx --no-build`
 - Format check: `dotnet format Sandtable.slnx --verify-no-changes --no-restore`
 - Run locally: `dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj`
+- Markdown-only changes: `just docs-links` (Lychee 0.24.2)
 - Full local gate: `just check`
 - Same gate, concurrent shards and the known Orleans outlier excluded: `just check-fast`
 - Focused local suites: `just test-suite host` (also `core`, `runner`, `contracts`, `boundary`)

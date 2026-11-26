@@ -378,7 +378,10 @@ An **Exercise** is one fresh local simulation. A **Maneuver** is an ordered set 
 optional paired profiles with trusted local artifacts and deterministic replay checks.
 
 `Cna.LoadHarness` is a plain technical name for a standalone developer tool that
-loads the Host through real campaign grains; it is not an authoritative domain.
+exercises actual campaign grains either in-process or over the Development loopback HTTP API;
+it is not an authoritative domain. Its synthetic checkpoint and full legal-choice policies,
+coverage and optional replay fingerprints are developer evidence, distinct from Exercises and
+Maneuvers. See the [harness README](tools/Cna.LoadHarness/README.md).
 
 **War College** reserves the future evaluation environment: commander/persona comparisons,
 tournaments, rule variants and strategy benchmarking. Existing Exercise/Maneuver reports are

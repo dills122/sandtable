@@ -1,5 +1,7 @@
 # Operation-Stage Entry v1 Technical Design
 
+> **2026-11-26 status note:** This v1 design retains its original scope. Later native stage-entry and turn-boundary contracts now support the bounded synthetic HTTP checkpoint through open Turn 2 Reserve (#640, #649–#652, #654); the v1 unsupported-policy guards are unchanged.
+
 **Status:** Implemented; STG-TASK-001 through STG-TASK-022 and STG-TASK-014A complete
 
 **Date:** 2026-08-24

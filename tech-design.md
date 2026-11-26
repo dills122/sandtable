@@ -33,8 +33,9 @@ implemented the storage and scheduling parts:
   campaign plus optimistic-concurrency documents, through `CampaignDurableAuthorityJournal`,
   `CampaignDurableAuthorityJournalStore` and `CampaignJournalWorkingSet`. The working set is a
   process-private, in-memory relational scratch copy for one unit of work; it is not a store, and
-  each unit of work flushes to Postgres in one transaction. The former SQLite file store survives
-  only as the test-side equivalence baseline.
+  each unit of work flushes to Postgres in one transaction. The SQLite file store remains a
+  Development/test equivalence baseline and load-harness option. PostgreSQL is the production
+  journal backend.
 - Outside Development, Orleans clustering and reminders run against Postgres through AdoNet
   (PR #444), so the Host is no longer limited to a single dev machine for clustering. Development
   keeps localhost clustering.
@@ -86,7 +87,19 @@ fails closed on an unclean checkout; exploratory profiles record that limitation
 See the [runbook](docs/runbooks/exercise-runner.md),
 [specification](docs/specs/exercise-harness-v1.md), and
 [design](docs/design/exercise-harness-v1.md) for exact contracts and retained profiles. Public Rules9
-still stops at first-side Combat entry. Private Combat tests/contracts do not activate that path.
+profiles retain their first-side Combat-entry boundary; bounded Combat adoption (020–023) is
+separate from that historical evidence and from the actual HTTP Host path.
+
+The standalone [Cna.LoadHarness](tools/Cna.LoadHarness/README.md) exercises actual campaign
+grains or the Development loopback HTTP surface with SQLite or Postgres. Its open-seat discovery
+uses the current Pending occurrence without changing state; optional HTTP verification reads and
+reconstructs the persisted history without grain activation or writes (#660). The current
+synthetic checkpoint spans all three stages and the next-turn prelude, stopping before accepting
+Turn 2 Reserve; stage/turn identity comes from accepted history and stage CP accounting rolls
+forward through native Reserve V58. The [roadmap](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
+owns current coverage and open Reaction/executor/real-content gates. The separate
+[content-pack design](docs/work/plans/2026-11-25-content-pack-separation-design.md) describes
+future release without source data; it has not been implemented.
 
 ## Accepted local-server and Maproom direction
 

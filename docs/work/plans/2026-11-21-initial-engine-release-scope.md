@@ -1,5 +1,9 @@
 # Initial engine release — agreed scope (frozen 2026-11-21)
 
+> **2026-11-26 status pointer:** The original scope/design/evidence below is unchanged. The
+> real synthetic HTTP checkpoint now reaches open Turn 2 Reserve, not six-turn completion,
+> and native Reaction/executor migration remain open. See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 **Status: owner-agreed scope for the first engine-only pre-alpha release. Do not
 reinterpret or narrow/broaden this without a new explicit owner ruling recorded
 here.** This supersedes informal framing from this session's prior status

@@ -1,5 +1,9 @@
 # Cna.Core public API surface (internal reference)
 
+> **2026-11-26 status pointer:** The original scope/design/evidence below is unchanged. The
+> real synthetic HTTP checkpoint now reaches open Turn 2 Reserve, not six-turn completion,
+> and native Reaction/executor migration remain open. See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 This is a map of the genuinely public (not `internal`) surface of `src/Cna.Core/`
 that a caller outside the `Cna.Core` assembly can use, for engine developers
 working on the Exercise Harness, the Orleans Host, or Core itself. It is not

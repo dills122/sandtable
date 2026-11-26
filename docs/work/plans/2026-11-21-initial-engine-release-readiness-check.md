@@ -1,5 +1,11 @@
 # Initial engine release — readiness check (November 21, 2026)
 
+> **2026-11-26 follow-up:** This is a dated baseline, not the current implementation ledger.
+> #640, #645, #648–#650 and #658 cover bounded synthetic Stage 2/3 HTTP progression and real
+> Combat rounds; #646, #651 and #652 prove Turn 1 through the next turn’s open Reserve.
+> Turn 2 acceptance and later turns, native Reaction (#655) and executor migration remain open.
+> See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 This checks every item in
 [the frozen scope doc](2026-11-21-initial-engine-release-scope.md) against
 the actual code and tests, today. It does not take any other document's

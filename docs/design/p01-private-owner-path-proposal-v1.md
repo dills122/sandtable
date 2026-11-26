@@ -23,7 +23,7 @@ absences and zero admitted actions. Public Maproom and native P01 stay closed.
   fixture. `TemporaryOutwardActionIngress` is host-private and no public
   submit/receipt route calls it. These are useful patterns, not durable P01
   seat provenance or a P01 store. No executable Chronicle/Archives persistence
-  module is present for this path. [Current host limits](../../README.md#project-at-a-glance),
+  module is present for this path. [Current host limits](../../README.md#where-things-stand),
   [host seam](../../src/Cna.OrleansHost/Api/TemporaryOutwardActionIngress.cs),
   [session store](../../src/Cna.OrleansHost/Api/LocalSessionStore.cs), and
   [temporary grain](../../src/Cna.OrleansHost/TemporaryCampaignGrain.cs)

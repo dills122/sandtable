@@ -89,7 +89,7 @@ outside any UI.
 | `src/Cna.Game.Contracts` | The typed HTTP contract between Maproom and the host, including a generated client. |
 | `src/Cna.Intelligence.Gateway` / `Cna.Intelligence.Contracts` | The gRPC boundary for any future model-backed commander. |
 | `src/Cna.ExerciseRunner` | CLI for running and comparing deterministic simulation scenarios without a UI. |
-| `tools/Cna.LoadHarness` | [Development-only in-process Host load harness](tools/Cna.LoadHarness/README.md); standalone build outside the solution. |
+| `tools/Cna.LoadHarness` | [Development-only Host load harness (in-process and HTTP)](tools/Cna.LoadHarness/README.md); standalone build outside the solution. |
 | `src/Cna.DecisionWorker`, `Cna.ServiceDefaults` | Supporting services for the Aspire stack. |
 | `docs/` | Specs, design docs, research notes, and the current roadmap. |
 
@@ -102,11 +102,12 @@ outside any UI.
 | Area | Status | What that means |
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands and events, replay, checkpoints, and side-safe action boundaries are implemented. |
-| Playable rule path | Working through Combat entry | A runner executes Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and the continual turn cycle | Bounded native implementation | Contact-based Core and normal durable Host cover an initial assault plus two selected repeated assaults, settlement, custody, and Reserve Release. Development loopback access is not public Combat certification; broader support and evidence gates remain open. |
-| Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and evidence bundles, all from the CLI. |
+| Synthetic HTTP rule path | Turn 1 through open Turn 2 Reserve | Fresh synthetic campaigns traverse all 112 Turn 1 positions, both sides of all three Operation Stages, then End of Turn and the next prelude. Cold replay matches live at every tested boundary. |
+| Combat and continual turn cycle | Bounded native implementation | Real HTTP Combat owner rounds work at Stages 2 and 3 (#658), with stage-local movement accounting (#654). Reaction and later-turn acceptance remain unsupported; this is not public Combat certification. |
+| Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and bounded Combat Runner adoption (020–023); separate from HTTP proof. |
+| Load harness | Working, synthetic only | Standalone in-process and HTTP drivers, SQLite/Postgres stores, policy/coverage reporting and optional operator state verification. |
 | User interface (Maproom) | Angular foundation, local read-only preview, plus a wired but unreachable action-submission path | A synthetic fixture study and a local, URL-backed campaign read mode. A real HTTP action-submission adapter and a real backend trust signal (bootstrap's `actionSubmissionTrusted`) are now wired end to end into `canSubmit` and covered by a browser test. No mounted route yet advances a campaign past its first System-only decision, so the bundled fixture never reaches a human decision point: nothing is actually clickable yet. |
-| Published scenario | Source data in progress | Six-turn Graziani's Offensive is the first target; historical campaign admission and the required Combat loop remain incomplete. |
+| Published scenario | Source data in progress | Six-turn Graziani's Offensive is the first target; historical campaign admission, content-pack separation, supply and victory remain incomplete. |
 | Durable save and resume | Durable Host implemented; product gate open | PostgreSQL + Marten journal and cold replay support bounded campaigns. Journal schema 14 persists Selection, RBA, Force, Retreat, Custody, Reserve Release and cycle-control deadlines at decision entry. Per-campaign Orleans grain timers, backed by reminders, expire those deadlines without any owner query. HOST-PUB-001 publication certification and user-facing campaign lifecycle acceptance remain open. |
 | Model-backed commanders | Scaffold only | The gateway and worker processes exist. No model provider is configured, and AI will not hold authority over the rules. |
 
@@ -116,37 +117,17 @@ What you can do today:
 
 - build the engine and run the full test suite
 - launch the Aspire service stack
-- simulate the currently checked Movement, Reaction, and Breakdown paths
-- exercise native Combat on bounded local paths (public Combat certification remains open)
+- drive a fresh synthetic campaign through all three Operation Stages over Development-only HTTP
+- run bounded native Combat paths and verify deterministic replay, including selected real owner rounds
+- use the standalone load harness to exercise the open Turn 2 Reserve checkpoint
 
-**You cannot yet play a public campaign end to end.**
+**You cannot yet play a public campaign end to end.** Turn 2 Reserve acceptance and Movement,
+Turns 3–6, native Reaction resolution, full supply/victory, real scenario content, executor migration,
+and end-user lifecycle acceptance remain open. The original Rules9 Exercise Runner profiles stop at
+Combat entry; bounded Combat adoption (Tasks 020–023) is a separate developer path, not proof of
+full HTTP play or a six-turn Runner.
 
-Recent rule-path changes:
-
-- **Acting last.** When an initiative holder elects to act last, the normal Combat owner and its
-  timeout use the recorded first-acting side. Older decisions remain replayable.
-- **Zones of control (World6).** World6 can calculate source-qualified ZOC, but its admitted content
-  profile still excludes the stacks needed to produce one. Historical armor, reconnaissance and
-  anti-tank ratings can feed that calculation without being admitted for combat. Artillery
-  position and player-safe ZOC disclosure remain open.
-- **The second acting side.** Through the normal journal:
-  1. An owner can explicitly pass the first side's convoy, rail, towing, maintenance and patrol
-     phases. The checkpoint then reaches the second side's Reserve Designation.
-  2. The second side can designate eligible units and complete its reserve phase.
-  3. An eligible unit can move one hex and stop. Contacts and any Reaction window are retained
-     through replay.
-  4. An explicit owner completion advances to Breakdown when no Reaction is pending. A bounded
-     no-breakdown step (V46) then leads into the second side's Combat selection (V47).
-
-  Still incomplete: Reaction handling after a second-side move, vehicle breakdown, and the optional
-  convoy, rail, towing, maintenance and patrol activities themselves.
-- **Exercise Runner and Combat.** Runner setups still stop at Combat entry
-  ([#448](https://github.com/dills122/sandtable/issues/448)). Task 020 is adding a Core-owned,
-  audience-safe Combat decision surface so the runner can eventually drive full games through
-  Combat. That work is partial and not certified; see the
-  [Task 020 scoping note](docs/work/plans/2026-11-20-task-020-combat-legal-actions-scoping.md).
-
-The [October 24 baseline evidence matrix](docs/work/reviews/2026-10-24-rc-baseline-evidence.md)
+The historical [October 24 baseline evidence matrix](docs/work/reviews/2026-10-24-rc-baseline-evidence.md)
 separates these paths from original P01 certification and remaining release gates.
 
 ### Graziani's Offensive: scenario and setup progress
@@ -271,16 +252,45 @@ grouped control are unadmitted, and general cross-sheet movement remains blocked
 
 ### Synthetic HTTP turn-boundary checkpoint
 
-The opt-in `rules-lab.breakdown.turn-boundary.gt1.v1` and `rules-lab.breakdown.turn-boundary.gt12.v1`
-setups drive a complete initial turn and the successor turn's prelude to its first Reserve
-Designation opening. The second setup crosses the Fall/Winter boundary. Existing setups are
-unchanged and refuse this rollover path. The bound is the lower of the declared scenario end and
-Weather's maximum game turn; terminal scoring and later-turn Reserve submission are not wired.
-The Development/loopback HTTP host replays and drains these boundaries through the existing
-stage-entry declaration and Reserve opening names. Later-turn Reserve submission remains unsupported.
-The first native Reserve decision of each later Operation Stage uses event contract V58 to advance
-the shared per-stage expenditure ledger; existing Stage 1 Reserve events retain V43. The successor
-turn's read-only Reserve opening validates the same factory without committing it.
+As of 2026-11-26 (main through #669), the real Development/loopback HTTP Host can
+create a fresh synthetic campaign, discover openings for both seats, traverse all 112
+Turn 1 catalog positions across Operation Stages 1–3, and cross End of Turn through
+Turn 2 initiative declaration and weather to the **open, unaccepted** Reserve Designation.
+The completion/pass checkpoint proof (#646, #651, #652) compares cold replay with live state
+at each stage/turn boundary and repeats identical seeded canonical event bytes. The additive
+GT12→13 fixture also crosses the season boundary. Current turn is derived from accepted history,
+with the initial setup stamp as the starting value, never treated as the current turn. Stage 2/3 Movement has stage-local CP accounting (native Reserve
+V58, #654); occurrence-scoped HTTP owner and System continuations (#640, #645, #648–#650)
+and bounded real Combat owner rounds (#658) have separate replay tests. The combat-capable
+GT1 fixture (#669) additionally proves selected owner outcomes and seeded full-turn replay.
+
+This is a synthetic engine checkpoint, not a complete scenario, not exhaustive legal-branch
+coverage, and not an end-user release. Native Reaction-triggering moves outside the initial-turn
+Stage 1 second-side window refuse deterministically (`rule-not-implemented`, HTTP 409,
+#656); that retained window is explicitly marked unsupported in discovery (#666). #655 tracks
+native Reaction resolution/closure and resumption of the interrupted Movement occurrence; the
+E4b design is not implemented. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
+as do source-backed campaign admission, supply/victory rulings, executor migration, release
+packaging and Maproom play. The intended distribution excludes source-derived data; the
+[content-pack separation design](docs/work/plans/2026-11-25-content-pack-separation-design.md)
+is not yet implemented, and source-derived research/data remain in the repository.
+
+The opt-in setups are `rules-lab.breakdown.turn-boundary.gt1.v1`,
+`rules-lab.breakdown.turn-boundary.gt12.v1`, and `rules-lab.breakdown.turn-boundary.combat.gt1.v1`.
+Existing non-opt-in setups do not roll over. The horizon is bounded by scenario end and Weather's
+maximum game turn. Selection of V58 resets stage-local expenditure only on the first accepted
+Reserve decision of a new stage; subsequent decisions in that stage retain V43. The successor
+turn's opening validates the factory without committing it.
+
+### Simulation and load testing
+
+See [Cna.LoadHarness](tools/Cna.LoadHarness/README.md) for standalone build/run commands,
+`--until turn2-reserve`, checkpoint and full legal-choice policies, coverage reporting, and SQLite
+or Postgres with in-process or real HTTP drivers. The HTTP `--verify-state` option uses the read-only
+Development/loopback operator-only `GET /api/v2/campaigns/{id}/verification` route (#660, #668),
+not player authority. The reported
+Bot S2 sweep on main `c6fda932` completed 242/256 synthetic campaigns; all 14 partial campaigns
+hit the retained Reaction gap. This is reported measurement, not a release guarantee.
 
 ### Further detail
 
@@ -304,6 +314,10 @@ so `dotnet test` needs `--solution` for the whole solution or `--project` for on
 bare positional test path is not supported.
 
 ### First checkout
+
+The commands below are developer recipes checked against repository configuration. They were not
+rerun as part of the 2026-11-26 documentation-only refresh; use the linked test evidence for the
+current checkpoint.
 
 ```sh
 git clone https://github.com/dills122/sandtable.git
@@ -425,18 +439,23 @@ older passing run as current evidence on Combat contracts specifically.
 CI runs in three tiers:
 
 - **Pull requests** run only the `fast-*`/`r02-*`/`exercise`/`contracts` shards (`long-*`
-  excluded), targeting under ten minutes. PRs confined to `site/`, `src/Cna.Maproom/`,
+  excluded), with a roughly 13–15 minute critical-path estimate before queueing ([November 25
+  redesign note](docs/work/2026-11-25-ci-redesign-decision.md)). PRs confined to `site/`,
+  `src/Cna.Maproom/`,
   `tools/`, `deploy/`, or documentation-only changes skip .NET work; `format` and `verify`
   still report success. Closing a PR cancels superseded CI runs.
-- **Pushes to `main`** run the full suite as the post-merge safety net; new pushes cancel older
-  runs.
+- **Pushes to `main`** run the full suite, including the eight `long-*` shards, as the post-merge
+  safety net; new pushes cancel older runs. #647 balances long shards against actual concurrency.
+  The [#669 main run](https://github.com/dills122/sandtable/actions/runs/45804203637) passed in
+  23m31s, including preparation and Orleans suites; timing varies with workload and queueing.
 - **Nightly** CI runs the full suite in a separate concurrency group, including `long-*`.
   The separate `.github/workflows/ci-nightly-heavy.yml` runs the six `p01-*` proof families
   and Orleans. Offline documentation links run on Markdown changes or manual dispatch.
 
-Adding tests requires registering each new row by adding one new entry file under
-`.github/scripts/long-suite-weights/` (see the
-[long-suite manifest guide](.github/scripts/long-suite-weights.md)). An optional, label-triggered PR
+Adding, renaming or removing ordinary tests requires no timing-weight registration (#618). Discovery
+plans missing weights conservatively and ignores deleted rows while enforcing exact executed-row
+coverage. Measured overrides and scheduled refreshes live under `.github/scripts/long-suite-weights/`;
+see the [long-suite manifest guide](.github/scripts/long-suite-weights.md). An optional, label-triggered PR
 review pass for high-risk changes is also available; see the
 [runbook](docs/runbooks/optional-code-review.md). It supplements ordinary CI and review, and does
 not replace either.
@@ -530,7 +549,9 @@ are used only to identify the game that Sandtable implements.
 The repository contains no original box art, logos, counter art, map or chart images, scans, or
 rulebook pages. It does contain transcribed charts and tables, unit rosters, and a map derived from
 third-party data, plus notes that paraphrase rules with section citations. Rights-holder review of
-that source-derived data has not been completed; see the carve-out above.
+that source-derived data has not been completed; see the carve-out above. The engine-only release
+is intended to ship without that data, with a local content pack supplied separately; separation is
+planned, not yet implemented. No engine release is currently shipped.
 
 Short form for the site footer: *Independent, unofficial project. Not affiliated with or endorsed by
 SPI or any rights holder of The Campaign for North Africa. No original art, scans, or rulebook pages

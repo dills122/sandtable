@@ -1,5 +1,9 @@
 # Codebase overhaul direction: dispatch, duplication, and structural future-proofing (2026-11-23)
 
+> **2026-11-26 status pointer:** The original scope/design/evidence below is unchanged. The
+> real synthetic HTTP checkpoint now reaches open Turn 2 Reserve, not six-turn completion,
+> and native Reaction/executor migration remain open. See the [current roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
 **Status:** direction document for owner review and sync — no code in this pass. Written
 after two read-only audits (2026-11-22/23) found the real quality problems in this
 codebase. This doc goes one level deeper than those audits: for each problem, it names

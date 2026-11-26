@@ -1,5 +1,9 @@
 # Load harness L1: Stage 1 opening discovery and ordering
 
+> **2026-11-26 follow-up:** L1 measurements below are the Stage 1 discovery baseline.
+> The standalone [load harness](../../tools/Cna.LoadHarness/README.md) now has both drivers,
+> PostgreSQL, open Turn 2 Reserve checkpoint, full legal-choice policy and verified state fingerprints.
+
 ## Scope and result
 
 Measured against the existing Development, loopback-only v2 HTTP fixture on the

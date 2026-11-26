@@ -1,8 +1,9 @@
 # Exercise Runner runbook
 
 Run these commands from the repository root. These are synthetic rules-laboratory fixtures,
-not published scenario content or a playable campaign. Public Rules9 actions stop at first-side
-Combat entry. Commands below document supported profiles; historical evidence does not certify
+not published scenario content or a playable campaign. These retained Rules9 profiles stop at
+first-side Combat entry; bounded Combat Runner adoption is separate. For the real HTTP synthetic
+Turn 1-to-Turn 2 Reserve checkpoint, use the [load harness](../../tools/Cna.LoadHarness/README.md). Commands below document supported profiles; historical evidence does not certify
 their current admission or replace a new run. Read the
 [verification inventory](../research/combat-verification-pin-maintenance.md) and
 [simulator check-in](../research/simulator-post-merge-checkin.md) for known fixture/pin limitations.
@@ -130,4 +131,4 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
 
 
 See the [Exercise Harness specification](../specs/exercise-harness-v1.md),
-[design](../design/exercise-harness-v1.md), and [project setup](../../README.md#start-run-and-develop).
+[design](../design/exercise-harness-v1.md), and [project setup](../../README.md#getting-started).

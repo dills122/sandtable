@@ -89,8 +89,9 @@ suite failures. Exact-head CI is required before merge.
 Available Core chunks: `fast-01` through `fast-04`, `long-01` through `long-08`,
 and `r02-1` through `r02-3`. They reuse CI's compiled Release discovery, timing
 manifest and R02 allocation, including exact parameterized rows. Discovery runs
-before each shard and fails on stale/missing manifest rows; use class/method
-selection for newly added tests until the reviewed CI manifest is updated.
+before each shard. Missing timing weights receive conservative estimates and obsolete weights
+are ignored; exact discovery/execution coverage remains mandatory. Ordinary tests need no manifest
+registration. See the [timing guide](../../.github/scripts/long-suite-weights.md).
 
 Shard preparation builds the solution and discovery helper. `--dry-run` for a
 shard still builds/discovers to print its actual commands; it never runs tests.

@@ -1,3 +1,7 @@
+For project architecture, authority boundaries, current test commands and documentation ownership,
+follow [AGENTS.md](AGENTS.md). Current delivery status lives in the
+[roadmap](docs/roadmap/pre-alpha-roadmap.md). Historical research and reviews retain their original cut.
+
 <!-- codebase-memory-block-version: 1 -->
 ## Codebase search: use codebase-memory-mcp
 

@@ -1,5 +1,10 @@
 # CI redesign: measurement and decision (2026-11-25)
 
+> **2026-11-26 follow-up:** #631 implemented obsolete-run cancellation and narrow-path filtering;
+> #647 fixed long-shard balancing against actual lane caps. Main #669’s
+> [full CI run](https://github.com/dills122/sandtable/actions/runs/45804203637) passed in 23m31s.
+> The measurements below are the original queue/critical-path baseline, not current wall time.
+
 **Status:** Decision recorded; implementation PRs pending. Owner-controlled changes remain out of scope.
 
 Owner problem: CI is a blocker. Runs queue for an hour, every rebase restarts 25-60 minutes, semantic collisions reach `main`, CodeQL is red or queued, and 13 PRs were merged without waiting. This note measures why and decides what to change. Labels: **VERIFIED** (measured from `gh api` data pulled 2026-11-25 17:20 UTC, window 2026-11-22 17:20 to 2026-11-25 17:20 UTC, 913 runs), **DOC** (GitHub documentation or an earlier repo note), **ASSUMED** (extrapolated; stated as such). Earlier context: [2026-11-24 wall-clock measurement](2026-11-24-ci-wall-clock-measurement.md), [2026-10-15 runtime note](ci-runtime-optimization-2026-10-15.md).
