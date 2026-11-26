@@ -19,7 +19,7 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -29,3 +29,5 @@ jobs:
           global-json-file: global.json
       - run: dotnet build tools/Cna.LoadHarness/Cna.LoadHarness.csproj -c Release
       - run: python3 tools/Cna.LoadHarness/test_harness.py
+        env:
+          SANDTABLE_LOAD_POSTGRES_TEST: "1"

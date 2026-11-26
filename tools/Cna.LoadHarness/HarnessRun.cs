@@ -5,6 +5,7 @@ using System.Runtime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Cna.Core.Actions;
 using Cna.ExerciseRunner.Artifacts;
 using Cna.ExerciseRunner.Execution;
@@ -45,29 +46,54 @@ internal static class HarnessRun
         Directory.CreateDirectory(config.Output);
         Directory.CreateDirectory(Path.Combine(config.Output, "campaigns"));
         Directory.CreateDirectory(Path.Combine(config.Output, "seed-ledgers"));
-        WriteJson(Path.Combine(config.Output, "run-manifest.json"), new
+        var extended = config.Store == "postgres" || config.Until != "stage2" || config.HotPool != 16;
+        var manifest = new
         {
             contractVersion = 1,
             harnessVersion = typeof(HarnessRun).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion,
             hostVersion = typeof(CampaignSeatCredential).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion,
             driver = "inproc",
-            backing = "sqlite",
+            backing = config.Store,
             config.Campaigns,
             config.Policy,
             config.RootSeed,
             config.MaxStepsPerCampaign,
-            scenario = InProcessDriver.SetupId,
+            scenario = config.Until == "stage2" ? InProcessDriver.SetupId : InProcessDriver.TurnBoundarySetupId,
             labSeed = InProcessDriver.LabSeed,
             decisionBudgetMs = InProcessDriver.BudgetMs,
             processorCount = Environment.ProcessorCount,
             serverGc = GCSettings.IsServerGC,
-        });
-        await using var driver = new InProcessDriver();
+        };
+        if (extended)
+            WriteJson(Path.Combine(config.Output, "run-manifest.json"), Extend(manifest, new { config.Until, config.HotPool }));
+        else
+            WriteJson(Path.Combine(config.Output, "run-manifest.json"), manifest);
+        await using var driver = new InProcessDriver(config);
         await driver.StartAsync(cancellationToken).ConfigureAwait(false);
+        using var metrics = extended ? new RunMetrics(driver.Postgres) : null;
+        using var sampleStop = new CancellationTokenSource();
+        using var slots = new SemaphoreSlim(config.HotPool);
+        if (metrics is not null) await metrics.SampleAsync(cancellationToken).ConfigureAwait(false);
         var timer = Stopwatch.StartNew();
-        var results = await Task.WhenAll(Enumerable.Range(0, config.Campaigns).Select(ordinal =>
-            Task.Run(() => DriveAsync(driver, config, ordinal, cancellationToken), CancellationToken.None))).ConfigureAwait(false);
-        timer.Stop();
+        var polling = metrics?.PollAsync(sampleStop.Token) ?? Task.CompletedTask;
+        CampaignResult[] results;
+        try
+        {
+            results = await Task.WhenAll(Enumerable.Range(0, config.Campaigns).Select(ordinal =>
+                Task.Run(async () =>
+                {
+                    await slots.WaitAsync().ConfigureAwait(false);
+                    try { return await DriveAsync(driver, config, ordinal, cancellationToken).ConfigureAwait(false); }
+                    finally { slots.Release(); }
+                }, CancellationToken.None))).ConfigureAwait(false);
+        }
+        finally
+        {
+            timer.Stop();
+            await sampleStop.CancelAsync().ConfigureAwait(false);
+            await polling.ConfigureAwait(false);
+        }
+        if (metrics is not null) await metrics.SampleAsync(CancellationToken.None).ConfigureAwait(false);
         var fingerprints = results.Select(r => new { r.CampaignOrdinal, r.Status, r.Steps, r.DecisionFingerprint }).ToArray();
         WriteJson(Path.Combine(config.Output, "fingerprints.json"), new
         {
@@ -76,7 +102,7 @@ internal static class HarnessRun
         });
         var diagnostics = results.SelectMany(r => r.Diagnostics).ToArray();
         File.WriteAllText(Path.Combine(config.Output, "diagnostics.jsonl"), Lines(diagnostics));
-        var completed = results.Count(r => r.Status == "stage-2-boundary");
+        var completed = results.Count(r => r.Status == (config.Until == "stage2" ? "stage-2-boundary" : "turn2-reserve"));
         var steps = results.Sum(r => r.Steps);
         var summary = new
         {
@@ -99,8 +125,9 @@ internal static class HarnessRun
             }, StringComparer.Ordinal),
             perCampaign = results.Select(r => new { r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs }),
         };
-        WriteJson(Path.Combine(config.Output, "summary.json"), summary);
-        Console.WriteLine(JsonSerializer.Serialize(summary, Json));
+        object outputSummary = metrics is null ? summary : Extend(summary, metrics.Snapshot());
+        WriteJson(Path.Combine(config.Output, "summary.json"), outputSummary);
+        Console.WriteLine(JsonSerializer.Serialize(outputSummary, Json));
         return completed == config.Campaigns ? 0 : 1;
     }
 
@@ -121,6 +148,9 @@ internal static class HarnessRun
         };
         var status = "step-limit";
         var previous = "";
+        var longRun = config.Until == "turn2-reserve";
+        var declarations = 0;
+        var endOfTurnVerified = false;
         try
         {
             var seats = await driver.CreateAsync(id).ConfigureAwait(false);
@@ -134,8 +164,16 @@ internal static class HarnessRun
                     var discovered = await Measure(seat, "", "discover", () => driver.DiscoverAsync(seat)).ConfigureAwait(false);
                     foreach (var entry in discovered.Open)
                     {
-                        if (entry.OpeningStage == BoundaryStage) { boundaryAdvertised = true; continue; }
-                        if (entry.RuleNotImplemented) continue;
+                        if (!longRun && entry.OpeningStage == BoundaryStage) { boundaryAdvertised = true; continue; }
+                        if (entry.RuleNotImplemented)
+                        {
+                            if (longRun) throw new InvalidOperationException("Unsupported discovered opening.");
+                            continue;
+                        }
+                        if (longRun && declarations == 3 && entry.OpeningStage == BoundaryStage && !endOfTurnVerified)
+                            endOfTurnVerified = await driver.AtBoundaryAsync(id, "land.position.end-of-turn").ConfigureAwait(false);
+                        // B6 follows the synthetic checkpoint path without optional movement.
+                        if (longRun && entry.OpeningStage is "movement" or "second-movement" or "stage-entry-movement") continue;
                         foreach (var element in entry.ActingElementIds)
                         {
                             var cut = await TryOpen(seat, entry.OpeningStage, element, "open").ConfigureAwait(false);
@@ -146,7 +184,7 @@ internal static class HarnessRun
                 // A Stage 2 opening alone is not proof: L1 observed it before Stage 1 finished.
                 if (boundaryAdvertised && await driver.AtBoundaryAsync(id).ConfigureAwait(false))
                 { status = "stage-2-boundary"; break; }
-                if (openings.Count == 0)
+                if (!longRun && openings.Count == 0)
                 {
                     foreach (var fallback in Fallbacks.Where(row => row.Previous == previous))
                     {
@@ -164,10 +202,47 @@ internal static class HarnessRun
                     { status = "stage-2-boundary"; break; }
                 }
                 if (openings.Count == 0) { status = "unresolved-opening"; break; }
+                // B6 uses discovery only and selects the ordinal-last element of the one open stage.
+                var selected = longRun ? openings.OrderBy(o => o.Element, StringComparer.Ordinal).Last() : openings[^1];
+                if (longRun)
+                {
+                    if (openings.Select(o => (o.Seat.Audience, o.Stage)).Distinct().Count() != 1)
+                    { status = "ambiguous-opening"; break; }
+                    if (declarations == 4 && selected.Stage == "stage-entry-reserve")
+                    {
+                        status = endOfTurnVerified && await driver.AtBoundaryAsync(id, "land.position.operation-1.first-player.reserve-designation").ConfigureAwait(false)
+                            ? "turn2-reserve" : "boundary-not-verified";
+                        break;
+                    }
+                    if (selected.Stage == BoundaryStage && declarations > 0)
+                    {
+                        var position = declarations switch
+                        {
+                            1 => "land.position.operation-2.initiative-declaration",
+                            2 => "land.position.operation-3.initiative-declaration",
+                            3 => "land.position.operation-1.initiative-declaration",
+                            _ => "",
+                        };
+                        if (!await driver.AtBoundaryAsync(id, position).ConfigureAwait(false))
+                        { status = "boundary-not-verified"; break; }
+                    }
+                }
                 if (rows.Count == config.MaxStepsPerCampaign) break;
                 // L1's fixed opening-selection order, independent of the index-selection policy.
-                var selected = openings[^1];
-                var index = bots[selected.Seat.Audience].Choose(selected.Cut.PublicActionRefs.Length);
+                int index;
+                if (longRun && selected.Stage is "reserve-designation" or "second-reserve" or "stage-entry-reserve")
+                {
+                    // The B6 lab exercises reserve completion, not individual designations.
+                    // Filter using the owner's visible choices, never hidden authoritative state.
+                    using var visible = JsonDocument.Parse(selected.Cut.VisibleBytes);
+                    var eligible = visible.RootElement.GetProperty("choices").EnumerateArray()
+                        .Select((choice, offset) => (choice, offset))
+                        .Where(row => row.choice.GetProperty("kind").GetString() == "complete")
+                        .Select(row => row.offset).ToArray();
+                    if (eligible.Length != 1) { status = "unresolved-reserve-completion"; break; }
+                    index = eligible[bots[selected.Seat.Audience].Choose(eligible.Length)];
+                }
+                else index = bots[selected.Seat.Audience].Choose(selected.Cut.PublicActionRefs.Length);
                 var result = await Measure(selected.Seat, selected.Stage, "submit", () => driver.SubmitAsync(
                     selected.Seat, selected.Stage, selected.Element, selected.Cut.Revision,
                     selected.Cut.PublicActionRefs[index]), value => value.IsAccepted ? "ok" : value.RejectionCode ?? "rejected").ConfigureAwait(false);
@@ -175,6 +250,7 @@ internal static class HarnessRun
                 var receipt = CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(result.CanonicalReceipt!);
                 rows.Add(new(ordinal, rows.Count, Audience(selected.Seat), selected.Stage, selected.Element,
                     selected.Cut.PublicActionRefs.Length, index, receipt.CommittedStateVersion));
+                if (selected.Stage is "initiative-order" or BoundaryStage) declarations++;
                 previous = selected.Stage;
             }
         }
@@ -214,6 +290,14 @@ internal static class HarnessRun
             catch (InvalidOperationException) when (operation is "open" or "probe") { code = "unavailable"; throw; }
             finally { diagnostics.Add(new(ordinal, rows.Count, Audience(seat), stage, operation, code, watch.Elapsed.TotalMilliseconds)); }
         }
+    }
+
+    private static JsonObject Extend(object original, object additional)
+    {
+        var result = JsonSerializer.SerializeToNode(original, Json)!.AsObject();
+        foreach (var property in JsonSerializer.SerializeToNode(additional, Json)!.AsObject())
+            result.Add(property.Key, property.Value?.DeepClone());
+        return result;
     }
 
     private static double Percentile(IEnumerable<Diagnostic> values, double fraction)

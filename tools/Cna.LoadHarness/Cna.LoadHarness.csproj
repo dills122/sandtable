@@ -6,6 +6,7 @@
     <Description>Local, in-process load harness for the board-game Host.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Testcontainers.PostgreSql" />
     <ProjectReference Include="../../src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
     <ProjectReference Include="../../src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj" />
   </ItemGroup>
