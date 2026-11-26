@@ -13,14 +13,14 @@ namespace Cna.OrleansHost.Tests;
 // Cna.Core.Tests/Hosting/OccurrenceSlotContinuationTests.cs.
 public sealed partial class CampaignDurableAuthorityJournalTests
 {
-    private sealed record StageTwoSelection(CampaignDurableAuthorityJournal Journal, ManualClock Clock,
+    private sealed record StageTwoSelection(CampaignDurableAuthorityJournal Journal, TimeProvider Clock,
         CampaignCreationRequest Request, CampaignSeatCredential Holder, string Actor);
 
     // Drives Stage 1 -> Stage 2 declaration/reserve/movement completion so the Stage 2 first-side
     // Breakdown (and its Selection round) is current.
-    private static async Task<StageTwoSelection> AdvanceToStageTwoFirstSideSelection(JournalFixture fixture)
+    private static async Task<StageTwoSelection> AdvanceToStageTwoFirstSideSelection(JournalFixture fixture, TimeProvider? trustedClock = null, Action? beforeBreakdown = null)
     {
-        var clock = new ManualClock();
+        var clock = trustedClock ?? new ManualClock();
         var journal = fixture.Create(clock);
         var (request, axis, commonwealth) = AdvanceToSecondCombatSelectionWithAdjacentEnemy(journal);
         var selection = journal.QueryCombatOwnerOpening(commonwealth, "commonwealth-infantry");
@@ -56,8 +56,11 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         const string finish = "stage-entry-movement-completion";
         const string finishKey = "land.stage-entry-movement-completion";
         var completion = await QueryOpeningForOpenSeatTest(outward, holder, finishKey, finish);
-        Assert.Equal(HttpStatusCode.OK, (await outward.SubmitResponse(holder, finishKey, finish,
-            completion.Revision, Assert.Single(completion.Refs))).Status);
+        // The drain after this completion runs the Stage 2 Breakdown and tries to arm its round.
+        beforeBreakdown?.Invoke();
+        var submitted = await outward.SubmitResponse(holder, finishKey, finish,
+            completion.Revision, Assert.Single(completion.Refs));
+        Assert.Equal(HttpStatusCode.OK, submitted.Status);
         return new StageTwoSelection(journal, clock, request, holder,
             holder.Audience == CampaignActionAudience.Axis ? "axis-infantry" : "commonwealth-infantry");
     }
@@ -106,9 +109,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var stage = await AdvanceToStageTwoFirstSideSelection(fixture);
         var before = CampaignExercises.QueryCheckpoint(fixture.Open(stage.Clock).ReadVerified(stage.Request.CampaignId));
         var noAttackBefore = CountAcceptedStep(fixture.Path, stage.Request.CampaignId, "native-combat-no-attack");
-        stage.Clock.Advance(TimeSpan.FromMilliseconds(29_999));
+        ((ManualClock)stage.Clock).Advance(TimeSpan.FromMilliseconds(29_999));
         Assert.False(stage.Journal.TickSelectionRound(stage.Request.CampaignId));
-        stage.Clock.Advance(TimeSpan.FromMilliseconds(1));
+        ((ManualClock)stage.Clock).Advance(TimeSpan.FromMilliseconds(1));
         var cold = fixture.Open(stage.Clock);
         Assert.True(cold.TickSelectionRound(stage.Request.CampaignId));
         Assert.False(cold.TickSelectionRound(stage.Request.CampaignId));
@@ -123,5 +126,35 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         // A late owner submission after the deadline cannot consume or reopen the closed round.
         var late = stage.Journal.SubmitOwnerCombatSelection(stage.Holder, stage.Actor, 0, "stale");
         Assert.False(late.IsAccepted);
+    }
+
+    [Fact]
+    public async Task StageTwoBreakdownWithoutTrustedClockClosesSelectionAndDrainsFromTheReloadedHead()
+    {
+        using var fixture = new JournalFixture();
+        var clock = new TrustedNowFailingClock();
+        var stage = await AdvanceToStageTwoFirstSideSelection(fixture, clock, () => clock.FailTrustedNow = true);
+        // No trusted clock at entry: the round closes as selection-unavailable inside the drain, which
+        // persists the timeout, no-attack and empty Reserve Release in one call. The drain must continue
+        // from the reloaded head, so nothing is left at Combat Selection and no round is armed.
+        var session = fixture.Open(stage.Clock).ReadVerified(stage.Request.CampaignId);
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+        Assert.NotEqual("land.position.operation-2.first-player.movement-and-combat.combat.position-determination",
+            CampaignExercises.QueryCheckpoint(session).PositionId);
+        Assert.Null(stage.Journal.GetSelectionRoundDeadlineMs(stage.Request.CampaignId));
+        Assert.Equal(1, CountAcceptedStep(fixture.Path, stage.Request.CampaignId, "native-combat-selection-timeout"));
+        Assert.False(stage.Journal.TickSelectionRound(stage.Request.CampaignId));
+    }
+
+    // Fails only the journal's TryTrustedNow read (seat authentication still sees a clock), which is
+    // the "no trusted clock at round entry" case.
+    private sealed class TrustedNowFailingClock : TimeProvider
+    {
+        private readonly DateTimeOffset now = DateTimeOffset.Parse("2026-01-01T00:00:00Z",
+            global::System.Globalization.CultureInfo.InvariantCulture);
+        internal bool FailTrustedNow { get; set; }
+        public override DateTimeOffset GetUtcNow() =>
+            FailTrustedNow && new global::System.Diagnostics.StackTrace().ToString().Contains("TryTrustedNow")
+                ? throw new InvalidOperationException("Trusted clock unavailable.") : now;
     }
 }

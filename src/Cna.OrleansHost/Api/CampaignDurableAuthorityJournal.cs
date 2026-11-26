@@ -678,7 +678,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 // no-attack continuation (submit or timeout), and VerifySelectionRounds binds
                 // it to this step's V46 digest through QueryNativeCombatSelectionEntryBinding.
                 if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                {
                     TryInitializeSelectionRound(connection, transaction, head, campaignId);
+                    // Without trusted timing the round closes inside that call (timeout, no-attack,
+                    // Reserve Release, Cycle round all persisted), so the head must be reloaded.
+                    head = Load(connection, transaction, campaignId);
+                }
                 continue;
             }
             var query = CampaignHostAdapter.QuerySystem(head.Session);
@@ -701,6 +706,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
             // leading System-only steps. Safe and idempotent: it no-ops whenever the position
             // still isn't Selection-ready.
             TryInitializeSelectionRound(connection, transaction, head, campaignId);
+            head = Load(connection, transaction, campaignId);
         }
     }
 
