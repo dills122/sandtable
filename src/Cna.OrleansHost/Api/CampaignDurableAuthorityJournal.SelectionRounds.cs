@@ -224,14 +224,15 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private void AppendSelectionNoAttack(SqliteConnection connection, SqliteTransaction transaction,
         string campaignId, Loaded authority)
     {
-        // Later-stage timeout continuations are not yet durable Host kinds.
-        if (!CampaignExercises.QueryCheckpoint(authority.Session).PositionId.StartsWith(
-                "land.position.operation-1.", StringComparison.Ordinal))
-            throw new InvalidOperationException("Later-stage Selection continuation is not wired.");
-        // The second side's V48 timeout completes through its own no-attack.
-        if (CampaignHostAdapter.IsSecondSideCombatPending(authority.Session)
-            && CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(authority.Session))
+        // W4: the continuation is chosen from the current occurrence slot (live Pending subtype), so a
+        // later-stage timeout can never run a Stage 1 second-side completion off stale session fields.
+        var slot = CampaignHostAdapter.QueryCombatSelectionSlot(authority.Session)
+            ?? throw new InvalidOperationException("No current Combat Selection occurrence.");
+        if (slot is CampaignCombatSelectionSlot.StageOneSecond or CampaignCombatSelectionSlot.StageTwoSecond
+            or CampaignCombatSelectionSlot.StageThreeSecond)
         {
+            if (!CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(authority.Session))
+                throw new InvalidOperationException("Second-side selection timeout is not a voluntary finish.");
             var secondNoAttack = CampaignHostAdapter.CompleteSecondCombatNoAttack(authority.Session);
             if (!secondNoAttack.IsAccepted)
                 throw new InvalidOperationException("Second-side selection timeout cannot complete no-attack Combat.");
@@ -244,7 +245,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // Scoped to the round actually bound to THIS Selection timeout, not
         // a bare "is CurrentRepeatCombatSelection non-null somewhere in
         // session history" read -- see IsNativeRepeatCombatNoAttackPending.
-        var repeated = CampaignHostAdapter.IsNativeRepeatCombatNoAttackPending(authority.Session);
+        // Only the Stage 1 first side can be a repeat cycle.
+        var repeated = slot == CampaignCombatSelectionSlot.StageOneFirst
+            && CampaignHostAdapter.IsNativeRepeatCombatNoAttackPending(authority.Session);
         var accepted = repeated
             ? CampaignHostAdapter.CompleteNativeRepeatCombatNoAttack(authority.Session)
             : CampaignHostAdapter.CompleteNativeCombatNoAttack(authority.Session);

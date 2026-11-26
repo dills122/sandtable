@@ -111,8 +111,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var cold = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         Assert.Equal(46, CampaignExercises.QueryCheckpoint(cold).ContractVersion);
-        // Stage 2 selection is not yet wired. There must be no collecting round to
-        // schedule indefinitely while its owner and timeout continuations are unavailable.
-        Assert.Null(fixture.Open(clock).GetSelectionRoundDeadlineMs(request.CampaignId));
+        // W4: the Stage 2 Breakdown arms its own Selection round and deadline; its owner and
+        // timeout continuations are proven in CampaignDurableAuthorityJournalTests.OccurrenceSlot.cs.
+        Assert.NotNull(fixture.Open(clock).GetSelectionRoundDeadlineMs(request.CampaignId));
     }
 }
