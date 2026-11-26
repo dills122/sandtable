@@ -74,8 +74,10 @@ internal static class Cna1979BreakdownSetupCatalog
     private static CampaignSetupDefinitionV6 CreateTurnBoundarySetup(ContentPackV6Artifact artifact)
     {
         var turn = artifact.Definition.LegacyDefinition.Scenarios.Single().Start.GameTurn;
-        return CreateSetup($"rules-lab.breakdown.turn-boundary.gt{turn}.v1", $"Rules Lab: Turn Boundary GT{turn}",
-            artifact, $"turn-boundary.gt{turn}.v1", initiative: new ContestedInitiative(new AxisInitiativeSourceFacts(
+        var variant = artifact.Identity.PackId["rules-lab.content.breakdown-turn-boundary.".Length..^3];
+        return CreateSetup($"rules-lab.breakdown.turn-boundary.{variant}.v1",
+            variant == "combat.gt1" ? "Rules Lab: Combat Turn Boundary GT1" : $"Rules Lab: Turn Boundary GT{turn}",
+            artifact, $"turn-boundary.{variant}.v1", initiative: new ContestedInitiative(new AxisInitiativeSourceFacts(
                 AxisInitiativeLocation.OffMapOrUnavailable, [AxisInitiativeLocation.QualifyingGameMap])),
             openingPreamble: TurnBoundaryPreamblePolicy);
     }
