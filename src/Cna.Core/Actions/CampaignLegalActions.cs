@@ -387,7 +387,7 @@ public static class CampaignLegalActions
         && snapshot.Setup.InitialInitiative == definition.InitialInitiative;
 
     private static bool HasAdmittedOpeningPreamblePolicy(CampaignSnapshotV11 snapshot) =>
-        snapshot.Setup.OpeningPreamble == Cna1979SetupCatalog.OpeningPreamblePolicy;
+        Cna1979BreakdownSetupCatalog.IsAdmittedOpeningPreamble(snapshot.Setup);
 
     private static bool HasAdmittedStageEntryPolicy(
         CampaignSnapshotV11 snapshot,

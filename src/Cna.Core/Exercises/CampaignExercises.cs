@@ -9,7 +9,7 @@ using Cna.Core.Visibility;
 
 namespace Cna.Core.Exercises;
 
-public static class CampaignExercises
+public static partial class CampaignExercises
 {
     // Shared catch-block filter (maintainability-refactor-direction.md
     // Slice 2b, Finding C minor): the large majority of this file's many
@@ -3939,6 +3939,8 @@ public static class CampaignExercises
         CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.Pending is TurnBoundaryPending)
+            return CampaignLegalActionQueryResult.Rejected(CampaignLegalActionQueryRejectionReason.InvalidState);
         return CampaignCombatExerciseActions.Query(session, audience) ?? Query(session, audience);
     }
 
@@ -3952,6 +3954,8 @@ public static class CampaignExercises
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
+        if (session.Pending is TurnBoundaryPending)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
         return CampaignCombatExerciseActions.Submit(session, submission) ?? Submit(session, submission);
     }
 
@@ -3986,7 +3990,7 @@ public static class CampaignExercises
             ?? throw new InvalidOperationException("Second Combat selection requires a completed second Breakdown.");
         var world = session.CurrentSecondMoveWorld ?? session.CurrentSecondReserveWorld
             ?? throw new InvalidOperationException("Second Combat selection requires a retained World.");
-        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+        var catalog = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session))
             .Single(value => value.PositionId == breakdown.NextPositionId);
         var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
             catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
@@ -4005,7 +4009,7 @@ public static class CampaignExercises
             ?? throw new InvalidOperationException("Stage Entry Combat selection requires a completed Stage Entry Breakdown.");
         var world = session.CurrentStageEntryMoveWorld ?? session.CurrentStageEntryReserveWorld
             ?? throw new InvalidOperationException("Stage Entry Combat selection requires a retained World.");
-        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+        var catalog = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session))
             .Single(value => value.PositionId == breakdown.NextPositionId);
         var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
             catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
@@ -4022,7 +4026,7 @@ public static class CampaignExercises
             ?? throw new InvalidOperationException("Stage 3 Combat selection requires a completed Stage 3 Breakdown.");
         var world = session.CurrentThirdStageMoveWorld ?? session.CurrentThirdStageReserveWorld
             ?? throw new InvalidOperationException("Stage 3 Combat selection requires a retained World.");
-        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+        var catalog = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session))
             .Single(value => value.PositionId == breakdown.NextPositionId);
         var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
             catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
@@ -4037,7 +4041,7 @@ public static class CampaignExercises
             ?? throw new InvalidOperationException("Stage 3 second-side Combat selection requires a completed Stage 3 second-side Breakdown.");
         var world = session.CurrentThirdStageSecondMoveWorld ?? session.CurrentThirdStageSecondReserveWorld
             ?? throw new InvalidOperationException("Stage 3 second-side Combat selection requires a retained World.");
-        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+        var catalog = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session))
             .Single(value => value.PositionId == breakdown.NextPositionId);
         var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
             catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
@@ -4056,7 +4060,7 @@ public static class CampaignExercises
             ?? throw new InvalidOperationException("Stage Entry second-side Combat selection requires a completed second-side Breakdown.");
         var world = session.CurrentStageEntrySecondMoveWorld ?? session.CurrentStageEntrySecondReserveWorld
             ?? throw new InvalidOperationException("Stage Entry second-side Combat selection requires a retained World.");
-        var catalog = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+        var catalog = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session))
             .Single(value => value.PositionId == breakdown.NextPositionId);
         var position = new LandSequencePosition(catalog.ContractVersion, catalog.PositionId, catalog.GameTurn,
             catalog.OperationStage, catalog.StageId, catalog.PhaseId, catalog.SegmentId, catalog.StepId,
@@ -4205,6 +4209,8 @@ public static class CampaignExercises
         // C# construct that enforces this at compile time without reintroducing a wildcard.
         switch (session.Pending)
         {
+            case TurnBoundaryPending:
+                return new ExerciseCheckpoint(CampaignGameTurn.BoundaryInfo(session.CurrentHistory[^1]), session.CurrentSnapshot);
             case StageEntrySecondAssaultPending:
                 return ExerciseCheckpoint.ForSecondAssault(session.CurrentStageEntrySecondAssault!,
                     session.CurrentStageEntrySecondCombatDecision!);
@@ -7212,7 +7218,7 @@ public static class CampaignExercises
             };
             var (source, world) = QuerySecondMovementSource(session);
             var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
-                session.CurrentSnapshot.OperationStageOrders, side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                session.CurrentSnapshot.OperationStageOrders, side, CampaignGameTurn.CurrentGameTurn(session),
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
             var next = session.WithSecondMovementCompletion(completed, contacts);
@@ -7276,7 +7282,7 @@ public static class CampaignExercises
     {
         var (source, world) = slot.Source(session);
         var (_, _, position) = CampaignNativeSecondMoveV44.Source(source, world, session.Context,
-            slot.Orders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            slot.Orders(session), side, CampaignGameTurn.CurrentGameTurn(session),
             session.CurrentContacts.AuthorityVersion);
         return CampaignContactOwnerMovementCut.ProjectSecondMovement(world, position, session.Context,
             session.CurrentContacts, side, elementId);
@@ -7301,7 +7307,7 @@ public static class CampaignExercises
             var (source, world) = QuerySecondMovementSource(session);
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 session.CurrentSnapshot.OperationStageOrders, session.CurrentContacts, side,
-                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+                CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithSecondMove(movement, result, contacts);
             var bytes = movement.SerializeCanonical();
@@ -7341,7 +7347,7 @@ public static class CampaignExercises
             var (predecessor, world) = QuerySecondReserveSource(session);
             var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
                 session.Context, session.CurrentSnapshot.OperationStageOrders, side, elementId,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
             var next = session.WithSecondReserve(reserve, result, contacts);
             var bytes = reserve.SerializeCanonical();
@@ -7388,12 +7394,13 @@ public static class CampaignExercises
     private static CampaignNativeInitiativeDeclarationV49 RecreateInitiativeDeclaration(
         ExerciseSession predecessor, CampaignNativeInitiativeDeclarationV49 declared)
     {
-        var holder = predecessor.CurrentSnapshot.InitiativeHolder
-            ?? throw new InvalidCampaignHistoryException("Initiative holder is unresolved.");
+        var holder = CampaignGameTurn.LatestInitiativeHolder(predecessor.CurrentHistory,
+            predecessor.CurrentSnapshot.InitiativeHolder
+                ?? throw new InvalidCampaignHistoryException("Initiative holder is unresolved."));
         if (holder != declared.DeclaringHolder)
             throw new InvalidCampaignHistoryException("Initiative Declaration does not belong to its retained holder.");
         return CampaignNativeInitiativeDeclarationV49.Create(QueryLatestInitiativeDeclarationSource(predecessor),
-            holder, declared.FirstSide == holder, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+            holder, declared.FirstSide == holder, CampaignGameTurn.CurrentGameTurn(predecessor),
             predecessor.CurrentContacts.AuthorityVersion);
     }
 
@@ -7414,13 +7421,14 @@ public static class CampaignExercises
                 CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
                 _ => throw new InvalidOperationException("Initiative Declaration requires an owner."),
             };
-            var holder = session.CurrentSnapshot.InitiativeHolder
-                ?? throw new InvalidOperationException("Initiative Declaration requires a resolved holder.");
+            var holder = CampaignGameTurn.LatestInitiativeHolder(session.CurrentHistory,
+                session.CurrentSnapshot.InitiativeHolder
+                    ?? throw new InvalidOperationException("Initiative Declaration requires a resolved holder."));
             if (side != holder)
                 throw new InvalidOperationException("Only the initiative holder may declare.");
             var predecessor = QueryStageEntryInitiativeDeclarationSource(session);
             var declared = CampaignNativeInitiativeDeclarationV49.Create(predecessor, holder, actFirst,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceInitiativeDeclaration(declared);
             var next = session.WithInitiativeDeclaration(declared, contacts);
             var bytes = declared.SerializeCanonical();
@@ -7449,7 +7457,7 @@ public static class CampaignExercises
             };
             var prior = ExerciseSession.LatestCursor(session.CurrentSnapshot.RandomState, session.CurrentHistory);
             var determined = CampaignNativeWeatherDeterminationV50.Create(declared, prior,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceWeatherDetermination(determined);
             var next = pending is ThirdStageInitiativeDeclarationPending
                 ? session.WithThirdStageWeather(determined, contacts)
@@ -7576,7 +7584,7 @@ public static class CampaignExercises
             var (predecessor, world) = QueryStageEntryReserveSource(session);
             var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
                 session.Context, StageEntryOrders(session), side, elementId,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
             var next = session.WithStageEntryReserve(reserve, result, contacts);
             var bytes = reserve.SerializeCanonical();
@@ -7625,7 +7633,7 @@ public static class CampaignExercises
             var (predecessor, world) = QueryStageEntrySecondReserveSource(session);
             var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
                 session.Context, StageEntryOrders(session), side, elementId,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
             var next = session.WithStageEntrySecondReserve(reserve, result, contacts);
             var bytes = reserve.SerializeCanonical();
@@ -7663,7 +7671,7 @@ public static class CampaignExercises
             };
             var (source, world) = QueryStageEntrySecondMovementSource(session);
             var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
-                StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                StageEntryOrders(session), side, CampaignGameTurn.CurrentGameTurn(session),
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
             var next = session.WithStageEntrySecondMovementCompletion(completed, contacts);
@@ -7695,7 +7703,7 @@ public static class CampaignExercises
             var (source, world) = QueryStageEntrySecondMovementSource(session);
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 StageEntryOrders(session), session.CurrentContacts, side,
-                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+                CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithStageEntrySecondMove(movement, result, contacts);
             var bytes = movement.SerializeCanonical();
@@ -7761,7 +7769,7 @@ public static class CampaignExercises
             };
             var (source, world) = QueryStageEntryMovementSource(session);
             var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
-                StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                StageEntryOrders(session), side, CampaignGameTurn.CurrentGameTurn(session),
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
             var next = session.WithStageEntryMovementCompletion(completed, contacts);
@@ -7793,7 +7801,7 @@ public static class CampaignExercises
             var (source, world) = QueryStageEntryMovementSource(session);
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 StageEntryOrders(session), session.CurrentContacts, side,
-                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+                CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithStageEntryMove(movement, result, contacts);
             var bytes = movement.SerializeCanonical();
@@ -7874,7 +7882,7 @@ public static class CampaignExercises
             var (predecessor, world) = QueryThirdStageReserveSource(session);
             var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
                 session.Context, ThirdStageOrders(session), side, elementId,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
             var next = session.WithThirdStageReserve(reserve, result, contacts);
             var bytes = reserve.SerializeCanonical();
@@ -7905,7 +7913,7 @@ public static class CampaignExercises
             };
             var (source, world) = QueryThirdStageMovementSource(session);
             var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
-                ThirdStageOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                ThirdStageOrders(session), side, CampaignGameTurn.CurrentGameTurn(session),
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
             var next = session.WithThirdStageMovementCompletion(completed, contacts);
@@ -7937,7 +7945,7 @@ public static class CampaignExercises
             var (source, world) = QueryThirdStageMovementSource(session);
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 ThirdStageOrders(session), session.CurrentContacts, side,
-                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+                CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithThirdStageMove(movement, result, contacts);
             var bytes = movement.SerializeCanonical();
@@ -7993,7 +8001,7 @@ public static class CampaignExercises
             var (predecessor, world) = QueryThirdStageSecondReserveSource(session);
             var (reserve, result) = CampaignNativeSecondReserveV43.Create(predecessor, world,
                 session.Context, ThirdStageOrders(session), side, elementId,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondReserve(reserve);
             var next = session.WithThirdStageSecondReserve(reserve, result, contacts);
             var bytes = reserve.SerializeCanonical();
@@ -8024,7 +8032,7 @@ public static class CampaignExercises
             };
             var (source, world) = QueryThirdStageSecondMovementSource(session);
             var completed = CampaignNativeSecondMovementCompletedV45.Create(source, world, session.Context,
-                ThirdStageOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+                ThirdStageOrders(session), side, CampaignGameTurn.CurrentGameTurn(session),
                 session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvanceSecondMovementCompletion(completed);
             var next = session.WithThirdStageSecondMovementCompletion(completed, contacts);
@@ -8056,7 +8064,7 @@ public static class CampaignExercises
             var (source, world) = QueryThirdStageSecondMovementSource(session);
             var (movement, result) = CampaignNativeSecondMoveV44.Create(source, world, session.Context,
                 ThirdStageOrders(session), session.CurrentContacts, side,
-                session.CurrentSnapshot.Setup.InitialGameTurn, elementId, actionId, session.CurrentSnapshot.RulesetHash);
+                CampaignGameTurn.CurrentGameTurn(session), elementId, actionId, session.CurrentSnapshot.RulesetHash);
             var contacts = session.CurrentContacts.AppendNativeSecondMove(world, result, movement, session.Context);
             var next = session.WithThirdStageSecondMove(movement, result, contacts);
             var bytes = movement.SerializeCanonical();
@@ -8123,7 +8131,7 @@ public static class CampaignExercises
                 _ => throw new InvalidOperationException("Post-combat pass requires an owner."),
             };
             var passed = CampaignNativePostCombatPassV42.Create(QueryPostCombatPassSource(session), side,
-                session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
             var contacts = session.CurrentContacts.AdvancePostCombatPass(passed);
             var next = session.ActiveThirdStageAssault is not null
                 ? session.WithRepeatAssaultEvent(passed, contacts)
@@ -9907,6 +9915,8 @@ public static class CampaignExercises
         // needs a human (or a test) to catch it, not the compiler.
         switch (completedSession.Pending)
         {
+            case TurnBoundaryPending:
+                return ReconstructTurnBoundary(completedSession, includeStreamHash, predecessorVerified);
             case StageEntrySecondBreakdownPending:
                 {
                     var stageEntrySecondBreakdown = completedSession.CurrentStageEntrySecondBreakdown!;
@@ -9949,7 +9959,7 @@ public static class CampaignExercises
                         var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
                         var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
                             StageEntryOrders(predecessor), stageEntrySecondMovementCompletion.Side,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                            CampaignGameTurn.CurrentGameTurn(predecessor), predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
                         if (!expected.AsSpan().SequenceEqual(bytes)
@@ -9984,7 +9994,7 @@ public static class CampaignExercises
                         var (source, world) = QueryStageEntrySecondMovementSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
                             predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
-                            stageEntrySecondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntrySecondMove.ElementId,
+                            stageEntrySecondMove.Side, CampaignGameTurn.CurrentGameTurn(predecessor), stageEntrySecondMove.ElementId,
                             stageEntrySecondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
@@ -10020,7 +10030,7 @@ public static class CampaignExercises
                         var (source, world) = QueryStageEntrySecondReserveSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
                             predecessor.Context, StageEntryOrders(predecessor), stageEntrySecondReserve.Side,
-                            stageEntrySecondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            stageEntrySecondReserve.ElementId, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntrySecondReserve);
@@ -10339,7 +10349,7 @@ public static class CampaignExercises
                         var (source, world) = QuerySecondMovementSource(predecessor);
                         var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
                             predecessor.CurrentSnapshot.OperationStageOrders, movementCompletion.Side,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                            CampaignGameTurn.CurrentGameTurn(predecessor), predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
                         if (!expected.AsSpan().SequenceEqual(bytes)
@@ -10374,7 +10384,7 @@ public static class CampaignExercises
                         var (source, world) = QuerySecondMovementSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
                             predecessor.Context, predecessor.CurrentSnapshot.OperationStageOrders, predecessor.CurrentContacts,
-                            secondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, secondMove.ElementId,
+                            secondMove.Side, CampaignGameTurn.CurrentGameTurn(predecessor), secondMove.ElementId,
                             secondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
@@ -10410,7 +10420,7 @@ public static class CampaignExercises
                         var (source, world) = QuerySecondReserveSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
                             predecessor.Context, predecessor.CurrentSnapshot.OperationStageOrders, secondReserve.Side,
-                            secondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            secondReserve.ElementId, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(secondReserve);
@@ -10513,7 +10523,7 @@ public static class CampaignExercises
                         var (source, world) = QueryStageEntryMovementSource(predecessor);
                         var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
                             StageEntryOrders(predecessor), stageEntryMovementCompletion.Side,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                            CampaignGameTurn.CurrentGameTurn(predecessor), predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
                         if (!expected.AsSpan().SequenceEqual(bytes)
@@ -10548,7 +10558,7 @@ public static class CampaignExercises
                         var (source, world) = QueryStageEntryMovementSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
                             predecessor.Context, StageEntryOrders(predecessor), predecessor.CurrentContacts,
-                            stageEntryMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, stageEntryMove.ElementId,
+                            stageEntryMove.Side, CampaignGameTurn.CurrentGameTurn(predecessor), stageEntryMove.ElementId,
                             stageEntryMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
@@ -10584,7 +10594,7 @@ public static class CampaignExercises
                         var (source, world) = QueryStageEntryReserveSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
                             predecessor.Context, StageEntryOrders(predecessor), stageEntryReserve.Side,
-                            stageEntryReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            stageEntryReserve.ElementId, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(stageEntryReserve);
@@ -10618,7 +10628,7 @@ public static class CampaignExercises
                         if (!predecessorVerified && !Reconstruct(predecessor, includeStreamHash: false).IsVerified)
                             throw new InvalidCampaignHistoryException("Post-combat predecessor did not replay.");
                         var replayed = CampaignNativePostCombatPassV42.Create(QueryPostCombatPassSource(predecessor),
-                            phasePassed.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            phasePassed.Side, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvancePostCombatPass(phasePassed);
                         if (!expected.AsSpan().SequenceEqual(replayed)
@@ -10719,7 +10729,7 @@ public static class CampaignExercises
                         if (priorRandomState.NextByteCursor != determined.PriorRandomCursor)
                             throw new InvalidCampaignHistoryException("Weather Determination does not start at the retained cursor.");
                         var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentInitiativeDeclaration!,
-                            priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            priorRandomState, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceWeatherDetermination(determined);
                         if (!expected.AsSpan().SequenceEqual(replayed)
@@ -11109,7 +11119,7 @@ public static class CampaignExercises
                         var (source, world) = QueryThirdStageSecondMovementSource(predecessor);
                         var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
                             ThirdStageOrders(predecessor), thirdStageSecondMovementCompletion.Side,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                            CampaignGameTurn.CurrentGameTurn(predecessor), predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
                         if (!expected.AsSpan().SequenceEqual(bytes)
@@ -11144,7 +11154,7 @@ public static class CampaignExercises
                         var (source, world) = QueryThirdStageSecondMovementSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
                             predecessor.Context, ThirdStageOrders(predecessor), predecessor.CurrentContacts,
-                            thirdStageSecondMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, thirdStageSecondMove.ElementId,
+                            thirdStageSecondMove.Side, CampaignGameTurn.CurrentGameTurn(predecessor), thirdStageSecondMove.ElementId,
                             thirdStageSecondMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
@@ -11180,7 +11190,7 @@ public static class CampaignExercises
                         var (source, world) = QueryThirdStageSecondReserveSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
                             predecessor.Context, ThirdStageOrders(predecessor), thirdStageSecondReserve.Side,
-                            thirdStageSecondReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            thirdStageSecondReserve.ElementId, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(thirdStageSecondReserve);
@@ -11244,7 +11254,7 @@ public static class CampaignExercises
                         var (source, world) = QueryThirdStageMovementSource(predecessor);
                         var replayed = CampaignNativeSecondMovementCompletedV45.Create(source, world, predecessor.Context,
                             ThirdStageOrders(predecessor), thirdStageMovementCompletion.Side,
-                            predecessor.CurrentSnapshot.Setup.InitialGameTurn, predecessor.CurrentContacts.AuthorityVersion);
+                            CampaignGameTurn.CurrentGameTurn(predecessor), predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondMovementCompletion(replayed);
                         if (!expected.AsSpan().SequenceEqual(bytes)
@@ -11279,7 +11289,7 @@ public static class CampaignExercises
                         var (source, world) = QueryThirdStageMovementSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondMoveV44.Create(source, world,
                             predecessor.Context, ThirdStageOrders(predecessor), predecessor.CurrentContacts,
-                            thirdStageMove.Side, predecessor.CurrentSnapshot.Setup.InitialGameTurn, thirdStageMove.ElementId,
+                            thirdStageMove.Side, CampaignGameTurn.CurrentGameTurn(predecessor), thirdStageMove.ElementId,
                             thirdStageMove.ActionId, predecessor.CurrentSnapshot.RulesetHash);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AppendNativeSecondMove(world, resultWorld, replayed, predecessor.Context);
@@ -11315,7 +11325,7 @@ public static class CampaignExercises
                         var (source, world) = QueryThirdStageReserveSource(predecessor);
                         var (replayed, resultWorld) = CampaignNativeSecondReserveV43.Create(source, world,
                             predecessor.Context, ThirdStageOrders(predecessor), thirdStageReserve.Side,
-                            thirdStageReserve.ElementId, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            thirdStageReserve.ElementId, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion);
                         var bytes = replayed.SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceSecondReserve(thirdStageReserve);
@@ -11384,7 +11394,7 @@ public static class CampaignExercises
                         if (priorRandomState.NextByteCursor != determined.PriorRandomCursor)
                             throw new InvalidCampaignHistoryException("Weather Determination does not start at the retained cursor.");
                         var replayed = CampaignNativeWeatherDeterminationV50.Create(predecessor.CurrentThirdStageInitiativeDeclaration!,
-                            priorRandomState, predecessor.CurrentSnapshot.Setup.InitialGameTurn,
+                            priorRandomState, CampaignGameTurn.CurrentGameTurn(predecessor),
                             predecessor.CurrentContacts.AuthorityVersion).SerializeCanonical();
                         var contacts = predecessor.CurrentContacts.AdvanceWeatherDetermination(determined);
                         if (!expected.AsSpan().SequenceEqual(replayed)

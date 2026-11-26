@@ -22,6 +22,16 @@ public sealed class SequencingScenarioCoverageTests
     }
 
     [Fact]
+    public void TurnBoundaryScenarioStopsAtTheReadOnlyReserveOpening()
+    {
+        var boundary = SequencingScenarios.All.Single(s => s.Samples[0].Scenario.StartsWith("turn-boundary-", StringComparison.Ordinal));
+        var turnSteps = boundary.Samples.Where(s => s.Label.StartsWith("turn.", StringComparison.Ordinal)).ToArray();
+        Assert.Equal(10, turnSteps.Length);
+        Assert.All(turnSteps, sample => Assert.Equal("TurnBoundaryPending", sample.PendingName));
+        Assert.Equal("land.position.operation-1.first-player.reserve-designation", turnSteps[^1].PositionId);
+    }
+
+    [Fact]
     public void MoveSamplesAreTheOnlyMoveWithinPositionSamplesAndKeepTheCursorOnMovement()
     {
         var all = SequencingScenarios.All.SelectMany(s => s.Samples).ToList();

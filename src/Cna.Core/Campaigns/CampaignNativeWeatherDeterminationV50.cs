@@ -55,7 +55,7 @@ internal sealed record CampaignNativeWeatherDeterminationV50(
         if (priorRandomState.ContractVersion != SandtableRandom.ContractVersion
             || priorRandomState.AlgorithmId != SandtableRandom.AlgorithmId)
             throw new InvalidOperationException("Weather Determination requires a valid random cursor.");
-        if (contactVersion != predecessor.StateVersion)
+        if (contactVersion != predecessor.StateVersion || predecessor.GameTurn != gameTurn)
             throw new InvalidOperationException("Weather Determination belongs to the current cut.");
         var position = Cna1979LandSequenceV4.CreateTurn(gameTurn)
             .Single(value => value.PositionId == predecessor.NextPositionId);

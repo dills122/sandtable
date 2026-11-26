@@ -128,7 +128,7 @@ internal sealed record CampaignNativeSecondBreakdownV46(
             throw new InvalidOperationException($"{slot.Context}Breakdown requires settled movement and World authority.");
         var (movementSource, _) = slot.QuerySource(source);
         var expectedCompletion = CampaignNativeSecondMovementCompletedV45.Create(movementSource, world, context,
-            orders, completed.Side, initial.Setup.InitialGameTurn, source.CurrentContacts.AuthorityVersion);
+            orders, completed.Side, CampaignGameTurn.CurrentGameTurn(source), source.CurrentContacts.AuthorityVersion);
         if (!completed.SerializeCanonical().AsSpan().SequenceEqual(expectedCompletion.SerializeCanonical()))
             throw new InvalidOperationException("Movement completion differs from its predecessor.");
         // Every admitted second-side move is retained as V44. Walk the chain
@@ -146,7 +146,7 @@ internal sealed record CampaignNativeSecondBreakdownV46(
                 ?? throw new InvalidOperationException($"{slot.Context}Movement predecessor is missing.");
             var (priorEvent, priorWorld) = slot.QuerySource(predecessor);
             var (replayed, replayedWorld) = CampaignNativeSecondMoveV44.Create(priorEvent, priorWorld, context,
-                orders, predecessor.CurrentContacts, move.Side, initial.Setup.InitialGameTurn,
+                orders, predecessor.CurrentContacts, move.Side, CampaignGameTurn.CurrentGameTurn(predecessor),
                 move.ElementId, move.ActionId, initial.RulesetHash);
             if (!move.SerializeCanonical().AsSpan().SequenceEqual(replayed.SerializeCanonical())
                 || slot.MoveWorld(cursor) != replayedWorld)
@@ -155,7 +155,7 @@ internal sealed record CampaignNativeSecondBreakdownV46(
         }
         if (cursor.CurrentHistory.Count == 0 || cursor.CurrentHistory[^1] is not CampaignNativeSecondReserveV43 { Completed: true })
             throw new InvalidOperationException($"{slot.Context}Movement lacks its completed reserve predecessor.");
-        var catalog = Cna1979LandSequenceV4.CreateTurn(initial.Setup.InitialGameTurn);
+        var catalog = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session));
         var movement = catalog.Single(value => value.PositionId == completed.PositionId);
         var breakdown = catalog.Single(value => value.PositionId == completed.NextPositionId);
         var order = orders.Single(value => value.GameTurn == movement.GameTurn

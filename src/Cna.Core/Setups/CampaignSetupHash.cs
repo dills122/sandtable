@@ -106,6 +106,8 @@ internal static class CampaignSetupHash
                 {
                     CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations =>
                         "no-opening-naval-convoy-obligations",
+                    CampaignOpeningPreambleKind.NoOpeningOrLaterTurnNavalConvoyObligations =>
+                        "no-opening-or-later-turn-naval-convoy-obligations",
                     _ => throw new ArgumentOutOfRangeException(nameof(openingPreamble)),
                 });
             writer.WriteStartArray("sources");

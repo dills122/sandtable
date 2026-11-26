@@ -23,11 +23,11 @@ public sealed class PendingFromCursorShadowTests
             foreach (var position in turn)
             {
                 Assert.Equal(
-                    Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.CompletedPosition),
-                    PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.CompletedPosition));
+                    Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.CompletedPosition, gameTurn == 1),
+                    PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.CompletedPosition, gameTurn == 1));
                 Assert.Equal(
-                    Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.MoveWithinPosition),
-                    PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.MoveWithinPosition));
+                    Spike.PendingFromCursor.Derive(turn, position.PositionId, Spike.LastEvent.MoveWithinPosition, gameTurn == 1),
+                    PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.MoveWithinPosition, gameTurn == 1));
             }
         }
     }
@@ -36,8 +36,10 @@ public sealed class PendingFromCursorShadowTests
     public void EverySubtypeIsDerivableOrOnTheNamedExceptionListAndNothingIsInvented()
     {
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
+        var later = Cna1979LandSequenceV4.CreateTurn(2);
         var derived = turn.SelectMany(p => Enum.GetValues<PendingLastEvent>()
                 .Select(e => PendingFromCursor.Derive(turn, p.PositionId, e)))
+            .Concat(later.Select(p => PendingFromCursor.Derive(later, p.PositionId, PendingLastEvent.CompletedPosition, false)))
             .Where(x => x is not null).Select(x => x!).ToHashSet(StringComparer.Ordinal);
         var subtypes = Subtypes();
         Assert.Empty(derived.Except(subtypes));

@@ -11,16 +11,16 @@ internal sealed record CampaignNativeEndOfTurnV55(
     string PositionId, string NextPositionId, string WorldHash, int GameTurn, int NextGameTurn)
 {
     internal const int CurrentContractVersion = 55;
-    internal const int LastRolloverTurn = 5;
+    internal const int LastRolloverTurn = Cna1979Weather.MaxGameTurn - 1;
     internal long StateVersion => checked(PriorStateVersion + 1);
 
     // V42 has no turn stamp. The caller must derive gameTurn from accepted history.
     internal static CampaignNativeEndOfTurnV55 Create(
-        CampaignNativePostCombatPassV42 predecessor, int gameTurn, long contactVersion)
+        CampaignNativePostCombatPassV42 predecessor, int gameTurn, long contactVersion, int scenarioEndGameTurn)
     {
         ArgumentNullException.ThrowIfNull(predecessor);
         ArgumentOutOfRangeException.ThrowIfLessThan(gameTurn, 1);
-        if (gameTurn > LastRolloverTurn || gameTurn >= Cna1979Weather.MaxGameTurn)
+        if (gameTurn >= Math.Min(scenarioEndGameTurn, Cna1979Weather.MaxGameTurn))
             throw new CampaignRuleNotImplementedException("End of Turn is not implemented at or beyond the terminal turn.");
         if (contactVersion != predecessor.StateVersion)
             throw new InvalidOperationException("End of Turn belongs to the current cut.");

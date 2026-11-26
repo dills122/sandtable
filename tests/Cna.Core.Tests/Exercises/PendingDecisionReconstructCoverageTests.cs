@@ -162,7 +162,7 @@ internal static class SessionTamper
     internal static ExerciseSession Clone(ExerciseSession session) =>
         (ExerciseSession)typeof(object).GetMethod("MemberwiseClone", Any)!.Invoke(session, null)!;
 
-    private static void Set(ExerciseSession session, string property, object? value) =>
+    internal static void Set(ExerciseSession session, string property, object? value) =>
         (typeof(ExerciseSession).GetProperty(property, Any)
             ?? throw new MissingMemberException(nameof(ExerciseSession), property)).SetValue(session, value);
 
@@ -173,6 +173,13 @@ internal static class SessionTamper
     internal static (ExerciseSession? Tampered, string Property) TamperOwnRecord(ExerciseSession session)
     {
         var pendingName = session.Pending!.GetType().Name;
+        if (session.Pending is TurnBoundaryPending)
+        {
+            var replacement = FlipEvent(session.CurrentHistory[^1], session);
+            var clone = Clone(session);
+            Set(clone, nameof(ExerciseSession.CurrentHistory), session.CurrentHistory.SetItem(session.CurrentHistory.Count - 1, replacement));
+            return (clone, nameof(ExerciseSession.CurrentHistory));
+        }
         var stem = pendingName[..^"Pending".Length].Replace("CombatSelection", "CombatDecision", StringComparison.Ordinal);
         var propertyName = "Current" + stem;
         var property = typeof(ExerciseSession).GetProperty(propertyName, Any)
@@ -254,7 +261,11 @@ internal static class PendingFixtures
     // One line per subtype that the driven session below does NOT reach on its own,
     // e.g. [typeof(SomeStageThreePending)] = () => BuildSomeStageThreePending(),
     private static readonly IReadOnlyDictionary<Type, Func<ExerciseSession>> ExtraFixtures =
-        new Dictionary<Type, Func<ExerciseSession>>();
+        new Dictionary<Type, Func<ExerciseSession>>
+        {
+            [typeof(TurnBoundaryPending)] = () => Sequencing.SequencingScenarios.All.SelectMany(s => s.Samples)
+                .First(sample => sample.Session.Pending is TurnBoundaryPending).Session,
+        };
 
     private static readonly Lazy<IReadOnlyDictionary<Type, Func<ExerciseSession>>> Lazy = new(Build);
 

@@ -97,7 +97,7 @@ public static class Cna1979SyntheticContentCatalog
         var artifact = string.Equals(packId, ArtifactV6.Identity.PackId, StringComparison.Ordinal)
             ? ArtifactV6
             : string.Equals(packId, ArtifactBreakdownReactionV6.Identity.PackId, StringComparison.Ordinal)
-                ? ArtifactBreakdownReactionV6 : BreakdownRunnerArtifactsV6.SingleOrDefault(value =>
+                ? ArtifactBreakdownReactionV6 : BreakdownRunnerArtifactsV6.Concat(Cna1979BreakdownContentCatalog.TurnBoundaryArtifacts).SingleOrDefault(value =>
                     string.Equals(value.Identity.PackId, packId, StringComparison.Ordinal));
         if (artifact is null)
             return ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.UnknownPackId);

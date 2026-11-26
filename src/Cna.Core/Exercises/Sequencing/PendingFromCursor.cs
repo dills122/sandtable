@@ -16,11 +16,13 @@ internal static class PendingFromCursor
     internal static string? Derive(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        var turn = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn);
-        return Derive(turn, CampaignExercises.QueryCheckpoint(session).PositionId, PendingLastEventClassifier.Classify(session));
+        var gameTurn = CampaignGameTurn.CurrentGameTurn(session);
+        var turn = Cna1979LandSequenceV4.CreateTurn(gameTurn);
+        return Derive(turn, CampaignExercises.QueryCheckpoint(session).PositionId, PendingLastEventClassifier.Classify(session),
+            gameTurn == session.CurrentSnapshot.Setup.InitialGameTurn);
     }
 
-    internal static string? Derive(IReadOnlyList<LandSequencePosition> turn, string checkpointPositionId, PendingLastEvent last)
+    internal static string? Derive(IReadOnlyList<LandSequencePosition> turn, string checkpointPositionId, PendingLastEvent last, bool isFirstTurn = true)
     {
         ArgumentNullException.ThrowIfNull(turn);
         var index = IndexOf(turn, checkpointPositionId);
@@ -28,28 +30,28 @@ internal static class PendingFromCursor
         var at = turn[index];
 
         if (last == PendingLastEvent.MoveWithinPosition)
-            return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } movePrefix }
+            return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole, isFirstTurn) is { Prefix: { } movePrefix }
                 ? movePrefix + "MovePending" : null;
 
         // Repeat returns the cursor to Movement while the cycle's Assault runtime is retained; the
         // occurrence's Assault arm owns it. UNVERIFIED for non-legacy occurrences: S0 can only drive
         // a Repeat on the legacy first side (Pending null), so the non-legacy answer is a hypothesis.
         if (last == PendingLastEvent.CycleRepeat)
-            return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } repeatPrefix, CombatArms: true }
+            return IsMovement(at) && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole, isFirstTurn) is { Prefix: { } repeatPrefix, CombatArms: true }
                 ? repeatPrefix + "AssaultPending" : null;
 
         // A Reserve event either designated an element (cursor stays on Reserve Designation) or completed
         // the phase (cursor advanced; the generic completed-position path below applies).
         if (last == PendingLastEvent.ReserveWithinPosition && at.PhaseId == LandPhaseIds.ReserveDesignation
-            && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole) is { Prefix: { } reservePrefix })
+            && PendingOccurrenceTable.Find(at.OperationStage, at.ActorRole, isFirstTurn) is { Prefix: { } reservePrefix })
             return reservePrefix + "ReservePending";
 
-        if (index == 0) return null;
-        var done = turn[index - 1];
+        if (index == 0 && isFirstTurn) return null;
+        var done = index == 0 ? Cna1979LandSequenceV4.CreateTurn(at.GameTurn - 1)[^1] : turn[index - 1];
 
         if (done.ActorRole is LandActorRole.FirstActingSide or LandActorRole.SecondActingSide)
         {
-            if (PendingOccurrenceTable.Find(done.OperationStage, done.ActorRole) is not { } occurrence) return null;
+            if (PendingOccurrenceTable.Find(done.OperationStage, done.ActorRole, isFirstTurn) is not { } occurrence) return null;
             if (MechanicOf(done) is not { } mechanic) return null;
             if (!occurrence.CombatArms && mechanic is Mechanic.CombatSelection or Mechanic.Combat or Mechanic.Truck or Mechanic.PostCombat)
                 return null;
@@ -65,7 +67,7 @@ internal static class PendingFromCursor
             };
         }
 
-        return PendingPreambleTable.Find(done.OperationStage, done.PhaseId, done.SegmentId);
+        return PendingPreambleTable.Find(done.OperationStage, done.PhaseId, done.SegmentId, isFirstTurn);
     }
 
     private static int IndexOf(IReadOnlyList<LandSequencePosition> turn, string positionId)

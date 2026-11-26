@@ -27,13 +27,14 @@ internal static class CampaignStageThreePreambleAuthority
                 CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
                 _ => throw new InvalidOperationException("Initiative Declaration requires an owner."),
             };
-            var holder = current.CurrentSnapshot.InitiativeHolder
-                ?? throw new InvalidOperationException("Initiative Declaration requires a resolved holder.");
+            var holder = CampaignGameTurn.LatestInitiativeHolder(current.CurrentHistory,
+                current.CurrentSnapshot.InitiativeHolder
+                    ?? throw new InvalidOperationException("Initiative Declaration requires a resolved holder."));
             if (side != holder)
                 throw new InvalidOperationException("Only the initiative holder may declare.");
 
             var declared = CampaignNativeInitiativeDeclarationV49.Create(predecessor, holder, actFirst,
-                current.CurrentSnapshot.Setup.InitialGameTurn, current.CurrentContacts.AuthorityVersion);
+                CampaignGameTurn.CurrentGameTurn(current), current.CurrentContacts.AuthorityVersion);
             var contacts = current.CurrentContacts.AdvanceInitiativeDeclaration(declared);
             var next = current.WithThirdStageInitiativeDeclaration(declared, contacts);
             var bytes = declared.SerializeCanonical();
