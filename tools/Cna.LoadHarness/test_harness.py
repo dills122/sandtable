@@ -46,7 +46,7 @@ class HarnessTests(unittest.TestCase):
                              (outputs[1] / 'attempts/0.jsonl').read_bytes())
 
     def test_full_policy_refusal_retry_and_wedge(self):
-        for mode in ('retry', 'completion', 'wedge', 'unexpected'):
+        for mode in ('retry', 'completion', 'wedge', 'unexpected', 'gate'):
             with self.subTest(mode=mode):
                 submissions = []
 
@@ -76,10 +76,15 @@ class HarnessTests(unittest.TestCase):
                             audience = body['credential']['audience']
                             value = {'campaignId': parts[3], 'audience': audience}
                             if route == 'openings/open':
+                                gate_stage = ('stage-entry-initiative-declaration' if len(submissions) < 4
+                                              else 'stage-entry-reserve')
                                 value['open'] = [{'openingStage': 'stage-entry-movement',
                                                   'actionStage': 'stage-entry-movement',
                                                   'actingElementIds': ['test-element'],
                                                   'ruleNotImplemented': False}] if audience == 'axis' else []
+                                if mode == 'gate' and audience == 'axis':
+                                    value['open'] = [{'openingStage': gate_stage, 'actionStage': gate_stage,
+                                                      'actingElementIds': ['test-element'], 'ruleNotImplemented': False}]
                                 if mode == 'completion' and audience == 'axis':
                                     value['open'].append({'openingStage': 'stage-entry-movement-completion',
                                                           'actionStage': 'stage-entry-movement-completion',
@@ -93,12 +98,19 @@ class HarnessTests(unittest.TestCase):
                                 if body['stage'] == 'stage-entry-movement-completion':
                                     cut = {'positionId': 'test-position', 'choices': [{'kind': 'complete'}]}
                                     refs = ['c']
+                                if mode == 'gate':
+                                    position = ['operation-1.initiative-declaration', 'operation-2.initiative-declaration',
+                                                'operation-3.initiative-declaration', 'operation-1.initiative-declaration',
+                                                'operation-1.first-player.reserve-designation'][len(submissions)]
+                                    cut = {'positionId': 'land.position.' + position,
+                                           'choices': [{'kind': 'act-first' if len(submissions) < 4 else 'complete'}]}
+                                    refs = [str(len(submissions))]
                                 value.update(stage=body['stage'], actingElementId=body['actingElementId'], revision=1,
                                              visibleCutBase64=base64.b64encode(json.dumps(cut).encode()).decode(),
                                              publicActionRefs=refs)
                             elif route == 'actions':
                                 submissions.append(body['publicActionRef'])
-                                if not (mode == 'retry' and len(submissions) > 1 or
+                                if not (mode == 'gate' or mode == 'retry' and len(submissions) > 1 or
                                         mode == 'completion' and body['publicActionRef'] == 'c'):
                                     status = 409
                                     value = {'code': 'invalid-authority' if mode == 'unexpected' else 'rule-not-implemented'}
@@ -119,13 +131,21 @@ class HarnessTests(unittest.TestCase):
                     try:
                         output = pathlib.Path(tmp) / 'run'
                         result = self.run_harness(output, '--driver', 'http', '--policy', 'random-legal-full',
-                                                  '--until', 'turn2-reserve', '--max-steps-per-campaign', '1',
+                                                  '--until', 'turn2-reserve', '--max-steps-per-campaign',
+                                                  '4' if mode == 'gate' else '1',
+                                                  *(['--require-coverage', 'moves,attacks'] if mode == 'gate' else []),
                                                   '--base-url', f'http://127.0.0.1:{server.server_port}',
                                                   '--stop-error-rate', '0',
                                                   env={**os.environ, 'SANDTABLE_LOAD_OPERATOR_SECRET': 'test-only'})
                         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
                         summary = json.loads((output / 'summary.json').read_text())
                         self.assertEqual(summary['errorCount'], int(mode == 'unexpected'))
+                        if mode == 'gate':
+                            self.assertEqual(summary['outcomes'], {'turn2-reserve': 1})
+                            self.assertEqual(summary['completed'], 1)
+                            self.assertEqual(summary['missingCoverage'], ['moves', 'attacks'])
+                            self.assertEqual(len(submissions), 4)
+                            continue
                         if mode == 'completion':
                             self.assertGreater(summary['coverage']['reactionRefused'], 0)
                             self.assertEqual(submissions[-1], 'c')
