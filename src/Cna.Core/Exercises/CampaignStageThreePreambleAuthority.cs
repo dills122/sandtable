@@ -9,17 +9,24 @@ namespace Cna.Core.Exercises;
 /// <summary>Forward authority for the existing Stage 3 preamble events.</summary>
 internal static class CampaignStageThreePreambleAuthority
 {
+    internal static CampaignNativePostCombatPassV42 QueryStageThreeInitiativeDeclarationSource(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        // A retained post-combat pass alone is not enough: only the exact
+        // Stage 3 declaration position may advance into the next stage.
+        if (CampaignExercises.QueryCheckpoint(session).PositionId != "land.position.operation-3.initiative-declaration")
+            throw new InvalidOperationException("Stage 3 Initiative Declaration is not available at this position.");
+        if (session.CurrentHistory.LastOrDefault() is not CampaignNativePostCombatPassV42 predecessor
+            || predecessor.StateVersion != session.CurrentContacts.AuthorityVersion)
+            throw new InvalidOperationException("Initiative Declaration requires the latest completed terminal pass.");
+        return predecessor;
+    }
+
     internal static ExerciseStepResult SubmitStageThreeInitiativeDeclaration(ExerciseSession session,
         CampaignActionAudience audience, string actionId, bool actFirst) =>
         Complete<StageEntrySecondAssaultPending>(session, current =>
         {
-            // A retained post-combat pass alone is not enough: only the exact
-            // Stage 3 declaration position may advance into the next stage.
-            if (CampaignExercises.QueryCheckpoint(current).PositionId != "land.position.operation-3.initiative-declaration")
-                throw new InvalidOperationException("Stage 3 Initiative Declaration is not available at this position.");
-            if (current.CurrentHistory.LastOrDefault() is not CampaignNativePostCombatPassV42 predecessor
-                || predecessor.StateVersion != current.CurrentContacts.AuthorityVersion)
-                throw new InvalidOperationException("Initiative Declaration requires the latest completed terminal pass.");
+            var predecessor = QueryStageThreeInitiativeDeclarationSource(current);
 
             var side = audience switch
             {
