@@ -1420,7 +1420,7 @@ public sealed class ExerciseSession
         ArgumentNullException.ThrowIfNull(reserve);
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(contacts);
-        if (CurrentThirdStageNoObligationFleetRepair is null || CurrentThirdStageReserve is not null
+        if (CurrentThirdStageNoObligationFleetRepair is null || CurrentThirdStageReserve is { Completed: true }
             || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
             || contacts.AuthorityVersion != reserve.StateVersion
             || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
@@ -1683,7 +1683,7 @@ public sealed class ExerciseSession
         ArgumentNullException.ThrowIfNull(reserve);
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(contacts);
-        if (CurrentThirdStageAssault is not { PostCombatPasses.Count: > 0 } || CurrentThirdStageSecondReserve is not null
+        if (CurrentThirdStageAssault is not { PostCombatPasses.Count: > 0 } || CurrentThirdStageSecondReserve is { Completed: true }
             || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
             || contacts.AuthorityVersion != reserve.StateVersion
             || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
@@ -1779,7 +1779,7 @@ public sealed class ExerciseSession
         ArgumentNullException.ThrowIfNull(reserve);
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(contacts);
-        if (CurrentNoObligationFleetRepair is null || CurrentStageEntryReserve is not null
+        if (CurrentNoObligationFleetRepair is null || CurrentStageEntryReserve is { Completed: true }
             || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
             || contacts.AuthorityVersion != reserve.StateVersion
             || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
@@ -2041,7 +2041,7 @@ public sealed class ExerciseSession
         ArgumentNullException.ThrowIfNull(reserve);
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(contacts);
-        if (CurrentStageEntryAssault is not { PostCombatPasses.Count: > 0 } || CurrentStageEntrySecondReserve is not null
+        if (CurrentStageEntryAssault is not { PostCombatPasses.Count: > 0 } || CurrentStageEntrySecondReserve is { Completed: true }
             || reserve.PriorStateVersion != CurrentContacts.AuthorityVersion
             || contacts.AuthorityVersion != reserve.StateVersion
             || reserve.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(world))
