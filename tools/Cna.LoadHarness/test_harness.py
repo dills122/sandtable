@@ -1,6 +1,7 @@
-"""Black-box L2 contract tests; run with the Release harness already built."""
+"""Black-box load harness contract tests; run with the Release harness already built."""
 import hashlib
 import json
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -19,6 +20,57 @@ class HarnessTests(unittest.TestCase):
             result = self.run_harness(pathlib.Path(tmp) / 'run', '--campaigns', '17')
             self.assertEqual(result.returncode, 2)
             self.assertIn('campaigns', result.stderr)
+
+    def test_invalid_l3_options(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for args in [('--store', 'unknown'), ('--until', 'invalid'), ('--hot-pool', '0')]:
+                with self.subTest(args=args):
+                    result = self.run_harness(pathlib.Path(tmp) / 'run', *args)
+                    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+
+    def test_explicit_sqlite_preserves_contract(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = pathlib.Path(tmp) / 'run'
+            result = self.run_harness(output, '--store', 'sqlite', '--max-steps-per-campaign', '1')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertEqual(json.loads((output / 'summary.json').read_text())['outcomes'], {'step-limit': 1})
+            self.assertNotIn('gc', json.loads((output / 'summary.json').read_text()))
+            implicit = pathlib.Path(tmp) / 'implicit'
+            result = self.run_harness(implicit, '--max-steps-per-campaign', '1')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            for name in ('run-manifest.json', 'fingerprints.json', 'campaigns/0.jsonl', 'seed-ledgers/0.json'):
+                self.assertEqual((output / name).read_bytes(), (implicit / name).read_bytes())
+
+    @unittest.skipUnless(os.getenv('SANDTABLE_LOAD_POSTGRES_TEST') == '1', 'opt-in Postgres integration')
+    def test_postgres_turn2_reserve(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = pathlib.Path(tmp) / 'run'
+            result = self.run_harness(output, '--store', 'postgres', '--until', 'turn2-reserve',
+                                      '--hot-pool', '2', '--policy', 'random-legal', '--root-seed', '7')
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            summary = json.loads((output / 'summary.json').read_text())
+            self.assertEqual(summary['outcomes'], {'turn2-reserve': 1})
+            self.assertGreater(summary['steps'], 22)
+            self.assertGreater(summary['postgresConnectionPeak'], 0)
+            self.assertLessEqual(summary['postgresConnectionPeak'], 2)
+            self.assertGreater(summary['rssPeakBytes'], 0)
+            self.assertGreaterEqual(summary['gc']['pauseMs'], 0)
+            rows = [json.loads(line) for line in (output / 'campaigns/0.jsonl').read_text().splitlines()]
+            self.assertEqual(sum(row['stage'] in ('initiative-order', 'stage-entry-initiative-declaration')
+                                 for row in rows), 4)
+            self.assertEqual(rows[-1]['stage'], 'stage-entry-initiative-declaration')
+
+    @unittest.skipUnless(os.getenv('SANDTABLE_LOAD_POSTGRES_TEST') == '1', 'opt-in Postgres integration')
+    def test_postgres_hot_pool_and_step_limit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = pathlib.Path(tmp) / 'run'
+            result = self.run_harness(output, '--store', 'postgres', '--campaigns', '2',
+                                      '--hot-pool', '1', '--max-steps-per-campaign', '1')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            summary = json.loads((output / 'summary.json').read_text())
+            self.assertEqual(summary['outcomes'], {'step-limit': 2})
+            self.assertEqual(summary['steps'], 2)
+            self.assertEqual(summary['postgresConnectionPeak'], 1)
 
     def test_seeded_random_is_reproducible_and_isolated(self):
         with tempfile.TemporaryDirectory() as tmp:
