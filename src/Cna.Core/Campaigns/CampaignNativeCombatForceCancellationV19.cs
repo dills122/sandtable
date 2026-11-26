@@ -66,17 +66,20 @@ internal sealed record CampaignNativeCombatForceCancellationV19(
                 or "force-unavailable")
                 && cancelledAtUnixMilliseconds is not null))
             throw new InvalidOperationException("Force cancellation clock and reason differ.");
-        var position = Cna1979LandSequenceV4.CreateTurn(
-                selected.PriorSnapshot.CurrentPosition.SequencePosition!.GameTurn)
-            .Single(value => value.PositionId == decline.NextPositionId);
+        var sequence = Cna1979LandSequenceV4.CreateTurn(
+            selected.PriorSnapshot.CurrentPosition.SequencePosition!.GameTurn);
+        // A repeated selection retains the initial snapshot; its decision binds the actual occurrence.
+        var selectionPosition = sequence.Single(value => value.PositionId == selected.Decision.PositionId);
+        var position = sequence.Single(value => value.PositionId == decline.NextPositionId);
         if (position.SegmentId != LandSegmentIds.Combat
             || position.StepId != LandStepIds.ForceAssignment)
             throw new InvalidOperationException("Force cancellation left Force Assignment.");
         position = Cna1979LandSequenceV4.GetNext(position);
         if (position.SegmentId != LandSegmentIds.Combat
             || position.StepId != LandStepIds.AntiArmor
-            || position.GameTurn != selected.PriorSnapshot.CurrentPosition.SequencePosition.GameTurn
-            || position.OperationStage != selected.PriorSnapshot.CurrentPosition.SequencePosition.OperationStage)
+            || position.GameTurn != selectionPosition.GameTurn
+            || position.OperationStage != selectionPosition.OperationStage
+            || position.ActorRole != selectionPosition.ActorRole)
             throw new InvalidOperationException("Force cancellation must reach same-slot Anti Armor.");
         return new(CurrentContractVersion, selected.CampaignId,
             seals.Count == 0 ? decline.StateVersion : seals[0].StateVersion,
