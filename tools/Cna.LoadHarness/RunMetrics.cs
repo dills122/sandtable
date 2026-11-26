@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Npgsql;
 
 namespace Cna.LoadHarness;
 
@@ -12,6 +13,8 @@ internal sealed class RunMetrics(PostgresBacking? postgres) : IDisposable
     private long rssPeak;
     private int connectionsPeak;
     private int samples;
+    private int connectionSamples;
+    private int connectionSampleFailures;
 
     internal async Task SampleAsync(CancellationToken cancellationToken)
     {
@@ -19,7 +22,21 @@ internal sealed class RunMetrics(PostgresBacking? postgres) : IDisposable
         process.Refresh();
         rssPeak = Math.Max(rssPeak, process.WorkingSet64);
         if (postgres is not null)
-            connectionsPeak = Math.Max(connectionsPeak, await postgres.CountConnectionsAsync(cancellationToken).ConfigureAwait(false));
+        {
+            try
+            {
+                connectionsPeak = Math.Max(connectionsPeak,
+                    await postgres.CountConnectionsAsync(cancellationToken).ConfigureAwait(false));
+                connectionSamples++;
+            }
+            catch (Exception exception) when (!cancellationToken.IsCancellationRequested
+                && exception is NpgsqlException or TimeoutException or OperationCanceledException)
+            {
+                // Sampling is diagnostic; a saturated or unreachable monitor must not discard
+                // campaign results. Do not emit exception text or connection details.
+                connectionSampleFailures++;
+            }
+        }
         samples++;
     }
 
@@ -36,7 +53,9 @@ internal sealed class RunMetrics(PostgresBacking? postgres) : IDisposable
 
     internal object Snapshot() => new
     {
-        postgresConnectionPeak = postgres is null ? (int?)null : connectionsPeak,
+        postgresConnectionPeak = connectionSamples == 0 ? (int?)null : connectionsPeak,
+        postgresConnectionSamples = connectionSamples,
+        postgresConnectionSampleFailures = connectionSampleFailures,
         rssPeakBytes = rssPeak,
         metricSamples = samples,
         gc = new

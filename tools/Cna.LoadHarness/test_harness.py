@@ -71,6 +71,8 @@ class HarnessTests(unittest.TestCase):
             self.assertEqual(summary['outcomes'], {'step-limit': 2})
             self.assertEqual(summary['steps'], 2)
             self.assertEqual(summary['postgresConnectionPeak'], 1)
+            self.assertGreater(summary['postgresConnectionSamples'], 0)
+            self.assertEqual(summary['postgresConnectionSampleFailures'], 0)
 
     def test_seeded_random_is_reproducible_and_isolated(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -99,7 +99,10 @@ encoding (timestamps and measured latency are inherently variable).
 Postgres, extended checkpoint, or non-default pool runs add `until` and
 `hotPool` to the manifest and append metrics to the summary:
 `postgresConnectionPeak` (sampled peak client backends for this run's database,
-excluding the monitor; null for SQLite), `rssPeakBytes` (sampled process working
+excluding the monitor; null if no samples succeed or SQLite),
+`postgresConnectionSamples` and `postgresConnectionSampleFailures` (successful
+and failed connection count samples; diagnostic failures do not discard workload
+artifacts), `rssPeakBytes` (sampled process working
 set), `metricSamples`, and `gc` (gen0/1/2 collection count deltas, total pause
 milliseconds, sampled peak and final managed heap bytes). Samples are taken
 before/after the timed workload and every 250 ms; peaks are lower bounds.
@@ -159,3 +162,9 @@ is L5. T2's 100-campaign paced workload and latency budgets were not tested.
 A separate external-server smoke used two campaigns, a hot-pool cap of one,
 and a one-step limit. Both stopped at the limit as expected, peak connection
 count was one, and the external server had no leftover harness databases.
+
+Monitor-only fault injection on an external test server (temporary connection
+limit zero on the monitor database, then restored) recorded eight failed and
+48 successful samples. The one campaign retained all 14 accepted owner steps
+and every aggregate artifact; the expected step-limit exit and database cleanup
+were preserved.
