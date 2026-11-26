@@ -4,12 +4,14 @@ using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Exercises;
 using Cna.OrleansHost.Api;
+using Cna.OrleansHost.Tests.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Orleans;
 
 namespace Cna.OrleansHost.Tests;
@@ -133,6 +135,39 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             }
         }
         finally { await StopOutwardApiSiloAsync(silo); }
+    }
+
+    [Fact]
+    public async Task VerificationReadMartenRejectsMalformedSequence()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var connectionString = await SharedPostgres.CreateDatabaseAsync();
+        using var documentStore = SharedPostgres.CreateCampaignStore(connectionString);
+        var backend = await CampaignJournalMartenBackend.CreateAsync(documentStore, OperatorSecret,
+            cancellationToken: cancellationToken);
+        var store = new CampaignDurableAuthorityJournalStore(backend);
+        var request = Request();
+        await store.CreateCampaignAsync(request);
+        var before = await store.VerifyReadOnlyAsync(request.CampaignId, cancellationToken);
+        Assert.NotNull(before);
+        Assert.True(before.IsVerified);
+        Assert.Equal(before, await store.VerifyReadOnlyAsync(request.CampaignId, cancellationToken));
+        await using (var connection = new NpgsqlConnection(connectionString))
+        {
+            await connection.OpenAsync(cancellationToken);
+            await using var command = connection.CreateCommand();
+            // Corrupt only the test stream's explicit sequence header. This fails
+            // during Marten materialization, before the journal checks event bytes.
+            command.CommandText = """
+                UPDATE public.mt_events SET headers=jsonb_set(headers,'{sequence}','"invalid"'::jsonb)
+                WHERE stream_id=@campaignId
+                """;
+            command.Parameters.AddWithValue("campaignId", request.CampaignId);
+            Assert.Equal(1, await command.ExecuteNonQueryAsync(cancellationToken));
+        }
+        var corrupt = await store.VerifyReadOnlyAsync(request.CampaignId, cancellationToken);
+        Assert.NotNull(corrupt);
+        Assert.False(corrupt.IsVerified);
     }
 
     [Theory]
