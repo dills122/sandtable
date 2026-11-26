@@ -46,8 +46,11 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             });
             app.MapDurableCampaignApi();
             await app.StartAsync(TestContext.Current.CancellationToken);
-            using var client = new HttpClient { BaseAddress = new Uri(app.Services.GetRequiredService<IServer>()
-                .Features.Get<IServerAddressesFeature>()!.Addresses.Single()) };
+            using var client = new HttpClient
+            {
+                BaseAddress = new Uri(app.Services.GetRequiredService<IServer>()
+                .Features.Get<IServerAddressesFeature>()!.Addresses.Single())
+            };
             var path = $"/api/v2/campaigns/{request.CampaignId}";
             Assert.Equal(HttpStatusCode.Forbidden, (await Verify(OperatorSecret, sameOrigin: false)).Status);
             Assert.Equal(HttpStatusCode.Forbidden, (await Verify(OperatorSecret, remote: true)).Status);
@@ -122,11 +125,18 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             {
                 using var message = new HttpRequestMessage(HttpMethod.Post, path + "/openings/open")
                 {
-                    Content = JsonContent.Create(new { contractVersion = 2, credential = new
+                    Content = JsonContent.Create(new
                     {
-                        campaignId = seat.CampaignId, audience = "axis", epoch = seat.Epoch,
-                        secret = seat.Secret, expiresUnixMs = seat.ExpiresUnixMs,
-                    } }),
+                        contractVersion = 2,
+                        credential = new
+                        {
+                            campaignId = seat.CampaignId,
+                            audience = "axis",
+                            epoch = seat.Epoch,
+                            secret = seat.Secret,
+                            expiresUnixMs = seat.ExpiresUnixMs,
+                        }
+                    }),
                 };
                 message.Headers.Add("Sec-Fetch-Site", "same-origin");
                 using var response = await client.SendAsync(message, TestContext.Current.CancellationToken);
@@ -182,8 +192,11 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         if (environment == "Production")
             Assert.Throws<InvalidOperationException>(() => app.MapDurableCampaignApi());
         await app.StartAsync(TestContext.Current.CancellationToken);
-        using var client = new HttpClient { BaseAddress = new Uri(app.Services.GetRequiredService<IServer>()
-            .Features.Get<IServerAddressesFeature>()!.Addresses.Single()) };
+        using var client = new HttpClient
+        {
+            BaseAddress = new Uri(app.Services.GetRequiredService<IServer>()
+            .Features.Get<IServerAddressesFeature>()!.Addresses.Single())
+        };
         using var response = await client.GetAsync("/api/v2/campaigns/test/verification", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }

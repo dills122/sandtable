@@ -67,7 +67,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
             ? Connect(create: false)
             : new SqliteConnection(new SqliteConnectionStringBuilder
             {
-                DataSource = path, Mode = SqliteOpenMode.ReadOnly, Pooling = false,
+                DataSource = path,
+                Mode = SqliteOpenMode.ReadOnly,
+                Pooling = false,
             }.ToString());
         if (connection.State != System.Data.ConnectionState.Open) connection.Open();
         using var transaction = connection.BeginTransaction(deferred: true);
