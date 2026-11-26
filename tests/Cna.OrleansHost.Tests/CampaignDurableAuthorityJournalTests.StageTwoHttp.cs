@@ -10,16 +10,19 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     [Fact]
     public Task TwoHttpSeatsCompleteStageTwoWithDiscoveryAndColdReplay() => RunStagesHttp(includeStageThree: false);
 
-    private static async Task RunStagesHttp(bool includeStageThree)
+    private static async Task RunStagesHttp(bool includeStageThree, int? boundaryTurn = null)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
-        var request = CombatInfantryRequest();
+        var request = boundaryTurn is { } turn ? TurnBoundaryRequest(turn) : CombatInfantryRequest();
         await using var outward = await OwnerHttpHarness.Start(journal, request.CampaignId);
         await outward.CreateCampaign(request, Timing(request), OperatorSecret);
         var axis = await outward.IssueAndRedeemSeat(CampaignActionAudience.Axis, OperatorSecret);
         var commonwealth = await outward.IssueAndRedeemSeat(CampaignActionAudience.Commonwealth, OperatorSecret);
+        // Boundary-specific tests only need the real prior-turn checkpoint, not the W5/W6
+        // assertions repeated for every owner action while constructing that checkpoint.
+        var checkingBoundary = false;
 
         CampaignSeatCredential Other(CampaignSeatCredential seat) => seat == axis ? commonwealth : axis;
         string Element(CampaignSeatCredential seat) => seat == axis ? "axis-infantry" : "commonwealth-infantry";
@@ -44,17 +47,22 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         }
         async Task Play(CampaignSeatCredential seat, string stage, string key, bool last = true, bool verify = false)
         {
-            var own = await Discover(seat);
-            var other = await Discover(Other(seat));
-            Assert.Contains(own, entry => entry.OpeningStage == stage && entry.Elements.Contains(key));
-            Assert.DoesNotContain(other, entry => entry.OpeningStage == stage);
-            if (verify)
+            var buildingCheckpoint = boundaryTurn is not null && !checkingBoundary;
+            verify &= !buildingCheckpoint;
+            if (!buildingCheckpoint)
             {
-                Assert.Equal(stage, Assert.Single(own).OpeningStage);
-                Assert.Empty(other);
+                var own = await Discover(seat);
+                var other = await Discover(Other(seat));
+                Assert.Contains(own, entry => entry.OpeningStage == stage && entry.Elements.Contains(key));
+                Assert.DoesNotContain(other, entry => entry.OpeningStage == stage);
+                if (verify)
+                {
+                    Assert.Equal(stage, Assert.Single(own).OpeningStage);
+                    Assert.Empty(other);
+                }
             }
             var opening = await QueryOpeningForOpenSeatTest(outward, seat, key, stage);
-            var before = CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId));
+            var before = verify ? CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId)) : null;
             if (verify) Replay();
             var reference = last ? opening.Refs[^1] : opening.Refs[0];
             if (stage is "reserve-designation" or "stage-entry-reserve")
@@ -70,7 +78,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             }
             var accepted = await outward.SubmitResponse(seat, key, stage, opening.Revision, reference);
             Assert.True(accepted.Status == HttpStatusCode.OK, $"{stage}: {accepted}");
-            Assert.Equal(accepted, await outward.SubmitResponse(seat, key, stage, opening.Revision, reference));
+            if (!buildingCheckpoint)
+                Assert.Equal(accepted, await outward.SubmitResponse(seat, key, stage, opening.Revision, reference));
             if (verify)
             {
                 var after = CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId));
@@ -80,8 +89,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                     "combat-selection" => 3, // owner + no-attack + empty Reserve Release
                     _ => 1,
                 };
-                Assert.Equal(before.StateVersion + committed, after.StateVersion);
-                Assert.NotEqual(before.PositionId, after.PositionId);
+                Assert.Equal(before!.StateVersion + committed, after.StateVersion);
+                Assert.NotEqual(before!.PositionId, after.PositionId);
                 if (stage == "stage-entry-movement-completion")
                     Assert.NotNull(journal.GetSelectionRoundDeadlineMs(request.CampaignId));
                 if (stage == "combat-selection")
@@ -91,6 +100,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         }
         async Task FinishSide(CampaignSeatCredential seat, string reserve, string completion, bool verify)
         {
+            verify &= boundaryTurn is null || checkingBoundary;
             if (verify)
             {
                 Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(seat, "land.second-reserve", "second-reserve")).Status);
@@ -156,8 +166,47 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         await FinishSide(holder, "stage-entry-reserve", "stage-entry-movement-completion", true);
         Assert.Equal("land.position.end-of-turn",
             CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).PositionId);
-        Assert.Empty(await Discover(axis));
-        Assert.Empty(await Discover(commonwealth));
+        Replay();
+        if (boundaryTurn is null)
+        {
+            var beforeRefusal = CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId));
+            foreach (var seat in new[] { axis, commonwealth })
+            {
+                var refused = await outward.OpenForSeatResponse(seat);
+                Assert.Equal(HttpStatusCode.Conflict, refused.Status);
+                Assert.Contains("rule-not-implemented", refused.Body);
+            }
+            Assert.Equal(beforeRefusal.StateVersion,
+                CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).StateVersion);
+            return;
+        }
+
+        checkingBoundary = true;
+        var boundaryHead = fixture.Open(clock).ReadVerified(request.CampaignId);
+        var declaration = ReplayTurnBoundaryPrefixes(boundaryHead, boundaryTurn.Value, beforeDeclaration: true);
+        holder = (await Discover(axis)).Any(entry => entry.OpeningStage == "stage-entry-initiative-declaration") ? axis : commonwealth;
+        Assert.Equal("stage-entry-initiative-declaration", Assert.Single(await Discover(holder)).OpeningStage);
+        Assert.Empty(await Discover(Other(holder)));
+        // Discovery previews; querying an opening persists the preceding System steps.
+        await QueryOpeningForOpenSeatTest(outward, holder, "land.stage-entry-initiative-declaration", "stage-entry-initiative-declaration");
+        var actualDeclaration = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(CampaignExercises.Reconstruct(declaration).EventStreamHash,
+            CampaignExercises.Reconstruct(actualDeclaration).EventStreamHash);
+        Replay();
+        await Play(holder, "stage-entry-initiative-declaration", "land.stage-entry-initiative-declaration", verify: true);
+        var declarationAccepted = fixture.Open(clock).ReadVerified(request.CampaignId);
+        var reserve = ReplayTurnBoundaryPrefixes(declarationAccepted, boundaryTurn.Value, beforeDeclaration: false);
+        Assert.Equal("stage-entry-reserve", Assert.Single(await Discover(Other(holder))).OpeningStage);
+        Assert.Empty(await Discover(holder));
+        var opening = await QueryOpeningForOpenSeatTest(outward, Other(holder), "land.stage-entry-reserve", "stage-entry-reserve");
+        Assert.NotEmpty(opening.Refs);
+        var actualReserve = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(CampaignExercises.Reconstruct(reserve).EventStreamHash,
+            CampaignExercises.Reconstruct(actualReserve).EventStreamHash);
+        Assert.Equal("land.position.operation-1.first-player.reserve-designation", CampaignExercises.QueryCheckpoint(actualReserve).PositionId);
+        Assert.Equal(HttpStatusCode.Conflict, (await outward.SubmitResponse(Other(holder), "land.stage-entry-reserve", "stage-entry-reserve", opening.Revision, opening.Refs[^1])).Status);
+        Assert.Equal(CampaignExercises.QueryCheckpoint(actualReserve).StateVersion,
+            CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).StateVersion);
         Replay();
     }
 }

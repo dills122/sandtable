@@ -46,6 +46,16 @@ public sealed class PendingFromCursorShadowTests
     }
 
     [Fact]
+    public void LaterTurnOwnerPositionsHaveBoundaryPendingDerivations()
+    {
+        var turn = Cna1979LandSequenceV4.CreateTurn(2);
+        var openings = turn.Where(position => CampaignOpenSeatCatalog.StagesAt(position, false)!.Count > 0).ToArray();
+        Assert.Equal(2, openings.Length);
+        Assert.All(openings, position => Assert.Equal(nameof(TurnBoundaryPending),
+            PendingFromCursor.Derive(turn, position.PositionId, PendingLastEvent.CompletedPosition, false)));
+    }
+
+    [Fact]
     public void EverySubtypeIsDerivableOrOnTheNamedExceptionListAndNothingIsInvented()
     {
         var turn = Cna1979LandSequenceV4.CreateTurn(1);

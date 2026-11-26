@@ -21,6 +21,18 @@ public static partial class CampaignExercises
     internal static ExerciseStepResult CompleteTurnTacticalShipping(ExerciseSession session) =>
         CompleteTurnBoundary(session, "land.position.naval-convoy.tactical-shipping");
 
+    internal static CampaignNativeNoObligationTurnPhaseV57 QueryTurnStartDeclarationSource(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        var checkpoint = QueryCheckpoint(session);
+        if (session.Pending is not TurnBoundaryPending
+            || checkpoint.PositionId != "land.position.operation-1.initiative-declaration"
+            || session.CurrentHistory[^1] is not CampaignNativeNoObligationTurnPhaseV57 phase
+            || phase.NextPositionId != checkpoint.PositionId || phase.StateVersion != checkpoint.StateVersion)
+            throw new InvalidOperationException("Turn-start declaration is not available at this position.");
+        return phase;
+    }
+
     internal static ExerciseStepResult SubmitStageOneDeclaration(ExerciseSession session,
         CampaignActionAudience audience, string actionId, bool actFirst) =>
         CompleteTurnBoundary(session, "land.position.operation-1.initiative-declaration", audience, actionId, actFirst);

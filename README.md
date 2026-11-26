@@ -269,14 +269,15 @@ grouped control are unadmitted, and general cross-sheet movement remains blocked
   resolver. The default Host still uses the synthetic catalog, and resolver content must remain
   available across restarts.
 
-### Synthetic Core turn-boundary checkpoint
+### Synthetic HTTP turn-boundary checkpoint
 
 The opt-in `rules-lab.breakdown.turn-boundary.gt1.v1` and `rules-lab.breakdown.turn-boundary.gt12.v1`
 setups drive a complete initial turn and the successor turn's prelude to its first Reserve
 Designation opening. The second setup crosses the Fall/Winter boundary. Existing setups are
 unchanged and refuse this rollover path. The bound is the lower of the declared scenario end and
 Weather's maximum game turn; terminal scoring and later-turn Reserve submission are not wired.
-This is Core-only; Host and Maproom integration remain separate work.
+The Development/loopback HTTP host replays and drains these boundaries through the existing
+stage-entry declaration and Reserve opening names. Later-turn Reserve submission remains unsupported.
 
 ### Further detail
 

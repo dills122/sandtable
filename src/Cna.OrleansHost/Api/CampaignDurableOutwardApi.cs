@@ -964,6 +964,9 @@ internal static partial class CampaignDurableOutwardApi
             String(value, "secret"), value.GetProperty("expiresUnixMs").GetInt64());
     }
 
+    private static readonly Action<ILogger, Exception?> LogBoundarySystemRefusal = LoggerMessage.Define(
+        LogLevel.Warning, new EventId(1, nameof(LogBoundarySystemRefusal)), "Campaign System step refused.");
+
     private static async Task<IResult> Execute(HttpContext context, Func<Task<IResult>> action)
     {
         try { return await action(); }
@@ -975,6 +978,11 @@ internal static partial class CampaignDurableOutwardApi
         // FID-002: a real, source-legal decision the engine cannot resolve yet (currently only
         // a Reaction window opened by a second-side Movement -- #394 gap 3) -- distinguishable
         // from the generic "unavailable" below, which also covers "no such opening exists".
+        catch (CampaignBoundarySystemStepRejectedException error)
+        {
+            LogBoundarySystemRefusal(context.RequestServices.GetRequiredService<ILogger<CampaignDurableAuthorityJournal>>(), error);
+            return Error(context, 409, CampaignOwnerSubmissionResult.RuleNotImplementedCode);
+        }
         catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
         { return Error(context, 409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
         catch (InvalidOperationException) { return Error(context, 409, "unavailable"); }
@@ -989,6 +997,11 @@ internal static partial class CampaignDurableOutwardApi
         catch (JsonException) { return Error(context, 400, "invalid-request"); }
         catch (KeyNotFoundException) { return Error(context, 400, "invalid-request"); }
         catch (FormatException) { return Error(context, 400, "invalid-request"); }
+        catch (CampaignBoundarySystemStepRejectedException error)
+        {
+            LogBoundarySystemRefusal(context.RequestServices.GetRequiredService<ILogger<CampaignDurableAuthorityJournal>>(), error);
+            return Error(context, 409, CampaignOwnerSubmissionResult.RuleNotImplementedCode);
+        }
         catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
         { return Error(context, 409, CampaignOwnerSubmissionResult.RuleNotImplementedCode); }
         catch (InvalidOperationException) { return Error(context, 409, "unavailable"); }

@@ -1945,10 +1945,24 @@ public static class CampaignHostAdapter
         return (position.OperationStage, position.ActorRole == LandActorRole.SecondActingSide);
     }
 
-    /// <summary>Deterministic Stage 2 and 3 System transitions, selected from the current native cut.</summary>
+    /// <summary>Deterministic native System transitions, including the later-turn prelude.</summary>
     public static (string Kind, ExerciseStepResult Result)? TryCompleteStageEntrySystemStep(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
+        if (session.Pending is TurnBoundaryPending or ThirdStageSecondAssaultPending)
+            return CampaignExercises.QueryCheckpoint(session).PositionId switch
+            {
+                "land.position.end-of-turn" => (CampaignHostAcceptedStep.NativeEndOfTurnKind, CampaignExercises.CompleteEndOfTurn(session)),
+                "land.position.initiative-determination" => (CampaignHostAcceptedStep.NativeTurnInitiativeKind, CampaignExercises.CompleteTurnInitiative(session)),
+                "land.position.naval-convoy.schedule" => (CampaignHostAcceptedStep.NativeNoObligationTurnPhaseKind, CampaignExercises.CompleteTurnConvoySchedule(session)),
+                "land.position.naval-convoy.tactical-shipping" => (CampaignHostAcceptedStep.NativeNoObligationTurnPhaseKind, CampaignExercises.CompleteTurnTacticalShipping(session)),
+                "land.position.operation-1.weather-determination" => (CampaignHostAcceptedStep.NativeTurnStartWeatherKind, CampaignExercises.CompleteTurnStartWeather(session)),
+                "land.position.operation-1.organization" => (CampaignHostAcceptedStep.NativeTurnStartOrganizationKind, CampaignExercises.CompleteTurnStartOrganization(session)),
+                "land.position.operation-1.naval-convoy-arrival" => (CampaignHostAcceptedStep.NativeTurnStartConvoyArrivalKind, CampaignExercises.CompleteTurnStartConvoyArrival(session)),
+                "land.position.operation-1.commonwealth-fleet.assignment" => (CampaignHostAcceptedStep.NativeTurnStartFleetAssignmentKind, CampaignExercises.CompleteTurnStartFleetAssignment(session)),
+                "land.position.operation-1.commonwealth-fleet.repair" => (CampaignHostAcceptedStep.NativeTurnStartFleetRepairKind, CampaignExercises.CompleteTurnStartFleetRepair(session)),
+                _ => null,
+            };
         return session.Pending switch
         {
             InitiativeDeclarationPending => (CampaignHostAcceptedStep.NativeStageEntryWeatherKind, CampaignExercises.CompleteStageEntryWeather(session)),
@@ -1980,7 +1994,7 @@ public static class CampaignHostAdapter
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         if (!accepted.IsAccepted || accepted.Evidence is not { Receipt: { Audience: CampaignActionAudience.System } receipt }
             || receipt.CampaignId != checkpoint.CampaignId || receipt.PriorStateVersion != checkpoint.StateVersion)
-            throw new ArgumentException("Accepted Stage Entry System step required.", nameof(accepted));
+            throw new ArgumentException("Accepted native System step required.", nameof(accepted));
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
             checkpoint.CampaignId, checkpoint.StateVersion, checkpoint.PositionId, CampaignActionAudience.System, receipt.ActionId);
     }
@@ -2062,7 +2076,7 @@ public static class CampaignHostAdapter
             _ => throw new InvalidOperationException("Unknown Stage Entry occurrence."),
         };
         var proposed = CampaignNativeSecondMovementCompletedV45.Create(predecessor, world, session.Context,
-            slot.Stage == 3 ? CampaignExercises.ThirdStageOrders(session) : CampaignExercises.StageEntryOrders(session), side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            slot.Stage == 3 ? CampaignExercises.ThirdStageOrders(session) : CampaignExercises.StageEntryOrders(session), side, CampaignGameTurn.CurrentGameTurn(session),
             session.CurrentContacts.AuthorityVersion);
         using var stream = new MemoryStream();
         using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
@@ -2115,15 +2129,17 @@ public static class CampaignHostAdapter
         CreateStageEntryReserveOwnerDraft(ExerciseSession session, CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
-        var slot = StageEntrySlot(session, LandPhaseIds.ReserveDesignation);
+        var turnStart = session.Pending is TurnBoundaryPending;
+        var slot = turnStart ? (Stage: 1, Second: false) : StageEntrySlot(session, LandPhaseIds.ReserveDesignation);
         var side = audience switch
         {
             CampaignActionAudience.Axis => LandSide.Axis,
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new InvalidOperationException("Stage Entry Reserve needs an owner side."),
         };
-        var (predecessor, world) = slot switch
+        (object predecessor, CampaignWorldSnapshotV6 world) = slot switch
         {
+            (1, false) => CampaignExercises.QueryTurnStartReserve(session),
             (2, false) => CampaignExercises.QueryStageEntryReserveSource(session),
             (2, true) => CampaignExercises.QueryStageEntrySecondReserveSource(session),
             (3, false) => CampaignExercises.QueryThirdStageReserveSource(session),
@@ -2131,7 +2147,8 @@ public static class CampaignHostAdapter
             _ => throw new InvalidOperationException("Unknown Stage Entry occurrence."),
         };
         var (check, _) = CampaignNativeSecondReserveV43.Create(predecessor, world, session.Context,
-            slot.Stage == 3 ? CampaignExercises.ThirdStageOrders(session) : CampaignExercises.StageEntryOrders(session), side, null, session.CurrentSnapshot.Setup.InitialGameTurn,
+            turnStart ? CampaignExercises.TurnStartOrders(session)
+                : slot.Stage == 3 ? CampaignExercises.ThirdStageOrders(session) : CampaignExercises.StageEntryOrders(session), side, null, CampaignGameTurn.CurrentGameTurn(session),
             session.CurrentContacts.AuthorityVersion);
         var definition = session.Context.ArtifactV6!.Definition.LegacyDefinition;
         var actions = CampaignOwnElementProjection.ProjectPlaced(definition, world, side)
@@ -2185,6 +2202,8 @@ public static class CampaignHostAdapter
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
         if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        if (session.Pending is TurnBoundaryPending)
+            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
         var elementId = action is DesignateReserveAction designated ? designated.ElementId : null;
         return StageEntrySlot(session, LandPhaseIds.ReserveDesignation) switch
         {
@@ -2249,7 +2268,7 @@ public static class CampaignHostAdapter
         };
         var (predecessor, world) = CampaignExercises.QuerySecondMovementSource(session);
         var proposed = CampaignNativeSecondMovementCompletedV45.Create(predecessor, world, session.Context,
-            session.CurrentSnapshot.OperationStageOrders, side, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentSnapshot.OperationStageOrders, side, CampaignGameTurn.CurrentGameTurn(session),
             session.CurrentContacts.AuthorityVersion);
         using var stream = new MemoryStream();
         using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
@@ -2307,13 +2326,23 @@ public static class CampaignHostAdapter
         if (side != holder)
             throw new InvalidOperationException("Only the initiative holder may declare.");
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
-        var predecessor = checkpoint.PositionId switch
+        (string CampaignId, long StateVersion, string NextPositionId) predecessor;
+        if (session.Pending is TurnBoundaryPending)
         {
-            "land.position.operation-2.initiative-declaration" => CampaignExercises.QueryStageEntryInitiativeDeclarationSource(session),
-            "land.position.operation-3.initiative-declaration" => CampaignStageThreePreambleAuthority.QueryStageThreeInitiativeDeclarationSource(session),
-            _ => throw new InvalidOperationException("Stage Entry opening is not available at this position."),
-        };
-        var position = Cna1979LandSequenceV4.CreateTurn(session.CurrentSnapshot.Setup.InitialGameTurn)
+            var phase = CampaignExercises.QueryTurnStartDeclarationSource(session);
+            predecessor = (phase.CampaignId, phase.StateVersion, phase.NextPositionId);
+        }
+        else
+        {
+            var prior = checkpoint.PositionId switch
+            {
+                "land.position.operation-2.initiative-declaration" => CampaignExercises.QueryStageEntryInitiativeDeclarationSource(session),
+                "land.position.operation-3.initiative-declaration" => CampaignStageThreePreambleAuthority.QueryStageThreeInitiativeDeclarationSource(session),
+                _ => throw new InvalidOperationException("Stage Entry opening is not available at this position."),
+            };
+            predecessor = (prior.CampaignId, prior.StateVersion, prior.NextPositionId);
+        }
+        var position = Cna1979LandSequenceV4.CreateTurn(CampaignGameTurn.CurrentGameTurn(session))
             .Single(value => value.PositionId == predecessor.NextPositionId);
         var actions = new CampaignActionCandidate[] { new ActFirstAction(position.OperationStage),
             new ActLastAction(position.OperationStage) };
@@ -2363,6 +2392,9 @@ public static class CampaignHostAdapter
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
         if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+        if (session.Pending is TurnBoundaryPending)
+            return CampaignExercises.SubmitStageOneDeclaration(session, submission.Audience,
+                submission.ActionId, action is ActFirstAction);
         return checkpoint.PositionId == "land.position.operation-3.initiative-declaration"
             ? CampaignStageThreePreambleAuthority.SubmitStageThreeInitiativeDeclaration(session, submission.Audience,
                 submission.ActionId, action is ActFirstAction)
@@ -2382,7 +2414,7 @@ public static class CampaignHostAdapter
         };
         var (predecessor, world) = CampaignExercises.QuerySecondReserveSource(session);
         var (check, _) = CampaignNativeSecondReserveV43.Create(predecessor, world, session.Context,
-            session.CurrentSnapshot.OperationStageOrders, side, null, session.CurrentSnapshot.Setup.InitialGameTurn,
+            session.CurrentSnapshot.OperationStageOrders, side, null, CampaignGameTurn.CurrentGameTurn(session),
             session.CurrentContacts.AuthorityVersion);
         var definition = session.Context.ArtifactV6!.Definition.LegacyDefinition;
         var actions = CampaignOwnElementProjection.ProjectPlaced(definition, world, side)
@@ -2451,7 +2483,7 @@ public static class CampaignHostAdapter
             _ => throw new InvalidOperationException("Post-combat pass needs an owner side."),
         };
         var proposed = CampaignNativePostCombatPassV42.Create(CampaignExercises.QueryPostCombatPassSource(session),
-            side, session.CurrentSnapshot.Setup.InitialGameTurn, session.CurrentContacts.AuthorityVersion);
+            side, CampaignGameTurn.CurrentGameTurn(session), session.CurrentContacts.AuthorityVersion);
         using var stream = new MemoryStream();
         using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
         {
@@ -3642,6 +3674,14 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeStageThreeFleetRepairKind
                 or CampaignHostAcceptedStep.NativeStageThreeBreakdownKind
                 or CampaignHostAcceptedStep.NativeStageThreeSecondBreakdownKind
+                or CampaignHostAcceptedStep.NativeEndOfTurnKind
+                or CampaignHostAcceptedStep.NativeTurnInitiativeKind
+                or CampaignHostAcceptedStep.NativeNoObligationTurnPhaseKind
+                or CampaignHostAcceptedStep.NativeTurnStartWeatherKind
+                or CampaignHostAcceptedStep.NativeTurnStartOrganizationKind
+                or CampaignHostAcceptedStep.NativeTurnStartConvoyArrivalKind
+                or CampaignHostAcceptedStep.NativeTurnStartFleetAssignmentKind
+                or CampaignHostAcceptedStep.NativeTurnStartFleetRepairKind
                 or CampaignHostAcceptedStep.ContactStageEntryReserveKind
                 or CampaignHostAcceptedStep.ContactStageEntryMovementKind
                 or CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind
@@ -3957,6 +3997,14 @@ public static class CampaignHostAdapter
                 CampaignHostAcceptedStep.NativeStageThreeFleetRepairKind => CompleteStageEntrySystemStep(session, step.Kind),
                 CampaignHostAcceptedStep.NativeStageThreeBreakdownKind => CompleteStageEntrySystemStep(session, step.Kind),
                 CampaignHostAcceptedStep.NativeStageThreeSecondBreakdownKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeEndOfTurnKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeTurnInitiativeKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeNoObligationTurnPhaseKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeTurnStartWeatherKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeTurnStartOrganizationKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeTurnStartConvoyArrivalKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeTurnStartFleetAssignmentKind => CompleteStageEntrySystemStep(session, step.Kind),
+                CampaignHostAcceptedStep.NativeTurnStartFleetRepairKind => CompleteStageEntrySystemStep(session, step.Kind),
                 CampaignHostAcceptedStep.ContactStageEntryReserveKind => SubmitStageEntryReserve(session, submission),
                 CampaignHostAcceptedStep.ContactStageEntryMovementKind => SubmitStageEntryMovement(session, submission, step.ActingElementId!),
                 CampaignHostAcceptedStep.ContactStageEntryMovementCompletionKind => SubmitStageEntryMovementCompletion(session, submission),
@@ -4190,6 +4238,14 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.NativeStageThreeFleetRepairKind
                 or CampaignHostAcceptedStep.NativeStageThreeBreakdownKind
                 or CampaignHostAcceptedStep.NativeStageThreeSecondBreakdownKind
+                or CampaignHostAcceptedStep.NativeEndOfTurnKind
+                or CampaignHostAcceptedStep.NativeTurnInitiativeKind
+                or CampaignHostAcceptedStep.NativeNoObligationTurnPhaseKind
+                or CampaignHostAcceptedStep.NativeTurnStartWeatherKind
+                or CampaignHostAcceptedStep.NativeTurnStartOrganizationKind
+                or CampaignHostAcceptedStep.NativeTurnStartConvoyArrivalKind
+                or CampaignHostAcceptedStep.NativeTurnStartFleetAssignmentKind
+                or CampaignHostAcceptedStep.NativeTurnStartFleetRepairKind
                 && (!accepted.IsAccepted || !step.CanonicalCommand.AsSpan().SequenceEqual(
                     CampaignActionSubmissionSerializer.SerializeCanonical(StageEntrySystemCommand(session, accepted)))))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
@@ -4720,6 +4776,14 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeStageThreeFleetRepairContractVersion = 139;
     public const int NativeStageThreeBreakdownContractVersion = 140;
     public const int NativeStageThreeSecondBreakdownContractVersion = 141;
+    public const int NativeEndOfTurnContractVersion = 142;
+    public const int NativeTurnInitiativeContractVersion = 143;
+    public const int NativeNoObligationTurnPhaseContractVersion = 144;
+    public const int NativeTurnStartWeatherContractVersion = 145;
+    public const int NativeTurnStartOrganizationContractVersion = 146;
+    public const int NativeTurnStartConvoyArrivalContractVersion = 147;
+    public const int NativeTurnStartFleetAssignmentContractVersion = 148;
+    public const int NativeTurnStartFleetRepairContractVersion = 149;
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
@@ -4860,6 +4924,14 @@ public sealed class CampaignHostAcceptedStep
     public const string NativeStageThreeFleetRepairKind = "native-stage-three-fleet-repair";
     public const string NativeStageThreeBreakdownKind = "native-stage-three-breakdown";
     public const string NativeStageThreeSecondBreakdownKind = "native-stage-three-second-breakdown";
+    public const string NativeEndOfTurnKind = "native-end-of-turn";
+    public const string NativeTurnInitiativeKind = "native-turn-initiative";
+    public const string NativeNoObligationTurnPhaseKind = "native-no-obligation-turn-phase";
+    public const string NativeTurnStartWeatherKind = "native-turn-start-weather";
+    public const string NativeTurnStartOrganizationKind = "native-turn-start-organization";
+    public const string NativeTurnStartConvoyArrivalKind = "native-turn-start-convoy-arrival";
+    public const string NativeTurnStartFleetAssignmentKind = "native-turn-start-fleet-assignment";
+    public const string NativeTurnStartFleetRepairKind = "native-turn-start-fleet-repair";
     public const string ContactStageEntryReserveKind = "contact-stage-entry-reserve";
     public const string ContactStageEntryMovementKind = "contact-stage-entry-movement";
     public const string ContactStageEntryMovementCompletionKind = "contact-stage-entry-movement-completion";
@@ -4908,6 +4980,14 @@ public sealed class CampaignHostAcceptedStep
                 or NativeStageThreeFleetRepairKind
                 or NativeStageThreeBreakdownKind
                 or NativeStageThreeSecondBreakdownKind
+                or NativeEndOfTurnKind
+                or NativeTurnInitiativeKind
+                or NativeNoObligationTurnPhaseKind
+                or NativeTurnStartWeatherKind
+                or NativeTurnStartOrganizationKind
+                or NativeTurnStartConvoyArrivalKind
+                or NativeTurnStartFleetAssignmentKind
+                or NativeTurnStartFleetRepairKind
                 or ContactStageEntryReserveKind
                 or ContactStageEntryMovementKind
                 or ContactStageEntryMovementCompletionKind
@@ -4943,6 +5023,14 @@ public sealed class CampaignHostAcceptedStep
                 or NativeStageThreeFleetRepairKind
                 or NativeStageThreeBreakdownKind
                 or NativeStageThreeSecondBreakdownKind
+                or NativeEndOfTurnKind
+                or NativeTurnInitiativeKind
+                or NativeNoObligationTurnPhaseKind
+                or NativeTurnStartWeatherKind
+                or NativeTurnStartOrganizationKind
+                or NativeTurnStartConvoyArrivalKind
+                or NativeTurnStartFleetAssignmentKind
+                or NativeTurnStartFleetRepairKind
                 or NativeCycleControlTimeoutKind or NativeReserveReleaseTimeoutKind or NativeCombatCustodyTimeoutKind or NativeCombatRetreatTimeoutKind or NativeCombatSelectionTimeoutKind
                 && actingElementId is not null))
             throw new ArgumentException("Accepted step kind and acting element differ.", nameof(kind));
@@ -5048,6 +5136,14 @@ public sealed class CampaignHostAcceptedStep
             NativeStageThreeFleetRepairKind => NativeStageThreeFleetRepairContractVersion,
             NativeStageThreeBreakdownKind => NativeStageThreeBreakdownContractVersion,
             NativeStageThreeSecondBreakdownKind => NativeStageThreeSecondBreakdownContractVersion,
+            NativeEndOfTurnKind => NativeEndOfTurnContractVersion,
+            NativeTurnInitiativeKind => NativeTurnInitiativeContractVersion,
+            NativeNoObligationTurnPhaseKind => NativeNoObligationTurnPhaseContractVersion,
+            NativeTurnStartWeatherKind => NativeTurnStartWeatherContractVersion,
+            NativeTurnStartOrganizationKind => NativeTurnStartOrganizationContractVersion,
+            NativeTurnStartConvoyArrivalKind => NativeTurnStartConvoyArrivalContractVersion,
+            NativeTurnStartFleetAssignmentKind => NativeTurnStartFleetAssignmentContractVersion,
+            NativeTurnStartFleetRepairKind => NativeTurnStartFleetRepairContractVersion,
             ContactStageEntryReserveKind => ContactStageEntryReserveContractVersion,
             ContactStageEntryMovementKind => ContactStageEntryMovementContractVersion,
             ContactStageEntryMovementCompletionKind => ContactStageEntryMovementCompletionContractVersion,

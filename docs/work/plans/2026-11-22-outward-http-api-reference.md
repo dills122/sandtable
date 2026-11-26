@@ -138,9 +138,31 @@ permission to manufacture offers. No positive Stage 2 move is verified yet (D-B 
 and both Stage 2 roles on the no-attack path, verifying read-only seat discovery and cold replay.
 The position-aware catalog selects candidates from the checkpoint rather than retained prior-role
 state. `CampaignDurableAuthorityJournalTests.StageThreeHttp.cs` extends that synthetic trace
-through both Stage 3 roles with cold replay and seat discovery, stopping at End of Turn (B5).
+through both Stage 3 roles with cold replay and seat discovery, stopping at End of Turn for
+setups without an admitted later-turn policy.
 Positive Stage 2/3 moves remain unavailable in these fixtures (D-B); positive attack
 continuations and Reaction remain deferred (D-D and D-E).
+For the opt-in turn-boundary synthetic setups, the same Host drain advances End of Turn and the
+successor prelude. The successor Stage 1 declaration uses `stage-entry-initiative-declaration`
+(contract 116); the read-only `stage-entry-reserve` opening uses the same owner cut as the earlier
+stages, but its submission is refused. The current turn is derived from accepted history, not the
+initial setup. The following additive accepted-step contracts are replayed from the exact cursor:
+
+| Version | Accepted-step kind |
+| --- | --- |
+| 142 | `native-end-of-turn` |
+| 143 | `native-turn-initiative` |
+| 144 | `native-no-obligation-turn-phase` (two positions) |
+| 145 | `native-turn-start-weather` |
+| 146 | `native-turn-start-organization` |
+| 147 | `native-turn-start-convoy-arrival` |
+| 148 | `native-turn-start-fleet-assignment` |
+| 149 | `native-turn-start-fleet-repair` |
+
+A refused boundary System step returns HTTP 409 `rule-not-implemented` and is logged for the
+operator. A retry of an already accepted and authenticated owner submission returns its retained
+receipt before trying to drain the new boundary. No existing route or Maproom stage name changes.
+
 Maproom's fixed stage catalog is outside this Host-only slice.
 
 Discovery correction for #637: the catalog's rows describe retained event types, not always the
