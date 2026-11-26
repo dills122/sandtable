@@ -75,7 +75,9 @@ or the pool is exhausted (`wedge`). Other rejections, unsupported discovery, emp
 discovery, checkpoint/replay failures, and step-limit exhaustion fail the run.
 Locally launched full-policy campaigns also verify replay on exit, including
 partial campaigns; this post-run diagnostic never drives owner choice. Attached
-HTTP mode retains its public-checkpoint-only evidence boundary.
+HTTP mode retains its public-checkpoint-only evidence boundary unless explicitly
+using L5 `--verify-state`; that option adds a state fingerprint, not local
+canonical journal position coverage.
 
 Full-policy `summary.json` includes aggregate and per-campaign `coverage`:
 accepted moves, visible move CP cost, attack selections, combat-step counts and
@@ -210,8 +212,10 @@ repeats but is not the full L3 hash. Compare common fields by replacing
 discovered and fallback owner offers have been exhausted; Turn 2 Reserve requires four
 accepted declarations and the observed open position, including Stage 2/3
 and Turn 2 declaration cuts. This proves the public checkpoint path, not the
-private End of Turn history or authoritative replay. L5 owns verified state
-fingerprints; no private reads or guessed revisions are used to drive HTTP mode.
+private End of Turn history or authoritative replay by itself. The optional
+`--verify-state` flag adds a read-only operator verification after each campaign
+finishes; it does not drive decisions or expose private committed revisions to
+the owner driver.
 
 ## Output (version 1)
 
@@ -220,18 +224,39 @@ fingerprints; no private reads or guessed revisions are used to drive HTTP mode.
 | `run-manifest.json` | Assembly versions, configuration, scenario, lab seed, GC mode and CPU count |
 | `seed-ledgers/<ordinal>.json` | Exact Runner `sandtable.exercise-seeds.v1` ledger, including per-role controller seed and digest |
 | `campaigns/<ordinal>.jsonl` | Accepted owner decisions: zero-based ordinal, seat, stage, acting element, count/index, committed revision |
-| `fingerprints.json` | Per-campaign terminal status and decision hash, aggregate decision hash |
+| `fingerprints.json` | Per-campaign terminal status and decision hash, aggregate decision hash; optional verified state fingerprints |
 | `diagnostics.jsonl` | Discovery/open/probe/submit outcomes and elapsed milliseconds |
 | `summary.json` | Completion counts, throughput, per-campaign latency, per-call latency percentiles and outcome counts |
 
 Hashes are SHA-256 of UTF-8 JSONL (fixed field order, LF terminator per row),
 then SHA-256 of the ordered per-campaign hash strings (LF terminator per hash).
-Timing, opaque refs, seat secrets and temporary paths are not fingerprinted or
-written to artifacts. Decision fingerprints measure observed choices, not full
+Timing, opaque refs, seat secrets and temporary paths are not included in
+decision rows or stored directly in artifacts. Decision fingerprints measure observed choices, not full
 state identity. Summary throughput covers campaign creation through boundary
-verification, excluding silo startup/shutdown. Full T1 state fingerprint
-verification is deferred to L5. The 64/100-campaign nightly soak and capacity
-certification belong to later slices.
+verification, excluding silo startup/shutdown. The 64/100-campaign nightly soak
+and capacity certification belong to later slices.
+
+### Operator state verification (L5)
+
+Add `--verify-state` to HTTP runs (including the example above). The harness
+issues `GET /api/v2/campaigns/{id}/verification` with the operator capability
+and existing same-origin header. The route is unavailable unless the Development
+outward API is enabled, and rejects non-loopback or cross-origin calls. No grain
+activation, durable append or timer processing occurs.
+
+The `stateFingerprint` object in each campaign result and `fingerprints.json`
+contains the verified persisted chain head, reconstructed snapshot hash, event
+count (including genesis), canonical event byte count, checkpoint position and
+game turn. The aggregate state hash is computed over the ordered fingerprint
+objects as JSONL; a failed verification leaves that campaign fingerprint and
+the aggregate null and fails the run. The existing decision hash calculation
+is unchanged.
+
+Compare the reconstruction hashes independently of the persisted chain hashes:
+record hashes bind opaque owner references, which use fresh host randomness.
+Different chain heads across independent fresh databases therefore do not by
+themselves establish a difference in reconstructed game state. Attached runs
+also use unique campaign IDs, so are not suitable for exact state hash comparison.
 
 Default SQLite/Stage 2 retains the version 1 output layout and fingerprint
 encoding (timestamps and measured latency are inherently variable).

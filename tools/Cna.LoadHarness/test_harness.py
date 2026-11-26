@@ -163,6 +163,24 @@ class HarnessTests(unittest.TestCase):
                         server.shutdown()
                         thread.join()
 
+    def test_full_policy_with_l5_operator_verification(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = pathlib.Path(tmp) / 'run'
+            result = self.run_harness(output, '--driver', 'http', '--verify-state',
+                                      '--policy', 'random-legal-full', '--until', 'turn2-reserve',
+                                      '--max-steps-per-campaign', '1', '--require-coverage', 'moves,attacks')
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            summary = json.loads((output / 'summary.json').read_text())
+            self.assertEqual(summary['outcomes'], {'step-limit': 1})
+            self.assertEqual(summary['checkpointEvidence'], 'verified-read')
+            self.assertEqual(summary['coverage']['journalCampaigns'], 1)
+            campaign = summary['perCampaign'][0]
+            self.assertEqual(campaign['coverage']['journalCampaigns'], 1)
+            self.assertIsNotNone(campaign['stateFingerprint'])
+            fingerprints = json.loads((output / 'fingerprints.json').read_text())
+            self.assertEqual(fingerprints['campaigns'][0]['stateFingerprint'], campaign['stateFingerprint'])
+            self.assertIsNotNone(fingerprints['aggregateStateFingerprint'])
+
     def test_invalid_l3_options(self):
         with tempfile.TemporaryDirectory() as tmp:
             for args in [('--store', 'unknown'), ('--until', 'invalid'), ('--hot-pool', '0')]:

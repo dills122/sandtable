@@ -108,7 +108,19 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
             return new Submission(true, null, null);
         }, "submit", Side(seat.Audience), stage);
 
-    private async Task<T> Send<T>(string path, object body, Func<JsonElement, T> parse, string operation,
+    internal Task<StateFingerprint?> VerifyAsync(string id) =>
+        Send(Path(prefix + id, "verification"), null, root =>
+        {
+            if (!root.GetProperty("isVerified").GetBoolean()) return null;
+            return new StateFingerprint(
+                root.GetProperty("chainHeadHash").GetString() ?? throw new JsonException("Missing chain head."),
+                root.GetProperty("reconstructionHash").GetString() ?? throw new JsonException("Missing reconstruction hash."),
+                root.GetProperty("eventCount").GetInt64(), root.GetProperty("canonicalByteCount").GetInt64(),
+                root.GetProperty("positionId").GetString() ?? throw new JsonException("Missing checkpoint position."),
+                root.GetProperty("gameTurn").GetInt32());
+        }, "verify", operatorCall: true);
+
+    private async Task<T> Send<T>(string path, object? body, Func<JsonElement, T> parse, string operation,
         string audience = "", string stage = "", bool operatorCall = false, HttpStatusCode expected = HttpStatusCode.OK)
     {
         await control.EnterAsync().ConfigureAwait(false);
@@ -116,7 +128,8 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
         var outcome = "error";
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = JsonContent.Create(body, options: Json) };
+            using var request = new HttpRequestMessage(body is null ? HttpMethod.Get : HttpMethod.Post, path);
+            if (body is not null) request.Content = JsonContent.Create(body, options: Json);
             if (operatorCall) request.Headers.Add("X-Sandtable-Operator", secret);
             using var response = await client.SendAsync(request).ConfigureAwait(false);
             if (response.StatusCode != expected)
@@ -145,10 +158,10 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
                 throw new HttpRequestException("Unexpected HTTP status.", null, response.StatusCode);
             }
             using var document = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
-            if (document.RootElement.GetProperty("contractVersion").GetInt32() != 2)
+            if (body is not null && document.RootElement.GetProperty("contractVersion").GetInt32() != 2)
                 throw new JsonException("Unexpected contract version.");
             var value = parse(document.RootElement);
-            outcome = "ok";
+            outcome = value is null && body is null ? "verification-failed" : "ok";
             return value;
         }
         finally

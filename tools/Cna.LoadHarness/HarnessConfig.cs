@@ -4,24 +4,34 @@ namespace Cna.LoadHarness;
 
 internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSeed, int MaxStepsPerCampaign,
     string Output, string Store, string Until, int HotPool, string Driver, Uri? BaseUrl,
-    int RampSeconds, int ThinkMsMin, int ThinkMsMax, int MaxInflight, double? StopSubmitP95Ms, double? StopErrorRate, string[] RequireCoverage)
+    int RampSeconds, int ThinkMsMin, int ThinkMsMax, int MaxInflight, double? StopSubmitP95Ms, double? StopErrorRate,
+    string[] RequireCoverage, bool VerifyState = false)
 {
     internal const string Usage = "Usage: cna-load --output <new-directory> [--campaigns 1..16 (inproc) or 1..100 (http)] " +
         "[--policy first|last|random-legal|random-legal-full] [--root-seed 7] [--max-steps-per-campaign 50|112|512] " +
         "[--store sqlite|postgres] [--until stage2|turn2-reserve] [--hot-pool 16] " +
         "[--driver inproc|http] [--base-url http://127.0.0.1:port] [--ramp-seconds 0] " +
         "[--think-ms-min 0] [--think-ms-max 0] [--max-inflight 16] " +
-        "[--stop-submit-p95-ms ms] [--stop-error-rate fraction] [--require-coverage moves,attacks]";
+        "[--stop-submit-p95-ms ms] [--stop-error-rate fraction] [--require-coverage moves,attacks] [--verify-state]";
 
     internal static HarnessConfig Parse(string[] args)
     {
         var options = new Dictionary<string, string>(StringComparer.Ordinal);
-        for (var i = 0; i < args.Length; i += 2)
+        var verifyState = false;
+        for (var i = 0; i < args.Length;)
         {
+            if (args[i] == "--verify-state")
+            {
+                if (verifyState) throw new ArgumentException("Duplicate --verify-state.");
+                verifyState = true;
+                i++;
+                continue;
+            }
             if (i + 1 == args.Length || args[i] is not ("--output" or "--campaigns" or "--policy" or "--root-seed" or "--max-steps-per-campaign" or "--store" or "--until" or "--hot-pool" or "--driver" or "--base-url" or "--ramp-seconds"
                 or "--think-ms-min" or "--think-ms-max" or "--max-inflight" or "--stop-submit-p95-ms" or "--stop-error-rate" or "--require-coverage")
                 || !options.TryAdd(args[i], args[i + 1]))
                 throw new ArgumentException("Unknown, duplicate or missing option: " + args[i]);
+            i += 2;
         }
         var driver = options.GetValueOrDefault("--driver", "inproc");
         if (driver is not ("inproc" or "http")) throw new ArgumentException("Invalid --driver.");
@@ -44,7 +54,7 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
         Uri? baseUrl = null;
         var httpOptions = new[] { "--base-url", "--ramp-seconds", "--think-ms-min", "--think-ms-max",
             "--max-inflight", "--stop-submit-p95-ms", "--stop-error-rate" };
-        if (driver != "http" && httpOptions.Any(options.ContainsKey))
+        if (driver != "http" && (verifyState || httpOptions.Any(options.ContainsKey)))
             throw new ArgumentException("HTTP traffic options require --driver http.");
         if (options.TryGetValue("--base-url", out var url))
         {
@@ -64,7 +74,7 @@ internal sealed record HarnessConfig(int Campaigns, string Policy, ulong RootSee
             throw new ArgumentException("Invalid --require-coverage; expected moves,attacks.");
         return new(campaigns, policy, seed, steps, output, store, until, hotPool, driver, baseUrl,
             ramp, minThink, maxThink, maxInflight, Threshold("--stop-submit-p95-ms", double.MaxValue),
-            Threshold("--stop-error-rate", 1, allowZero: true), required);
+            Threshold("--stop-error-rate", 1, allowZero: true), required, verifyState);
 
         double? Threshold(string key, double max, bool allowZero = false)
         {

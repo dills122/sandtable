@@ -18,8 +18,10 @@ internal sealed record DecisionRow(int CampaignOrdinal, int StepOrdinal, string 
     string ActingElementId, int ChoiceCount, int ChosenIndex, long? ResultingRevision);
 internal sealed record Diagnostic(int CampaignOrdinal, int StepOrdinal, string Audience, string Stage,
     string Operation, string Outcome, double ElapsedMs);
+internal sealed record StateFingerprint(string ChainHeadHash, string ReconstructionHash, long EventCount,
+    long CanonicalByteCount, string PositionId, int GameTurn);
 internal sealed record CampaignResult(int CampaignOrdinal, string Status, int Steps, string DecisionFingerprint,
-    double ElapsedMs, IReadOnlyList<Diagnostic> Diagnostics, ActionCoverage Coverage);
+    double ElapsedMs, IReadOnlyList<Diagnostic> Diagnostics, ActionCoverage Coverage, StateFingerprint? StateFingerprint);
 
 internal static class HarnessRun
 {
@@ -75,7 +77,7 @@ internal static class HarnessRun
             {
                 config.Until, config.HotPool, attached = config.BaseUrl is not null,
                 config.RampSeconds, config.ThinkMsMin, config.ThinkMsMax, config.MaxInflight,
-                config.StopSubmitP95Ms, config.StopErrorRate, checkpointEvidence = "owner-opening-only",
+                config.StopSubmitP95Ms, config.StopErrorRate, config.VerifyState, checkpointEvidence = config.VerifyState ? "verified-read" : "owner-opening-only",
                 decisionFingerprintFields = "v1-except-private-committed-state-version",
                 metricsScope = config.BaseUrl is null ? "host-and-harness" : "harness-only",
             }));
@@ -112,12 +114,20 @@ internal static class HarnessRun
             await polling.ConfigureAwait(false);
         }
         if (metrics is not null) await metrics.SampleAsync(CancellationToken.None).ConfigureAwait(false);
-        var fingerprints = results.Select(r => new { r.CampaignOrdinal, r.Status, r.Steps, r.DecisionFingerprint }).ToArray();
-        WriteJson(Path.Combine(config.Output, "fingerprints.json"), new
+        var fingerprints = results.Select(r => config.VerifyState
+            ? Extend(new { r.CampaignOrdinal, r.Status, r.Steps, r.DecisionFingerprint }, new { r.StateFingerprint })
+            : JsonSerializer.SerializeToNode(new { r.CampaignOrdinal, r.Status, r.Steps, r.DecisionFingerprint }, Json)!.AsObject()).ToArray();
+        var fingerprintOutput = new
         {
             campaigns = fingerprints,
             aggregateDecisionFingerprint = Hash(Encoding.UTF8.GetBytes(string.Join('\n', results.Select(r => r.DecisionFingerprint)) + "\n")),
-        });
+        };
+        WriteJson(Path.Combine(config.Output, "fingerprints.json"), config.VerifyState
+            ? Extend(fingerprintOutput, new
+            {
+                aggregateStateFingerprint = results.All(r => r.StateFingerprint is not null)
+                    ? Hash(Encoding.UTF8.GetBytes(Lines(results.Select(r => r.StateFingerprint)))) : null,
+            }) : (object)fingerprintOutput);
         var diagnostics = results.SelectMany(r => r.Diagnostics).ToArray();
         File.WriteAllText(Path.Combine(config.Output, "diagnostics.jsonl"), Lines(diagnostics));
         var completed = results.Count(r => r.Status == (config.Until == "stage2" ? "stage-2-boundary" : "turn2-reserve"));
@@ -141,7 +151,9 @@ internal static class HarnessRun
                 p95Ms = Percentile(g, 0.95),
                 maxMs = g.Max(d => d.ElapsedMs),
             }, StringComparer.Ordinal),
-            perCampaign = results.Select(r => new { r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs }),
+            perCampaign = results.Select(r => config.VerifyState
+                ? Extend(new { r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs }, new { r.StateFingerprint })
+                : JsonSerializer.SerializeToNode(new { r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs }, Json)!.AsObject()),
         };
         object outputSummary = metrics is null ? summary : Extend(summary, metrics.Snapshot());
         if (control is not null)
@@ -149,7 +161,7 @@ internal static class HarnessRun
             outputSummary = Extend(outputSummary, control.Snapshot(diagnostics));
             outputSummary = Extend(outputSummary, new
             {
-                checkpointEvidence = "owner-opening-only",
+                checkpointEvidence = config.VerifyState ? "verified-read" : "owner-opening-only",
                 metricsScope = config.BaseUrl is null ? "host-and-harness" : "harness-only",
             });
         }
@@ -163,9 +175,11 @@ internal static class HarnessRun
             node["missingCoverage"] = JsonSerializer.SerializeToNode(missing, Json);
             node["refusalWedgeCount"] = results.Count(r => r.Status == "wedge");
             node["discoveryWedgeCount"] = results.Count(r => r.Status == "unresolved-opening");
-            node["perCampaign"] = JsonSerializer.SerializeToNode(results.Select(r => new
+            node["perCampaign"] = JsonSerializer.SerializeToNode(results.Select(r =>
             {
-                r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs, coverage = r.Coverage.Snapshot(),
+                var campaign = new { r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs, coverage = r.Coverage.Snapshot() };
+                return config.VerifyState ? Extend(campaign, new { r.StateFingerprint })
+                    : JsonSerializer.SerializeToNode(campaign, Json)!.AsObject();
             }), Json);
             outputSummary = node;
         }
@@ -195,6 +209,7 @@ internal static class HarnessRun
         ICampaignDriver transport = worker is null ? driver : worker;
         // Independent per-campaign random stream; pacing never consumes controller entropy.
         var think = worker is null ? null : new BotPolicy("random-legal", ledger, ExerciseSeedRole.System);
+        StateFingerprint? stateFingerprint = null;
         var full = config.Policy == "random-legal-full";
         var coverageEnabled = full || config.RequireCoverage.Length > 0;
         var coverage = new ActionCoverage();
@@ -384,6 +399,16 @@ internal static class HarnessRun
                 }
                 Accept(selected, index, result, acceptedChoice);
             }
+            if (config.VerifyState)
+            {
+                stateFingerprint = await worker!.VerifyAsync(id).ConfigureAwait(false);
+                if (stateFingerprint is null) status = "verification-failed";
+                else if (status == "turn2-reserve" && (stateFingerprint.GameTurn != 2
+                    || stateFingerprint.PositionId != "land.position.operation-1.first-player.reserve-designation"))
+                    status = "boundary-not-verified";
+                else if (status == "stage-2-boundary" && stateFingerprint.PositionId != InProcessDriver.Boundary)
+                    status = "boundary-not-verified";
+            }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { status = "cancelled"; }
         catch (Exception exception)
@@ -405,7 +430,7 @@ internal static class HarnessRun
         }
         var lines = Lines(rows);
         File.WriteAllText(decisionPath, lines);
-        return new(ordinal, status, rows.Count, Hash(Encoding.UTF8.GetBytes(lines)), timer.Elapsed.TotalMilliseconds, diagnostics, coverage);
+        return new(ordinal, status, rows.Count, Hash(Encoding.UTF8.GetBytes(lines)), timer.Elapsed.TotalMilliseconds, diagnostics, coverage, stateFingerprint);
 
         async Task<Submission> Submit(Opening opening, int index)
         {
@@ -426,6 +451,7 @@ internal static class HarnessRun
             if (opening.Stage is "initiative-order" or BoundaryStage) declarations++;
             previous = opening.Stage;
         }
+
 
         async Task<CampaignGrainOpeningResult?> TryOpen(CampaignSeatCredential seat, string stage, string element, string operation)
         {
