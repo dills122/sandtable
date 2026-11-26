@@ -381,6 +381,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
                     revision = checked(reader.GetInt64(1) + 1);
             }
         }
+        // W4: a retained opening whose exact (element, epoch, revision) already has an accepted
+        // step belongs to an earlier occurrence (for example the same element's identical Combat
+        // Selection cut at Stage 1 and again at Stage 2). Reusing its revision would reuse its public
+        // references too, so the submit retry shortcut would hand back the earlier receipt and the
+        // new decision would never run. A fresh occurrence always gets a fresh revision.
+        while (OpeningRevisionAlreadyAccepted(connection, transaction, seat.CampaignId,
+                   side, actingElementId, seat.Epoch, revision))
+            revision = checked(revision + 1);
         var key = ReadReferenceKey(connection, transaction);
         var refs = actionIds.Select((_, index) => Reference(key, seat.CampaignId, side,
             actingElementId, seat.Epoch, revision, digest, index)).ToArray();
@@ -457,6 +465,25 @@ internal sealed partial class CampaignDurableAuthorityJournal
         if (query.ExecuteScalar() is not byte[] key || key.Length != 32)
             throw new InvalidOperationException("Owner reference key is missing.");
         return key;
+    }
+
+    private static bool OpeningRevisionAlreadyAccepted(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId, string side, string actingElementId,
+        long epoch, long revision)
+    {
+        using var query = connection.CreateCommand();
+        query.Transaction = transaction;
+        query.CommandText = """
+            SELECT 1 FROM accepted_steps
+            WHERE campaign_id=$id AND owner_side=$side AND acting_element_id=$element
+              AND seat_epoch=$epoch AND owner_revision=$revision LIMIT 1
+            """;
+        query.Parameters.AddWithValue("$id", campaignId);
+        query.Parameters.AddWithValue("$side", side);
+        query.Parameters.AddWithValue("$element", actingElementId);
+        query.Parameters.AddWithValue("$epoch", epoch);
+        query.Parameters.AddWithValue("$revision", revision);
+        return query.ExecuteScalar() is not null;
     }
 
     private static string Reference(byte[] key, string campaignId, string side,

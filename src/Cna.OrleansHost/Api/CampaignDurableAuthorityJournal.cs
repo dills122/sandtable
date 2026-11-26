@@ -673,9 +673,12 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 var command = CampaignHostAdapter.StageEntrySystemCommand(head.Session, native.Result);
                 head = PersistAccepted(connection, transaction, campaignId, head,
                     native.Kind, null, null, null, null, command, native.Result);
-                // TODO(StageEntrySelectionRounds): initialize the round here only when
-                // the Stage 2 selection and timeout paths are wired end to end (including
-                // the V46 replay binding). Do not arm an uncloseable collecting round.
+                // W4: the Breakdown that opens a Combat Selection occurrence arms its own
+                // Selection round and deadline. The round closes through the slot-resolved
+                // no-attack continuation (submit or timeout), and VerifySelectionRounds binds
+                // it to this step's V46 digest through QueryNativeCombatSelectionEntryBinding.
+                if (native.Kind == CampaignHostAcceptedStep.NativeStageEntryBreakdownKind)
+                    TryInitializeSelectionRound(connection, transaction, head, campaignId);
                 continue;
             }
             var query = CampaignHostAdapter.QuerySystem(head.Session);

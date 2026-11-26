@@ -447,11 +447,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
 
         var checkpoint = CampaignExercises.QueryCheckpoint(head.Session);
-        // Stage 2/3 selection continuations are not wired into the journal yet.
-        // Their current predicates must never route through Stage 1 commands.
-        if (kind == CampaignOwnerOpeningKind.CombatSelection
-            && !checkpoint.PositionId.StartsWith("land.position.operation-1.", StringComparison.Ordinal))
-            return CampaignOwnerSubmissionResult.RuleNotImplemented();
+        // W4: the post-submit continuation is chosen from the current occurrence slot
+        // (CampaignHostAdapter.QueryCombatSelectionSlot), never from retained Stage 1 fields.
+        var selectionSlot = kind == CampaignOwnerOpeningKind.CombatSelection
+            ? CampaignHostAdapter.QueryCombatSelectionSlot(head.Session) : null;
         var submission = new CampaignActionSubmission(1, seat.CampaignId,
             checkpoint.StateVersion, checkpoint.PositionId, seat.Audience, coreActionId);
         var result = kind switch
@@ -538,6 +537,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 ? CampaignOwnerSubmissionResult.RuleNotImplemented()
                 : CampaignOwnerSubmissionResult.Rejected(
                     CampaignOwnerSubmissionResult.CoreRejectionCode(result.RejectionReason));
+        // Stage 2/3 only wire the voluntary finish; an assault pick would enter the Stage 1-bound
+        // Barrage/RBA chain, so it is rejected deterministically before anything is persisted.
+        if (selectionSlot is { } slot
+            && slot is not (CampaignCombatSelectionSlot.StageOneFirst or CampaignCombatSelectionSlot.StageOneSecond)
+            && !(slot is CampaignCombatSelectionSlot.StageTwoFirst or CampaignCombatSelectionSlot.StageThreeFirst
+                ? CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!)
+                : CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(result.SuccessorSession!)))
+            return CampaignOwnerSubmissionResult.RuleNotImplemented();
+        if (kind == CampaignOwnerOpeningKind.CombatSelection && selectionSlot is null)
+            return CampaignOwnerSubmissionResult.RuleNotImplemented();
         RbaRound? rbaRound = null;
         if (kind == CampaignOwnerOpeningKind.RetreatBeforeAssault)
         {
@@ -692,8 +701,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // string as the decision the second side actually just made --
         // without this, this first-side-only check could alias onto a
         // genuinely second-side submission and run the wrong continuation.
-        if (kind == CampaignOwnerOpeningKind.CombatSelection
-            && !CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
+        if (selectionSlot is CampaignCombatSelectionSlot.StageOneFirst
+                or CampaignCombatSelectionSlot.StageTwoFirst or CampaignCombatSelectionSlot.StageThreeFirst
             && CampaignHostAdapter.IsNativeCombatVoluntaryFinish(result.SuccessorSession!))
         {
             var noAttack = CampaignHostAdapter.CompleteNativeCombatNoAttack(result.SuccessorSession!);
@@ -713,7 +722,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // pair (extra-3) instead of the first-side checks, which would read
         // whatever the *first* side chose, not this decision. The second
         // side's own Reserve Release then follows from its V13 completion.
-        else if (kind == CampaignOwnerOpeningKind.CombatSelection
+        else if (selectionSlot is CampaignCombatSelectionSlot.StageOneSecond
+                or CampaignCombatSelectionSlot.StageTwoSecond or CampaignCombatSelectionSlot.StageThreeSecond
             && CampaignHostAdapter.IsNativeSecondCombatVoluntaryFinish(result.SuccessorSession!))
         {
             var noAttack = CampaignHostAdapter.CompleteSecondCombatNoAttack(result.SuccessorSession!);
@@ -733,8 +743,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         // first side's: the V14-V26 stages replay from the V47 selection
         // (CampaignNativeRepeatAssaultRuntime.ReplaySecond) and open the
         // defender's RBA round.
-        else if (kind == CampaignOwnerOpeningKind.CombatSelection
-            && CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
+        else if (selectionSlot is CampaignCombatSelectionSlot.StageOneSecond
             && CampaignHostAdapter.IsNativeSecondCombatSelectedAssault(result.SuccessorSession!))
         {
             var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);
@@ -750,8 +759,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
         }
         // Guarded so a stale first-side "select-contact-assault" pick can
         // never alias onto a second-side submission.
-        else if (kind == CampaignOwnerOpeningKind.CombatSelection
-            && !CampaignHostAdapter.IsSecondSideCombatPending(result.SuccessorSession!)
+        else if (selectionSlot is CampaignCombatSelectionSlot.StageOneFirst
             && CampaignHostAdapter.IsNativeCombatSelectedAssault(result.SuccessorSession!))
         {
             var barrage = CampaignHostAdapter.CompleteNativeCombatBarrage(result.SuccessorSession!);

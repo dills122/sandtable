@@ -1128,7 +1128,12 @@ public static class CampaignHostAdapter
 
     /// <summary>System-only structural continuation of an accepted voluntary finish.</summary>
     public static ExerciseStepResult CompleteNativeCombatNoAttack(ExerciseSession session) =>
-        CampaignExercises.CompleteNativeCombatNoAttack(session);
+        session.Pending switch
+        {
+            StageEntryCombatSelectionPending => CampaignExercises.CompleteStageEntryCombatNoAttack(session),
+            ThirdStageCombatSelectionPending => CampaignExercises.CompleteThirdStageCombatNoAttack(session),
+            _ => CampaignExercises.CompleteNativeCombatNoAttack(session),
+        };
 
     /// <summary>
     /// #394 extra-2/3: second-side analog of <see cref="CompleteNativeCombatNoAttack"/>.
@@ -1136,7 +1141,12 @@ public static class CampaignHostAdapter
     /// <see cref="CampaignExercises.CompleteSecondCombatNoAttack"/>'s remarks.
     /// </summary>
     public static ExerciseStepResult CompleteSecondCombatNoAttack(ExerciseSession session) =>
-        CampaignExercises.CompleteSecondCombatNoAttack(session);
+        session.Pending switch
+        {
+            StageEntrySecondCombatSelectionPending => CampaignExercises.CompleteStageEntrySecondCombatNoAttack(session),
+            ThirdStageSecondCombatSelectionPending => CampaignExercises.CompleteThirdStageSecondCombatNoAttack(session),
+            _ => CampaignExercises.CompleteSecondCombatNoAttack(session),
+        };
 
     public static ExerciseStepResult CompleteNativeRepeatCombatNoAttack(
         ExerciseSession session) =>
@@ -1295,6 +1305,28 @@ public static class CampaignHostAdapter
     public static bool IsNativeSecondCombatSelectedAssault(ExerciseSession session) =>
         CurrentSecondSideCombatChoice(session) == "select-contact-assault";
 
+    /// <summary>
+    /// W4: the occurrence slot a Combat Selection (or its V48 timeout) currently belongs to,
+    /// derived only from the live <see cref="ExerciseSession.Pending"/> subtype and the
+    /// checkpoint position, never from retained Stage 1 fields. Null when no native
+    /// first/second-side selection occurrence is current (for example a repeat cycle).
+    /// </summary>
+    public static CampaignCombatSelectionSlot? QueryCombatSelectionSlot(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return session.Pending switch
+        {
+            SecondBreakdownPending or SecondCombatSelectionPending => CampaignCombatSelectionSlot.StageOneSecond,
+            StageEntryBreakdownPending or StageEntryCombatSelectionPending => CampaignCombatSelectionSlot.StageTwoFirst,
+            StageEntrySecondBreakdownPending or StageEntrySecondCombatSelectionPending => CampaignCombatSelectionSlot.StageTwoSecond,
+            ThirdStageBreakdownPending or ThirdStageCombatSelectionPending => CampaignCombatSelectionSlot.StageThreeFirst,
+            ThirdStageSecondBreakdownPending or ThirdStageSecondCombatSelectionPending => CampaignCombatSelectionSlot.StageThreeSecond,
+            null when CampaignExercises.QueryCheckpoint(session).PositionId.StartsWith(
+                "land.position.operation-1.", StringComparison.Ordinal) => CampaignCombatSelectionSlot.StageOneFirst,
+            _ => null,
+        };
+    }
+
     public static bool IsSecondSideCombatPending(ExerciseSession session) =>
         session.Pending is SecondBreakdownPending or SecondCombatSelectionPending
             or StageEntrySecondBreakdownPending or StageEntrySecondCombatSelectionPending
@@ -1362,13 +1394,36 @@ public static class CampaignHostAdapter
                 System.Security.Cryptography.SHA256.HashData(decline.SerializeCanonical())));
     }
 
+    // Slot-scoped: the predecessor's own occurrence decides which retained fields prove the
+    // completion, so a stale Stage 1 field can neither satisfy nor block a later-stage check.
+    private static bool CurrentFirstSideNoAttackCompleted(ExerciseSession predecessor, ExerciseSession? successor) =>
+        successor is not null && predecessor.Pending switch
+        {
+            StageEntryCombatSelectionPending => predecessor.CurrentStageEntryCombatDecision is not null
+                && successor.CurrentStageEntryNoAttackCompletion is not null,
+            ThirdStageCombatSelectionPending => predecessor.CurrentThirdStageCombatDecision is not null
+                && successor.CurrentThirdStageNoAttackCompletion is not null,
+            _ => predecessor.CurrentCombatDecision is not null && successor.CurrentNoAttackCompletion is not null,
+        };
+
+    private static bool CurrentSecondSideNoAttackCompleted(ExerciseSession predecessor, ExerciseSession? successor) =>
+        successor is not null && predecessor.Pending switch
+        {
+            StageEntrySecondCombatSelectionPending => predecessor.CurrentStageEntrySecondCombatDecision is not null
+                && successor.CurrentStageEntrySecondNoAttackCompletion is not null,
+            ThirdStageSecondCombatSelectionPending => predecessor.CurrentThirdStageSecondCombatDecision is not null
+                && successor.CurrentThirdStageSecondNoAttackCompletion is not null,
+            _ => predecessor.CurrentSecondCombatDecision is not null
+                && successor.CurrentSecondNoAttackCompletion is not null,
+        };
+
     /// <summary>Deterministic System command retained alongside the no-attack event.</summary>
     public static CampaignActionSubmission NativeCombatNoAttackCommand(
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
         ArgumentNullException.ThrowIfNull(predecessor);
-        if (!accepted.IsAccepted || predecessor.CurrentCombatDecision is null
-            || accepted.SuccessorSession?.CurrentNoAttackCompletion is null)
+        if (!accepted.IsAccepted || accepted.Evidence is null
+            || !CurrentFirstSideNoAttackCompleted(predecessor, accepted.SuccessorSession))
             throw new ArgumentException("Accepted no-attack completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -1384,8 +1439,8 @@ public static class CampaignHostAdapter
         ExerciseSession predecessor, ExerciseStepResult accepted)
     {
         ArgumentNullException.ThrowIfNull(predecessor);
-        if (!accepted.IsAccepted || predecessor.CurrentSecondCombatDecision is null
-            || accepted.SuccessorSession?.CurrentSecondNoAttackCompletion is null)
+        if (!accepted.IsAccepted || accepted.Evidence is null
+            || !CurrentSecondSideNoAttackCompleted(predecessor, accepted.SuccessorSession))
             throw new ArgumentException("Accepted second-side no-attack completion required.", nameof(accepted));
         var checkpoint = CampaignExercises.QueryCheckpoint(predecessor);
         return new CampaignActionSubmission(CampaignActionSubmission.CurrentContractVersion,
@@ -1665,12 +1720,10 @@ public static class CampaignHostAdapter
         // EntryHash QuerySecondCombatSelectionRoundBinding computed when the
         // round was first initialized (CampaignExercises.cs), or a
         // genuinely correct second-side round looks tampered-with on replay.
-        // TODO(StageEntrySelectionRounds): add NativeStageEntryBreakdownKind and
-        // NativeStageEntrySecondBreakdownKind here when the Stage 2 owner/timeout
-        // paths retain and close their rounds. The stage-aware Core binding uses
-        // this same V46 digest and version. Recognizing an unwired terminal
-        // Breakdown now would make VerifySelectionRounds require a missing row.
-        if (step.Kind == CampaignHostAcceptedStep.NativeSecondBreakdownKind && step.EventRecords.Count == 1)
+        // W4: a Stage 2 first-side Breakdown opens its own V46-bound Selection round exactly like the
+        // Stage 1 second side (the Host journal now arms and closes that round).
+        if (step.Kind is CampaignHostAcceptedStep.NativeSecondBreakdownKind
+                or CampaignHostAcceptedStep.NativeStageEntryBreakdownKind && step.EventRecords.Count == 1)
         {
             var secondBreakdown = CampaignNativeSecondBreakdownV46.Deserialize(step.EventRecords[0]);
             return (CampaignSelectionTimeoutEvidenceV38.Digest(secondBreakdown.SerializeCanonical()), secondBreakdown.StateVersion);
@@ -4381,6 +4434,12 @@ public sealed class CampaignHostContactForceOwnerDraft
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }
+
+/// <summary>The (stage, side) occurrence a native Combat Selection belongs to.</summary>
+public enum CampaignCombatSelectionSlot
+{
+    StageOneFirst, StageOneSecond, StageTwoFirst, StageTwoSecond, StageThreeFirst, StageThreeSecond,
+}
 
 // Host-private source data. These records must never be returned from an HTTP endpoint.
 public sealed record CampaignHostPrivateSideCut(
