@@ -49,6 +49,7 @@ internal static partial class CampaignDurableOutwardApi
 
         var api = app.MapGroup("/api/v2/campaigns");
         MapOpenForSeat(api);
+        MapVerification(api);
         api.MapPost("/source", async (HttpContext context, CampaignDurableAuthorityJournalStore journal) =>
             await Execute(context, async () =>
             {
