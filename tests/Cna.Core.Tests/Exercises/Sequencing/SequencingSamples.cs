@@ -225,6 +225,16 @@ internal static class SequencingScenarios
                 offered++;
                 var moved = submit(session, audience, CampaignNativeSecondMoveV44.ActionIdFor(offer), element);
                 if (!moved.IsAccepted) continue;
+                // Later-stage Reaction continuation is deliberately outside the checkpoint's scope.
+                // A detached trial that opens a window must not advance this no-attack driver.
+                if (tag.StartsWith("op2.", StringComparison.Ordinal) || tag.StartsWith("op3.", StringComparison.Ordinal))
+                {
+                    if (moved.SuccessorSession!.CurrentHistory[^1] is CampaignNativeSecondMoveV44 { ReactionWindow: not null })
+                    {
+                        r.Notes.Add($"{tag}: optional move opens unsupported Reaction window (D-E)");
+                        continue;
+                    }
+                }
                 r.Notes.Add($"{tag}: real move accepted ({element})");
                 return r.Rec($"{tag}.move", moved.SuccessorSession!);
             }

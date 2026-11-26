@@ -169,6 +169,18 @@ internal static class CampaignWorldV6Validator
         ContentPackV6Artifact artifact,
         ContentScenario scenario) => IsValidCore(world, artifact, scenario, requireInitial: false);
 
+    // A runtime world may advance to a later admitted ledger, but the whole world
+    // must share its scope. Initial-world validation below still requires scenario start.
+    private static bool HasValidRuntimeLedgerScope(CampaignElementOperationalStateV5 ledger,
+        CampaignWorldSnapshotV6 world, ContentScenario scenario)
+    {
+        var scope = (ledger.LedgerGameTurn, ledger.LedgerOperationStage);
+        var first = world.Elements[0].OperationalState;
+        return scope == (first.LedgerGameTurn, first.LedgerOperationStage)
+            && scope.CompareTo((scenario.Start.GameTurn, scenario.Start.OperationStage)) >= 0
+            && scope.CompareTo((scenario.End.GameTurn, scenario.End.OperationStage)) <= 0;
+    }
+
     internal static void RequireValidContent(ContentPackV6Artifact artifact)
     {
         ArgumentNullException.ThrowIfNull(artifact);
@@ -246,8 +258,10 @@ internal static class CampaignWorldV6Validator
                 || !locations.Contains(state.CurrentLocationId)
                 || !HasValidComponents(state.Components, facts, initial.InitialComponentToes)
                 || state.OperationalState.CapabilityPointsExpended > new CapabilityPointAmount(contentElement.BaseCapabilityPointAllowance, 1)
-                || state.OperationalState.LedgerGameTurn != scenario.Start.GameTurn
-                || state.OperationalState.LedgerOperationStage != scenario.Start.OperationStage
+                || (requireInitial
+                    ? state.OperationalState.LedgerGameTurn != scenario.Start.GameTurn
+                        || state.OperationalState.LedgerOperationStage != scenario.Start.OperationStage
+                    : !HasValidRuntimeLedgerScope(state.OperationalState, world, scenario))
                 || (state.OperationalState.MovementEnded is not null
                     && state.OperationalState.MovementEnded.SequenceContractVersion != 4)
                 || !HasConservedCohort(state, contentElement, world.BrokenVehicleLots)

@@ -46,7 +46,7 @@ public sealed class FrozenTurnBoundaryIdentityTests
             v6 rules-lab.breakdown.truck-cost.v1 cd64068c7a1ef06e574d65df9216f157883aabf694ccf33e1c756858efa78189
             v6 rules-lab.breakdown.truck-one-point.v1 79f3c31270701655c4b336b9dfd484195c4034c4d5e8045b86c1a34993d6c794
             v6 rules-lab.breakdown.truck.v1 fc528041ba1b8929445ddb56fb7fb4dd8ece0945d0ae0169b62e218c5720cec6
-            stream pregame-no-attack sha256:1708a7faa17883c85e82427bb59d1e1a2a7327d8ff5b6fdffe55f38006faa78d
+            stream pregame-no-attack sha256:a38b47f239d2007e42cf9ad4b461c4d9cedc904a1fac58115a574f8243a89910
             stream real-attack sha256:a683044cd7e699ddfeb89c1865f387ba6a22fdeeb3ef7781236e9fada63d0c2c
             stream real-attack-repeat sha256:91c489431465902a9573c02f9a1f5a8511bda4cfb06e55ed13278383dc8e0160
             """, string.Join('\n', legacySetups.Concat(v6Bytes).Concat(streams)));

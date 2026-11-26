@@ -22,3 +22,19 @@ and forged choices without mutation.
 This contract does not implement second-side Movement or admit historical
 formations, deferred arrivals or a Graziani campaign. Its eligibility cannot be
 used for a broader content profile without validating that profile's rules.
+
+## Ledger rollover, event 58
+
+The first Reserve decision after a native stage preamble (V54) instead writes
+contract version 58 with the same canonical fields. Its prior World hash still
+binds the settled predecessor; its result World hash commits the ledger's current
+Game Turn and Operation Stage, zero stage expenditure, and removal of the prior
+stage's Movement-ended markers. All other element state and World data are
+preserved except the optional accepted Reserve choice. Additional choices and
+the other side's Reserve opening retain V43 and do not reset the ledger again.
+
+The accounting scope follows `MOV-REQ-004` in [Movement foundation](movement-foundation-v1.md)
+and the repository's retained rule provenance (Land §§6.13–6.16). The Turn 2
+Reserve opening can validate the new event without accepting it. The V11
+snapshot retains its historical scenario-start scope and diagnostics; no V11
+serialization or setup identity changes.

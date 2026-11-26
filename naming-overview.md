@@ -257,7 +257,8 @@ Raw ZOC qualification can use source-backed armor, reconnaissance and anti-tank
 ratings; those names do not imply that their combat rules are admitted.
 V41/V42 name explicit owner passes through convoy, rail, towing, maintenance
 and patrol. V43 records second-side Reserve choices against the settled World and
-completion to Movement. V44 records a one-hex second-side move-and-stop, retaining
+completion to Movement. V58 is its versioned first post-preamble decision that rolls the expenditure
+ledger to the current turn/stage; ordinary V43 decisions retain their prior byte contract. V44 records a one-hex second-side move-and-stop, retaining
 any Reaction window. V45 records owner completion to Breakdown when no Reaction
 is pending. Those optional activities, Reaction handling and Breakdown remain unsupported.
 V30 records the cohortless Breakdown System determination into Combat with

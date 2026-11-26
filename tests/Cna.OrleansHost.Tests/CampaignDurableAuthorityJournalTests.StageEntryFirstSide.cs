@@ -86,11 +86,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var move = await QueryOpeningForOpenSeatTest(outward, holder, actor, movement);
         Assert.Equal("land.position.operation-2.first-player.movement-and-combat.movement",
             move.Visible.GetProperty("positionId").GetString());
-        // Known Core gap: the retained world has not acquired a Stage 2 movement ledger yet.
-        // No legal action can be invented by the Host; direct query works, discovery excludes it.
-        Assert.Equal(1, move.Visible.GetProperty("ownElements")[0].GetProperty("ledgerOperationStage").GetInt32());
-        Assert.Empty(move.Refs);
-        Assert.DoesNotContain(await Open(holder), entry => entry.OpeningStage == movement);
+        Assert.Equal(2, move.Visible.GetProperty("ownElements")[0].GetProperty("ledgerOperationStage").GetInt32());
+        Assert.NotEmpty(move.Refs);
+        Assert.Contains(await Open(holder), entry => entry.OpeningStage == movement);
         Assert.Equal(HttpStatusCode.Conflict, (await outward.SubmitResponse(holder, actor, movement, move.Revision, forged)).Status);
         Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(other, actor, movement)).Status);
         const string finish = "stage-entry-movement-completion";

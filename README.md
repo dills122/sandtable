@@ -278,6 +278,9 @@ unchanged and refuse this rollover path. The bound is the lower of the declared 
 Weather's maximum game turn; terminal scoring and later-turn Reserve submission are not wired.
 The Development/loopback HTTP host replays and drains these boundaries through the existing
 stage-entry declaration and Reserve opening names. Later-turn Reserve submission remains unsupported.
+The first native Reserve decision of each later Operation Stage uses event contract V58 to advance
+the shared per-stage expenditure ledger; existing Stage 1 Reserve events retain V43. The successor
+turn's read-only Reserve opening validates the same factory without committing it.
 
 ### Further detail
 

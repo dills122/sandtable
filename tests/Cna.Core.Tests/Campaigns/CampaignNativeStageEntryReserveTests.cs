@@ -40,8 +40,10 @@ public sealed class CampaignNativeStageEntryReserveTests
             CampaignNativeCombatPaidWorldV22.Hash(world));
     }
 
-    [Fact]
-    public void StageEntryReserveCompletesForTheNewStagesFirstActingSide()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("axis-infantry")]
+    public void StageEntryReserveRollsLedgerOnFirstDecisionOnly(string? elementId)
     {
         var artifact = BreakdownContentFixture.Artifact();
         var scenario = BreakdownSnapshotTests.Scenario();
@@ -62,17 +64,31 @@ public sealed class CampaignNativeStageEntryReserveTests
         IReadOnlyList<CampaignOperationStageOrder> orders = [order];
 
         var (reserve, resultWorld) = CampaignNativeSecondReserveV43.Create(
-            fleetRepair, world, context, orders, order.FirstSide, elementId: null, 1, fleetRepair.StateVersion);
+            fleetRepair, world, context, orders, order.FirstSide, elementId, 1, fleetRepair.StateVersion);
 
         Assert.Equal(order.FirstSide, reserve.Side);
         Assert.Equal(2, Cna1979LandSequenceV4.CreateTurn(1)
             .Single(value => value.PositionId == reserve.PositionId).OperationStage);
-        Assert.True(reserve.Completed);
+        Assert.Equal(elementId is null, reserve.Completed);
         Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(resultWorld), reserve.ResultWorldHash);
-        Assert.Same(world, resultWorld);
+        Assert.Equal(CampaignNativeSecondReserveV43.LedgerRolloverContractVersion, reserve.ContractVersion);
+        Assert.All(resultWorld.Elements, element =>
+        {
+            Assert.Equal(1, element.OperationalState.LedgerGameTurn);
+            Assert.Equal(2, element.OperationalState.LedgerOperationStage);
+            Assert.Equal(CapabilityPointAmount.Zero, element.OperationalState.CapabilityPointsExpended);
+        });
 
         var bytes = reserve.SerializeCanonical();
         Assert.Equal(reserve, CampaignNativeSecondReserveV43.Deserialize(bytes));
+        if (elementId is not null)
+        {
+            var (completed, finalWorld) = CampaignNativeSecondReserveV43.Create(reserve, resultWorld, context,
+                orders, order.FirstSide, null, 1, reserve.StateVersion);
+            Assert.True(completed.Completed);
+            Assert.Equal(CampaignNativeSecondReserveV43.CurrentContractVersion, completed.ContractVersion);
+            Assert.Same(resultWorld, finalWorld);
+        }
     }
 
     [Fact]

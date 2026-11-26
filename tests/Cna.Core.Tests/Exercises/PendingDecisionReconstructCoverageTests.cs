@@ -31,10 +31,6 @@ public sealed class PendingDecisionReconstructCoverageTests
         "Unreachable through public flows: CompleteXCombatNoAttack installs the no-attack completion "
         + "together with the non-empty Assault runtime, so Pending always resolves to XAssaultPending. "
         + "The no-attack event is tested through that observable Assault head.";
-    private const string StageEntryMoveReason =
-        "No fixture: the retained movement ledger is still operation stage 1, so the later-stage "
-        + "owner cuts have no move offers. Ledger rollover is deferred (D-B).";
-
     private static readonly Dictionary<Type, string> UnreachableAllowList = new()
     {
         [typeof(SecondNoAttackPending)] = NoAttackReason,
@@ -42,10 +38,6 @@ public sealed class PendingDecisionReconstructCoverageTests
         [typeof(StageEntrySecondNoAttackPending)] = NoAttackReason,
         [typeof(ThirdStageNoAttackPending)] = NoAttackReason,
         [typeof(ThirdStageSecondNoAttackPending)] = NoAttackReason,
-        [typeof(StageEntryMovePending)] = StageEntryMoveReason,
-        [typeof(StageEntrySecondMovePending)] = StageEntryMoveReason,
-        [typeof(ThirdStageMovePending)] = StageEntryMoveReason,
-        [typeof(ThirdStageSecondMovePending)] = StageEntryMoveReason,
     };
 
     public static TheoryData<string> Subtypes()
@@ -273,9 +265,16 @@ internal static class PendingFixtures
     private static readonly IReadOnlyDictionary<Type, Func<ExerciseSession>> ExtraFixtures =
         new Dictionary<Type, Func<ExerciseSession>>
         {
+            [typeof(StageEntryMovePending)] = LaterMoveFixture<StageEntryMovePending>,
+            [typeof(StageEntrySecondMovePending)] = LaterMoveFixture<StageEntrySecondMovePending>,
+            [typeof(ThirdStageMovePending)] = LaterMoveFixture<ThirdStageMovePending>,
+            [typeof(ThirdStageSecondMovePending)] = LaterMoveFixture<ThirdStageSecondMovePending>,
             [typeof(TurnBoundaryPending)] = () => Sequencing.SequencingScenarios.All.SelectMany(s => s.Samples)
                 .Last(sample => sample.Session.Pending is TurnBoundaryPending).Session,
         };
+
+    private static ExerciseSession LaterMoveFixture<T>() where T : PendingDecision => Sequencing.SequencingScenarios.All
+        .SelectMany(s => s.Samples).First(sample => sample.Session.Pending is T).Session;
 
     private static readonly Lazy<IReadOnlyDictionary<Type, Func<ExerciseSession>>> Lazy = new(Build);
 

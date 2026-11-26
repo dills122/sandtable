@@ -57,7 +57,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 Assert.DoesNotContain(other, entry => entry.OpeningStage == stage);
                 if (verify)
                 {
-                    Assert.Equal(stage, Assert.Single(own).OpeningStage);
+                    var required = stage == "stage-entry-movement-completion"
+                        ? own.Where(entry => entry.OpeningStage != "stage-entry-movement") : own;
+                    Assert.Equal(stage, Assert.Single(required).OpeningStage);
                     Assert.Empty(other);
                 }
             }
@@ -110,10 +112,12 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             if (verify)
             {
                 var movement = await QueryOpeningForOpenSeatTest(outward, seat, Element(seat), "stage-entry-movement");
-                Assert.Empty(movement.Refs);
-                Assert.Equal(1, movement.Visible.GetProperty("ownElements")[0].GetProperty("ledgerOperationStage").GetInt32());
+                Assert.NotEmpty(movement.Refs);
+                var checkpoint = CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId));
+                var stage = checkpoint.PositionId.Contains("operation-3", StringComparison.Ordinal) ? 3 : 2;
+                Assert.Equal(stage, movement.Visible.GetProperty("ownElements")[0].GetProperty("ledgerOperationStage").GetInt32());
                 Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(Other(seat), Element(seat), "stage-entry-movement")).Status);
-                Assert.DoesNotContain(await Discover(seat), entry => entry.OpeningStage == "stage-entry-movement");
+                Assert.Contains(await Discover(seat), entry => entry.OpeningStage == "stage-entry-movement");
             }
             await Play(seat, completion, $"land.{completion}", verify: verify);
             await Play(seat, "combat-selection", Element(seat), verify: verify);
