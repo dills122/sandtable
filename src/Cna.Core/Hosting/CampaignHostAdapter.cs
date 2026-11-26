@@ -2848,6 +2848,12 @@ public static class CampaignHostAdapter
                 throw new CampaignReactionWindowRuleNotImplementedException(
                     "A reaction window opened by a second-side Movement cannot yet be " +
                     "resolved through an owner opening (#394 gap 3).");
+            // A retained native window must not be mistaken for absence, even in a
+            // detached session from before the E4b (#655) move-submission refusal.
+            if (session.CurrentHistory.LastOrDefault() is CampaignNativeSecondMoveV44 { ReactionWindow: not null } move
+                && move.StateVersion == CampaignExercises.QueryCheckpoint(session).StateVersion)
+                throw new CampaignReactionWindowRuleNotImplementedException(
+                    "A reaction window opened by a later native Movement cannot yet be resolved (#655).");
             throw new InvalidOperationException("Reaction is unavailable.");
         }
         var actions = set.Candidates.ToArray();
