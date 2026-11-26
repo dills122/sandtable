@@ -53,7 +53,10 @@ public sealed class PendingEquivalenceOracleTests
     [InlineData("land.position.operation-2.initiative-declaration", "stage-entry-initiative-declaration")]
     [InlineData("land.position.operation-2.first-player.reserve-designation", "stage-entry-reserve")]
     [InlineData("land.position.operation-2.second-player.reserve-designation", "stage-entry-reserve")]
-    public void DiscoveryUsesTheCursorAtStageTwoBoundaries(string position, string stage)
+    [InlineData("land.position.operation-3.initiative-declaration", "stage-entry-initiative-declaration")]
+    [InlineData("land.position.operation-3.first-player.reserve-designation", "stage-entry-reserve")]
+    [InlineData("land.position.operation-3.second-player.reserve-designation", "stage-entry-reserve")]
+    public void DiscoveryUsesTheCursorAtStageBoundaries(string position, string stage)
     {
         var rows = Rows().Where(row => row.PositionId == position).ToArray();
         Assert.NotEmpty(rows);

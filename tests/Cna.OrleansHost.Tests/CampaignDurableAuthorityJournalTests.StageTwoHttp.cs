@@ -8,7 +8,9 @@ namespace Cna.OrleansHost.Tests;
 public sealed partial class CampaignDurableAuthorityJournalTests
 {
     [Fact]
-    public async Task TwoHttpSeatsCompleteStageTwoWithDiscoveryAndColdReplay()
+    public Task TwoHttpSeatsCompleteStageTwoWithDiscoveryAndColdReplay() => RunStagesHttp(includeStageThree: false);
+
+    private static async Task RunStagesHttp(bool includeStageThree)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
@@ -55,7 +57,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             var before = CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId));
             if (verify) Replay();
             var reference = last ? opening.Refs[^1] : opening.Refs[0];
-            if (stage == "reserve-designation")
+            if (stage is "reserve-designation" or "stage-entry-reserve")
             {
                 var choices = opening.Visible.GetProperty("choices").EnumerateArray()
                     .Select(value => value.GetProperty("kind").GetString()).ToArray();
@@ -124,13 +126,38 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         await FinishSide(Other(holder), "stage-entry-reserve", "stage-entry-movement-completion", true);
         Assert.Equal("land.position.operation-3.initiative-declaration",
             CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).PositionId);
-        // Stage 3 Host openings are W6; no stale Stage 2 opening may be advertised here.
+        holder = (await Discover(axis)).Any(entry => entry.OpeningStage == "stage-entry-initiative-declaration") ? axis : commonwealth;
+        Assert.Equal("stage-entry-initiative-declaration", Assert.Single(await Discover(holder)).OpeningStage);
+        Assert.Empty(await Discover(Other(holder)));
+        foreach (var seat in new[] { axis, commonwealth })
+            Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(seat, "land.stage-entry-reserve", "stage-entry-reserve")).Status);
+        if (!includeStageThree) return;
+
+        // Switch the first role at the next occurrence, so retained side/role aliases cannot pass.
+        await Play(holder, "stage-entry-initiative-declaration", "land.stage-entry-initiative-declaration", verify: true);
+        Assert.Equal("land.position.operation-3.weather-determination",
+            CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId)).PositionId);
+        var declarationHead = fixture.Open(clock).ReadVerified(request.CampaignId);
+        var preamble = ReplayStageThreePreamblePrefixes(declarationHead);
+        Assert.Equal("stage-entry-reserve", Assert.Single(await Discover(Other(holder))).OpeningStage);
+        Assert.Empty(await Discover(holder));
+        Assert.Equal(CampaignExercises.QueryCheckpoint(declarationHead).StateVersion,
+            CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).StateVersion);
+        await QueryOpeningForOpenSeatTest(outward, Other(holder), "land.stage-entry-reserve", "stage-entry-reserve");
+        var afterPreamble = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.Equal(CampaignExercises.QueryCheckpoint(declarationHead).StateVersion + 5,
+            CampaignExercises.QueryCheckpoint(afterPreamble).StateVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(preamble).EventStreamHash,
+            CampaignExercises.Reconstruct(afterPreamble).EventStreamHash);
+        Replay();
+        await FinishSide(Other(holder), "stage-entry-reserve", "stage-entry-movement-completion", true);
+        Assert.Equal("land.position.operation-3.second-player.reserve-designation",
+            CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId)).PositionId);
+        await FinishSide(holder, "stage-entry-reserve", "stage-entry-movement-completion", true);
+        Assert.Equal("land.position.end-of-turn",
+            CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).PositionId);
         Assert.Empty(await Discover(axis));
         Assert.Empty(await Discover(commonwealth));
-        foreach (var seat in new[] { axis, commonwealth })
-        {
-            Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(seat, "land.stage-entry-initiative-declaration", "stage-entry-initiative-declaration")).Status);
-            Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(seat, "land.stage-entry-reserve", "stage-entry-reserve")).Status);
-        }
+        Replay();
     }
 }

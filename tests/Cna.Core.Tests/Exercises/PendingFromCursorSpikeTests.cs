@@ -184,13 +184,17 @@ public sealed class PendingFromCursorSpikeTests
         Assert.Contains(rows, r => r.sample.NonNullCurrentFields >= 5 && r.derived == r.sample.Pending);
     }
 
-    [Fact]
-    public void RetainedFirstRoleAssaultAtSecondRoleBoundaryDoesNotDetermineHostOpening()
+    [Theory]
+    [InlineData(2, "StageEntryAssaultPending")]
+    [InlineData(3, "ThirdStageAssaultPending")]
+    public void RetainedFirstRoleAssaultAtSecondRoleBoundaryDoesNotDetermineHostOpening(int stage, string pending)
     {
-        RunRealSession();
-        var boundary = Assert.Single(samples, s => s.PositionId == "land.position.operation-2.second-player.reserve-designation");
-        Assert.Equal("StageEntryAssaultPending", boundary.Pending);
-        var position = Cna1979LandSequenceV4.CreateTurn(boundary.GameTurn).Single(p => p.PositionId == boundary.PositionId);
+        var reserveType = stage == 2 ? typeof(StageEntrySecondReservePending) : typeof(ThirdStageSecondReservePending);
+        var boundary = PendingFixtures.All[reserveType]().Pending!.Predecessor!;
+        Assert.Equal(pending, boundary.Pending!.GetType().Name);
+        var checkpoint = CampaignExercises.QueryCheckpoint(boundary);
+        Assert.Equal($"land.position.operation-{stage}.second-player.reserve-designation", checkpoint.PositionId);
+        var position = Cna1979LandSequenceV4.CreateTurn(1).Single(p => p.PositionId == checkpoint.PositionId);
         Assert.Equal(["stage-entry-reserve"], CampaignOpenSeatCatalog.StagesAt(position, true));
     }
 

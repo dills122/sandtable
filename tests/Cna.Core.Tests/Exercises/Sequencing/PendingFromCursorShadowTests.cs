@@ -34,12 +34,12 @@ public sealed class PendingFromCursorShadowTests
     }
 
     [Fact]
-    public void BothStageTwoOccurrencesUseTheSameHostStagesAtMatchingPositions()
+    public void BothLaterStageOccurrencesUseTheSameHostStagesAtMatchingPositions()
     {
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
-        foreach (var first in turn.Where(p => p.OperationStage == 2 && p.ActorRole == LandActorRole.FirstActingSide))
+        foreach (var first in turn.Where(p => p.OperationStage is 2 or 3 && p.ActorRole == LandActorRole.FirstActingSide))
         {
-            var second = turn.Single(p => p.OperationStage == 2 && p.ActorRole == LandActorRole.SecondActingSide
+            var second = turn.Single(p => p.OperationStage == first.OperationStage && p.ActorRole == LandActorRole.SecondActingSide
                 && p.PhaseId == first.PhaseId && p.SegmentId == first.SegmentId && p.StepId == first.StepId);
             Assert.Equal(CampaignOpenSeatCatalog.StagesAt(first, true), CampaignOpenSeatCatalog.StagesAt(second, true));
         }

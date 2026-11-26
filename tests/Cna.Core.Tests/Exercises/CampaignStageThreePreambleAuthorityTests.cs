@@ -9,6 +9,28 @@ namespace Cna.Core.Tests.Exercises;
 public sealed class CampaignStageThreePreambleAuthorityTests
 {
     [Fact]
+    public void DeclarationSourceRequiresExactCheckpointAndReturnsLatestPass()
+    {
+        var declared = Fixture<ThirdStageInitiativeDeclarationPending>();
+        var terminal = declared.Pending!.Predecessor!;
+        var source = CampaignStageThreePreambleAuthority.QueryStageThreeInitiativeDeclarationSource(terminal);
+        Assert.Same(terminal.CurrentHistory[^1], source);
+        Assert.Equal(terminal.CurrentContacts.AuthorityVersion, source.StateVersion);
+        var early = terminal;
+        for (var index = 0; index < 3; index++)
+        {
+            early = early.Pending!.Predecessor!;
+            Assert.Throws<InvalidOperationException>(() =>
+                CampaignStageThreePreambleAuthority.QueryStageThreeInitiativeDeclarationSource(early));
+        }
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignStageThreePreambleAuthority.QueryStageThreeInitiativeDeclarationSource(declared));
+        Assert.Throws<InvalidOperationException>(() =>
+            CampaignStageThreePreambleAuthority.QueryStageThreeInitiativeDeclarationSource(
+                Fixture<InitiativeDeclarationPending>().Pending!.Predecessor!));
+    }
+
+    [Fact]
     public void ForwardPreambleMatchesHandBuiltEventsAndReachesFirstOwnerDecision()
     {
         // The independent driver constructs the Stage 3 preamble using native Create/With methods.

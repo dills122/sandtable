@@ -104,6 +104,12 @@ public sealed class PendingDecisionReconstructCoverageTests
         // retained type describes the prior position and the cursor has crossed a boundary.
         var candidates = CampaignOpenSeatCatalog.CandidatesFor(session);
         Assert.All(candidates.Stages, stage => Assert.Contains(stage, CampaignOpenSeatCatalog.ReferencedStageNames));
+        var checkpoint = CampaignExercises.QueryCheckpoint(session);
+        if (checkpoint.PositionId == "land.position.operation-3.initiative-declaration")
+            Assert.Equal(["stage-entry-initiative-declaration"], candidates.Stages);
+        if (checkpoint.PositionId.StartsWith("land.position.operation-3.", StringComparison.Ordinal)
+            && checkpoint.PositionId.EndsWith("reserve-designation", StringComparison.Ordinal))
+            Assert.Equal(["stage-entry-reserve"], candidates.Stages);
     }
 
     [Theory]

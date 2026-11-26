@@ -30,14 +30,20 @@ public sealed class CampaignOpenSeatCatalogTests
     }
 
     [Fact]
-    public void EveryCursorStageIsRegisteredAndStageThreeIsNotAdvertisedYet()
+    public void EveryCursorStageIsRegisteredAndStageThreeMatchesStageTwo()
     {
         foreach (var position in Cna1979LandSequence.CreateTurn(1))
         {
             var stages = CampaignOpenSeatCatalog.StagesAt(position, true);
             if (stages is null) continue;
             Assert.All(stages, stage => Assert.Contains(stage, CampaignOpenSeatCatalog.ReferencedStageNames));
-            if (position.OperationStage == 3) Assert.Empty(stages);
+            if (position.OperationStage == 3)
+            {
+                var stageTwo = Cna1979LandSequence.CreateTurn(1).Single(p => p.OperationStage == 2
+                    && p.ActorRole == position.ActorRole && p.PhaseId == position.PhaseId
+                    && p.SegmentId == position.SegmentId && p.StepId == position.StepId);
+                Assert.Equal(CampaignOpenSeatCatalog.StagesAt(stageTwo, true), stages);
+            }
         }
     }
 

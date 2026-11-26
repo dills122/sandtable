@@ -88,10 +88,11 @@ appears throughout `CampaignDurableAuthorityJournalTests.cs`, e.g. lines
 
 ## Experimental / in-flux
 
-### Stage 2 entry and both-side owner openings
+### Stage 2 and 3 entry and both-side owner openings
 
-The Stage 2 declaration is available only at `land.position.operation-2.initiative-declaration`,
-to the resolved initiative holder. Weather, Organization, Naval Convoy Arrival, Fleet Assignment,
+The Stage 2 and Stage 3 declarations are available only at their respective
+`land.position.operation-2.initiative-declaration` and `land.position.operation-3.initiative-declaration`
+checkpoints, to the resolved initiative holder. Weather, Organization, Naval Convoy Arrival, Fleet Assignment,
 and Fleet Repair then auto-drain in the durable owner-opening path; the read-only open-for-seat
 route previews the same transitions without committing them. Each side's movement completion
 attempts its existing obligation-free Breakdown transition and arms that occurrence's Selection
@@ -105,13 +106,27 @@ None of these System steps is a player or operator HTTP action.
 | `stage-entry-movement` / `StageEntryMovement` | own independently placed non-vehicle element ID | `QueryStageEntryMovementOwnerDraft` / `SubmitStageEntryMovement` |
 | `stage-entry-movement-completion` / `StageEntryMovementCompletion` | `land.stage-entry-movement-completion` | `QueryStageEntryMovementCompletionOwnerDraft` / `SubmitStageEntryMovementCompletion` |
 
-Only the currently acting side may open or submit these kinds. Both roles share the same wire
+Only the currently acting side may open or submit these kinds. Both roles and stages share the same wire
 names: the checkpoint position and occurrence table select the matching authority. The movement cut uses visible contract
 version 3, including the position ID to distinguish it from retained Stage 1 per-element cuts;
 the reserve and completion cuts use the existing native V43/V45 shape. Accepted-step contract
 versions 125–130 identify the six first-side/preamble System transitions, and 131–133 identify
 the three shared owner kinds. Version 134 identifies second-side Breakdown; the other four
 role-specific no-attack and Reserve Release transitions use the existing W4 replay contracts.
+Stage 3 reuses the declaration (116), owner openings (131–133), combat selection, no-attack
+(first and second role), empty Reserve Release, Selection timeout, Cycle Control, Truck Convoy
+and Post-Combat pass contracts. Seven new System accepted-step contracts identify Stage 3's
+authoritative completions:
+
+| Version | Accepted-step kind |
+| --- | --- |
+| 135 | `native-stage-three-weather` |
+| 136 | `native-stage-three-organization` |
+| 137 | `native-stage-three-naval-convoy-arrival` |
+| 138 | `native-stage-three-fleet-assignment` |
+| 139 | `native-stage-three-fleet-repair` |
+| 140 | `native-stage-three-breakdown` |
+| 141 | `native-stage-three-second-breakdown` |
 
 `CampaignDurableAuthorityJournalTests.StageEntryFirstSide.cs` verifies the actual HTTP declaration
 fence, read-only preamble preview, durable System advancement, reserve and movement-completion
@@ -122,7 +137,10 @@ permission to manufacture offers. No positive Stage 2 move is verified yet (D-B 
 `CampaignDurableAuthorityJournalTests.StageTwoHttp.cs` exercises a fresh campaign through Stage 1
 and both Stage 2 roles on the no-attack path, verifying read-only seat discovery and cold replay.
 The position-aware catalog selects candidates from the checkpoint rather than retained prior-role
-state. Stage 3 Host openings, positive attack continuations, and Reaction remain deferred.
+state. `CampaignDurableAuthorityJournalTests.StageThreeHttp.cs` extends that synthetic trace
+through both Stage 3 roles with cold replay and seat discovery, stopping at End of Turn (B5).
+Positive Stage 2/3 moves remain unavailable in these fixtures (D-B); positive attack
+continuations and Reaction remain deferred (D-D and D-E).
 Maproom's fixed stage catalog is outside this Host-only slice.
 
 Discovery correction for #637: the catalog's rows describe retained event types, not always the
