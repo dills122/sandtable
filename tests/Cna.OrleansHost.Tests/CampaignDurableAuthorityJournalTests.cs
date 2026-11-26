@@ -2453,6 +2453,37 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             ? (marten ?? throw new InvalidOperationException("Journal is missing.")).Journal(OperatorSecret, clock)
             : CampaignDurableAuthorityJournal.OpenExisting(Path, clock);
 
+        internal async Task<byte[][]> ReadCanonicalCheckpointEvents(string campaignId)
+        {
+            if (UsesMarten)
+            {
+                using var query = (marten ?? throw new InvalidOperationException("Journal is missing.")).Store.QuerySession();
+                var events = await query.Events.FetchStreamAsync(campaignId, token: TestContext.Current.CancellationToken);
+                return events.Select(value => value.Data switch
+                {
+                    Cna.OrleansHost.Persistence.CampaignGenesisEvent genesis => genesis.CreationEvent,
+                    Cna.OrleansHost.Persistence.CampaignAcceptedStepEvent accepted => accepted.CanonicalEvent,
+                    _ => throw new InvalidOperationException("Unexpected campaign stream envelope."),
+                }).ToArray();
+            }
+            using var connection = new SqliteConnection($"Data Source={Path};Mode=ReadOnly;Pooling=False");
+            connection.Open();
+            using var command = connection.CreateCommand();
+            // Read genesis and accepted records in journal sequence, not lexical byte order.
+            command.CommandText = """
+                SELECT canonical FROM (
+                    SELECT 0 AS sequence, creation_event AS canonical FROM campaigns WHERE campaign_id=$id
+                    UNION ALL
+                    SELECT sequence, canonical_event FROM accepted_steps WHERE campaign_id=$id
+                ) ORDER BY sequence
+                """;
+            command.Parameters.AddWithValue("$id", campaignId);
+            using var reader = command.ExecuteReader();
+            var records = new List<byte[]>();
+            while (reader.Read()) records.Add((byte[])reader.GetValue(0));
+            return records.ToArray();
+        }
+
         public void Dispose()
         {
             marten?.Dispose();
