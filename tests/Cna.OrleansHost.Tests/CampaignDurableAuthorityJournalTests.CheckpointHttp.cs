@@ -36,6 +36,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             await outward.IssueAndRedeemSeat(CampaignActionAudience.Commonwealth, OperatorSecret),
         ];
         var declarations = 0;
+        var stagesWithMovementOffers = new HashSet<int>();
         var trace = new List<string>();
         var duration = Stopwatch.StartNew();
         for (var step = 0; step < 112; step++)
@@ -49,6 +50,18 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 {
                     Assert.False(entry.RuleNotImplemented, $"Unsupported {entry.OpeningStage} after {string.Join('\n', trace)}");
                     // Optional movement is not required to complete the synthetic path.
+                    if (entry.OpeningStage == "stage-entry-movement")
+                    {
+                        foreach (var element in entry.Elements)
+                        {
+                            var movement = await QueryOpeningForOpenSeatTest(outward, seat, element, entry.OpeningStage);
+                            Assert.NotEmpty(movement.Refs);
+                            var ledger = movement.Visible.GetProperty("ownElements")[0];
+                            Assert.Equal(initialTurn, ledger.GetProperty("ledgerGameTurn").GetInt32());
+                            Assert.Equal(declarations, ledger.GetProperty("ledgerOperationStage").GetInt32());
+                            stagesWithMovementOffers.Add(declarations);
+                        }
+                    }
                     if (entry.OpeningStage is "movement" or "second-movement" or "stage-entry-movement") continue;
                     foreach (var key in entry.Elements)
                         candidates.Add((seat, entry.OpeningStage, entry.ActionStage, key));
@@ -85,6 +98,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                     CampaignExercises.QueryCheckpoint(checkpoint).PositionId);
                 var records = await fixture.ReadCanonicalCheckpointEvents(request.CampaignId);
                 AssertCheckpointHistory(records, initialTurn, owner.Audience);
+                Assert.Equal([2, 3], stagesWithMovementOffers.Order());
                 AssertCheckpointTamper(checkpoint, records[^1]);
                 var canonicalHash = Convert.ToHexStringLower(SHA256.HashData(records.SelectMany(value => value).ToArray()));
                 TestContext.Current.TestOutputHelper?.WriteLine($"GT{initialTurn}: {step} owner submissions, {records.Length} events, {records.Sum(value => value.Length)} canonical bytes, {duration.Elapsed}; {canonicalHash}");
@@ -141,6 +155,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var visited = 0;
         var noAttackCount = 0;
         var endCount = 0;
+        var rolloverCount = 0;
         var weatherCount = 0;
         using (var genesis = JsonDocument.Parse(records[0]))
         {
@@ -155,6 +170,13 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             var root = document.RootElement;
             var kind = root.GetProperty("eventType").GetString();
             var turn = expected[visited].GameTurn;
+            if (kind == "second-reserve-decided")
+            {
+                var position = expected[visited];
+                var rollover = position.OperationStage > 1 && position.ActorRole == LandActorRole.FirstActingSide;
+                Assert.Equal(rollover ? 58 : 43, root.GetProperty("contractVersion").GetInt32());
+                if (rollover) rolloverCount++;
+            }
             if (turn != initialTurn)
                 Assert.Equal(turn, root.GetProperty("gameTurn").GetInt32());
             else if (root.TryGetProperty("gameTurn", out var stamped))
@@ -199,6 +221,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(expected.Length - 1, visited);
         Assert.Equal(6, noAttackCount);
         Assert.Equal(1, endCount);
+        Assert.Equal(2, rolloverCount);
         Assert.Equal(4, weatherCount);
 
         void Advance(string? from, string? next)

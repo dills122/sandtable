@@ -130,7 +130,10 @@ internal static class CampaignSnapshotV11Validator
             || snapshot.Setup.StageEntry.OperationStage != scenario.Start.OperationStage
             || snapshot.Setup.CapabilityProfileId != artifact.Definition.CapabilityProfileId)
             return BreakdownCapabilityDiagnostics.Identity;
-        if (!CampaignWorldV6Validator.IsValid(snapshot.World, artifact, scenario)
+        // Snapshot V11 remains bound to the original stage even though runtime Worlds can advance.
+        if (snapshot.World.Elements.Any(element => element.OperationalState.LedgerGameTurn != scenario.Start.GameTurn
+                || element.OperationalState.LedgerOperationStage != scenario.Start.OperationStage)
+            || !CampaignWorldV6Validator.IsValid(snapshot.World, artifact, scenario)
             || (snapshot.StateVersion == 1 && !CampaignWorldV6Validator.IsValidInitial(snapshot.World, artifact, scenario)))
             return BreakdownCapabilityDiagnostics.Conservation;
         try

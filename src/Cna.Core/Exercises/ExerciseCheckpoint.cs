@@ -159,7 +159,7 @@ public sealed class ExerciseCheckpoint
     {
         if (reserve.CampaignId != initial.CampaignId)
             throw new ArgumentException("Second Reserve belongs to another campaign.");
-        ContractVersion = CampaignNativeSecondReserveV43.CurrentContractVersion;
+        ContractVersion = reserve.ContractVersion;
         CampaignId = reserve.CampaignId;
         StateVersion = reserve.StateVersion;
         RulesetHash = initial.RulesetHash;

@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
@@ -73,6 +74,18 @@ public sealed class TurnBoundaryIntegrationTests
         Assert.Equal(repair.ToOrder(), orders.Single(order => order.GameTurn == initialTurn + 1 && order.OperationStage == 1));
         Assert.Equal(terminalPass.WorldHash, CampaignNativeCombatPaidWorldV22.Hash(world));
         Assert.Same(lastInitial.CurrentThirdStageSecondAssault!.Release!.World, world);
+        var (reserve, rolled) = CampaignNativeSecondReserveV43.Create(repair, world, boundary[^1].Session.Context,
+            orders, repair.FirstSide, null, initialTurn + 1, repair.StateVersion);
+        Assert.Equal(CampaignNativeSecondReserveV43.LedgerRolloverContractVersion, reserve.ContractVersion);
+        Assert.All(rolled.Elements, element =>
+        {
+            Assert.Equal(initialTurn + 1, element.OperationalState.LedgerGameTurn);
+            Assert.Equal(1, element.OperationalState.LedgerOperationStage);
+            Assert.Equal(CapabilityPointAmount.Zero, element.OperationalState.CapabilityPointsExpended);
+        });
+        Assert.Equal(reserve, CampaignNativeSecondReserveV43.Deserialize(reserve.SerializeCanonical()));
+        Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(world), reserve.PriorWorldHash);
+        Assert.Equal(CampaignNativeCombatPaidWorldV22.Hash(rolled), reserve.ResultWorldHash);
         Assert.Equal("land.position.operation-1.first-player.reserve-designation", CampaignExercises.QueryCheckpoint(boundary[^1].Session).PositionId);
         Assert.False(CampaignExercises.CompleteTurnStartFleetRepair(boundary[^1].Session).IsAccepted);
         var frontier = CampaignExercises.QueryCheckpoint(boundary[^1].Session);
@@ -83,6 +96,73 @@ public sealed class TurnBoundaryIntegrationTests
         Assert.Equal(CampaignActionSubmissionRejectionReason.RuleNotImplemented,
             CampaignExercises.SubmitWithCombat(boundary[^1].Session, reserveSubmission).RejectionReason);
         Assert.Null(CampaignExercises.QueryWithCombat(boundary[^1].Session, firstAudience).ActionSet);
+    }
+
+    // Canonical prefix digests independently captured from d82af0f5 (before D-B).
+    // Stop just before the first changed Reserve event; scenarios that never enter
+    // another stage retain their complete historical stream.
+    [Theory]
+    [InlineData("pregame-no-attack", 41, "8235b67ed6bb67603305810f17fa8282ec9a3d29fc6dff40b0e47b61d45ee980")]
+    [InlineData("real-attack", 41, "90ec1f054c17b9e81171f7cbb633333ae0db0736dc753a85107a7a4816a8d93c")]
+    [InlineData("real-attack-repeat", 29, "03a89bb7beaf832bfc868b95159fdb673b4e5c40ecbc0683c5cc004ae28786b4")]
+    [InlineData("turn-boundary-12345-rules-lab.breakdown.turn-boundary.gt1.v1", 41, "0d3a3481b392030681e851a839d4c432e11e23dff92c48b9caca3c50690e08bc")]
+    [InlineData("turn-boundary-2-rules-lab.breakdown.turn-boundary.gt1.v1", 41, "c201e4dc33f4ff036c877a94808cfb7416c8bd22efe6738d13e95fe3cabfa1fa")]
+    [InlineData("turn-boundary-3-rules-lab.breakdown.turn-boundary.gt1.v1", 41, "21fd43b896274336facf00f53c8a813f9ae3d472b92ae7734eab9647e264c97b")]
+    [InlineData("turn-boundary-12345-rules-lab.breakdown.turn-boundary.gt12.v1", 41, "de324f072dfd7e3deaa635eca533e5e6681122f89697aefd12622b7a3890dfaa")]
+    public void PreRolloverCanonicalBytesMatchThePreviousRevision(string name, int count, string digest)
+    {
+        var fixture = name switch
+        {
+            "turn-boundary-2-rules-lab.breakdown.turn-boundary.gt1.v1" => SequencingScenarios.DriveTurnBoundary(1, 2),
+            "turn-boundary-3-rules-lab.breakdown.turn-boundary.gt1.v1" => SequencingScenarios.DriveTurnBoundary(1, 3),
+            "turn-boundary-12345-rules-lab.breakdown.turn-boundary.gt12.v1" => SequencingScenarios.DriveTurnBoundary(12, 12345),
+            _ => SequencingScenarios.All.Single(scenario => scenario.Samples[0].Scenario == name),
+        };
+        var samples = fixture.Samples;
+        var session = (samples.FirstOrDefault(sample => sample.Label == "op2.fleet-repair") ?? samples[^1]).Session;
+        var records = session.CurrentHistory.Select(value => CampaignCurrentEventSerializer.Serialize(value, session.Context)).ToArray();
+        Assert.Equal(count, records.Length);
+        Assert.Equal(digest, Convert.ToHexStringLower(SHA256.HashData(records.SelectMany(value => value).ToArray())));
+    }
+
+    [Fact]
+    public void EachLaterStageStartsFreshAndSpendsOnlyFromItsOwnLedger()
+    {
+        var samples = SequencingScenarios.All.Single(s => s.Samples[0].Scenario == "pregame-no-attack").Samples;
+        var stageTwoEntry = samples.Single(s => s.Label == "op2.fleet-repair").Session;
+        var (_, priorWorld) = CampaignExercises.QueryStageEntryReserveSource(stageTwoEntry);
+        Assert.Contains(priorWorld.Elements, element => element.OperationalState.CapabilityPointsExpended > CapabilityPointAmount.Zero);
+
+        foreach (var stage in new[] { 2, 3 })
+        {
+            var fresh = samples.Single(s => s.Label == $"op{stage}.first.reserve").Session;
+            var world = stage == 2 ? fresh.CurrentStageEntryReserveWorld! : fresh.CurrentThirdStageReserveWorld!;
+            Assert.All(world.Elements, element =>
+            {
+                Assert.Equal(1, element.OperationalState.LedgerGameTurn);
+                Assert.Equal(stage, element.OperationalState.LedgerOperationStage);
+                Assert.Equal(CapabilityPointAmount.Zero, element.OperationalState.CapabilityPointsExpended);
+            });
+            var reserve = Assert.IsType<CampaignNativeSecondReserveV43>(fresh.CurrentHistory[^1]);
+            Assert.Equal(CampaignNativeSecondReserveV43.LedgerRolloverContractVersion, reserve.ContractVersion);
+            var move = samples.Single(s => s.Label == $"op{stage}.first.move").Session;
+            var movement = Assert.IsType<CampaignNativeSecondMoveV44>(move.CurrentHistory[^1]);
+            var cut = stage == 2 ? CampaignExercises.QueryStageEntryMovementCut(fresh, reserve.Side, movement.ElementId)
+                : CampaignExercises.QueryThirdStageMovementCut(fresh, reserve.Side, movement.ElementId);
+            Assert.NotEmpty(cut.MovementOffers);
+            var spent = stage == 2 ? move.CurrentStageEntryMoveWorld! : move.CurrentThirdStageMoveWorld!;
+            var state = spent.Elements.Single(element => element.ElementId == movement.ElementId).OperationalState;
+            Assert.Equal(stage, state.LedgerOperationStage);
+            Assert.True(state.CapabilityPointsExpended > CapabilityPointAmount.Zero);
+            var second = samples.Single(s => s.Label == $"op{stage}.second.reserve").Session;
+            var secondWorld = stage == 2 ? second.CurrentStageEntrySecondReserveWorld! : second.CurrentThirdStageSecondReserveWorld!;
+            Assert.Equal(CampaignNativeSecondReserveV43.CurrentContractVersion,
+                Assert.IsType<CampaignNativeSecondReserveV43>(second.CurrentHistory[^1]).ContractVersion);
+            Assert.Equal(state.CapabilityPointsExpended,
+                secondWorld.Elements.Single(element => element.ElementId == movement.ElementId).OperationalState.CapabilityPointsExpended);
+            Assert.True(CampaignExercises.Reconstruct(fresh).IsVerified);
+            Assert.True(CampaignExercises.Reconstruct(move).IsVerified);
+        }
     }
 
     [Fact]

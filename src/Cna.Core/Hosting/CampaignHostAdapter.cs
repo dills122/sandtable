@@ -2160,7 +2160,7 @@ public static class CampaignHostAdapter
         using (var writer = new System.Text.Json.Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", CampaignNativeSecondReserveV43.CurrentContractVersion);
+            writer.WriteNumber("contractVersion", check.ContractVersion);
             writer.WriteString("campaignId", check.CampaignId);
             writer.WriteString("side", side.ToString());
             writer.WriteString("positionId", check.PositionId);

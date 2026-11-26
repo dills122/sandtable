@@ -43,7 +43,7 @@ public sealed class CampaignNativeStageEntryMovementTests
     // Carries the six-event preamble chain through to a completed Reserve
     // Designation for the new stage's first acting side -- identical setup
     // to CampaignNativeStageEntryReserveTests.StageEntryReserveCompletesForTheNewStagesFirstActingSide.
-    private static (CampaignNativeSecondReserveV43 Reserve, CampaignOperationStageOrder Order)
+    private static (CampaignNativeSecondReserveV43 Reserve, CampaignOperationStageOrder Order, CampaignWorldSnapshotV6 World)
         CompletedStageEntryReserve(string campaignId, CampaignWorldSnapshotV6 world, CampaignContentContext context)
     {
         var predecessor = SecondSidePatrolComplete(campaignId, 100, world);
@@ -58,9 +58,9 @@ public sealed class CampaignNativeStageEntryMovementTests
         var fleetRepair = CampaignNativeNoObligationFleetRepairV54.Create(fleetAssignment, fleetAssignment.StateVersion);
         var order = fleetRepair.ToOrder();
         IReadOnlyList<CampaignOperationStageOrder> orders = [order];
-        var (reserve, _) = CampaignNativeSecondReserveV43.Create(
+        var (reserve, resultWorld) = CampaignNativeSecondReserveV43.Create(
             fleetRepair, world, context, orders, order.FirstSide, elementId: null, 1, fleetRepair.StateVersion);
-        return (reserve, order);
+        return (reserve, order, resultWorld);
     }
 
     [Fact]
@@ -71,12 +71,12 @@ public sealed class CampaignNativeStageEntryMovementTests
         var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
         var world = CampaignWorldV6Factory.CreateInitial(artifact, scenario);
 
-        var (reserve, order) = CompletedStageEntryReserve("test-campaign-stage-entry-movement", world, context);
+        var (reserve, order, resultWorld) = CompletedStageEntryReserve("test-campaign-stage-entry-movement", world, context);
         Assert.True(reserve.Completed);
         IReadOnlyList<CampaignOperationStageOrder> orders = [order];
 
         var completed = CampaignNativeSecondMovementCompletedV45.Create(
-            reserve, world, context, orders, order.FirstSide, 1, reserve.StateVersion);
+            reserve, resultWorld, context, orders, order.FirstSide, 1, reserve.StateVersion);
 
         Assert.Equal(order.FirstSide, completed.Side);
         Assert.Equal(2, Cna1979LandSequenceV4.CreateTurn(1)
@@ -97,11 +97,11 @@ public sealed class CampaignNativeStageEntryMovementTests
         var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
         var world = CampaignWorldV6Factory.CreateInitial(artifact, scenario);
 
-        var (reserve, order) = CompletedStageEntryReserve("test-campaign-stage-entry-movement-reject", world, context);
+        var (reserve, order, resultWorld) = CompletedStageEntryReserve("test-campaign-stage-entry-movement-reject", world, context);
         IReadOnlyList<CampaignOperationStageOrder> orders = [order];
 
         var error = Assert.Throws<InvalidOperationException>(() => CampaignNativeSecondMovementCompletedV45.Create(
-            reserve, world, context, orders, order.SecondSide, 1, reserve.StateVersion));
+            reserve, resultWorld, context, orders, order.SecondSide, 1, reserve.StateVersion));
 
         Assert.Equal("Second Movement does not bind the owner and World.", error.Message);
     }

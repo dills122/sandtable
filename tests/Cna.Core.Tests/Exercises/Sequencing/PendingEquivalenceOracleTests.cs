@@ -15,7 +15,7 @@ public sealed class PendingEquivalenceOracleTests
     // Subtypes no fixture drives today. Shrinks as slices land fixtures; a subtype missing from both the
     // observed set and this list fails the completeness test, and a listed subtype that IS observed
     // fails it too (so the list cannot rot).
-    private static readonly string[] NotDriven = ["StageEntryMovePending", "StageEntrySecondMovePending", "ThirdStageMovePending", "ThirdStageSecondMovePending"];
+    private static readonly string[] NotDriven = [];
 
     private sealed record Row(string Fixture, string Label, ExerciseSession Session, string? Actual, string PositionId,
         IReadOnlyList<string> NonNull);

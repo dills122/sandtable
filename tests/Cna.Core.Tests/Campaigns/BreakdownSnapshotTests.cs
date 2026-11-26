@@ -79,6 +79,42 @@ public sealed class BreakdownSnapshotTests
             BreakdownContentFixture.Artifact(), Scenario()));
     }
 
+    [Theory]
+    [InlineData(1, 2, false)]
+    [InlineData(1, 2, true)]
+    [InlineData(2, 1, false)]
+    public void ForeignLedgerScopeRetainsConservationDiagnostic(int turn, int stage, bool mixed)
+    {
+        var snapshot = Create(true);
+        var artifact = BreakdownContentFixture.Artifact();
+        var scenario = Scenario();
+        var world = new CampaignWorldSnapshotV6(6, snapshot.World.Elements.Select((element, index) =>
+            mixed && index != 0 ? element : new CampaignElementStateV5(element.ElementId,
+                element.CurrentLocationId, element.ReserveStatus,
+                new CampaignElementOperationalStateV5(turn, stage, element.OperationalState.CapabilityPointsExpended,
+                    element.OperationalState.CohesionLevel, element.OperationalState.VehicleBreakdownState, null),
+                element.Components)), snapshot.World.Representations, snapshot.World.BrokenVehicleLots);
+        var invalid = Copy(snapshot, new CampaignBreakdownFlow.Idle(), world: world);
+
+        Assert.False(CampaignSnapshotV11Validator.IsValid(invalid, artifact, scenario));
+        Assert.Equal("BRK-CERT-005", CampaignSnapshotV11Validator.GetDiagnostic(invalid, artifact, scenario));
+        Assert.False(CampaignWorldV6Validator.IsValidInitial(world, artifact, scenario));
+        Assert.Equal(!mixed && turn == 1, CampaignWorldV6Validator.IsValid(world, artifact, scenario));
+    }
+
+    [Theory]
+    [InlineData(1, 2)]
+    [InlineData(2, 1)]
+    public void ForeignStageOrderRetainsMixedContextDiagnostic(int turn, int stage)
+    {
+        var snapshot = Create(true);
+        var error = Assert.Throws<ArgumentException>(() => new CampaignSnapshotV11(11, snapshot.CampaignId,
+            snapshot.StateVersion, snapshot.RulesetHash, snapshot.Setup, snapshot.World, snapshot.InitiativeHolder,
+            [new CampaignOperationStageOrder(2, turn, stage, LandSide.Axis, LandSide.Commonwealth)],
+            snapshot.OperationStageWeather, snapshot.RandomState, snapshot.CurrentPosition, null, snapshot.BreakdownFlow));
+        Assert.Equal("BRK-CERT-006: Mixed identity or stage context.", error.Message);
+    }
+
     internal static ContentScenario Scenario() => BreakdownContentFixture.Artifact().Definition.LegacyDefinition.Scenarios.Single();
     internal static CampaignSnapshotV11 Create(bool movement = false)
     {

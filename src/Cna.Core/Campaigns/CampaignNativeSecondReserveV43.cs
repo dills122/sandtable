@@ -10,7 +10,10 @@ internal sealed record CampaignNativeSecondReserveV43(
     LandSide Side, string PositionId, string NextPositionId, string? ElementId,
     string PriorWorldHash, string ResultWorldHash)
 {
+    // V43 is retained for non-rollover Reserve decisions. V58 has the same wire
+    // fields, but explicitly commits the new ledger scope in ResultWorldHash.
     internal const int CurrentContractVersion = 43;
+    internal const int LedgerRolloverContractVersion = 58;
     internal long StateVersion => checked(PriorStateVersion + 1);
     internal bool Completed => ElementId is null;
 
@@ -56,7 +59,8 @@ internal sealed record CampaignNativeSecondReserveV43(
             || context.ArtifactV6 is not { } artifact || !CampaignWorldV6Validator.IsValid(world, artifact, context.Scenario))
             throw new InvalidOperationException("Second Reserve requires its owner and settled World.");
         var next = position;
-        var resultWorld = world;
+        var rollsLedger = predecessor is CampaignNativeNoObligationFleetRepairV54;
+        var resultWorld = rollsLedger ? RollLedger(world, position.GameTurn, position.OperationStage) : world;
         if (elementId is null)
         {
             next = Cna1979LandSequenceV4.GetNext(position);
@@ -71,19 +75,26 @@ internal sealed record CampaignNativeSecondReserveV43(
                 || !world.Representations.Any(value => value.BindingKind == CampaignMapRepresentationBindingKind.IndependentElement
                     && value.BoundElementIds.Count == 1 && value.BoundElementIds[0] == elementId))
                 throw new InvalidOperationException("Reserve selection is not an eligible own element.");
-            resultWorld = CampaignWorldV6Factory.DesignateReserve(world, elementId);
-            if (!CampaignWorldV6Validator.IsValid(resultWorld, artifact, context.Scenario))
-                throw new InvalidOperationException("Reserve selection leaves invalid World authority.");
+            resultWorld = CampaignWorldV6Factory.DesignateReserve(resultWorld, elementId);
         }
-        return (new(CurrentContractVersion, campaignId, version,
+        if (!CampaignWorldV6Validator.IsValid(resultWorld, artifact, context.Scenario))
+            throw new InvalidOperationException("Reserve selection leaves invalid World authority.");
+        return (new(rollsLedger ? LedgerRolloverContractVersion : CurrentContractVersion, campaignId, version,
             "sha256:" + Convert.ToHexStringLower(SHA256.HashData(priorBytes)), side,
             position.PositionId, next.PositionId, elementId, priorHash,
             CampaignNativeCombatPaidWorldV22.Hash(resultWorld)), resultWorld);
     }
 
+    private static CampaignWorldSnapshotV6 RollLedger(CampaignWorldSnapshotV6 world, int gameTurn, int operationStage) =>
+        new(world.ContractVersion, world.Elements.Select(element =>
+            new CampaignElementStateV5(element.ElementId, element.CurrentLocationId, element.ReserveStatus,
+                new CampaignElementOperationalStateV5(gameTurn, operationStage, CapabilityPointAmount.Zero,
+                    element.OperationalState.CohesionLevel, element.OperationalState.VehicleBreakdownState, null),
+                element.Components)), world.Representations, world.BrokenVehicleLots);
+
     internal byte[] SerializeCanonical()
     {
-        if (ContractVersion != CurrentContractVersion || PriorStateVersion < 1 || !Enum.IsDefined(Side)
+        if (ContractVersion is not (CurrentContractVersion or LedgerRolloverContractVersion) || PriorStateVersion < 1 || !Enum.IsDefined(Side)
             || !IsHash(PriorEventHash) || !IsHash(PriorWorldHash) || !IsHash(ResultWorldHash))
             throw new JsonException("Invalid second Reserve event.");
         using var stream = new MemoryStream();

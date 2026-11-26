@@ -874,7 +874,10 @@ accepted random stream; V57 explicitly passes the schedule and shipping position
 the opt-in version 2 synthetic opening/later-turn policy. V49–V54 continue the next stage's
 prelude using accepted-history turn, holder, and cursor. The single `TurnBoundaryPending`
 state owns these cuts through the read-only first-side Reserve Designation opening. No Reserve
-submission, terminal scoring, or ledger rollover is included. The Host uses additive accepted-step
+submission or terminal scoring is included. V58 versions the shared native Reserve factory's first
+post-preamble ledger rollover; the successor turn uses it only to validate the read-only opening.
+The runtime World allows a coherent admitted turn/stage ledger, while Snapshot 11 certification
+continues to require the scenario-start ledger with its original diagnostic. The Host uses additive accepted-step
 contracts 142–149, history-derived turn identity, and the shared stage-entry owner opening names.
 System-step refusal is reported rather than silently retried.
 
