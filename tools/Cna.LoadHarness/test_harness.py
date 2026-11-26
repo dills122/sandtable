@@ -6,6 +6,7 @@ import threading
 import json
 import os
 import pathlib
+import signal
 import subprocess
 import tempfile
 import unittest
@@ -185,9 +186,11 @@ class HarnessTests(unittest.TestCase):
         fingerprint = {'chainHeadHash': 'a' * 64, 'reconstructionHash': 'b' * 64,
                        'eventCount': 1, 'canonicalByteCount': 123,
                        'positionId': 'test-position', 'gameTurn': 1}
-        for mode in ('unsupported', 'discovery', 'grant', 'cliff', 'unverified', 'verify-http-error', 'create'):
+        for mode in ('unsupported', 'discovery', 'grant', 'cliff', 'unverified', 'verify-http-error', 'create', 'cancel'):
             with self.subTest(mode=mode):
                 observed = []
+                verification_started = threading.Event()
+                verification_release = threading.Event()
 
                 class Handler(http.server.BaseHTTPRequestHandler):
                     def do_POST(self):
@@ -224,6 +227,10 @@ class HarnessTests(unittest.TestCase):
                     def do_GET(self):
                         observed.append((self.path, self.headers.get('X-Sandtable-Operator'),
                                          self.headers.get('Sec-Fetch-Site')))
+                        if mode == 'cancel':
+                            verification_started.set()
+                            verification_release.wait(10)
+                            return
                         self.respond(503 if mode == 'verify-http-error' else 200,
                                      {'isVerified': mode != 'unverified', **fingerprint})
 
@@ -242,15 +249,33 @@ class HarnessTests(unittest.TestCase):
                     thread.start()
                     try:
                         output = pathlib.Path(tmp) / 'run'
-                        result = self.run_harness(output, '--driver', 'http', '--verify-state',
-                                                  '--base-url', f'http://127.0.0.1:{server.server_port}', '--until', 'turn2-reserve',
-                                                  *(['--stop-error-rate', '0'] if mode == 'cliff' else []),
-                                                  env={**os.environ, 'SANDTABLE_LOAD_OPERATOR_SECRET': 'test-only'})
+                        args = ['--driver', 'http', '--verify-state', '--until', 'turn2-reserve',
+                                '--base-url', f'http://127.0.0.1:{server.server_port}',
+                                *(['--stop-error-rate', '0'] if mode == 'cliff' else [])]
+                        env = {**os.environ, 'SANDTABLE_LOAD_OPERATOR_SECRET': 'test-only'}
+                        if mode == 'cancel':
+                            with subprocess.Popen(['dotnet', str(DLL), '--output', str(output), *args],
+                                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                                  env=env) as process:
+                                try:
+                                    self.assertTrue(verification_started.wait(10))
+                                    process.send_signal(signal.SIGINT)
+                                    try:
+                                        stdout, stderr = process.communicate(timeout=5)
+                                    except subprocess.TimeoutExpired:
+                                        self.fail('Explicit cancellation did not stop the pending verification')
+                                    result = subprocess.CompletedProcess(process.args, process.returncode, stdout, stderr)
+                                finally:
+                                    verification_release.set()
+                                    if process.poll() is None:
+                                        process.kill()
+                        else:
+                            result = self.run_harness(output, *args, env=env)
                         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
                         summary = json.loads((output / 'summary.json').read_text())
                         failure = 'InvalidOperationException' if mode == 'unsupported' else 'HttpRequestException'
                         self.assertEqual(summary['outcomes'], {f'error:{failure}': 1})
-                        expected = None if mode in ('unverified', 'verify-http-error', 'create') else fingerprint
+                        expected = None if mode in ('unverified', 'verify-http-error', 'create', 'cancel') else fingerprint
                         self.assertEqual(summary['perCampaign'][0]['stateFingerprint'], expected)
                         fingerprints = json.loads((output / 'fingerprints.json').read_text())
                         self.assertEqual(fingerprints['campaigns'][0]['stateFingerprint'], expected)
@@ -258,7 +283,7 @@ class HarnessTests(unittest.TestCase):
                         diagnostics = [json.loads(line) for line in (output / 'diagnostics.jsonl').read_text().splitlines()]
                         verify = [row['outcome'] for row in diagnostics if row['operation'] == 'verify']
                         self.assertEqual(verify, {'create': [], 'unverified': ['verification-failed'],
-                                                  'verify-http-error': ['http-503']}.get(mode, ['ok']))
+                                                  'verify-http-error': ['http-503'], 'cancel': ['error']}.get(mode, ['ok']))
                         self.assertEqual(observed[1:], [] if mode == 'create' else
                                          [(f'/api/v2/campaigns/{observed[0]}/verification', 'test-only', 'same-origin')])
                         self.assertEqual(summary['stoppedOnCliff'], mode == 'cliff')

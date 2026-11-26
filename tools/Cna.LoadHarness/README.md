@@ -193,7 +193,8 @@ Both cliff gates are opt-in and evaluated online without a warmup. In-flight cal
 finish, pending/ramping/thinking owner loops stop, and optional read-only verification
 still runs for created campaigns within the same concurrency cap. Partial artifacts are written
 with `stoppedOnCliff`, `cliffReason`, and exit 1. This is a capacity test, not a
-retrying client. `--hot-pool` continues to cap the launched Postgres pool;
+retrying client. Explicit user cancellation (Ctrl-C) also cancels verification.
+`--hot-pool` continues to cap the launched Postgres pool;
 it does not limit HTTP campaign workers. Keep paced runs within the one-hour
 decision budget if comparing fingerprints.
 

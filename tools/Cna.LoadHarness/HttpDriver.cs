@@ -134,7 +134,8 @@ internal sealed class HttpDriver : ICampaignDriver, IDisposable
             using var request = new HttpRequestMessage(body is null ? HttpMethod.Get : HttpMethod.Post, path);
             if (body is not null) request.Content = JsonContent.Create(body, options: Json);
             if (operatorCall) request.Headers.Add("X-Sandtable-Operator", secret);
-            using var response = await client.SendAsync(request).ConfigureAwait(false);
+            using var response = await client.SendAsync(request, operation == "verify"
+                ? control.VerificationCancellation : CancellationToken.None).ConfigureAwait(false);
             if (response.StatusCode != expected)
             {
                 outcome = "http-" + (int)response.StatusCode;

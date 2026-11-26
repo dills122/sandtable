@@ -88,7 +88,7 @@ internal static class HarnessRun
         await using var driver = new InProcessDriver(config);
         await driver.StartAsync(cancellationToken).ConfigureAwait(false);
         using var runStop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        using var control = http ? new HttpRunControl(config, runStop) : null;
+        using var control = http ? new HttpRunControl(config, runStop, cancellationToken) : null;
         var prefix = config.BaseUrl is null ? "" : "load-" + Guid.NewGuid().ToString("N") + "-";
         using var metrics = extended ? new RunMetrics(driver.Postgres) : null;
         using var sampleStop = new CancellationTokenSource();
