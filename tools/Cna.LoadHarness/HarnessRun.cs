@@ -15,7 +15,7 @@ using Cna.OrleansHost.Campaigns;
 namespace Cna.LoadHarness;
 
 internal sealed record DecisionRow(int CampaignOrdinal, int StepOrdinal, string Audience, string Stage,
-    string ActingElementId, int ChoiceCount, int ChosenIndex, long ResultingRevision);
+    string ActingElementId, int ChoiceCount, int ChosenIndex, long? ResultingRevision);
 internal sealed record Diagnostic(int CampaignOrdinal, int StepOrdinal, string Audience, string Stage,
     string Operation, string Outcome, double ElapsedMs);
 internal sealed record CampaignResult(int CampaignOrdinal, string Status, int Steps, string DecisionFingerprint,
@@ -46,13 +46,14 @@ internal static class HarnessRun
         Directory.CreateDirectory(config.Output);
         Directory.CreateDirectory(Path.Combine(config.Output, "campaigns"));
         Directory.CreateDirectory(Path.Combine(config.Output, "seed-ledgers"));
-        var extended = config.Store == "postgres" || config.Until != "stage2" || config.HotPool != 16;
+        var http = config.Driver == "http";
+        var extended = http || config.Store == "postgres" || config.Until != "stage2" || config.HotPool != 16;
         var manifest = new
         {
             contractVersion = 1,
             harnessVersion = typeof(HarnessRun).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion,
-            hostVersion = typeof(CampaignSeatCredential).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion,
-            driver = "inproc",
+            hostVersion = config.BaseUrl is null ? typeof(CampaignSeatCredential).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion : null,
+            driver = config.Driver,
             backing = config.Store,
             config.Campaigns,
             config.Policy,
@@ -64,12 +65,24 @@ internal static class HarnessRun
             processorCount = Environment.ProcessorCount,
             serverGc = GCSettings.IsServerGC,
         };
-        if (extended)
+        if (http)
+            WriteJson(Path.Combine(config.Output, "run-manifest.json"), Extend(manifest, new
+            {
+                config.Until, config.HotPool, attached = config.BaseUrl is not null,
+                config.RampSeconds, config.ThinkMsMin, config.ThinkMsMax, config.MaxInflight,
+                config.StopSubmitP95Ms, config.StopErrorRate, checkpointEvidence = "owner-opening-only",
+                decisionFingerprintFields = "v1-except-private-committed-state-version",
+                metricsScope = config.BaseUrl is null ? "host-and-harness" : "harness-only",
+            }));
+        else if (extended)
             WriteJson(Path.Combine(config.Output, "run-manifest.json"), Extend(manifest, new { config.Until, config.HotPool }));
         else
             WriteJson(Path.Combine(config.Output, "run-manifest.json"), manifest);
         await using var driver = new InProcessDriver(config);
         await driver.StartAsync(cancellationToken).ConfigureAwait(false);
+        using var runStop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        using var control = http ? new HttpRunControl(config, runStop) : null;
+        var prefix = config.BaseUrl is null ? "" : "load-" + Guid.NewGuid().ToString("N") + "-";
         using var metrics = extended ? new RunMetrics(driver.Postgres) : null;
         using var sampleStop = new CancellationTokenSource();
         using var slots = new SemaphoreSlim(config.HotPool);
@@ -82,9 +95,9 @@ internal static class HarnessRun
             results = await Task.WhenAll(Enumerable.Range(0, config.Campaigns).Select(ordinal =>
                 Task.Run(async () =>
                 {
-                    await slots.WaitAsync().ConfigureAwait(false);
-                    try { return await DriveAsync(driver, config, ordinal, cancellationToken).ConfigureAwait(false); }
-                    finally { slots.Release(); }
+                    if (!http) await slots.WaitAsync().ConfigureAwait(false);
+                    try { return await DriveAsync(driver, config, ordinal, control, prefix, http ? runStop.Token : cancellationToken).ConfigureAwait(false); }
+                    finally { if (!http) slots.Release(); }
                 }, CancellationToken.None))).ConfigureAwait(false);
         }
         finally
@@ -126,13 +139,22 @@ internal static class HarnessRun
             perCampaign = results.Select(r => new { r.CampaignOrdinal, r.Status, r.Steps, r.ElapsedMs }),
         };
         object outputSummary = metrics is null ? summary : Extend(summary, metrics.Snapshot());
+        if (control is not null)
+        {
+            outputSummary = Extend(outputSummary, control.Snapshot(diagnostics));
+            outputSummary = Extend(outputSummary, new
+            {
+                checkpointEvidence = "owner-opening-only",
+                metricsScope = config.BaseUrl is null ? "host-and-harness" : "harness-only",
+            });
+        }
         WriteJson(Path.Combine(config.Output, "summary.json"), outputSummary);
         Console.WriteLine(JsonSerializer.Serialize(outputSummary, Json));
-        return completed == config.Campaigns ? 0 : 1;
+        return completed == config.Campaigns && control?.StoppedOnCliff != true ? 0 : 1;
     }
 
     private static async Task<CampaignResult> DriveAsync(InProcessDriver driver, HarnessConfig config,
-        int ordinal, CancellationToken cancellationToken)
+        int ordinal, HttpRunControl? control, string prefix, CancellationToken cancellationToken)
     {
         var timer = Stopwatch.StartNew();
         var rows = new List<DecisionRow>();
@@ -146,6 +168,12 @@ internal static class HarnessRun
             [CampaignActionAudience.Axis] = new(config.Policy, ledger, ExerciseSeedRole.Axis),
             [CampaignActionAudience.Commonwealth] = new(config.Policy, ledger, ExerciseSeedRole.Commonwealth),
         };
+        using var worker = control is null ? null : new HttpDriver(config, driver.Address!, driver.OperatorSecret, control,
+            (audience, stage, operation, outcome, elapsedMs) =>
+                diagnostics.Add(new(ordinal, rows.Count, audience, stage, operation, outcome, elapsedMs)), prefix);
+        ICampaignDriver transport = worker is null ? driver : worker;
+        // Independent per-campaign random stream; pacing never consumes controller entropy.
+        var think = worker is null ? null : new BotPolicy("random-legal", ledger, ExerciseSeedRole.System);
         var status = "step-limit";
         var previous = "";
         var longRun = config.Until == "turn2-reserve";
@@ -153,7 +181,13 @@ internal static class HarnessRun
         var endOfTurnVerified = false;
         try
         {
-            var seats = await driver.CreateAsync(id).ConfigureAwait(false);
+            if (worker is not null)
+            {
+                if (config.Campaigns > 1 && config.RampSeconds > 0)
+                    await Task.Delay(TimeSpan.FromSeconds((double)config.RampSeconds * ordinal / (config.Campaigns - 1)), cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+            var seats = await transport.CreateAsync(id).ConfigureAwait(false);
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -161,16 +195,25 @@ internal static class HarnessRun
                 var boundaryAdvertised = false;
                 foreach (var seat in seats)
                 {
-                    var discovered = await Measure(seat, "", "discover", () => driver.DiscoverAsync(seat)).ConfigureAwait(false);
+                    var discovered = await Measure(seat, "", "discover", () => transport.DiscoverAsync(seat)).ConfigureAwait(false);
                     foreach (var entry in discovered.Open)
                     {
-                        if (!longRun && entry.OpeningStage == BoundaryStage) { boundaryAdvertised = true; continue; }
+                        if (!longRun && entry.OpeningStage == BoundaryStage)
+                        {
+                            if (worker is null) boundaryAdvertised = true;
+                            else foreach (var element in entry.ActingElementIds)
+                            {
+                                var boundary = await TryOpen(seat, entry.OpeningStage, element, "open").ConfigureAwait(false);
+                                if (boundary is not null && Position(boundary, InProcessDriver.Boundary)) boundaryAdvertised = true;
+                            }
+                            continue;
+                        }
                         if (entry.RuleNotImplemented)
                         {
                             if (longRun) throw new InvalidOperationException("Unsupported discovered opening.");
                             continue;
                         }
-                        if (longRun && declarations == 3 && entry.OpeningStage == BoundaryStage && !endOfTurnVerified)
+                        if (worker is null && longRun && declarations == 3 && entry.OpeningStage == BoundaryStage && !endOfTurnVerified)
                             endOfTurnVerified = await driver.AtBoundaryAsync(id, "land.position.end-of-turn").ConfigureAwait(false);
                         // B6 follows the synthetic checkpoint path without optional movement.
                         if (longRun && entry.OpeningStage is "movement" or "second-movement" or "stage-entry-movement") continue;
@@ -181,8 +224,10 @@ internal static class HarnessRun
                         }
                     }
                 }
-                // A Stage 2 opening alone is not proof: L1 observed it before Stage 1 finished.
-                if (boundaryAdvertised && await driver.AtBoundaryAsync(id).ConfigureAwait(false))
+                // L1 can advertise and open Stage 2 prematurely. Inproc verifies replay;
+                // HTTP additionally exhausts the Stage 1 discovery/fallback ladder before
+                // treating an obtainable Stage 2 cut as public checkpoint evidence.
+                if (worker is null && boundaryAdvertised && await driver.AtBoundaryAsync(id).ConfigureAwait(false))
                 { status = "stage-2-boundary"; break; }
                 if (!longRun && openings.Count == 0)
                 {
@@ -193,12 +238,14 @@ internal static class HarnessRun
                             var element = fallback.Element.Replace("{seat}", Audience(seat), StringComparison.Ordinal);
                             var cut = await TryOpen(seat, fallback.Stage, element, "probe").ConfigureAwait(false);
                             if (cut is null) continue;
-                            if (fallback.Stage == BoundaryStage) boundaryAdvertised = true;
+                            if (fallback.Stage == BoundaryStage) boundaryAdvertised |= worker is null || Position(cut, InProcessDriver.Boundary);
                             else openings.Add(new(seat, fallback.Stage, element, cut));
                         }
                         if (openings.Count > 0) break;
                     }
-                    if (boundaryAdvertised && await driver.AtBoundaryAsync(id).ConfigureAwait(false))
+                    if (boundaryAdvertised && (worker is not null
+                            ? openings.Count == 0
+                            : await driver.AtBoundaryAsync(id).ConfigureAwait(false)))
                     { status = "stage-2-boundary"; break; }
                 }
                 if (openings.Count == 0) { status = "unresolved-opening"; break; }
@@ -210,7 +257,9 @@ internal static class HarnessRun
                     { status = "ambiguous-opening"; break; }
                     if (declarations == 4 && selected.Stage == "stage-entry-reserve")
                     {
-                        status = endOfTurnVerified && await driver.AtBoundaryAsync(id, "land.position.operation-1.first-player.reserve-designation").ConfigureAwait(false)
+                        status = (worker is not null || endOfTurnVerified) && (worker is not null
+                            ? Position(selected.Cut, "land.position.operation-1.first-player.reserve-designation")
+                            : await driver.AtBoundaryAsync(id, "land.position.operation-1.first-player.reserve-designation").ConfigureAwait(false))
                             ? "turn2-reserve" : "boundary-not-verified";
                         break;
                     }
@@ -223,7 +272,7 @@ internal static class HarnessRun
                             3 => "land.position.operation-1.initiative-declaration",
                             _ => "",
                         };
-                        if (!await driver.AtBoundaryAsync(id, position).ConfigureAwait(false))
+                        if (worker is not null ? !Position(selected.Cut, position) : !await driver.AtBoundaryAsync(id, position).ConfigureAwait(false))
                         { status = "boundary-not-verified"; break; }
                     }
                 }
@@ -243,13 +292,14 @@ internal static class HarnessRun
                     index = eligible[bots[selected.Seat.Audience].Choose(eligible.Length)];
                 }
                 else index = bots[selected.Seat.Audience].Choose(selected.Cut.PublicActionRefs.Length);
-                var result = await Measure(selected.Seat, selected.Stage, "submit", () => driver.SubmitAsync(
+                if (worker is not null && config.ThinkMsMax > 0)
+                    await Task.Delay(config.ThinkMsMin + think!.Choose(config.ThinkMsMax - config.ThinkMsMin + 1), cancellationToken).ConfigureAwait(false);
+                var result = await Measure(selected.Seat, selected.Stage, "submit", () => transport.SubmitAsync(
                     selected.Seat, selected.Stage, selected.Element, selected.Cut.Revision,
                     selected.Cut.PublicActionRefs[index]), value => value.IsAccepted ? "ok" : value.RejectionCode ?? "rejected").ConfigureAwait(false);
                 if (!result.IsAccepted) { status = "submission-rejected"; break; }
-                var receipt = CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(result.CanonicalReceipt!);
                 rows.Add(new(ordinal, rows.Count, Audience(selected.Seat), selected.Stage, selected.Element,
-                    selected.Cut.PublicActionRefs.Length, index, receipt.CommittedStateVersion));
+                    selected.Cut.PublicActionRefs.Length, index, result.CommittedStateVersion));
                 if (selected.Stage is "initiative-order" or BoundaryStage) declarations++;
                 previous = selected.Stage;
             }
@@ -269,16 +319,18 @@ internal static class HarnessRun
         {
             try
             {
-                var cut = await Measure(seat, stage, operation, () => driver.OpenAsync(seat, stage, element),
+                var cut = await Measure(seat, stage, operation, () => transport.OpenAsync(seat, stage, element, operation),
                     value => value.PublicActionRefs.Length > 0 ? "ok" : "empty").ConfigureAwait(false);
                 return cut.PublicActionRefs.Length > 0 ? cut : null;
             }
-            catch (InvalidOperationException) { return null; }
+            catch (InvalidOperationException) when (worker is null) { return null; }
+            catch (OpeningUnavailableException) { return null; }
         }
 
         async Task<T> Measure<T>(CampaignSeatCredential seat, string stage, string operation, Func<Task<T>> call,
             Func<T, string>? outcome = null)
         {
+            if (worker is not null) return await call().ConfigureAwait(false);
             var watch = Stopwatch.StartNew();
             var code = "error";
             try
@@ -290,6 +342,12 @@ internal static class HarnessRun
             catch (InvalidOperationException) when (operation is "open" or "probe") { code = "unavailable"; throw; }
             finally { diagnostics.Add(new(ordinal, rows.Count, Audience(seat), stage, operation, code, watch.Elapsed.TotalMilliseconds)); }
         }
+    }
+
+    private static bool Position(CampaignGrainOpeningResult cut, string expected)
+    {
+        using var visible = JsonDocument.Parse(cut.VisibleBytes);
+        return visible.RootElement.TryGetProperty("positionId", out var position) && position.GetString() == expected;
     }
 
     private static JsonObject Extend(object original, object additional)

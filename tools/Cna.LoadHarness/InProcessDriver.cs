@@ -9,6 +9,8 @@ using Cna.Core.Rules;
 using Cna.OrleansHost.Api;
 using Cna.OrleansHost.Campaigns;
 using Cna.OrleansHost.Timeouts;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,7 +19,7 @@ using Orleans.Hosting;
 
 namespace Cna.LoadHarness;
 
-internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable
+internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, ICampaignDriver
 {
     internal const string SetupId = "rules-lab.breakdown.reaction.combat-infantry.v1";
     internal const string TurnBoundarySetupId = "rules-lab.breakdown.turn-boundary.gt1.v1";
@@ -27,15 +29,23 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable
     private readonly string directory = Path.Combine(Path.GetTempPath(), "sandtable-load-" + Guid.NewGuid().ToString("N"));
     private readonly string operatorSecret = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
     private IHost? silo;
+    internal string OperatorSecret => config.BaseUrl is null ? operatorSecret
+        : Environment.GetEnvironmentVariable("SANDTABLE_LOAD_OPERATOR_SECRET")!;
+    internal Uri? Address { get; private set; }
     private PostgresBacking? postgres;
     internal PostgresBacking? Postgres => postgres;
     private CampaignDurableAuthorityJournalStore? store;
     private CampaignDurableAuthorityJournalStore Store => store ?? throw new InvalidOperationException("Silo not started.");
     private IGrainFactory Grains => silo!.Services.GetRequiredService<IGrainFactory>();
 
-    // LocalCampaignSimulator bootstrap, but with the multi-campaign journal directory and no web listener.
+    // LocalCampaignSimulator bootstrap. HTTP mode runs the actual outward route map on a loopback Kestrel listener.
     internal async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (config.BaseUrl is not null)
+        {
+            Address = config.BaseUrl;
+            return;
+        }
         if (config.Store == "postgres")
         {
             postgres = new PostgresBacking(config.HotPool);
@@ -44,21 +54,43 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable
         }
         else
             store = new(directory, operatorSecret, contentResolver: Cna1979SyntheticContentResolver.Instance);
+        if (config.Driver == "http")
+        {
+            var web = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Development" });
+            web.Configuration["CampaignJournal:EnableOutwardApi"] = "true";
+            web.Configuration["CampaignJournal:OperatorSecret"] = operatorSecret;
+            web.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+            web.Services.AddSingleton(Store);
+            web.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
+            web.Logging.SetMinimumLevel(LogLevel.Warning);
+            web.Host.UseOrleans(ConfigureSilo);
+            var app = web.Build();
+            silo = app;
+            if (web.Configuration.GetValue<bool>("CampaignJournal:EnableOutwardApi"))
+                app.MapDurableCampaignApi();
+            await app.StartAsync(cancellationToken).ConfigureAwait(false);
+            Address = new Uri(app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single());
+            return;
+        }
+
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddSingleton(Store);
         builder.Services.AddSingleton<ICampaignRoundDeadlineSink, MartenCampaignRoundDeadlineSink>();
         builder.Logging.SetMinimumLevel(LogLevel.Warning);
-        builder.UseOrleans(s =>
-        {
-            s.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
-            s.AddReminders();
-            s.UseInMemoryReminderService();
-        });
+        builder.UseOrleans(ConfigureSilo);
         silo = builder.Build();
         await silo.StartAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    internal async Task<CampaignSeatCredential[]> CreateAsync(string id)
+    private static void ConfigureSilo(ISiloBuilder s)
+    {
+        s.UseLocalhostClustering(siloPort: FreePort(), gatewayPort: 0);
+        s.AddReminders();
+        s.UseInMemoryReminderService();
+    }
+
+    internal static (CampaignCreationRequest Request, CampaignDecisionTimingConfigurationV1 Timing) Creation(HarnessConfig config, string id)
     {
         var request = config.Until == "turn2-reserve"
             ? new CampaignCreationRequest(1, id, Cna1979Ruleset.Manifest.Hash, LabSeed, TurnBoundarySetupId,
@@ -78,6 +110,12 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable
                 new("rba", BudgetMs, "cancel-without-decline"),
                 new("reserve-release", BudgetMs, "convert-unresolved-i-retain-ii"),
                 new("retreat", BudgetMs, "refuse-retreat"), new("selection", BudgetMs, "no-selection")]);
+        return (request, timing);
+    }
+
+    public async Task<CampaignSeatCredential[]> CreateAsync(string id)
+    {
+        var (request, timing) = Creation(config, id);
         await Store.CreateCampaignAsync(request, timing).ConfigureAwait(false);
         var seats = new List<CampaignSeatCredential>();
         foreach (var audience in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
@@ -89,12 +127,18 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable
         return [.. seats];
     }
 
-    internal Task<CampaignOpenSeatResult> DiscoverAsync(CampaignSeatCredential seat) => Store.QueryOpenForSeatAsync(seat);
-    internal Task<CampaignGrainOpeningResult> OpenAsync(CampaignSeatCredential seat, string stage, string element) =>
+    public Task<CampaignOpenSeatResult> DiscoverAsync(CampaignSeatCredential seat) => Store.QueryOpenForSeatAsync(seat);
+    public Task<CampaignGrainOpeningResult> OpenAsync(CampaignSeatCredential seat, string stage, string element, string operation) =>
         Grains.GetGrain<ICampaignGrain>(seat.CampaignId).QueryOwnerOpeningAsync(stage, seat, element);
-    internal Task<CampaignGrainSubmissionResult> SubmitAsync(CampaignSeatCredential seat, string stage,
-        string element, long revision, string reference) => Grains.GetGrain<ICampaignGrain>(seat.CampaignId)
-        .SubmitOwnerActionAsync(stage, seat, element, revision, reference);
+    public async Task<Submission> SubmitAsync(CampaignSeatCredential seat, string stage,
+        string element, long revision, string reference)
+    {
+        var result = await Grains.GetGrain<ICampaignGrain>(seat.CampaignId)
+            .SubmitOwnerActionAsync(stage, seat, element, revision, reference).ConfigureAwait(false);
+        return new(result.IsAccepted, result.RejectionCode, result.IsAccepted
+            ? CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(result.CanonicalReceipt!).CommittedStateVersion
+            : null);
+    }
 
     // Authoritative read is used exclusively for terminal verification, never to select bot actions.
     internal async Task<bool> AtBoundaryAsync(string id, string position = Boundary)
@@ -118,7 +162,11 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable
             if (silo is not null)
             {
                 try { await silo.StopAsync().ConfigureAwait(false); }
-                finally { silo.Dispose(); }
+                finally
+                {
+                    if (silo is WebApplication app) await app.DisposeAsync().ConfigureAwait(false);
+                    else silo.Dispose();
+                }
             }
         }
         finally
