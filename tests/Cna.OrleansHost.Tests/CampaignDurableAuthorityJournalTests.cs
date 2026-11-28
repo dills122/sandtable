@@ -708,12 +708,16 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var farNorthWest = Enumerable.Range(0, thirdOffers.GetArrayLength())
             .Single(index => thirdOffers[index]
                 .GetProperty("apparentLocationId").GetString() == "far-north-west");
-        await using var outward = await OwnerHttpHarness.Start(journal,
-            request.CampaignId);
-        await outward.Submit(attacker, "axis-infantry-third",
-            "repeat-combat-selection", "repeat-combat-selection", thirdCombat,
-            thirdAssault ? thirdCombat.PublicActionRefs[farNorthWest]
-                : thirdCombat.PublicActionRefs[^1]);
+        // Exercise the selection over HTTP, then stop its timeout grain before the
+        // cold journal's explicit manual-clock tick. Otherwise the live timer can
+        // win the cancellation race and make TickForceRound return false.
+        await using (var outward = await OwnerHttpHarness.Start(journal, request.CampaignId))
+        {
+            await outward.Submit(attacker, "axis-infantry-third",
+                "repeat-combat-selection", "repeat-combat-selection", thirdCombat,
+                thirdAssault ? thirdCombat.PublicActionRefs[farNorthWest]
+                    : thirdCombat.PublicActionRefs[^1]);
+        }
         cold = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         if (thirdAssault)
@@ -1532,12 +1536,25 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.NotEqual(System.Text.Json.JsonValueKind.Null, movementEvent.RootElement.GetProperty("reactionWindow").ValueKind);
         Assert.Equal(44, CampaignExercises.QueryCheckpoint(movementHead).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(movementHead).IsVerified);
-        Assert.Throws<InvalidOperationException>(() => movementCold.QuerySecondMovementCompletionOwnerOpening(opponent));
+        Assert.True(CampaignHostAdapter.IsNativeReactionPending(movementHead));
+        var system = CampaignHostAdapter.QuerySystem(movementHead);
+        Assert.True(system.IsSuccessful);
+        Assert.Equal("close-reaction-window-no-eligible-reactor", Assert.Single(system.ActionSet!.Candidates).Kind);
+        // A retained empty window closes as a mandatory System step before the
+        // moving seat can query completion; it is not a permanent gap-3 refusal.
+        var resumed = movementCold.QuerySecondMovementCompletionOwnerOpening(opponent);
+        Assert.Single(resumed.PublicActionRefs);
+        var resumedHead = movementCold.ReadVerified(request.CampaignId);
+        Assert.Equal(60, CampaignExercises.QueryCheckpoint(resumedHead).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(resumedHead).IsVerified);
         var movementChild = await FreshProcessRunDeadlineChild(movementCopy.Path, request.CampaignId,
             DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         Assert.True(movementChild.IsVerified);
-        Assert.Equal(44, movementChild.ContractVersion);
-        Assert.Equal(CampaignExercises.Reconstruct(movementHead).EventStreamHash, movementChild.EventStreamHash);
+        Assert.Equal(60, movementChild.ContractVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(resumedHead).EventStreamHash, movementChild.EventStreamHash);
+        Assert.True(movementCold.SubmitOwnerSecondMovementCompletion(opponent, resumed.Revision,
+            Assert.Single(resumed.PublicActionRefs)).IsAccepted);
+        Assert.True(CampaignExercises.Reconstruct(movementCopy.Open().ReadVerified(request.CampaignId)).IsVerified);
     }
 
     [Theory]
@@ -2176,9 +2193,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 TestContext.Current.CancellationToken));
         }
 
-        // Status and body of one opening post, without asserting success (Reaction:
-        // CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException must surface as
-        // an explicit 409 rule-not-implemented, not the generic 409 "unavailable").
+        // Status and body of one opening post, without asserting success; used to
+        // verify wrong-seat and unavailable opening requests over the real route.
         internal async Task<(HttpStatusCode Status, string Body)> OpeningResponse(
             CampaignSeatCredential credential, string actor, string openingStage)
         {

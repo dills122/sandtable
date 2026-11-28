@@ -133,9 +133,9 @@ public sealed class TurnBoundaryIntegrationTests
     [InlineData(2, true)]
     [InlineData(3, false)]
     [InlineData(3, true)]
-    public void LaterStageReactionMoveIsRefusedWithoutAdvancingAuthority(int stage, bool second)
+    public void LaterStageReactionMoveOpensWindowAndAdvancesAuthority(int stage, bool second)
     {
-        var session = SequencingScenarios.DriveReactionRefusalFixture().Samples
+        var session = SequencingScenarios.DriveReactionFixture().Samples
             .Single(sample => sample.Label == $"op{stage}.{(second ? "second" : "first")}.reserve").Session;
         var reserve = Assert.IsType<CampaignNativeSecondReserveV43>(session.CurrentHistory[^1]);
         var audience = reserve.Side == LandSide.Axis ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth;
@@ -179,29 +179,25 @@ public sealed class TurnBoundaryIntegrationTests
             _ => session.WithThirdStageSecondMove(candidate, projected, contacts),
         };
         Assert.True(CampaignExercises.Reconstruct(detached).IsVerified);
-        // R3 wires detached native owner openings, without enabling the later-stage
-        // triggering submission tested below. The phasing seat remains waiting.
-        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QueryReactionOwnerDraft(detached, audience));
-        var reactor = audience == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
-        Assert.NotEmpty(CampaignHostAdapter.QueryReactionOwnerDraft(detached, reactor).PrivateActionIds);
-        var checkpoint = CampaignExercises.QueryCheckpoint(session);
-        var before = CampaignExercises.Reconstruct(session);
-        Assert.True(before.IsVerified);
-        for (var attempt = 0; attempt < 2; attempt++)
+        var accepted = (stage, second) switch
         {
-            var rejected = (stage, second) switch
-            {
-                (2, false) => CampaignExercises.SubmitStageEntryMovement(session, audience, action, element),
-                (2, true) => CampaignExercises.SubmitStageEntrySecondMovement(session, audience, action, element),
-                (3, false) => CampaignExercises.SubmitThirdStageMovement(session, audience, action, element),
-                _ => CampaignExercises.SubmitThirdStageSecondMovement(session, audience, action, element),
-            };
-            Assert.False(rejected.IsAccepted);
-            Assert.Equal(CampaignActionSubmissionRejectionReason.RuleNotImplemented, rejected.RejectionReason);
-            Assert.Null(rejected.Evidence);
-            Assert.Equal(checkpoint.StateVersion, CampaignExercises.QueryCheckpoint(session).StateVersion);
-            Assert.Equal(before.EventStreamHash, CampaignExercises.Reconstruct(session).EventStreamHash);
-        }
+            (2, false) => CampaignExercises.SubmitStageEntryMovement(session, audience, action, element),
+            (2, true) => CampaignExercises.SubmitStageEntrySecondMovement(session, audience, action, element),
+            (3, false) => CampaignExercises.SubmitThirdStageMovement(session, audience, action, element),
+            _ => CampaignExercises.SubmitThirdStageSecondMovement(session, audience, action, element),
+        };
+        Assert.True(accepted.IsAccepted, accepted.RejectionReason.ToString());
+        var opened = accepted.SuccessorSession!;
+        Assert.IsType<NativeReactionPending>(opened.Pending);
+        Assert.Equal(candidate.SerializeCanonical(), Assert.IsType<CampaignNativeSecondMoveV44>(opened.CurrentHistory[^1]).SerializeCanonical());
+        Assert.Equal(CampaignExercises.QueryCheckpoint(session).StateVersion + 1,
+            CampaignExercises.QueryCheckpoint(opened).StateVersion);
+        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QueryReactionOwnerDraft(opened, audience));
+        var reactor = audience == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        Assert.NotEmpty(CampaignHostAdapter.QueryReactionOwnerDraft(opened, reactor).PrivateActionIds);
+        var replay = CampaignExercises.Reconstruct(opened);
+        Assert.True(replay.IsVerified);
+        Assert.Equal(CampaignExercises.Reconstruct(detached).EventStreamHash, replay.EventStreamHash);
     }
 
     [Fact]

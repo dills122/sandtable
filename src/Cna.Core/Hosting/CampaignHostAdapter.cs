@@ -2799,12 +2799,8 @@ public static class CampaignHostAdapter
         return CampaignExercises.Submit(session, submission);
     }
 
-    // FID-002: a source-legal Reaction window the Host cannot yet resolve into an owner
-    // opening (#394 gap 3 -- see CreateReactionOwnerDraft's remarks), surfaced distinguishably
-    // from "no such opening" rather than silently treated as a no-op. Public (unlike Core's own
-    // internal CampaignRuleNotImplementedException) so both the Journal query path
-    // (CampaignDurableAuthorityJournal.Openings.cs) and the outward HTTP layer
-    // (CampaignDurableOutwardApi.cs) can catch it by name across the Cna.OrleansHost boundary.
+    // Retained exception contract for an explicitly unsupported Reaction owner cut.
+    // Native windows are resolved through NativeReactionPending instead.
     public sealed class CampaignReactionWindowRuleNotImplementedException : InvalidOperationException
     {
         public CampaignReactionWindowRuleNotImplementedException(string message) : base(message) { }
@@ -2831,17 +2827,6 @@ public static class CampaignHostAdapter
                 or DeclineReactionWindowAction or CompleteReactionParticipantAction)))
         {
             if (native) throw new InvalidOperationException("Reaction is unavailable for this audience.");
-            if (session.NativeReaction is null && session.Pending is SecondMovePending
-                && session.CurrentSecondMove?.ReactionWindow is not null)
-                throw new CampaignReactionWindowRuleNotImplementedException(
-                    "A reaction window opened by a second-side Movement cannot yet be " +
-                    "resolved through an owner opening (#394 gap 3).");
-            // A retained native window must not be mistaken for absence, even in a
-            // detached session from before the E4b (#655) move-submission refusal.
-            if (session.CurrentHistory.LastOrDefault() is CampaignNativeSecondMoveV44 { ReactionWindow: not null } move
-                && move.StateVersion == CampaignExercises.QueryCheckpoint(session).StateVersion)
-                throw new CampaignReactionWindowRuleNotImplementedException(
-                    "A reaction window opened by a later native Movement cannot yet be resolved (#655).");
             throw new InvalidOperationException("Reaction is unavailable.");
         }
         var actions = set.Candidates.ToArray();

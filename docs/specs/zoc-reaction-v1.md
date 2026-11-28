@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-> **2026-11-27 status note:** This contract describes the retained legacy Reaction profile. E4b adds native V59/V60 resolution and closure, with Host accepted-step contract 150 (`native-reaction`) for the retained Stage 1 second-side window. Later-stage triggering moves still refuse with HTTP 409 `rule-not-implemented` (#656); their activation remains tracked by #655.
+> **2026-11-28 status note:** E4b adds native V59/V60 resolution and closure, with Host accepted-step contract 150 (`native-reaction`) for Stage 1 second-side and both Stage 2/3 roles. The exact seed-6 retained window has no eligible participant and closes through the System reason in ZOR-REQ-008. Reactor-opened chains remain unsupported; later-turn proof awaits later-turn Movement admission.
 
 **Status:** Complete — `ZOR-TASK-002A`-`007B` implemented and verified; independent review Ready
 
