@@ -124,7 +124,17 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
     public async Task<CampaignSeatCredential[]> CreateAsync(string id)
     {
         var (request, timing) = Creation(config, id);
+        return await CreateAsync(request, timing).ConfigureAwait(false);
+    }
+
+    internal async Task<CampaignSeatCredential[]> CreateAsync(CampaignCreationRequest request, CampaignDecisionTimingConfigurationV1 timing)
+    {
         await Store.CreateCampaignAsync(request, timing).ConfigureAwait(false);
+        return await IssueSeatsAsync(request.CampaignId).ConfigureAwait(false);
+    }
+
+    internal async Task<CampaignSeatCredential[]> IssueSeatsAsync(string id)
+    {
         var seats = new List<CampaignSeatCredential>();
         foreach (var audience in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
         {
@@ -187,6 +197,44 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
         while (await reader.ReadAsync().ConfigureAwait(false)) records.Add((byte[])reader.GetValue(0));
         return records.ToArray();
     }
+
+#if CAPACITY_PROBE
+    internal Task<ExerciseSession> CreateProbeCampaignAsync(CampaignCreationRequest request,
+        CampaignDecisionTimingConfigurationV1 timing) => Store.CreateCampaignAsync(request, timing);
+
+    internal sealed record ProbeEvidenceRow(long Sequence, string Kind, long Command, long EventBytes,
+        long Receipt, long Checkpoint, long Contacts);
+
+    internal async Task<IReadOnlyList<ProbeEvidenceRow>> ProbeEvidenceLengthsAsync(string id)
+    {
+        await using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = Path.Combine(directory, id + CampaignDurableAuthorityJournal.CampaignFileExtension),
+            Mode = SqliteOpenMode.ReadOnly, Pooling = false,
+        }.ConnectionString);
+        await connection.OpenAsync().ConfigureAwait(false);
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT 0, 'genesis', 0, length(creation_event), 0, length(initial_snapshot), length(initial_contacts)
+            FROM campaigns WHERE campaign_id=$id
+            UNION ALL
+            SELECT sequence, action_kind, length(canonical_command), length(canonical_event),
+                length(canonical_receipt), length(snapshot_checkpoint), length(canonical_contacts)
+            FROM accepted_steps WHERE campaign_id=$id ORDER BY 1
+            """;
+        command.Parameters.AddWithValue("$id", id);
+        await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+        var rows = new List<ProbeEvidenceRow>();
+        while (await reader.ReadAsync().ConfigureAwait(false))
+            rows.Add(new(reader.GetInt64(0), reader.GetString(1), reader.GetInt64(2), reader.GetInt64(3),
+                reader.GetInt64(4), reader.GetInt64(5), reader.GetInt64(6)));
+        return rows;
+    }
+
+    internal ExerciseSession ColdLoad(string id) => CampaignDurableAuthorityJournal.OpenExisting(
+        Path.Combine(directory, id + CampaignDurableAuthorityJournal.CampaignFileExtension),
+        contentResolver: Cna1979SyntheticContentResolver.Instance).ReadVerified(id);
+#endif
 
     private static int FreePort()
     {

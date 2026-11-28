@@ -1,10 +1,27 @@
 using System.Text;
 using Cna.Core.Content;
+#if !CAPACITY_PROBE
+using Cna.Core.Setups;
+#endif
 
 namespace Cna.Core.Tests.Content;
 
 public sealed class SyntheticContentCatalogTests
 {
+#if !CAPACITY_PROBE
+    [Theory]
+    [InlineData(60)]
+    [InlineData(250)]
+    [InlineData(1000)]
+    public void NormalBuildDoesNotAdmitCapacityProbeContentOrSetups(int size)
+    {
+        var resolution = Cna1979SyntheticContentCatalog.ResolveV6(
+            $"capacity-probe.content.{size}.v1", $"sha256:{new string('0', 64)}");
+        Assert.Equal(ContentCatalogRejectionReason.UnknownPackId, resolution.RejectionReason);
+        Assert.False(Cna1979BreakdownSetupCatalog.TryGet($"capacity-probe.setup.{size}.v1", out _));
+    }
+#endif
+
     [Fact]
     public void CatalogLoadsTheCompleteOriginalRulesLaboratory()
     {
