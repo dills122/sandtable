@@ -4,8 +4,8 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Rules;
-using Cna.Core.Visibility;
 using Cna.Core.Tests.Exercises.Sequencing;
+using Cna.Core.Visibility;
 
 namespace Cna.Core.Tests.Exercises;
 
