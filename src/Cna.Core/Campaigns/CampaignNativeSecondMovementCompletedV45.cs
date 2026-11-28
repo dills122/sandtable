@@ -23,6 +23,7 @@ internal sealed record CampaignNativeSecondMovementCompletedV45(
         {
             CampaignNativeSecondReserveV43 reserve => reserve.CampaignId,
             CampaignNativeSecondMoveV44 move => move.CampaignId,
+            CampaignNativeReactionClosedV60 closed => closed.CampaignId,
             _ => throw new InvalidOperationException("Movement completion requires an accepted predecessor."),
         };
         var catalogPosition = Cna1979LandSequenceV4.CreateTurn(gameTurn)

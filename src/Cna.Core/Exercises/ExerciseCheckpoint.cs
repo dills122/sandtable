@@ -144,6 +144,28 @@ public sealed class ExerciseCheckpoint
         PositionId = completed.NextPositionId;
     }
 
+    internal ExerciseCheckpoint(CampaignNativeReactionMoveV59 moved, string positionId, CampaignSnapshotV11 initial)
+    {
+        if (moved.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Native Reaction move belongs to another campaign.");
+        ContractVersion = CampaignNativeReactionMoveV59.CurrentContractVersion;
+        CampaignId = moved.CampaignId;
+        StateVersion = moved.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = positionId;
+    }
+
+    internal ExerciseCheckpoint(CampaignNativeReactionClosedV60 closed, CampaignSnapshotV11 initial)
+    {
+        if (closed.CampaignId != initial.CampaignId)
+            throw new ArgumentException("Native Reaction closure belongs to another campaign.");
+        ContractVersion = CampaignNativeReactionClosedV60.CurrentContractVersion;
+        CampaignId = closed.CampaignId;
+        StateVersion = closed.StateVersion;
+        RulesetHash = initial.RulesetHash;
+        PositionId = closed.ResumePositionId;
+    }
+
     internal ExerciseCheckpoint(CampaignNativeSecondMoveV44 movement, CampaignSnapshotV11 initial)
     {
         if (movement.CampaignId != initial.CampaignId)

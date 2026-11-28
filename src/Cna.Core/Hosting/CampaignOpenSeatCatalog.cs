@@ -40,6 +40,8 @@ public static class CampaignOpenSeatCatalog
     internal static readonly IReadOnlyDictionary<Type, CampaignOpenSeatRow> Rows =
         new Dictionary<Type, CampaignOpenSeatRow>
         {
+            // E4b (#655): an open native Reaction window belongs to the reacting seat, whatever the stage.
+            [typeof(NativeReactionPending)] = CampaignOpenSeatRow.Stages("reaction"),
             // Stage 3 second side.
             [typeof(ThirdStageSecondCombatSelectionPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
             [typeof(TurnBoundaryPending)] = CampaignOpenSeatRow.Stages("stage-entry-initiative-declaration", "stage-entry-reserve"),

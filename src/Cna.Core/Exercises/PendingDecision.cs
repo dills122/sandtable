@@ -21,6 +21,10 @@ internal abstract record PendingDecision(ExerciseSession? Predecessor);
 // The later-turn prelude reads its current cut from the last accepted history event.
 internal sealed record TurnBoundaryPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 
+// E4b (#655): an open native Reaction window (trigger V44 later than the last closing V60). The
+// reacting side owns it; the slot is derived from the window's suspended Movement position.
+internal sealed record NativeReactionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+
 // --- Stage 3's own SECOND acting side (S3-6..S3-9: Reserve through Combat) ---
 
 internal sealed record ThirdStageSecondAssaultPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);

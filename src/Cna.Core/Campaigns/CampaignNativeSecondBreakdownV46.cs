@@ -136,11 +136,24 @@ internal sealed record CampaignNativeSecondBreakdownV46(
         // movement or a reaction prevents this no-breakdown successor.
         var cursor = source;
         var seen = new HashSet<ExerciseSession>(ReferenceEqualityComparer.Instance);
-        while (cursor.CurrentHistory.Count != 0 && cursor.CurrentHistory[^1] is CampaignNativeSecondMoveV44 move)
+        // E4b: a Reaction window is settled only when a later V60 closed it for that window id.
+        var closedWindows = new HashSet<string>(StringComparer.Ordinal);
+        while (cursor.CurrentHistory.Count != 0 && cursor.CurrentHistory[^1] is
+            CampaignNativeSecondMoveV44 or CampaignNativeReactionMoveV59 or CampaignNativeReactionClosedV60)
         {
             if (!seen.Add(cursor)) throw new InvalidOperationException($"{slot.Context}Movement history contains a cycle.");
+            if (cursor.CurrentHistory[^1] is CampaignNativeReactionMoveV59 or CampaignNativeReactionClosedV60)
+            {
+                if (cursor.CurrentHistory[^1] is CampaignNativeReactionClosedV60 { WindowAfter: null } closure)
+                    closedWindows.Add(closure.WindowId.Value);
+                cursor = cursor.NativeReactionPredecessor
+                    ?? throw new InvalidOperationException($"{slot.Context}Reaction predecessor is missing.");
+                continue;
+            }
+            var move = (CampaignNativeSecondMoveV44)cursor.CurrentHistory[^1];
             var definition = artifact.Definition.LegacyDefinition.Elements.Single(value => value.ElementId == move.ElementId);
-            if (definition.BreakdownVehicleCohort is not null || move.ReactionWindow is not null)
+            if (definition.BreakdownVehicleCohort is not null
+                || (move.ReactionWindow is { } window && !closedWindows.Contains(window.WindowId.Value)))
                 throw new InvalidOperationException("Movement requires breakdown or reaction handling.");
             var predecessor = slot.MovePredecessor(cursor)
                 ?? throw new InvalidOperationException($"{slot.Context}Movement predecessor is missing.");

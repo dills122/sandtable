@@ -12,6 +12,9 @@ internal static class PendingExceptionTable
     /// </summary>
     internal static readonly IReadOnlyList<string> Unobservable =
     [
+        // E4b (#655): an open Reaction window is an overlay on the stage cut, derived from the last
+        // accepted V44/V59/V60 and never from the catalog cursor position.
+        "NativeReactionPending",
         "SecondNoAttackPending",
         "StageEntryNoAttackPending",
         "StageEntrySecondNoAttackPending",

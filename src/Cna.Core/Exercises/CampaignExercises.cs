@@ -4207,8 +4207,13 @@ public static partial class CampaignExercises
         // So: no case here is missing today, and a future missing case for a new subtype
         // still needs a human (or a test) to catch, not the compiler -- there is currently no
         // C# construct that enforces this at compile time without reintroducing a wildcard.
+        // E4b: the head of an open or just-closed Reaction cut owns the checkpoint.
+        if (session.NativeReaction is { } nativeReaction)
+            return nativeReaction.Checkpoint(session.CurrentSnapshot);
         switch (session.Pending)
         {
+            case NativeReactionPending:
+                throw new InvalidOperationException("An open native Reaction window must retain its cut.");
             case TurnBoundaryPending:
                 return new ExerciseCheckpoint(CampaignGameTurn.BoundaryInfo(session.CurrentHistory[^1]), session.CurrentSnapshot);
             case StageEntrySecondAssaultPending:
@@ -7193,8 +7198,17 @@ public static partial class CampaignExercises
         if (slot.AlreadyCompleted(session))
             throw new InvalidOperationException($"{slot.Context}Movement has already completed.");
         if (slot.Move(session) is { } movement)
-            return (movement, slot.MoveWorld(session)
-                ?? throw new InvalidOperationException($"{slot.Context}Movement World is missing."));
+        {
+            var movementWorld = slot.MoveWorld(session)
+                ?? throw new InvalidOperationException($"{slot.Context}Movement World is missing.");
+            // E4b: a window this move opened and a V60 fully closed hands its closing cut (and the
+            // post-Reaction World) to Movement completion; an open window never reaches this return.
+            if (movement.ReactionWindow is { } opened
+                && session.NativeReaction is { Last: CampaignNativeReactionClosedV60 { WindowAfter: null } closed }
+                && closed.WindowId == opened.WindowId)
+                return (closed, movementWorld);
+            return (movement, movementWorld);
+        }
         if (slot.Reserve(session) is { Completed: true } reserve)
             return (reserve, slot.ReserveWorld(session)
                 ?? throw new InvalidOperationException($"{slot.Context}Reserve World is missing."));
@@ -8819,7 +8833,7 @@ public static partial class CampaignExercises
             // a single property read: cursor.Pending is already computed in
             // the correct order and already carries Predecessor, so there is
             // no separate cascade left to keep in sync here.
-            var pending = cursor.Pending;
+            var pending = cursor.ReconstructionPending;
             if (pending is null) break;
             if (pending.Predecessor is null) return InvalidNativeHistory(completedSession);
             chain.Add(cursor);
@@ -9923,8 +9937,10 @@ public static partial class CampaignExercises
         // exactly the runtime-only safety net this hardening pass was meant to remove, so
         // none was added. A future missing case for a new PendingDecision subtype still
         // needs a human (or a test) to catch it, not the compiler.
-        switch (completedSession.Pending)
+        switch (completedSession.ReconstructionPending)
         {
+            case NativeReactionPending:
+                return ReconstructNativeReaction(completedSession, includeStreamHash, predecessorVerified);
             case TurnBoundaryPending:
                 return ReconstructTurnBoundary(completedSession, includeStreamHash, predecessorVerified);
             case StageEntrySecondBreakdownPending:

@@ -33,6 +33,8 @@ public sealed class PendingDecisionReconstructCoverageTests
         + "The no-attack event is tested through that observable Assault head.";
     private static readonly Dictionary<Type, string> UnreachableAllowList = new()
     {
+        [typeof(NativeReactionPending)] = "Opened only by a later-stage Reaction window; driven, reconstructed and tampered "
+            + "by NativeReactionPendingTests rather than the Stage 1-2 driver here.",
         [typeof(SecondNoAttackPending)] = NoAttackReason,
         [typeof(StageEntryNoAttackPending)] = NoAttackReason,
         [typeof(StageEntrySecondNoAttackPending)] = NoAttackReason,

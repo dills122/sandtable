@@ -16,6 +16,9 @@ public sealed class NativeTurnAuthorityTests
     [InlineData("Campaigns/CampaignNativeReactionMoveV59.cs")]
     [InlineData("Campaigns/CampaignNativeReactionClosedV60.cs")]
     [InlineData("Campaigns/CampaignNativeReactionCodec.cs")]
+    [InlineData("Actions/CampaignNativeReactionActions.cs")]
+    [InlineData("Exercises/CampaignExercises.NativeReaction.cs")]
+    [InlineData("Exercises/ExerciseSession.NativeReaction.cs")]
     public void NativeTurnAuthorityDoesNotReadFrozenSetupTurn(string file)
     {
         DirectoryInfo? directory = new DirectoryInfo(AppContext.BaseDirectory);
@@ -24,7 +27,7 @@ public sealed class NativeTurnAuthorityTests
         Assert.NotNull(directory);
         var source = File.ReadAllText(Path.Combine(directory.FullName, "src", "Cna.Core", file));
         Assert.DoesNotContain("Setup.InitialGameTurn", source, StringComparison.Ordinal);
-        if (file.Contains("CampaignNativeReaction", StringComparison.Ordinal))
+        if (file.Contains("NativeReaction", StringComparison.Ordinal))
         {
             // Scope must bind from the retained position rather than individual turn/stage cases.
             Assert.DoesNotMatch(@"(?i)(?:gameTurn|operationStage)\s*(?:==|!=|is)\s*\d+", source);
