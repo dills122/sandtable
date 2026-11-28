@@ -180,6 +180,15 @@ class ExecuteTests(unittest.TestCase):
         self.assertEqual(self.run_execute(runner), 2)
         self.assertEqual(len(calls), 1)
 
+    def test_lifecycle_accepts_multiline_captured_output(self):
+        tracker = op.RowProgress()
+        header = 'TestNode = TestNode { Uid = TestNodeUid { Value = a }, DisplayName = A.Row, Properties = ['
+        self.assertEqual(tracker.observe(header + ' InProgressTestNodeStateProperty { Explanation = } ] }', 10), 'START A.Row')
+        self.assertIsNone(tracker.observe(header + ' StandardOutputProperty { Value = first line', 20))
+        self.assertIsNone(tracker.observe('second line', 20))
+        self.assertEqual(tracker.observe(' }, PassedTestNodeStateProperty { Explanation = } ] }', 20), 'FINISH A.Row (10.0s, Passed)')
+        self.assertEqual(tracker.expired(100, 10), [])
+
     def test_lifecycle_distinguishes_parallel_rows_and_theory_names(self):
         tracker = op.RowProgress()
         def message(uid, name, state):

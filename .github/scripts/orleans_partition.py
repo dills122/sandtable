@@ -165,12 +165,18 @@ class RowProgress:
     def __init__(self):
         self.active = {}
         self.started = False
+        self.pending = None
 
     def observe(self, line, now):
-        event, state = self.event.search(line), self.state.search(line)
-        if not event or not state:
+        event = self.event.search(line)
+        if event:
+            self.pending = event.groups()
+        state = self.state.search(line)
+        if not self.pending or not state:
             return None
-        uid, name = event.groups()
+        # A terminal record may span multiple lines when it contains captured output.
+        uid, name = self.pending
+        self.pending = None
         outcome = state.group(1)
         if outcome == 'InProgress' and uid not in self.active:
             self.started = True
