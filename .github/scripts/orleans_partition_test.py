@@ -117,6 +117,18 @@ class ExecuteTests(unittest.TestCase):
     def run_execute(self, runner):
         return op.execute(1, 1, self.out, runner=runner, discoverer=lambda: self.listing, attempts=2)
 
+    def test_explicit_weights_leave_default_unchanged(self):
+        custom = self.tmp.name + '/nightly.json'
+        Path(custom).write_text(json.dumps({T + 'B.Heavy': 100.0}))
+        counts = op.inventory(self.listing)
+        def runner(cmd, log):
+            (self.out / 'r.xml').write_text(xml(rows_for(counts))); return 0
+        with mock.patch.object(op, 'build_plan', wraps=op.build_plan) as plan:
+            self.assertEqual(op.execute(1, 1, self.out, runner=runner,
+                                        discoverer=lambda: self.listing, weights_path=custom), 0)
+            self.assertEqual(plan.call_args.args[1], {T + 'B.Heavy': 100.0})
+        self.assertEqual(op.WEIGHTS.read_text(), '{}')
+
     def test_two_stalls_without_report_fail(self):
         calls = []
         def runner(cmd, log):

@@ -158,8 +158,8 @@ def run_attempt(command, log_path, cap=ATTEMPT_CAP):
         return process.wait()
 
 
-def execute(shard, total, results, runner=run_attempt, discoverer=discover, attempts=ATTEMPTS):
-    weights = json.loads(WEIGHTS.read_text())
+def execute(shard, total, results, runner=run_attempt, discoverer=discover, attempts=ATTEMPTS, weights_path=None):
+    weights = json.loads(Path(weights_path or WEIGHTS).read_text())
     plan = build_plan(discoverer(), weights, total)
     require(1 <= shard <= total, 'Shard out of range')
     methods = plan['shards'][shard - 1]
@@ -195,12 +195,13 @@ def main(argv):
     run.add_argument('--shard', type=int, required=True)
     run.add_argument('--total', type=int, required=True)
     run.add_argument('--results', default='artifacts/orleans-results')
+    run.add_argument('--weights', type=Path, default=None, help='Optional timing hints (default: PR CI weights)')
     check = sub.add_parser('verify')
     check.add_argument('--total', type=int, required=True)
     check.add_argument('directories', nargs='+')
     args = parser.parse_args(argv)
     if args.command == 'execute':
-        return execute(args.shard, args.total, args.results)
+        return execute(args.shard, args.total, args.results, weights_path=args.weights)
     print(json.dumps(verify(args.directories, args.total), sort_keys=True))
     return 0
 
