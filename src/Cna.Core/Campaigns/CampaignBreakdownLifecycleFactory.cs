@@ -75,9 +75,7 @@ internal static class CampaignBreakdownLifecycleFactory
             throw Unsupported("Completion is not the exact current participant capability.");
         var window = prior.ReactionWindow!;
         var flow = (CampaignBreakdownFlow.Reacting)prior.BreakdownFlow;
-        var after = new CampaignReactionWindow(window.WindowId, window.TriggerCommittedStateVersion,
-            window.PhasingSide, window.ReactingSide, window.ReactingPosition, window.TriggerAuthority,
-            window.ApparentTrigger, window.FrozenOpportunities, window.ResolvedOpportunityIds.Append(input.OpportunityId), null);
+        var after = CompleteParticipant(window, input.OpportunityId);
         return new(prior.CampaignId, checked(prior.StateVersion + 1), prior.StateVersion, input.FromPositionId,
             input.ActingSide, input.ActionId, input.SubmittedWindowId, input.SubmittedOpportunityId, input.WindowId,
             input.OpportunityId, after, prior.RulesetHash, new CampaignBreakdownFlow.ReactorStopOpen(flow.PhasingContinuation,
@@ -92,11 +90,7 @@ internal static class CampaignBreakdownLifecycleFactory
         var active = window.ActiveOpportunityId is not null;
         var anyOptions = window.FrozenOpportunities.Where(x => !window.ResolvedOpportunityIds.Contains(x.OpportunityId))
             .Any(x => CampaignReactingElementMovedV2Factory.MoveOptions(prior, artifact, scenario, x).Length > 0);
-        var noEligible = !active && !anyOptions;
-        if (!Enum.IsDefined(reason)
-            || (reason == CampaignReactionWindowCloseReason.NoEligibleReactor) != noEligible
-            || (reason == CampaignReactionWindowCloseReason.PlayerDecline && active))
-            throw Unsupported("The requested close reason is not a current legal capability.");
+        RequireCloseReason(reason, active, anyOptions);
         var publicWindow = CampaignReactingElementMovedV2Factory.CreateWindowCapability(prior);
         ReactionWindowAction action = reason switch
         {
@@ -109,6 +103,20 @@ internal static class CampaignBreakdownLifecycleFactory
         return new(prior.CampaignId, prior.StateVersion, prior.CurrentPosition.SequenceContext.PositionId,
             reason == CampaignReactionWindowCloseReason.PlayerDecline ? window.ReactingSide : null,
             action.ActionId, publicWindow, window.WindowId, reason);
+    }
+
+    internal static CampaignReactionWindow CompleteParticipant(CampaignReactionWindow window,
+        CampaignReactionOpportunityId opportunityId) => new(window.WindowId, window.TriggerCommittedStateVersion,
+        window.PhasingSide, window.ReactingSide, window.ReactingPosition, window.TriggerAuthority,
+        window.ApparentTrigger, window.FrozenOpportunities, window.ResolvedOpportunityIds.Append(opportunityId), null);
+
+    internal static void RequireCloseReason(CampaignReactionWindowCloseReason reason, bool active, bool anyOptions)
+    {
+        var noEligible = !active && !anyOptions;
+        if (!Enum.IsDefined(reason)
+            || (reason == CampaignReactionWindowCloseReason.NoEligibleReactor) != noEligible
+            || (reason == CampaignReactionWindowCloseReason.PlayerDecline && active))
+            throw Unsupported("The requested close reason is not a current legal capability.");
     }
 
     public static ReactionWindowClosedV2 CreateReactionClose(CampaignSnapshotV11 prior,

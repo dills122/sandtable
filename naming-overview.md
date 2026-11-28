@@ -260,7 +260,9 @@ and patrol. V43 records second-side Reserve choices against the settled World an
 completion to Movement. V58 is its versioned first post-preamble decision that rolls the expenditure
 ledger to the current turn/stage; ordinary V43 decisions retain their prior byte contract. V44 records a one-hex second-side move-and-stop, retaining
 any Reaction window. V45 records owner completion to Breakdown when no Reaction
-is pending. Those optional activities, Reaction handling and Breakdown remain unsupported.
+is pending. Native V59 records a Reaction move and V60 records participant or window closure
+over World V6; these are detached contracts until session and Host continuation are wired.
+Those optional activities remain unsupported.
 V30 records the cohortless Breakdown System determination into Combat with
 normal Host cold replay. Internal V31 projects repeated Combat owner offers
 without rebuilding V11 and binds an exact replayed owner choice. Exercise and
