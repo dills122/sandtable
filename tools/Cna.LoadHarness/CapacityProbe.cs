@@ -1,5 +1,6 @@
 #if CAPACITY_PROBE
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
@@ -47,6 +48,7 @@ internal static class CapacityProbe
             cancellation.Token.ThrowIfCancellationRequested();
             Write(new { size, prefix, stage, operation, outcome = "started", utc = DateTimeOffset.UtcNow });
             var allocated = GC.GetTotalAllocatedBytes(precise: true);
+            var cpuStart = process.TotalProcessorTime;
             var start = Stopwatch.GetTimestamp();
             try
             {
@@ -54,13 +56,15 @@ internal static class CapacityProbe
                 var elapsedMs = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
                 var allocatedBytes = GC.GetTotalAllocatedBytes(precise: true) - allocated;
                 process.Refresh();
-                Write(new { size, prefix, stage, operation, elapsedMs, allocatedBytes,
+                var cpuMs = (process.TotalProcessorTime - cpuStart).TotalMilliseconds;
+                Write(new { size, prefix, stage, operation, elapsedMs, cpuMs, allocatedBytes,
                     rssBytes = process.WorkingSet64, peakRssBytes = process.PeakWorkingSet64, detail = detail?.Invoke(value), outcome = "ok" });
                 return value;
             }
             catch (Exception ex)
             {
                 Write(new { size, prefix, stage, operation, elapsedMs = Stopwatch.GetElapsedTime(start).TotalMilliseconds,
+                    cpuMs = (process.TotalProcessorTime - cpuStart).TotalMilliseconds,
                     allocatedBytes = GC.GetTotalAllocatedBytes(precise: true) - allocated, outcome = ex.GetType().Name });
                 throw;
             }
@@ -119,7 +123,8 @@ internal static class CapacityProbe
                     {
                         stage = entry.ActionStage;
                         var cut = await Measure("open", () => driver.OpenAsync(seat, entry.OpeningStage, element, "open"),
-                            value => new { visibleBytes = value.VisibleBytes.Length, refs = value.PublicActionRefs.Length }).ConfigureAwait(false);
+                            value => new { visibleBytes = value.VisibleBytes.Length, visibleHash = Convert.ToHexStringLower(SHA256.HashData(value.VisibleBytes)),
+                                refs = value.PublicActionRefs.Length }).ConfigureAwait(false);
                         if (cut.PublicActionRefs.Length > 0) openings.Add(new(seat, entry.ActionStage, element, cut));
                     }
                 }
@@ -169,14 +174,19 @@ internal static class CapacityProbe
             return sampled || prefix == limit ? 0 : 1;
 
             Task<CampaignOpenSeatResult> Discover(CampaignSeatCredential seat, string operation) =>
-                Measure(operation, () => driver.DiscoverAsync(seat), value => new
+                Measure(operation, () => driver.DiscoverAsync(seat), value =>
                 {
-                    audience = value.Audience.ToString(),
-                    serializedBytes = JsonSerializer.SerializeToUtf8Bytes(value, Json).Length,
-                    advertisedByStage = value.Open.Select(entry => new { entry.OpeningStage,
-                        entries = entry.ActingElementIds.Count, entry.RuleNotImplemented }).ToArray(),
-                    advertisedDrafts = value.Open.Sum(entry => entry.ActingElementIds.Count),
-                    unsupportedDrafts = value.Open.Where(entry => entry.RuleNotImplemented).Sum(entry => entry.ActingElementIds.Count),
+                    var bytes = JsonSerializer.SerializeToUtf8Bytes(value, Json);
+                    return new
+                    {
+                        audience = value.Audience.ToString(),
+                        serializedBytes = bytes.Length,
+                        serializedHash = Convert.ToHexStringLower(SHA256.HashData(bytes)),
+                        advertisedByStage = value.Open.Select(entry => new { entry.OpeningStage,
+                            entries = entry.ActingElementIds.Count, entry.RuleNotImplemented }).ToArray(),
+                        advertisedDrafts = value.Open.Sum(entry => entry.ActingElementIds.Count),
+                        unsupportedDrafts = value.Open.Where(entry => entry.RuleNotImplemented).Sum(entry => entry.ActingElementIds.Count),
+                    };
                 });
             async Task Journal()
             {
@@ -189,8 +199,12 @@ internal static class CapacityProbe
             async Task Replay()
             {
                 var session = await Measure("cold-open-load", () => Task.FromResult(driver.ColdLoad(id))).ConfigureAwait(false);
-                var replay = await Measure("reconstruct", () => Task.FromResult(CampaignExercises.Reconstruct(session)),
-                    value => new { value.IsVerified }).ConfigureAwait(false);
+                var replay = await Measure("reconstruct", () =>
+                {
+                    using var performance = CampaignPerformanceSpan.Start("CampaignExercises.Reconstruct");
+                    return Task.FromResult(CampaignExercises.Reconstruct(session));
+                },
+                    value => new { value.IsVerified, value.EventStreamHash, value.ExpectedSnapshotHash, value.ReconstructedSnapshotHash }).ConfigureAwait(false);
                 if (!replay.IsVerified) throw new InvalidOperationException("Cold replay did not verify.");
             }
         }

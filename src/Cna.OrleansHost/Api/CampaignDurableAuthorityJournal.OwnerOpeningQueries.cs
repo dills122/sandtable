@@ -22,6 +22,13 @@ internal sealed record OwnerOpeningDraft(byte[] VisibleBytes, long AuthorityVers
 
 internal sealed partial class CampaignDurableAuthorityJournal
 {
+    private static OwnerOpeningDraft QueryDiscoveryDraft(CampaignOpeningStageDescriptor stage,
+        ExerciseSession session, CampaignActionAudience audience, string element)
+    {
+        using var performance = Cna.Core.Content.CampaignPerformanceSpan.Start("Journal.DiscoveryDraft");
+        return openingQueries[stage.Kind](session, audience, element);
+    }
+
     private static readonly FrozenDictionary<CampaignOwnerOpeningKind, Func<ExerciseSession, CampaignActionAudience, string, OwnerOpeningDraft>> openingQueries =
         new Dictionary<CampaignOwnerOpeningKind, Func<ExerciseSession, CampaignActionAudience, string, OwnerOpeningDraft>>
         {

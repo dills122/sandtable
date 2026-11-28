@@ -444,8 +444,9 @@ use 20 for a cold plus 19 warm samples). An optional final `sample` mode uses th
 visible choice classifier to measure a single movement and positive combat selection if reachable,
 opening only one advertised element per stage and preferring completion offers to avoid exhausting
 optional choices; it is explicitly separate from the full-policy prefix series (default `full`). Each row is flushed before/after a measurement, so an
-interrupted expensive call has a durable start marker. Journal rows contain only byte lengths
-and kind, not canonical payloads. The random-legal-full policy samples the entire discovered
+interrupted expensive call has a durable start marker. Journal rows contain byte lengths, kind,
+and SHA-256 fingerprints, not canonical payloads. Discovery and visible opening bytes are also
+fingerprinted for exact before/after comparisons. The random-legal-full policy samples the entire discovered
 owner-visible action pool without replacement on rule-not-implemented rejection. Unlike the
 regular harness, this probe has no terminal boundary or legacy fallback ladder; it stops on
 no accepted action, cancellation or its explicit step limit. No state or private contacts are
@@ -453,10 +454,15 @@ used to choose actions. A stopped run is not a successful terminal campaign.
 
 Payload sizes are JSON serialization of the in-process discovery result and canonical visible
 bytes for an individual opening, not HTTP wire sizes. Allocated bytes are process-wide GC
-allocation deltas, not live heap or retained memory. Resident bytes are sampled at call boundaries;
+allocation deltas, not live heap or retained memory. `cpuMs` is process CPU time across all
+threads (including GC); `elapsedMs` is monotonic wall time. Resident bytes are sampled at call boundaries;
 use an OS process peak-RSS measurement as a supplement where .NET reports zero peak. Cold replay
 opens a new journal handle (not a cold OS page cache) and separately reconstructs Core state.
-Discovery counts advertised successful drafts; rejected draft attempts are not instrumented.
+Discovery counts advertised successful drafts. Enable the informational `Sandtable-Performance`
+EventSource to capture synchronous elapsed ticks and thread-local allocations for creation,
+content validation, replay, system preview, per-stage and per-element draft attempts. It is off
+by default; trace separate from ordinary timed runs. For the profiling commands and measured
+results, see [T9 performance profile](../../docs/work/2026-11-performance-profile-and-fixes.md).
 The probe is informational, not a performance assertion or CI gate. Run on an isolated machine
 and timebox if creation/discovery is already orders of magnitude beyond the planning guards.
 Rebuild without `CAPACITY_PROBE` before running ordinary tests or shipping a Host.

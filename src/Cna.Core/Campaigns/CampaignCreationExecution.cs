@@ -60,6 +60,7 @@ internal static class CampaignCreationExecution
 
     public static CampaignCreationExecutionResult Execute(CampaignCreationRequest request, IContentPackV6Resolver resolver)
     {
+        using var performance = CampaignPerformanceSpan.Start("CampaignCreationExecution.Execute");
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(resolver);
         if (request.ContractVersion != CampaignCreationRequest.CurrentContractVersion)

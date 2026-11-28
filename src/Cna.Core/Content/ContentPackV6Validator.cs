@@ -26,6 +26,7 @@ internal static class ContentPackV6Validator
 
     public static ContentValidationResult Validate(ContentPackV6Definition definition)
     {
+        using var performance = CampaignPerformanceSpan.Start("ContentPackV6Validator.Validate");
         ArgumentNullException.ThrowIfNull(definition);
         var issues = new List<ContentValidationIssue>();
         var legacy = definition.LegacyDefinition;

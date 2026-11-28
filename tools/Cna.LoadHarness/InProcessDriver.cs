@@ -203,7 +203,8 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
         CampaignDecisionTimingConfigurationV1 timing) => Store.CreateCampaignAsync(request, timing);
 
     internal sealed record ProbeEvidenceRow(long Sequence, string Kind, long Command, long EventBytes,
-        long Receipt, long Checkpoint, long Contacts);
+        long Receipt, long Checkpoint, long Contacts, string? CommandHash, string EventHash,
+        string? ReceiptHash, string CheckpointHash, string ContactsHash);
 
     internal async Task<IReadOnlyList<ProbeEvidenceRow>> ProbeEvidenceLengthsAsync(string id)
     {
@@ -215,19 +216,26 @@ internal sealed class InProcessDriver(HarnessConfig config) : IAsyncDisposable, 
         await connection.OpenAsync().ConfigureAwait(false);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT 0, 'genesis', 0, length(creation_event), 0, length(initial_snapshot), length(initial_contacts)
+            SELECT 0, 'genesis', NULL, creation_event, NULL, initial_snapshot, initial_contacts
             FROM campaigns WHERE campaign_id=$id
             UNION ALL
-            SELECT sequence, action_kind, length(canonical_command), length(canonical_event),
-                length(canonical_receipt), length(snapshot_checkpoint), length(canonical_contacts)
+            SELECT sequence, action_kind, canonical_command, canonical_event,
+                canonical_receipt, snapshot_checkpoint, canonical_contacts
             FROM accepted_steps WHERE campaign_id=$id ORDER BY 1
             """;
         command.Parameters.AddWithValue("$id", id);
         await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
         var rows = new List<ProbeEvidenceRow>();
         while (await reader.ReadAsync().ConfigureAwait(false))
-            rows.Add(new(reader.GetInt64(0), reader.GetString(1), reader.GetInt64(2), reader.GetInt64(3),
-                reader.GetInt64(4), reader.GetInt64(5), reader.GetInt64(6)));
+        {
+            var payloads = Enumerable.Range(2, 5).Select(index => reader.IsDBNull(index)
+                ? null : (byte[])reader.GetValue(index)).ToArray();
+            static string? Hash(byte[]? payload) => payload is null ? null : Convert.ToHexStringLower(SHA256.HashData(payload));
+            rows.Add(new(reader.GetInt64(0), reader.GetString(1), payloads[0]?.LongLength ?? 0,
+                payloads[1]!.LongLength, payloads[2]?.LongLength ?? 0, payloads[3]!.LongLength,
+                payloads[4]!.LongLength, Hash(payloads[0]), Hash(payloads[1])!, Hash(payloads[2]),
+                Hash(payloads[3])!, Hash(payloads[4])!));
+        }
         return rows;
     }
 

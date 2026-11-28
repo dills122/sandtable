@@ -126,6 +126,7 @@ internal sealed class CampaignContentContext
     }
     public static CampaignContentContext Create(ContentPackV6Artifact artifact, string scenarioId)
     {
+        using var performance = CampaignPerformanceSpan.Start("CampaignContentContext.CreateV6");
         ArgumentNullException.ThrowIfNull(artifact);
         ArgumentException.ThrowIfNullOrWhiteSpace(scenarioId);
         CampaignWorldV6Validator.RequireValidContent(artifact);

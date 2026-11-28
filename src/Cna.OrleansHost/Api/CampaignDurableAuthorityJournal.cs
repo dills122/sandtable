@@ -852,6 +852,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     internal ExerciseSession ReadVerified(string campaignId)
     {
+        using var performance = CampaignPerformanceSpan.Start("Journal.ReadVerified");
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction();
         return Load(connection, transaction, campaignId).Session;
@@ -1300,6 +1301,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     private Loaded Load(SqliteConnection connection, SqliteTransaction transaction,
         string campaignId)
     {
+        using var performance = CampaignPerformanceSpan.Start("Journal.Load");
         ArgumentException.ThrowIfNullOrWhiteSpace(campaignId);
         CampaignCreationRequest request;
         byte[] creation;
