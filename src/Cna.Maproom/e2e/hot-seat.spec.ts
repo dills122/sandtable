@@ -48,6 +48,27 @@ async function fakeHost(page: Page): Promise<Seen[]> {
       status: 409,
       json: { contractVersion: 2, code: 'unavailable', requestId: 'rq' },
     };
+    if (path.endsWith('/openings/open')) {
+      await route.fulfill({
+        json: {
+          contractVersion: 2,
+          campaignId: 'campaign-local-simulator',
+          audience: body.credential.audience,
+          open:
+            body.credential.audience === 'axis' && !axisInitiativeDone
+              ? [
+                  {
+                    openingStage: 'initiative-order',
+                    actionStage: 'initiative-order',
+                    actingElementIds: ['land.initiative-order'],
+                    ruleNotImplemented: false,
+                  },
+                ]
+              : [],
+        },
+      });
+      return;
+    }
     if (kind === 'actions') {
       if (body.credential.audience !== 'axis' || body.publicActionRef !== AXIS_REF) {
         await route.fulfill(unavailable);
@@ -124,7 +145,6 @@ test('hand-off removes the prior seat from DOM, live regions, storage and later 
   await startSession(page);
   // Setup inputs are cleared once the credentials are taken.
   await page.getByRole('button', { name: /I am the Axis player/ }).click();
-  await page.getByLabel(/Acting unit id/).fill('axis-infantry');
   await page.getByRole('button', { name: 'Find my decisions' }).click();
   await page.getByRole('radio', { name: 'act-first' }).check();
   await page.getByRole('button', { name: 'Submit choice' }).click();
@@ -171,7 +191,6 @@ test('hand-off removes the prior seat from DOM, live regions, storage and later 
   await expect(page.getByRole('heading', { name: 'Commonwealth seat' })).toBeVisible();
   await expect(page.locator('mr-opening-form')).toHaveCount(0);
   expect(await page.locator('body').innerText()).not.toMatch(/act-first|Choice accepted/);
-  await expect(page.getByLabel(/Acting unit id/)).toHaveValue('');
   await page.getByRole('button', { name: 'Find my decisions' }).click();
   await expect(
     page.getByText('No decision is open for the Commonwealth seat right now.'),

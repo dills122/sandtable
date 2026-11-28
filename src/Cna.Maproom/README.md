@@ -45,11 +45,19 @@ that renders any opening from its `visibleCut` and public action refs. `hot-seat
 between two seats: a neutral hand-off screen separates them, and the prior seat's decisions, outcome,
 errors and live-region text are destroyed before it renders. Credentials live in memory only (no
 storage, cookies or URL), and a reply that lands after a hand-off is discarded. Setup is operator
-driven: paste the two seat credentials (the Local Campaign Simulator prints them) or supply the
-operator secret. Run `npm run start:connected` against a Development host, then open `/hot-seat`.
-The Host has no "which opening is open for me" endpoint, so "Find my decisions" probes the seat-level
-gameplay stages on an explicit click (opening queries write durable state on the Host); unit stages
-need an acting unit id.
+driven: from the repository root, `scripts/demo.sh` launches the real Development
+Host with disposable PostgreSQL, prepares a fresh synthetic campaign, redeems both
+seats, and serves this route at `http://127.0.0.1:4300/hot-seat`. Paste the two
+seat credentials privately; alternatively enter a campaign ID and operator secret
+for an existing host. No credentials appear in URLs or browser storage.
+**Find my decisions** calls the read-only owner discovery endpoint, then queries
+only the advertised openings and acting elements. No unit ID guessing is required.
+An unsupported discovery is shown as a warning, not mistaken for an empty seat.
+Recheck discovery after a choice or pass the device if there is no opening for
+this seat. The generic forms are not a complete custom game interface, and
+Stage 1 has been exercised through the live Stage 2 opening; full-turn completion
+has not yet been verified in the browser. The fixture
+workspace and the v1 connected read mode remain separate from this lane.
 
 ## Project boundaries
 

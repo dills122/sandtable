@@ -122,10 +122,6 @@ export class HotSeat {
 
   protected outcomeFor(found: FoundOpening) {
     const outcome = this.session.outcome();
-    return outcome && outcome.stage === found.opening.stage ? outcome.result : null;
-  }
-
-  protected setUnit(event: Event): void {
-    this.session.unitId.set((event.target as HTMLInputElement).value);
+    return outcome && outcome.opening === found.opening ? outcome.result : null;
   }
 }
