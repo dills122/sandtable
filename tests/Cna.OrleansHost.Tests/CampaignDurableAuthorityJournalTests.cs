@@ -708,12 +708,16 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var farNorthWest = Enumerable.Range(0, thirdOffers.GetArrayLength())
             .Single(index => thirdOffers[index]
                 .GetProperty("apparentLocationId").GetString() == "far-north-west");
-        await using var outward = await OwnerHttpHarness.Start(journal,
-            request.CampaignId);
-        await outward.Submit(attacker, "axis-infantry-third",
-            "repeat-combat-selection", "repeat-combat-selection", thirdCombat,
-            thirdAssault ? thirdCombat.PublicActionRefs[farNorthWest]
-                : thirdCombat.PublicActionRefs[^1]);
+        // Exercise the selection over HTTP, then stop its timeout grain before the
+        // cold journal's explicit manual-clock tick. Otherwise the live timer can
+        // win the cancellation race and make TickForceRound return false.
+        await using (var outward = await OwnerHttpHarness.Start(journal, request.CampaignId))
+        {
+            await outward.Submit(attacker, "axis-infantry-third",
+                "repeat-combat-selection", "repeat-combat-selection", thirdCombat,
+                thirdAssault ? thirdCombat.PublicActionRefs[farNorthWest]
+                    : thirdCombat.PublicActionRefs[^1]);
+        }
         cold = fixture.Open(clock).ReadVerified(request.CampaignId);
         Assert.True(CampaignExercises.Reconstruct(cold).IsVerified);
         if (thirdAssault)
