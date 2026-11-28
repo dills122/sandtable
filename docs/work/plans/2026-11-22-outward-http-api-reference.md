@@ -313,3 +313,15 @@ remain Unverified/Open per
 in this pass changes that. It also does not cover the Exercise Harness's
 own HTTP surface, because the Harness has none — see
 [`2026-11-22-core-public-api-surface.md`](2026-11-22-core-public-api-surface.md).
+
+## Seat-filtered world observation (v2)
+
+`POST /api/v2/campaigns/{campaignId}/observation` accepts
+`{contractVersion:2, credential}` under the existing v2 gates. Returns a coherent,
+committed, side-scoped position and display cut (visible topology, own placed elements,
+apparent contacts, and a currently exposed deadline when available). The opaque
+`observationRevision` identifies only the published view. No coordinates are exposed;
+render a read-only state panel when `worldAvailable` is false. For actionable
+destinations, continue using opening discovery and the visible opening choices.
+See [seat observation v2](../../specs/campaign-seat-observation-v2.md) for the full
+contract and availability semantics.

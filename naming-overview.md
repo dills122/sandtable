@@ -53,6 +53,8 @@ Intelligence and Maproom cannot invent outcomes or mutate authority. Internally,
 `CampaignContactKnowledge` is a plain Core technical name for replayed side
 knowledge in the permanent fog rule; `CampaignContactView` is its outward
 projection, with private target binding retained only by Umpire.
+`CampaignHostObservation` is the read-only display cut for an authenticated seat, not an
+authoritative world, opening, or action capability.
 `ScheduledArrivalIndex` is an internal Umpire technical name for a source-neutral
 lookup; it does not execute arrivals or authorize a campaign action.
 `ArrivalLabFixture` and `ArrivalLabState` name an isolated synthetic transition

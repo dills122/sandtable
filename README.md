@@ -284,6 +284,9 @@ maximum game turn. Selection of V58 resets stage-local expenditure only on the f
 Reserve decision of a new stage; subsequent decisions in that stage retain V43. The successor
 turn's opening validates the factory without committing it.
 
+Seat-filtered campaign display reads use [observation v2](docs/specs/campaign-seat-observation-v2.md),
+which returns committed owner-only world rows and a position without advancing the campaign.
+
 ### Simulation and load testing
 
 See [Cna.LoadHarness](tools/Cna.LoadHarness/README.md) for standalone build/run commands,

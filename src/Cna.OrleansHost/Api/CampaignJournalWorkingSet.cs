@@ -99,11 +99,12 @@ internal sealed class CampaignJournalMartenBackend
     /// in this database -- the synchronous test harness's mode) into a fresh in-memory working set.
     /// </summary>
     internal async Task<CampaignJournalWorkingSet> OpenAsync(IReadOnlyCollection<string>? campaignIds,
-        Func<byte[]> newReferenceKey, CancellationToken cancellationToken)
+        Func<byte[]> newReferenceKey, CancellationToken cancellationToken, bool repeatableRead = false)
     {
-        var workingSet = new CampaignJournalWorkingSet(this);
+        var workingSet = new CampaignJournalWorkingSet(this, repeatableRead);
         try
         {
+            if (repeatableRead) await workingSet.BeginReadSnapshotAsync(cancellationToken).ConfigureAwait(false);
             await workingSet.LoadAsync(campaignIds, newReferenceKey, cancellationToken).ConfigureAwait(false);
             return workingSet;
         }
@@ -194,10 +195,11 @@ internal sealed class CampaignJournalWorkingSet : IDisposable
         Dictionary<string, CampaignSeatDocument> Seats, Dictionary<string, CampaignOwnerOpeningDocument> Openings,
         CampaignReferenceKeyDocument? ReferenceKey, CampaignRoundHighWaterDocument? HighWater);
 
-    internal CampaignJournalWorkingSet(CampaignJournalMartenBackend backend)
+    internal CampaignJournalWorkingSet(CampaignJournalMartenBackend backend, bool repeatableRead = false)
     {
         this.backend = backend;
-        session = backend.Store.LightweightSession();
+        session = repeatableRead ? backend.Store.LightweightSession(System.Data.IsolationLevel.RepeatableRead)
+            : backend.Store.LightweightSession();
         ConnectionString = new SqliteConnectionStringBuilder
         {
             DataSource = "campaign-working-set-" + Guid.NewGuid().ToString("N"),
@@ -208,6 +210,9 @@ internal sealed class CampaignJournalWorkingSet : IDisposable
         anchor = new SqliteConnection(ConnectionString);
         anchor.Open();
     }
+
+    internal ValueTask BeginReadSnapshotAsync(CancellationToken cancellationToken) =>
+        session.BeginTransactionAsync(cancellationToken);
 
     internal string ConnectionString { get; }
 
