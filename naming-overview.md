@@ -355,6 +355,9 @@ both side cuts belong to the same accepted committed head. It grants no publicat
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
 Docker profile packages the Maproom shell and Development Orleans host; the Exercise Runner stays
 a separate trusted CLI. Browser creation is limited to one admitted temporary fixture.
+The **embedded local-play pilot** is an opt-in configuration of the existing Host, not a new
+service. It uses the durable v2 API and private journal directory, not the temporary MAP-08 seat
+sessions; see the [pilot results](docs/work/2026-11-embedded-local-play-pilot.md).
 
 ## Domain modules and reserved names
 

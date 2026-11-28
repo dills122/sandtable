@@ -1,11 +1,13 @@
 using Cna.Core.Campaigns;
 using Cna.OrleansHost;
 using Cna.OrleansHost.Api;
+using Cna.OrleansHost.Embedded;
 using Cna.OrleansHost.Persistence;
 using Cna.OrleansHost.Timeouts;
 using Orleans.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+using var localPlay = LocalPlayPilot.Configure(builder);
 
 builder.AddServiceDefaults();
 builder.Services.AddSingleton(TimeProvider.System);
@@ -22,15 +24,16 @@ builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
 // by its campaign id, with host operational state (seats, openings, reference keys, open-round
 // high-water marks, operator capability) as optimistic-concurrency Marten documents. The former
 // file-per-campaign SQLite store (CampaignJournal:Path) is retired as a host configuration: its
-// class survives only as the test-side equivalence baseline the Marten store was proven against
-// (tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.MartenEquivalence.cs).
+// class survives as the test-side equivalence baseline the Marten store was proven against
+// (tests/Cna.OrleansHost.Tests/CampaignDurableAuthorityJournalTests.MartenEquivalence.cs) and
+// is used by the explicitly opted-in, Development-only LocalPlayPilot above.
 var campaignJournalOperatorSecret = builder.Configuration["CampaignJournal:OperatorSecret"];
 var hotConnectionString = builder.Configuration["SANDTABLE_POSTGRES_HOT_CONNECTION_STRING"];
 if (!string.IsNullOrWhiteSpace(builder.Configuration["CampaignJournal:Path"]))
     throw new InvalidOperationException(
         "CampaignJournal:Path (the SQLite file store) is retired; configure " +
         "SANDTABLE_POSTGRES_HOT_CONNECTION_STRING and CampaignJournal:OperatorSecret instead.");
-if (!string.IsNullOrWhiteSpace(hotConnectionString))
+if (localPlay is null && !string.IsNullOrWhiteSpace(hotConnectionString))
 {
     if (string.IsNullOrWhiteSpace(campaignJournalOperatorSecret))
         throw new InvalidOperationException(
@@ -80,7 +83,7 @@ builder.Host.UseOrleans(siloBuilder =>
         // Single-machine, dev-only clustering provider. Fine for local development,
         // but silently using it in any other environment would produce a silo that
         // can never form a multi-instance cluster.
-        siloBuilder.UseTemporaryCampaignDevelopmentSilo();
+        siloBuilder.UseTemporaryCampaignDevelopmentSilo(localPlay?.SiloPort);
     }
     else
     {
@@ -112,7 +115,7 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 app.MapLocalGameApi();
-if (builder.Configuration.GetValue<bool>("CampaignJournal:EnableOutwardApi"))
+if (localPlay is not null || builder.Configuration.GetValue<bool>("CampaignJournal:EnableOutwardApi"))
     app.MapDurableCampaignApi();
 app.MapGet("/", () => Results.Ok(new
 {

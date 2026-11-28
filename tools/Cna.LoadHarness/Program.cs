@@ -1,10 +1,17 @@
 using Cna.LoadHarness;
 using System.Text.Json;
 
+if (args is ["--local-play-probe", var hostDll])
+{
+    await LocalPlayProbe.RunAsync(hostDll);
+    return 0;
+}
+
 if (args is ["--help"])
 {
     Console.WriteLine(HarnessConfig.Usage);
     Console.WriteLine("Local demo setup: --prepare-demo (used by scripts/demo.sh; creates and redeems two seats, without playing).");
+    Console.WriteLine("Local-play lifecycle probe: --local-play-probe <built-host-dll>");
     return 0;
 }
 
