@@ -174,6 +174,8 @@ be added in subsequent PRs. No performance fix is included in this phase.
 - Focused `CampaignPerformanceSpanTests`: 1 passed, 0 failed. Event payload includes only
   diagnostic name, ticks and thread allocations.
 - `FrozenTurnBoundaryIdentityTests`: 1 passed, 0 failed; existing setup and event stream pins unchanged.
+- After integrating main `7e3256ad` (#681 squash, including #677), diagnostic and frozen identity
+  tests passed again, and `NativeReactionPendingTests`: 26 passed, 0 failed.
 - No full solution or Postgres gate run locally. The 250 prefix slope and 1,000 genesis follow-up
   are deferred until the first cheap fix makes those probes reachable.
 
