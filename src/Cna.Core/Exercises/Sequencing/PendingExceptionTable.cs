@@ -15,6 +15,8 @@ internal static class PendingExceptionTable
         // E4b (#655): an open Reaction window is an overlay on the stage cut, derived from the last
         // accepted V44/V59/V60 and never from the catalog cursor position.
         "NativeReactionPending",
+        // Successor-turn play is derived from the latest accepted event after a rollover, not the catalog cursor.
+        "TurnSuccessorPending",
         "SecondNoAttackPending",
         "StageEntryNoAttackPending",
         "StageEntrySecondNoAttackPending",

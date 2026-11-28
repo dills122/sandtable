@@ -2278,6 +2278,29 @@ public sealed partial class ExerciseSession
 
     internal ExerciseSession? TurnBoundaryPredecessor { get; private set; }
 
+    // World retained for the successor-turn head event (V43/V44/V45); the checkpoint itself derives from the head.
+    internal CampaignWorldSnapshotV6? CurrentTurnSuccessorWorld { get; private set; }
+
+    // True when the latest accepted event is a successor-turn play event: a play event after a rollover.
+    internal bool IsTurnSuccessorHead => CurrentHistory is { Count: > 0 }
+        && CurrentHistory[^1] is CampaignNativeSecondReserveV43 or CampaignNativeSecondMoveV44
+            or CampaignNativeSecondMovementCompletedV45
+        && CurrentHistory.Any(value => value is CampaignNativeEndOfTurnV55);
+
+    internal ExerciseSession WithTurnSuccessorEvent(object campaignEvent, CampaignWorldSnapshotV6? world,
+        CampaignContactJournal contacts)
+    {
+        if (CurrentHistory.Any(value => value is CampaignNativeEndOfTurnV55) is false
+            || contacts.AuthorityVersion != CurrentContacts.AuthorityVersion + 1)
+            throw new InvalidOperationException("Successor-turn event must advance the current cut after a rollover.");
+        var successor = (ExerciseSession)MemberwiseClone();
+        successor.TurnBoundaryPredecessor = this;
+        successor.CurrentTurnSuccessorWorld = world;
+        successor.CurrentHistory = CurrentHistory.Add(campaignEvent);
+        successor.CurrentContacts = contacts;
+        return successor;
+    }
+
     internal ExerciseSession WithTurnBoundaryEvent(object campaignEvent, CampaignContactJournal contacts)
     {
         var info = CampaignGameTurn.BoundaryInfo(campaignEvent);
@@ -2300,6 +2323,9 @@ public sealed partial class ExerciseSession
                 or CampaignNativeNoObligationFleetAssignmentV53 or CampaignNativeNoObligationFleetRepairV54
                 && CurrentHistory.Any(value => value is CampaignNativeEndOfTurnV55))))
             return new TurnBoundaryPending(TurnBoundaryPredecessor);
+        // Successor-turn play: derived from the latest event, so earlier-turn retained fields cannot shadow it.
+        if (IsTurnSuccessorHead)
+            return new TurnSuccessorPending(TurnBoundaryPredecessor);
         // E4b: an open Reaction window outranks every retained stage cut; openness is derived
         // from the last accepted event, never from a never-reset field.
         if (includeReaction && NativeReaction is { IsOpen: true } reaction)

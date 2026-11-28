@@ -3955,7 +3955,8 @@ public static partial class CampaignExercises
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(submission);
         if (session.Pending is TurnBoundaryPending)
-            return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
+            return SubmitTurnStartReserve(session, submission)
+                ?? ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.RuleNotImplemented);
         return CampaignCombatExerciseActions.Submit(session, submission) ?? Submit(session, submission);
     }
 
@@ -4216,6 +4217,14 @@ public static partial class CampaignExercises
                 throw new InvalidOperationException("An open native Reaction window must retain its cut.");
             case TurnBoundaryPending:
                 return new ExerciseCheckpoint(CampaignGameTurn.BoundaryInfo(session.CurrentHistory[^1]), session.CurrentSnapshot);
+            case TurnSuccessorPending:
+                return session.CurrentHistory[^1] switch
+                {
+                    CampaignNativeSecondReserveV43 reserve => new ExerciseCheckpoint(reserve, session.CurrentSnapshot),
+                    CampaignNativeSecondMoveV44 move => new ExerciseCheckpoint(move, session.CurrentSnapshot),
+                    CampaignNativeSecondMovementCompletedV45 done => new ExerciseCheckpoint(done, session.CurrentSnapshot),
+                    _ => throw new InvalidOperationException("Unsupported successor-turn head."),
+                };
             case StageEntrySecondAssaultPending:
                 return ExerciseCheckpoint.ForSecondAssault(session.CurrentStageEntrySecondAssault!,
                     session.CurrentStageEntrySecondCombatDecision!);
@@ -9933,6 +9942,8 @@ public static partial class CampaignExercises
                 return ReconstructNativeReaction(completedSession, includeStreamHash, predecessorVerified);
             case TurnBoundaryPending:
                 return ReconstructTurnBoundary(completedSession, includeStreamHash, predecessorVerified);
+            case TurnSuccessorPending:
+                return ReconstructTurnSuccessor(completedSession, includeStreamHash, predecessorVerified);
             case StageEntrySecondBreakdownPending:
                 {
                     var stageEntrySecondBreakdown = completedSession.CurrentStageEntrySecondBreakdown!;

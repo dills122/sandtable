@@ -177,7 +177,7 @@ internal static class SessionTamper
     internal static (ExerciseSession? Tampered, string Property) TamperOwnRecord(ExerciseSession session)
     {
         var pendingName = session.Pending!.GetType().Name;
-        if (session.Pending is TurnBoundaryPending)
+        if (session.Pending is TurnBoundaryPending or TurnSuccessorPending)
         {
             var replacement = FlipEvent(session.CurrentHistory[^1], session);
             var clone = Clone(session);
@@ -271,6 +271,16 @@ internal static class PendingFixtures
             [typeof(StageEntrySecondMovePending)] = LaterMoveFixture<StageEntrySecondMovePending>,
             [typeof(ThirdStageMovePending)] = LaterMoveFixture<ThirdStageMovePending>,
             [typeof(ThirdStageSecondMovePending)] = LaterMoveFixture<ThirdStageSecondMovePending>,
+            [typeof(TurnSuccessorPending)] = () =>
+            {
+                var opened = Sequencing.SequencingScenarios.DriveTurnBoundary(1, 2UL).Samples[^1].Session;
+                var side = opened.CurrentHistory.OfType<CampaignNativeInitiativeDeclarationV49>().Last().FirstSide;
+                var checkpoint = CampaignExercises.QueryCheckpoint(opened);
+                return CampaignExercises.SubmitWithCombat(opened, new CampaignActionSubmission(1, checkpoint.CampaignId,
+                    checkpoint.StateVersion, checkpoint.PositionId,
+                    side == Cna.Core.Rules.LandSide.Axis ? CampaignActionAudience.Axis : CampaignActionAudience.Commonwealth,
+                    new CompleteReserveDesignationAction().ActionId)).SuccessorSession!;
+            },
             [typeof(TurnBoundaryPending)] = () => Sequencing.SequencingScenarios.All.SelectMany(s => s.Samples)
                 .Last(sample => sample.Session.Pending is TurnBoundaryPending).Session,
         };
