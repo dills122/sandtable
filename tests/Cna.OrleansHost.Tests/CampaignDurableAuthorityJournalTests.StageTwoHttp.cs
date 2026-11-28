@@ -10,7 +10,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
     [Fact]
     public Task TwoHttpSeatsCompleteStageTwoWithDiscoveryAndColdReplay() => RunStagesHttp(includeStageThree: false);
 
-    private static async Task RunStagesHttp(bool includeStageThree, int? boundaryTurn = null)
+    private static async Task RunStagesHttp(bool includeStageThree, int? boundaryTurn = null,
+        Func<OwnerHttpHarness, CampaignSeatCredential, ExerciseCheckpoint, int, Task>? observationCheck = null)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
@@ -80,6 +81,9 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             }
             var accepted = await outward.SubmitResponse(seat, key, stage, opening.Revision, reference);
             Assert.True(accepted.Status == HttpStatusCode.OK, $"{stage}: {accepted}");
+            if (observationCheck is not null)
+                await observationCheck(outward, seat, CampaignExercises.QueryCheckpoint(journal.ReadVerified(request.CampaignId)),
+                    (boundaryTurn ?? 1) + (checkingBoundary ? 1 : 0));
             if (!buildingCheckpoint)
                 Assert.Equal(accepted, await outward.SubmitResponse(seat, key, stage, opening.Revision, reference));
             if (verify)
@@ -208,6 +212,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal(CampaignExercises.Reconstruct(reserve).EventStreamHash,
             CampaignExercises.Reconstruct(actualReserve).EventStreamHash);
         Assert.Equal("land.position.operation-1.first-player.reserve-designation", CampaignExercises.QueryCheckpoint(actualReserve).PositionId);
+        if (observationCheck is not null)
+            await observationCheck(outward, Other(holder), CampaignExercises.QueryCheckpoint(actualReserve), boundaryTurn.Value + 1);
         Assert.Equal(HttpStatusCode.Conflict, (await outward.SubmitResponse(Other(holder), "land.stage-entry-reserve", "stage-entry-reserve", opening.Revision, opening.Refs[^1])).Status);
         Assert.Equal(CampaignExercises.QueryCheckpoint(actualReserve).StateVersion,
             CampaignExercises.QueryCheckpoint(fixture.Open(clock).ReadVerified(request.CampaignId)).StateVersion);

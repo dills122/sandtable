@@ -116,7 +116,8 @@ launches service scaffolds; the browser client runs separately until integration
 audience-safe HTTP contracts live separately from intelligence
 protobuf. SignalR carries audience-safe change hints; HTTP readback recovers after reconnect.
 The server grants seats and revalidates every submitted legal action. Browser caches, drafts and
-late responses are isolated by seat generation.
+late responses are isolated by seat generation. The durable [seat observation v2 contract](docs/specs/campaign-seat-observation-v2.md)
+reads a single committed head, exposes owner world rows only, and does not create openings or timers.
 
 The first connected test uses an explicitly temporary synthetic rules-lab session. Durable
 publication and restore are later contract/provider gates, with external I/O coordinated outside
