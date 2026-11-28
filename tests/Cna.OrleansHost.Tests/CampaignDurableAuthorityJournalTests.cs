@@ -1536,12 +1536,25 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.NotEqual(System.Text.Json.JsonValueKind.Null, movementEvent.RootElement.GetProperty("reactionWindow").ValueKind);
         Assert.Equal(44, CampaignExercises.QueryCheckpoint(movementHead).ContractVersion);
         Assert.True(CampaignExercises.Reconstruct(movementHead).IsVerified);
-        Assert.Throws<InvalidOperationException>(() => movementCold.QuerySecondMovementCompletionOwnerOpening(opponent));
+        Assert.True(CampaignHostAdapter.IsNativeReactionPending(movementHead));
+        var system = CampaignHostAdapter.QuerySystem(movementHead);
+        Assert.True(system.IsSuccessful);
+        Assert.Equal("close-reaction-window-no-eligible-reactor", Assert.Single(system.ActionSet!.Candidates).Kind);
+        // A retained empty window closes as a mandatory System step before the
+        // moving seat can query completion; it is not a permanent gap-3 refusal.
+        var resumed = movementCold.QuerySecondMovementCompletionOwnerOpening(opponent);
+        Assert.Single(resumed.PublicActionRefs);
+        var resumedHead = movementCold.ReadVerified(request.CampaignId);
+        Assert.Equal(60, CampaignExercises.QueryCheckpoint(resumedHead).ContractVersion);
+        Assert.True(CampaignExercises.Reconstruct(resumedHead).IsVerified);
         var movementChild = await FreshProcessRunDeadlineChild(movementCopy.Path, request.CampaignId,
             DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         Assert.True(movementChild.IsVerified);
-        Assert.Equal(44, movementChild.ContractVersion);
-        Assert.Equal(CampaignExercises.Reconstruct(movementHead).EventStreamHash, movementChild.EventStreamHash);
+        Assert.Equal(60, movementChild.ContractVersion);
+        Assert.Equal(CampaignExercises.Reconstruct(resumedHead).EventStreamHash, movementChild.EventStreamHash);
+        Assert.True(movementCold.SubmitOwnerSecondMovementCompletion(opponent, resumed.Revision,
+            Assert.Single(resumed.PublicActionRefs)).IsAccepted);
+        Assert.True(CampaignExercises.Reconstruct(movementCopy.Open().ReadVerified(request.CampaignId)).IsVerified);
     }
 
     [Theory]
