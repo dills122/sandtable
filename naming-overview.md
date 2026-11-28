@@ -261,8 +261,9 @@ completion to Movement. V58 is its versioned first post-preamble decision that r
 ledger to the current turn/stage; ordinary V43 decisions retain their prior byte contract. V44 records a one-hex second-side move-and-stop, retaining
 any Reaction window. V45 records owner completion to Breakdown when no Reaction
 is pending. Native V59 records a Reaction move and V60 records participant or window closure
-over World V6; these are detached contracts until session and Host continuation are wired.
-Those optional activities remain unsupported.
+over World V6. The Host uses the `reaction` owner route and `native-reaction` accepted-step
+kind (contract 150), separate from `contact-reaction` contract 50. The pre-existing later-stage
+trigger refusals remain in place until E4b activation.
 V30 records the cohortless Breakdown System determination into Combat with
 normal Host cold replay. Internal V31 projects repeated Combat owner offers
 without rebuilding V11 and binds an exact replayed owner choice. Exercise and

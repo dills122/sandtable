@@ -288,12 +288,16 @@ internal sealed partial class CampaignDurableAuthorityJournal
             // *RejectsStaleForgedAndWrongAudienceSubmissions-style test asserts.
             retry.CommandText = """
                 SELECT canonical_receipt FROM accepted_steps
-                WHERE campaign_id=$id AND action_kind=$kind
+                WHERE campaign_id=$id AND (action_kind=$kind OR action_kind=$nativeReactionKind)
                   AND acting_element_id=$element AND owner_public_ref=$ref
                   AND seat_epoch=$epoch AND owner_revision=$revision AND owner_side=$side
                 """;
             retry.Parameters.AddWithValue("$id", seat.CampaignId);
             retry.Parameters.AddWithValue("$kind", AcceptedKind(kind));
+            // The public Reaction route spans two accepted-step contracts. Retry lookup
+            // must recognize either even after the native pending has closed.
+            retry.Parameters.AddWithValue("$nativeReactionKind", kind == CampaignOwnerOpeningKind.Reaction
+                ? CampaignHostAcceptedStep.NativeReactionKind : AcceptedKind(kind));
             retry.Parameters.AddWithValue("$element", actingElementId);
             retry.Parameters.AddWithValue("$ref", publicActionRef);
             retry.Parameters.AddWithValue("$epoch", seat.Epoch);
@@ -330,17 +334,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
                 seat.CampaignId);
         }
 
-        // Reaction (#394 gap 3, PR #501): while a window opened by a second-side Movement
-        // cannot be resolved into an owner opening at all, no owner_openings row for it is
-        // ever persisted either (the query that would persist one throws first) -- so the
-        // ordinary revision/visible-cut lookup below can never match and would otherwise fall
-        // through to the ordinary StaleOpeningCode rejection below (API shape-review,
-        // 2026-11-23) -- accurate as far as it goes ("no such opening row exists"), but still
-        // not the real reason: the decision genuinely cannot be resolved yet, not merely stale.
-        // Checking this specific, already-distinguishable case here, before that lookup, is
-        // what lets a real player's submission get the same explicit rule-not-implemented
-        // signal the query side already gives, instead of an ordinary-looking rejection that
-        // would silently approximate a real, open decision as a no-op (FID-002).
+        // Preserve the distinguishable FID-002 rejection for any residual unsupported
+        // Reaction cut that has no persisted opening. Native supported cuts use the normal
+        // revision, visible-cut, and seat-scoped reference checks below.
         if (kind == CampaignOwnerOpeningKind.Reaction)
         {
             try { CampaignHostAdapter.QueryReactionOwnerDraft(head.Session, seat.Audience); }
@@ -619,7 +615,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
         }
         var acceptedHead = PersistAccepted(connection, transaction, seat.CampaignId, head,
-            AcceptedKind(kind), actingElementId,
+            kind == CampaignOwnerOpeningKind.Reaction && CampaignHostAdapter.IsNativeReactionPending(head.Session)
+                ? CampaignHostAcceptedStep.NativeReactionKind : AcceptedKind(kind), actingElementId,
             publicActionRef, seat.Epoch, openingRevision, submission, result);
         if (selectionRound is not null)
         {

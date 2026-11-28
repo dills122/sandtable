@@ -3,6 +3,7 @@ using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
+using Cna.Core.Hosting;
 
 namespace Cna.OrleansHost.Tests;
 
@@ -69,29 +70,35 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             Assert.True(submitted == HttpStatusCode.OK, $"{step.Stage}: {receipt}");
         }
 
-        var reconstructed = CampaignExercises.Reconstruct(fixture.Open(clock).ReadVerified(request.CampaignId));
-        Assert.True(reconstructed.IsVerified, reconstructed.FailureReason.ToString());
+        var retained = fixture.Open(clock).ReadVerified(request.CampaignId);
+        Assert.True(CampaignHostAdapter.IsNativeReactionPending(retained));
+        var system = CampaignHostAdapter.QuerySystem(retained);
+        Assert.True(system.IsSuccessful);
+        Assert.Equal("close-reaction-window-no-eligible-reactor", Assert.Single(system.ActionSet!.Candidates).Kind);
+        Assert.True(CampaignExercises.Reconstruct(retained).IsVerified);
+
+        // Seed 6 has a real retained window but no eligible player choice. Discovery
+        // previews the closure without persisting it; the next owner query commits V60.
+        var before = journal.VerifyReadOnly(request.CampaignId);
         var (axisStatus, axisBody) = await outward.OpenForSeatResponse(axis);
         var (commonwealthStatus, commonwealthBody) = await outward.OpenForSeatResponse(commonwealth);
         Assert.True(axisStatus == HttpStatusCode.OK, axisBody);
         Assert.True(commonwealthStatus == HttpStatusCode.OK, commonwealthBody);
-        Assert.NotEmpty(ParseOpen(axisBody).Concat(ParseOpen(commonwealthBody)));
-
-        // #394 gap 3 deliberately refuses the retained window in this occurrence. Discovery
-        // must report that explicit marker, not pretend there is no owner opening or legal ref.
-        foreach (var (seat, body) in new[] { (axis, axisBody), (commonwealth, commonwealthBody) })
-        {
-            var entry = Assert.Single(ParseOpen(body));
-            Assert.Equal("reaction", entry.OpeningStage);
-            Assert.Equal("reaction", entry.ActionStage);
-            Assert.True(entry.RuleNotImplemented);
-            var actor = Assert.Single(entry.Elements);
-            Assert.Equal("land.reaction", actor);
-            var (openStatus, openBody) = await outward.OpeningResponse(seat, actor, entry.OpeningStage);
-            Assert.Equal(HttpStatusCode.Conflict, openStatus);
-            using var json = JsonDocument.Parse(openBody);
-            Assert.Equal("rule-not-implemented", json.RootElement.GetProperty("code").GetString());
-            Assert.False(json.RootElement.TryGetProperty("publicActionRefs", out _));
-        }
+        Assert.Empty(ParseOpen(axisBody));
+        var entryAfterClose = Assert.Single(ParseOpen(commonwealthBody), entry => entry.OpeningStage == "second-movement-completion");
+        Assert.False(entryAfterClose.RuleNotImplemented);
+        Assert.Equal(before, journal.VerifyReadOnly(request.CampaignId));
+        var (completionRevision, completionRefs, _) = await QueryOpeningForOpenSeatTest(outward, commonwealth,
+            "land.second-movement-completion", "second-movement-completion");
+        var events = await fixture.ReadCanonicalCheckpointEvents(request.CampaignId);
+        using var closure = JsonDocument.Parse(events[^1]);
+        Assert.Equal(60, closure.RootElement.GetProperty("contractVersion").GetInt32());
+        Assert.Equal("noEligibleReactor", closure.RootElement.GetProperty("closeKind").GetString());
+        Assert.True((await outward.SubmitResponse(commonwealth, "land.second-movement-completion",
+            "second-movement-completion", completionRevision, Assert.Single(completionRefs))).Status == HttpStatusCode.OK);
+        var verification = journal.VerifyReadOnly(request.CampaignId);
+        Assert.NotNull(verification);
+        Assert.True(verification.IsVerified);
+        Assert.Equal(verification, fixture.Open(clock).VerifyReadOnly(request.CampaignId));
     }
 }

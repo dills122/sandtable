@@ -1097,12 +1097,16 @@ public static class CampaignHostAdapter
     public static CampaignLegalActionQueryResult QuerySystem(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        return CampaignExercises.Query(session, CampaignActionAudience.System);
+        return IsNativeReactionPending(session)
+            ? CampaignExercises.QueryNativeReaction(session, CampaignActionAudience.System)
+            : CampaignExercises.Query(session, CampaignActionAudience.System);
     }
 
     public static ExerciseStepResult Submit(
         ExerciseSession session, CampaignActionSubmission submission) =>
-        CampaignExercises.Submit(session, submission);
+        IsNativeReactionPending(session)
+            ? CampaignExercises.SubmitNativeReaction(session, submission)
+            : CampaignExercises.Submit(session, submission);
 
     /// <summary>Trusted Core submission against the contact-derived owner cut, never V7 actions.</summary>
     public static ExerciseStepResult SubmitContactOwnerMovement(
@@ -2806,46 +2810,29 @@ public static class CampaignHostAdapter
         public CampaignReactionWindowRuleNotImplementedException(string message) : base(message) { }
     }
 
-    // Reaction window resolution (land.position...reaction, opened whenever a Movement or
-    // second-side Movement crosses an eligible opponent's reaction opportunity): the same gap
-    // class as InitiativeOrder/ReserveDesignation. Core computes and replay-verifies this via
-    // CampaignExercises.QueryReactionWindow/SubmitReactionWindow (CampaignLegalActions.Query
-    // routes to CampaignObservationV7ActionDerivation.DerivePlayer whenever
-    // snapshot.ReactionWindow is not null) -- a dedicated non-generic entry point, not the
-    // shared CampaignExercises.Query/Submit (see that method's own remarks: #394 gap 1's stale
-    // CurrentCombatDecision gate would otherwise reject every second-side-triggered window).
-    // Two-phase, like SecondMovement/SecondMovementCompletion: with no active participant yet,
-    // the legal set is one MoveReactingElementAction per (opportunity, move option) plus one
-    // DeclineReactionWindowAction; once a MoveReactingElementAction commits to an opportunity,
-    // the legal set narrows to that opportunity's own remaining move options plus one
-    // CompleteReactionParticipantAction. Re-querying this same opening after each accepted move
-    // reflects whichever phase the window is currently in. No round/deadline tracking, same
-    // reasoning as InitiativeOrder/ReserveDesignation.
-    //
-    // Ruled out of scope for this release (PR #501, tracked future design decision): #394 gap
-    // 3 means ExerciseSession.CurrentSnapshot is never bridged to the second-side native
-    // chain's own world/position, so a window opened by a second-side Movement (WithSecondMove)
-    // is invisible to CampaignLegalActions.Query -- it still reads session.CurrentSnapshot,
-    // which stays frozen at the pre-second-side state, and finds no reaction candidates there
-    // even with gap 1's gate removed. CurrentSecondMove?.ReactionWindow is not null is the one
-    // reliable signal this layer has that a real window exists despite that -- so rather than
-    // let it surface only as an opaque "Reaction is unavailable" (indistinguishable from
-    // "nothing to see here", which would violate FID-002 by silently approximating a real,
-    // open decision as a no-op), that specific case throws the distinguishable
-    // CampaignReactionWindowRuleNotImplementedException instead. A first-side-opened window
-    // (CurrentSnapshot kept current throughout ordinary first-side Movement) is unaffected and
-    // still resolves normally through this same method.
+    // Both chains expose the same owner opening shape. The native overlay owns its
+    // own World V6 authority and must never fall back to the retained legacy snapshot.
+    public static bool IsNativeReactionPending(ExerciseSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return session.Pending is NativeReactionPending;
+    }
+
     private static (CampaignHostCycleControlOwnerDraft Draft, CampaignActionCandidate[] Actions)
         CreateReactionOwnerDraft(ExerciseSession session, CampaignActionAudience audience)
     {
         ArgumentNullException.ThrowIfNull(session);
-        var result = CampaignExercises.QueryReactionWindow(session, audience);
+        var native = IsNativeReactionPending(session);
+        var result = native ? CampaignExercises.QueryNativeReaction(session, audience)
+            : CampaignExercises.QueryReactionWindow(session, audience);
         if (!result.IsSuccessful || result.ActionSet is not { } set
             || set.Candidates.Count == 0
             || set.Candidates.Any(value => value is not (MoveReactingElementAction
                 or DeclineReactionWindowAction or CompleteReactionParticipantAction)))
         {
-            if (session.Pending is SecondMovePending && session.CurrentSecondMove?.ReactionWindow is not null)
+            if (native) throw new InvalidOperationException("Reaction is unavailable for this audience.");
+            if (session.NativeReaction is null && session.Pending is SecondMovePending
+                && session.CurrentSecondMove?.ReactionWindow is not null)
                 throw new CampaignReactionWindowRuleNotImplementedException(
                     "A reaction window opened by a second-side Movement cannot yet be " +
                     "resolved through an owner opening (#394 gap 3).");
@@ -2924,7 +2911,9 @@ public static class CampaignHostAdapter
             return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.UnexpectedPosition);
         var action = cut.Actions.SingleOrDefault(value => value.ActionId == submission.ActionId);
         if (action is null) return ExerciseStepResult.Rejected(CampaignActionSubmissionRejectionReason.ActionNotLegal);
-        return CampaignExercises.SubmitReactionWindow(session, submission);
+        return IsNativeReactionPending(session)
+            ? CampaignExercises.SubmitNativeReaction(session, submission)
+            : CampaignExercises.SubmitReactionWindow(session, submission);
     }
 
     public static CampaignHostCycleControlOwnerDraft QueryNativeCycleControlOwnerDraft(
@@ -3538,6 +3527,10 @@ public static class CampaignHostAdapter
             var step = item.Step;
             if (step is null || (sourceOnly && (!IsSourceStep(step) || item.Contacts is null)))
                 return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
+            // A native Reaction interrupt only admits its additive accepted-step kind.
+            // Do not replay the same command as a legacy v50 (or generic) step.
+            if (IsNativeReactionPending(session) != (step.Kind == CampaignHostAcceptedStep.NativeReactionKind))
+                return CampaignHostImportResult.Rejected(CampaignHostImportRejectionReason.InvalidStep);
             CampaignActionSubmission submission;
             try
             {
@@ -3634,6 +3627,7 @@ public static class CampaignHostAdapter
                 or CampaignHostAcceptedStep.ContactInitiativeOrderKind
                 or CampaignHostAcceptedStep.ContactReserveDesignationKind
                 or CampaignHostAcceptedStep.ContactReactionKind
+                or CampaignHostAcceptedStep.NativeReactionKind
                 or CampaignHostAcceptedStep.ContactMovementSegmentCompletionKind
                 or CampaignHostAcceptedStep.ContactCombatSelectionKind
                 or CampaignHostAcceptedStep.NativeCombatNoAttackKind
@@ -3931,6 +3925,7 @@ public static class CampaignHostAdapter
                     session, submission),
                 CampaignHostAcceptedStep.ContactReactionKind => SubmitReaction(
                     session, submission),
+                CampaignHostAcceptedStep.NativeReactionKind => CampaignExercises.SubmitNativeReaction(session, submission),
                 CampaignHostAcceptedStep.ContactMovementSegmentCompletionKind => SubmitMovementSegmentCompletion(
                     session, submission),
                 CampaignHostAcceptedStep.NativeCombatNoAttackKind => CompleteNativeCombatNoAttack(session),
@@ -4791,6 +4786,7 @@ public sealed class CampaignHostAcceptedStep
     public const int NativeTurnStartConvoyArrivalContractVersion = 147;
     public const int NativeTurnStartFleetAssignmentContractVersion = 148;
     public const int NativeTurnStartFleetRepairContractVersion = 149;
+    public const int NativeReactionContractVersion = 150;
     public const int SourceCertifiedMalettiWorldContractVersion = 75;
     public const int SourceAxisCorpsWorldContractVersion = 72;
     public const int SourceAxisFreeWorldContractVersion = 69;
@@ -4804,6 +4800,7 @@ public sealed class CampaignHostAcceptedStep
     public const string ContactInitiativeOrderKind = "contact-initiative-order";
     public const string ContactReserveDesignationKind = "contact-reserve-designation";
     public const string ContactReactionKind = "contact-reaction";
+    public const string NativeReactionKind = "native-reaction";
     public const string ContactMovementSegmentCompletionKind = "contact-movement-segment-completion";
     public const string ContactCombatSelectionKind = "contact-combat-selection";
     public const string NativeCombatNoAttackKind = "native-combat-no-attack";
@@ -4962,7 +4959,7 @@ public sealed class CampaignHostAcceptedStep
         byte[] canonicalReceipt, byte[] snapshotCheckpoint, string kind = LegacyKind,
         string? actingElementId = null)
     {
-        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceTobrukBardiaGarrisonAdmissionKind or SourceTobrukBardiaGarrisonActivationKind or SourceBardiaGarrisonRemainderAdmissionKind or SourceBardiaGarrisonRemainderActivationKind or SourceTripoliTankRegimentAdmissionKind or SourceTripoliTankRegimentActivationKind or SourceCwAttachedArtilleryAdmissionKind or SourceCwAttachedArtilleryActivationKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or ContactMovementSegmentCompletionKind or ContactCombatSelectionKind or ContactStageEntryInitiativeDeclarationKind
+        if (kind is not (LegacyKind or PregameAxisSupplyKind or PregameAxisSupplyFinishKind or SourceAxisDumpKind or SourceCommonwealthSupplyKind or SourceDummyKind or SourceMotorizationKind or SourceUnattachedCargoKind or SourceActionsKind or SourceAxisGt1SupplyKind or SourceCommonwealthSupplyPlanKind or SourceAxisSupplementKind or SourceAutoblindaKind or SourceCommonwealthSupplementKind or SourcePriorityMotorizationKind or SourcePriorityMotorizationChoiceKind or SourceAttachedInitialLoadsKind or SourceAttachedInitialLoadsChoiceKind or SourceInitialWrecksKind or SourceInitialWrecksChoiceKind or SourceAxisFreeSetupKind or SourceAxisFreeSetupChoiceKind or SourceAxisCorpsSetupKind or SourceAxisCorpsSetupChoiceKind or SourceMalettiHierarchyKind or SourceMalettiHierarchyChoiceKind or SourceGt2CorrectionKind or SourceGt2CorrectionChoiceKind or SourceCwPriorityCatalogKind or SourceCwPriorityCatalogChoiceKind or SourceCompactCheckpointKind or SourceFourthIndianWorldKind or SourceMatruhGroupedWorldKind or SourceMalettiGroupedWorldKind or SourceLibyanGroupedWorldKind or SourceItalianDivisionsGroupedWorldKind or SourceSeventhArmoredGroupedWorldKind or SourceSixteenthBrigadeGroupedWorldKind or SourceCatanzaroGroupedWorldKind or SourceTurnStartKind or SourceTurnInitiativeKind or SourceGt1BreakdownCompleteKind or SourceGt1FleetCompleteKind or SourceGt1ArrivalsCompleteKind or SourceGt1OrganizationCompleteKind or SourceGt1SchedulingCompleteKind or SourceGt1WeatherKind or SourceGt1Lane2AnnounceKind or SourceGt1Lane3AnnounceKind or SourceSeventhShellCorrectionKind or SourceGt1MultiLanesKind or SourceAxisMinorGarrisonsActivationKind or SourceAxisGarrisonRemainderKind or SourceGiarabubMotorMachineGunKind or SourceCwFrontlineKind or SourceGiarabubMotorPlacementPolicyKind or SourceTobrukBardiaGarrisonAdmissionKind or SourceTobrukBardiaGarrisonActivationKind or SourceBardiaGarrisonRemainderAdmissionKind or SourceBardiaGarrisonRemainderActivationKind or SourceTripoliTankRegimentAdmissionKind or SourceTripoliTankRegimentActivationKind or SourceCwAttachedArtilleryAdmissionKind or SourceCwAttachedArtilleryActivationKind or SourceMatruhFormationKind or SourceMatruhFormationChoiceKind or SourceCwFreeGunsKind or SourceCwFreeGunsChoiceKind or SourceAxisPriorityMotorizationKind or SourceAxisPriorityChoiceKind or SourceAxisMinorGarrisonsKind or SourceBattlefieldKind or SourceCairoSetupKind or SourceCairoUnitKind or SourceCairoWorldKind or SourceMalettiKind or SourceIndependentKind or SourceLocalMapKind or SourceExpandedIndependentKind or SourceAxisFreeWorldKind or SourceAxisCorpsWorldKind or SourceCertifiedMalettiWorldKind or SourceMatruhDetachedWorldKind or SourceCwPriorityWorldKind or SourceCwFreeGunsWorldKind or ContactMovementKind or ContactInitiativeOrderKind or ContactReserveDesignationKind or ContactReactionKind or NativeReactionKind or ContactMovementSegmentCompletionKind or ContactCombatSelectionKind or ContactStageEntryInitiativeDeclarationKind
                 or NativeCombatNoAttackKind or NativeSecondCombatNoAttackKind or NativeCombatBarrageKind or ContactRbaDeclineKind
                 or ContactRbaMoveKind or ContactForceSealKind or NativeCombatForceCompletionKind
                 or NativeCombatForceCancellationKind or NativeCombatAntiArmorKind
@@ -5158,6 +5155,7 @@ public sealed class CampaignHostAcceptedStep
             ContactInitiativeOrderKind => ContactInitiativeOrderContractVersion,
             ContactReserveDesignationKind => ContactReserveDesignationContractVersion,
             ContactReactionKind => ContactReactionContractVersion,
+            NativeReactionKind => NativeReactionContractVersion,
             ContactMovementSegmentCompletionKind => ContactMovementSegmentCompletionContractVersion,
             ContactCombatSelectionKind => ContactCombatSelectionContractVersion,
             ContactRbaDeclineKind => ContactRbaDeclineContractVersion,

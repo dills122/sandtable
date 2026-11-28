@@ -86,6 +86,26 @@ public sealed class CampaignOpenSeatCatalogTests
     }
 
     [Fact]
+    public void NativeReactionPendingHasOnlyTheReactionRoute()
+    {
+        Assert.Equal(["reaction"], CampaignOpenSeatCatalog.Rows[typeof(NativeReactionPending)].StageNames);
+        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(SecondMovePending)].StageNames);
+        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(StageEntryMovePending)].StageNames);
+        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(StageEntrySecondMovePending)].StageNames);
+        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(ThirdStageMovePending)].StageNames);
+        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(ThirdStageSecondMovePending)].StageNames);
+    }
+
+    [Fact]
+    public void NativeReactionAcceptedStepUsesNewContractWithoutChangingLegacyKind()
+    {
+        Assert.Equal("contact-reaction", CampaignHostAcceptedStep.ContactReactionKind);
+        Assert.Equal(50, CampaignHostAcceptedStep.ContactReactionContractVersion);
+        Assert.Equal("native-reaction", CampaignHostAcceptedStep.NativeReactionKind);
+        Assert.Equal(150, CampaignHostAcceptedStep.NativeReactionContractVersion);
+    }
+
+    [Fact]
     public void EveryRowNamesStagesOrAnExceptionReasonNeverBothNeverNeither()
     {
         foreach (var (type, row) in CampaignOpenSeatCatalog.Rows)

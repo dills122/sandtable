@@ -162,6 +162,8 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var query = CampaignHostAdapter.QuerySystem(session);
             if (!query.IsSuccessful || query.ActionSet is not { } set || set.Candidates.Count == 0)
                 return session;
+            if (CampaignHostAdapter.IsNativeReactionPending(session) && set.Candidates.Count > 1)
+                return session;
             var candidate = set.Candidates.Count == 1 ? set.Candidates[0]
                 : OneAmbiguousForcedSystemCandidate(set.Candidates);
             var submission = new CampaignActionSubmission(1, set.CampaignId, set.StateVersion,

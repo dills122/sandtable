@@ -3,6 +3,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Exercises.Sequencing;
 using Cna.Core.Rules;
+using Cna.Core.Hosting;
 using Cna.Core.Tests.Exercises.Sequencing;
 
 namespace Cna.Core.Tests.Exercises;
@@ -149,6 +150,37 @@ public sealed class NativeReactionPendingTests
         Assert.Contains(system, value => value is CloseReactionWindowTimeoutAction);
         // Movement completion is refused while the window is open (V44.Source needs a closing V60).
         Assert.False(CompleteMovement(opened.Window, stage, second, opened.Phasing).IsAccepted);
+    }
+
+    [Theory]
+    [MemberData(nameof(Slots))]
+    public void HostNativeReactionOpeningAndAcceptedKindReplayAreSlotIndependent(int stage, bool second)
+    {
+        var opened = Open(stage, second);
+        var stages = CampaignOpenSeatCatalog.CandidatesFor(opened.Window);
+        Assert.False(stages.IsLegacyChain);
+        Assert.Equal(["reaction"], stages.Stages);
+        var draft = CampaignHostAdapter.QueryReactionOwnerDraft(opened.Window, opened.Reactor);
+        Assert.Equal(opened.Trigger.StateVersion, draft.AuthorityVersion);
+        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QueryReactionOwnerDraft(opened.Window, opened.Phasing));
+        var decline = Candidates(opened.Window, opened.Reactor).OfType<DeclineReactionWindowAction>().Single();
+        Assert.Contains(decline.ActionId, draft.PrivateActionIds);
+        var submission = Submission(opened.Window, opened.Reactor, decline);
+        var result = CampaignHostAdapter.SubmitReaction(opened.Window, submission);
+        Assert.True(result.IsAccepted, result.RejectionReason.ToString());
+        var evidence = result.Evidence!;
+        CampaignHostAcceptedStep Step(string kind) => new(CampaignActionSubmissionSerializer.SerializeCanonical(submission),
+            evidence.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt),
+            evidence.SnapshotCheckpoint, kind, "land.reaction");
+        var native = Step(CampaignHostAcceptedStep.NativeReactionKind);
+        Assert.Equal(150, native.ContractVersion);
+        var replayed = CampaignHostAdapter.ImportResumed(opened.Window, [native]);
+        Assert.True(replayed.IsVerified, replayed.RejectionReason.ToString());
+        Assert.Equal(CampaignExercises.Reconstruct(result.SuccessorSession!).EventStreamHash,
+            CampaignExercises.Reconstruct(replayed.Session!).EventStreamHash);
+        var legacy = Step(CampaignHostAcceptedStep.ContactReactionKind);
+        Assert.Equal(50, legacy.ContractVersion);
+        Assert.False(CampaignHostAdapter.ImportResumed(opened.Window, [legacy]).IsVerified);
     }
 
     [Theory]
