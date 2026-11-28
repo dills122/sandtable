@@ -1,0 +1,41 @@
+name: Source-derived guard
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'docs/**'
+      - 'scenarios/**'
+      - '.planning/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'site/**'
+      - '.github/**'
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Source-derived inventory (observational)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test guard with synthetic fixtures
+        run: python3 -m unittest discover -s scripts -p test_source_derived_guard.py
+      - name: Audit tracked paths (report-only)
+        run: python3 scripts/source_derived_guard.py > "$RUNNER_TEMP/source-derived-report.json"
+      - name: Upload metadata-only report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: source-derived-report
+          path: ${{ runner.temp }}/source-derived-report.json
+          if-no-files-found: error
+          retention-days: 7
