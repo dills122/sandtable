@@ -77,7 +77,7 @@ describe('HotSeatSession', () => {
   it('rejects mismatched credentials', () => {
     expect(() => session.configure(cred('commonwealth'), cred('axis'))).toThrow(CampaignV2Error);
     expect(() =>
-      session.configure(cred('axis'), { ...cred('commonwealth'), campaignId: 'c2' })
+      session.configure(cred('axis'), { ...cred('commonwealth'), campaignId: 'c2' }),
     ).toThrow(CampaignV2Error);
     expect(session.phase()).toBe('setup');
   });
@@ -202,7 +202,7 @@ describe('HotSeatSession', () => {
       throw new CampaignV2Error(
         'Host rejected the request (401 unauthorized).',
         401,
-        'unauthorized'
+        'unauthorized',
       );
     };
     session.configure(cred('axis'), cred('commonwealth'));

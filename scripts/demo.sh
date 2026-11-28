@@ -38,7 +38,7 @@ operator_secret=$(python3 -c 'import secrets; print(secrets.token_hex(32))')
 db_password=$(python3 -c 'import secrets; print(secrets.token_hex(24))')
 labels=()
 if [[ -n "${AO_SESSION_ID:-}" ]]; then labels+=(--label "ao.session=$AO_SESSION_ID"); fi
-db_id=$(docker run --rm -d "${labels[@]}" -e POSTGRES_PASSWORD="$db_password" \
+db_id=$(docker run --rm -d ${labels[@]+"${labels[@]}"} -e POSTGRES_PASSWORD="$db_password" \
   -p 127.0.0.1::5432 postgres:16-alpine)
 db_port=$(docker port "$db_id" 5432/tcp | cut -d: -f2)
 for attempt in $(seq 1 60); do
