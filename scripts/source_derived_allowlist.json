@@ -741,7 +741,7 @@
   },
   "README.md": {
     "reason": "Original provenance/engineering guidance; baseline inventory META, not rights clearance",
-    "sha256": "7d08aaa4dd76ca143e71f3ec66c651cb6609d736c6186672137b993551db4e0b"
+    "sha256": "e8fa154f118dcbe04fe8eed854de1541ceb885f738db21acb490803573404ccc"
   },
   "docs/design/campaign-world-v1.md": {
     "reason": "Provenance, rule-note or shape candidate; baseline inventory DOC, not rights clearance",
@@ -1009,7 +1009,7 @@
   },
   "docs/roadmap/pre-alpha-roadmap.md": {
     "reason": "Provenance, rule-note or shape candidate; baseline inventory DOC, not rights clearance",
-    "sha256": "c96c569d87ad963bf85bd98b85d773d835e657887c2b8bb6f829aefb3a5fd985"
+    "sha256": "ec1cae8ce2a44f82608eeaecdc9bdc79e4ac2e463dcdee1b4648965cf6ee9371"
   },
   "docs/specs/breakdown-wire-contract-v1.md": {
     "reason": "Provenance, rule-note or shape candidate; baseline inventory DOC, not rights clearance",
@@ -1685,7 +1685,7 @@
   },
   "docs/work/2026-11-source-derived-inventory.md": {
     "reason": "Metadata-only inventory and assembly resource evidence, not source values",
-    "sha256": "5ce7ec9dfd653bde8d20b86c40dc7b583b6e4ef357cb623f806643eb59424366"
+    "sha256": "c553d27cf7cbe70135cfe23d751ef8eeff89d38639f77188c0d1cff5540e9c6f"
   },
   "docs/work/combat-p01-action-provenance-evidence.md": {
     "reason": "Provenance, rule-note or shape candidate; baseline inventory DOC, not rights clearance",
@@ -1749,7 +1749,7 @@
   },
   "docs/work/plans/2026-10-24-rc-checklist.md": {
     "reason": "Provenance, rule-note or shape candidate; baseline inventory DOC, not rights clearance",
-    "sha256": "9acfc6350b01cf5c6cf9ada705b528790c3940560be40ba48d2ce48b9cce6c83"
+    "sha256": "a88859df1eb43cca00bd5bc216a638b813ff4e5c836bbf06ea3d2f91b040f968"
   },
   "docs/work/plans/2026-10-24-reserve-release-timeout-plan.md": {
     "reason": "Provenance, rule-note or shape candidate; baseline inventory DOC, not rights clearance",
@@ -7345,7 +7345,7 @@
   },
   "naming-overview.md": {
     "reason": "Original provenance/engineering guidance; baseline inventory META, not rights clearance",
-    "sha256": "0671c390fc17ba488b38ba2bfa08c9aa1375e4514e10300356e258049dc094f1"
+    "sha256": "3eee3abfde7b6a0f9d80fb0f18c0fd27cc45edb08b740406b7da117f6375552f"
   },
   "scripts/graziani-reviewer-kit/build_reviewer_kit.py": {
     "reason": "Original provenance/engineering guidance; baseline inventory META, not rights clearance",
@@ -8161,7 +8161,7 @@
   },
   "src/Cna.Core/Exercises/CampaignExercises.cs": {
     "reason": "Marker or shape candidate; may be reference-only; baseline inventory CODE, not rights clearance",
-    "sha256": "77aebffb7a67cbb0182c721dc8ae74b08cab4424d41d168a5a9f9a42ed802842"
+    "sha256": "8abf1e4ce0ae7129cd823fddec30cf6763850d52fd54812ec442dd9cdf9d2b82"
   },
   "src/Cna.Core/Exercises/CampaignSourceSetupBridge.cs": {
     "reason": "Source-track code; data/reference distinction unresolved; baseline inventory MIXED, not rights clearance",
@@ -8177,7 +8177,7 @@
   },
   "src/Cna.Core/Hosting/CampaignHostAdapter.cs": {
     "reason": "Marker or shape candidate; may be reference-only; baseline inventory CODE, not rights clearance",
-    "sha256": "35163e5dcf3dfd528d980d159d6756bad999a0e3e8408cb354d6915612b4f0cb"
+    "sha256": "e664c358f0964789585cd5b0e64f4bd7cd83fdb473fe3ad393ed08ebf7f3f816"
   },
   "src/Cna.Core/Observations/CampaignObservationV6.cs": {
     "reason": "Marker or shape candidate; may be reference-only; baseline inventory CODE, not rights clearance",
@@ -8333,7 +8333,7 @@
   },
   "tech-design.md": {
     "reason": "Original provenance/engineering guidance; baseline inventory META, not rights clearance",
-    "sha256": "e1b5adbab627b073cab52ef924c79506ce4227ec963a2c777ff10de62e9317b1"
+    "sha256": "7f3caf0d3d3e9e52b27af7c7f48d85492c699bfdc4011babfdea86ec3ddef368"
   },
   "tests/Cna.Core.Tests/Actions/BreakdownActionMembershipTests.cs": {
     "reason": "Source-related test or shape candidate; baseline inventory TEST, not rights clearance",
@@ -8661,7 +8661,7 @@
   },
   "tests/Cna.Core.Tests/Exercises/TurnBoundaryIntegrationTests.cs": {
     "reason": "Source-related test or shape candidate; baseline inventory TEST, not rights clearance",
-    "sha256": "1ebe769e7dbf714661d1ec8b1e9721fe48ecfcf00959daf02992ad8f46d63a79"
+    "sha256": "bc458efc821066c3dfb40363a442da3c513e3f279fdb0fb15ae3ee3162605834"
   },
   "tests/Cna.Core.Tests/Observations/CampaignMovementObservationContractTests.cs": {
     "reason": "Source-related test or shape candidate; baseline inventory TEST, not rights clearance",

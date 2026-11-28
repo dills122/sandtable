@@ -1,7 +1,7 @@
 # Source-derived material: tip inventory and artifact audit
 
 **Feasibility track T8, 2026-11-28. Proposal only; not legal advice or release clearance.**
-Baseline: local `origin/main` / HEAD `651de7484504b56c7a2dda6633d1df856c646644`, 5,069 tracked paths.
+Baseline: local `origin/main` `6d2de9f4d751003b0d07e037084bd3788c4ba021`, 5,069 tracked paths.
 No data file was moved, deleted or modified. No history or repository settings were changed.
 
 ## Scope and reproducibility
@@ -25,10 +25,11 @@ python3 -m unittest discover -s scripts -p test_source_derived_guard.py
 
 The deterministic JSON report contains only paths, status, and detector counts. Default report-only
 exits zero on findings; strict mode exits one for unexpected hits or stale manifest paths. Invalid
-manifest / Git failures are operational errors. Allow-list entries pin exact paths and SHA-256 hashes with reasons, not globs or legal authorization.
-Changed content at a matched path requires re-review, as do new matching paths. The manifest
-itself is the sole path-only exception because a self-hash is impossible; review its diffs explicitly.
-Missing tracked paths are unexpected even if allow-listed. Shrink the manifest as separation proceeds.
+manifest / Git failures are operational errors. Allow-list entries are exact paths with reasons, not
+globs or legal authorization. SHA-256 hashes pin allowed content; changes to matched paths and new
+matching paths are unexpected. The manifest is the sole path-only exception (a self-hash is impossible);
+review its diffs explicitly. Missing tracked paths are unexpected even if allow-listed. Shrink the
+manifest as separation proceeds.
 
 Detection includes source identifiers/symbols, source-origin and locator references, provenance
 language, known path families, JSON/JSONL of at least 16 KiB with unit/hex identifier keys, numeric
@@ -42,7 +43,7 @@ observational PR workflow; no content or binary output is uploaded by this guard
 
 The repository is public. The listed paths existed at the pinned main tip, so their data or references
 were already available through Git. First-add column records the earliest reachable addition under
-the exact path found by `git log --diff-filter=A --no-renames --format=... --name-only -z HEAD`.
+the exact path found by `git log --diff-filter=A --no-renames --format=... --name-only -z origin/main`.
 It does not follow renames or prove when a specific value first appeared. As a result, first-add
 is a path-level history hint, not a complete exposure timeline. A tip-only cleanup does not remove
 older commits, forks, clones, cached copies, or previously distributed artifacts. Counsel and owner
@@ -56,8 +57,8 @@ Built the baseline locally using `dotnet build src/Cna.Core/Cna.Core.csproj -c R
 stream lengths only. The Core build is sufficient to demonstrate the resource payload
 that a normal Host publish referencing Core would include; Host publish itself was not run.
 
-- Assembly: `artifacts/bin/Cna.Core/release/Cna.Core.dll`, 7,919,616 bytes.
-- Assembly SHA-256: `5030aa37733a71f15af082ffaf266c0daff043c5c3f7c3dffcb9b4eb63c63ed1`.
+- Assembly: `artifacts/bin/Cna.Core/release/Cna.Core.dll`, 7,918,592 bytes.
+- Assembly SHA-256: `bc07020bf30d3c0d6844ff9a9dca8800e5a0153876aae73a21e240169cf8f805`.
 - 33 manifest resources, 1,668,581 bytes total uncompressed stream lengths.
 - Confirmed source-derived map resources: 2, 1,375,448 bytes total.
 - Other resources: the synthetic rules-lab family and linked canonical fixture per the separation
@@ -333,7 +334,7 @@ Unknown categories deliberately default to review/private storage where appropri
 | `.planning/combat-task008-delivery/task017a-kernel-feasibility.md` | 11792 | EVIDENCE | 32a038c322c5 |
 | `CONTRIBUTING.md` | 5788 | META | dcee1eb9b880 |
 | `NOTICE` | 1837 | META | ae4300bb81c8 |
-| `README.md` | 34941 | META | dcee1eb9b880 |
+| `README.md` | 34896 | META | dcee1eb9b880 |
 | `docs/design/campaign-world-v1.md` | 33110 | DOC | 743a6043d6e7 |
 | `docs/design/combat-cost-resolution-order-v1.md` | 20530 | DOC | 8bbea59bbcc4 |
 | `docs/design/combat-cycle-implementation-plan.md` | 285852 | DOC | 8bbea59bbcc4 |
@@ -400,7 +401,7 @@ Unknown categories deliberately default to review/private storage where appropri
 | `docs/reviews/combat-progress-review-9.md` | 15743 | DOC | 7060a61f39ad |
 | `docs/reviews/combat-reserve-research-review-1.md` | 3615 | DOC | c210bb2215de |
 | `docs/reviews/combat-reserve-research-review-2.md` | 3642 | DOC | c210bb2215de |
-| `docs/roadmap/pre-alpha-roadmap.md` | 106684 | DOC | 8dd0ffcaaf4b |
+| `docs/roadmap/pre-alpha-roadmap.md` | 106590 | DOC | 8dd0ffcaaf4b |
 | `docs/specs/breakdown-wire-contract-v1.md` | 24360 | DOC | 5c16fdb61f88 |
 | `docs/specs/campaign-arrival-draft-identity-v1.md` | 4122 | DOC | efad95e68ca2 |
 | `docs/specs/campaign-scenario-arrival-content-v1.md` | 28379 | DOC | efad95e68ca2 |
@@ -583,7 +584,7 @@ Unknown categories deliberately default to review/private storage where appropri
 | `docs/work/plans/2026-10-14-actual-moved-continuation-implementation.md` | 9107 | DOC | 2e18cfebf33a |
 | `docs/work/plans/2026-10-19-p01-admission-overnight.md` | 7482 | DOC | 35f5db5668c1 |
 | `docs/work/plans/2026-10-24-entry-clock-proof.md` | 2618 | DOC | fc4cb9255dd6 |
-| `docs/work/plans/2026-10-24-rc-checklist.md` | 28704 | DOC | fc4cb9255dd6 |
+| `docs/work/plans/2026-10-24-rc-checklist.md` | 28753 | DOC | fc4cb9255dd6 |
 | `docs/work/plans/2026-10-24-reserve-release-timeout-plan.md` | 2746 | DOC | fc4cb9255dd6 |
 | `docs/work/plans/2026-11-12-graziani-abstract-logistics-crosswalk.md` | 17156 | PACKET | efad95e68ca2 |
 | `docs/work/plans/2026-11-12-graziani-arrival-authority-handoff.md` | 7005 | PACKET | efad95e68ca2 |
@@ -1982,7 +1983,7 @@ Unknown categories deliberately default to review/private storage where appropri
 | `docs/work/reviews/2026-10-15-actual-moved-repeat-movement-completion-self-review.md` | 9970 | DOC | 121baa56820f |
 | `docs/work/reviews/2026-10-24-repeated-retreat-handoff.md` | 5773 | DOC | fc4cb9255dd6 |
 | `docs/work/reviews/2026-10-25-combat-source-pin-preflight.md` | 15832 | DOC | 38bf158dde12 |
-| `naming-overview.md` | 34930 | META | d6e0d12fea34 |
+| `naming-overview.md` | 34948 | META | d6e0d12fea34 |
 | `scripts/graziani-reviewer-kit/build_reviewer_kit.py` | 14353 | META | 87fe136e95fd |
 | `src/Cna.Core/Actions/CampaignLegalActionSerializer.cs` | 11928 | CODE | 3c382552af5f |
 | `src/Cna.Core/Actions/CampaignLegalActionSet.cs` | 13011 | CODE | 3c382552af5f |
@@ -2183,11 +2184,11 @@ Unknown categories deliberately default to review/private storage where appropri
 | `src/Cna.Core/Content/ContentSourceTripoliTankRegimentPackArtifact.cs` | 5807 | MIXED | 355839d5eb25 |
 | `src/Cna.Core/Content/HistoricalMap/hexes.v1.json` | 780776 | MAP | 6490b0945c65 |
 | `src/Cna.Core/Content/HistoricalMap/hexsides.v1.json` | 594672 | MAP | 6490b0945c65 |
-| `src/Cna.Core/Exercises/CampaignExercises.cs` | 916978 | CODE | fab1b9d76ac3 |
+| `src/Cna.Core/Exercises/CampaignExercises.cs` | 915943 | CODE | fab1b9d76ac3 |
 | `src/Cna.Core/Exercises/CampaignSourceSetupBridge.cs` | 22957 | MIXED | efad95e68ca2 |
 | `src/Cna.Core/Exercises/ExerciseCheckpoint.cs` | 37730 | CODE | fab1b9d76ac3 |
 | `src/Cna.Core/Exercises/ExerciseSession.cs` | 155503 | CODE | fab1b9d76ac3 |
-| `src/Cna.Core/Hosting/CampaignHostAdapter.cs` | 353291 | CODE | 0990ef4cb73f |
+| `src/Cna.Core/Hosting/CampaignHostAdapter.cs` | 351939 | CODE | 0990ef4cb73f |
 | `src/Cna.Core/Observations/CampaignObservationV6.cs` | 26461 | CODE | 916d174dcc23 |
 | `src/Cna.Core/Observations/CampaignObservationV6Projector.cs` | 15311 | CODE | 916d174dcc23 |
 | `src/Cna.Core/Observations/CampaignObservationV7.cs` | 25836 | CODE | 5c16fdb61f88 |
@@ -2226,7 +2227,7 @@ Unknown categories deliberately default to review/private storage where appropri
 | `src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournal.cs` | 121159 | CODE | c050b105b23d |
 | `src/Cna.OrleansHost/Api/CampaignDurableAuthorityJournalStore.cs` | 87699 | CODE | d3bb55bb15f4 |
 | `src/Cna.OrleansHost/Api/CampaignDurableOutwardApi.cs` | 67467 | CODE | 1a6f54b4ad9f |
-| `tech-design.md` | 84823 | META | d6e0d12fea34 |
+| `tech-design.md` | 84875 | META | d6e0d12fea34 |
 | `tests/Cna.Core.Tests/Actions/BreakdownActionMembershipTests.cs` | 7108 | TEST | 5c16fdb61f88 |
 | `tests/Cna.Core.Tests/Actions/CampaignObservationV6ActionDerivationTests.cs` | 19824 | TEST | 916d174dcc23 |
 | `tests/Cna.Core.Tests/CampaignSourcePolishArrivalContactsTests.cs` | 2147 | TEST | 61c9a56e9e29 |
@@ -2308,7 +2309,7 @@ Unknown categories deliberately default to review/private storage where appropri
 | `tests/Cna.Core.Tests/Content/GrazianiSourceContentV2Tests.cs` | 13307 | TEST | efad95e68ca2 |
 | `tests/Cna.Core.Tests/Content/GrazianiSourceSetupPackArtifactTests.cs` | 13605 | TEST | efad95e68ca2 |
 | `tests/Cna.Core.Tests/Content/ZocReactionContentTestData.cs` | 3159 | TEST | 916d174dcc23 |
-| `tests/Cna.Core.Tests/Exercises/TurnBoundaryIntegrationTests.cs` | 21838 | TEST | a4d211703a2e |
+| `tests/Cna.Core.Tests/Exercises/TurnBoundaryIntegrationTests.cs` | 21659 | TEST | a4d211703a2e |
 | `tests/Cna.Core.Tests/Observations/CampaignMovementObservationContractTests.cs` | 14110 | TEST | f8321f012416 |
 | `tests/Cna.Core.Tests/Observations/CampaignObservationContractTests.cs` | 10972 | TEST | d6f050e516b8 |
 | `tests/Cna.Core.Tests/Observations/CampaignObservationReadbackTests.cs` | 6922 | TEST | f8321f012416 |
