@@ -16,18 +16,16 @@ env:
 jobs:
   orleans-slow:
     runs-on: ubuntu-24.04
-    # GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame
-    # is excluded from the per-push orleans job in ci.yml because it alone takes
-    # ~29m43s (144 steps replayed against one campaign; CampaignDurableAuthorityJournal.Load
-    # re-reads the full accepted_steps history, avg ~961KB checkpoint blob/step, on every
-    # write - an O(n^2) replay cost). Run it here on a schedule instead, so it still gets
-    # exercised without gating every PR's CI turnaround.
-    timeout-minutes: 45
+    # Long SQLite replay proof: 144 accepted steps and repeated full-history
+    # verification, previously ~29m43s locally. Hosted runs consistently hit
+    # the 40m cap; allow up to 90m with bounded progress sampling and retain
+    # diagnostics even when the test itself reaches that deadline.
+    timeout-minutes: 100
     steps:
-      - name: Check out main
+      - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: main
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Set up .NET
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
@@ -38,11 +36,8 @@ jobs:
           dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
           dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
       - name: Run the excluded slow replay test
-        timeout-minutes: 40
-        shell: bash
-        run: |
-          mkdir -p artifacts/orleans-slow-results
-          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-slow-results --filter-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame" 2>&1 | tee artifacts/orleans-slow-results/console.log
+        timeout-minutes: 95
+        run: python3 .github/scripts/orleans_soak.py artifacts/orleans-slow-results
       - name: Retain slow replay test results
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

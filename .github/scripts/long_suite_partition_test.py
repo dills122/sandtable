@@ -513,9 +513,12 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('cron:', trigger)
         self.assertNotIn('pull_request', trigger)
         self.assertNotIn('push:', trigger)
-        self.assertIn('dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj', text)
-        self.assertIn('python3 .github/scripts/verify_orleans_results.py', text)
-        self.assertIn('--filter-not-display-name "Cna.OrleansHost.Tests.GrazianiPregameJournalTests.FinalizedRealSupplyPlanSurvivesFreshHostReplayWithoutStartingTheGame"', text)
+        self.assertIn('python3 .github/scripts/orleans_partition.py execute --shard "$ORLEANS_SHARD" --total 6', text)
+        self.assertIn('--weights .github/scripts/orleans-nightly-weights.json', text)
+        self.assertIn('python3 .github/scripts/orleans_partition.py verify --total 6', text)
+        self.assertIn('needs: orleans', text)
+        self.assertIn('matrix:\n        shard: [1, 2, 3, 4, 5, 6]', text)
+        self.assertIn('orleans-nightly-${{ github.sha }}-${{ github.run_attempt }}-shard-*', text)
         self.assertNotIn('continue-on-error', text)
         for job in (
             'p01-paid-fresh-shard', 'p01-paid-fresh-aggregate',
@@ -523,7 +526,7 @@ class WorkflowTests(unittest.TestCase):
             'p01-rba-cancel-fresh-shard', 'p01-rba-cancel-fresh-aggregate',
             'p01-force-seal-fresh', 'p01-absent-shard', 'p01-absent-aggregate',
             'p01-all-prefix-reject-shard', 'p01-all-prefix-reject-aggregate',
-            'orleans',
+            'orleans', 'orleans-aggregate',
         ):
             self.assertIn('\n  ' + job + ':', text)
         self.assertNotIn('needs: prepare', text)
