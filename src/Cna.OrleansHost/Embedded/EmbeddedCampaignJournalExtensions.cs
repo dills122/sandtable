@@ -10,8 +10,8 @@ namespace Cna.OrleansHost.Embedded;
 /// <summary>
 /// DI wiring for the embedded (local-play) durable journal: one SQLite file per campaign under a
 /// private directory, the exact journal code the Postgres + Marten backend was proven equivalent
-/// to, plus the boot re-arm that replaces Postgres-backed reminders. Spike (phase 1): not yet called
-/// from <c>Program.cs</c>; see the design doc for the wiring plan. Never changes the Postgres path.
+/// to, plus the boot re-arm that replaces Postgres-backed reminders. Used by the explicit Development-only
+/// local-play pilot. Never changes the Postgres path.
 /// </summary>
 internal static class EmbeddedCampaignJournalExtensions
 {

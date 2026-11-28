@@ -1,8 +1,15 @@
 using Cna.LoadHarness;
 
+if (args is ["--local-play-probe", var hostDll])
+{
+    await LocalPlayProbe.RunAsync(hostDll);
+    return 0;
+}
+
 if (args is ["--help"])
 {
     Console.WriteLine(HarnessConfig.Usage);
+    Console.WriteLine("Local-play lifecycle probe: --local-play-probe <built-host-dll>");
     return 0;
 }
 
