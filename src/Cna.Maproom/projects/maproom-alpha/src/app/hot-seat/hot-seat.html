@@ -77,24 +77,20 @@
       </header>
       <form
         class="find"
-        (submit)="$event.preventDefault(); session.findDecisions(session.unitId())"
+        (submit)="$event.preventDefault(); session.findDecisions()"
         [attr.aria-busy]="session.busy()"
       >
-        <label for="hs-unit">Acting unit id (optional, for movement and combat decisions)</label>
-        <input
-          id="hs-unit"
-          type="text"
-          autocomplete="off"
-          spellcheck="false"
-          [value]="session.unitId()"
-          (input)="setUnit($event)"
-        />
         <div class="actions">
           <button type="submit" [disabled]="session.busy()">Find my decisions</button>
         </div>
       </form>
       <div role="status" class="notice">
-        @if (session.searched() && session.openings().length === 0 && !session.error()) {
+        @if (
+          session.searched() &&
+          session.openings().length === 0 &&
+          session.unsupported().length === 0 &&
+          !session.error()
+        ) {
           <fa-status
             >No decision is open for the {{ label(session.seat()!) }} seat right now.</fa-status
           >
@@ -105,7 +101,13 @@
           <fa-status tone="danger">{{ session.error() }}</fa-status>
         }
       </div>
-      @for (found of session.openings(); track found.opening.stage) {
+      @for (title of session.unsupported(); track title) {
+        <fa-status tone="warning">{{ title }} is not implemented by this host.</fa-status>
+      }
+      @for (
+        found of session.openings();
+        track found.opening.stage + ':' + found.opening.actingElementId
+      ) {
         <mr-opening-form
           [opening]="found.opening"
           [heading]="found.entry.title"

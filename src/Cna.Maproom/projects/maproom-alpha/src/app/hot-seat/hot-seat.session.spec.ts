@@ -26,6 +26,19 @@ class FakeClient {
   gate: Promise<void> | undefined;
   open: Record<string, OpeningView> = {};
   submitted: string[] = [];
+  discoveries: string[] = [];
+  async discoverOpenings(c: SeatCredential) {
+    this.discoveries.push(c.audience);
+    await this.gate;
+    return Object.values(this.open)
+      .filter((o) => o.audience === c.audience)
+      .map((o) => ({
+        openingStage: o.stage,
+        actionStage: o.stage,
+        actingElementIds: [o.actingElementId],
+        ruleNotImplemented: false,
+      }));
+  }
   async queryOpening(c: SeatCredential, stage: string): Promise<OpeningView> {
     this.queries.push({ audience: c.audience, stage });
     await this.gate;
@@ -61,36 +74,58 @@ describe('HotSeatSession', () => {
     expect(session.phase()).toBe('seat');
   });
 
-  it('clears the typed unit id on hand-off and reset', () => {
-    session.configure(cred('axis'), cred('commonwealth'));
-    session.reveal();
-    session.unitId.set('axis-infantry');
-    session.handoffTo('commonwealth');
-    expect(session.unitId()).toBe('');
-    session.unitId.set('x');
-    session.reset();
-    expect(session.unitId()).toBe('');
-  });
-
   it('rejects mismatched credentials', () => {
     expect(() => session.configure(cred('commonwealth'), cred('axis'))).toThrow(CampaignV2Error);
     expect(() =>
-      session.configure(cred('axis'), { ...cred('commonwealth'), campaignId: 'c2' }),
+      session.configure(cred('axis'), { ...cred('commonwealth'), campaignId: 'c2' })
     ).toThrow(CampaignV2Error);
     expect(session.phase()).toBe('setup');
   });
 
-  it('finds decisions for the active seat only and skips unit stages without a unit id', async () => {
+  it('uses only advertised elements of the active seat', async () => {
     client.open['axis:initiative-order'] = opening('axis', 'initiative-order', 'act-first');
+    client.open['commonwealth:movement'] = opening('commonwealth', 'movement', 'choice');
     session.configure(cred('axis'), cred('commonwealth'));
     session.reveal();
     await session.findDecisions();
     expect(session.openings().map((f) => f.opening.stage)).toEqual(['initiative-order']);
-    expect(client.queries.every((q) => q.audience === 'axis')).toBe(true);
-    expect(client.queries.some((q) => q.stage === 'movement')).toBe(false);
-    expect(client.queries.some((q) => q.stage.startsWith('source-'))).toBe(false);
-    await session.findDecisions('axis-infantry');
-    expect(client.queries.some((q) => q.stage === 'movement')).toBe(true);
+    expect(client.discoveries).toEqual(['axis']);
+    expect(client.queries).toEqual([{ audience: 'axis', stage: 'initiative-order' }]);
+  });
+
+  it('does not probe unsupported entries and clears their notice on hand-off', async () => {
+    client.discoverOpenings = async () => [
+      {
+        openingStage: 'future-opening',
+        actionStage: 'future-action',
+        actingElementIds: [],
+        ruleNotImplemented: true,
+      },
+    ];
+    session.configure(cred('axis'), cred('commonwealth'));
+    session.reveal();
+    await session.findDecisions();
+    expect(session.unsupported()).toEqual(['future-opening']);
+    expect(client.queries).toEqual([]);
+    session.handoffTo('commonwealth');
+    expect(session.unsupported()).toEqual([]);
+  });
+
+  it('uses the host action-stage mapping for an advertised element', async () => {
+    const seatOpening = opening('axis', 'example', 'choice');
+    client.discoverOpenings = async () => [
+      {
+        openingStage: 'example',
+        actionStage: 'example-submit',
+        actingElementIds: ['example'],
+        ruleNotImplemented: false,
+      },
+    ];
+    client.open['axis:example'] = seatOpening;
+    session.configure(cred('axis'), cred('commonwealth'));
+    session.reveal();
+    await session.findDecisions();
+    expect(session.openings()[0].entry.actionStage).toBe('example-submit');
   });
 
   it('destroys the prior seat decisions, outcome and error on hand-off', async () => {
@@ -109,7 +144,7 @@ describe('HotSeatSession', () => {
     session.reveal();
     await session.findDecisions();
     expect(session.openings()).toEqual([]);
-    expect(client.queries.filter((q) => q.audience === 'commonwealth').length).toBeGreaterThan(0);
+    expect(client.discoveries).toContain('commonwealth');
   });
 
   it('discards a lookup reply that lands after the hand-off', async () => {
@@ -163,11 +198,11 @@ describe('HotSeatSession', () => {
   });
 
   it('turns a host failure into a short audience-safe error', async () => {
-    client.queryOpening = async () => {
+    client.discoverOpenings = async () => {
       throw new CampaignV2Error(
         'Host rejected the request (401 unauthorized).',
         401,
-        'unauthorized',
+        'unauthorized'
       );
     };
     session.configure(cred('axis'), cred('commonwealth'));

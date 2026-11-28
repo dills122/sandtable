@@ -59,6 +59,13 @@ export interface OpeningKindsView {
   readonly kinds: readonly string[];
 }
 
+export interface DiscoveredOpening {
+  readonly openingStage: string;
+  readonly actionStage: string;
+  readonly actingElementIds: readonly string[];
+  readonly ruleNotImplemented: boolean;
+}
+
 /** Raised for transport/contract failures. The message is audience-safe: it never echoes request bodies. */
 export class CampaignV2Error extends Error {
   constructor(

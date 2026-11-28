@@ -301,6 +301,30 @@ For every contract, every merged slice, and every open gate, see the
 [first-release audit](docs/research/2026-10-05-first-release-audit.md), and the
 [Combat implementation plan](docs/design/combat-cycle-implementation-plan.md).
 
+## Try it
+
+Start a fresh, disposable synthetic hot-seat campaign on the real local Development Host:
+
+```sh
+scripts/demo.sh
+```
+
+Requires Docker running, .NET 10 SDK, Node 22 (see Maproom's engine range), npm 10,
+Python 3 and curl. Ports 5087 (Host) and 4300 (Maproom) must be free. First launch
+builds both .NET projects and installs Maproom dependencies. The script starts a
+private throwaway PostgreSQL container, prepares a fresh synthetic campaign and
+redeems two seats. Open the printed URL, paste the two JSON credentials into
+the corresponding setup fields, and confirm each hand-off. Click **Find my
+decisions** to read the active seat's advertised openings. Keep credentials
+private; do not capture the terminal in a recording. Ctrl+C stops the processes
+and removes this run's database.
+
+This is a synthetic development lane, not a release of the published game.
+Host-supported openings are rendered generically; unimplemented paths remain
+visible as such. The live browser path has reached Stage 2; full-turn browser completion has not
+yet been verified.
+See [Maproom](src/Cna.Maproom/README.md#hot-seat-v2-lane-hot-seat).
+
 ## Getting started
 
 ### Prerequisites

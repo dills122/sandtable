@@ -1,12 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { CampaignV2Client } from '../v2/campaign-v2.client';
-import { StageEntry, STAGE_CATALOG, elementFor } from '../v2/stage-catalog';
+import { STAGE_CATALOG } from '../v2/stage-catalog';
 import { ActionOutcome, Audience, CampaignV2Error, OpeningView, SeatCredential } from '../v2/types';
 
 export type HotSeatPhase = 'setup' | 'handoff' | 'seat';
 
 export interface FoundOpening {
-  readonly entry: StageEntry;
+  readonly entry: { title: string; actionStage: string };
   readonly opening: OpeningView;
 }
 
@@ -34,11 +34,10 @@ export class HotSeatSession {
   /** The seat the device is handed to (handoff phase) or the seat in front of the screen (seat phase). */
   readonly seat = signal<Audience | null>(null);
   readonly openings = signal<readonly FoundOpening[]>([]);
-  readonly outcome = signal<{ stage: string; result: ActionOutcome } | null>(null);
+  readonly outcome = signal<{ opening: OpeningView; result: ActionOutcome } | null>(null);
+  readonly unsupported = signal<readonly string[]>([]);
   readonly error = signal('');
   readonly busy = signal(false);
-  /** Acting unit id typed by the active seat. Seat-private: cleared on hand-off and reset. */
-  readonly unitId = signal('');
   /** True once the active seat has had its decisions looked up at least once. */
   readonly searched = signal(false);
   readonly otherSeat = computed(() => {
@@ -74,7 +73,7 @@ export class HotSeatSession {
     this.error.set('');
     this.busy.set(false);
     this.searched.set(false);
-    this.unitId.set('');
+    this.unsupported.set([]);
     this.seat.set(seat);
     this.phase.set('handoff');
   }
@@ -99,7 +98,7 @@ export class HotSeatSession {
     this.error.set('');
     this.busy.set(false);
     this.searched.set(false);
-    this.unitId.set('');
+    this.unsupported.set([]);
     this.seat.set(null);
   }
 
@@ -108,39 +107,57 @@ export class HotSeatSession {
     return this.phase() === 'seat' && seat ? (this.#seats[seat] ?? null) : null;
   }
 
-  /**
-   * Looks up the active seat's open decisions. There is no "what is open for me" endpoint, so this
-   * probes the seat-level gameplay stages, plus unit stages when an acting unit id is supplied.
-   * A 409 `unavailable` means "nothing open here" and is the normal answer for most stages.
-   */
-  async findDecisions(unitId?: string): Promise<void> {
+  /** Read-only discovery identifies the active seat's candidates; only those openings are fetched. */
+  async findDecisions(): Promise<void> {
     const credential = this.credential();
     if (!credential || this.busy()) return;
     const generation = this.#generation;
     this.busy.set(true);
     this.error.set('');
     this.outcome.set(null);
+    this.openings.set([]);
+    this.unsupported.set([]);
+    this.searched.set(false);
     const found: FoundOpening[] = [];
+    const unsupported: string[] = [];
     try {
-      const unit = unitId?.trim();
-      for (const entry of STAGE_CATALOG) {
-        if (entry.category !== 'gameplay') continue;
-        if (entry.element.kind === 'unit' && !unit) continue;
-        try {
-          const opening = await this.client.queryOpening(
-            credential,
-            entry.openingStage,
-            elementFor(entry, unit),
-          );
-          if (generation !== this.#generation) return;
-          found.push({ entry, opening });
-        } catch (cause) {
-          if (generation !== this.#generation) return;
-          if (cause instanceof CampaignV2Error && cause.status === 409) continue;
-          throw cause;
+      const discovered = await this.client.discoverOpenings(credential);
+      if (generation !== this.#generation) return;
+      for (const candidate of discovered) {
+        const title =
+          STAGE_CATALOG.find((e) => e.openingStage === candidate.openingStage)?.title ??
+          candidate.openingStage;
+        if (candidate.ruleNotImplemented) {
+          unsupported.push(title);
+          continue;
+        }
+        for (const element of candidate.actingElementIds) {
+          try {
+            const opening = await this.client.queryOpening(
+              credential,
+              candidate.openingStage,
+              element,
+            );
+            if (generation !== this.#generation) return;
+            found.push({ entry: { title, actionStage: candidate.actionStage }, opening });
+          } catch (cause) {
+            if (generation !== this.#generation) return;
+            if (
+              cause instanceof CampaignV2Error &&
+              cause.status === 409 &&
+              cause.code === 'unavailable'
+            )
+              continue;
+            if (cause instanceof CampaignV2Error && cause.code === 'rule-not-implemented') {
+              unsupported.push(title);
+              continue;
+            }
+            throw cause;
+          }
         }
       }
       this.openings.set(found);
+      this.unsupported.set([...new Set(unsupported)]);
       this.searched.set(true);
     } catch (cause) {
       if (generation !== this.#generation) return;
@@ -167,7 +184,7 @@ export class HotSeatSession {
         found.entry.actionStage,
       );
       if (generation !== this.#generation) return;
-      this.outcome.set({ stage: found.opening.stage, result });
+      this.outcome.set({ opening: found.opening, result });
     } catch (cause) {
       if (generation !== this.#generation) return;
       this.error.set(

@@ -5,6 +5,7 @@ import {
   CONTRACT_VERSION,
   parseAcceptedAction,
   parseErrorBody,
+  parseDiscoveredOpenings,
   parseGrantResponse,
   parseOpeningKinds,
   parseOpeningResponse,
@@ -14,6 +15,7 @@ import {
   ActionOutcome,
   Audience,
   CampaignV2Error,
+  DiscoveredOpening,
   OpeningKindsView,
   OpeningView,
   SeatCredential,
@@ -61,6 +63,20 @@ export class CampaignV2Client {
     if (credential.campaignId !== grant.campaignId || credential.audience !== grant.audience)
       throw new CampaignV2Error('Unsupported v2 response: seat identity');
     return credential;
+  }
+
+  async discoverOpenings(credential: SeatCredential): Promise<readonly DiscoveredOpening[]> {
+    return parseDiscoveredOpenings(
+      await this.send(
+        'POST',
+        `${BASE}/${encodeURIComponent(credential.campaignId)}/openings/open`,
+        {
+          contractVersion: CONTRACT_VERSION,
+          credential,
+        },
+      ),
+      credential,
+    );
   }
 
   async queryOpening(

@@ -2,6 +2,7 @@ import {
   Audience,
   ActionOutcome,
   CampaignV2Error,
+  DiscoveredOpening,
   JsonValue,
   OpeningKindsView,
   OpeningView,
@@ -80,6 +81,39 @@ export function parseSeatResponse(raw: unknown): SeatCredential {
   const o = obj(raw, 'seat response');
   version(o);
   return seatShape(o['credential'], 'credential');
+}
+
+export function parseDiscoveredOpenings(
+  raw: unknown,
+  credential: SeatCredential,
+): readonly DiscoveredOpening[] {
+  const o = obj(raw, 'open discovery response');
+  version(o);
+  if (
+    str(o, 'campaignId') !== credential.campaignId ||
+    audience(o, 'audience') !== credential.audience
+  )
+    return fail('discovery identity');
+  const entries = o['open'];
+  if (!Array.isArray(entries) || entries.length > MAX_REFS) return fail('open');
+  return entries.map((rawEntry) => {
+    const entry = obj(rawEntry, 'open entry');
+    const ids = entry['actingElementIds'];
+    const unsupported = entry['ruleNotImplemented'];
+    if (
+      !Array.isArray(ids) ||
+      ids.length > MAX_REFS ||
+      ids.some((id) => typeof id !== 'string' || !id || id.length > 4096) ||
+      typeof unsupported !== 'boolean'
+    )
+      return fail('open entry');
+    return {
+      openingStage: str(entry, 'openingStage'),
+      actionStage: str(entry, 'actionStage'),
+      actingElementIds: ids as string[],
+      ruleNotImplemented: unsupported,
+    };
+  });
 }
 
 export function parseOpeningKinds(raw: unknown): OpeningKindsView {

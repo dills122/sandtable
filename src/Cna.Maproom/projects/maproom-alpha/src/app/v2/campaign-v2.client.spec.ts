@@ -44,6 +44,36 @@ describe('CampaignV2Client', () => {
   });
   afterEach(() => http.verify());
 
+  it('discovers only the credential owner’s advertised openings', async () => {
+    const pending = client.discoverOpenings(credential);
+    const req = http.expectOne('/api/v2/campaigns/c1/openings/open');
+    expect(req.request.body).toEqual({ contractVersion: 2, credential });
+    const entry = {
+      openingStage: 'example',
+      actionStage: 'example-submit',
+      actingElementIds: ['element-1'],
+      ruleNotImplemented: false,
+    };
+    req.flush({
+      contractVersion: 2,
+      campaignId: 'c1',
+      audience: credential.audience,
+      open: [entry],
+    });
+    expect(await pending).toEqual([entry]);
+  });
+
+  it('rejects discovery for another audience', async () => {
+    const pending = client.discoverOpenings(credential);
+    http.expectOne('/api/v2/campaigns/c1/openings/open').flush({
+      contractVersion: 2,
+      campaignId: 'c1',
+      audience: 'commonwealth',
+      open: [],
+    });
+    await expect(pending).rejects.toBeInstanceOf(CampaignV2Error);
+  });
+
   it('queries an opening with the v2 envelope', async () => {
     const pending = client.queryOpening(credential, 'initiative-order', 'initiative-order');
     const req = http.expectOne('/api/v2/campaigns/c1/openings');
