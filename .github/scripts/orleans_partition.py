@@ -1,13 +1,13 @@
 """Deterministic, proof-carrying shards for the Orleans host (Postgres/Marten) test module.
 
 Cna.OrleansHost.Tests is dominated by one partial class whose rows run serially
-in a single process (~20 minutes on a hosted runner). This splits the module by
+in a single process. This splits the module by
 test method (all rows of a theory stay together) across N parallel CI jobs and
 proves, at aggregate time, that the shards ran every discovered row exactly once.
 
 Subcommands (run from the repository root):
   execute --shard I --total N   discover, run shard I (bounded retry on a
-                                no-report stall), then check its own report
+                                pre-row timeout), then check its own report
   verify  --total N DIR...      require shards 1..N, one identical plan, a
                                 disjoint complete method allocation and a fully
                                 passing, exactly matching report per shard
@@ -16,15 +16,24 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import os
+import re
+import signal
 import subprocess
 import sys
+import tempfile
+import time
 import xml.etree.ElementTree as ET
 
 ASSEMBLY = 'Cna.OrleansHost.Tests'
 PROJECT = 'tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj'
 BINARY = 'artifacts/bin/Cna.OrleansHost.Tests/release/Cna.OrleansHost.Tests.dll'
 WEIGHTS = Path(__file__).with_name('orleans-weights.json')
-ATTEMPT_CAP = '18m'
+ATTEMPT_CAP = 18 * 60
+BOOTSTRAP_CAP = 3 * 60
+ROW_CAP = 6 * 60
+BOOTSTRAP_TIMEOUT = 124
+ROW_TIMEOUT = 125
 ATTEMPTS = 2
 
 # Rows deliberately not run in PR CI (covered by orleans-slow.yml / the nightly
@@ -148,14 +157,111 @@ def discover(binary=BINARY):
     return parse_listing(result.stdout)
 
 
-def run_attempt(command, log_path, cap=ATTEMPT_CAP):
-    """Run with a hard per-attempt cap, teeing to the console and a log; return the real exit code."""
-    wrapped = ['timeout', '--kill-after=30s', cap] + command
-    with subprocess.Popen(wrapped, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as process, open(log_path, 'w') as log:
-        for line in process.stdout:
-            sys.stdout.write(line)
-            log.write(line)
-        return process.wait()
+class RowProgress:
+    """Track MTP TestNode lifecycle messages by UID, not method (theories may overlap)."""
+    event = re.compile(r'TestNode = TestNode \{ Uid = TestNodeUid \{ Value = ([^}]+) \}, DisplayName = (.*?), Properties = \[')
+    state = re.compile(r'\b(InProgress|Passed|Failed|Skipped|Error|Timeout|Cancelled|Canceled)TestNodeStateProperty\b')
+
+    def __init__(self):
+        self.active = {}
+        self.started = False
+        self.pending = None
+
+    def observe(self, line, now):
+        event = self.event.search(line)
+        if event:
+            self.pending = event.groups()
+        state = self.state.search(line)
+        if not self.pending or not state:
+            return None
+        # A terminal record may span multiple lines when it contains captured output.
+        uid, name = self.pending
+        self.pending = None
+        outcome = state.group(1)
+        if outcome == 'InProgress' and uid not in self.active:
+            self.started = True
+            self.active[uid] = (name, now)
+            return f'START {name}'
+        if outcome != 'InProgress' and uid in self.active:
+            name, start = self.active.pop(uid)
+            return f'FINISH {name} ({now - start:.1f}s, {outcome})'
+        return None
+
+    def expired(self, now, cap):
+        return [name for name, start in self.active.values() if now - start >= cap]
+
+
+def stop_process(process):
+    """Terminate the entire test process group, including any child host."""
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+        process.wait(timeout=10)
+    except (subprocess.TimeoutExpired, ProcessLookupError):
+        pass
+    finally:
+        # The leader may exit before its child hosts; reap the whole group.
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
+
+
+def run_attempt(command, log_path, cap=ATTEMPT_CAP, bootstrap_cap=BOOTSTRAP_CAP, row_cap=ROW_CAP):
+    """Flush runner and row lifecycle logs while bounding bootstrap, each row and the shard."""
+    # MTP trace messages include row UIDs and state transitions even when dotnet test
+    # buffers console output. A unique directory keeps old attempts out of the watchdog.
+    diagnostics = Path(tempfile.mkdtemp(prefix=f'{log_path.stem}-diagnostics-', dir=log_path.parent))
+    command = [*command, '--diagnostic', '--diagnostic-synchronous-write',
+               '--diagnostic-output-directory', str(diagnostics.resolve()), '--no-ansi']
+    progress = RowProgress()
+    offsets = {}
+    start = time.monotonic()
+    raw_path = diagnostics / 'runner.log'
+    with raw_path.open('w') as raw, raw_path.open() as console, log_path.open('w', buffering=1) as log:
+        def emit(line):
+            print(line, flush=True)
+            print(line, file=log, flush=True)
+
+        def drain():
+            for line in console:
+                emit(line.rstrip('\n'))
+            for path in diagnostics.glob('*.diag'):
+                with path.open() as stream:
+                    stream.seek(offsets.get(path, 0))
+                    while line := stream.readline():
+                        if not line.endswith('\n'):
+                            break  # writer may still be writing this record; read it again
+                        offsets[path] = stream.tell()
+                        message = progress.observe(line, time.monotonic())
+                        if message:
+                            emit(message)
+
+        with subprocess.Popen(command, stdout=raw, stderr=subprocess.STDOUT, start_new_session=True) as process:
+            while True:
+                drain()
+                status = process.poll()
+                if status is not None:
+                    drain()
+                    # A report-less process failure after work began is not a bootstrap retry.
+                    return ROW_TIMEOUT if status in (BOOTSTRAP_TIMEOUT, ROW_TIMEOUT) and progress.started else status
+                now = time.monotonic()
+                expired = progress.expired(now, row_cap)
+                if expired:
+                    emit(f'::error::Row exceeded {row_cap}s: {", ".join(expired)}')
+                    status = ROW_TIMEOUT
+                elif not progress.started and now - start >= bootstrap_cap:
+                    emit(f'::error::No row started within {bootstrap_cap}s; test runner or fixture bootstrap timed out.')
+                    status = BOOTSTRAP_TIMEOUT
+                elif now - start >= cap:
+                    emit(f'::error::Shard exceeded {cap}s; active rows: {", ".join(name for name, _ in progress.active.values()) or "none"}')
+                    status = ROW_TIMEOUT
+                else:
+                    time.sleep(0.25)
+                    continue
+                stop_process(process)
+                drain()
+                return status
 
 
 def execute(shard, total, results, runner=run_attempt, discoverer=discover, attempts=ATTEMPTS, weights_path=None):
@@ -176,13 +282,13 @@ def execute(shard, total, results, runner=run_attempt, discoverer=discover, atte
         status = runner(command, results / f'console-attempt-{attempt}.log')
         if status == 0:
             break
-        if list(results.glob('*.xml')):
-            print(f'::error::Orleans shard {shard} produced a report and still failed on attempt {attempt} (exit {status}) -- a real failure, not retrying.')
+        if status != BOOTSTRAP_TIMEOUT or list(results.glob('*.xml')):
+            print(f'::error::Orleans shard {shard} failed on attempt {attempt} (exit {status}) -- not a retryable pre-row timeout.', flush=True)
             return status
         if attempt == attempts:
-            print(f'::error::Orleans shard {shard} produced no report after {attempts} attempts (exit {status}).')
+            print(f'::error::Orleans shard {shard} timed out before any row started after {attempts} attempts (exit {status}).', flush=True)
             return status
-        print(f'::warning::Orleans shard {shard} produced no report on attempt {attempt} (exit {status}) -- likely a Testcontainers/Docker bootstrap stall. Retrying once.')
+        print(f'::warning::Orleans shard {shard} timed out before any row started on attempt {attempt} (exit {status}). Retrying bootstrap once.', flush=True)
     check_report(results, {m: plan['counts'][m] for m in methods})
     print(json.dumps({'shard': shard, 'methods': len(methods), 'rows': sum(plan['counts'][m] for m in methods)}, sort_keys=True))
     return 0

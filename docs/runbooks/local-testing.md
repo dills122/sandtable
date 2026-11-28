@@ -159,6 +159,27 @@ uniquifies the database name it actually creates (fixed per-test-class
 literal names would otherwise collide across workers sharing one instance),
 transparently to every caller.
 
+## Orleans shard diagnostics
+
+After a Release build of `tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj`,
+reproduce the current PR CI allocation with Docker running:
+
+```sh
+python3 .github/scripts/orleans_partition.py execute --shard 4 --total 4 --results /tmp/orl4
+```
+
+The runner retains the plan, per-attempt console and MTP diagnostics, and the
+final xUnit XML. `START` and `FINISH` lines identify individual theory rows as
+well as ordinary tests, even if `dotnet test` buffers stdout. A pre-row timeout
+(3 minutes) retries once; a row executing for 6 minutes or the shard exceeding
+18 minutes terminates the process group, reports active rows, and fails without
+retry. A missing report alone is not proof of a Docker bootstrap problem.
+
+Historical passing shard-4 reports for PRs #664 and #672 took 13m51s–15m05s,
+with one previously unweighted HTTP theory accounting for over 7 minutes of
+serial work. The PR timing hints now include seven measured new slow methods;
+keep all theory rows together and preserve exact coverage when rebalancing.
+
 ## Trunk.io flaky-test uploads
 
 `architecture-tests`, `orleans`, and `tests` (CI) each run a
