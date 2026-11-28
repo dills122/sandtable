@@ -94,6 +94,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
     /// </summary>
     internal CampaignOpenSeatResult QueryOpenForSeat(CampaignSeatCredential credential)
     {
+        using var performance = Cna.Core.Content.CampaignPerformanceSpan.Start("Journal.QueryOpenForSeat");
         using var connection = Connect(create: false);
         using var transaction = connection.BeginTransaction();
         var seat = AuthenticateSeat(connection, transaction, credential, out var verifiedHead)
@@ -114,13 +115,14 @@ internal sealed partial class CampaignDurableAuthorityJournal
         var open = new List<CampaignOpenSeatEntry>();
         foreach (var stage in stages)
         {
+            using var stagePerformance = Cna.Core.Content.CampaignPerformanceSpan.Start(stage.OpeningStage);
             var ids = new List<string>();
             var ruleNotImplemented = false;
             foreach (var element in stage.ElementKey is { } key ? [key] : elements)
             {
                 try
                 {
-                    var draft = openingQueries[stage.Kind](session, seat.Audience, element);
+                    var draft = QueryDiscoveryDraft(stage, session, seat.Audience, element);
                     if (draft.ActionIds.Length > 0) ids.Add(element);
                 }
                 catch (CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException)
@@ -141,6 +143,7 @@ internal sealed partial class CampaignDurableAuthorityJournal
 
     private static ExerciseSession PreviewDrainSystemSteps(ExerciseSession session)
     {
+        using var performance = Cna.Core.Content.CampaignPerformanceSpan.Start("Journal.PreviewDrainSystemSteps");
         while (true)
         {
             if (CampaignHostAdapter.TryCompleteStageEntrySystemStep(session) is { } native)

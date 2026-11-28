@@ -9,6 +9,7 @@ internal static class CampaignObservationV7ActionDerivation
 {
     public static CampaignLegalActionSet DerivePlayer(CampaignObservationV7 observation)
     {
+        using var performance = Cna.Core.Content.CampaignPerformanceSpan.Start("CampaignObservationV7ActionDerivation.DerivePlayer");
         ArgumentNullException.ThrowIfNull(observation);
         var audience = ToAudience(observation.Observer);
         var candidates = observation.DecisionState switch
@@ -23,6 +24,7 @@ internal static class CampaignObservationV7ActionDerivation
 
     public static CampaignLegalActionSet DeriveSystem(CampaignObservationV7 observation)
     {
+        using var performance = Cna.Core.Content.CampaignPerformanceSpan.Start("CampaignObservationV7ActionDerivation.DeriveSystem");
         ArgumentNullException.ThrowIfNull(observation);
         IReadOnlyList<CampaignActionCandidate> candidates = observation.DecisionState switch
         {
@@ -54,6 +56,7 @@ internal static class CampaignObservationV7ActionDerivation
         CampaignObservationV7 observation,
         CampaignActionSubmission submission)
     {
+        using var performance = Cna.Core.Content.CampaignPerformanceSpan.Start("CampaignObservationV7ActionDerivation.MapSubmission");
         ArgumentNullException.ThrowIfNull(observation);
         ArgumentNullException.ThrowIfNull(submission);
         if (!CampaignActionContractValidator.IsValidSubmission(submission)
