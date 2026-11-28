@@ -40,8 +40,9 @@ public sealed class PendingEquivalenceOracleTests
     public void DerivedPendingEqualsTheCascadeOverEveryFixtureSession()
     {
         var rows = Rows().ToList();
+        // TurnSuccessorPending derives from the latest event, not the cursor (see PendingExceptionTable).
         var mismatches = rows.Select(row => (row, derived: PendingFromCursor.Derive(row.Session)))
-            .Where(x => x.derived != x.row.Actual).Select(x => Describe(x.row, x.derived)).ToList();
+            .Where(x => x.derived != x.row.Actual && x.row.Actual != nameof(TurnSuccessorPending)).Select(x => Describe(x.row, x.derived)).ToList();
         Assert.True(rows.Count > 150, $"too few oracle rows: {rows.Count}");
         if (Environment.GetEnvironmentVariable("SEQUENCING_DUMP") is { Length: > 0 } dump)
             File.WriteAllLines(dump + ".mismatch", mismatches.Append(
@@ -125,5 +126,5 @@ public sealed class PendingEquivalenceOracleTests
     // S3-9 visits the eight second-side selection/tail positions, including the end-of-turn
     // frontier. The remaining 20 are the four unvisited actual-combat cuts in each non-legacy occurrence.
     private const int ExpectedUnvisited = 20;
-    private const int ExpectedLaterTurnUnvisited = 102;
+    private const int ExpectedLaterTurnUnvisited = 101; // T3: successor-turn first-side Reserve is now visited
 }

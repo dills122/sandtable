@@ -44,6 +44,7 @@ public static class CampaignOpenSeatCatalog
             [typeof(NativeReactionPending)] = CampaignOpenSeatRow.Stages("reaction"),
             // Stage 3 second side.
             [typeof(ThirdStageSecondCombatSelectionPending)] = CampaignOpenSeatRow.Stages("combat-selection"),
+            [typeof(TurnSuccessorPending)] = CampaignOpenSeatRow.Unwired("Successor-turn play is Core-only until Host exposure lands."),
             [typeof(TurnBoundaryPending)] = CampaignOpenSeatRow.Stages("stage-entry-initiative-declaration", "stage-entry-reserve"),
             [typeof(ThirdStageSecondAssaultPending)] = CampaignOpenSeatRow.Stages(StageEntryTail),
             [typeof(ThirdStageSecondNoAttackPending)] = CampaignOpenSeatRow.SystemOnly("No-attack auto-completes."),

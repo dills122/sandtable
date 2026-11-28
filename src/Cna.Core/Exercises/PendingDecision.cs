@@ -21,6 +21,10 @@ internal abstract record PendingDecision(ExerciseSession? Predecessor);
 // The later-turn prelude reads its current cut from the last accepted history event.
 internal sealed record TurnBoundaryPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
 
+// Successor-turn play after the turn-start prelude: the cut is derived from the latest accepted event
+// (never from a retained earlier-turn field), and the predecessor is the TurnBoundaryPredecessor.
+internal sealed record TurnSuccessorPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);
+
 // E4b (#655): an open native Reaction window (trigger V44 later than the last closing V60). The
 // reacting side owns it; the slot is derived from the window's suspended Movement position.
 internal sealed record NativeReactionPending(ExerciseSession? Predecessor) : PendingDecision(Predecessor);

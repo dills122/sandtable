@@ -96,8 +96,10 @@ public sealed class TurnBoundaryIntegrationTests
         var reserveSubmission = new CampaignActionSubmission(1, frontier.CampaignId, frontier.StateVersion,
             frontier.PositionId, firstAudience, new CompleteReserveDesignationAction().ActionId);
         Assert.False(CampaignExercises.Submit(boundary[^1].Session, reserveSubmission).IsAccepted);
-        Assert.Equal(CampaignActionSubmissionRejectionReason.RuleNotImplemented,
-            CampaignExercises.SubmitWithCombat(boundary[^1].Session, reserveSubmission).RejectionReason);
+        // Legitimate change (T3): the first-side Reserve is now accepted by the Core successor-turn path;
+        // TurnSuccessorPlayTests owns its continuation and negative rows.
+        Assert.IsType<CampaignNativeSecondReserveV43>(
+            CampaignExercises.SubmitWithCombat(boundary[^1].Session, reserveSubmission).SuccessorSession!.CurrentHistory[^1]);
         Assert.Null(CampaignExercises.QueryWithCombat(boundary[^1].Session, firstAudience).ActionSet);
     }
 
