@@ -25,16 +25,20 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         Assert.Equal("75dccd580ef9306d0ce564a42c4798717697ceeaee18a1f68ad5ecff7d6386b2", winter.CanonicalHash);
     }
 
-    [Fact]
-    public async Task LaterStageReactionMoveReturnsHttp409AndLeavesMovementOpen() =>
-        await DriveCheckpointHttp(1, rejectReaction: true);
+    [Theory]
+    [InlineData(2, "first-player")]
+    [InlineData(2, "second-player")]
+    [InlineData(3, "first-player")]
+    [InlineData(3, "second-player")]
+    public async Task LaterStageReactionMoveOpensReactingSeatAndResumesMovement(int stage, string role) =>
+        await DriveCheckpointHttp(1, $"land.position.operation-{stage}.{role}.movement-and-combat.movement");
 
-    private static async Task<(string? StreamHash, string CanonicalHash)> DriveCheckpointHttp(int initialTurn, bool rejectReaction = false)
+    private static async Task<(string? StreamHash, string CanonicalHash)> DriveCheckpointHttp(int initialTurn, string? reactionPosition = null)
     {
         using var fixture = new JournalFixture();
         var clock = new ManualClock();
         var journal = fixture.Create(clock);
-        var request = rejectReaction ? ContactRequest() : TurnBoundaryRequest(initialTurn);
+        var request = reactionPosition is not null ? ContactRequest() : TurnBoundaryRequest(initialTurn);
         await using var outward = await OwnerHttpHarness.Start(journal, request.CampaignId);
         await outward.CreateCampaign(request, Timing(request), OperatorSecret);
         CampaignSeatCredential[] seats =
@@ -43,7 +47,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             await outward.IssueAndRedeemSeat(CampaignActionAudience.Commonwealth, OperatorSecret),
         ];
         var declarations = 0;
-        var refusedPositions = new HashSet<string>();
         var stagesWithMovementOffers = new HashSet<int>();
         var trace = new List<string>();
         var duration = Stopwatch.StartNew();
@@ -68,33 +71,73 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                             Assert.Equal(initialTurn, ledger.GetProperty("ledgerGameTurn").GetInt32());
                             Assert.Equal(declarations, ledger.GetProperty("ledgerOperationStage").GetInt32());
                             stagesWithMovementOffers.Add(declarations);
-                            if (rejectReaction && element.EndsWith("-infantry", StringComparison.Ordinal))
+                            if (reactionPosition == movement.Visible.GetProperty("positionId").GetString()
+                                && element.EndsWith("-infantry", StringComparison.Ordinal))
                             {
-                                var position = movement.Visible.GetProperty("positionId").GetString()!;
                                 var offers = movement.Visible.GetProperty("movementOffers").EnumerateArray().ToArray();
                                 var index = Array.FindIndex(offers, value => value.GetProperty("destinationLocationId").GetString() == "north");
-                                Assert.True(index >= 0, position);
-                                var before = await fixture.ReadCanonicalCheckpointEvents(request.CampaignId);
-                                var rejection = await Refuse(outward);
-                                Assert.Equal(rejection, await Refuse(outward));
-                                Assert.Equal((HttpStatusCode.OK, body), await outward.OpenForSeatResponse(seat));
-                                await using var cold = await OwnerHttpHarness.Start(fixture.Open(clock), request.CampaignId);
-                                Assert.Equal(rejection, await Refuse(cold));
-                                Assert.Equal((HttpStatusCode.OK, body), await cold.OpenForSeatResponse(seat));
-                                Assert.Equal(before, await fixture.ReadCanonicalCheckpointEvents(request.CampaignId));
+                                Assert.True(index >= 0, reactionPosition);
+                                var priorRecords = await fixture.ReadCanonicalCheckpointEvents(request.CampaignId);
+                                var moved = await outward.SubmitResponse(seat, element, entry.ActionStage, movement.Revision, movement.Refs[index]);
+                                Assert.True(moved.Status == HttpStatusCode.OK, moved.Body);
+                                var reactor = Assert.Single(seats, candidate => candidate.Audience != seat.Audience);
+                                const string reactionActor = "land.reaction";
+                                var reacting = await outward.OpenForSeatResponse(reactor);
+                                Assert.Equal(HttpStatusCode.OK, reacting.Status);
+                                var reaction = Assert.Single(ParseOpen(reacting.Body));
+                                Assert.Equal("reaction", reaction.OpeningStage);
+                                Assert.Equal("reaction", reaction.ActionStage);
+                                Assert.False(reaction.RuleNotImplemented);
+                                Assert.Equal(reactionActor, Assert.Single(reaction.Elements));
+                                var waiting = await outward.OpenForSeatResponse(seat);
+                                Assert.Equal(HttpStatusCode.OK, waiting.Status);
+                                Assert.Empty(ParseOpen(waiting.Body));
+                                var reactionOpening = await QueryOpeningForOpenSeatTest(outward, reactor, reactionActor, "reaction");
+                                var choices = reactionOpening.Visible.GetProperty("choices").EnumerateArray().ToArray();
+                                var decline = Array.FindIndex(choices, choice => choice.GetProperty("kind").GetString() == "decline");
+                                Assert.True(decline >= 0, reactionPosition);
+                                var declineRef = reactionOpening.Refs[decline];
+                                Assert.Equal(HttpStatusCode.Conflict, (await outward.OpeningResponse(seat, reactionActor, "reaction")).Status);
+                                Assert.Equal(HttpStatusCode.Conflict, (await outward.SubmitResponse(seat, reactionActor, "reaction", reactionOpening.Revision, declineRef)).Status);
+                                Assert.Equal(HttpStatusCode.Conflict, (await outward.SubmitResponse(reactor, reactionActor, "reaction", reactionOpening.Revision + 1, declineRef)).Status);
                                 VerifyReplay();
-                                Assert.True(refusedPositions.Add(position));
-
-                                async Task<(HttpStatusCode Status, int Version, string? Code)> Refuse(OwnerHttpHarness host)
-                                {
-                                    var reply = await host.SubmitResponse(seat, element, entry.ActionStage, movement.Revision, movement.Refs[index]);
-                                    Assert.True(reply.Status == HttpStatusCode.Conflict, $"{position}: {reply}");
-                                    using var json = JsonDocument.Parse(reply.Body);
-                                    Assert.Equal("rule-not-implemented", json.RootElement.GetProperty("code").GetString());
-                                    // The outward envelope carries a fresh transport trace identifier per request.
-                                    return (reply.Status, json.RootElement.GetProperty("contractVersion").GetInt32(),
-                                        json.RootElement.GetProperty("code").GetString());
-                                }
+                                var pendingFingerprint = await VerifyReactionHttp(outward, request.CampaignId);
+                                Assert.NotNull(pendingFingerprint);
+                                Assert.True(pendingFingerprint.IsVerified);
+                                await using var cold = await OwnerHttpHarness.Start(fixture.Open(clock), request.CampaignId);
+                                Assert.Equal(pendingFingerprint, await VerifyReactionHttp(cold, request.CampaignId));
+                                var reopened = await QueryOpeningForOpenSeatTest(cold, reactor, reactionActor, "reaction");
+                                Assert.Equal(reactionOpening.Revision, reopened.Revision);
+                                Assert.Equal(reactionOpening.Refs, reopened.Refs);
+                                Assert.Equal(reactionOpening.Visible.GetRawText(), reopened.Visible.GetRawText());
+                                var acceptedReaction = await cold.SubmitResponse(reactor, reactionActor, "reaction", reactionOpening.Revision, declineRef);
+                                Assert.True(acceptedReaction.Status == HttpStatusCode.OK, acceptedReaction.Body);
+                                Assert.Equal(acceptedReaction, await cold.SubmitResponse(reactor, reactionActor, "reaction", reactionOpening.Revision, declineRef));
+                                var resumed = await cold.OpenForSeatResponse(seat);
+                                Assert.Equal(HttpStatusCode.OK, resumed.Status);
+                                var completion = Assert.Single(ParseOpen(resumed.Body), item => item.OpeningStage == "stage-entry-movement-completion");
+                                var completionActor = Assert.Single(completion.Elements);
+                                var completing = await QueryOpeningForOpenSeatTest(cold, seat, completionActor, completion.OpeningStage);
+                                var completed = await cold.SubmitResponse(seat, completionActor, completion.ActionStage, completing.Revision, Assert.Single(completing.Refs));
+                                Assert.True(completed.Status == HttpStatusCode.OK, completed.Body);
+                                var reactionRecords = await fixture.ReadCanonicalCheckpointEvents(request.CampaignId);
+                                Assert.Equal(priorRecords, reactionRecords.Take(priorRecords.Length).ToArray());
+                                // Submission may also drain mandatory Breakdown, so anchor on the
+                                // trigger's committed history offset rather than the journal tail.
+                                using var trigger = JsonDocument.Parse(reactionRecords[priorRecords.Length]);
+                                using var closure = JsonDocument.Parse(reactionRecords[priorRecords.Length + 1]);
+                                using var completionEvent = JsonDocument.Parse(reactionRecords[priorRecords.Length + 2]);
+                                Assert.Equal(44, trigger.RootElement.GetProperty("contractVersion").GetInt32());
+                                Assert.Equal(60, closure.RootElement.GetProperty("contractVersion").GetInt32());
+                                Assert.Equal("declined", closure.RootElement.GetProperty("closeKind").GetString());
+                                Assert.Equal(45, completionEvent.RootElement.GetProperty("contractVersion").GetInt32());
+                                var (_, reactionReplay) = VerifyReplay();
+                                var completedFingerprint = await VerifyReactionHttp(cold, request.CampaignId);
+                                Assert.NotNull(completedFingerprint);
+                                Assert.True(completedFingerprint.IsVerified);
+                                Assert.Equal(completedFingerprint, await VerifyReactionHttp(outward, request.CampaignId));
+                                return (reactionReplay.EventStreamHash,
+                                    Convert.ToHexStringLower(SHA256.HashData(reactionRecords.SelectMany(value => value).ToArray())));
                             }
                         }
                     }
@@ -151,20 +194,6 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             }
             var (accepted, response) = await outward.SubmitResponse(owner, keyId, actionStage, opening.Revision, reference);
             Assert.True(accepted == HttpStatusCode.OK, $"{string.Join('\n', trace)}\n{accepted}: {response}");
-            if (rejectReaction && refusedPositions.Count == 4)
-            {
-                Assert.Equal("stage-entry-movement-completion", stage);
-                Assert.Equal([
-                    "land.position.operation-2.first-player.movement-and-combat.movement",
-                    "land.position.operation-2.second-player.movement-and-combat.movement",
-                    "land.position.operation-3.first-player.movement-and-combat.movement",
-                    "land.position.operation-3.second-player.movement-and-combat.movement",
-                ], refusedPositions.Order());
-                var (_, reconstruction) = VerifyReplay();
-                var records = await fixture.ReadCanonicalCheckpointEvents(request.CampaignId);
-                return (reconstruction.EventStreamHash,
-                    Convert.ToHexStringLower(SHA256.HashData(records.SelectMany(value => value).ToArray())));
-            }
         }
         throw new InvalidOperationException("Checkpoint not reached:\n" + string.Join('\n', trace));
 

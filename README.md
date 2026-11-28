@@ -106,7 +106,7 @@ outside any UI.
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands and events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Synthetic HTTP rule path | Turn 1 through open Turn 2 Reserve | Fresh synthetic campaigns traverse all 112 Turn 1 positions, both sides of all three Operation Stages, then End of Turn and the next prelude. Cold replay matches live at every tested boundary. |
-| Combat and continual turn cycle | Bounded native implementation | Real HTTP Combat owner rounds work at Stages 2 and 3 (#658), with stage-local movement accounting (#654). Later-stage Reaction triggers and later-turn acceptance remain unsupported; this is not public Combat certification. |
+| Combat and continual turn cycle | Bounded native implementation | Real HTTP Combat owner rounds work at Stages 2 and 3 (#658), with stage-local movement accounting (#654). Native Reaction is admitted across both roles in Stages 2 and 3; later-turn acceptance remains unsupported; this is not public Combat certification. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, and bounded Combat Runner adoption (020–023); separate from HTTP proof. |
 | Load harness | Working, synthetic only | Standalone in-process and HTTP drivers, SQLite/Postgres stores, policy/coverage reporting and optional operator state verification. |
 | User interface (Maproom) | Angular foundation, local read-only preview, plus a wired but unreachable action-submission path | A synthetic fixture study and a local, URL-backed campaign read mode. A real HTTP action-submission adapter and a real backend trust signal (bootstrap's `actionSubmissionTrusted`) are now wired end to end into `canSubmit` and covered by a browser test. No mounted route yet advances a campaign past its first System-only decision, so the bundled fixture never reaches a human decision point: nothing is actually clickable yet. |
@@ -125,7 +125,7 @@ What you can do today:
 - use the standalone load harness to exercise the open Turn 2 Reserve checkpoint
 
 **You cannot yet play a public campaign end to end.** Turn 2 Reserve acceptance and Movement,
-Turns 3–6, later-stage Reaction activation, full supply/victory, real scenario content, executor migration,
+Turns 3–6, later-turn Reaction proof, full supply/victory, real scenario content, executor migration,
 and end-user lifecycle acceptance remain open. The original Rules9 Exercise Runner profiles stop at
 Combat entry; bounded Combat adoption (Tasks 020–023) is a separate developer path, not proof of
 full HTTP play or a six-turn Runner.
@@ -255,7 +255,7 @@ grouped control are unadmitted, and general cross-sheet movement remains blocked
 
 ### Synthetic HTTP turn-boundary checkpoint
 
-As of 2026-11-26 (main through #669), the real Development/loopback HTTP Host can
+As of 2026-11-28, the real Development/loopback HTTP Host can
 create a fresh synthetic campaign, discover openings for both seats, traverse all 112
 Turn 1 catalog positions across Operation Stages 1–3, and cross End of Turn through
 Turn 2 initiative declaration and weather to the **open, unaccepted** Reserve Designation.
@@ -268,13 +268,13 @@ and bounded real Combat owner rounds (#658) have separate replay tests. The comb
 GT1 fixture (#669) additionally proves selected owner outcomes and seeded full-turn replay.
 
 This is a synthetic engine checkpoint, not a complete scenario, not exhaustive legal-branch
-coverage, and not an end-user release. Native Reaction-triggering moves outside the initial-turn
-Stage 1 second-side window refuse deterministically (`rule-not-implemented`, HTTP 409,
-#656). The retained window now uses the native V59 move and V60 closure events through
-Core and the authenticated `reaction` owner opening. Discovery offers the reacting seat its
-choices and leaves the other seat waiting; no-eligible windows close as System steps. Native
-Host journal steps use `native-reaction` (contract 150), leaving the legacy `contact-reaction`
-contract 50 unchanged. Later-stage triggering-move activation remains tracked by #655. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
+coverage, and not an end-user release. Native Reaction-triggering moves open the retained window for both roles in Stages 2 and 3,
+using native V59 move and V60 closure events through Core and the authenticated `reaction`
+owner opening. Discovery offers the reacting seat its choices and leaves the other seat waiting;
+no-eligible windows close as System steps, including the exact seed-6 retained prefix (#661).
+Native Host journal steps use `native-reaction` (contract 150), leaving legacy `contact-reaction`
+contract 50 unchanged. Reactor-opened chains remain explicitly unsupported. Turn 2 Reserve
+acceptance/Movement and Turns 3–6 remain open,
 as do source-backed campaign admission, supply/victory rulings, executor migration, release
 packaging and Maproom play. The intended distribution excludes source-derived data; the
 [content-pack separation design](docs/work/plans/2026-11-25-content-pack-separation-design.md)
