@@ -2,8 +2,8 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Exercises.Sequencing;
-using Cna.Core.Rules;
 using Cna.Core.Hosting;
+using Cna.Core.Rules;
 using Cna.Core.Tests.Exercises.Sequencing;
 
 namespace Cna.Core.Tests.Exercises;
