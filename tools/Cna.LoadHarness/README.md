@@ -421,3 +421,42 @@ owner loop fails. In the reported #660 PostgreSQL runs (N=1, N=16 twice), all ca
 the open checkpoint and verification succeeded; repeats matched decision and reconstruction
 hashes but not persisted chain hashes (fresh opaque references). Do not equate full fingerprint
 object equality with deterministic reconstructed state. No six-turn or general capacity claim follows.
+
+### Opt-in synthetic capacity probe (not required PR CI)
+
+The normal build does not compile the generator or register probe-only setup/content IDs.
+Use a separate Release build with `CAPACITY_PROBE` defined. Do not deploy that build.
+The probe uses invented rectangular hex graphs (400 or 7,000 locations), a deterministic
+synthetic pack and the existing in-process Orleans/SQLite Host journal, with no API gate changes.
+The v6 validator accepts only one same-side battalion per location; adjacent occupied groups
+exercise permitted contact density, not unsupported oversized stacks. No source data is loaded.
+
+```sh
+dotnet build tools/Cna.LoadHarness/Cna.LoadHarness.csproj -c Release -p:DefineConstants=CAPACITY_PROBE
+dotnet artifacts/bin/Cna.LoadHarness/release/Cna.LoadHarness.dll --capacity-probe 60 105 /tmp/capacity-60.jsonl 20 1
+dotnet artifacts/bin/Cna.LoadHarness/release/Cna.LoadHarness.dll --capacity-probe 250 105 /tmp/capacity-250.jsonl 20 1
+dotnet artifacts/bin/Cna.LoadHarness/release/Cna.LoadHarness.dll --capacity-probe 1000 105 /tmp/capacity-1000.jsonl 20 1
+```
+
+Run sequentially, with new output filenames; the arguments are size, accepted owner submission
+limit (0 for measurements only), output file, warm discovery samples (default 20), and fresh creation replicas (default 1;
+use 20 for a cold plus 19 warm samples). An optional final `sample` mode uses the existing
+visible choice classifier to measure a single movement and positive combat selection if reachable,
+opening only one advertised element per stage and preferring completion offers to avoid exhausting
+optional choices; it is explicitly separate from the full-policy prefix series (default `full`). Each row is flushed before/after a measurement, so an
+interrupted expensive call has a durable start marker. Journal rows contain only byte lengths
+and kind, not canonical payloads. The random-legal-full policy samples the entire discovered
+owner-visible action pool without replacement on rule-not-implemented rejection. Unlike the
+regular harness, this probe has no terminal boundary or legacy fallback ladder; it stops on
+no accepted action, cancellation or its explicit step limit. No state or private contacts are
+used to choose actions. A stopped run is not a successful terminal campaign.
+
+Payload sizes are JSON serialization of the in-process discovery result and canonical visible
+bytes for an individual opening, not HTTP wire sizes. Allocated bytes are process-wide GC
+allocation deltas, not live heap or retained memory. Resident bytes are sampled at call boundaries;
+use an OS process peak-RSS measurement as a supplement where .NET reports zero peak. Cold replay
+opens a new journal handle (not a cold OS page cache) and separately reconstructs Core state.
+Discovery counts advertised successful drafts; rejected draft attempts are not instrumented.
+The probe is informational, not a performance assertion or CI gate. Run on an isolated machine
+and timebox if creation/discovery is already orders of magnitude beyond the planning guards.
+Rebuild without `CAPACITY_PROBE` before running ordinary tests or shipping a Host.

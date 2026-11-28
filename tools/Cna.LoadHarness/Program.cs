@@ -10,6 +10,10 @@ if (args is ["--help"])
 
 try
 {
+#if CAPACITY_PROBE
+    if (args.Length > 0 && args[0] == "--capacity-probe")
+        return await CapacityProbe.RunAsync(args[1..]).ConfigureAwait(false);
+#endif
     if (args is ["--prepare-demo"])
     {
         // Reuse the same fixture, real HTTP creation, and seat redemption as the load runner,

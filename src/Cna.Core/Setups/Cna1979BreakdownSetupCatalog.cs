@@ -40,6 +40,14 @@ internal static class Cna1979BreakdownSetupCatalog
     public static bool TryGet(string? setupId,
         [NotNullWhen(true)] out CampaignSetupDefinitionV6? definition)
     {
+#if CAPACITY_PROBE
+        foreach (var size in CapacityProbeCatalog.Sizes)
+            if (setupId == CapacityProbeCatalog.SetupId(size))
+            {
+                definition = CreateSetup(setupId, "Capacity probe", CapacityProbeCatalog.Get(size), "capacity-probe");
+                return true;
+            }
+#endif
         definition = Definitions.SingleOrDefault(value => value.SetupId == setupId);
         return definition is not null;
     }
