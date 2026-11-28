@@ -29,7 +29,7 @@ public static class CampaignOpenSeatCatalog
     ];
 
     private static readonly string[] StageEntryReserve = ["stage-entry-reserve", "stage-entry-movement", "stage-entry-movement-completion"];
-    private static readonly string[] StageEntryMove = ["stage-entry-movement", "stage-entry-movement-completion"];
+    private static readonly string[] StageEntryMove = ["stage-entry-movement", "stage-entry-movement-completion", "reaction"];
     private static readonly string[] StageEntryTail = ["reserve-release", "cycle-control", "truck-convoy-pass", "post-combat-pass"];
 
     /// <summary>
@@ -123,6 +123,10 @@ public static class CampaignOpenSeatCatalog
         // decision at the cursor. In particular the first role's final pass leaves an Assault
         // subtype at the second role's Reserve Designation. Use the exact catalog position
         // for Stages 2 and 3, including the inter-stage declaration boundary.
+        // Reaction overlays the suspended catalog position rather than advancing its cursor.
+        // Probing that position would offer the phasing route instead of the reacting seat.
+        if (pending is NativeReactionPending)
+            return new CampaignOpenSeatCandidates(false, row.StageNames, null);
         var gameTurn = CampaignGameTurn.CurrentGameTurn(session);
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
         var position = Cna1979LandSequence.CreateTurn(gameTurn).SingleOrDefault(p => p.PositionId == checkpoint.PositionId);

@@ -179,8 +179,11 @@ public sealed class TurnBoundaryIntegrationTests
             _ => session.WithThirdStageSecondMove(candidate, projected, contacts),
         };
         Assert.True(CampaignExercises.Reconstruct(detached).IsVerified);
-        Assert.Throws<CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException>(() =>
-            CampaignHostAdapter.QueryReactionOwnerDraft(detached, audience));
+        // R3 wires detached native owner openings, without enabling the later-stage
+        // triggering submission tested below. The phasing seat remains waiting.
+        Assert.Throws<InvalidOperationException>(() => CampaignHostAdapter.QueryReactionOwnerDraft(detached, audience));
+        var reactor = audience == CampaignActionAudience.Axis ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        Assert.NotEmpty(CampaignHostAdapter.QueryReactionOwnerDraft(detached, reactor).PrivateActionIds);
         var checkpoint = CampaignExercises.QueryCheckpoint(session);
         var before = CampaignExercises.Reconstruct(session);
         Assert.True(before.IsVerified);

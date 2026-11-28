@@ -697,6 +697,10 @@ internal sealed partial class CampaignDurableAuthorityJournal
             var query = CampaignHostAdapter.QuerySystem(head.Session);
             if (!query.IsSuccessful || query.ActionSet is not { } set || set.Candidates.Count == 0)
                 return head;
+            // Native timeout/unavailable requires an explicit System submission; an owner
+            // opening must survive ordinary discovery/drain while its decision is actionable.
+            if (CampaignHostAdapter.IsNativeReactionPending(head.Session) && set.Candidates.Count > 1)
+                return head;
             var candidate = set.Candidates.Count == 1 ? set.Candidates[0]
                 : OneAmbiguousForcedSystemCandidate(set.Candidates);
             var submission = new CampaignActionSubmission(1, set.CampaignId, set.StateVersion,
@@ -705,7 +709,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
             if (!result.IsAccepted)
                 throw new InvalidOperationException("Core rejected its own forced System step.");
             head = PersistAccepted(connection, transaction, campaignId, head,
-                CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
+                CampaignHostAdapter.IsNativeReactionPending(head.Session)
+                    ? CampaignHostAcceptedStep.NativeReactionKind : CampaignHostAcceptedStep.LegacyKind,
+                null, null, null, null, submission, result);
             // A drained step (e.g. CompleteBreakdownSegmentAction, following Movement Segment
             // Completion) can be exactly the step that first makes a Combat Selection round
             // startable -- the same TryInitializeSelectionRound call every other completion
@@ -890,7 +896,9 @@ internal sealed partial class CampaignDurableAuthorityJournal
             }
         }
         var acceptedHead = PersistAccepted(connection, transaction, campaignId, head,
-            CampaignHostAcceptedStep.LegacyKind, null, null, null, null, submission, result);
+            CampaignHostAdapter.IsNativeReactionPending(head.Session)
+                ? CampaignHostAcceptedStep.NativeReactionKind : CampaignHostAcceptedStep.LegacyKind,
+            null, null, null, null, submission, result);
         if (selectionRound is not null)
         {
             UpdateSelectionRound(connection, transaction, selectionRound with { Status = "completed" });

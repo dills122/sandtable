@@ -1031,9 +1031,13 @@ passes do not implement those activities. V43 then lets the second side designat
 eligible units in the settled World and complete Reserve Designation. V44 permits
 an eligible second-side element to move one hex and stop, deriving contacts and
 retaining any Reaction window. V45 records explicit completion to Breakdown
-when no Reaction is pending. V59 and V60 add detached native Reaction movement and closure
+when no Reaction is pending. V59 and V60 add native Reaction movement and closure
 contracts over World V6, with strict predecessor/world hash binding and the retained window.
-Session and Host continuation remain unsupported until the following slices. See the
+The native pending overlay drives the existing `reaction` owner opening; only the reacting
+seat has choices. The Host persists those submissions and native System closures as
+`native-reaction` contract 150, distinct from legacy contract 50. Discovery previews forced
+no-eligible closure without writing; timeout and unavailable remain explicit System reasons.
+Later-stage triggering moves still refuse until E4b activation. See the
 [post-combat pass contract](docs/specs/native-post-combat-pass-v41.md) and
 [second-side Reserve](docs/specs/native-second-reserve-v43.md) and
 [Movement](docs/specs/native-second-movement-v44.md) contracts.
