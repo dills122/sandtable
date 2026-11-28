@@ -34,9 +34,7 @@ internal static class CampaignReactingElementMovedV2Factory
             : CampaignBreakdownRoute.Create(prior.CampaignId, prior.RulesetHash, checked(prior.StateVersion + 1),
                 element.ElementId, representation.RepresentationId, window.ReactingSide, input.OriginLocationId,
                 input.DestinationLocationId, content.BreakdownVehicleCohort is { } cohort ? [cohort.CohortId] : []);
-        var windowAfter = new CampaignReactionWindow(window.WindowId, window.TriggerCommittedStateVersion,
-            window.PhasingSide, window.ReactingSide, window.ReactingPosition, window.TriggerAuthority,
-            window.ApparentTrigger, window.FrozenOpportunities, window.ResolvedOpportunityIds, opportunity.OpportunityId);
+        var windowAfter = ActivateParticipant(window, opportunity.OpportunityId);
         return new ReactingElementMovedV2(prior.CampaignId, checked(prior.StateVersion + 1), prior.StateVersion,
             input.FromPositionId, prior.CurrentPosition.SequenceContext.GameTurn, prior.CurrentPosition.SequenceContext.OperationStage,
             input.ActingSide, input.ActionId, input.SubmittedWindowId, input.SubmittedOpportunityId,
@@ -53,11 +51,7 @@ internal static class CampaignReactingElementMovedV2Factory
     {
         RequireContext(prior, artifact, scenario);
         var window = prior.ReactionWindow!;
-        if (window.ResolvedOpportunityIds.Contains(opportunityId)
-            || (window.ActiveOpportunityId is { } active && active != opportunityId))
-            throw Unsupported("Only an unresolved current Reaction participant may move.");
-        var opportunity = window.FrozenOpportunities.SingleOrDefault(x => x.OpportunityId == opportunityId)
-            ?? throw Unsupported("Unknown frozen Reaction opportunity.");
+        var opportunity = RequireOpportunity(window, opportunityId);
         var options = MoveOptions(prior, artifact, scenario, opportunity);
         var option = options.SingleOrDefault(x => x.DestinationLocationId == destination)
             ?? throw Unsupported("The Reaction destination is not currently legal.");
@@ -74,22 +68,46 @@ internal static class CampaignReactingElementMovedV2Factory
     internal static ObservedReactionMoveOption[] MoveOptions(CampaignSnapshotV11 prior,
         ContentPackV6Artifact artifact, ContentScenario scenario, CampaignFrozenReactionOpportunity opportunity)
     {
+        var route = ((CampaignBreakdownFlow.Reacting)prior.BreakdownFlow).ReactorRoute;
+        return MoveOptions(prior.World, artifact, scenario, prior.ReactionWindow!, opportunity,
+            route is null ? null : (route.ElementId, route.RepresentationId));
+    }
+
+    internal static CampaignFrozenReactionOpportunity RequireOpportunity(CampaignReactionWindow window,
+        CampaignReactionOpportunityId opportunityId)
+    {
+        if (window.ResolvedOpportunityIds.Contains(opportunityId)
+            || (window.ActiveOpportunityId is { } active && active != opportunityId))
+            throw Unsupported("Only an unresolved current Reaction participant may move.");
+        return window.FrozenOpportunities.SingleOrDefault(x => x.OpportunityId == opportunityId)
+            ?? throw Unsupported("Unknown frozen Reaction opportunity.");
+    }
+
+    internal static CampaignReactionWindow ActivateParticipant(CampaignReactionWindow window,
+        CampaignReactionOpportunityId opportunityId) => new(window.WindowId, window.TriggerCommittedStateVersion,
+        window.PhasingSide, window.ReactingSide, window.ReactingPosition, window.TriggerAuthority,
+        window.ApparentTrigger, window.FrozenOpportunities, window.ResolvedOpportunityIds, opportunityId);
+
+    internal static ObservedReactionMoveOption[] MoveOptions(CampaignWorldSnapshotV6 world, ContentPackV6Artifact artifact,
+        ContentScenario scenario, CampaignReactionWindow window, CampaignFrozenReactionOpportunity opportunity,
+        (string ElementId, string RepresentationId)? activeBinding,
+        Func<ContentCombatElement, CampaignElementStateV5, ContentHexEdge, ContentHex, IReadOnlyList<CampaignBreakdownStep>>? accounting = null)
+    {
         var definition = artifact.Definition.LegacyDefinition;
         var id = opportunity.ReactingRepresentation.BoundElementIds.Single();
         var content = definition.Elements.Single(x => x.ElementId == id);
-        var element = prior.World.Elements.Single(x => x.ElementId == id);
-        var representation = prior.World.Representations.Single(x => x.RepresentationId == opportunity.ReactingRepresentation.RepresentationId);
+        var element = world.Elements.Single(x => x.ElementId == id);
+        var representation = world.Representations.Single(x => x.RepresentationId == opportunity.ReactingRepresentation.RepresentationId);
         var facts = artifact.Definition.ElementCombatFacts.Single(x => x.ElementId == id);
-        var flow = (CampaignBreakdownFlow.Reacting)prior.BreakdownFlow;
         if (Cna1979Combat.FindClassification(facts.CombatClassificationId)?.Kind != ZocCombatClassificationKind.CombatUnit
-            || content.SideId != CampaignSnapshotSerializer.FormatSide(prior.ReactionWindow!.ReactingSide)
+            || content.SideId != CampaignSnapshotSerializer.FormatSide(window.ReactingSide)
             || element.ReserveStatus != CampaignElementReserveStatus.None
             || element.OperationalState.CohesionLevel <= Cna1979Zoc.MinimumExclusiveCohesion
-            || (flow.ReactorRoute is { } route && (route.ElementId != id || route.RepresentationId != representation.RepresentationId))
-            || (flow.ReactorRoute is null && element.CurrentLocationId != opportunity.ReactingRepresentation.CurrentLocationId))
+            || (activeBinding is { } route && (route.ElementId != id || route.RepresentationId != representation.RepresentationId))
+            || (activeBinding is null && element.CurrentLocationId != opportunity.ReactingRepresentation.CurrentLocationId))
             return [];
-        var controlled = CampaignElementMovedV3Factory.DeriveControlledLocationIds(prior.World, artifact, scenario, prior.ReactionWindow!.PhasingSide);
-        var enemyLocations = prior.World.Elements.Join(definition.Elements, x => x.ElementId, x => x.ElementId,
+        var controlled = CampaignElementMovedV3Factory.DeriveControlledLocationIds(world, artifact, scenario, window.PhasingSide);
+        var enemyLocations = world.Elements.Join(definition.Elements, x => x.ElementId, x => x.ElementId,
                 (state, immutable) => (state, immutable))
             .Where(x => x.immutable.SideId != content.SideId).Select(x => x.state.CurrentLocationId).ToHashSet(StringComparer.Ordinal);
         if (controlled.Contains(element.CurrentLocationId, StringComparer.Ordinal) || enemyLocations.Contains(element.CurrentLocationId)) return [];
@@ -101,13 +119,14 @@ internal static class CampaignReactingElementMovedV2Factory
             var destination = definition.Locations.Single(x => x.LocationId == destinationId);
             try
             {
-                var movement = CampaignElementMovedV3Factory.CalculateMovement(prior, definition, content, element,
+                var movement = CampaignElementMovedV3Factory.CalculateMovement(world, definition, content, element,
                     edge, destination, element.CurrentLocationId, destinationId);
                 var movedRepresentation = new CampaignMapRepresentationState(representation.RepresentationId,
                     destinationId, representation.BindingKind, representation.BoundElementIds);
-                var world = CampaignElementMovedV3Factory.ProjectMoveForAuthority(prior.World, element,
-                    movedRepresentation, movement.ExpendedAfter, [], element.OperationalState.MovementEnded);
-                if (CampaignWorldV6Validator.IsValid(world, artifact, scenario))
+                var projected = CampaignElementMovedV3Factory.ProjectMoveForAuthority(world, element,
+                    movedRepresentation, movement.ExpendedAfter, accounting?.Invoke(content, element, edge, destination) ?? [],
+                    element.OperationalState.MovementEnded);
+                if (CampaignWorldV6Validator.IsValid(projected, artifact, scenario))
                     result.Add(new ObservedReactionMoveOption(element.CurrentLocationId, destinationId, movement.ActionCost));
             }
             catch (Exception exception) when (exception is ArgumentException or InvalidOperationException or ArithmeticException)
@@ -118,11 +137,16 @@ internal static class CampaignReactingElementMovedV2Factory
 
     internal static IReadOnlyList<CampaignBreakdownStep> CalculateAccounting(CampaignSnapshotV11 prior,
         ContentPackV6Artifact artifact, ContentCombatElement content, CampaignElementStateV5 element,
-        ContentHexEdge edge, ContentHex destination) => content.BreakdownVehicleCohort is { } cohort
-        ? [CampaignBreakdownAccounting.Calculate(cohort,
-            element.OperationalState.VehicleBreakdownState ?? throw Unsupported("Missing vehicle ledger."), edge,
-            destination, element.CurrentLocationId, CampaignSnapshotV11Validator.ApplicableWeather(prior, artifact, destination.LocationId))]
-        : [];
+        ContentHexEdge edge, ContentHex destination) => CalculateAccounting(content, element, edge, destination,
+            () => CampaignSnapshotV11Validator.ApplicableWeather(prior, artifact, destination.LocationId));
+
+    internal static IReadOnlyList<CampaignBreakdownStep> CalculateAccounting(ContentCombatElement content,
+        CampaignElementStateV5 element, ContentHexEdge edge, ContentHex destination, Func<BreakdownWeatherKind> weather) =>
+        content.BreakdownVehicleCohort is { } cohort
+            ? [CampaignBreakdownAccounting.Calculate(cohort,
+                element.OperationalState.VehicleBreakdownState ?? throw Unsupported("Missing vehicle ledger."), edge,
+                destination, element.CurrentLocationId, weather())]
+            : [];
 
     private static void RequireContext(CampaignSnapshotV11 prior, ContentPackV6Artifact artifact, ContentScenario scenario)
     {

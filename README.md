@@ -269,7 +269,8 @@ coverage, and not an end-user release. Native Reaction-triggering moves outside 
 Stage 1 second-side window refuse deterministically (`rule-not-implemented`, HTTP 409,
 #656); that retained window is explicitly marked unsupported in discovery (#666). #655 tracks
 native Reaction resolution/closure and resumption of the interrupted Movement occurrence; the
-E4b design is not implemented. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
+E4b Core event slice adds detached V59 move and V60 closure factories and canonical codecs;
+session, Host, and interrupted-Movement continuation are not yet wired. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
 as do source-backed campaign admission, supply/victory rulings, executor migration, release
 packaging and Maproom play. The intended distribution excludes source-derived data; the
 [content-pack separation design](docs/work/plans/2026-11-25-content-pack-separation-design.md)

@@ -25,6 +25,8 @@ internal static class CampaignCurrentEventSerializer
         CampaignNativePostCombatPassV42 passed => passed.SerializeCanonical(),
         CampaignNativeSecondReserveV43 reserve => reserve.SerializeCanonical(),
         CampaignNativeSecondMoveV44 movement => movement.SerializeCanonical(),
+        CampaignNativeReactionMoveV59 reaction => reaction.SerializeCanonical(),
+        CampaignNativeReactionClosedV60 reaction => reaction.SerializeCanonical(),
         CampaignNativeSecondMovementCompletedV45 completed => completed.SerializeCanonical(),
         CampaignNativeSecondBreakdownV46 breakdown => breakdown.SerializeCanonical(),
         // #394 gap 1/3: second-side Combat decision, keyed to (World, Position)
@@ -99,6 +101,8 @@ internal static class CampaignCurrentEventSerializer
             "post-combat-phase-passed" => CampaignNativePostCombatPassV42.Deserialize(canonicalJson),
             "second-reserve-decided" => CampaignNativeSecondReserveV43.Deserialize(canonicalJson),
             "second-element-moved-and-stopped" => CampaignNativeSecondMoveV44.Deserialize(canonicalJson),
+            CampaignNativeReactionMoveV59.EventTypeId => CampaignNativeReactionMoveV59.Deserialize(canonicalJson),
+            CampaignNativeReactionClosedV60.EventTypeId => CampaignNativeReactionClosedV60.Deserialize(canonicalJson),
             "second-movement-completed" => CampaignNativeSecondMovementCompletedV45.Deserialize(canonicalJson),
             "second-breakdown-completed" => CampaignNativeSecondBreakdownV46.Deserialize(canonicalJson),
             "second-combat-selection-decided" => CampaignNativeSecondCombatDecisionV47.Deserialize(canonicalJson),

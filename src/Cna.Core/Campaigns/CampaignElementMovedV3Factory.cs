@@ -255,7 +255,7 @@ internal static class CampaignElementMovedV3Factory
             null);
     }
 
-    private static CampaignMapRepresentationState[]
+    internal static CampaignMapRepresentationState[]
         FindAdjacentCombatRepresentations(
             CampaignWorldSnapshotV6 world,
             ContentPackV6Artifact artifact,
