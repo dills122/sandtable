@@ -1,10 +1,11 @@
 # RC checklist — October 24, 2026
 
-> **2026-11-26 engine checkpoint:** Fresh synthetic HTTP campaign proof now covers all 112
+> **2026-11-28 engine checkpoint:** Fresh synthetic HTTP campaign proof now covers all 112
 > Turn 1 positions, both acting sides in all three stages and End of Turn through the next
 > turn's open, unaccepted Reserve (#652). V58 stage ledger and bounded later-stage real
-> Combat rounds are implemented (#654, #658); Reaction remains an explicit unsupported
-> gap (#655, #656, #666). No Turn 2 Reserve acceptance or complete six-turn campaign.
+> Combat rounds are implemented (#654, #658); native Reaction opens and closes for both
+> Stage 2/3 roles (#655), with reactor-opened chains still unsupported. No Turn 2 Reserve
+> acceptance or complete six-turn campaign.
 > All playable-MVP gates below remain open where indicated. Earlier dated evidence retains
 > its original cut; see the [roadmap](../../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
 

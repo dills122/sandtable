@@ -1037,7 +1037,8 @@ The native pending overlay drives the existing `reaction` owner opening; only th
 seat has choices. The Host persists those submissions and native System closures as
 `native-reaction` contract 150, distinct from legacy contract 50. Discovery previews forced
 no-eligible closure without writing; timeout and unavailable remain explicit System reasons.
-Later-stage triggering moves still refuse until E4b activation. See the
+Native triggering moves are admitted across both roles in Stages 2 and 3; reactor-opened
+chains remain unsupported. See the
 [post-combat pass contract](docs/specs/native-post-combat-pass-v41.md) and
 [second-side Reserve](docs/specs/native-second-reserve-v43.md) and
 [Movement](docs/specs/native-second-movement-v44.md) contracts.

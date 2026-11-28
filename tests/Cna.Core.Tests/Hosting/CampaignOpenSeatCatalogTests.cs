@@ -89,11 +89,16 @@ public sealed class CampaignOpenSeatCatalogTests
     public void NativeReactionPendingHasOnlyTheReactionRoute()
     {
         Assert.Equal(["reaction"], CampaignOpenSeatCatalog.Rows[typeof(NativeReactionPending)].StageNames);
-        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(SecondMovePending)].StageNames);
-        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(StageEntryMovePending)].StageNames);
-        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(StageEntrySecondMovePending)].StageNames);
-        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(ThirdStageMovePending)].StageNames);
-        Assert.Contains("reaction", CampaignOpenSeatCatalog.Rows[typeof(ThirdStageSecondMovePending)].StageNames);
+        Assert.Equal(["second-movement", "second-movement-completion", "reaction"],
+            CampaignOpenSeatCatalog.Rows[typeof(SecondMovePending)].StageNames);
+        Assert.Equal(["stage-entry-movement", "stage-entry-movement-completion", "reaction"],
+            CampaignOpenSeatCatalog.Rows[typeof(StageEntryMovePending)].StageNames);
+        Assert.Equal(["stage-entry-movement", "stage-entry-movement-completion", "reaction"],
+            CampaignOpenSeatCatalog.Rows[typeof(StageEntrySecondMovePending)].StageNames);
+        Assert.Equal(["stage-entry-movement", "stage-entry-movement-completion", "reaction"],
+            CampaignOpenSeatCatalog.Rows[typeof(ThirdStageMovePending)].StageNames);
+        Assert.Equal(["stage-entry-movement", "stage-entry-movement-completion", "reaction"],
+            CampaignOpenSeatCatalog.Rows[typeof(ThirdStageSecondMovePending)].StageNames);
     }
 
     [Fact]

@@ -91,7 +91,7 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 accepted = await outward.SubmitResponse(other, actor, "reaction", revision, reference);
                 Assert.True(accepted.Status == HttpStatusCode.OK, accepted.Body);
                 Assert.Equal(accepted, await outward.SubmitResponse(other, actor, "reaction", revision, reference));
-                liveFingerprint = await VerifyHttp(outward);
+                liveFingerprint = await VerifyReactionHttp(outward, request.CampaignId);
                 Assert.NotNull(liveFingerprint);
                 Assert.True(liveFingerprint.IsVerified);
             }
@@ -105,20 +105,36 @@ public sealed partial class CampaignDurableAuthorityJournalTests
             await using var reopened = await OwnerHttpHarness.Start(cold, request.CampaignId);
             Assert.Equal(accepted, await reopened.SubmitResponse(other, actor, "reaction", revision, reference));
             Assert.Equal(HttpStatusCode.Conflict, (await reopened.SubmitResponse(mover, actor, "reaction", revision, reference)).Status);
-            Assert.Equal(liveFingerprint, await VerifyHttp(reopened));
-        }
+            Assert.Equal(liveFingerprint, await VerifyReactionHttp(reopened, request.CampaignId));
 
-        async Task<CampaignVerification?> VerifyHttp(OwnerHttpHarness harness)
-        {
-            using var client = new HttpClient { BaseAddress = harness.Address };
-            client.DefaultRequestHeaders.Add("X-Sandtable-Operator", OperatorSecret);
-            client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
-            using var response = await client.GetAsync($"/api/v2/campaigns/{request.CampaignId}/verification",
-                TestContext.Current.CancellationToken);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return JsonSerializer.Deserialize<CampaignVerification>(await response.Content.ReadAsStringAsync(
-                TestContext.Current.CancellationToken), JsonSerializerOptions.Web);
+            // An eligible Stage 1 second-side window resumes its suspended Movement
+            // after the explicit decline, just as the seed-6 empty window does after auto-close.
+            var resumed = await reopened.OpenForSeatResponse(mover);
+            Assert.Equal(HttpStatusCode.OK, resumed.Status);
+            var completion = Assert.Single(ParseOpen(resumed.Body), entry => entry.OpeningStage == "second-movement-completion");
+            Assert.False(completion.RuleNotImplemented);
+            var completionActor = Assert.Single(completion.Elements);
+            var completionOpening = await QueryOpeningForOpenSeatTest(reopened, mover, completionActor, completion.OpeningStage);
+            var completed = await reopened.SubmitResponse(mover, completionActor, completion.ActionStage,
+                completionOpening.Revision, Assert.Single(completionOpening.Refs));
+            Assert.True(completed.Status == HttpStatusCode.OK, completed.Body);
+            var finalFingerprint = await VerifyReactionHttp(reopened, request.CampaignId);
+            Assert.NotNull(finalFingerprint);
+            Assert.True(finalFingerprint.IsVerified);
+            Assert.Equal(finalFingerprint, fixture.Open(clock).VerifyReadOnly(request.CampaignId));
         }
+    }
+
+    private static async Task<CampaignVerification?> VerifyReactionHttp(OwnerHttpHarness harness, string campaignId)
+    {
+        using var client = new HttpClient { BaseAddress = harness.Address };
+        client.DefaultRequestHeaders.Add("X-Sandtable-Operator", OperatorSecret);
+        client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
+        using var response = await client.GetAsync($"/api/v2/campaigns/{campaignId}/verification",
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        return JsonSerializer.Deserialize<CampaignVerification>(await response.Content.ReadAsStringAsync(
+            TestContext.Current.CancellationToken), JsonSerializerOptions.Web);
     }
 
     [Fact]

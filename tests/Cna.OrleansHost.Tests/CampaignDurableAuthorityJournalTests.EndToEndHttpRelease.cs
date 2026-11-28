@@ -136,21 +136,25 @@ public sealed partial class CampaignDurableAuthorityJournalTests
         var (secondReserveRevision, secondReserveRefs, _) = await Query(other, "land.second-reserve", "second-reserve");
         await Submit(other, "land.second-reserve", "second-reserve", secondReserveRevision, secondReserveRefs[^1]);
 
-        // 13. Second side: Movement -- a real per-element move, if one is offered, checking
-        // after it for a genuine Reaction window and confirming the explicit rule-not-implemented
-        // rejection fires over HTTP (not a crash) rather than assuming this fixture never opens
-        // one.
+        // 13. Second side: Movement, resolving any offered Reaction before completion.
         var (secondMoveRevision, secondMoveRefs, _) = await Query(other, otherInfantry, "second-movement");
         if (secondMoveRefs.Length > 0)
         {
             await Submit(other, otherInfantry, "second-movement", secondMoveRevision, secondMoveRefs[0]);
             var (reactionStatus, reactionBody) = await outward.OpeningResponse(acting, "land.reaction", "reaction");
-            if (reactionStatus == HttpStatusCode.Conflict)
+            if (reactionStatus == HttpStatusCode.OK)
             {
+                var reaction = await QueryOpeningForOpenSeatTest(outward, acting, "land.reaction", "reaction");
+                var reactionChoices = reaction.Visible.GetProperty("choices").EnumerateArray().ToArray();
+                var decline = Array.FindIndex(reactionChoices, choice => choice.GetProperty("kind").GetString() == "decline");
+                Assert.True(decline >= 0);
+                await Submit(acting, "land.reaction", "reaction", reaction.Revision, reaction.Refs[decline]);
+            }
+            else
+            {
+                Assert.Equal(HttpStatusCode.Conflict, reactionStatus);
                 using var reactionJson = JsonDocument.Parse(reactionBody);
-                var code = reactionJson.RootElement.GetProperty("code").GetString();
-                Assert.True(code is "rule-not-implemented" or "unavailable",
-                    $"Unexpected Reaction rejection code: {code}");
+                Assert.Equal("unavailable", reactionJson.RootElement.GetProperty("code").GetString());
             }
         }
 
