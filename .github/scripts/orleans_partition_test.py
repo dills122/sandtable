@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import tempfile
+import sys
 import unittest
 from unittest import mock
 
@@ -128,6 +129,69 @@ class ExecuteTests(unittest.TestCase):
                                         discoverer=lambda: self.listing, weights_path=custom), 0)
             self.assertEqual(plan.call_args.args[1], {T + 'B.Heavy': 100.0})
         self.assertEqual(op.WEIGHTS.read_text(), '{}')
+
+    def test_measured_slow_methods_have_weights(self):
+        weights = json.loads(Path(op.__file__).with_name('orleans-weights.json').read_text())
+        for method, measured in {
+            'LaterStageCombatSelectionRunsThroughHttp': 431.2,
+            'FreshHttpCampaignReachesTurnTwoCheckpoint': 100.4,
+            'TwoHttpSeatsCompleteStageThreeWithDiscoveryAndColdReplay': 88.3,
+            'CombatTurnBoundaryOwnerRoundsReplayAndReachTurnTwo': 77.6,
+            'AdvertisedTruckSelectionContinuationIsAccepted': 54.2,
+            'HttpTurnBoundaryReachesLaterTurnReserveOpening': 51.8,
+            'TwoHttpSeatsCompleteStageTwoWithDiscoveryAndColdReplay': 43.8,
+        }.items():
+            self.assertGreaterEqual(weights.get(T + 'CampaignDurableAuthorityJournalTests.' + method, 0), measured)
+
+    def test_started_row_timeout_is_not_retried(self):
+        calls = []
+        def runner(cmd, log):
+            calls.append(cmd)
+            return op.ROW_TIMEOUT
+        self.assertEqual(self.run_execute(runner), op.ROW_TIMEOUT)
+        self.assertEqual(len(calls), 1)
+
+    def test_watchdog_times_out_started_row_with_name(self):
+        self.out.mkdir()
+        script = ('import pathlib, sys, time; '
+                  'd = pathlib.Path(sys.argv[sys.argv.index("--diagnostic-output-directory") + 1]); '
+                  'd.joinpath("test.diag").write_text('
+                  '"TestNode = TestNode { Uid = TestNodeUid { Value = a }, DisplayName = A.Blocked, "'
+                  '"Properties = [ InProgressTestNodeStateProperty { Explanation = } ] }\\n"); '
+                  'time.sleep(30)')
+        log = self.out / 'console.log'
+        self.assertEqual(op.run_attempt([sys.executable, '-c', script], log,
+                                        cap=5, bootstrap_cap=2, row_cap=0.3), op.ROW_TIMEOUT)
+        self.assertIn('START A.Blocked', log.read_text())
+        self.assertIn('Row exceeded 0.3s: A.Blocked', log.read_text())
+
+    def test_watchdog_bounds_pre_row_timeout(self):
+        self.out.mkdir()
+        log = self.out / 'console.log'
+        self.assertEqual(op.run_attempt([sys.executable, '-c', 'import time; time.sleep(30)'], log,
+                                        cap=5, bootstrap_cap=0.3, row_cap=2), op.BOOTSTRAP_TIMEOUT)
+        self.assertIn('No row started within 0.3s', log.read_text())
+
+    def test_reportless_non_timeout_failure_is_not_retried(self):
+        calls = []
+        def runner(cmd, log):
+            calls.append(cmd)
+            return 2
+        self.assertEqual(self.run_execute(runner), 2)
+        self.assertEqual(len(calls), 1)
+
+    def test_lifecycle_distinguishes_parallel_rows_and_theory_names(self):
+        tracker = op.RowProgress()
+        def message(uid, name, state):
+            return (f'TestNodeUpdateMessage {{ TestNode = TestNode {{ Uid = TestNodeUid {{ Value = {uid} }}, '
+                    f'DisplayName = {name}, Properties = [ {state}TestNodeStateProperty {{ Explanation =  }} ] }} }}')
+        name = 'A.Theory(x: 1, role: "first-player")'
+        self.assertEqual(tracker.observe(message('a', name, 'InProgress'), 10), f'START {name}')
+        self.assertEqual(tracker.observe(message('b', 'B.Other', 'InProgress'), 20), 'START B.Other')
+        self.assertEqual(tracker.observe(message('a', name, 'Passed'), 25), f'FINISH {name} (15.0s, Passed)')
+        self.assertEqual(tracker.expired(31, 10), ['B.Other'])
+        self.assertEqual(tracker.observe(message('b', 'B.Other', 'Failed'), 31), 'FINISH B.Other (11.0s, Failed)')
+        self.assertEqual(tracker.expired(100, 10), [])
 
     def test_two_stalls_without_report_fail(self):
         calls = []

@@ -361,9 +361,9 @@ jobs:
     # 4 parallel jobs (docs/work/2026-11-24-ci-wall-clock-measurement.md). Each shard runs its own
     # Testcontainers Postgres. orleans_partition.py proves per shard that every planned row ran and
     # passed, and the `verify` job proves all shards share one plan whose allocation is disjoint and
-    # complete. Retry-once-on-no-report and the 18m per-attempt cap are preserved inside the script;
-    # a failed or report-less run now exits non-zero (the old inline loop reported exit 0 after two
-    # timeouts and skipped verification).
+    # complete. The script streams row lifecycle diagnostics, bounds individual rows at 6m,
+    # retries once only on a 3m pre-row timeout, and retains the 18m hard per-attempt cap.
+    # A failed or report-less run exits non-zero.
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
