@@ -2176,9 +2176,8 @@ public sealed partial class CampaignDurableAuthorityJournalTests
                 TestContext.Current.CancellationToken));
         }
 
-        // Status and body of one opening post, without asserting success (Reaction:
-        // CampaignHostAdapter.CampaignReactionWindowRuleNotImplementedException must surface as
-        // an explicit 409 rule-not-implemented, not the generic 409 "unavailable").
+        // Status and body of one opening post, without asserting success; used to
+        // verify wrong-seat and unavailable opening requests over the real route.
         internal async Task<(HttpStatusCode Status, string Body)> OpeningResponse(
             CampaignSeatCredential credential, string actor, string openingStage)
         {

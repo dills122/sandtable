@@ -46,7 +46,7 @@ in the same change.
 
 ## Current checkpoint and next gates
 
-As of 2026-11-26 (main through #669), the real Development/loopback HTTP Host can
+As of 2026-11-28, the real Development/loopback HTTP Host can
 create a fresh synthetic campaign, discover openings for both seats, traverse all 112
 Turn 1 catalog positions across Operation Stages 1–3, and cross End of Turn through
 Turn 2 initiative declaration and weather to the **open, unaccepted** Reserve Designation.
@@ -59,11 +59,11 @@ and bounded real Combat owner rounds (#658) have separate replay tests. The comb
 GT1 fixture (#669) additionally proves selected owner outcomes and seeded full-turn replay.
 
 This is a synthetic engine checkpoint, not a complete scenario, not exhaustive legal-branch
-coverage, and not an end-user release. Native Reaction-triggering moves outside the initial-turn
-Stage 1 second-side window refuse deterministically (`rule-not-implemented`, HTTP 409,
-#656); that retained window is explicitly marked unsupported in discovery (#666). #655 tracks
-native Reaction resolution/closure and resumption of the interrupted Movement occurrence; the
-E4b design is not implemented. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
+coverage, and not an end-user release. Native Reaction resolution and closure (#655) admit triggering moves through
+both roles in Stages 2 and 3, using native V59/V60 and Host contract 150. The reacting
+seat has the opening, the moving seat waits, and closure resumes the suspended Movement.
+Empty windows (including the retained #661 seed-6 prefix) close automatically; reactor-opened
+chains remain unsupported. Turn 2 Reserve acceptance/Movement and Turns 3–6 remain open,
 as do source-backed campaign admission, supply/victory rulings, executor migration, release
 packaging and Maproom play. The intended distribution excludes source-derived data; the
 [content-pack separation design](../work/plans/2026-11-25-content-pack-separation-design.md)
@@ -266,9 +266,9 @@ Optional parser evidence gate
 | --- | --- | --- | --- |
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
-| Movement, Reaction, Breakdown | Versioned native stage ledger (V58); legacy bounded Reaction and Breakdown | Both acting sides at Stages 1–3 have bounded Movement/Breakdown paths; later-stage Reaction-triggering moves refuse, retained Stage 1 second-side window is unsupported | Native Reaction resolution/closure (#655), Turn 2 acceptance, broader admitted mechanics |
+| Movement, Reaction, Breakdown | Versioned native stage ledger (V58); native Reaction (V59/V60) and bounded Breakdown | Both acting sides at Stages 1–3 have bounded Movement/Reaction/Breakdown paths | Later-turn Reaction proof, Turn 2 acceptance, broader admitted mechanics |
 | Combat and continual cycle | Bounded native round contracts, separate original P01 evidence lineage | Selected real HTTP owner rounds across all three stages; #658 covers both roles of Stages 2/3 | Broaden legal-branch coverage, retain original P01 certification gates and complete remaining Runner evidence |
-| Working pre-alpha skeleton | Acceptance boundary defined | Complete synthetic Turn 1-to-open-Turn 2 Reserve checkpoint, not six-turn engine RC | Accept successor Reserve and continue later turns; close Reaction and remaining release/fidelity gates |
+| Working pre-alpha skeleton | Acceptance boundary defined | Complete synthetic Turn 1-to-open-Turn 2 Reserve checkpoint, not six-turn engine RC | Accept successor Reserve and continue later turns; prove later-turn Reaction and remaining release/fidelity gates |
 | Six-turn scenario and remaining Land rules | Initial source-surface inventory merged in PR #254; exact exercised-rule/data reconciliation remains open | No complete six-turn scenario implementation | Measure and freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Angular workspace, Field Atlas library/Storybook, MAP-04–08 initial host contracts and private MAP-09/diary tracker | Temporary Rules9 grain and initial authorized connected read; synthetic fixture workflow remains separate | Two-seat successor/diary projection, public submit/receipt and MAP-11 order flow; product acceptance additionally requires durable save/resume, hot-seat isolation and complete scenario path |
 | Exercise Harness | Evidence contracts and historical Rules9 profiles established | Single Exercise, serial Maneuver, paired comparisons; bounded Combat adoption 022–023 | Complete remaining Runner evidence independently of HTTP |

@@ -83,7 +83,7 @@ internal static class SequencingScenarios
     internal static SequencingRecorder DriveTurnBoundary(int initialGameTurn, ulong seed) =>
         DrivePregameThroughStageThreeFirstSide($"rules-lab.breakdown.turn-boundary.gt{initialGameTurn}.v1", seed, true);
 
-    internal static SequencingRecorder DriveReactionRefusalFixture() =>
+    internal static SequencingRecorder DriveReactionFixture() =>
         DrivePregameThroughStageThreeFirstSide(Cna1979BreakdownSetupCatalog.ReactionSetupId, completionOnly: true);
 
     private static SequencingRecorder DrivePregameThroughStageThreeFirstSide(
@@ -227,12 +227,13 @@ internal static class SequencingScenarios
             {
                 offered++;
                 var moved = submit(session, audience, CampaignNativeSecondMoveV44.ActionIdFor(offer), element);
-                // E4b (#655): a refused optional move leaves the session at the same
-                // opening. Try another offer, or fall through to movement completion.
-                if (!moved.IsAccepted)
+                if (!moved.IsAccepted) continue;
+                // This driver is the frozen no-Reaction history oracle. Select the same
+                // non-triggering offer as before E4b, without adopting the immutable
+                // triggering successor. NativeReactionPendingTests drive those offers.
+                if (moved.SuccessorSession!.Pending is NativeReactionPending)
                 {
-                    if (moved.RejectionReason == CampaignActionSubmissionRejectionReason.RuleNotImplemented)
-                        r.Notes.Add($"{tag}: optional move opens unsupported Reaction window (D-E)");
+                    r.Notes.Add($"{tag}: optional Reaction trigger skipped for frozen history");
                     continue;
                 }
                 r.Notes.Add($"{tag}: real move accepted ({element})");

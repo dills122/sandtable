@@ -262,8 +262,8 @@ ledger to the current turn/stage; ordinary V43 decisions retain their prior byte
 any Reaction window. V45 records owner completion to Breakdown when no Reaction
 is pending. Native V59 records a Reaction move and V60 records participant or window closure
 over World V6. The Host uses the `reaction` owner route and `native-reaction` accepted-step
-kind (contract 150), separate from `contact-reaction` contract 50. The pre-existing later-stage
-trigger refusals remain in place until E4b activation.
+kind (contract 150), separate from `contact-reaction` contract 50. Both roles in Stages 2 and 3
+use this same pending overlay; reactor-opened chains remain unsupported.
 V30 records the cohortless Breakdown System determination into Combat with
 normal Host cold replay. Internal V31 projects repeated Combat owner offers
 without rebuilding V11 and binds an exact replayed owner choice. Exercise and

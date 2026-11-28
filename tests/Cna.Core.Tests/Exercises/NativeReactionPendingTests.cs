@@ -8,8 +8,7 @@ using Cna.Core.Tests.Exercises.Sequencing;
 
 namespace Cna.Core.Tests.Exercises;
 
-// E4b (#655) slice R2: session + NativeReactionPending + native reaction actions/query/submit/reconstruct.
-// The five stage refusals stay in place, so later-stage windows are opened by retaining a V44 directly.
+// E4b (#655): exercise native Reaction through the real Movement submission in every admitted slot.
 public sealed class NativeReactionPendingTests
 {
     public static TheoryData<int, bool> Slots => new()
@@ -18,7 +17,7 @@ public sealed class NativeReactionPendingTests
     };
 
     private static readonly Lazy<IReadOnlyList<SequencingSample>> Samples = new(
-        () => SequencingScenarios.DriveReactionRefusalFixture().Samples);
+        () => SequencingScenarios.DriveReactionFixture().Samples);
 
     private sealed record Opened(ExerciseSession Before, ExerciseSession Window, CampaignNativeSecondMoveV44 Trigger,
         CampaignActionAudience Reactor, CampaignActionAudience Phasing, string ElementId, string ActionId);
@@ -41,34 +40,19 @@ public sealed class NativeReactionPendingTests
             _ => CampaignExercises.QueryThirdStageSecondMovementCut(session, reserve.Side, element),
         };
         var action = CampaignNativeSecondMoveV44.ActionIdFor(Assert.Single(cut.MovementOffers, value => value.DestinationLocationId == "north"));
-        var (source, world) = (stage, second) switch
+        var submitted = (stage, second) switch
         {
-            (1, _) => CampaignExercises.QuerySecondMovementSource(session),
-            (2, false) => CampaignExercises.QueryStageEntryMovementSource(session),
-            (2, true) => CampaignExercises.QueryStageEntrySecondMovementSource(session),
-            (3, false) => CampaignExercises.QueryThirdStageMovementSource(session),
-            _ => CampaignExercises.QueryThirdStageSecondMovementSource(session),
+            (1, _) => CampaignExercises.SubmitSecondMovement(session, audience, action, element),
+            (2, false) => CampaignExercises.SubmitStageEntryMovement(session, audience, action, element),
+            (2, true) => CampaignExercises.SubmitStageEntrySecondMovement(session, audience, action, element),
+            (3, false) => CampaignExercises.SubmitThirdStageMovement(session, audience, action, element),
+            _ => CampaignExercises.SubmitThirdStageSecondMovement(session, audience, action, element),
         };
-        var orders = stage switch
-        {
-            1 => session.CurrentSnapshot.OperationStageOrders,
-            2 => CampaignExercises.StageEntryOrders(session),
-            _ => CampaignExercises.ThirdStageOrders(session),
-        };
-        var (trigger, projected) = CampaignNativeSecondMoveV44.Create(source, world, session.Context, orders,
-            session.CurrentContacts, reserve.Side, CampaignGameTurn.CurrentGameTurn(session), element, action,
-            session.CurrentSnapshot.RulesetHash);
+        Assert.True(submitted.IsAccepted, submitted.RejectionReason.ToString());
+        var opened = submitted.SuccessorSession!;
+        var trigger = Assert.IsType<CampaignNativeSecondMoveV44>(opened.CurrentHistory[^1]);
         Assert.NotNull(trigger.ReactionWindow);
-        var contacts = session.CurrentContacts.AppendNativeSecondMove(world, projected, trigger, session.Context);
-        var detached = (stage, second) switch
-        {
-            (1, _) => session.WithSecondMove(trigger, projected, contacts),
-            (2, false) => session.WithStageEntryMove(trigger, projected, contacts),
-            (2, true) => session.WithStageEntrySecondMove(trigger, projected, contacts),
-            (3, false) => session.WithThirdStageMove(trigger, projected, contacts),
-            _ => session.WithThirdStageSecondMove(trigger, projected, contacts),
-        };
-        return new(session, detached, trigger, Audience(trigger.ReactionWindow!.ReactingSide), audience, element, action);
+        return new(session, opened, trigger, Audience(trigger.ReactionWindow.ReactingSide), audience, element, action);
     }
 
     private static CampaignActionSubmission Submission(ExerciseSession session, CampaignActionAudience audience, CampaignActionCandidate action)
