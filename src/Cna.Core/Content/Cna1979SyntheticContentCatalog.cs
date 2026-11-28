@@ -94,6 +94,16 @@ public static class Cna1979SyntheticContentCatalog
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(packId);
         ArgumentException.ThrowIfNullOrWhiteSpace(expectedHash);
+#if CAPACITY_PROBE
+        foreach (var size in CapacityProbeCatalog.Sizes)
+            if (packId == CapacityProbeCatalog.PackId(size))
+            {
+                var probe = CapacityProbeCatalog.Get(size);
+                return expectedHash == probe.Identity.Hash
+                    ? ContentPackV6CatalogResolution.Resolved(probe)
+                    : ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
+            }
+#endif
         var artifact = string.Equals(packId, ArtifactV6.Identity.PackId, StringComparison.Ordinal)
             ? ArtifactV6
             : string.Equals(packId, ArtifactBreakdownReactionV6.Identity.PackId, StringComparison.Ordinal)
