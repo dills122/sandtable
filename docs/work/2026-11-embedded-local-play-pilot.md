@@ -78,6 +78,12 @@ Release build: zero warnings and errors. Process probe: exit 0. Existing focused
 tests: 4 passed, 0 failed; no Docker. Changed-file formatting check passed. Full solution gate
 not run, per spike scope; exact-head CI remains required.
 
+First CI run (pre-#677 baseline) failed the existing
+`VoluntaryCombatFinishHasNoPrivateTargetAndRetainsReceiptAcrossRestart` assertion expecting
+an exception from the owner opening. Merged main after #677 updated that assertion; focused
+re-run passed 1/1 and the embedded suite passed again 4/4. No pilot-specific changes to Core or
+the journal were needed.
+
 | Item | Result | Evidence / limits |
 | --- | --- | --- |
 | Single process, no Postgres/Docker | Works | Actual Program.cs Host, explicit Development flag, embedded SQLite, dynamic loopback HTTP, local silo. |
