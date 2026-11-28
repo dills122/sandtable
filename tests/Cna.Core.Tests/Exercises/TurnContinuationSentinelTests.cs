@@ -36,6 +36,56 @@ public sealed class TurnContinuationSentinelTests
         Assert.True(CampaignExercises.Reconstruct(successor).IsVerified);
     }
 
+    [Theory]
+    [InlineData(1, 2UL)]
+    [InlineData(1, 3UL)]
+    [InlineData(12, 12345UL)]
+    public void SuccessorDeclarationMustBindTheChronologicalTurnAndOwner(int initialTurn, ulong seed)
+    {
+        var samples = SequencingScenarios.DriveTurnBoundary(initialTurn, seed).Samples;
+        var declared = samples.Single(sample => sample.Label == "turn.declaration").Session;
+        var record = Assert.IsType<CampaignNativeInitiativeDeclarationV49>(declared.CurrentHistory[^1]);
+        var earlier = declared.CurrentHistory.Take(declared.CurrentHistory.Count - 1).ToArray();
+        var rollover = Assert.Single(earlier.OfType<CampaignNativeEndOfTurnV55>());
+        var initiative = Assert.Single(earlier.OfType<CampaignNativeTurnInitiativeV56>());
+        Assert.Equal(initialTurn, rollover.GameTurn);
+        Assert.Equal(initialTurn + 1, rollover.NextGameTurn);
+        Assert.Equal(rollover.NextGameTurn, record.GameTurn);
+        Assert.Equal(1, record.OperationStage);
+        Assert.Equal(initiative.Holder, record.DeclaringHolder);
+        Assert.Equal(initiative.Holder, record.SecondSide);
+        Assert.NotEqual(record.FirstSide, record.SecondSide);
+        var priorWeather = earlier.OfType<CampaignNativeWeatherDeterminationV50>().Last();
+        Assert.Equal(priorWeather.ResultRandomCursor, initiative.PriorRandomCursor);
+        var weather = Assert.IsType<CampaignNativeWeatherDeterminationV50>(samples.Single(sample => sample.Label == "turn.weather").Session.CurrentHistory[^1]);
+        Assert.Equal(initiative.ResultRandomCursor, weather.PriorRandomCursor);
+        Assert.True(CampaignExercises.Reconstruct(declared).IsVerified);
+
+        // Both replacements are serializable records, not malformed input.
+        foreach (var wrong in new[]
+                 {
+                     record with { GameTurn = initialTurn },
+                     record with { DeclaringHolder = record.FirstSide },
+                 })
+        {
+            Assert.Equal(wrong, CampaignNativeInitiativeDeclarationV49.Deserialize(wrong.SerializeCanonical()));
+            var tampered = SessionTamper.Clone(declared);
+            SessionTamper.Set(tampered, nameof(ExerciseSession.CurrentHistory),
+                declared.CurrentHistory.SetItem(declared.CurrentHistory.Count - 1, wrong));
+            Assert.Equal(ExerciseReconstructionFailureReason.InvalidHistory, CampaignExercises.Reconstruct(tampered).FailureReason);
+        }
+    }
+
+    [Fact]
+    public void BoundaryFixturesCoverBothHoldersAndAReversedOrder()
+    {
+        var sessions = new ulong[] { 2, 3 }.Select(seed =>
+            SequencingScenarios.DriveTurnBoundary(1, seed).Samples[^1].Session).ToArray();
+        Assert.Equal(2, sessions.Select(session => session.CurrentHistory.OfType<CampaignNativeTurnInitiativeV56>().Single().Holder).Distinct().Count());
+        Assert.Contains(sessions, session => session.CurrentSnapshot.OperationStageOrders.Single(order => order.OperationStage == 1).SecondSide
+            == session.CurrentHistory.OfType<CampaignNativeInitiativeDeclarationV49>().Last().FirstSide);
+    }
+
     // Diagnostic only: append the existing factory's valid successor record to a
     // detached test copy, without treating it as a live accepted submission. This
     // isolates the pending/checkpoint cascade from the closed submission gate.
