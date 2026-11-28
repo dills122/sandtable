@@ -52,6 +52,9 @@ path to multi-server campaigns. Its storage and scheduling groundwork has landed
   [issue #439](https://github.com/dills122/sandtable/issues/439)).
 - Outside Development, Orleans clustering and reminders use Postgres through AdoNet, so the Host
   is no longer limited to a single dev machine for clustering.
+- A Development-only, API-only [embedded local-play pilot](docs/work/2026-11-embedded-local-play-pilot.md)
+  uses private SQLite saves, localhost clustering, and boot deadline re-arm without Postgres. It
+  is opt-in feasibility tooling, not a released player runtime.
 - A measured [capacity budget](docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md)
   supports about 100 active campaigns per silo with histories under about 50 accepted steps. It
   requires Server GC and a capped Postgres connection pool.

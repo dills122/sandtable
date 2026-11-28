@@ -34,14 +34,16 @@ implemented the storage and scheduling parts:
   `CampaignDurableAuthorityJournalStore` and `CampaignJournalWorkingSet`. The working set is a
   process-private, in-memory relational scratch copy for one unit of work; it is not a store, and
   each unit of work flushes to Postgres in one transaction. The SQLite file store remains a
-  Development/test equivalence baseline and load-harness option. PostgreSQL is the production
-  journal backend.
+  Development/test equivalence baseline and load-harness option, and is wired by the explicit
+  Development-only [embedded local-play pilot](docs/work/2026-11-embedded-local-play-pilot.md).
+  PostgreSQL is the production journal backend.
 - Outside Development, Orleans clustering and reminders run against Postgres through AdoNet
   (PR #444), so the Host is no longer limited to a single dev machine for clustering. Development
   keeps localhost clustering.
 - Round deadlines no longer use a cross-campaign sweep (`CampaignCombatTimeoutService` was retired
   in Phase C3a). Each campaign arms per-round-kind `CampaignRoundTimeoutGrain` timers, with a
-  coarse Orleans reminder as a durability backstop.
+  coarse Orleans reminder as a durability backstop. The embedded pilot instead uses in-memory
+  reminders and reconstructs timer registrations from durable collecting rounds at silo startup.
 - The [Phase D benchmark](docs/work/plans/2026-11-20-phase-d-capacity-latency-benchmark.md)
   records the supported budget: about 100 active campaigns per silo, histories under about 50
   accepted steps, Server GC, and a capped Postgres connection pool.
