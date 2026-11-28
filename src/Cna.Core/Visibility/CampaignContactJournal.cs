@@ -511,6 +511,27 @@ internal sealed class CampaignContactJournal
             .AtAuthorityVersion(movement.StateVersion);
     }
 
+    // E4b: a reactor move changes adjacency exactly like a phasing move, so contacts derive from both Worlds.
+    internal CampaignContactJournal AppendNativeReactionMove(CampaignWorldSnapshotV6 before,
+        CampaignWorldSnapshotV6 after, CampaignNativeReactionMoveV59 moved, CampaignContentContext context)
+    {
+        ArgumentNullException.ThrowIfNull(moved);
+        if (moved.CampaignId != CampaignId || moved.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Reaction move does not bind contact authority.", nameof(moved));
+        return ApplySources(
+            CampaignContactAdjacencySource.OnNativeReactionMove(before, after, moved, context, axis),
+            CampaignContactAdjacencySource.OnNativeReactionMove(before, after, moved, context, commonwealth))
+            .AtAuthorityVersion(moved.StateVersion);
+    }
+
+    internal CampaignContactJournal AdvanceNativeReactionClosed(CampaignNativeReactionClosedV60 closed)
+    {
+        ArgumentNullException.ThrowIfNull(closed);
+        if (closed.CampaignId != CampaignId || closed.PriorStateVersion != AuthorityVersion)
+            throw new ArgumentException("Reaction closure does not bind contact authority.", nameof(closed));
+        return AtAuthorityVersion(closed.StateVersion);
+    }
+
     internal CampaignContactJournal AdvanceNativeRepeatMove(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeRepeatMovementV29 movement,

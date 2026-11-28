@@ -141,6 +141,8 @@ public sealed class PendingFromCursorSpikeTests
     [
         // NoAttack: no-attack completion also installs the Assault runtime, whose Events
         // are non-empty, and the Assault arm is checked first -> never observable.
+        // NativeReaction: an overlay derived from the last V44/V59/V60, not from the catalog cursor.
+        "NativeReactionPending",
         "SecondNoAttackPending", "StageEntryNoAttackPending", "StageEntrySecondNoAttackPending", "ThirdStageNoAttackPending", "ThirdStageSecondNoAttackPending",
     ];
 
@@ -217,7 +219,7 @@ public sealed class PendingFromCursorSpikeTests
     {
         var subtypes = typeof(PendingDecision).Assembly.GetTypes()
             .Where(t => t.BaseType == typeof(PendingDecision)).Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
-        Assert.Equal(50, subtypes.Count); // 29 + 6 Stage 3 preamble + 7 per Stage 3 acting side.
+        Assert.Equal(51, subtypes.Count); // 29 + 6 Stage 3 preamble + 7 per Stage 3 acting side + 1 native Reaction.
 
         var turn = Cna1979LandSequenceV4.CreateTurn(1);
         var later = Cna1979LandSequenceV4.CreateTurn(2);

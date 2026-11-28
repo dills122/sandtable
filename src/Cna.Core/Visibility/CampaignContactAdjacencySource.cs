@@ -111,6 +111,27 @@ internal static class CampaignContactAdjacencySource
             context.ArtifactV6, knowledge, movement.RepresentationId);
     }
 
+    internal static IReadOnlyList<CampaignContactTransition> OnNativeReactionMove(
+        CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
+        CampaignNativeReactionMoveV59 moved, CampaignContentContext context, CampaignContactKnowledge knowledge)
+    {
+        ArgumentNullException.ThrowIfNull(before);
+        ArgumentNullException.ThrowIfNull(after);
+        ArgumentNullException.ThrowIfNull(moved);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(knowledge);
+        var representation = before.Representations.SingleOrDefault(value => value.BoundElementIds.Count == 1
+            && value.BoundElementIds[0] == moved.ElementId && value.CurrentLocationId == moved.OriginLocationId);
+        if (context.ArtifactV6 is null || moved.CampaignId != knowledge.CampaignId || representation is null
+            || moved.PriorWorldHash != CampaignNativeCombatPaidWorldV22.Hash(before)
+            || moved.ResultWorldHash != CampaignNativeCombatPaidWorldV22.Hash(after)
+            || !after.Representations.Any(value => value.RepresentationId == representation.RepresentationId
+                && value.CurrentLocationId == moved.DestinationLocationId))
+            throw new ArgumentException("Reaction move does not bind both World cuts.", nameof(moved));
+        return Derive(before, after, moved.CampaignId, moved.StateVersion,
+            context.ArtifactV6, knowledge, representation.RepresentationId);
+    }
+
     public static IReadOnlyList<CampaignContactTransition> OnNativeSettlement(
         CampaignWorldSnapshotV6 before, CampaignWorldSnapshotV6 after,
         CampaignNativeCombatSettlementV24 settlement,

@@ -41,6 +41,10 @@ internal sealed record CampaignNativeSecondMoveV44(
                 (reserve.StateVersion, reserve.Side, reserve.NextPositionId, reserve.ResultWorldHash),
             CampaignNativeSecondMoveV44 move when move.ReactionWindow is null =>
                 (move.StateVersion, move.Side, move.PositionId, move.ResultWorldHash),
+            // E4b: a window is "closed" only by the V60 that leaves no remaining participant.
+            CampaignNativeReactionClosedV60 { WindowAfter: null } closed =>
+                (closed.StateVersion, closed.ReactingSide == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis,
+                    closed.ResumePositionId, closed.ResultWorldHash),
             _ => throw new InvalidOperationException("Second Movement requires a completed Reserve or unblocked move."),
         };
         var catalog = Cna1979LandSequenceV4.CreateTurn(gameTurn).Single(value => value.PositionId == positionId);
@@ -71,6 +75,7 @@ internal sealed record CampaignNativeSecondMoveV44(
         {
             CampaignNativeSecondReserveV43 reserve => reserve.CampaignId,
             CampaignNativeSecondMoveV44 move => move.CampaignId,
+            CampaignNativeReactionClosedV60 closed => closed.CampaignId,
             _ => throw new InvalidOperationException("Second Movement predecessor is unsupported."),
         };
         if (contacts.CampaignId != previousCampaign)

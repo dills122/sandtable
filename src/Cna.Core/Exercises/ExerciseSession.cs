@@ -5,7 +5,7 @@ using Cna.Core.Visibility;
 
 namespace Cna.Core.Exercises;
 
-public sealed class ExerciseSession
+public sealed partial class ExerciseSession
 {
     private readonly CampaignSnapshotV11? currentSnapshot;
     private readonly CampaignContentContext? context;
@@ -2271,7 +2271,10 @@ public sealed class ExerciseSession
     // real session has played through Operation Stage 1's second side, which
     // no test exercised until Stage 2's own close-out existed to drive to.
     // The guard is applied to the whole group now, not just the one arm.
-    internal PendingDecision? Pending => ComputePending();
+    internal PendingDecision? Pending => ComputePending(includeReaction: true);
+
+    // E4b: the same cascade without the open-Reaction overlay (stage cut under an open window).
+    internal PendingDecision? StagePending => ComputePending(includeReaction: false);
 
     internal ExerciseSession? TurnBoundaryPredecessor { get; private set; }
 
@@ -2288,7 +2291,7 @@ public sealed class ExerciseSession
         return successor;
     }
 
-    private PendingDecision? ComputePending()
+    private PendingDecision? ComputePending(bool includeReaction)
     {
         if (CurrentHistory is { Count: > 0 } && (CurrentHistory[^1] is CampaignNativeEndOfTurnV55
                 or CampaignNativeTurnInitiativeV56 or CampaignNativeNoObligationTurnPhaseV57
@@ -2297,6 +2300,10 @@ public sealed class ExerciseSession
                 or CampaignNativeNoObligationFleetAssignmentV53 or CampaignNativeNoObligationFleetRepairV54
                 && CurrentHistory.Any(value => value is CampaignNativeEndOfTurnV55))))
             return new TurnBoundaryPending(TurnBoundaryPredecessor);
+        // E4b: an open Reaction window outranks every retained stage cut; openness is derived
+        // from the last accepted event, never from a never-reset field.
+        if (includeReaction && NativeReaction is { IsOpen: true } reaction)
+            return new NativeReactionPending(reaction.OpenPredecessor);
         // Stage 3's own second-acting-side cuts (S3-6..S3-9) are chronologically
         // latest of all, so they come first, most-recent-first.
         if (CurrentThirdStageSecondAssault is { Events.Count: > 0 })
