@@ -4,8 +4,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Exercises;
-using Cna.OrleansHost.Tests.Persistence;
 using Cna.OrleansHost.Api;
+using Cna.OrleansHost.Tests.Persistence;
 
 namespace Cna.OrleansHost.Tests;
 
